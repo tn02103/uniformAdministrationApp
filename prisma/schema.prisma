@@ -1,0 +1,254 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider          = "postgresql"
+    url               = env("DATABASE_URL")
+    shadowDatabaseUrl = env("DATABASE_URL_SHADOW")
+}
+
+model Assosiation {
+    id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    name    String  @unique @db.VarChar(100)
+    acronym String  @db.VarChar(5)
+    useBeta Boolean @default(false)
+    cadet   Cadet[]
+    user    User[]
+}
+
+model RefreshToken {
+    fk_user   String   @db.Char(36)
+    deviceId  String   @db.Char(36)
+    token     String   @id @db.Char(50)
+    endOfLife DateTime @db.Timestamp(6)
+    user      User     @relation(fields: [fk_user], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+    @@index([fk_user])
+}
+
+model User {
+    id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    fk_assosiation   String         @db.Char(36)
+    role             Int            @db.SmallInt
+    username         String         @db.VarChar(10)
+    name             String         @db.VarChar(20)
+    password         String         @db.VarChar(100)
+    active           Boolean
+    failedLoginCount Int            @default(0)
+    refreshtoken     RefreshToken[]
+    assosiation      Assosiation    @relation(fields: [fk_assosiation], references: [id])
+
+    @@unique([username, fk_assosiation])
+    @@index([fk_assosiation])
+}
+
+model Cadet {
+    id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    firstname       String            @db.VarChar(30)
+    lastname        String            @db.VarChar(30)
+    fk_assosiation  String            @db.Char(36)
+    active          Boolean           @default(true)
+    comment         String            @default("")
+    recdelete       DateTime?         @db.Timestamp(6)
+    recdeleteUser   String?           @db.VarChar(10)
+    assosiation     Assosiation       @relation(fields: [fk_assosiation], references: [id])
+    cadetDeficiency CadetDeficiency[]
+    cadetInspection CadetInspection[]
+    issuedEntrys    MaterialIssued[]
+    uniformIssued   UniformIssued[]
+
+    @@index([fk_assosiation])
+}
+
+model CadetDeficiency {
+    id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    fk_deficiencyType  String              @db.Char(36)
+    description        String              @db.VarChar(30)
+    comment            String?
+    fk_cadetInspection String?             @db.Char(36)
+    fk_cadet           String              @db.Char(36)
+    dateCreated        DateTime            @default(now()) @db.Date
+    dateResolved       DateTime?           @db.Date
+    cadetInspection    CadetInspection?    @relation(fields: [fk_cadetInspection], references: [id], onUpdate: Restrict)
+    cadet              Cadet               @relation(fields: [fk_cadet], references: [id], onDelete: Cascade, onUpdate: Restrict)
+    deficiencyType     CadetDeficiencyType @relation(fields: [fk_deficiencyType], references: [id], onUpdate: Restrict)
+
+    @@index([fk_cadetInspection])
+    @@index([fk_cadet])
+    @@index([fk_deficiencyType])
+}
+
+model CadetDeficiencyType {
+    id                      String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    fk_assosiation          String            @db.Char(36)
+    name                    String            @db.VarChar(20)
+    dependsOnUniformitem    Boolean
+    addCommentToUniformitem Boolean           @default(false)
+    cadetdeficiency         CadetDeficiency[]
+
+    @@unique([name, fk_assosiation])
+    @@index([fk_assosiation])
+}
+
+model CadetInspection {
+    id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    fk_inspection   String            @db.Char(36)
+    fk_cadet        String            @db.Char(36)
+    uniformComplete Boolean
+    cadetDeficiency CadetDeficiency[]
+    cadet           Cadet             @relation(fields: [fk_cadet], references: [id], onDelete: Cascade, onUpdate: Restrict)
+    inspection      Inspection        @relation(fields: [fk_inspection], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+    @@unique([fk_inspection, fk_cadet])
+    @@index([fk_cadet])
+}
+
+model Inspection {
+    id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    fk_assosiation  String            @db.Char(36)
+    date            DateTime          @default(now()) @db.Date
+    active          Boolean           @default(true)
+    cadetInspection CadetInspection[]
+
+    @@unique([date, fk_assosiation])
+    @@index([fk_assosiation])
+}
+
+model Material {
+    id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    typename         String           @db.VarChar(20)
+    fk_materialGroup String           @db.Char(36)
+    actualQuantity   Int              @db.SmallInt
+    targetQuantity   Int              @db.SmallInt
+    sortOrder        Int              @db.SmallInt
+    recdelete        DateTime?        @db.Timestamp(6)
+    recdeleteUser    String?          @db.VarChar(10)
+    materialGroup    MaterialGroup    @relation(fields: [fk_materialGroup], references: [id], onUpdate: Restrict)
+    issuedEntrys     MaterialIssued[]
+
+    @@index([fk_materialGroup])
+}
+
+model MaterialGroup {
+    id               String     @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    description      String     @db.VarChar(20)
+    fk_assosiation   String     @db.Char(36)
+    issuedDefault    Int?       @db.SmallInt
+    sortOrder        Int        @db.SmallInt
+    recdelete        DateTime?  @db.Timestamp(6)
+    recdeleteUser    String?    @db.VarChar(10)
+    multitypeAllowed Boolean
+    typeList         Material[]
+
+    @@index([fk_assosiation])
+}
+
+model MaterialIssued {
+    id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    fk_material  String    @db.Char(36)
+    fk_cadet     String    @db.Char(36)
+    quantity     Int       @db.SmallInt
+    dateIssued   DateTime  @default(now()) @db.Timestamp(6)
+    dateReturned DateTime? @db.Timestamp(6)
+    cadet        Cadet     @relation(fields: [fk_cadet], references: [id], onDelete: Cascade, onUpdate: Restrict)
+    material     Material  @relation(fields: [fk_material], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+    @@unique([fk_material, fk_cadet, dateIssued])
+    @@index([fk_cadet])
+}
+
+model Uniform {
+    id             String             @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    number         Int                @db.SmallInt
+    fk_uniformType String             @db.Char(36)
+    fk_generation  String?            @db.Char(36)
+    fk_size        String?            @db.Char(36)
+    active         Boolean            @default(true)
+    comment        String?
+    recdelete      DateTime?          @db.Timestamp(6)
+    recdeleteUser  String?            @db.VarChar(10)
+    generation     UniformGeneration? @relation(fields: [fk_generation], references: [id], onDelete: Restrict, onUpdate: Restrict)
+    size           UniformSize?       @relation(fields: [fk_size], references: [id], onUpdate: Restrict)
+    type           UniformType        @relation(fields: [fk_uniformType], references: [id], onUpdate: Restrict)
+    issuedEntrys   UniformIssued[]
+
+    @@index([fk_generation])
+    @@index([fk_size])
+    @@index([fk_uniformType])
+}
+
+model UniformGeneration {
+    id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    fk_uniformType  String           @db.Char(36)
+    name            String           @db.VarChar(20)
+    fk_sizeList     String?          @db.Char(36)
+    sortOrder       Int              @db.SmallInt
+    outdated        Boolean          @default(false)
+    recdelete       DateTime?        @db.Timestamp(6)
+    recdeleteUser   String?          @db.VarChar(10)
+    uniformList     Uniform[]
+    uniformSizeList UniformSizelist? @relation(fields: [fk_sizeList], references: [id], onUpdate: Restrict)
+    uniformType     UniformType      @relation(fields: [fk_uniformType], references: [id], onUpdate: Restrict)
+
+    @@index([fk_sizeList])
+    @@index([fk_uniformType])
+}
+
+model UniformIssued {
+    id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    fk_cadet     String    @db.Char(36)
+    fk_uniform   String    @db.Char(36)
+    dateIssued   DateTime  @default(now()) @db.Date
+    dateReturned DateTime? @db.Date
+    cadet        Cadet     @relation(fields: [fk_cadet], references: [id], onDelete: Cascade, onUpdate: Restrict)
+    uniform      Uniform   @relation(fields: [fk_uniform], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+    @@unique([fk_cadet, fk_uniform, dateIssued])
+    @@index([fk_cadet])
+    @@index([fk_uniform])
+}
+
+model UniformSize {
+    id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    name             String            @db.VarChar(10)
+    fk_assosiation   String            @db.Char(36)
+    sortOrder        Int
+    uniformList      Uniform[]
+    uniformSizelists UniformSizelist[] @relation("uniformsizetouniformsizelist")
+
+    @@unique([name, fk_assosiation])
+    @@index([fk_assosiation])
+}
+
+model UniformSizelist {
+    id                    String              @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    name                  String              @db.VarChar(40)
+    fk_assosiation        String              @db.Char(36)
+    uniformGenerationList UniformGeneration[]
+    uniformTypeList       UniformType[]
+    uniformSizes          UniformSize[]       @relation("uniformsizetouniformsizelist")
+
+    @@unique([name, fk_assosiation])
+    @@index([fk_assosiation])
+}
+
+model UniformType {
+    id                    String              @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    name                  String              @db.VarChar(10)
+    acronym               String              @db.VarChar(2)
+    issuedDefault         Int                 @default(1)
+    usingGenerations      Boolean
+    usingSizes            Boolean
+    fk_defaultSizeList    String?             @db.Char(36)
+    sortOrder             Int
+    fk_assosiation        String              @db.Char(36)
+    recdelete             DateTime?           @db.Timestamp(6)
+    recdeleteUser         String?             @db.VarChar(10)
+    uniformList           Uniform[]
+    uniformGenerationList UniformGeneration[]
+    defaultSizeList       UniformSizelist?    @relation(fields: [fk_defaultSizeList], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+    @@index([fk_defaultSizeList])
+    @@index([fk_assosiation])
+}

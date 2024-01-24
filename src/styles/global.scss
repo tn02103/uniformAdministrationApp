@@ -1,0 +1,36 @@
+// Required
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+@import "../../node_modules/bootstrap/scss/variables-dark";
+@import "../../node_modules/bootstrap/scss/maps";
+@import "../../node_modules/bootstrap/scss/mixins";
+@import "../../node_modules/bootstrap/scss/utilities";
+
+// Create your own map
+$custom-colors: (
+  "navy": #01153e,
+  "navy-secondary": #2C4B8A,
+  "navy-tertiary": #9dbdff,
+  "vivid-orange": #FF5E0E
+);
+
+// Merge the maps
+$theme-colors: map-merge($theme-colors, $custom-colors);
+
+$all-colors: map-merge-multiple($blues, $indigos, $purples, $pinks, $reds, $oranges, $yellows, $greens, $teals, $cyans, $custom-colors);
+
+$utilities: map-merge($utilities,
+    ("color": map-merge(map-get($utilities, "color"),
+        (values: map-merge(map-get(map-get($utilities, "color"), "values"),
+            ($all-colors ),
+          ),
+        ),
+      ),
+      "background-color": map-merge(map-get($utilities, "background-color"),
+        (values: map-merge(map-get(map-get($utilities, "background-color"), "values"),
+            ($all-colors ),
+          ),
+        ),
+      )));
+
+@import "bootstrap/scss/utilities/api";
