@@ -6,6 +6,10 @@ import { useEffect, useState } from "react";
 import { Assosiation } from "@prisma/client";
 import { AuthItem } from "@/lib/storageTypes";
 import { uuid } from "uuidv4";
+import { useRouter, useSearchParams } from "next/navigation";
+import { mutate } from "swr";
+import { toast } from "react-toastify";
+import { useI18n } from "@/lib/locales/client";
 
 type PropType = {
     assosiations: Assosiation[];
@@ -16,9 +20,11 @@ export type RegistrationFormType = {
     assosiation: string,
 }
 const LoginForm = ({ assosiations }: PropType) => {
-    const t = (key: string) => key;
-
+    const t = useI18n();
+    const router = useRouter();
+    const searchParam = useSearchParams();
     const { register, handleSubmit, formState: { errors }, setValue } = useForm<RegistrationFormType>({ defaultValues: { assosiation: undefined } });
+
 
     const [failedLogin, setFailedLogin] = useState<boolean>(false);
     const [hideLogin, setHideLogin] = useState<boolean>(false);
@@ -46,12 +52,12 @@ const LoginForm = ({ assosiations }: PropType) => {
 
                 localStorage.setItem(process.env.NEXT_PUBLIC_LOCAL_AUTH_KEY as string, JSON.stringify(authItem));
 
-                /*  mutate(() => true, undefined, true);
-                  if (router.query.returnUrl !== undefined) {
-                      router.push(router.query.returnUrl as string);
-                  } else {
-                      router.push("/cadet");
-                  }*/
+                mutate(() => true, undefined, true);
+                if (searchParam.has('returnUrl')) {
+                    router.push(searchParam.get('returnUrl') as string);
+                } else {
+                    router.push(`/app/cadet`);
+                }
             } else if (response.status === 401) {
                 setFailedLogin(true);
             }
@@ -59,51 +65,51 @@ const LoginForm = ({ assosiations }: PropType) => {
         }).catch(error => {
             setFailedLogin(false);
             console.error(error);
-            // toast.error(t('error.login.unknown'));
+            toast.error(t('login.error.unknown'));
         });
     }
 
-    // onMount
-    useEffect(() => {
-        const storageString = localStorage.getItem(process.env.NEXT_PUBLIC_LOCAL_AUTH_KEY as string)
-        if (!storageString) {
-            return;
-        }
+    /*    // onMount
+        useEffect(() => {
+              const storageString = localStorage.getItem(process.env.NEXT_PUBLIC_LOCAL_AUTH_KEY as string)
+              if (!storageString) {
+                  return;
+              }
+      
+              const authItem: AuthItem = JSON.parse(storageString);
+      
+              // no refreshToken
+              if (!authItem.authToken) {
+                  if (authItem.assosiationId) {
+                      setValue("assosiation", authItem.assosiationId);
+                  }
+                  return;
+              }*/
 
-        const authItem: AuthItem = JSON.parse(storageString);
-
-        // no refreshToken
-        if (!authItem.authToken) {
-            if (authItem.assosiationId) {
-                setValue("assosiation", authItem.assosiationId);
-            }
-            return;
-        }
-
-        // Try to login with refreshToken
-        /* setHideLogin(true);
-         refreshSessionCookie()
-             .then((success) => {
-                 if (success) {
-                     mutate(() => true, undefined, true);
-                     if (router.query.returnUrl !== undefined) {
-                         router.push(router.query.returnUrl as string);
-                     } else {
-                         router.push("/cadet");
-                     }
+    // Try to login with refreshToken
+    /* setHideLogin(true);
+     refreshSessionCookie()
+         .then((success) => {
+             if (success) {
+                 mutate(() => true, undefined, true);
+                 if (router.query.returnUrl !== undefined) {
+                     router.push(router.query.returnUrl as string);
                  } else {
-                     setHideLogin(false);
-                     if (authItem.assosiationId) {
-                         setValue("assosiation", authItem.assosiationId);
-                     }
+                     router.push("/cadet");
                  }
-             });*/
-    }, []);
+             } else {
+                 setHideLogin(false);
+                 if (authItem.assosiationId) {
+                     setValue("assosiation", authItem.assosiationId);
+                 }
+             }
+         });
+}, []);*/
 
     return (
         <Form onSubmit={handleSubmit(onSubmit)}>
             <Form.Group className="mb-3">
-                <Form.Label>{t('label.user.assosiation')}:</Form.Label>
+                <Form.Label>{t('login.label.assosiation')}:</Form.Label>
                 <Form.Select
                     id="assosiation"
                     isInvalid={!!errors.assosiation}
@@ -116,7 +122,7 @@ const LoginForm = ({ assosiations }: PropType) => {
                 </Form.Select>
             </Form.Group>
             <Form.Group className="mb-3">
-                <Form.Label>{t('label.user.username')}:</Form.Label>
+                <Form.Label>{t('login.label.username')}:</Form.Label>
                 <Form.Control
                     type="text"
                     isInvalid={!!errors.username || failedLogin}
@@ -125,7 +131,7 @@ const LoginForm = ({ assosiations }: PropType) => {
                         {
                             required: {
                                 value: true,
-                                message: t('error.login.username.required')
+                                message: t('common.error.string.required')
                             },
                         })
                     } />
@@ -134,14 +140,14 @@ const LoginForm = ({ assosiations }: PropType) => {
                 {errors.username?.message}
             </div>
             <Form.Group className="mb-3">
-                <Form.Label>{t('label.user.password')}:</Form.Label>
+                <Form.Label>{t('login.label.password')}:</Form.Label>
                 <Form.Control
                     type="password"
                     isInvalid={!!errors.password || failedLogin}
                     {...register("password", {
                         required: {
                             value: true,
-                            message: t('error.login.password.required')
+                            message: t('common.error.string.required')
                         },
                     })} />
             </Form.Group>
@@ -149,11 +155,13 @@ const LoginForm = ({ assosiations }: PropType) => {
                 {errors.password?.message}
             </div>
             <div className="text-danger-emphasis fs-6 mb-3">
-                {failedLogin ? t('error.login.wrongCredentials') : ""}
+                {failedLogin && t('login.error.failed')}
             </div>
             <Row>
                 <Col>
-                    <Button variant="primary" type="submit">{t('label.user.login')}</Button>
+                    <Button variant="primary" type="submit" data-testid="btn_login">
+                        {t('login.label.login')}
+                    </Button>
                 </Col>
             </Row>
         </Form>

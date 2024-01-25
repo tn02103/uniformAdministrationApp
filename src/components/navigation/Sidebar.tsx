@@ -6,7 +6,7 @@ import { faAddressCard, faAngleLeft, faAngleRight, faClipboardCheck, faGear, faP
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Assosiation } from "@prisma/client";
 import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Dropdown } from "react-bootstrap";
 import Footer from "./Footer";
@@ -15,6 +15,9 @@ import NavButton from "./NavButton";
 import NavGroup from "./NavGroup";
 import NavLink from "./NavLink";
 import { useGlobalData } from "../globalDataProvider";
+import { logout } from "@/actions/auth";
+import { mutate } from "swr";
+import { AuthItem } from "@/lib/storageTypes";
 
 
 type SidebarPropType = {
@@ -29,9 +32,20 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
     const { inspectionState } = useGlobalData();
     const pathname = usePathname();
     const { locale } = useParams();
+    const router = useRouter();
 
-    function logout() {
-
+    function handleLogout() {
+        logout().then(() => {
+            const authItemString = localStorage.getItem(process.env.NEXT_PUBLIC_LOCAL_AUTH_KEY as string);
+            if (authItemString) {
+                const item: AuthItem = JSON.parse(authItemString);
+                item.authToken = undefined;
+                item.lastLogin = undefined;
+                localStorage.setItem(process.env.NEXT_PUBLIC_LOCAL_AUTH_KEY as string, JSON.stringify(item))
+            }
+            router.push('/login');
+            mutate(() => true, undefined);
+        });
     }
     function startStopInspection() {
 
@@ -180,7 +194,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                             {username}
                                         </Dropdown.Toggle>
                                         <Dropdown.Menu className="bg-navy-secondary border-white text-white">
-                                            <Dropdown.Item onClick={logout} data-testid="btn_logout" className="text-white bg-navy-secondary">
+                                            <Dropdown.Item onClick={handleLogout} data-testid="btn_logout" className="text-white bg-navy-secondary">
                                                 {t('sidebar.logout')}
                                             </Dropdown.Item>
                                         </Dropdown.Menu>
