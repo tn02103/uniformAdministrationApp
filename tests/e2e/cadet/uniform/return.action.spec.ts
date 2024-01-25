@@ -35,7 +35,6 @@ test.describe('', () => {
         });
 
         await test.step('open modal', async () => {
-            await page.pause();
             await Promise.all([
                 expect.soft(messagePopupComponent.div_header).toHaveText(t.modals.messageModal.uniform.return.header),
                 expect.soft(messagePopupComponent.div_message).toBeVisible(),

@@ -32,7 +32,6 @@ const CadetDataTableForm = (props: PropType) => {
     const router = useRouter();
 
     const { userRole } = useGlobalData();
-    console.log(userRole);
     const { cadetId, locale }: { cadetId: string, locale: string } = useParams();
     const [submitting, setSubmitting] = useState(false);
     const [editable, setEditable] = useState((cadetId === "new") ? true : false);
