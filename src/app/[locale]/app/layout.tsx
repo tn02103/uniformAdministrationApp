@@ -20,7 +20,7 @@ const Layout = async ({ children }: any) => {
 
     return (
         <GlobalDataProvider
-            userRole={AuthRole.admin}
+            userRole={user.role}
             useBeta={assosiation.useBeta}
             uniformTypeConfiguration={uniformConfiguration}
         >

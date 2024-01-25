@@ -49,7 +49,7 @@ const UniformRow = (props: PropType) => {
             toast.error(t('cadetDetailPage.returnUniform.error'))
         });
 
-        modal?.simpleYesNoModal({
+        modal?.simpleWarningModal({
             header: modalT('return.header'),
             message: modalT('return.message', { type: props.uniformType.name, number: uniform.number }),
             primaryFunction: returnItem,

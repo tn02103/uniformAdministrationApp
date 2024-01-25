@@ -62,7 +62,7 @@ const GeneralOverviewTable = ({
                 </InputGroup>
             </div>
             <div className="border border-2 rounded px-0">
-                <table className="table table-fixed border border-1">
+                <table className="table table-fixed border border-1" data-testid="div_table_cadetList">
                     <thead data-testid="tbl_header" className="bg-white sticky-top topoffset-nav p-0 pt-2">
                         <tr className="rounded-top">
                             {inspectionState?.active &&

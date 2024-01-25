@@ -32,12 +32,14 @@ const CadetDataTableForm = (props: PropType) => {
     const router = useRouter();
 
     const { userRole } = useGlobalData();
+    console.log(userRole);
     const { cadetId, locale }: { cadetId: string, locale: string } = useParams();
     const [submitting, setSubmitting] = useState(false);
     const [editable, setEditable] = useState((cadetId === "new") ? true : false);
     const { data: lastInspectionDate, error } = useSWR(
         `cadet/inspection/lastInspection`,
-        cadetId === "new" ? null : () => getCadetLastInspectionDate(cadetId),
+        (cadetId === "new" || userRole < AuthRole.inspector)
+            ? null : () => getCadetLastInspectionDate(cadetId).catch((e) => console.log(e)),
     )
 
     // handle cadetIdChange
@@ -92,8 +94,6 @@ const CadetDataTableForm = (props: PropType) => {
             setEditable(true);
         }
     }
-
-    if (error) throw error;
 
     return (
         <div data-testid="div_personalData" className="container border border-2 rounded">

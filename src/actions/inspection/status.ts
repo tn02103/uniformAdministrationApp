@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 import { InspectionStatus } from "@/types/deficiencyTypes";
 
 export const getInspectionState = (): Promise<InspectionStatus> => genericSAValidatior(
-    AuthRole.inspector,
+    AuthRole.user,
     true, []
 ).then(async ({ assosiation }) => {
     const inspection = await prisma.inspection.findFirst({
