@@ -121,4 +121,24 @@ test.describe('', async () => {
             expect(await cadetListPage.div_cadet_list.count()).toBe(9);
         });
     });
+    test('validate Links', async () => {
+        await test.step('Marie Ackermann', async () => {
+            await cadetListPage.lnk_cadet_firstname('0d06427b-3c12-11ee-8084-0068eb8ba754').click();
+            await expect(page).toHaveURL('/de/app/cadet/0d06427b-3c12-11ee-8084-0068eb8ba754');
+            await page.goBack();
+
+            await cadetListPage.lnk_cadet_lastname('0d06427b-3c12-11ee-8084-0068eb8ba754').click();
+            await expect(page).toHaveURL('/de/app/cadet/0d06427b-3c12-11ee-8084-0068eb8ba754');
+            await page.goBack();
+        });
+        await test.step('Uwe Luft', async () => {
+            await cadetListPage.lnk_cadet_firstname('d468ac3c-3c11-11ee-8084-0068eb8ba754').click();
+            await expect(page).toHaveURL('/de/app/cadet/d468ac3c-3c11-11ee-8084-0068eb8ba754');
+            await page.goBack();
+
+            await cadetListPage.lnk_cadet_lastname('d468ac3c-3c11-11ee-8084-0068eb8ba754').click();
+            await expect(page).toHaveURL('/de/app/cadet/d468ac3c-3c11-11ee-8084-0068eb8ba754');
+            await page.goBack();
+        });
+    });
 });

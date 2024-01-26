@@ -25,10 +25,10 @@ export class CadetListPage {
         return this.div_cadet(cadetId).getByTestId('div_inspection');
     }
     lnk_cadet_lastname(cadetId: string) {
-        return this.div_cadet(cadetId).getByTestId('lnk_lastname');
+        return this.div_cadet(cadetId).getByTestId('lnk_lastname').locator('a');
     }
     lnk_cadet_firstname(cadetId: string) {
-        return this.div_cadet(cadetId).getByTestId('lnk_firstname');
+        return this.div_cadet(cadetId).getByTestId('lnk_firstname').locator('a');
     }
     div_cadet_lastInspection(cadetId: string) {
         return this.div_cadet(cadetId).getByTestId('div_lastInspection');
