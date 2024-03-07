@@ -29,7 +29,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
     const { uniformTypeConfiguration, userRole } = useGlobalData();
 
     const { data: uniformMap, mutate: keyedMutator, error } = useSWR(
-        `cadetUniform/${cadetId}`,
+        `cadet.${cadetId}.uniform`,
         () => getCadetUniformMap(cadetId).catch(e => { console.log("cought SAError", e, Object.entries(e)); throw e }),
         {
             fallbackData: props.uniformMap,
@@ -147,7 +147,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
                 const items = uniformMap?.[type.id] ?? [];
                 return (
                     <div data-testid={`div_utype_${type.id}`} key={"typeRow" + type.id} className="col-12">
-                        <div style={{ background: "#f2f2f2" }} className="row border-top border-bottom border-dark border-1 py-1 ">
+                        <div style={{ background: "#f2f2f2" }} className="row m-0 border-top border-bottom border-dark border-1 py-1 ">
                             <div data-testid={"div_name"} className="col-2 col-md-1 fw-bold">{type.name}</div>
                             <div data-testid={"div_uitems_amount"} className={`col-4 col-sm-2 col-xl-1 ${(items.length < type.issuedDefault) ? "text-orange-500" : "fw-light"}`}>
                                 ({items?.length} {t('common.of')} {type.issuedDefault})

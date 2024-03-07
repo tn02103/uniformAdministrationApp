@@ -10,6 +10,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { mutate } from "swr";
 import { toast } from "react-toastify";
 import { useI18n } from "@/lib/locales/client";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 type PropType = {
     assosiations: Assosiation[];
@@ -23,7 +25,7 @@ const LoginForm = ({ assosiations }: PropType) => {
     const t = useI18n();
     const router = useRouter();
     const searchParam = useSearchParams();
-    const { register, handleSubmit, formState: { errors }, setValue } = useForm<RegistrationFormType>({ defaultValues: { assosiation: undefined } });
+    const { register, handleSubmit, formState: { errors, isSubmitting }, setValue } = useForm<RegistrationFormType>({ defaultValues: { assosiation: undefined } });
 
 
     const [failedLogin, setFailedLogin] = useState<boolean>(false);
@@ -159,8 +161,11 @@ const LoginForm = ({ assosiations }: PropType) => {
             </div>
             <Row>
                 <Col>
-                    <Button variant="primary" type="submit" data-testid="btn_login">
-                        {t('login.label.login')}
+                    <Button variant="primary" type="submit" disabled={isSubmitting} data-testid="btn_login">
+                        {isSubmitting ?
+                            <FontAwesomeIcon icon={faSpinner} className="mx-3 fa-spin-pulse" />
+                            : t('login.label.login')
+                        }
                     </Button>
                 </Col>
             </Row>

@@ -41,7 +41,7 @@ const IssueMaterialModal = ({ cadetId, materialGroup, issuedMaterialList, oldMat
 
     return (
         <Modal data-testid="div_popup" show onHide={onClose}>
-            <Modal.Header data-testid="div_header" closeButton>
+            <Modal.Header className="fs-5 fw-bold" data-testid="div_header" closeButton>
                 {t('cadetDetailPage.issueMaterial.header', { group: materialGroup.description })}
             </Modal.Header>
             <Form onSubmit={handleSubmit(onSubmit)}>

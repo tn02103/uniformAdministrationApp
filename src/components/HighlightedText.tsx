@@ -8,7 +8,7 @@ function HighlightedText({ text, highlight }: HighlightedTextProp) {
         <span>
             {parts.map((part, i) =>
                 part.toLowerCase() === highlight.toLowerCase() ? (
-                    <span key={i} style={{ backgroundColor: 'yellow' }}>
+                    <span key={i} style={{ backgroundColor: 'yellow' }} data-testid="div_hilight">
                         {part}
                     </span>
                 ) : (

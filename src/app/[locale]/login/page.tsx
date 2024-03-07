@@ -1,14 +1,14 @@
-import { prisma } from "@/lib/db"
+import { prisma } from "@/lib/db";
+import { getI18n } from "@/lib/locales/config";
+import { setStaticParamsLocale } from "next-international/server";
 import Head from "next/head";
 import { Col, Row } from "react-bootstrap";
 import LoginForm from "./loginForm";
-import { setStaticParamsLocale } from "next-international/server";
-import { getI18n, getStaticParams } from "@/lib/locales/config";
 
 
 
-const LoginPage = async () => {
-
+const LoginPage = async ({ params: { locale } }: { params: { locale: string } }) => {
+    setStaticParamsLocale(locale);
     const t = await getI18n();
     const assosiations = await prisma.assosiation.findMany();
 

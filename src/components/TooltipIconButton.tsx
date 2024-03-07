@@ -20,8 +20,9 @@ type PropType = {
 const TooltipIconButton = ({ icon, variant, tooltipText, testId, onClick, buttonSize, buttonClass, disabled, iconClass, buttonType }: PropType) => (
     <OverlayTrigger
         delay={{ show: 1000, hide: 150 }}
+        trigger={"focus"}
         overlay={
-            <Tooltip>{tooltipText}</Tooltip>
+            <Tooltip className="d-none d-lg-inline">{tooltipText}</Tooltip>
         }
         rootClose={disabled}
     >

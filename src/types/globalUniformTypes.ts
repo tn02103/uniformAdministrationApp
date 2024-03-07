@@ -119,6 +119,7 @@ export type UniformConfiguration = {
 
 export type UniformFormData = {
     id: string;
+    number: number;
     generation?: string;
     size?: string;
     comment: string;
@@ -128,4 +129,13 @@ export type UniformFormData = {
 export type UniformNumbersSizeMap = {
     sizeId: string;
     numbers: number[];
+}
+
+export type IssuedEntryType = {
+    dateIssued: Date;
+    dateReturned: Date | null;
+    cadetDeleted: boolean;
+    firstname: string;
+    lastname: string;
+    cadetId: string;
 }

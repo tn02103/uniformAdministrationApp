@@ -14,6 +14,7 @@ export default {
             save: "speichern",
             edit: "Bearbeiten",
             create: "Anlegen",
+            open: "Öffnen",
             edit_item: "{item} Bearbeiten",
             issue_item: "{item} Ausgeben",
             issue: "Ausgeben",
@@ -21,6 +22,7 @@ export default {
             replace: "Austauschen",
             changeIssued: "Anzahl & Typ verändern",
             delete: "Löschen",
+            load: "Laden",
         },
         cadet: {
             cadet: "Person",
@@ -36,7 +38,11 @@ export default {
         uniform: {
             number: "Nummer",
             generation: "Generation",
+            generation_other: "Generationen",
             size: "Größe",
+            size_other: "Sizes",
+            owner: "Besitzer",
+
         },
         material: {
             type_one: "Typ",
@@ -121,6 +127,26 @@ export default {
         'defaultIssuedWarning#one': "Es sollte {count} Stück ausgegeben werden",
         'defaultIssuedWarning#other': "Es sollten {count} Stücke ausgegeben werden",
         'multitypeWarning': "Es sollte nur 1 Typ dieses Materials ausgegeben werden",
+    },
+    uniformList: {
+        filter: "Filter",
+        other: "weitere Filter",
+        withOwner: "mit Besitzer",
+        withoutOwner: "ohne Besitzer",
+        selectAll: "Alle auswählen",
+        error: {
+            activ: "Von Aktiv und Passiv muss mindestens ein Option ausgewählt sein!",
+            owner: "Von mit und ohne Benutzer muss mindestens eine Option ausgewählt sein!",
+        },
+        search: {
+            invalid: "Sucheingabe Invalide",
+            label: "Suche",
+        },
+        'numberOfEntries#one': "{count} Einträge",
+        'numberOfEntries#zero': "Keine Einträge",
+        'numberOfEntries#other': "{count} Eintrag",
+        noData: "Keine Daten geladen",
+        header: "Uniformteile",
     },
     sidebar: {
         logout: "Abmelden",

@@ -4,6 +4,7 @@ import { getIronSession } from "@/lib/ironSession";
 import { getI18n } from "@/lib/locales/config";
 import Head from "next/head";
 import GeneralOverviewTable from "./table";
+import { setStaticParamsLocale } from "next-international/server";
 
 export type GeneralOverviewCadetType = {
     id: string;
@@ -74,6 +75,7 @@ const loadData = async (propertie: "lastname" | "firstname", asc: boolean): Prom
 }
 
 const CadetListPage = async ({ params, searchParams }: any) => {
+    setStaticParamsLocale(params.locale);
     const t = await getI18n();
     const orderBy = searchParams.orderBy === "firstname" ? "firstname" : "lastname";
     const asc = searchParams.asc ? searchParams.asc === "true" ? true : false : true;

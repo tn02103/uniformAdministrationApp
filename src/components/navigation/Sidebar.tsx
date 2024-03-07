@@ -8,7 +8,7 @@ import { Assosiation } from "@prisma/client";
 import Link from "next/link";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { Dropdown } from "react-bootstrap";
+import { Col, Dropdown } from "react-bootstrap";
 import Footer from "./Footer";
 import Header from "./Header";
 import NavButton from "./NavButton";
@@ -208,14 +208,14 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                     </div>
                 </div>
             </div>
-            <div className='col-sm min-vh-100' onClick={() => ((window.innerWidth < 992) && showSidebar && setShowSidebar(false))}>
+            <Col lg={collapsed ? 11 : 9} xl={collapsed ? 11 : 10} className=' min-vh-100' onClick={() => ((window.innerWidth < 992) && showSidebar && setShowSidebar(false))}>
                 <div className='row m-0'>
                     <div className={`container-fluid pt-6 pt-lg-4 pb-3 px-0`}>
                         {children}
                     </div>
                 </div>
                 <div className='row m-0' style={{ height: "400px" }}></div>
-            </div>
+            </Col>
         </div>
     );
 }

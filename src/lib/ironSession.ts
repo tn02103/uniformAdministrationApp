@@ -7,7 +7,7 @@ const sessionOptions: SessionOptions = {
     cookieName: process.env.IRON_SESSION_COOKIE_NAME as string,
     cookieOptions: {
         secure: process.env.STAGE !== "DEV",
-        maxAge: (3600 * 24),
+        maxAge: (3600 * 6),
         sameSite: "Strict"
     }
 }

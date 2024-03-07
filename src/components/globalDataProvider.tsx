@@ -3,7 +3,7 @@ import { getInspectionState } from "@/actions/inspection/status";
 import { getUniformTypeConfiguration as getUniformTypeConfigurationSA } from "@/actions/uniform/type"
 import { AuthRole } from "@/lib/AuthRoles"
 import { InspectionStatus } from "@/types/deficiencyTypes";
-import { UniformType } from "@/types/globalUniformTypes"
+import { UniformSizeList, UniformType } from "@/types/globalUniformTypes"
 import { Context, createContext, useCallback, useContext } from "react"
 import useSWR from "swr"
 
@@ -14,6 +14,7 @@ type GlobalDataProviderContextType = {
     userRole: AuthRole;
     inspectionState: InspectionStatus;
     useBeta: boolean;
+    sizeLists: UniformSizeList[]
 }
 
 type GlobalDataProviderPropType = {
@@ -21,6 +22,7 @@ type GlobalDataProviderPropType = {
     uniformTypeConfiguration: UniformType[];
     userRole: AuthRole;
     useBeta: boolean;
+    sizeLists: UniformSizeList[];
 }
 
 export let GlobalDataContext: Context<GlobalDataProviderContextType>;
@@ -44,13 +46,13 @@ const GlobalDataProvider = ({ children, ...props }: GlobalDataProviderPropType) 
         }
     )
 
-
     const getProviderContext = useCallback(() => {
         return {
             uniformTypeConfiguration,
             userRole: props.userRole,
             useBeta: props.useBeta,
             inspectionState,
+            sizeLists: props.sizeLists,
         }
     }, [uniformTypeConfiguration, props.userRole, inspectionState])
 

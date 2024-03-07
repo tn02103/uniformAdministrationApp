@@ -5,6 +5,8 @@ import { useI18n } from "@/lib/locales/client";
 import SimpleFormModal, { SimpleFormModalProps } from "./simpleFormModal";
 import { CadetMaterial, MaterialGroup } from "@/types/globalMaterialTypes";
 import IssueMaterialModal, { IssueMaterialModalProps } from "./issueMaterial";
+import { UniformType } from "@/types/globalUniformTypes";
+import UniformItemDetailModal, { UIDModalProps } from "./uniformItemDetail";
 
 
 
@@ -15,7 +17,7 @@ type ModalContextType = {
     //dangerConfirmationModal: (header: string, message: string | ReactNode, confirmationText: string, dangerOption: string, dangerFunction: () => void, cancelOption?: string, cancelFunction?: () => void) => void,
     simpleFormModal: (props: SimpleFormModalProps) => void,
     issueMaterialModal: (cadetId: string, materialGroup: MaterialGroup, issuedMaterialList: CadetMaterial[], oldMaterial?: CadetMaterial) => void,
-
+    uniformItemDetailModal: (uniformId: string, uniformType: UniformType, ownerId: string | null) => void,
 }
 
 type ModalCapsule = {
@@ -23,7 +25,7 @@ type ModalCapsule = {
     props: any,
 }
 type ModalTypes = "DangerConfirmationModal" | "EditGenerationModal" | "EditMaterialTypeModal" | "InspectionReviewPopup" | "IssueMaterialModal"
-    | "IssueUniformModal" | "ChangeUserPasswordModal" | "SimpleFormModal"
+    | "IssueUniformModal" | "ChangeUserPasswordModal" | "SimpleFormModal" | "UniformItemDetailModal"
 
 export const ModalContext = createContext<ModalContextType | undefined>(undefined);
 export const useModal = () => useContext(ModalContext);
@@ -127,6 +129,16 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         showModal("IssueMaterialModal", props);
     }, []);
 
+    const uniformItemDetailModal = useCallback((uniformId: string, uniformType: UniformType, ownerId: string | null) => {
+        const props: UIDModalProps = {
+            uniformId,
+            uniformType,
+            ownerId,
+            onClose,
+        };
+        showModal("UniformItemDetailModal", props);
+    }, [])
+
     const onClose = () => {
         setQueue(prevState => prevState.slice(1))
     }
@@ -142,7 +154,8 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
              inspectionReviewPopup,
              changeUserPasswordModal,*/
             issueMaterialModal,
-            simpleFormModal
+            simpleFormModal,
+            uniformItemDetailModal
         }
     }, [showMessageModal,
         simpleYesNoModal,
@@ -154,7 +167,8 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
          inspectionReviewPopup,
          changeUserPasswordModal,*/
         issueMaterialModal,
-        simpleFormModal]);
+        simpleFormModal,
+        uniformItemDetailModal]);
 
     function renderModal(modal: ModalCapsule) {
         switch (modal.modalType) {
@@ -174,6 +188,8 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
                 return <SimpleFormModal {...modal.props} />
             case "IssueMaterialModal":
                 return <IssueMaterialModal {...modal.props} />
+            case "UniformItemDetailModal":
+                return <UniformItemDetailModal {...modal.props} />
         }
     }
 

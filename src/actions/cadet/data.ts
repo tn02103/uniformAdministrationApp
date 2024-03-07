@@ -1,11 +1,10 @@
 'use server'
+import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
+import { cadetValidation, uuidValidationPattern } from "@/lib/validations";
 import { Cadet, cadetArgs } from "@/types/globalCadetTypes";
 import { cache } from "react";
 import { genericSAValidatior } from "../validations";
-import { AuthRole } from "@/lib/AuthRoles";
-import { cadetValidation, nameValidationPattern, uuidValidationPattern } from "@/lib/validations";
-import { UnauthorizedException } from "@/errors/CustomException";
 
 export const getCadetData = cache(async (cadetId: string): Promise<Cadet> => genericSAValidatior(
     AuthRole.user,
