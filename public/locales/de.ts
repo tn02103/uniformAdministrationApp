@@ -2,7 +2,13 @@ export default {
     common: {
         of: "von",
         comment: "Kommentar",
+        description: "Beschreibung",
+        type: "Typ",
         loading: "Lädt",
+        dates: {
+            created: "Erstellt am:",
+            updated: "zulest Verändert:",
+        },
         yes: "Ja",
         no: "Nein",
         active: {
@@ -10,11 +16,13 @@ export default {
             false: "Inaktiv"
         },
         actions: {
-            cancel: "Abbrechen",
+            cancel: "abbrechen",
             save: "speichern",
-            edit: "Bearbeiten",
+            edit: "bearbeiten",
             create: "Anlegen",
             open: "Öffnen",
+            prevStep: "zurück",
+            nextStep: "weiter",
             edit_item: "{item} Bearbeiten",
             issue_item: "{item} Ausgeben",
             issue: "Ausgeben",
@@ -60,6 +68,12 @@ export default {
                 target: "Soll",
                 targetQuantity: "Sollmänge",
                 issued: "Ausgegeben"
+            }
+        },
+        deficiency: {
+            resolved: {
+                true: "Behoben",
+                false: "Unbehoben",
             }
         },
         error: {
@@ -116,6 +130,9 @@ export default {
             uniformTable: "Uniformteile",
             cadetTable: "Personaldaten",
             materialTable: "Materialien",
+            inspection: "Uniformkontrolle",
+            inspecting: "VK kontrollieren",
+            deficiencies: "Mängel",
         },
         returnUniform: {
             error: "Beim Zurückziehen des Uniformteils ist ein Fehler aufgetreten. Bitte versuchen sie es noch einmal",
@@ -127,6 +144,12 @@ export default {
         'defaultIssuedWarning#one': "Es sollte {count} Stück ausgegeben werden",
         'defaultIssuedWarning#other': "Es sollten {count} Stücke ausgegeben werden",
         'multitypeWarning': "Es sollte nur 1 Typ dieses Materials ausgegeben werden",
+        tooltips: {
+            inspection: {
+                inspected: "Kadetten kontrolliert:\nInspektion des Kadetten aktualisieren",
+                notInspected: "Kadetten unkontrolliert:\nInspektion des Kadetten starten"
+            }
+        }
     },
     uniformList: {
         filter: "Filter",

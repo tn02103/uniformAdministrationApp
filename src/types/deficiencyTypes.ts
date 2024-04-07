@@ -8,23 +8,28 @@ export const deficiencyTypeArgs = Prisma.validator<Prisma.CadetDeficiencyTypeArg
         addCommentToUniformitem: true,
     }
 })
-export const deficiencyArgs = Prisma.validator<Prisma.CadetDeficiencyArgs>()({
-    select: {
-        id: true,
-        description: true,
-        comment: true,
-        dateCreated: true,
-        dateResolved: true,
-        deficiencyType: {
-            ...deficiencyTypeArgs,
-        }
-    }
-});
 
-export type Deficiency = Prisma.CadetDeficiencyGetPayload<typeof deficiencyArgs>;
+
 
 export type DeficiencyType = Prisma.CadetDeficiencyTypeGetPayload<typeof deficiencyTypeArgs>;
 
+export type Deficiency = {
+    id: string;
+    typeId: string;
+    typeName: string;
+    description: string;
+    comment: string;
+    fk_cadet: string;
+    fk_material: string | null;
+    fk_uniform: string | null;
+    dateCreated: Date;
+    dateUpdated: Date;
+    dateResolved: Date;
+    userCreated: Date;
+    userUpdated: Date;
+    userResolved: Date;
+
+}
 
 export type CadetInspection = {
     id: string,

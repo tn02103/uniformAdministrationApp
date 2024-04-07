@@ -14,6 +14,7 @@ export default {
             save: "speichern",
             edit: "Bearbeiten",
             create: "Anlegen",
+            open: "Öffnen",
             edit_item: "{item} Bearbeiten",
             issue_item: "{item} Ausgeben",
             issue: "Ausgeben",

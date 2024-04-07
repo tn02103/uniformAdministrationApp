@@ -1,3 +1,4 @@
+"use server"
 
 import { AuthRole } from "@/lib/AuthRoles";
 import { genericSAValidatior } from "../validations";
@@ -55,4 +56,5 @@ export const getInspectedCadetIdList = () => genericSAValidatior(AuthRole.inspec
                 }
             }
         }).then((data) => data.map(c => c.fk_cadet))
-    )
+    );
+

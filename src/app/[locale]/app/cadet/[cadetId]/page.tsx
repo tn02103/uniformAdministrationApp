@@ -7,6 +7,7 @@ import CadetDataTable from "./_cadetDataTable/table";
 import MaterialTableContainer from "./_materialTable/container";
 import CadetUniformTableContainer from "./_uniformTable/container";
 import CadetDropDown from "./cadetDropDown";
+import CadetInspectionCard from "./_inspctionTable/card";
 
 type PropType = {
     params: {
@@ -39,7 +40,7 @@ const CadetDetailPage = async (props: PropType) => {
             <Row className="position-relative">
                 {(cadet && user!.role >= AuthRole.materialManager) &&
                     <div className="position-absolute w-auto top-0 end-0">
-                        <CadetDropDown firstname={cadet?.firstname} lastname={cadet?.lastname} />
+                        <CadetDropDown firstname={cadet.firstname} lastname={cadet.lastname} />
                     </div>
                 }
                 <h1 data-testid="div_pageHeader" className="text-center mb-3">
@@ -49,6 +50,9 @@ const CadetDetailPage = async (props: PropType) => {
             <Row className="justify-content-center">
                 <Col xs={12} md={8} lg={7} xl={3} className="pb-3 pe-md-3 p-0">
                     <CadetDataTable initialData={cadet} />
+                </Col>
+                <Col xs={12} md={8} lg={7} xl={5} className="pb-3 pe-md-3 p-0">
+                    <CadetInspectionCard />
                 </Col>
                 {(props.params.cadetId !== "new") &&
                     <Col xs={12} md={8} lg={7} xl={4} className="p-0 pb-3">

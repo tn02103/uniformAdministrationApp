@@ -1,6 +1,6 @@
 "use server";
 
-import { UnauthenticatedException, UnauthorizedException } from "@/errors/CustomException";
+import { UnauthorizedException } from "@/errors/CustomException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { IronSessionUser, getIronSession } from "@/lib/ironSession";
@@ -45,6 +45,61 @@ export const genericSAValidatior = async (
                 throw Error("Not implemented AssosiationValidation");
         }
     }));
+    return user;
+}
+
+export const genericSAValidatiorV2 = async (
+    requiredRole: AuthRole,
+    typeValidation: boolean,
+    assosiationValidations: {
+        cadetId?: string | string[],
+        uniformId?: string | string[],
+        uniformTypeId?: string | string[],
+        materialId?: string | string[],
+    }
+): Promise<IronSessionUser> => {
+    "use server"
+
+    const { user } = await getIronSession();
+    if (!user) {
+        return redirect('/login');
+    } else if (user.role < requiredRole) {
+        throw new UnauthorizedException(`user does not have required role ${requiredRole}`);
+    }
+
+    if (!typeValidation) {
+        throw new Error("Typevalidation failed");
+    }
+
+    const validationPromisses: Promise<any>[] = [];
+    const validate = (ids: string | string[], validator: (id: string, assosiationId: string) => Promise<any>) => {
+        if (Array.isArray(ids)) {
+            validationPromisses.push(
+                ...ids.map((id) => validator(id, user.assosiation))
+            );
+        } else {
+            validationPromisses.push(
+                validator(ids, user.assosiation)
+            );
+        }
+    }
+
+    if (assosiationValidations.cadetId) {
+        validate(assosiationValidations.cadetId, validateCadetAssosiation);
+    }
+
+    if (assosiationValidations.uniformId) {
+        validate(assosiationValidations.uniformId, validateUniformAssosiation);
+    }
+
+    if (assosiationValidations.uniformTypeId) {
+        validate(assosiationValidations.uniformTypeId, validateUniformTypeAssosiation);
+    }
+
+    if (assosiationValidations.materialId) {
+        validate(assosiationValidations.materialId, validateMaterailAssosiation);
+    }
+
     return user;
 }
 
