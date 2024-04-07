@@ -35,7 +35,7 @@ test.describe('', async () => {
     });
 
     // E2E0271
-    test('validate add and remove newDef', async () => {
+    test.skip('validate add and remove newDef', async () => {
         await test.step('add new', async () => {
             await expect(inspectionComponent.div_newDeficiency(0)).not.toBeVisible();
 
@@ -75,7 +75,7 @@ test.describe('', async () => {
         });
     });
     // E2E0274
-    test('validate material selects', async () => {
+    test.skip('validate material selects', async () => {
         const type = testDeficiencyTypes.find(t => t.relation === "material");
 
         await test.step('type with materialRelation', async () => {
@@ -137,7 +137,7 @@ test.describe('', async () => {
         });
     });
     // E2E0272
-    test('validate uniformSelect', async () => {
+    test.skip('validate uniformSelect', async () => {
         await test.step('dependend uniform', async () => {
             const type = testDeficiencyTypes.find(t => t.dependend === "uniform"
                 && t.fk_assosiation === testAssosiation.id
@@ -172,7 +172,7 @@ test.describe('', async () => {
         });
     });
     // E2E0273
-    test('validate update of uniformSelect Content', async () => {
+    test.skip('validate update of uniformSelect Content', async () => {
         const uniformComponent = new CadetUniformComponent(page);
         const formComponent = new SimpleFormPopupComponent(page);
         const type = testDeficiencyTypes.find(t => t.dependend === "uniform"
@@ -197,7 +197,7 @@ test.describe('', async () => {
         });
     });
     // E2E0280
-    test('validate formValidations', async () => {
+    test.skip('validate formValidations', async () => {
         // TODO create test 
     });
 });

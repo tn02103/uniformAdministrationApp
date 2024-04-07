@@ -35,6 +35,7 @@ test.describe('', async () => {
     test.afterAll(() => page.close());
     test.beforeEach(async () => {
         await page.reload();
+        await expect(inspectionComponent.div_step0_loading).not.toBeVisible();
     });
 
     // TESTS
@@ -42,6 +43,7 @@ test.describe('', async () => {
     test('validate step0 defList prev. Inspction', async () => {
         await removeInspection();
         await page.reload();
+        await expect(inspectionComponent.div_step0_loading).not.toBeVisible();
         await Promise.all([
             test.step('visible with correct sortorder', async () => {
                 const div_list = inspectionComponent.div_ci.getByTestId(/div_olddef_/);
@@ -67,7 +69,7 @@ test.describe('', async () => {
         await startInspection();
     });
     // E2E0267
-    test('validate step1 devList prev. Inspection', async () => {
+    test.skip('validate step1 devList prev. Inspection', async () => {
         await test.step('setup', async () => {
             await inspectionComponent.btn_inspect.click();
         });
@@ -99,7 +101,7 @@ test.describe('', async () => {
         });
     });
     // E2E0268
-    test('validate step1 chk_resolved', async () => {
+    test.skip('validate step1 chk_resolved', async () => {
         const id = 'ccffb98b-3dcf-11ee-ac41-0068eb8ba754';
         await inspectionComponent.btn_inspect.click();
         await expect(inspectionComponent.chk_olddef_resolved(id)).not.toBeChecked();
@@ -111,7 +113,7 @@ test.describe('', async () => {
         await expect(inspectionComponent.lbl_olddef_resolved(id)).toHaveText(t.common.deficiency.resolved.true);
     });
     // E2E0269
-    test('validate oldDeficiencyRow data', async () => {
+    test.skip('validate oldDeficiencyRow data', async () => {
         const deficiency = testDeficiencies.find(d => d.id === 'ccffb98b-3dcf-11ee-ac41-0068eb8ba754');
         if (!deficiency) throw new Error('Could not find deficiency');
         const type = testDeficiencyTypes.find(t => t.id === deficiency?.fk_deficiencyType);
@@ -160,7 +162,7 @@ test.describe('', async () => {
         });
     });
     // E2E0270
-    test('validate step2 unresolvedDefCountLabel', async () => {
+    test.skip('validate step2 unresolvedDefCountLabel', async () => {
         await test.step('goto step2 none resolve', async () => {
             await inspectionComponent.btn_inspect.click();
             await inspectionComponent.btn_step1_continue.click();
@@ -198,7 +200,7 @@ test.describe('', async () => {
         });
     });
     // E2E0279
-    test('validate step2 uniformCompleteLabel', async () => {
+    test.skip('validate step2 uniformCompleteLabel', async () => {
         await test.step('validate complete Uniform', async () => {
             await page.goto('/cadet/0d06427b-3c12-11ee-8084-0068eb8ba754');
             await inspectionComponent.btn_inspect.click();

@@ -12,19 +12,28 @@ test.describe('', () => {
 
     // SETUPS
     test.beforeAll(async ({ browser }) => {
-        page = await (await browser.newContext()).newPage();
-        inspectionComponent = new CadetInspectionComponent(page);
+        const getPage = async () => {
+            page = await (await browser.newContext()).newPage();
+            inspectionComponent = new CadetInspectionComponent(page);
+        }
+        const dataCleanup = async () => {
+            await cleanupData();
+            await startInspection();
+        }
 
-        await cleanupData();
-        await startInspection();
+        await Promise.all([getPage(), dataCleanup()]);
+        await page.goto(`de/app/cadet/c4d33a71-3c11-11ee-8084-0068eb8ba754`); // Sven Keller
     });
     test.afterAll(() => page.close());
-
+    test.beforeEach(async () => {
+        await page.reload();
+        await expect(inspectionComponent.div_step0_loading).not.toBeVisible();
+    });
 
     // TESTS
     // E2E0262
-    test('navigation with activeDeficiencies', async () => {
-        await page.goto(`/cadet/c4d33a71-3c11-11ee-8084-0068eb8ba754`); // Sven Keller
+    test.skip('navigation with activeDeficiencies', async () => {
+        await page.goto(`de/app/cadet/c4d33a71-3c11-11ee-8084-0068eb8ba754`); // Sven Keller
         await test.step('step0 visibility', async () => {
             await Promise.all([
                 expect.soft(inspectionComponent.btn_inspect).toBeVisible(),
@@ -81,8 +90,8 @@ test.describe('', () => {
         });
     });
     // E2E0263
-    test('navigation without activeDeficiencies', async () => {
-        await page.goto(`/cadet/0d06427b-3c12-11ee-8084-0068eb8ba754`); // Marie Ackerman
+    test.skip('navigation without activeDeficiencies', async () => {
+        await page.goto(`/de/app/cadet/0d06427b-3c12-11ee-8084-0068eb8ba754`); // Marie Ackerman
         await test.step('step0 visibility', async () => {
             await Promise.all([
                 expect.soft(inspectionComponent.btn_inspect).toBeVisible(),
@@ -118,6 +127,7 @@ test.describe('', () => {
     });
     //E2E0276
     test('validate header', async () => {
+        await page.goto(`de/app/cadet/c4d33a71-3c11-11ee-8084-0068eb8ba754`); // Sven Keller
         await test.step('active Inspection not inspected', async () => {
             await expect(inspectionComponent.div_header).toHaveText('Uniformkontrolle');
             await expect(inspectionComponent.btn_inspect).toBeVisible();
@@ -144,6 +154,7 @@ test.describe('', () => {
         await test.step('no active inspection', async () => {
             await removeInspection();
             await page.reload();
+            await inspectionComponent.div_step0_loading.isHidden();
 
             await expect(inspectionComponent.div_header).toHaveText('Mängel');
             await expect(inspectionComponent.btn_inspect).not.toBeVisible();

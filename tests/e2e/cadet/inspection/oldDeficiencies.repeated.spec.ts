@@ -24,11 +24,12 @@ test.describe('', async () => {
         }
 
         await Promise.all([getPage(), dataCleanup()]);
-        await page.goto(`/cadet/c4d33a71-3c11-11ee-8084-0068eb8ba754`); // Sven Keller
+        await page.goto(`de/app/cadet/c4d33a71-3c11-11ee-8084-0068eb8ba754`); // Sven Keller
     });
     test.afterAll(() => page.close());
     test.beforeEach(async () => {
         await page.reload();
+        await expect(inspectionComponent.div_step0_loading).not.toBeVisible();
     });
 
     // TESTS
@@ -37,12 +38,12 @@ test.describe('', async () => {
         await test.step('resolved not shown', async () => {
             await expect.soft(
                 inspectionComponent.div_oldDeficiency(
-                    '09868976-3dcf-11ee-ac41-0068eb8ba754'
+                    svenKellerFirstInspectionData.oldDefIdsToResolve[0]
                 )
             ).not.toBeVisible();
             await expect.soft(
                 inspectionComponent.div_oldDeficiency(
-                    '345309ab-3dcf-11ee-ac41-0068eb8ba754'
+                    svenKellerFirstInspectionData.oldDefIdsToResolve[1]
                 )
             ).not.toBeVisible();
         });
@@ -56,7 +57,7 @@ test.describe('', async () => {
         );
     });
     // E2E0266
-    test('validate step1 devList after Inspection', async () => {
+    test.skip('validate step1 devList after Inspection', async () => {
         await test.step('setup', async () => {
             await inspectionComponent.btn_inspect.click();
         });

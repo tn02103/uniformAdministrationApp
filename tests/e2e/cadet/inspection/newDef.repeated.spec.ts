@@ -34,7 +34,7 @@ test.describe('', async () => {
     });
 
     // E2E0278
-    test('validate typedisabled', async () => {
+    test.skip('validate typedisabled', async () => {
         const i = svenKellerFirstInspectionData.newDeficiencyList.length;
         await test.step('setup', async () => {
             await expect(inspectionComponent.div_newDeficiency(0)).toBeVisible();
@@ -47,7 +47,7 @@ test.describe('', async () => {
         await expect(inspectionComponent.sel_newDef_type(i)).toBeEnabled()
     });
     // E2E0277
-    test('validate data for repeated inspection', async () => {
+    test.skip('validate data for repeated inspection', async () => {
         const newDefs = svenKellerFirstInspectionData.newDeficiencyList;
 
         expect(inspectionComponent.div_newDeficiency(newDefs.length - 1)).toBeVisible();

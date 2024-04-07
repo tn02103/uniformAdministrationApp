@@ -11,9 +11,9 @@ export async function cleanupData() {
 }
 
 export async function deleteEverything() {
+    await deleteStaticInspection();
     await Promise.all([
         deleteStaticUniform(),
-        deleteStaticInspection(),
         deleteStaticMaterial(),
         deleteStaticAuthentication(),
     ]);

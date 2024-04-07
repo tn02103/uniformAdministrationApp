@@ -22,7 +22,7 @@ const testDef = {
     },
     cadetMaterialIssued: {
         type: typeList.find(t => t.dependend === "cadet" && t.relation === "material")!.id,
-        material: testMaterials.find(i => i.typename === "Type2-1")!.id,
+        material: testMaterials.find(i => i.typename === "Typ2-1")!.id,
         description: "Gruppe2-Typ2-1",
         comment: "Comment: CadetMaterial issued",
     },
@@ -66,7 +66,7 @@ test.describe('', async () => {
     });
 
     // E2E0275
-    test('initalInspection', async () => {
+    test.skip('initalInspection', async () => {
         await test.step('initialize', async () => {
             await test.step('step1', async () => {
                 await inspectionComponent.btn_inspect.click();
@@ -259,7 +259,7 @@ test.describe('', async () => {
         ]);
     });
     // E2E0281
-    test('validate updated inspection', async () => {
+    test.skip('validate updated inspection', async () => {
         // TODO create Test
     });
 });

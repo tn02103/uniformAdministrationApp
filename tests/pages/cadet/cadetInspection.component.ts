@@ -12,6 +12,7 @@ export class CadetInspectionComponent {
     readonly icn_inspected: Locator;
 
     readonly div_step0_placeholder: Locator;
+    readonly div_step0_loading: Locator;
     readonly btn_step1_back: Locator;
     readonly btn_step1_continue: Locator;
 
@@ -101,6 +102,7 @@ export class CadetInspectionComponent {
         this.icn_inspected = this.btn_inspect.locator('svg');
 
         this.div_step0_placeholder = this.div_ci.getByTestId("div_step0_noDeficiencies");
+        this.div_step0_loading = this.div_ci.getByTestId("div_step0_loading");
         this.btn_step1_back = this.div_ci.getByTestId("btn_step1_back");
         this.btn_step1_continue = this.div_ci.getByTestId("btn_step1_continue");
 
