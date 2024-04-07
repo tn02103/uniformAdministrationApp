@@ -2,9 +2,9 @@ import { prisma } from "../../src/lib/db";
 import { fillAllTables, testAssosiation, testWrongAssosiation } from "./staticData";
 
 export async function cleanupData() {
-    try{
+    try {
         await deleteEverything();
-    } catch(e) {
+    } catch (e) {
         console.error(e);
     }
     await fillAllTables();
@@ -25,7 +25,7 @@ export async function deleteEverything() {
         where: { id: assosiationCheck }
     });
 }
-const assosiationCheck = {in: [testAssosiation.id, testWrongAssosiation.id]};
+const assosiationCheck = { in: [testAssosiation.id, testWrongAssosiation.id] };
 
 export async function deleteStaticUniform() {
     await prisma.uniformIssued.deleteMany({
@@ -71,6 +71,39 @@ export async function deleteStaticUniform() {
 }
 
 export async function deleteStaticInspection() {
+    await prisma.deficiencyCadet.deleteMany({
+        where: {
+            Deficiency: {
+                DeficiencyType: {
+                    fk_assosiation: assosiationCheck
+                }
+            }
+        }
+    });
+
+    await prisma.deficiencyUniform.deleteMany({
+        where: {
+            Deficiency: {
+                DeficiencyType: {
+                    fk_assosiation: assosiationCheck
+                }
+            }
+        }
+    });
+
+    await prisma.deficiency.deleteMany({
+        where: {
+            DeficiencyType: {
+                fk_assosiation: assosiationCheck
+            }
+        }
+    });
+
+    await prisma.deficiencyType.deleteMany({
+        where: {
+            fk_assosiation: assosiationCheck
+        }
+    });
 
     await prisma.cadetDeficiency.deleteMany({
         where: {

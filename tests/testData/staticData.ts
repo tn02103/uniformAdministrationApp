@@ -1,4 +1,4 @@
-import { Assosiation } from "@prisma/client";
+import { Assosiation, Deficiency, DeficiencyCadet, DeficiencyType, DeficiencyUniform } from "@prisma/client";
 import { Cadet, Material, MaterialGroup, MaterialIssued, Uniform, UniformGeneration, UniformIssued, UniformSize, UniformType } from "@prisma/client";
 import { prisma } from "../../src/lib/db";
 
@@ -502,14 +502,129 @@ export const testMaterialIssued: MaterialIssued[] = [
 // Sven Keller, hat Mängel vorletze Kontrolle 
 // Antje Fried, keine Mängel, nie kontrolliert
 // Maik Finkel, nur letzte Kontrolle, mit Mängel
-
-export const testCadetDeficiencyTypes = [
-    { id: '4ae2c25c-3dcf-11ee-ac41-0068eb8ba754', fk_assosiation: '85181337-3aa3-11ee-ab4b-0068eb8ba754', name: 'Mangel am UT', dependsOnUniformitem: true, addCommentToUniformitem: true },
-    { id: '4ae2c800-3dcf-11ee-ac41-0068eb8ba754', fk_assosiation: '85181337-3aa3-11ee-ab4b-0068eb8ba754', name: 'UT zu klein', dependsOnUniformitem: true, addCommentToUniformitem: false },
-    { id: '4ae2c897-3dcf-11ee-ac41-0068eb8ba754', fk_assosiation: '85181337-3aa3-11ee-ab4b-0068eb8ba754', name: 'UT zu groß', dependsOnUniformitem: true, addCommentToUniformitem: false },
-    { id: '4ae2c8d9-3dcf-11ee-ac41-0068eb8ba754', fk_assosiation: '85181337-3aa3-11ee-ab4b-0068eb8ba754', name: 'Sonstiges', dependsOnUniformitem: false, addCommentToUniformitem: false },
-    { id: '23422349-3dcf-11ee-ac41-0068eb8ba754', fk_assosiation: '25209715-3aa3-11ee-ab4b-0068eb8ba754', name: 'DefciciencyTyp1', dependsOnUniformitem: false, addCommentToUniformitem: false },
+export const testDeficiencyTypes: DeficiencyType[] = [
+    { id: '4ae2c25c-3dcf-11ee-ac41-0068eb8ba754', fk_assosiation: '85181337-3aa3-11ee-ab4b-0068eb8ba754', name: 'Uniform', dependend: 'uniform', relation: null, recdelete: null, recdeleteUser: null },
+    { id: '4ae2c8d9-3dcf-11ee-ac41-0068eb8ba754', fk_assosiation: '85181337-3aa3-11ee-ab4b-0068eb8ba754', name: 'Cadet', dependend: 'cadet', relation: null, recdelete: null, recdeleteUser: null },
+    { id: '4ae2c800-3dcf-11ee-ac41-0068eb8ba754', fk_assosiation: '85181337-3aa3-11ee-ab4b-0068eb8ba754', name: 'CadetUniform', dependend: 'cadet', relation: 'uniform', recdelete: null, recdeleteUser: null },
+    { id: '4ae2c897-3dcf-11ee-ac41-0068eb8ba754', fk_assosiation: '85181337-3aa3-11ee-ab4b-0068eb8ba754', name: 'CadetMaterial', dependend: 'cadet', relation: 'material', recdelete: null, recdeleteUser: null },
+    { id: '4ae2c8d9-3dcf-11ee-ac41-314560987454', fk_assosiation: '85181337-3aa3-11ee-ab4b-0068eb8ba754', name: 'deleted', dependend: 'cadet', relation: null, recdelete: new Date("2023-08-13T09:58:00.000Z"), recdeleteUser: 'test4' },
+    { id: '23422349-3dcf-11ee-ac41-0068eb8ba754', fk_assosiation: '25209715-3aa3-11ee-ab4b-0068eb8ba754', name: 'DefciciencyTyp1', dependend: 'cadet', relation: 'uniform', recdelete: null, recdeleteUser: null },
 ];
+export const testDeficiencies: Deficiency[] = [
+    {
+        id: '8b6468ab-3dcf-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c25c-3dcf-11ee-ac41-0068eb8ba754', description: 'Typ1-1184', comment: 'Uniform Deficiency Sven Keller Resolved',
+        fk_inspection_created: '5153c4fb-3dcf-11ee-ac41-0068eb8ba754', fk_inspection_resolved: '8326e5ab-3dd1-11ee-ac41-0068eb8ba754',
+        dateCreated: new Date("2023-06-18T00:00:00.000Z"), dateUpdated: new Date("2023-06-18T00:00:00.000Z"), dateResolved: new Date("2023-08-13T14:14:28.000Z"),
+        userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4'
+    },
+    {
+        id: 'ccffb98b-3dcf-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c25c-3dcf-11ee-ac41-0068eb8ba754', description: 'Typ1-1146', comment: 'Uniform Deficiency Sven Keller Unresolved',
+        fk_inspection_created: '5153c4fb-3dcf-11ee-ac41-0068eb8ba754', fk_inspection_resolved: null,
+        dateCreated: new Date("2023-06-17T00:00:00.000Z"), dateUpdated: new Date("2023-06-17T00:00:00.000Z"), dateResolved: null,
+        userCreated: 'test4', userUpdated: 'test4', userResolved: null
+    },
+    {
+        id: '36843453-3dcf-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c25c-3dcf-11ee-ac41-0068eb8ba754', description: 'Typ1-1146', comment: 'Uniform Deficiency Sven Keller Resolved',
+        fk_inspection_created: '5153c4fb-3dcf-11ee-ac41-0068eb8ba754', fk_inspection_resolved: '8326e5ab-3dd1-11ee-ac41-0068eb8ba754',
+        dateCreated: new Date("2023-06-18T00:00:00.000Z"), dateUpdated: new Date("2023-06-18T00:00:00.000Z"), dateResolved: new Date("2023-08-13T14:14:28.000Z"),
+        userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4'
+    },
+    {
+        id: 'be9cf3cd-3dd1-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c25c-3dcf-11ee-ac41-0068eb8ba754', description: 'Typ1-1168', comment: 'Uniform Deficiency Faber Christina Unresolved',
+        fk_inspection_created: '8326e5ab-3dd1-11ee-ac41-0068eb8ba754', fk_inspection_resolved: null,
+        dateCreated: new Date("2023-08-13T00:00:00.000Z"), dateUpdated: new Date("2023-08-13T00:00:00.000Z"), dateResolved: null,
+        userCreated: 'test4', userUpdated: 'test4', userResolved: null
+    },
+    {
+        id: '95f44abb-3dcf-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c8d9-3dcf-11ee-ac41-0068eb8ba754', description: 'Ungewaschen', comment: 'Cadet Deficiency Marie Ackermann Resolved',
+        fk_inspection_created: '5153c4fb-3dcf-11ee-ac41-0068eb8ba754', fk_inspection_resolved: '8326e5ab-3dd1-11ee-ac41-0068eb8ba754',
+        dateCreated: new Date("2023-06-18T00:00:00.000Z"), dateUpdated: new Date("2023-06-18T00:00:00.000Z"), dateResolved: new Date("2023-08-13T14:14:28.000Z"),
+        userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4'
+    },
+    {
+        id: '09868976-3dcf-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c8d9-3dcf-11ee-ac41-0068eb8ba754', description: 'Description1', comment: 'Cadet Deficiency Sven Keller Unresolved',
+        fk_inspection_created: '5153c4fb-3dcf-11ee-ac41-0068eb8ba754', fk_inspection_resolved: null,
+        dateCreated: new Date("2023-06-08T00:00:00.000Z"), dateUpdated: new Date("2023-06-08T00:00:00.000Z"), dateResolved: null,
+        userCreated: 'test4', userUpdated: 'test4', userResolved: null
+    },
+    {
+        id: 'a351df15-3dcf-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c8d9-3dcf-11ee-ac41-0068eb8ba754', description: 'Resoved Test', comment: 'Cadet Deficiency Sven Keller Resolved',
+        fk_inspection_created: '5153c4fb-3dcf-11ee-ac41-0068eb8ba754', fk_inspection_resolved: '8326e5ab-3dd1-11ee-ac41-0068eb8ba754',
+        dateCreated: new Date("2023-06-18T00:00:00.000Z"), dateUpdated: new Date("2023-06-18T00:00:00.000Z"), dateResolved: new Date("2023-08-13T14:14:28.000Z"),
+        userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4'
+    },
+    {
+        id: 'ddfe80c4-3dd1-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c800-3dcf-11ee-ac41-0068eb8ba754', description: 'Typ4-1405', comment: 'CadetUniform Deficiency Lucas Schwartz Unresolved',
+        fk_inspection_created: '8326e5ab-3dd1-11ee-ac41-0068eb8ba754', fk_inspection_resolved: null,
+        dateCreated: new Date("2023-08-13T00:00:00.000Z"), dateUpdated: new Date("2023-08-13T00:00:00.000Z"), dateResolved: null,
+        userCreated: 'test4', userUpdated: 'test4', userResolved: null
+    },
+    {
+        id: 'a9e73275-3dd1-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c800-3dcf-11ee-ac41-0068eb8ba754', description: 'Typ1-1101', comment: 'CadetUniform Deficiency Maik Finkel Unresolved',
+        fk_inspection_created: '8326e5ab-3dd1-11ee-ac41-0068eb8ba754', fk_inspection_resolved: null,
+        dateCreated: new Date("2023-08-13T00:00:00.000Z"), dateUpdated: new Date("2023-08-13T00:00:00.000Z"), dateResolved: null,
+        userCreated: 'test4', userUpdated: 'test4', userResolved: null
+    },
+    {
+        id: 'ccff6a65-3dcf-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c897-3dcf-11ee-ac41-0068eb8ba754', description: 'Gruppe1-Typ1-1', comment: 'CadetMaterial Deficiency Sven Keller Unresolved',
+        fk_inspection_created: '5153c4fb-3dcf-11ee-ac41-0068eb8ba754', fk_inspection_resolved: null,
+        dateCreated: new Date("2023-06-18T00:00:00.000Z"), dateUpdated: new Date("2023-06-18T00:00:00.000Z"), dateResolved: null,
+        userCreated: 'test4', userUpdated: 'test4', userResolved: null
+    },
+    {
+        id: '345309ab-3dcf-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c897-3dcf-11ee-ac41-0068eb8ba754', description: 'Gruppe2-Typ2-3', comment: 'CadetMaterial Deficiency Sven Keller Unresolved',
+        fk_inspection_created: '5153c4fb-3dcf-11ee-ac41-0068eb8ba754', fk_inspection_resolved: null,
+        dateCreated: new Date("2023-06-10T00:00:00.000Z"), dateUpdated: new Date("2023-06-10T00:00:00.000Z"), dateResolved: null,
+        userCreated: 'test4', userUpdated: 'test4', userResolved: null
+    },
+    {
+        id: 'ddfe58dc-3dd1-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c897-3dcf-11ee-ac41-0068eb8ba754', description: 'Gruppe1-Typ1-1', comment: 'CadetMaterial Deeficiency Lucas Schwartz Unresolved',
+        fk_inspection_created: '8326e5ab-3dd1-11ee-ac41-0068eb8ba754', fk_inspection_resolved: null,
+        dateCreated: new Date("2023-08-13T00:00:00.000Z"), dateUpdated: new Date("2023-08-13T00:00:00.000Z"), dateResolved: null,
+        userCreated: 'test4', userUpdated: 'test4', userResolved: null
+    },
+    {
+        id: 'a9e7287a-3dd1-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c897-3dcf-11ee-ac41-0068eb8ba754', description: 'Gruppe1-Typ1-1', comment: 'CadetMaterial Deeficiency Maik Finkel Unresolved',
+        fk_inspection_created: '8326e5ab-3dd1-11ee-ac41-0068eb8ba754', fk_inspection_resolved: null,
+        dateCreated: new Date("2023-08-13T00:00:00.000Z"), dateUpdated: new Date("2023-08-13T00:00:00.000Z"), dateResolved: null,
+        userCreated: 'test4', userUpdated: 'test4', userResolved: null
+    },
+    {
+        id: '987a6c24-3dd1-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c8d9-3dcf-11ee-ac41-314560987454', description: 'Bemerkung', comment: 'DeletedType Deficiency Sven Keller Unresolved',
+        fk_inspection_created: '8326e5ab-3dd1-11ee-ac41-0068eb8ba754', fk_inspection_resolved: null,
+        dateCreated: new Date("2023-08-13T00:00:00.000Z"), dateUpdated: new Date("2023-08-13T00:00:00.000Z"), dateResolved: null,
+        userCreated: 'test4', userUpdated: 'test4', userResolved: null
+    },
+    {
+        id: '63cd8117-571c-11ee-afcf-0068eb8ba754', fk_deficiencyType: '23422349-3dcf-11ee-ac41-0068eb8ba754', description: 'Beschreibung', comment: 'DeficiencyComment wrong assosiation Unresolved',
+        fk_inspection_created: '572782d5-571c-11ee-afcf-0068eb8ba754', fk_inspection_resolved: null,
+        dateCreated: new Date("2023-09-19T00:00:00.000Z"), dateUpdated: new Date("2023-09-19T00:00:00.000Z"), dateResolved: null,
+        userCreated: 'test', userUpdated: 'test', userResolved: null
+    },
+]
+
+export const testDeficiencyUniforms: DeficiencyUniform[] = [
+    { deficiencyId: '8b6468ab-3dcf-11ee-ac41-0068eb8ba754', fk_uniform: '45f35815-3c0d-11ee-8084-0068eb8ba754' },
+    { deficiencyId: 'ccffb98b-3dcf-11ee-ac41-0068eb8ba754', fk_uniform: '45f33205-3c0d-11ee-8084-0068eb8ba754' },
+    { deficiencyId: '36843453-3dcf-11ee-ac41-0068eb8ba754', fk_uniform: '45f33205-3c0d-11ee-8084-0068eb8ba754' },
+    { deficiencyId: 'be9cf3cd-3dd1-11ee-ac41-0068eb8ba754', fk_uniform: '45f33fa9-3c0d-11ee-8084-0068eb8ba754' }
+];
+
+export const testDeficiencyCadets: DeficiencyCadet[] = [
+    { deficiencyId: '95f44abb-3dcf-11ee-ac41-0068eb8ba754', fk_cadet: '0d06427b-3c12-11ee-8084-0068eb8ba754', fk_uniform: null, fk_material: null },
+    { deficiencyId: '09868976-3dcf-11ee-ac41-0068eb8ba754', fk_cadet: 'c4d33a71-3c11-11ee-8084-0068eb8ba754', fk_uniform: null, fk_material: null },
+    { deficiencyId: 'a351df15-3dcf-11ee-ac41-0068eb8ba754', fk_cadet: 'c4d33a71-3c11-11ee-8084-0068eb8ba754', fk_uniform: null, fk_material: null },
+    { deficiencyId: 'ddfe80c4-3dd1-11ee-ac41-0068eb8ba754', fk_cadet: 'cbb69711-3c11-11ee-8084-0068eb8ba754', fk_uniform: '45f397b0-3c0d-11ee-8084-0068eb8ba754', fk_material: null },
+    { deficiencyId: 'a9e73275-3dd1-11ee-ac41-0068eb8ba754', fk_cadet: 'db998c2f-3c11-11ee-8084-0068eb8ba754', fk_uniform: '45f3053a-3c0d-11ee-8084-0068eb8ba754', fk_material: null },
+    { deficiencyId: 'ccff6a65-3dcf-11ee-ac41-0068eb8ba754', fk_cadet: 'c4d33a71-3c11-11ee-8084-0068eb8ba754', fk_uniform: null, fk_material: '9d09592c-3c03-11ee-8084-0068eb8ba754' },
+    { deficiencyId: '345309ab-3dcf-11ee-ac41-0068eb8ba754', fk_cadet: 'c4d33a71-3c11-11ee-8084-0068eb8ba754', fk_uniform: null, fk_material: 'd652732e-3c03-11ee-8084-0068eb8ba754' },
+    { deficiencyId: 'ddfe58dc-3dd1-11ee-ac41-0068eb8ba754', fk_cadet: 'cbb69711-3c11-11ee-8084-0068eb8ba754', fk_uniform: null, fk_material: '9d09592c-3c03-11ee-8084-0068eb8ba754' },
+    { deficiencyId: 'a9e7287a-3dd1-11ee-ac41-0068eb8ba754', fk_cadet: 'db998c2f-3c11-11ee-8084-0068eb8ba754', fk_uniform: null, fk_material: '9d09592c-3c03-11ee-8084-0068eb8ba754' },
+    { deficiencyId: '987a6c24-3dd1-11ee-ac41-0068eb8ba754', fk_cadet: 'c4d33a71-3c11-11ee-8084-0068eb8ba754', fk_uniform: null, fk_material: null },
+    { deficiencyId: '63cd8117-571c-11ee-afcf-0068eb8ba754', fk_cadet: '45dc48d7-5719-11ee-afcf-0068eb8ba754', fk_uniform: '00e8c632-571b-11ee-afcf-0068eb8ba754', fk_material: null },
+
+]
+
 export const testInspections = [
     { id: '5153c4fb-3dcf-11ee-ac41-0068eb8ba754', fk_assosiation: '85181337-3aa3-11ee-ab4b-0068eb8ba754', date: new Date("2023-06-18T00:00:00.000Z"), active: false },
     { id: '8326e5ab-3dd1-11ee-ac41-0068eb8ba754', fk_assosiation: '85181337-3aa3-11ee-ab4b-0068eb8ba754', date: new Date("2023-08-13T00:00:00.000Z"), active: false },
@@ -528,22 +643,6 @@ export const testCadetInspcetions = [
     { id: 'be99f337-3dd1-11ee-ac41-0068eb8ba754', fk_inspection: '8326e5ab-3dd1-11ee-ac41-0068eb8ba754', fk_cadet: 'f8e28d70-3c11-11ee-8084-0068eb8ba754', uniformComplete: false },
     { id: '63cb50ea-571c-11ee-afcf-0068eb8ba754', fk_inspection: '572782d5-571c-11ee-afcf-0068eb8ba754', fk_cadet: '45dc48d7-5719-11ee-afcf-0068eb8ba754', uniformComplete: true },
 ]
-export const testCadetDeficiencies = [
-    { id: '8b6468ab-3dcf-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c25c-3dcf-11ee-ac41-0068eb8ba754', description: 'Typ1-1184', comment: 'Reisverschluss kaput', fk_cadetInspection: '8b621608-3dcf-11ee-ac41-0068eb8ba754', fk_cadet: '0d06427b-3c12-11ee-8084-0068eb8ba754', dateCreated: new Date("2023-06-18T00:00:00.000Z"), dateResolved: new Date("2023-08-13T14:14:28.000Z") },
-    { id: '95f44abb-3dcf-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c8d9-3dcf-11ee-ac41-0068eb8ba754', description: 'Ungewaschen', comment: '', fk_cadetInspection: '8b621608-3dcf-11ee-ac41-0068eb8ba754', fk_cadet: '0d06427b-3c12-11ee-8084-0068eb8ba754', dateCreated: new Date("2023-06-18T00:00:00.000Z"), dateResolved: new Date("2023-08-13T14:14:28.000Z") },
-    { id: 'ccff6a65-3dcf-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c897-3dcf-11ee-ac41-0068eb8ba754', description: 'Typ1-1146', comment: 'zwei Nummern kleiner', fk_cadetInspection: 'ccfc756b-3dcf-11ee-ac41-0068eb8ba754', fk_cadet: 'c4d33a71-3c11-11ee-8084-0068eb8ba754', dateCreated: new Date("2023-06-18T00:00:00.000Z"), dateResolved: null },
-    { id: '345309ab-3dcf-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c897-3dcf-11ee-ac41-0068eb8ba754', description: 'Typ1-1148', comment: 'zwei Nummern kleiner', fk_cadetInspection: 'ccfc756b-3dcf-11ee-ac41-0068eb8ba754', fk_cadet: 'c4d33a71-3c11-11ee-8084-0068eb8ba754', dateCreated: new Date("2023-06-10T00:00:00.000Z"), dateResolved: null },
-    { id: '09868976-3dcf-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c8d9-3dcf-11ee-ac41-0068eb8ba754', description: 'Description1', comment: 'Bemerkung', fk_cadetInspection: 'ccfc756b-3dcf-11ee-ac41-0068eb8ba754', fk_cadet: 'c4d33a71-3c11-11ee-8084-0068eb8ba754', dateCreated: new Date("2023-06-08T00:00:00.000Z"), dateResolved: null },
-    { id: 'ccffb98b-3dcf-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c25c-3dcf-11ee-ac41-0068eb8ba754', description: 'Typ1-1146', comment: 'Reflektoren bröckeln ab', fk_cadetInspection: 'ccfc756b-3dcf-11ee-ac41-0068eb8ba754', fk_cadet: 'c4d33a71-3c11-11ee-8084-0068eb8ba754', dateCreated: new Date("2023-06-17T00:00:00.000Z"), dateResolved: null },
-    { id: '36843453-3dcf-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c25c-3dcf-11ee-ac41-0068eb8ba754', description: 'Typ1-1146', comment: 'Deficiency should be resolved', fk_cadetInspection: 'ccfc756b-3dcf-11ee-ac41-0068eb8ba754', fk_cadet: 'c4d33a71-3c11-11ee-8084-0068eb8ba754', dateCreated: new Date("2023-06-18T00:00:00.000Z"), dateResolved: new Date("2023-08-13T14:14:28.000Z") },
-    { id: 'a351df15-3dcf-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c8d9-3dcf-11ee-ac41-0068eb8ba754', description: 'Resoved Test', comment: 'Deficiency should be resolved', fk_cadetInspection: 'ccfc756b-3dcf-11ee-ac41-0068eb8ba754', fk_cadet: 'c4d33a71-3c11-11ee-8084-0068eb8ba754', dateCreated: new Date("2023-06-18T00:00:00.000Z"), dateResolved: new Date("2023-08-13T14:14:28.000Z") },
-    { id: 'ddfe58dc-3dd1-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c897-3dcf-11ee-ac41-0068eb8ba754', description: 'Typ3-1357', comment: 'Bemerkung 1', fk_cadetInspection: 'ddef6108-3dd1-11ee-ac41-0068eb8ba754', fk_cadet: 'cbb69711-3c11-11ee-8084-0068eb8ba754', dateCreated: new Date("2023-08-13T00:00:00.000Z"), dateResolved: null },
-    { id: 'ddfe80c4-3dd1-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c800-3dcf-11ee-ac41-0068eb8ba754', description: 'Typ4-1405', comment: 'Bemerkung 2', fk_cadetInspection: 'ddef6108-3dd1-11ee-ac41-0068eb8ba754', fk_cadet: 'cbb69711-3c11-11ee-8084-0068eb8ba754', dateCreated: new Date("2023-08-13T00:00:00.000Z"), dateResolved: null },
-    { id: 'a9e7287a-3dd1-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c897-3dcf-11ee-ac41-0068eb8ba754', description: 'Typ4-1402', comment: 'Bemerkung 2', fk_cadetInspection: 'a9e4076c-3dd1-11ee-ac41-0068eb8ba754', fk_cadet: 'db998c2f-3c11-11ee-8084-0068eb8ba754', dateCreated: new Date("2023-08-13T00:00:00.000Z"), dateResolved: null },
-    { id: 'a9e73275-3dd1-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c800-3dcf-11ee-ac41-0068eb8ba754', description: 'Typ1-1101', comment: 'Bemerkung 1', fk_cadetInspection: 'a9e4076c-3dd1-11ee-ac41-0068eb8ba754', fk_cadet: 'db998c2f-3c11-11ee-8084-0068eb8ba754', dateCreated: new Date("2023-08-13T00:00:00.000Z"), dateResolved: null },
-    { id: 'be9cf3cd-3dd1-11ee-ac41-0068eb8ba754', fk_deficiencyType: '4ae2c25c-3dcf-11ee-ac41-0068eb8ba754', description: 'Typ1-1168', comment: 'Bemerkung', fk_cadetInspection: 'be99f337-3dd1-11ee-ac41-0068eb8ba754', fk_cadet: 'f8e28d70-3c11-11ee-8084-0068eb8ba754', dateCreated: new Date("2023-08-13T00:00:00.000Z"), dateResolved: null },
-    { id: '63cd8117-571c-11ee-afcf-0068eb8ba754', fk_deficiencyType: '23422349-3dcf-11ee-ac41-0068eb8ba754', description: 'Beschreibung', comment: 'DeficiencyComment', fk_cadetInspection: '63cb50ea-571c-11ee-afcf-0068eb8ba754', fk_cadet: '45dc48d7-5719-11ee-afcf-0068eb8ba754', dateCreated: new Date("2023-09-19T00:00:00.000Z"), dateResolved: null },
-];
 
 export async function fillAllTables() {
     // AUTHENTICATION
@@ -590,17 +689,23 @@ export async function fillAllTables() {
     });
 
     // DEFICIENCY
-    await prisma.cadetDeficiencyType.createMany({
-        data: testCadetDeficiencyTypes
-    });
     await prisma.inspection.createMany({
         data: testInspections,
     });
     await prisma.cadetInspection.createMany({
         data: testCadetInspcetions,
     });
-    await prisma.cadetDeficiency.createMany({
-        data: testCadetDeficiencies
+    await prisma.deficiencyType.createMany({
+        data: testDeficiencyTypes
+    });
+    await prisma.deficiency.createMany({
+        data: testDeficiencies
+    });
+    await prisma.deficiencyCadet.createMany({
+        data: testDeficiencyCadets
+    });
+    await prisma.deficiencyUniform.createMany({
+        data: testDeficiencyUniforms
     });
 }
 
