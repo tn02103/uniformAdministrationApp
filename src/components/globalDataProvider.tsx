@@ -42,7 +42,8 @@ const GlobalDataProvider = ({ children, ...props }: GlobalDataProviderPropType) 
         "inspection/status",
         () => getInspectionState(),
         {
-            fallbackData: initialInspectionState
+            fallbackData: initialInspectionState,
+            refreshInterval: 30
         }
     )
 

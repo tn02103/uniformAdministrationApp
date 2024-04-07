@@ -18,7 +18,6 @@ import { Col, Dropdown, Form, FormControl, Row } from "react-bootstrap";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useSWRConfig } from "swr";
-import { setTimeout } from "timers/promises";
 
 type PropType = {
     uniform: Uniform;
@@ -63,9 +62,6 @@ const UniformRow = (props: PropType) => {
     }
 
     async function saveUniform(data: UniformFormData) {
-        console.log("saving", data);
-        await setTimeout(2000);
-
         await saveUniformItem(data).then(async () => {
             await mutate(`cadet.${cadetId}.uniform`)
             setEditable(false);

@@ -4,6 +4,7 @@ import { testAssosiation } from "./staticData";
 export const testActiveInspection = {
     id: "855823c4-5478-11ee-b196-0068eb8ba754",
     fk_assosiation: testAssosiation.id,
+    active: true
 }
 
 export const startInspection = async () =>
