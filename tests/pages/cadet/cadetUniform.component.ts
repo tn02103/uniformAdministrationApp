@@ -40,6 +40,9 @@ export class CadetUniformComponent {
     btn_uitem_edit(uniformId: string) {
         return this.div_uitem(uniformId).getByTestId("btn_edit");
     }
+    btn_uitem_open(uniformId: string) {
+        return this.div_uitem(uniformId).getByTestId("btn_open");
+    }
     btn_uitem_menu(uniformId: string) {
         return this.div_uitem(uniformId).getByTestId("btn_menu");
     }

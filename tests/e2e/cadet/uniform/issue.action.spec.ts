@@ -64,6 +64,7 @@ test.describe('', () => {
         await page.reload();
     });
 
+    // E2E0217
     test('validate Content of IssueUniform Modal', async () => {
         const uType = testUniformTypes.find(t => t.id == testData.normal.uTypeId);
 
@@ -93,6 +94,7 @@ test.describe('', () => {
         });
     });
 
+    // E2E0218
     test('Check Formvalidation of IssueUniform Modal: ', async () => {
         await page.goto(`/de/app/cadet/${testData.normal.cadetId}`);
         const testValues = ['', '-10', '160000000', 'Test string', '1.25'];
@@ -123,6 +125,7 @@ test.describe('', () => {
             await page.goto(`/de/app/cadet/${testData.normal.cadetId}`);
         });
 
+        // E2E0219
         test('Switch UniformItem', async () => {
             await test.step('verify startData', async () => {
                 await expect.soft(uniformComponent.div_utype_amount(testData.normal.uTypeId)).toHaveText(`(3 ${t.common.of} 3)`);
@@ -141,7 +144,8 @@ test.describe('', () => {
                 await expect.soft(uniformComponent.div_uitem(testData.normal.newUniformId)).toBeVisible();
                 await expect.soft(uniformComponent.div_uitem(testData.normal.oldUniformId)).not.toBeVisible();
             });
-        })
+        });
+        // E2E0220
         test('Issue UniformItem', async () => {
             await test.step('verify startData', async () => {
                 await expect.soft(uniformComponent.div_utype_amount(testData.normal.uTypeId)).toHaveText(`(3 ${t.common.of} 3)`);
@@ -168,6 +172,7 @@ test.describe('', () => {
             });
         });
 
+        // E2E0221
         test('Validate erorrMessage Popup and close action', async () => {
             await test.step('issue uniformItem', async () => {
                 await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
@@ -195,6 +200,7 @@ test.describe('', () => {
             });
         });
 
+        // E2E0222
         test('Check cancel Function', async () => {
             await test.step('issue uniformItem', async () => {
                 await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
@@ -211,6 +217,7 @@ test.describe('', () => {
                 await expect.soft(page.getByText(testData.notExisting.uniformNumber)).not.toBeVisible();
             });
         });
+        // E2E0223
         test('Check with switch function', async () => {
             await test.step('issue uniformItem', async () => {
                 await uniformComponent.btn_uitem_switch(testData.normal.oldUniformId).click();
@@ -228,6 +235,7 @@ test.describe('', () => {
                 await expect.soft(page.getByText(testData.notExisting.uniformNumber)).toBeVisible();
             });
         });
+        // E2E0224
         test('Check save Function', async () => {
             await test.step('issue uniformItem', async () => {
                 await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
@@ -257,6 +265,7 @@ test.describe('', () => {
             });
         });
 
+        // E2E0225
         test('Validate erorrMessage Popup', async () => {
             await test.step('issue uniformItem', async () => {
                 await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
@@ -282,6 +291,7 @@ test.describe('', () => {
                 await expect.soft(uniformComponent.div_utype_amount(testData.normal.uTypeId)).toHaveText(`(3 ${t.common.of} 3)`);
             });
         });
+        // E2E0226
         test('Check cancel Function', async () => {
             await test.step('issue uniformItem', async () => {
                 await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
@@ -298,6 +308,7 @@ test.describe('', () => {
                 await expect.soft(uniformComponent.div_utype_amount(testData.normal.uTypeId)).toHaveText(`(3 ${t.common.of} 3)`);
             });
         });
+        // E2E0227
         test('Check with switch function', async () => {
             await test.step('issue uniformItem', async () => {
                 await uniformComponent.btn_uitem_switch(testData.normal.oldUniformId).click();
@@ -315,6 +326,7 @@ test.describe('', () => {
                 await expect.soft(uniformComponent.div_utype_amount(testData.normal.uTypeId)).toHaveText(`(3 ${t.common.of} 3)`);
             });
         });
+        // E2E0228
         test('Check save Function', async () => {
             await test.step('issue uniformItem', async () => {
                 await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
@@ -338,6 +350,7 @@ test.describe('', () => {
             await page.goto(`/de/app/cadet/${testData.normal.cadetId}`);
         });
 
+        // E2E0229
         test('Validate erorrMessage Popup', async () => {
             await test.step('issue UniformItem', async () => {
                 await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
@@ -365,6 +378,7 @@ test.describe('', () => {
                 await expect.soft(uniformComponent.div_uitem(testData.issued.uniformId)).not.toBeVisible();
             });
         });
+        // E2E0230
         test('Check cancel Function', async () => {
             await test.step('issue UniformItem', async () => {
                 await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
@@ -382,6 +396,7 @@ test.describe('', () => {
                 await expect.soft(uniformComponent.div_uitem(testData.issued.uniformId)).not.toBeVisible();
             });
         });
+        // E2E0231
         test('Check openCadet function', async () => {
             let page2: Page, cadet2Page: CadetDetailPage;
 
@@ -402,6 +417,7 @@ test.describe('', () => {
                 await expect.soft(cadet2Page.divPageHeader).toContainText(testData.issued.ownerNamePattern);
             });
         });
+        // E2E0232
         test('Check save function', async () => {
             await test.step('issue UniformItem', async () => {
                 await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
@@ -423,6 +439,7 @@ test.describe('', () => {
                 await expect.soft(cadetComponent.txt_comment).toHaveValue(testData.issued.numberPattern);
             });
         });
+        // E2E0233
         test('Check save with switch function', async () => {
             await test.step('issue UniformItem', async () => {
                 await uniformComponent.btn_uitem_switch(testData.normal.oldUniformId).click();
@@ -454,6 +471,7 @@ test.describe('', () => {
             await page.goto(`/de/app/cadet/${testData.normal.cadetId}`);
         });
 
+        // E2E0234
         test('normal, passive, issued', async () => {
             await test.step('verify not jet issued', async () => {
                 await expect.soft(uniformComponent.div_uitem(testData.passiveAndIssued.uniformId)).not.toBeVisible();
@@ -485,6 +503,7 @@ test.describe('', () => {
             });
         });
 
+        // E2E0235
         test('switch, passive, issued', async () => {
             await test.step('verify not jet issued', async () => {
                 await expect.soft(uniformComponent.div_uitem(testData.passiveAndIssued.uniformId)).not.toBeVisible();
@@ -519,6 +538,7 @@ test.describe('', () => {
         });
     });
 
+    // E2E0236
     test('validate mobile switch button', async () => {
         await test.step('Setup - AdminLogin', async () => {
             await page.goto(`/de/app/cadet/${testData.normal.cadetId}`);

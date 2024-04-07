@@ -38,7 +38,7 @@ test.describe.skip('', () => {
         }
     });
 
-
+    // E2E0241
     test('validate formData', async () => {
         await expect(uniformComponent.div_uitem(uniform.id)).toBeVisible();
 
@@ -59,6 +59,7 @@ test.describe.skip('', () => {
         });
     });
 
+    // E2E0242
     test('validate CancelFunction', async () => {
         await test.step('open form', async () => {
             await uniformComponent.btn_uitem_edit(uniform.id).click();
@@ -82,6 +83,7 @@ test.describe.skip('', () => {
         });
     });
 
+    // E2E0243
     test('validate SaveFunction', async () => {
         await test.step('open form', async () => {
             await uniformComponent.btn_uitem_edit(uniform.id).click();
@@ -99,6 +101,7 @@ test.describe.skip('', () => {
         });
     });
 
+    // E2E0244
     test('validate passive UT', async () => {
         const formComponent = new EditUniformFormComponent(page, '45f31e47-3c0d-11ee-8084-0068eb8ba754');
         // using Uwe Luft   

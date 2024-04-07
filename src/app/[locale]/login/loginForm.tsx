@@ -1,17 +1,17 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { Button, Col, Form, Row } from "react-bootstrap";
-import { useEffect, useState } from "react";
-import { Assosiation } from "@prisma/client";
-import { AuthItem } from "@/lib/storageTypes";
-import { uuid } from "uuidv4";
-import { useRouter, useSearchParams } from "next/navigation";
-import { mutate } from "swr";
-import { toast } from "react-toastify";
 import { useI18n } from "@/lib/locales/client";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { AuthItem } from "@/lib/storageTypes";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Assosiation } from "@prisma/client";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Button, Col, Form, Row } from "react-bootstrap";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import { mutate } from "swr";
+import { uuid } from "uuidv4";
 
 type PropType = {
     assosiations: Assosiation[];
@@ -29,7 +29,6 @@ const LoginForm = ({ assosiations }: PropType) => {
 
 
     const [failedLogin, setFailedLogin] = useState<boolean>(false);
-    const [hideLogin, setHideLogin] = useState<boolean>(false);
 
     async function onSubmit(data: RegistrationFormType) {
         data.username = data.username.trim();
@@ -71,42 +70,43 @@ const LoginForm = ({ assosiations }: PropType) => {
         });
     }
 
-    /*    // onMount
-        useEffect(() => {
-              const storageString = localStorage.getItem(process.env.NEXT_PUBLIC_LOCAL_AUTH_KEY as string)
-              if (!storageString) {
-                  return;
-              }
-      
-              const authItem: AuthItem = JSON.parse(storageString);
-      
-              // no refreshToken
-              if (!authItem.authToken) {
-                  if (authItem.assosiationId) {
-                      setValue("assosiation", authItem.assosiationId);
-                  }
-                  return;
-              }*/
+    // onMount
+    useEffect(() => {
+        const storageString = localStorage.getItem(process.env.NEXT_PUBLIC_LOCAL_AUTH_KEY as string)
+        if (!storageString) {
+            return;
+        }
 
-    // Try to login with refreshToken
-    /* setHideLogin(true);
-     refreshSessionCookie()
-         .then((success) => {
-             if (success) {
-                 mutate(() => true, undefined, true);
-                 if (router.query.returnUrl !== undefined) {
-                     router.push(router.query.returnUrl as string);
+        const authItem: AuthItem = JSON.parse(storageString);
+
+        // no refreshToken
+        if (!authItem.authToken) {
+            if (authItem.assosiationId) {
+                setValue("assosiation", authItem.assosiationId);
+            }
+            return;
+        }
+    });
+    /*
+        // Try to login with refreshToken
+        /* setHideLogin(true);
+         refreshSessionCookie()
+             .then((success) => {
+                 if (success) {
+                     mutate(() => true, undefined, true);
+                     if (router.query.returnUrl !== undefined) {
+                         router.push(router.query.returnUrl as string);
+                     } else {
+                         router.push("/cadet");
+                     }
                  } else {
-                     router.push("/cadet");
+                     setHideLogin(false);
+                     if (authItem.assosiationId) {
+                         setValue("assosiation", authItem.assosiationId);
+                     }
                  }
-             } else {
-                 setHideLogin(false);
-                 if (authItem.assosiationId) {
-                     setValue("assosiation", authItem.assosiationId);
-                 }
-             }
-         });
-}, []);*/
+             });
+    }, []);*/
 
     return (
         <Form onSubmit={handleSubmit(onSubmit)}>
@@ -114,6 +114,7 @@ const LoginForm = ({ assosiations }: PropType) => {
                 <Form.Label>{t('login.label.assosiation')}:</Form.Label>
                 <Form.Select
                     id="assosiation"
+                    autoFocus
                     isInvalid={!!errors.assosiation}
                     {...register("assosiation", { required: true })}>
                     {assosiations?.map((ass) => {

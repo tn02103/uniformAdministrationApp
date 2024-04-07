@@ -9,7 +9,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
 import { getUniformSizeList } from "@/lib/uniformHelper";
 import { Uniform, UniformFormData, UniformSizeList, UniformType } from "@/types/globalUniformTypes";
-import { faArrowUpRightFromSquare, faBars, faCheck, faCross, faPencil, faRightLeft, faRightToBracket, faX, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faArrowUpRightFromSquare, faBars, faCheck, faPencil, faRightLeft, faRightToBracket, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -18,7 +18,6 @@ import { Col, Dropdown, Form, FormControl, Row } from "react-bootstrap";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useSWRConfig } from "swr";
-import { setTimeout } from "timers/promises";
 
 type PropType = {
     uniform: Uniform;
@@ -63,16 +62,13 @@ const UniformRow = (props: PropType) => {
     }
 
     async function saveUniform(data: UniformFormData) {
-        console.log("saving", data);
-        await setTimeout(2000);
-
         await saveUniformItem(data).then(async () => {
-            await mutate(`cadet.${cadetId}.uniform`)
+            await mutate(`cadet.${cadetId}.uniform`);
             setEditable(false);
         }).catch((e) => {
             console.error(e);
             toast.error(t('common.error.save.unknown'));
-        })
+        });
     }
 
     function withdraw(uniform: Uniform) {
@@ -236,7 +232,7 @@ const UniformRow = (props: PropType) => {
                                             testId="btn_edit"
                                             onClick={editUniform}
                                             buttonSize="sm"
-                                            buttonClass="d-sm-none d-lg-inline"
+                                            buttonClass="d-none d-lg-inline"
                                             buttonType="button"
                                             key={"btn_edit"}
                                         />

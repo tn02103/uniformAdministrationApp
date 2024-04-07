@@ -11,7 +11,7 @@ test.use({ storageState: adminAuthFile });
 test.beforeEach(async () => {
     await cleanupData();
 });
-
+// E2E0201
 test('validate data', async ({ page }) => {
     if (!cadet) throw Error();
     const dataComponent = new CadetDataComponent(page);
@@ -36,6 +36,7 @@ test('validate data', async ({ page }) => {
     });
 });
 
+//E2E0202
 test.describe('validate Authroles', async () => {
     test.describe('', async () => {
         test.use({ storageState: userAuthFile });
