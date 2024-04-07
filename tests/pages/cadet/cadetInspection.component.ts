@@ -9,6 +9,7 @@ export class CadetInspectionComponent {
     readonly div_ci: Locator;
     readonly div_header: Locator;
     readonly btn_inspect: Locator;
+    readonly icn_inspected: Locator;
 
     readonly div_step0_placeholder: Locator;
     readonly btn_step1_back: Locator;
@@ -55,6 +56,15 @@ export class CadetInspectionComponent {
     sel_newDef_uniform(index: number) {
         return this.div_ci.locator(`select[name="newDeficiencyList.${index}.uniformId"]`);
     }
+    sel_newDef_material(index: number) {
+        return this.div_ci.locator(`select[name="newDeficiencyList.${index}.materialId"]`);
+    }
+    sel_newDef_materialGroup(index: number) {
+        return this.div_ci.locator(`select[name="newDeficiencyList.${index}.materialGroup"]`);
+    }
+    sel_newDef_materialType(index: number) {
+        return this.div_ci.locator(`input[name="newDeficiencyList.${index}.materialType"]`);
+    }
     txt_newDef_description(index: number) {
         return this.div_ci.locator(`input[name="newDeficiencyList.${index}.description"]`);
     }
@@ -88,6 +98,7 @@ export class CadetInspectionComponent {
         this.div_ci = page.getByTestId('div_cadetInspection');
         this.div_header = this.div_ci.getByTestId('div_header');
         this.btn_inspect = this.div_ci.getByTestId('btn_inspect');
+        this.icn_inspected = this.btn_inspect.locator('svg');
 
         this.div_step0_placeholder = this.div_ci.getByTestId("div_step0_noDeficiencies");
         this.btn_step1_back = this.div_ci.getByTestId("btn_step1_back");
@@ -98,54 +109,5 @@ export class CadetInspectionComponent {
         this.div_step2_unifComplete = this.div_ci.getByTestId("div_step2_unifComplete");
         this.btn_step2_back = this.div_ci.getByTestId("btn_step2_back");
         this.btn_step2_submit = this.div_ci.getByTestId("btn_step2_submit");
-    }
-
-    readonly testInspection = {
-        id: "855823c4-5478-11ee-b196-0068eb8ba754",
-        fk_assosiation: testAssosiation.id,
-    }
-    readonly testInspectionSvenKeller = {
-        id: 'c4d33a71-9283-11ee-8084-0068eb8ba754',
-        fk_cadet: 'c4d33a71-3c11-11ee-8084-0068eb8ba754',
-        fk_inspection: this.testInspection.id,
-        uniformComplete: false,
-        cadetDeficiency: {
-            createMany: {
-                data: [
-                    {
-                        id: 'c4d33a71-1334-11ee-8084-0068eb8ba754',
-                        fk_deficiencyType: '4ae2c897-3dcf-11ee-ac41-0068eb8ba754',
-                        description: 'Typ1-1146',
-                        comment: "New Deficiency 1",
-                        fk_cadet: 'c4d33a71-3c11-11ee-8084-0068eb8ba754',
-                    }
-                ]
-            }
-        }
-    }
-    readonly testSvenKellerDeficienciesToResolve = ["09868976-3dcf-11ee-ac41-0068eb8ba754", "ccffb98b-3dcf-11ee-ac41-0068eb8ba754"];
-
-    async startInspection() {
-        await prisma.inspection.create({
-            data: this.testInspection,
-        });
-        await this.page.reload();
-    }
-
-    async insertSvenKellerFirstInspection() {
-        await prisma.cadetDeficiency.updateMany({
-            where: {
-                id: { in: this.testSvenKellerDeficienciesToResolve }
-            },
-            data: {
-                dateResolved: new Date(),
-            }
-        });
-
-        await prisma.cadetInspection.create({
-            data: {
-                ...this.testInspectionSvenKeller,
-            }
-        });
     }
 }
