@@ -22,7 +22,6 @@ export default function SearchFilter({ search }: { search: (data: { number: numb
     useEffect(() => {
         const value = form?.watch('search')?.replaceAll(' ', '')?.replaceAll('-', '');
         if (!value || value === "") {
-            console.log("empty search");
             setSearchedState({ valid: true, number: null, type: null });
             return;
         }
@@ -51,7 +50,6 @@ export default function SearchFilter({ search }: { search: (data: { number: numb
     }, [form?.watch('search')]);
 
     const onSubmit = () => {
-        console.log("is Submitting");
         if (searchedState?.valid) {
             search({
                 typeId: searchedState.type?.id,

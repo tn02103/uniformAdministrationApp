@@ -2,7 +2,13 @@ export default {
     common: {
         of: "von",
         comment: "Kommentar",
+        description: "Beschreibung",
+        type: "Typ",
         loading: "Lädt",
+        dates: {
+            created: "Erstellt am:",
+            updated: "zulest Verändert:",
+        },
         yes: "Ja",
         no: "Nein",
         active: {
@@ -10,11 +16,14 @@ export default {
             false: "Inaktiv"
         },
         actions: {
-            cancel: "Abbrechen",
+            cancel: "abbrechen",
             save: "speichern",
-            edit: "Bearbeiten",
+            edit: "bearbeiten",
             create: "Anlegen",
+            addNew: "neu hinzufügen",
             open: "Öffnen",
+            prevStep: "zurück",
+            nextStep: "weiter",
             edit_item: "{item} Bearbeiten",
             issue_item: "{item} Ausgeben",
             issue: "Ausgeben",
@@ -31,20 +40,25 @@ export default {
             status: "Status",
             lastInspection: "Letzte Kontrolle",
             notInspected: "Bisher noch nicht Kontrolliert",
-            uniformComplete: "Uniform vollständig",
+            uniformComplete: {
+                true: "Uniform vollständig",
+                false: "Uniform unvollständig",
+            },
             activeDeficiencies: "Aktive Mängel",
             issueCertificate: "Ausgabebescheinigung",
         },
         uniform: {
+            "item#one": "Uniformteil",
+            "item#other": "Uniformteile",
             number: "Nummer",
             generation: "Generation",
             generation_other: "Generationen",
             size: "Größe",
-            size_other: "Größen",
+            size_other: "Sizes",
             owner: "Besitzer",
-
         },
         material: {
+            material: "Material",
             type_one: "Typ",
             type_other: "Typen",
             issued: "ausgegeben",
@@ -62,6 +76,12 @@ export default {
                 issued: "Ausgegeben"
             }
         },
+        deficiency: {
+            resolved: {
+                true: "Behoben",
+                false: "Unbehoben",
+            }
+        },
         error: {
             pleaseSelect: "Bitte Auswählen",
             number: {
@@ -75,6 +95,7 @@ export default {
                 required: "Bitte ausfüllen",
                 maxLength: "Es sind höchtens {value} Zeichen erlaubt",
                 noSpecialChars: "Es dürfen keine Sonderzeichen genutzt werden",
+                commentValidation: "Nicht alle Zeichen die Sie genutzt haben sind erlaubt",
             },
             save: {
                 unknown: "Beim Speichern ist ein unbekannter Fehler aufgetreten "
@@ -116,6 +137,13 @@ export default {
             uniformTable: "Uniformteile",
             cadetTable: "Personaldaten",
             materialTable: "Materialien",
+            inspection: "Uniformkontrolle",
+            inspecting: "VK kontrollieren",
+            deficiencies: "Mängel",
+            oldDeficiencies: "alte Mängel",
+            newDeficiencies: "neue Mängel",
+            "amountUnresolved#other": "- {count} unbehoben",
+            "amountUnresolved#zero": "- Alle behoben",
         },
         returnUniform: {
             error: "Beim Zurückziehen des Uniformteils ist ein Fehler aufgetreten. Bitte versuchen sie es noch einmal",
@@ -127,6 +155,12 @@ export default {
         'defaultIssuedWarning#one': "Es sollte {count} Stück ausgegeben werden",
         'defaultIssuedWarning#other': "Es sollten {count} Stücke ausgegeben werden",
         'multitypeWarning': "Es sollte nur 1 Typ dieses Materials ausgegeben werden",
+        tooltips: {
+            inspection: {
+                inspected: "Kadetten kontrolliert:\nInspektion des Kadetten aktualisieren",
+                notInspected: "Kadetten unkontrolliert:\nInspektion des Kadetten starten"
+            }
+        }
     },
     uniformList: {
         filter: "Filter",

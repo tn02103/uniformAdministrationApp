@@ -18,6 +18,8 @@ import { useGlobalData } from "../globalDataProvider";
 import { logout } from "@/actions/auth";
 import { mutate } from "swr";
 import { AuthItem } from "@/lib/storageTypes";
+import { startInspection } from "@/actions/inspection/status";
+import { toast } from "react-toastify";
 
 
 type SidebarPropType = {
@@ -48,7 +50,14 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
         });
     }
     function startStopInspection() {
-
+        if (inspectionState.active) {
+            // TODO stop inspection
+        } else {
+            startInspection().then(() => {
+                toast.success("Uniformkontrolle erfolgreich gestartet");
+                mutate((key: any) => ((typeof key === "string") && /^(\/api\/inspection\/status)|(\/api\/cadet\/[\w\d-]+\/inspection)$/));
+            });
+        }
     }
 
     return (

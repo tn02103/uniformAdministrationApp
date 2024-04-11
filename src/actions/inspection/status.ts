@@ -1,7 +1,7 @@
 "use server"
 
 import { AuthRole } from "@/lib/AuthRoles";
-import { genericSAValidatior } from "../validations";
+import { genericSAValidatior, genericSAValidatiorV2 } from "../validations";
 import { prisma } from "@/lib/db";
 import { InspectionStatus } from "@/types/deficiencyTypes";
 
@@ -58,3 +58,26 @@ export const getInspectedCadetIdList = () => genericSAValidatior(AuthRole.inspec
         }).then((data) => data.map(c => c.fk_cadet))
     );
 
+export const startInspection = () => genericSAValidatiorV2(AuthRole.materialManager, true, {})
+    .then(async ({ assosiation }) => {
+        const i = await prisma.inspection.findFirst({
+            where: {
+                fk_assosiation: assosiation,
+                date: new Date(),
+            }
+        });
+
+        if (i) {
+            if (i.active) return;
+            await prisma.inspection.update({
+                where: { id: i.id },
+                data: { active: true }
+            });
+        } else {
+            await prisma.inspection.create({
+                data: {
+                    fk_assosiation: assosiation
+                }
+            });
+        }
+    })

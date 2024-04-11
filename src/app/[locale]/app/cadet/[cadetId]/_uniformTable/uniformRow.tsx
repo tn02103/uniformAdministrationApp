@@ -1,6 +1,6 @@
 "use client"
 
-import { returnUniformItem } from "@/actions/cadet/uniform";
+import { returnUniformItem } from "@/actions/controllers/CadetUniformController";
 import { saveUniformItem } from "@/actions/uniform/item";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { useGlobalData } from "@/components/globalDataProvider";
@@ -9,7 +9,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
 import { getUniformSizeList } from "@/lib/uniformHelper";
 import { Uniform, UniformFormData, UniformSizeList, UniformType } from "@/types/globalUniformTypes";
-import { faArrowUpRightFromSquare, faBars, faCheck, faCross, faPencil, faRightLeft, faRightToBracket, faX, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faArrowUpRightFromSquare, faBars, faCheck, faPencil, faRightLeft, faRightToBracket, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -90,7 +90,6 @@ const UniformRow = (props: PropType) => {
 
     useEffect(() => {
         const handleSizeChange = () => {
-            console.log("resizing", window.innerWidth);
             if (window.innerWidth < 992) {
                 setEditable(false);
             }

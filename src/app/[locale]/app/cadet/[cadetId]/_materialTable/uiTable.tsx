@@ -1,18 +1,18 @@
 "use client";
 
-import { getcadetMaterialMap, returnMaterial } from "@/actions/cadet/material";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { useGlobalData } from "@/components/globalDataProvider";
+import { useModal } from "@/components/modals/modalProvider";
+import { useCadetMaterialMap } from "@/dataFetcher/cadet";
 import { AuthRole } from "@/lib/AuthRoles";
+import { useI18n } from "@/lib/locales/client";
 import { CadetMaterialMap } from "@/types/globalCadetTypes";
 import { CadetMaterial, MaterialGroup } from "@/types/globalMaterialTypes";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
-import useSWR from "swr";
 import MaterialTableLine from "./tableLine";
-import { useModal } from "@/components/modals/modalProvider";
-import { useI18n } from "@/lib/locales/client";
+import { returnMaterial } from "@/actions/controllers/CadetMaterialController";
 
 type PropType = {
     initialData: CadetMaterialMap,
@@ -24,13 +24,7 @@ const MaterialTable = ({ initialData, materialConfig }: PropType) => {
     const modal = useModal();
     const t = useI18n();
 
-    const { data: materialMap, mutate } = useSWR(
-        `cadet/material/${cadetId}`,
-        () => getcadetMaterialMap(cadetId),
-        {
-            fallbackData: initialData
-        }
-    );
+    const { materialMap, mutate } = useCadetMaterialMap(cadetId, initialData);
 
     function handleIssue(group: MaterialGroup, material?: CadetMaterial) {
         modal?.issueMaterialModal(

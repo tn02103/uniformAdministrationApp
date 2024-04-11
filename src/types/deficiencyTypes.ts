@@ -1,38 +1,40 @@
 import { Prisma } from "@prisma/client";
 
-export const deficiencyTypeArgs = Prisma.validator<Prisma.CadetDeficiencyTypeArgs>()({
+export const deficiencyTypeArgs = Prisma.validator<Prisma.DeficiencyTypeFindManyArgs>()({
     select: {
         id: true,
         name: true,
-        dependsOnUniformitem: true,
-        addCommentToUniformitem: true,
+        dependend: true,
+        relation: true,
     }
-})
+});
 
+export type DeficiencyType = Prisma.DeficiencyTypeGetPayload<typeof deficiencyTypeArgs>;
 
-
-export type DeficiencyType = Prisma.CadetDeficiencyTypeGetPayload<typeof deficiencyTypeArgs>;
-
-export type Deficiency = {
-    id: string;
+export interface Deficiency {
+    id?: string;
     typeId: string;
     typeName: string;
     description: string;
     comment: string;
+    dateCreated?: Date;
+    dateUpdated?: Date;
+    dateResolved?: Date;
+    userCreated?: Date;
+    userUpdated?: Date;
+    userResolved?: Date;
+}
+export interface DeficiencyCadet extends Deficiency {
     fk_cadet: string;
-    fk_material: string | null;
-    fk_uniform: string | null;
-    dateCreated: Date;
-    dateUpdated: Date;
-    dateResolved: Date;
-    userCreated: Date;
-    userUpdated: Date;
-    userResolved: Date;
-
+    fk_material?: string;
+    fk_uniform?: string;
+}
+export interface UniformDeficiency extends Deficiency {
+    fk_uniform: string;
 }
 
 export type CadetInspection = {
-    id: string,
+    id?: string,
     uniformComplete: boolean,
     oldCadetDeficiencies: Deficiency[],
     newCadetDeficiencies: Deficiency[],

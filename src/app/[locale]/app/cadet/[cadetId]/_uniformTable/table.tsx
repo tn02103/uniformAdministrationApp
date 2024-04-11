@@ -1,6 +1,5 @@
 "use client"
 
-import { IssueUniformItemDataType, SAErrorResponseType, getCadetUniformMap, issueUniformItem } from "@/actions/cadet/uniform";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { useGlobalData } from "@/components/globalDataProvider";
 import { useModal } from "@/components/modals/modalProvider";
@@ -14,6 +13,8 @@ import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
 import useSWR from "swr";
 import UniformRow from "./uniformRow";
+import { useCadetUniformMap } from "@/dataFetcher/cadet";
+import { IssueUniformItemDataType, SAErrorResponseType, issueUniformItem } from "@/actions/controllers/CadetUniformController";
 
 
 
@@ -28,13 +29,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
 
     const { uniformTypeConfiguration, userRole } = useGlobalData();
 
-    const { data: uniformMap, mutate: keyedMutator, error } = useSWR(
-        `cadet.${cadetId}.uniform`,
-        () => getCadetUniformMap(cadetId).catch(e => { console.log("cought SAError", e, Object.entries(e)); throw e }),
-        {
-            fallbackData: props.uniformMap,
-        }
-    );
+    const { map, mutate: keyedMutator, error } = useCadetUniformMap(cadetId, props.uniformMap);
     if (error)
         throw error;
 
@@ -132,7 +127,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
         },
         save: (data) => issueMutation({
             number: +data.input,
-            typeId: type.id,
+            uniformTypeId: type.id,
             idToReplace: itemToReplace?.id,
             cadetId,
             options: { force: false, ignoreInactive: false, create: false }
@@ -144,7 +139,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
     return (
         <>
             {uniformTypeConfiguration.map((type) => {
-                const items = uniformMap?.[type.id] ?? [];
+                const items = map?.[type.id] ?? [];
                 return (
                     <div data-testid={`div_utype_${type.id}`} key={"typeRow" + type.id} className="col-12">
                         <div style={{ background: "#f2f2f2" }} className="row m-0 border-top border-bottom border-dark border-1 py-1 ">

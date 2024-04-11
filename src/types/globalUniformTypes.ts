@@ -59,7 +59,10 @@ export const uniformArgs = Prisma.validator<Prisma.UniformArgs>()({
 
 export type UniformWithOwner = Prisma.UniformGetPayload<typeof uniformWithOwnerArgs>;
 export type Uniform = Prisma.UniformGetPayload<typeof uniformArgs>;
-
+export type UniformLabel = {
+    id: string,
+    description: string,
+}
 // CONFIGURATION
 export const uniformGenerationArgs = Prisma.validator<Prisma.UniformGenerationArgs>()({
     select: {

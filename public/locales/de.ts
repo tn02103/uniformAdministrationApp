@@ -20,6 +20,7 @@ export default {
             save: "speichern",
             edit: "bearbeiten",
             create: "Anlegen",
+            addNew: "neu hinzufügen",
             open: "Öffnen",
             prevStep: "zurück",
             nextStep: "weiter",
@@ -39,20 +40,25 @@ export default {
             status: "Status",
             lastInspection: "Letzte Kontrolle",
             notInspected: "Bisher noch nicht Kontrolliert",
-            uniformComplete: "Uniform vollständig",
+            uniformComplete: {
+                true: "Uniform vollständig",
+                false: "Uniform unvollständig",
+            },
             activeDeficiencies: "Aktive Mängel",
             issueCertificate: "Ausgabebescheinigung",
         },
         uniform: {
+            "item#one": "Uniformteil",
+            "item#other": "Uniformteile",
             number: "Nummer",
             generation: "Generation",
             generation_other: "Generationen",
             size: "Größe",
             size_other: "Sizes",
             owner: "Besitzer",
-
         },
         material: {
+            material: "Material",
             type_one: "Typ",
             type_other: "Typen",
             issued: "ausgegeben",
@@ -89,6 +95,7 @@ export default {
                 required: "Bitte ausfüllen",
                 maxLength: "Es sind höchtens {value} Zeichen erlaubt",
                 noSpecialChars: "Es dürfen keine Sonderzeichen genutzt werden",
+                commentValidation: "Nicht alle Zeichen die Sie genutzt haben sind erlaubt",
             },
             save: {
                 unknown: "Beim Speichern ist ein unbekannter Fehler aufgetreten "
@@ -133,6 +140,10 @@ export default {
             inspection: "Uniformkontrolle",
             inspecting: "VK kontrollieren",
             deficiencies: "Mängel",
+            oldDeficiencies: "alte Mängel",
+            newDeficiencies: "neue Mängel",
+            "amountUnresolved#other": "- {count} unbehoben",
+            "amountUnresolved#zero": "- Alle behoben",
         },
         returnUniform: {
             error: "Beim Zurückziehen des Uniformteils ist ein Fehler aufgetreten. Bitte versuchen sie es noch einmal",

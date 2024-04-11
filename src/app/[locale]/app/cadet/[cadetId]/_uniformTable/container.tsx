@@ -1,8 +1,7 @@
-import { getCadetUniformMap } from "@/actions/cadet/uniform";
-import { getUniformTypes } from "@/actions/uniform/type";
 import { getIronSession } from "@/lib/ironSession";
 import { getScopedI18n } from "@/lib/locales/config";
 import CadetUniformTable from "./table";
+import { getCadetUniformMap } from "@/actions/controllers/CadetUniformController";
 
 type PropType = {
     cadetId: string;

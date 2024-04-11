@@ -69,7 +69,6 @@ export default function UniformDetailUIBorder({
             if (typeof key !== "string") return false;
             if (key.startsWith(`uniform.${uniformId}`)) return true;
             if (uniformHistory.find(h => h.dateReturned === null)) {
-                console.log("With cadet", uniformHistory.find(h => h.dateReturned === null)?.cadetId);
                 return key.startsWith(`cadet.${uniformHistory.find(h => h.dateReturned === null)?.cadetId}.uniform`);
             }
         }

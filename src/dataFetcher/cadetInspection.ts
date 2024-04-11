@@ -1,5 +1,5 @@
-import { getCadetInspection, getUnresolvedDeficienciesByCadet } from "@/actions/cadet/inspection"
-import useSWR from "swr"
+import { getCadetInspection, getUnresolvedDeficienciesByCadet } from "@/actions/controllers/CadetInspectionController";
+import useSWR from "swr";
 
 
 
@@ -8,7 +8,7 @@ export const useCadetInspection = (cadetId: string) => {
     return { cadetInspection: data };
 }
 
-
 export const useUnresolvedDeficienciesByCadet = (cadetId: string) => {
     const { data } = useSWR(`cadet.${cadetId}.deficiencies.unresolved`, () => getUnresolvedDeficienciesByCadet(cadetId));
+    return { unresolvedDeficiencies: data };
 }

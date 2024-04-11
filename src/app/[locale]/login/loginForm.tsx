@@ -145,6 +145,7 @@ const LoginForm = ({ assosiations }: PropType) => {
                 <Form.Label>{t('login.label.password')}:</Form.Label>
                 <Form.Control
                     type="password"
+                    autoComplete={"off"}
                     isInvalid={!!errors.password || failedLogin}
                     {...register("password", {
                         required: {
