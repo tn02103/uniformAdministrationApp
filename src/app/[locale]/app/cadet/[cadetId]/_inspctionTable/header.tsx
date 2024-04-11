@@ -20,7 +20,6 @@ export default function CadetInspectionCardHeader({
     const { cadetInspection } = useCadetInspection(cadetId as string);
     const inspected = (!!cadetInspection && !!cadetInspection.id)
 
-    console.log(inspectionState);
     function startInspectingCadet() {
         if (step !== 0) return;
 

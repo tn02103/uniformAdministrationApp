@@ -15,6 +15,11 @@ type PropType = {
         locale: string;
     };
 }
+
+export type ParamType = {
+    cadetId: string;
+    locale: string;
+}
 /*export const generateStaticParams = async ({ params: { locale } }: { params: { locale: string } }) => {
     return await prisma.cadet.findMany({ select: { id: true }, where: { recdelete: null } })
         .then((data) => data.map(c => ({ cadetId: c.id })));

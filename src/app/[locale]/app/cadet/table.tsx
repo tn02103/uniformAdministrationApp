@@ -92,7 +92,7 @@ const GeneralOverviewTable = ({
                                         {t('common.cadet.lastInspection')}
                                     </th>
                                     <th data-testid="div_uniformComplete" className="align-middle text-nowrap p-0 ps-2 d-none d-md-table-cell">
-                                        {t('common.cadet.uniformComplete')}
+                                        {t('common.cadet.uniformComplete.true')}
                                     </th>
                                     <th data-testid="div_activeDeficiencies" className="align-middle text-nowrap p-0 ps-2 d-none d-sm-table-cell">
                                         {t('common.cadet.activeDeficiencies')}

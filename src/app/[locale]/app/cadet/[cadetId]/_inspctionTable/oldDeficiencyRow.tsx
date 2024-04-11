@@ -15,7 +15,6 @@ export default function OldDeficiencyRow({
     const tDef = useScopedI18n('common.deficiency');
     const tCom = useScopedI18n('common')
     const { register, watch } = useFormContext<FormType>();
-    console.log(step, deficiency);
     return (
         <Row
             className={`p-1 m-0 border-bottom border-1 ${(step == 2) ? "py-1" : "py-3"}`}
@@ -70,7 +69,7 @@ export default function OldDeficiencyRow({
                     </Row>
                     <Row>
                         <Col data-testid={`div_created`}>
-                            {format(new Date(deficiency.dateCreated), "dd.MM.yyyy")}
+                            {format(new Date(deficiency.dateCreated!), "dd.MM.yyyy")}
                         </Col>
                     </Row>
                 </Col>
