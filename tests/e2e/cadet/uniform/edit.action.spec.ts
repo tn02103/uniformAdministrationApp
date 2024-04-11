@@ -120,10 +120,10 @@ test.describe.skip('', () => {
 
         await expect(uniformComponent.btn_uitem_menu(testData.uniformId)).toBeVisible();
         await uniformComponent.btn_uitem_menu(testData.uniformId).click();
-
-        await expect(uniformComponent.btn_uitem_menu_edit(testData.uniformId)).toBeVisible();
-        await uniformComponent.btn_uitem_menu_edit(testData.uniformId).click();
-
-        await expect(formComponent.div_component).toBeVisible();
+        /*
+                await expect(uniformComponent.btn_uitem_menu_edit(testData.uniformId)).toBeVisible();
+                await uniformComponent.btn_uitem_menu_edit(testData.uniformId).click();
+        
+                await expect(formComponent.div_component).toBeVisible();*/
     });
 });

@@ -33,8 +33,7 @@ test.describe('', async () => {
     });
 
     // TESTS
-    // E2E0264
-    test('validate step0 defList after Inspction', async () => {
+    test('E2E0264: validate step0 defList after Inspction', async () => {
         await test.step('resolved not shown', async () => {
             await expect.soft(
                 inspectionComponent.div_oldDeficiency(
@@ -56,8 +55,8 @@ test.describe('', async () => {
             )
         );
     });
-    // E2E0266
-    test.skip('validate step1 devList after Inspection', async () => {
+
+    test('E2E0266: validate step1 devList after Inspection', async () => {
         await test.step('setup', async () => {
             await inspectionComponent.btn_inspect.click();
         });
@@ -80,7 +79,6 @@ test.describe('', async () => {
                     expect.soft(inspectionComponent.chk_olddef_resolved(id)).toBeChecked()
                 )
             );
-
         });
         await test.step('correct are checked as resolved', async () => {
             await Promise.all(

@@ -52,10 +52,10 @@ export class CadetInspectionComponent {
     }
     // -- fields
     sel_newDef_type(index: number) {
-        return this.div_ci.locator(`select[name="newDeficiencyList.${index}.deficiencyType.id"]`);
+        return this.div_ci.locator(`select[name="newDeficiencyList.${index}.typeId"]`);
     }
     sel_newDef_uniform(index: number) {
-        return this.div_ci.locator(`select[name="newDeficiencyList.${index}.uniformId"]`);
+        return this.div_ci.locator(`select[name="newDeficiencyList.${index}.fk_uniform"]`);
     }
     sel_newDef_material(index: number) {
         return this.div_ci.locator(`select[name="newDeficiencyList.${index}.materialId"]`);
@@ -64,7 +64,7 @@ export class CadetInspectionComponent {
         return this.div_ci.locator(`select[name="newDeficiencyList.${index}.materialGroup"]`);
     }
     sel_newDef_materialType(index: number) {
-        return this.div_ci.locator(`input[name="newDeficiencyList.${index}.materialType"]`);
+        return this.div_ci.locator(`select[name="newDeficiencyList.${index}.materialType"]`);
     }
     txt_newDef_description(index: number) {
         return this.div_ci.locator(`input[name="newDeficiencyList.${index}.description"]`);

@@ -33,8 +33,7 @@ test.describe('', async () => {
         await inspectionComponent.btn_step1_continue.click();
     });
 
-    // E2E0278
-    test.skip('validate typedisabled', async () => {
+    test('E2E0278: validate typedisabled', async () => {
         const i = svenKellerFirstInspectionData.newDeficiencyList.length;
         await test.step('setup', async () => {
             await expect(inspectionComponent.div_newDeficiency(0)).toBeVisible();
@@ -46,21 +45,21 @@ test.describe('', async () => {
         await expect(inspectionComponent.sel_newDef_type(0)).toBeDisabled();
         await expect(inspectionComponent.sel_newDef_type(i)).toBeEnabled()
     });
-    // E2E0277
-    test.skip('validate data for repeated inspection', async () => {
+
+    test('E2E0277: validate data for repeated inspection', async () => {
         const newDefs = svenKellerFirstInspectionData.newDeficiencyList;
 
         expect(inspectionComponent.div_newDeficiency(newDefs.length - 1)).toBeVisible();
 
-        const typeIdList = new Array(newDefs.length);
+        const commentList = new Array(newDefs.length);
         for (let i = 0; i < newDefs.length; i++) {
-            const typeId = await inspectionComponent.sel_newDef_type(i).inputValue();
-            typeIdList.push(typeId);
+            const comment = await inspectionComponent.txt_newDef_comment(i).inputValue();
+            commentList[i] = comment;
         }
 
         await Promise.all([
             test.step('validate cadetDef', async () => {
-                const i = typeIdList.findIndex(id => id == newDefs[0].fk_deficiencyType);
+                const i = commentList.findIndex(id => id == newDefs[0].comment);
 
                 expect(i).toBeGreaterThanOrEqual(0);
                 await Promise.all([
@@ -71,7 +70,7 @@ test.describe('', async () => {
                 ]);
             }),
             test.step('validate cadetUniformDef', async () => {
-                const i = typeIdList.findIndex(id => id === newDefs[4].fk_deficiencyType);
+                const i = commentList.findIndex(id => id === newDefs[4].comment);
 
                 expect(i).toBeGreaterThanOrEqual(0);
                 await Promise.all([
@@ -81,7 +80,7 @@ test.describe('', async () => {
                 ]);
             }),
             test.step('validate uniformDef', async () => {
-                const i = typeIdList.findIndex(id => id === newDefs[1].fk_deficiencyType);
+                const i = commentList.findIndex(id => id === newDefs[1].comment);
 
                 expect(i).toBeGreaterThanOrEqual(0);
                 await Promise.all([
@@ -91,8 +90,8 @@ test.describe('', async () => {
                 ]);
             }),
             test.step('validate cadetMaterialDef not issued', async () => {
-                const i = typeIdList.findIndex(id => id === newDefs[2].fk_deficiencyType);
-                const groupId = testMaterialGroups.find(g => g.fk_assosiation === testAssosiation.id && g.description === "Gruppe1")!.id;
+                const i = commentList.findIndex(id => id === newDefs[2].comment);
+                const groupId = testMaterialGroups.find(g => g.fk_assosiation === testAssosiation.id && g.description === "Gruppe3")!.id;
 
                 expect(i).toBeGreaterThanOrEqual(0);
                 await Promise.all([
@@ -106,7 +105,7 @@ test.describe('', async () => {
                 ]);
             }),
             test.step('validate cadetMaterialDef issued', async () => {
-                const i = typeIdList.findIndex(id => id === newDefs[3].fk_deficiencyType);
+                const i = commentList.findIndex(id => id === newDefs[3].comment);
 
                 expect(i).toBeGreaterThanOrEqual(0);
                 await Promise.all([

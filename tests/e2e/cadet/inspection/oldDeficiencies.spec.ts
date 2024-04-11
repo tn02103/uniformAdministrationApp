@@ -1,12 +1,11 @@
+import { format } from "date-fns";
 import test, { Page, expect } from "playwright/test";
+import t from "../../../../public/locales/de";
 import { adminAuthFile } from "../../../auth.setup";
 import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
 import { cleanupData } from "../../../testData/cleanupStatic";
-import { removeInspection, startInspection, testActiveInspection } from "../../../testData/dynamicData";
+import { removeInspection, startInspection } from "../../../testData/dynamicData";
 import { testDeficiencies, testDeficiencyTypes } from "../../../testData/staticData";
-import t from "../../../../public/locales/de";
-import { format } from "date-fns";
-import { prisma } from "@/lib/db";
 
 test.use({ storageState: adminAuthFile });
 test.describe('', async () => {
@@ -39,8 +38,7 @@ test.describe('', async () => {
     });
 
     // TESTS
-    // E2E0265
-    test('validate step0 defList prev. Inspction', async () => {
+    test('E2E0265: validate step0 defList prev. Inspction', async () => {
         await removeInspection();
         await page.reload();
         await expect(inspectionComponent.div_step0_loading).not.toBeVisible();
@@ -68,8 +66,8 @@ test.describe('', async () => {
         ]);
         await startInspection();
     });
-    // E2E0267
-    test.skip('validate step1 devList prev. Inspection', async () => {
+
+    test('E2E0267: validate step1 devList prev. Inspection', async () => {
         await test.step('setup', async () => {
             await inspectionComponent.btn_inspect.click();
         });
@@ -100,20 +98,20 @@ test.describe('', async () => {
             ]);
         });
     });
-    // E2E0268
-    test.skip('validate step1 chk_resolved', async () => {
+
+    test('E2E0268: validate step1 chk_resolved', async () => {
         const id = 'ccffb98b-3dcf-11ee-ac41-0068eb8ba754';
         await inspectionComponent.btn_inspect.click();
         await expect(inspectionComponent.chk_olddef_resolved(id)).not.toBeChecked();
-        await expect(inspectionComponent.lbl_olddef_resolved(id)).toHaveCSS('color', /bs-danger-rgb/);
+        await expect(inspectionComponent.lbl_olddef_resolved(id)).toHaveCSS('color', "rgb(220, 53, 69)");
         await expect(inspectionComponent.lbl_olddef_resolved(id)).toHaveText(t.common.deficiency.resolved.false);
 
         await inspectionComponent.chk_olddef_resolved(id).check();
-        await expect(inspectionComponent.lbl_olddef_resolved(id)).toHaveCSS('color', /bs-success-rgb/);
+        await expect(inspectionComponent.lbl_olddef_resolved(id)).toHaveCSS('color', "rgb(25, 135, 84)");
         await expect(inspectionComponent.lbl_olddef_resolved(id)).toHaveText(t.common.deficiency.resolved.true);
     });
-    // E2E0269
-    test.skip('validate oldDeficiencyRow data', async () => {
+
+    test('E2E0269: validate oldDeficiencyRow data', async () => {
         const deficiency = testDeficiencies.find(d => d.id === 'ccffb98b-3dcf-11ee-ac41-0068eb8ba754');
         if (!deficiency) throw new Error('Could not find deficiency');
         const type = testDeficiencyTypes.find(t => t.id === deficiency?.fk_deficiencyType);
@@ -161,8 +159,8 @@ test.describe('', async () => {
             ]);
         });
     });
-    // E2E0270
-    test.skip('validate step2 unresolvedDefCountLabel', async () => {
+
+    test('E2E0270: validate step2 unresolvedDefCountLabel', async () => {
         await test.step('goto step2 none resolve', async () => {
             await inspectionComponent.btn_inspect.click();
             await inspectionComponent.btn_step1_continue.click();
@@ -170,7 +168,7 @@ test.describe('', async () => {
         await test.step('validate label all unresolved', async () => {
             await Promise.all([
                 expect.soft(inspectionComponent.div_step2_unresolvedDefHeader).toHaveClass(/text-danger/),
-                expect.soft(inspectionComponent.div_step2_unresolvedDefHeader).toContainText('Unbehoben'),
+                expect.soft(inspectionComponent.div_step2_unresolvedDefHeader).toContainText(/unbehoben/),
                 expect.soft(inspectionComponent.div_step2_unresolvedDefHeader).toContainText(String(unresolvedDefIds.length)),
             ]);
         });
@@ -183,7 +181,7 @@ test.describe('', async () => {
         await test.step('validate label partial resolved', async () => {
             await Promise.all([
                 expect.soft(inspectionComponent.div_step2_unresolvedDefHeader).toHaveClass(/text-danger/),
-                expect.soft(inspectionComponent.div_step2_unresolvedDefHeader).toContainText("Unbehoben"),
+                expect.soft(inspectionComponent.div_step2_unresolvedDefHeader).toContainText(/unbehoben/),
                 expect.soft(inspectionComponent.div_step2_unresolvedDefHeader).toContainText(String(unresolvedDefIds.length - 2)),
             ]);
         });
@@ -196,13 +194,13 @@ test.describe('', async () => {
         });
         await test.step('validate label all resolved', async () => {
             await expect.soft(inspectionComponent.div_step2_unresolvedDefHeader).toHaveClass(/text-success/);
-            await expect.soft(inspectionComponent.div_step2_unresolvedDefHeader).toHaveText('Behoben');
+            await expect.soft(inspectionComponent.div_step2_unresolvedDefHeader).toHaveText(/behoben/);
         });
     });
-    // E2E0279
-    test.skip('validate step2 uniformCompleteLabel', async () => {
+
+    test('E2E0279: validate step2 uniformCompleteLabel', async () => {
         await test.step('validate complete Uniform', async () => {
-            await page.goto('/cadet/0d06427b-3c12-11ee-8084-0068eb8ba754');
+            await page.goto('/de/app/cadet/0d06427b-3c12-11ee-8084-0068eb8ba754');
             await inspectionComponent.btn_inspect.click();
 
             await expect.soft(inspectionComponent.div_step2_unifComplete).toHaveClass(/text-success/);
@@ -210,7 +208,7 @@ test.describe('', async () => {
             await expect.soft(inspectionComponent.div_step2_unifComplete).toContainText('Uniform vollständig');
         });
         await test.step('validate uncomplete Uniform', async () => {
-            await page.goto(`/cadet/${cadetId}`);
+            await page.goto(`/de/app/cadet/${cadetId}`);
             await inspectionComponent.btn_inspect.click();
             await inspectionComponent.btn_step1_continue.click();
 

@@ -37,6 +37,9 @@ export class CadetUniformComponent {
     btn_uitem_switch(uniformId: string) {
         return this.div_uitem(uniformId).getByTestId("btn_switch");
     }
+    btn_uitem_open(uniformId: string) {
+        return this.div_uitem(uniformId).getByTestId("btn_open");
+    }
     btn_uitem_edit(uniformId: string) {
         return this.div_uitem(uniformId).getByTestId("btn_edit");
     }
@@ -49,8 +52,8 @@ export class CadetUniformComponent {
     btn_uitem_menu_switch(uniformId: string) {
         return this.div_uitem(uniformId).getByTestId("btn_menu_switch");
     }
-    btn_uitem_menu_edit(uniformId: string) {
-        return this.div_uitem(uniformId).getByTestId("btn_menu_edit");
+    btn_uitem_menu_open(uniformId: string) {
+        return this.div_uitem(uniformId).getByTestId("btn_menu_open");
     }
 
     div_uitem_number(uniformId: string) {

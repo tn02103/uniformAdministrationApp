@@ -31,8 +31,7 @@ test.describe('', () => {
     });
 
     // TESTS
-    // E2E0262
-    test.skip('navigation with activeDeficiencies', async () => {
+    test('E2E0262: navigation with activeDeficiencies', async () => {
         await page.goto(`de/app/cadet/c4d33a71-3c11-11ee-8084-0068eb8ba754`); // Sven Keller
         await test.step('step0 visibility', async () => {
             await Promise.all([
@@ -89,8 +88,8 @@ test.describe('', () => {
             ]);
         });
     });
-    // E2E0263
-    test.skip('navigation without activeDeficiencies', async () => {
+
+    test('E2E0263: navigation without activeDeficiencies', async () => {
         await page.goto(`/de/app/cadet/0d06427b-3c12-11ee-8084-0068eb8ba754`); // Marie Ackerman
         await test.step('step0 visibility', async () => {
             await Promise.all([
@@ -125,8 +124,8 @@ test.describe('', () => {
             ]);
         });
     });
-    //E2E0276
-    test('validate header', async () => {
+
+    test('E2E0276: validate header', async () => {
         await page.goto(`de/app/cadet/c4d33a71-3c11-11ee-8084-0068eb8ba754`); // Sven Keller
         await test.step('active Inspection not inspected', async () => {
             await expect(inspectionComponent.div_header).toHaveText('Uniformkontrolle');
