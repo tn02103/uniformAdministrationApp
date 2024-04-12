@@ -1,7 +1,7 @@
 import { UniformConfiguration, UniformSizeList, UniformType } from "../types/globalUniformTypes";
 
 type Props = {
-    generationId: string;
+    generationId?: string;
     sizeLists: UniformSizeList[];
 } & ({ type: UniformType } | ComplextProps)
 type ComplextProps = {

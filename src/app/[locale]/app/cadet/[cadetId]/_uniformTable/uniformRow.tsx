@@ -62,13 +62,15 @@ const UniformRow = (props: PropType) => {
     }
 
     async function saveUniform(data: UniformFormData) {
+        if (data.size === "") delete data.size;
+        if (data.generation === "") delete data.generation;
         await saveUniformItem(data).then(async () => {
-            await mutate(`cadet.${cadetId}.uniform`)
             setEditable(false);
+            await mutate(`cadet.${cadetId}.uniform`)
         }).catch((e) => {
             console.error(e);
             toast.error(t('common.error.save.unknown'));
-        })
+        });
     }
 
     function withdraw(uniform: Uniform) {
@@ -101,7 +103,7 @@ const UniformRow = (props: PropType) => {
 
     return (
         <div data-testid={`div_uitem_${uniform.id}`} className={`row border-top border-1 white m-0`}>
-            <Form id={`uniform_${uniform.id}`} onSubmit={form.handleSubmit(saveUniform)} className="p-0">
+            <form id={`uniform_${uniform.id}`} onSubmit={form.handleSubmit(saveUniform)} className="p-0">
                 <FormProvider {...form}>
                     <div className="col-12">
                         <div className={`row pb-2 pt-1 m-0 ${selected ? "bg-primary-subtle" : "bg-white"}`} onClick={onLineClick}>
@@ -187,7 +189,7 @@ const UniformRow = (props: PropType) => {
                                                 {t('common.actions.return')}
                                             </Dropdown.Item>
                                             <Link prefetch={false} href={'/[locale]/app/uniform/[uniformId]'} as={`/${locale}/app/uniform/${uniform.id}`}>
-                                                <Dropdown.Item onClick={() => { modal?.uniformItemDetailModal(uniform.id, uniformType, cadetId) }} data-testid={"btn_menu_edit"}>
+                                                <Dropdown.Item onClick={() => { modal?.uniformItemDetailModal(uniform.id, uniformType, cadetId) }} data-testid={"btn_menu_open"}>
                                                     {t('common.actions.open')}
                                                 </Dropdown.Item>
                                             </Link>
@@ -224,17 +226,19 @@ const UniformRow = (props: PropType) => {
                                         />
                                     </>
                                     : <>
-                                        <TooltipIconButton
-                                            icon={faPencil}
-                                            variant="outline-primary"
-                                            tooltipText="Bearbeiten"
-                                            testId="btn_edit"
-                                            onClick={editUniform}
-                                            buttonSize="sm"
-                                            buttonClass="d-sm-none d-lg-inline"
-                                            buttonType="button"
-                                            key={"btn_edit"}
-                                        />
+                                        {(userRole >= AuthRole.inspector) &&
+                                            <TooltipIconButton
+                                                icon={faPencil}
+                                                variant="outline-primary"
+                                                tooltipText="Bearbeiten"
+                                                testId="btn_edit"
+                                                onClick={editUniform}
+                                                buttonSize="sm"
+                                                buttonClass="d-sm-none d-lg-inline"
+                                                buttonType="button"
+                                                key={"btn_edit"}
+                                            />
+                                        }
                                         <TooltipIconButton
                                             icon={faArrowUpRightFromSquare}
                                             variant="outline-secondary"
@@ -250,7 +254,7 @@ const UniformRow = (props: PropType) => {
                         </div>
                     </div>
                 </FormProvider>
-            </Form>
+            </form>
         </div >
     )
 }
@@ -283,7 +287,7 @@ const GenerationRow = ({
     return (
         <Row data-testid={"div_generation"} className="pe-3">
             <Form.Select autoFocus {...register('generation')} className={!selectedGeneration ? "text-danger" : selectedGeneration.outdated ? "text-warning" : ""}>
-                <option className="text-danger">K.A.</option>
+                <option value="" className="text-danger">K.A.</option>
                 {uniformType.uniformGenerationList.map((gen) =>
                     <option key={gen.id} value={gen.id} className={gen.outdated ? "text-warning tests" : "text-black"}>
                         {gen.name}
@@ -306,24 +310,17 @@ const SizeRow = ({
 
     const [usedSizeList, setUsedSizeList] = useState<UniformSizeList>();
 
-    useEffect(() => {
-        const generationId = watch("generation");
-        if (generationId) {
-            generationChanged(generationId);
-        }
-    }, [watch("generation")]);
 
-    const generationChanged = async (generationId: string) => {
+    const generationChanged = async (generationId?: string) => {
         const newSizeList = getUniformSizeList({
             generationId,
             type: uniformType,
             sizeLists: sizeLists,
         });
-
         // no sizeList
         if (!newSizeList) {
             setUsedSizeList(undefined);
-            setValue("size", "null", { shouldValidate: true });
+            setValue("size", "", { shouldValidate: true });
             return;
         }
         // same sizeList
@@ -333,15 +330,25 @@ const SizeRow = ({
 
         // different sizeList
         await setUsedSizeList(newSizeList);
-        const oldSize = getValues("size");
-
-        if (newSizeList.uniformSizes.find(s => s.id == oldSize)) {
-            setValue("size", oldSize, { shouldValidate: true });
-        } else {
-            setValue("size", "null", { shouldValidate: true });
-        }
-        return newSizeList;
     }
+
+    useEffect(() => {
+        const generationId = watch("generation");
+        generationChanged(generationId);
+
+    }, [watch("generation")]);
+
+    useEffect(() => {
+        if (usedSizeList) {
+            const oldSize = getValues("size");
+
+            if (usedSizeList.uniformSizes.find(s => s.id == oldSize)) {
+                setValue("size", oldSize, { shouldValidate: true });
+            } else {
+                setValue("size", "", { shouldValidate: true });
+            }
+        }
+    }, [usedSizeList])
 
 
     if (!uniformType.usingSizes) return (
@@ -366,7 +373,7 @@ const SizeRow = ({
     return (
         <Row data-testid={"div_size"} className="pe-3">
             <Form.Select {...register('size')} className={!selectedSize ? "text-danger" : ""}>
-                <option className="text-danger">K.A.</option>
+                <option value={""} className="text-danger">K.A.</option>
                 {usedSizeList?.uniformSizes.map((size) =>
                     <option key={size.id} value={size.id} className="text-black">
                         {size.name}

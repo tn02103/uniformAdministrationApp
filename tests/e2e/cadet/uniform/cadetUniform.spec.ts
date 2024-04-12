@@ -50,9 +50,9 @@ test.describe('', () => {
                 expect.soft(uniformComponent.btn_uitem_withdraw(uniformId)).toBeVisible(),
 
                 expect.soft(uniformComponent.div_uitem_number(uniformId)).toBeVisible(),
-                expect.soft(uniformComponent.div_utiem_size(uniformId)).toBeVisible(),
-                expect.soft(uniformComponent.div_utiem_generation(uniformId)).toBeVisible(),
-                expect.soft(uniformComponent.div_utiem_comment(uniformId)).toBeVisible(),
+                expect.soft(uniformComponent.div_uitem_size(uniformId)).toBeVisible(),
+                expect.soft(uniformComponent.div_uitem_generation(uniformId)).toBeVisible(),
+                expect.soft(uniformComponent.div_uitem_comment(uniformId)).toBeVisible(),
 
                 expect.soft(uniformComponent.btn_uitem_menu(uniformId)).not.toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_menu_open(uniformId)).not.toBeVisible(),
@@ -74,9 +74,9 @@ test.describe('', () => {
                 expect.soft(uniformComponent.btn_uitem_withdraw(uniformId)).toBeVisible(),
 
                 expect.soft(uniformComponent.div_uitem_number(uniformId)).toBeVisible(),
-                expect.soft(uniformComponent.div_utiem_size(uniformId)).toBeVisible(),
-                expect.soft(uniformComponent.div_utiem_generation(uniformId)).toBeVisible(),
-                expect.soft(uniformComponent.div_utiem_comment(uniformId)).toBeVisible(),
+                expect.soft(uniformComponent.div_uitem_size(uniformId)).toBeVisible(),
+                expect.soft(uniformComponent.div_uitem_generation(uniformId)).toBeVisible(),
+                expect.soft(uniformComponent.div_uitem_comment(uniformId)).toBeVisible(),
 
                 expect.soft(uniformComponent.btn_uitem_menu(uniformId)).not.toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_menu_open(uniformId)).not.toBeVisible(),
@@ -98,9 +98,9 @@ test.describe('', () => {
                 expect.soft(uniformComponent.btn_uitem_withdraw(uniformId)).toBeVisible(),
 
                 expect.soft(uniformComponent.div_uitem_number(uniformId)).toBeVisible(),
-                expect.soft(uniformComponent.div_utiem_size(uniformId)).toBeVisible(),
-                expect.soft(uniformComponent.div_utiem_generation(uniformId)).toBeVisible(),
-                expect.soft(uniformComponent.div_utiem_comment(uniformId)).toBeVisible(),
+                expect.soft(uniformComponent.div_uitem_size(uniformId)).toBeVisible(),
+                expect.soft(uniformComponent.div_uitem_generation(uniformId)).toBeVisible(),
+                expect.soft(uniformComponent.div_uitem_comment(uniformId)).toBeVisible(),
 
                 expect.soft(uniformComponent.btn_uitem_menu(uniformId)).not.toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_menu_open(uniformId)).not.toBeVisible(),
@@ -116,15 +116,15 @@ test.describe('', () => {
                 expect.soft(uniformComponent.div_utype_amount(testdata.type1Id)).toBeVisible(),
                 expect.soft(uniformComponent.div_utype_name(testdata.type1Id)).toBeVisible(),
 
-                expect.soft(uniformComponent.btn_uitem_edit(uniformId)).toBeVisible(),
-                expect.soft(uniformComponent.btn_uitem_open(uniformId)).not.toBeVisible(),
+                expect.soft(uniformComponent.btn_uitem_edit(uniformId)).not.toBeVisible(),
+                expect.soft(uniformComponent.btn_uitem_open(uniformId)).toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_switch(uniformId)).toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_withdraw(uniformId)).toBeVisible(),
 
                 expect.soft(uniformComponent.div_uitem_number(uniformId)).toBeVisible(),
-                expect.soft(uniformComponent.div_utiem_size(uniformId)).toBeVisible(),
-                expect.soft(uniformComponent.div_utiem_generation(uniformId)).toBeVisible(),
-                expect.soft(uniformComponent.div_utiem_comment(uniformId)).toBeVisible(),
+                expect.soft(uniformComponent.div_uitem_size(uniformId)).toBeVisible(),
+                expect.soft(uniformComponent.div_uitem_generation(uniformId)).toBeVisible(),
+                expect.soft(uniformComponent.div_uitem_comment(uniformId)).toBeVisible(),
 
                 expect.soft(uniformComponent.btn_uitem_menu(uniformId)).not.toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_menu_open(uniformId)).not.toBeVisible(),
@@ -140,15 +140,15 @@ test.describe('', () => {
                 expect.soft(uniformComponent.div_utype_amount(testdata.type1Id)).toBeVisible(),
                 expect.soft(uniformComponent.div_utype_name(testdata.type1Id)).toBeVisible(),
 
-                expect.soft(uniformComponent.btn_uitem_edit(uniformId)).toBeVisible(),
-                expect.soft(uniformComponent.btn_uitem_open(uniformId)).not.toBeVisible(),
+                expect.soft(uniformComponent.btn_uitem_edit(uniformId)).not.toBeVisible(),
+                expect.soft(uniformComponent.btn_uitem_open(uniformId)).toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_switch(uniformId)).toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_withdraw(uniformId)).toBeVisible(),
 
                 expect.soft(uniformComponent.div_uitem_number(uniformId)).toBeVisible(),
-                expect.soft(uniformComponent.div_utiem_size(uniformId)).toBeVisible(),
-                expect.soft(uniformComponent.div_utiem_generation(uniformId)).toBeVisible(),
-                expect.soft(uniformComponent.div_utiem_comment(uniformId)).not.toBeVisible(),
+                expect.soft(uniformComponent.div_uitem(uniformId).getByTestId('div_size')).toBeVisible(),
+                expect.soft(uniformComponent.div_uitem_generation(uniformId)).toBeVisible(),
+                expect.soft(uniformComponent.div_uitem_comment(uniformId)).not.toBeVisible(),
 
                 expect.soft(uniformComponent.btn_uitem_menu(uniformId)).not.toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_menu_open(uniformId)).not.toBeVisible(),
@@ -170,9 +170,9 @@ test.describe('', () => {
                 expect.soft(uniformComponent.btn_uitem_withdraw(uniformId)).not.toBeVisible(),
 
                 expect.soft(uniformComponent.div_uitem_number(uniformId)).toBeVisible(),
-                expect.soft(uniformComponent.div_utiem_size(uniformId)).toBeVisible(),
-                expect.soft(uniformComponent.div_utiem_generation(uniformId)).toBeVisible(),
-                expect.soft(uniformComponent.div_utiem_comment(uniformId)).not.toBeVisible(),
+                expect.soft(uniformComponent.div_uitem(uniformId).getByTestId('div_size')).toBeVisible(),
+                expect.soft(uniformComponent.div_uitem_generation(uniformId)).toBeVisible(),
+                expect.soft(uniformComponent.div_uitem_comment(uniformId)).not.toBeVisible(),
             ]);
 
             await expect.soft(uniformComponent.btn_uitem_menu(uniformId)).toBeVisible();
@@ -274,21 +274,21 @@ test.describe('', () => {
             await Promise.all([
                 expect.soft(uniformComponent.div_uitem(uItem.id)).toBeVisible(),
                 expect.soft(uniformComponent.div_uitem_number(uItem.id)).toHaveText(uItem.number.toString()),
-                expect.soft(uniformComponent.div_utiem_generation(uItem.id)).toHaveText(uGeneration?.name as string),
-                expect.soft(uniformComponent.div_utiem_size(uItem.id)).toHaveText(uSize?.name as string),
-                expect.soft(uniformComponent.div_utiem_comment(uItem.id)).toHaveText(uItem?.comment as string),
+                expect.soft(uniformComponent.div_uitem_generation(uItem.id)).toHaveText(uGeneration?.name as string),
+                expect.soft(uniformComponent.div_uitem_size(uItem.id)).toHaveText(uSize?.name as string),
+                expect.soft(uniformComponent.div_uitem_comment(uItem.id)).toHaveText(uItem?.comment as string),
             ]);
         });
 
         test('validate generation hilighting', async () => {
             await test.step('generation not outdated: Marie Ackermann -> 1184', async () => {
                 await page.goto(`/de/app/cadet/${testdata.cadetId}`);
-                await expect.soft(await getTextColor(uniformComponent.div_utiem_generation('45f35815-3c0d-11ee-8084-0068eb8ba754'))).toBe(defaultTextColor);
+                await expect.soft(await getTextColor(uniformComponent.div_uitem_generation('45f35815-3c0d-11ee-8084-0068eb8ba754'))).toBe(defaultTextColor);
             });
 
             await test.step('generation outdated: Maik Finkel -> 1100', async () => {
                 await page.goto('/de/app/cadet/db998c2f-3c11-11ee-8084-0068eb8ba754');
-                await expect.soft(await getTextColor(uniformComponent.div_utiem_generation('45f2fdcc-3c0d-11ee-8084-0068eb8ba754'))).not.toBe(defaultTextColor);
+                await expect.soft(await getTextColor(uniformComponent.div_uitem_generation('45f2fdcc-3c0d-11ee-8084-0068eb8ba754'))).not.toBe(defaultTextColor);
             });
         });
 
@@ -324,9 +324,9 @@ test.describe('', () => {
                         expect.soft(uniformComponent.btn_uitem_switch(uniformId)).toBeVisible(),
                         expect.soft(uniformComponent.btn_uitem_withdraw(uniformId)).toBeVisible(),
                         expect.soft(uniformComponent.div_uitem_number(uniformId)).toBeVisible(),
-                        expect.soft(uniformComponent.div_utiem_size(uniformId)).toBeVisible(),
-                        expect.soft(uniformComponent.div_utiem_generation(uniformId)).toBeVisible(),
-                        expect.soft(uniformComponent.div_utiem_comment(uniformId)).toBeVisible(),
+                        expect.soft(uniformComponent.div_uitem_size(uniformId)).toBeVisible(),
+                        expect.soft(uniformComponent.div_uitem_generation(uniformId)).toBeVisible(),
+                        expect.soft(uniformComponent.div_uitem_comment(uniformId)).toBeVisible(),
                     ]);
 
                     await page.setViewportSize({ height: 800, width: 500 });
@@ -357,9 +357,9 @@ test.describe('', () => {
                         expect.soft(uniformComponent.btn_uitem_withdraw(uniformId)).toBeVisible(),
 
                         expect.soft(uniformComponent.div_uitem_number(uniformId)).toBeVisible(),
-                        expect.soft(uniformComponent.div_utiem_size(uniformId)).toBeVisible(),
-                        expect.soft(uniformComponent.div_utiem_generation(uniformId)).toBeVisible(),
-                        expect.soft(uniformComponent.div_utiem_comment(uniformId)).toBeVisible(),
+                        expect.soft(uniformComponent.div_uitem_size(uniformId)).toBeVisible(),
+                        expect.soft(uniformComponent.div_uitem_generation(uniformId)).toBeVisible(),
+                        expect.soft(uniformComponent.div_uitem_comment(uniformId)).toBeVisible(),
                     ]);
 
                     await page.setViewportSize({ height: 800, width: 500 });
@@ -388,9 +388,9 @@ test.describe('', () => {
                         expect.soft(uniformComponent.btn_uitem_switch(uniformId)).toBeVisible(),
                         expect.soft(uniformComponent.btn_uitem_withdraw(uniformId)).toBeVisible(),
                         expect.soft(uniformComponent.div_uitem_number(uniformId)).toBeVisible(),
-                        expect.soft(uniformComponent.div_utiem_size(uniformId)).toBeVisible(),
-                        expect.soft(uniformComponent.div_utiem_generation(uniformId)).toBeVisible(),
-                        expect.soft(uniformComponent.div_utiem_comment(uniformId)).toBeVisible(),
+                        expect.soft(uniformComponent.div_uitem_size(uniformId)).toBeVisible(),
+                        expect.soft(uniformComponent.div_uitem_generation(uniformId)).toBeVisible(),
+                        expect.soft(uniformComponent.div_uitem_comment(uniformId)).toBeVisible(),
                     ]);
 
 
@@ -421,9 +421,9 @@ test.describe('', () => {
                         expect.soft(uniformComponent.btn_uitem_switch(uniformId)).not.toBeVisible(),
                         expect.soft(uniformComponent.btn_uitem_withdraw(uniformId)).not.toBeVisible(),
                         expect.soft(uniformComponent.div_uitem_number(uniformId)).toBeVisible(),
-                        expect.soft(uniformComponent.div_utiem_size(uniformId)).toBeVisible(),
-                        expect.soft(uniformComponent.div_utiem_generation(uniformId)).toBeVisible(),
-                        expect.soft(uniformComponent.div_utiem_comment(uniformId)).toBeVisible(),
+                        expect.soft(uniformComponent.div_uitem_size(uniformId)).toBeVisible(),
+                        expect.soft(uniformComponent.div_uitem_generation(uniformId)).toBeVisible(),
+                        expect.soft(uniformComponent.div_uitem_comment(uniformId)).toBeVisible(),
                     ]);
 
                     await page.setViewportSize({ height: 800, width: 500 });

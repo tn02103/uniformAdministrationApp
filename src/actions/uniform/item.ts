@@ -7,6 +7,7 @@ import { prisma } from "@/lib/db";
 import { IssuedEntryType, UniformFormData, uniformArgs } from "@/types/globalUniformTypes";
 import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
+import { connect } from "http2";
 
 export const getUniformFormValues = (uniformId: string): Promise<UniformFormData> => genericSAValidatior(
     AuthRole.user,
@@ -60,9 +61,9 @@ export const saveUniformItem = (data: UniformFormData): Promise<UniformFormData>
     data: {
         active: data.active,
         comment: data.comment,
-        fk_generation: data.generation,
-        fk_size: data.size,
-    }
+        fk_generation: data.generation ?? null,
+        fk_size: data.size ?? null
+    },
 })).then(data => !data ? notFound() : ({
     id: data.id,
     number: data.number,
