@@ -12,7 +12,7 @@ import { useFormContext } from "react-hook-form";
 export default function SearchFilter({ search }: { search: (data: { number: number | null, typeId?: string }) => void }) {
     const form = useFormContext();
     const t = useI18n();
-    const { uniformTypeConfiguration } = useGlobalData();
+    const { typeList } = useGlobalData();
     const [searchedState, setSearchedState] = useState<{
         valid: boolean,
         type: UniformType | null,
@@ -28,7 +28,7 @@ export default function SearchFilter({ search }: { search: (data: { number: numb
         const firstChars = value.substring(0, 2).toLocaleUpperCase();
 
         if (!/^\d+$/.test(firstChars)) {
-            const type = uniformTypeConfiguration?.find(t => t.acronym == firstChars);
+            const type = typeList?.find(t => t.acronym == firstChars);
             if (!type) {
                 setSearchedState({ valid: false, number: null, type: null });
                 return;

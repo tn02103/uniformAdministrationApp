@@ -148,7 +148,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                             <NavGroup
                                 title={t('sidebar.links.administration.group')}
                                 icon={faGear}
-                                childSelected={pathname.startsWith("/admin")}
+                                childSelected={pathname.startsWith("/app/admin")}
                                 collapsed={collapsed}
                                 requiredRole={AuthRole.materialManager}
                                 setCollapsed={setCollapsed}
@@ -156,8 +156,8 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                 <ul>
                                     <NavLink
                                         text={t('sidebar.links.administration.uniform')}
-                                        href="/admin/uniform"
-                                        isRoute={pathname === "/admin/uniform"}
+                                        href="/app/admin/uniform"
+                                        isRoute={pathname === "/app/admin/uniform"}
                                         level={2}
                                         collapsed={collapsed}
                                         requiredRole={AuthRole.materialManager}

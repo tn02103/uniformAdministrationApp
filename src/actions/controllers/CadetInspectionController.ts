@@ -15,7 +15,6 @@ export const getUnresolvedDeficienciesByCadet = async (cadetId: string): Promise
     uuidValidationPattern.test(cadetId),
     { cadetId }
 ).then(async () => {
-    console.log("Iam a Server Action");
     return prisma.$queryRaw`
             SELECT * FROM "v_active_deficiency_by_cadet" 
              WHERE fk_cadet = ${cadetId}

@@ -1,12 +1,11 @@
 import { prisma } from "@/lib/db";
 import { CadetUniformMap } from "@/types/globalCadetTypes";
 import { uniformArgs } from "@/types/globalUniformTypes";
-import { Prisma, PrismaClient } from "@prisma/client";
-import { DefaultArgs } from "@prisma/client/runtime/library";
+import { PrismaClient } from "@prisma/client";
 import { isToday } from "date-fns";
 
 
-export class CadetUniformDBHandler {
+export class UniformDBHandler {
 
     getMap = async (cadetId: string, client?: PrismaClient) =>
         (client ?? prisma).uniform.findMany({
@@ -95,4 +94,24 @@ export class CadetUniformDBHandler {
         }
     }
 
+    returnManyByType = (fk_uniformType: string, client: PrismaClient) => client.uniformIssued.updateMany({
+        where: {
+            uniform: { fk_uniformType },
+            dateReturned: null,
+        },
+        data: {
+            dateReturned: new Date(),
+        }
+    });
+
+    deleteManyByType = (fk_uniformType: string, username: string, client: PrismaClient) => client.uniform.updateMany({
+        where: {
+            fk_uniformType,
+            recdelete: null,
+        },
+        data: {
+            recdelete: new Date(),
+            recdeleteUser: username,
+        }
+    });
 }

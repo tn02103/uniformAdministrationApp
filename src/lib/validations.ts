@@ -1,4 +1,5 @@
 import { Cadet } from "@/types/globalCadetTypes";
+import { UniformType } from "@/types/globalUniformTypes";
 
 export const NameValidation = {
     required: {
@@ -51,5 +52,17 @@ export const cadetValidation = {
         && nameValidationPattern.test(cadet.firstname)
         && (typeof cadet.active === "boolean")
         && (typeof cadet.comment === "string")
+    )
+}
+
+export const uniformTypeValidator = {
+    test: (type: UniformType) => (
+        uuidValidationPattern.test(type.id)
+        && nameValidationPattern.test(type.name)
+        && acronymValidationPattern.test(type.acronym)
+        && Number.isInteger(type.issuedDefault)
+        && (typeof type.usingGenerations === "boolean")
+        && (typeof type.usingSizes === "boolean")
+        && (!type.fk_defaultSizeList || uuidValidationPattern.test(type.fk_defaultSizeList))
     )
 }

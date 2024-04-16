@@ -1,20 +1,19 @@
 "use server";
 
-import { genericSAValidatior, genericSAValidatiorV2 } from "@/actions/validations";
+import { genericSAValidatiorV2 } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { uniformNumberValidation, uuidValidationPattern } from "@/lib/validations";
 import { CadetUniformMap } from "@/types/globalCadetTypes";
 
-import { prisma } from "@/lib/db";
-import { PrismaClient } from "@prisma/client";
-import SaveDataException, { UniformInactiveException, UniformIssuedException } from "@/errors/SaveDataException";
 import CustomException, { ExceptionType } from "@/errors/CustomException";
 import { NullValueException } from "@/errors/LoadDataException";
-import { isToday } from "date-fns";
-import { CadetUniformDBHandler } from "../dbHandlers/CadetUniformDBHandler";
+import SaveDataException, { UniformInactiveException, UniformIssuedException } from "@/errors/SaveDataException";
+import { prisma } from "@/lib/db";
+import { PrismaClient } from "@prisma/client";
 import { CadetDBHandler } from "../dbHandlers/CadetDBHandler";
+import { UniformDBHandler } from "../dbHandlers/UniformDBHandler";
 
-const dbHandler = new CadetUniformDBHandler();
+const dbHandler = new UniformDBHandler();
 const cadetDBHandler = new CadetDBHandler();
 
 export const getCadetUniformMap = async (cadetId: string): Promise<CadetUniformMap> => genericSAValidatiorV2(

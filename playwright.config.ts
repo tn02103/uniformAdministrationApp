@@ -74,9 +74,9 @@ export default defineConfig({
     ],
 
     /* Run your local dev server before starting the tests */
-    /* webServer: {
-         command: 'npm run test',
-         url: 'http://127.0.0.1:3020',
-         reuseExistingServer: true
-     },*/
+    webServer: {
+        command: 'npm run test',
+        url: 'http://127.0.0.1:3020',
+        reuseExistingServer: true
+    },
 });

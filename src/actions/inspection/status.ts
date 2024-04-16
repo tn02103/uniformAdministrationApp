@@ -4,11 +4,12 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { genericSAValidatior, genericSAValidatiorV2 } from "../validations";
 import { prisma } from "@/lib/db";
 import { InspectionStatus } from "@/types/deficiencyTypes";
+import { unstable_cache } from "next/cache";
 
-export const getInspectionState = (): Promise<InspectionStatus> => genericSAValidatior(
+export const getInspectionState = (callerId: string): Promise<InspectionStatus> => genericSAValidatior(
     AuthRole.user,
     true, []
-).then(async ({ assosiation }) => {
+).then(async ({ assosiation }): Promise<InspectionStatus> => unstable_cache(async (): Promise<InspectionStatus> => {
     const inspection = await prisma.inspection.findFirst({
         where: {
             fk_assosiation: assosiation,
@@ -41,7 +42,9 @@ export const getInspectionState = (): Promise<InspectionStatus> => genericSAVali
         inspectedCadets: inspectedCadets['_count'].id,
         activeCadets: activeCadets['_count'].id
     }
-});
+}, ['serverA', 'inspectionState', assosiation], {
+    revalidate: 20
+})());
 
 export const getInspectedCadetIdList = () => genericSAValidatior(AuthRole.inspector, true, [])
     .then(async ({ assosiation }) =>

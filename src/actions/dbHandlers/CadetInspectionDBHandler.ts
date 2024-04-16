@@ -3,9 +3,6 @@ import { Deficiency } from "@/types/deficiencyTypes";
 import { PrismaClient, PrismaPromise } from "@prisma/client";
 
 export class CadetInspectionDBHandler {
-    constructor() {
-        console.log("created new CadetInspectionDBHandler");
-    }
     getActiveInspection = (fk_assosiation: string) => prisma.inspection.findFirst({
         where: {
             active: true,

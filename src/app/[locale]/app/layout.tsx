@@ -1,5 +1,5 @@
+import { getUniformTypeList } from "@/actions/controllers/UniformConfigController";
 import { getUniformSizeLists } from "@/actions/uniform/sizeLists";
-import { getUniformTypeConfiguration } from "@/actions/uniform/type";
 import GlobalDataProvider from "@/components/globalDataProvider";
 import Sidebar from "@/components/navigation/Sidebar";
 import { prisma } from "@/lib/db";
@@ -14,8 +14,8 @@ const Layout = async ({ children, modal }: any) => {
         return redirect('/login');
     }
 
-    const [uniformConfiguration, assosiation, sizeLists] = await Promise.all([
-        await getUniformTypeConfiguration(),
+    const [typeList, assosiation, sizeLists] = await Promise.all([
+        await getUniformTypeList(),
         await prisma.assosiation.findUniqueOrThrow({ where: { id: user.assosiation } }),
         await getUniformSizeLists(),
     ])
@@ -24,7 +24,7 @@ const Layout = async ({ children, modal }: any) => {
         <GlobalDataProvider
             userRole={user.role}
             useBeta={assosiation.useBeta}
-            uniformTypeConfiguration={uniformConfiguration}
+            typeList={typeList}
             sizeLists={sizeLists}
         >
             <div>

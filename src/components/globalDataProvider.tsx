@@ -1,16 +1,17 @@
 "use client";
+import { getUniformTypeList } from "@/actions/controllers/UniformConfigController";
 import { getInspectionState } from "@/actions/inspection/status";
-import { getUniformTypeConfiguration as getUniformTypeConfigurationSA } from "@/actions/uniform/type"
-import { AuthRole } from "@/lib/AuthRoles"
+import { useUniformTypeList } from "@/dataFetcher/uniformAdmin";
+import { AuthRole } from "@/lib/AuthRoles";
 import { InspectionStatus } from "@/types/deficiencyTypes";
-import { UniformSizeList, UniformType } from "@/types/globalUniformTypes"
-import { Context, createContext, useCallback, useContext } from "react"
-import useSWR from "swr"
+import { UniformSizeList, UniformType } from "@/types/globalUniformTypes";
+import { Context, createContext, useCallback, useContext } from "react";
+import useSWR from "swr";
 
 
 
 type GlobalDataProviderContextType = {
-    uniformTypeConfiguration: UniformType[];
+    typeList: UniformType[];
     userRole: AuthRole;
     inspectionState: InspectionStatus;
     useBeta: boolean;
@@ -18,8 +19,8 @@ type GlobalDataProviderContextType = {
 }
 
 type GlobalDataProviderPropType = {
-    children: React.ReactNode,
-    uniformTypeConfiguration: UniformType[];
+    children: React.ReactNode;
+    typeList: UniformType[];
     userRole: AuthRole;
     useBeta: boolean;
     sizeLists: UniformSizeList[];
@@ -29,33 +30,32 @@ export let GlobalDataContext: Context<GlobalDataProviderContextType>;
 export const useGlobalData = () => useContext(GlobalDataContext);
 
 const GlobalDataProvider = ({ children, ...props }: GlobalDataProviderPropType) => {
-    const { data: uniformTypeConfiguration } = useSWR(
-        "uniformConfiguration",
-        () => getUniformTypeConfigurationSA(),
+    const { data: typeList } = useSWR(
+        'uniform.type.list23',
+        getUniformTypeList,
         {
-            fallbackData: props.uniformTypeConfiguration
-        }
-    )
+            fallbackData: props.typeList
+        });
 
     const initialInspectionState: InspectionStatus = { active: false }
     const { data: inspectionState } = useSWR(
         "inspection/status",
-        () => getInspectionState(),
+        () => getInspectionState("Global Data"),
         {
             fallbackData: initialInspectionState,
-            refreshInterval: 30
+            refreshInterval: 3000
         }
-    )
+    );
 
     const getProviderContext = useCallback(() => {
         return {
-            uniformTypeConfiguration,
+            typeList: typeList!,
             userRole: props.userRole,
             useBeta: props.useBeta,
             inspectionState,
             sizeLists: props.sizeLists,
         }
-    }, [uniformTypeConfiguration, props.userRole, inspectionState])
+    }, [typeList, props.userRole, inspectionState]);
 
     GlobalDataContext = createContext<GlobalDataProviderContextType>(getProviderContext());
     return (

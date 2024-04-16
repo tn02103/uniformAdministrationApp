@@ -4,6 +4,7 @@ import { UnauthorizedException } from "@/errors/CustomException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { IronSessionUser, getIronSession } from "@/lib/ironSession";
+import { UniformType } from "@/types/globalUniformTypes";
 import { redirect } from "next/navigation";
 
 type AssosiationValidationType = {
@@ -55,6 +56,8 @@ export const genericSAValidatiorV2 = async (
         cadetId?: string | string[],
         uniformId?: string | string[],
         uniformTypeId?: string | string[],
+        uniformGenerationId?: string | string[],
+        uniformSizeListId?: string | string[] | null,
         materialId?: string | string[],
     }
 ): Promise<IronSessionUser> => {
@@ -100,6 +103,10 @@ export const genericSAValidatiorV2 = async (
         validate(assosiationValidations.materialId, validateMaterailAssosiation);
     }
 
+    if (assosiationValidations.uniformSizeListId && assosiationValidations.uniformSizeListId !== null) {
+        validate(assosiationValidations.uniformSizeListId, validateUniformSizeListAssosiation);
+    }
+
     return user;
 }
 
@@ -137,5 +144,9 @@ const validateMaterailAssosiation = async (materialId: string, assosiationId: st
             fk_assosiation: assosiationId,
         }
     }
-})
+});
 
+const validateUniformSizeListAssosiation = async (id: string, fk_assosiation: string) =>
+    prisma.uniformSizelist.findUniqueOrThrow({
+        where: { id, fk_assosiation }
+    })

@@ -36,7 +36,7 @@ export default function FilterPanel({
     const router = useRouter();
     const t = useI18n();
 
-    const { uniformTypeConfiguration } = useGlobalData();
+    const { typeList } = useGlobalData();
     const searchParams = useSearchParams();
 
     useEffect(() => {
@@ -73,7 +73,7 @@ export default function FilterPanel({
                         value={uniformType ? uniformType.id : "null"}
                     >
                         <option disabled value={"null"}>{t('common.error.pleaseSelect')}</option>
-                        {uniformTypeConfiguration?.map(type => {
+                        {typeList?.map(type => {
                             return (
                                 <option key={"typeOption" + type.id} value={type.id}>
                                     ({type.acronym}) {type.name}

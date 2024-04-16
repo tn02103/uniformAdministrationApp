@@ -32,6 +32,8 @@ export default {
             changeIssued: "Anzahl & Typ verändern",
             delete: "Löschen",
             load: "Laden",
+            moveUp: "nach oben verschieben",
+            moveDown: "nach unten verschieben",
         },
         cadet: {
             cadet: "Person",
@@ -56,6 +58,16 @@ export default {
             size: "Größe",
             size_other: "Sizes",
             owner: "Besitzer",
+            type: {
+                "type#one": "Uniformtyp",
+                "type#other": "Uniformtypen",
+                name: "Name",
+                acronym: "Kürzel",
+                issuedDefault: "Anz. auszugeben",
+                usingGenerations: "Nutzt Generationen",
+                usingSizes: "Nutzt Größen",
+                defaultSizeList: "Standard GrößenListe"
+            }
         },
         material: {
             material: "Material",
@@ -206,6 +218,47 @@ export default {
             userOverview: "Zugänge",
         },
     },
+    admin: {
+        uniform: {
+            changeSizeListWarning: "Beim Ändern der ausgewählten Größenliste, kann bei Uniformteilen dieser Generation die Information der Größe verlohren gehen",
+            type: {
+                deleteModal: {
+                    header: "",
+                    confirmationText: "",
+                }
+            },
+            generationList: {
+                deleteModal: {
+                    header: "Generation \"{generation}\" Löschen",
+                    message: {
+                        part1: "Bist du dir sicher dass du diese Generation löschen willst?",
+                        part2: "Diese Aktion ist permanent und nicht wieder umkehrbar. ",
+                        part3: "Alle Uniformteile die dieser Generation zugeordnet sind, bleiben bestehen.",
+                    },
+                    confirmationText: "Generation-{generation}",
+                },
+            },
+            size: {
+                deleteModal: {
+                    header: "",
+                    message: ""
+                },
+            },
+            sizeList: {
+                createModal: {
+                    header: "",
+                },
+                inUseError: {
+                    header: "",
+                    message: "",
+                },
+                deleteWarning: {
+                    header: "",
+                    message: "",
+                }
+            },
+        },
+    },
     modals: {
         messageModal: {
             uniform: {
@@ -240,5 +293,8 @@ export default {
                 },
             },
         },
+        dangerConfirmation: {
+
+        }
     },
 } as const;

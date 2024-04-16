@@ -27,7 +27,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
     const modal = useModal();
     const { cadetId, locale }: { cadetId: string, locale: string } = useParams();
 
-    const { uniformTypeConfiguration, userRole } = useGlobalData();
+    const { typeList, userRole } = useGlobalData();
 
     const { map, mutate: keyedMutator, error } = useCadetUniformMap(cadetId, props.uniformMap);
     if (error)
@@ -138,7 +138,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
 
     return (
         <>
-            {uniformTypeConfiguration.map((type) => {
+            {typeList.map((type) => {
                 const items = map?.[type.id] ?? [];
                 return (
                     <div data-testid={`div_utype_${type.id}`} key={"typeRow" + type.id} className="col-12">

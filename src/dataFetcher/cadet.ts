@@ -1,9 +1,9 @@
 import { getCadetMaterialMap } from "@/actions/controllers/CadetMaterialController";
 import { getCadetUniformMap } from "@/actions/controllers/CadetUniformController";
-import { getUniformTypeConfiguration } from "@/actions/uniform/type";
 import { CadetMaterialMap, CadetUniformMap } from "@/types/globalCadetTypes";
 import { UniformLabel } from "@/types/globalUniformTypes";
 import useSWR, { KeyedMutator } from "swr";
+import { useUniformTypeList } from "./uniformAdmin";
 
 
 
@@ -42,10 +42,10 @@ export function useCadetUniformDescriptList(cadetId: string) {
 }
 
 export function useCadetUniformComplete(cadetId: string) {
-    const { data: types } = useSWR("uniformConfiguration", () => getUniformTypeConfiguration());
+    const { typeList } = useUniformTypeList();
     const { map } = useCadetUniformMap(cadetId);
-    if (!types || !map) return false;
-    return types.reduce(
+    if (!typeList || !map) return false;
+    return typeList.reduce(
         (bol: boolean, type) => {
             if (!bol)
                 return false;

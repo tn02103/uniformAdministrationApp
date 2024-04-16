@@ -6,6 +6,7 @@ import { uuidValidationPattern } from "@/lib/validations";
 import { prisma } from "@/lib/db";
 import { cache } from "react";
 import { uniformSizeListArgs, uniformTypeArgs } from "@/types/globalUniformTypes";
+import { deprecate } from "util";
 
 export const getUniformTypes = cache(async () => genericSAValidatior(AuthRole.user, true, [])
     .then(({ assosiation }) => {
@@ -21,6 +22,7 @@ export const getUniformTypes = cache(async () => genericSAValidatior(AuthRole.us
     })
 );
 
+/*
 export const getUniformTypeConfiguration = cache(async () => genericSAValidatior(AuthRole.user, true, [])
     .then(({ assosiation }) => {
         return prisma.uniformType.findMany({
@@ -32,7 +34,7 @@ export const getUniformTypeConfiguration = cache(async () => genericSAValidatior
             orderBy: { sortOrder: "asc" }
         });
     })
-)
+)*/
 
 export const getUniformSizeListConfiguration = cache(async () => genericSAValidatior(AuthRole.user, true, [])
     .then(({ assosiation }) => {
