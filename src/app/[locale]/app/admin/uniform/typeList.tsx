@@ -1,8 +1,10 @@
 "use client"
 
 import { changeUniformTypeSortOrder, createUniformType, deleteUniformType } from "@/actions/controllers/UniformConfigController";
+import { getUniformCountByType } from "@/actions/controllers/UniformController";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { Card, CardBody, CardHeader } from "@/components/card";
+import { useModal } from "@/components/modals/modalProvider";
 import { useUniformTypeList } from "@/dataFetcher/uniformAdmin";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
 import { UniformType } from "@/types/globalUniformTypes";
@@ -21,11 +23,12 @@ export default function UniformConfigTypeList({
     selectType: (typeId: string) => void;
 }) {
     const t = useI18n();
+    const modal = useModal();
     const tActions = useScopedI18n('common.actions');
     const { typeList, mutate } = useUniformTypeList();
 
-    function create() {
-        createUniformType().then(async (newType) => {
+    async function create() {
+        await createUniformType().then(async (newType) => {
             await mutate([...typeList ?? [], newType]);
             selectType(newType.id);
         }).catch((e) => {
@@ -34,15 +37,15 @@ export default function UniformConfigTypeList({
         });
     }
 
-    function changeSortOrder(up: boolean, typeId: string) {
-        mutate(changeUniformTypeSortOrder(typeId, up)).catch((e) => {
+    async function changeSortOrder(up: boolean, typeId: string) {
+        await mutate(changeUniformTypeSortOrder(typeId, up)).catch((e) => {
             console.error(e);
             toast.error('Beim ändern der Reihnfolge ist ein unbekannter Fehler aufgetreten.');
         });
     }
 
-    function deleteType(type: UniformType) {
-        mutate(
+    async function deleteType(type: UniformType) {
+        const deleteMutation = () => mutate(
             deleteUniformType(type.id),
             {
                 optimisticData: typeList?.filter(t => t.id !== type.id)
@@ -51,6 +54,22 @@ export default function UniformConfigTypeList({
             console.error(e);
             toast.error("Beim löschen des Uniformtyps ist ein unbekannter Fehler aufgetreten");
         });
+
+
+        await getUniformCountByType(type.id).then(count =>
+            modal?.dangerConfirmationModal(
+                t('modals.dangerConfirmation.deleteUniformType.header', { type: type.name }),
+                <span>
+                    {t('modals.dangerConfirmation.deleteUniformType.message.part1', { type: type.name })}<br />
+                    {t('modals.dangerConfirmation.deleteUniformType.message.part2')}
+                    <span className="fw-bold">{t('modals.dangerConfirmation.deleteUniformType.message.part3', { count })}</span>
+                    {t('modals.dangerConfirmation.deleteUniformType.message.part4')}
+                </span>,
+                t('modals.dangerConfirmation.deleteUniformType.confirmationText', { type: type.name }),
+                t('common.actions.delete'),
+                deleteMutation,
+            )
+        );
     }
 
     return (

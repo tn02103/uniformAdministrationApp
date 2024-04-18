@@ -3,10 +3,10 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "next dev -p 3020",
+        "dev": "next dev -p 3021",
         "build": "prisma generate && next build",
-        "start": "next start",
-        "test": "next start -p 3020",
+        "start": "next start -p 3021",
+        "test": "next start -p 3021",
         "lint": "next lint"
     },
     "dependencies": {

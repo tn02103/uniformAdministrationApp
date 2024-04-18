@@ -2,10 +2,10 @@
 
 import { saveCadetInspection } from "@/actions/controllers/CadetInspectionController";
 import { getMaterialGroupIdByTypeId } from "@/actions/material";
-import { useGlobalData } from "@/components/globalDataProvider";
 import { useCadetMaterialDescriptionList, useCadetUniformComplete } from "@/dataFetcher/cadet";
 import { useCadetInspection, useUnresolvedDeficienciesByCadet } from "@/dataFetcher/cadetInspection";
 import { useDeficiencyTypes } from "@/dataFetcher/deficiency";
+import { useInspectionState } from "@/dataFetcher/inspection";
 import { t } from "@/lib/test";
 import { Deficiency, UniformDeficiency } from "@/types/deficiencyTypes";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
@@ -39,7 +39,7 @@ export default function CadetInspectionCard() {
     const { cadetId }: { cadetId: string } = useParams();
 
 
-    const { inspectionState } = useGlobalData();
+    const { inspectionState } = useInspectionState();
     const { cadetInspection } = useCadetInspection(cadetId);
     const { unresolvedDeficiencies } = useUnresolvedDeficienciesByCadet(cadetId);
     const { deficiencyTypeList } = useDeficiencyTypes();
@@ -139,7 +139,7 @@ export default function CadetInspectionCard() {
             />
             <FormProvider {...form}>
                 <form onSubmit={form.handleSubmit(submit)}>
-                    {((step === 0) || !inspectionState.active) &&
+                    {((step === 0) || !inspectionState?.active) &&
                         <div className="row p-0 bg-white border-top border-1 border-dark">
                             {!unresolvedDeficiencies &&
                                 <div data-testid="div_step0_loading" className="text-center p-2">
@@ -154,12 +154,12 @@ export default function CadetInspectionCard() {
                             }
                         </div>
                     }
-                    {((step === 1) && inspectionState.active && cadetInspection) &&
+                    {((step === 1) && inspectionState?.active && cadetInspection) &&
                         <CadetInspectionStep1
                             stepState={stepState}
                             cancel={aboardInspection} />
                     }
-                    {((step === 2) && inspectionState.active && cadetInspection) &&
+                    {((step === 2) && inspectionState?.active && cadetInspection) &&
                         <CadetInspectionStep2
                             prevStep={() => { (cadetInspection!.oldCadetDeficiencies.length > 0) ? setStep(1) : aboardInspection() }}
                         />

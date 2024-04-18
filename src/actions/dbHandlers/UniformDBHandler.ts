@@ -62,6 +62,15 @@ export class UniformDBHandler {
             }
         });
 
+    getUniformCountByType = async (fk_uniformType: string, client?: PrismaClient) =>
+        (client ?? prisma).uniform.count({
+            where: {
+                fk_uniformType,
+                recdelete: null
+            }
+        });
+
+
     createIssuedUniformItem = (data: { number: number; fk_uniformType: string; }, fk_cadet: string, client?: PrismaClient) =>
         (client ?? prisma).uniform.create({
             data: {

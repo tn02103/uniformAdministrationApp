@@ -1,5 +1,5 @@
 "use client"
-import { useGlobalData } from "@/components/globalDataProvider";
+import { useUniformTypeList } from "@/dataFetcher/uniformAdmin";
 import { useI18n } from "@/lib/locales/client";
 import { UniformSize, UniformType } from "@/types/globalUniformTypes";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -36,7 +36,7 @@ export default function FilterPanel({
     const router = useRouter();
     const t = useI18n();
 
-    const { typeList } = useGlobalData();
+    const { typeList } = useUniformTypeList();
     const searchParams = useSearchParams();
 
     useEffect(() => {

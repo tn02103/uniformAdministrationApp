@@ -1,12 +1,10 @@
 import TooltipIconButton from "@/components/TooltipIconButton";
-import { useGlobalData } from "@/components/globalDataProvider";
 import { useCadetInspection } from "@/dataFetcher/cadetInspection";
+import { useInspectionState } from "@/dataFetcher/inspection";
 import { useScopedI18n } from "@/lib/locales/client";
 import { faClipboardCheck, faClipboardQuestion } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "next/navigation";
 import { Row } from "react-bootstrap";
-
-
 
 
 export default function CadetInspectionCardHeader({
@@ -15,7 +13,7 @@ export default function CadetInspectionCardHeader({
     stepState: [number, (n: number) => void]
 }) {
     const t = useScopedI18n('cadetDetailPage');
-    const { inspectionState } = useGlobalData();
+    const { inspectionState } = useInspectionState();
     const { cadetId } = useParams();
     const { cadetInspection } = useCadetInspection(cadetId as string);
     const inspected = (!!cadetInspection && !!cadetInspection.id)
@@ -32,7 +30,7 @@ export default function CadetInspectionCardHeader({
 
     return (
         <Row className="fs-5 fw-bold p-0">
-            {(inspectionState.active) ?
+            {(inspectionState?.active) ?
                 <div data-testid="div_header" className="col-12 text-center p-0">
                     {(step == 0) ? t('header.inspection') : t('header.inspecting')}
                     <TooltipIconButton

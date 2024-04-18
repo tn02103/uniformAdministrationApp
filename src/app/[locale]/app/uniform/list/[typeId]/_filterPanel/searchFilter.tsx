@@ -1,18 +1,18 @@
 "use client"
 
-import { useGlobalData } from "@/components/globalDataProvider";
+import { useUniformTypeList } from "@/dataFetcher/uniformAdmin";
 import { useI18n } from "@/lib/locales/client";
 import { UniformType } from "@/types/globalUniformTypes";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState, useEffect } from "react";
-import { Form, Row, Col, Button } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Button, Col, Form, Row } from "react-bootstrap";
 import { useFormContext } from "react-hook-form";
 
 export default function SearchFilter({ search }: { search: (data: { number: number | null, typeId?: string }) => void }) {
     const form = useFormContext();
     const t = useI18n();
-    const { typeList } = useGlobalData();
+    const { typeList } = useUniformTypeList();
     const [searchedState, setSearchedState] = useState<{
         valid: boolean,
         type: UniformType | null,

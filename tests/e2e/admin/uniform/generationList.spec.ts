@@ -27,7 +27,7 @@ test.describe.skip('', () => {
         generationComponent = new GenerationListComponent(page);
         editGenerationPopup = new EditGenerationPopupComponent(page);
 
-        await page.goto('/de/admin/uniform');
+        await page.goto('/de/app/admin/uniform');
     });
     test.beforeEach(async () => {
         await cleanupData();
@@ -110,14 +110,14 @@ test.describe.skip('', () => {
             test.use({ storageState: materialAuthFile });
             test('', async ({ page }) => {
                 const typeListComponent = new TypeListComponent(page);
-                await page.goto('/de/admin/uniform');
+                await page.goto('/de/app/admin/uniform');
                 await expect(typeListComponent.btn_create).toBeVisible();
             });
         });
         test.describe('material', async () => {
             test.use({ storageState: inspectorAuthFile });
             test('', async ({ page }) => {
-                await page.goto('/de/admin/uniform');
+                await page.goto('/de/app/admin/uniform');
                 await expect(page.getByTestId('div_403Page')).toBeVisible();
             });
         });

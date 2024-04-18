@@ -1,8 +1,11 @@
 "use client"
 
+import { IssueUniformItemDataType, SAErrorResponseType, issueUniformItem } from "@/actions/controllers/CadetUniformController";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { useGlobalData } from "@/components/globalDataProvider";
 import { useModal } from "@/components/modals/modalProvider";
+import { useCadetUniformMap } from "@/dataFetcher/cadet";
+import { useUniformTypeList } from "@/dataFetcher/uniformAdmin";
 import { ExceptionType } from "@/errors/CustomException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
@@ -11,10 +14,7 @@ import { Uniform, UniformType } from "@/types/globalUniformTypes";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
-import useSWR from "swr";
 import UniformRow from "./uniformRow";
-import { useCadetUniformMap } from "@/dataFetcher/cadet";
-import { IssueUniformItemDataType, SAErrorResponseType, issueUniformItem } from "@/actions/controllers/CadetUniformController";
 
 
 
@@ -27,8 +27,8 @@ const CadetUniformTable = ({ ...props }: PropType) => {
     const modal = useModal();
     const { cadetId, locale }: { cadetId: string, locale: string } = useParams();
 
-    const { typeList, userRole } = useGlobalData();
-
+    const { userRole } = useGlobalData();
+    const { typeList } = useUniformTypeList();
     const { map, mutate: keyedMutator, error } = useCadetUniformMap(cadetId, props.uniformMap);
     if (error)
         throw error;
@@ -138,7 +138,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
 
     return (
         <>
-            {typeList.map((type) => {
+            {typeList?.map((type) => {
                 const items = map?.[type.id] ?? [];
                 return (
                     <div data-testid={`div_utype_${type.id}`} key={"typeRow" + type.id} className="col-12">

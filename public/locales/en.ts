@@ -61,7 +61,12 @@ export default {
             type: {
                 "type#one": "Uniformtyp",
                 "type#other": "Uniformtypen",
-
+                name: "Name",
+                acronym: "Kürzel",
+                issuedDefault: "Anz. auszugeben",
+                usingGenerations: "Nutzt Generationen",
+                usingSizes: "Nutzt Größen",
+                defaultSizeList: "Standard GrößenListe"
             }
         },
         material: {
@@ -289,7 +294,13 @@ export default {
             },
         },
         dangerConfirmation: {
-
-        }
+            confirmation: {
+                label: "Zum Bestätigen der Aktion, bitte den folgenden Text eingeben:",
+                error: {
+                    required: "Bitte den Text zur Bestätigung eingeben",
+                    pattern: "Der Text stimmt nicht überein"
+                },
+            },
+        },
     },
 } as const;

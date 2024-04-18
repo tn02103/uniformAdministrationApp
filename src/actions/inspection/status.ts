@@ -6,7 +6,7 @@ import { prisma } from "@/lib/db";
 import { InspectionStatus } from "@/types/deficiencyTypes";
 import { unstable_cache } from "next/cache";
 
-export const getInspectionState = (callerId: string): Promise<InspectionStatus> => genericSAValidatior(
+export const getInspectionState = (): Promise<InspectionStatus> => genericSAValidatior(
     AuthRole.user,
     true, []
 ).then(async ({ assosiation }): Promise<InspectionStatus> => unstable_cache(async (): Promise<InspectionStatus> => {

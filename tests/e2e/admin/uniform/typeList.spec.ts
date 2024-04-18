@@ -5,17 +5,21 @@ import { DangerConfirmationModal } from "../../../pages/popups/DangerConfirmatio
 import { cleanupData } from "../../../testData/cleanupStatic";
 import { testAssosiation, testUniformTypes } from "../../../testData/staticData";
 import t from "@/../public/locales/de";
+import { TypeDetailComponent } from "../../../pages/admin/uniform/typeDetail.component";
+import { prisma } from "@/lib/db";
 
 
 test.use({ storageState: adminAuthFile });
 test.describe('', () => {
     let page: Page;
     let typeListComponent: TypeListComponent;
+    let typeDetailComponent: TypeDetailComponent;
     test.beforeAll(async ({ browser }) => {
         page = await (await browser.newContext()).newPage();
         typeListComponent = new TypeListComponent(page);
+        typeDetailComponent = new TypeDetailComponent(page);
 
-        await page.goto('/de/admin/uniform');
+        await page.goto('/de/app/admin/uniform');
     });
     test.beforeEach(async () => {
         await cleanupData();
@@ -27,6 +31,8 @@ test.describe('', () => {
         const types = testUniformTypes
             .filter(type => ((type.fk_assosiation === testAssosiation.id) && (!type.recdelete)))
             .sort((a, b) => a.sortOrder - b.sortOrder);
+
+        await page.pause();
         const divList = await page.locator('div[data-testid^="div_typeList_row_"]').all();
 
         await expect(divList.length).toBe(types.length);
@@ -37,26 +43,73 @@ test.describe('', () => {
     });
 
     test('validate create', async () => {
-        const responsePromise = page.waitForResponse('/api/uniform/type/create');
-        await typeListComponent.btn_create.click();
-        const response = await responsePromise
-        expect(response.ok()).toBeTruthy();
+        const name = 'Typ5'
 
-        const result = await response.json();
-        await expect.soft(typeListComponent.div_type(result.id)).toBeVisible();
+        await typeListComponent.btn_create.click();
+        await expect(typeListComponent.page.locator('div[data-testid^="div_typeList_row_"]').getByText(name)).toBeVisible();
+        await expect(typeDetailComponent.div_header).toHaveText(name);
+
+        const dbData = await prisma.uniformType.findFirst({
+            where: {
+                name: name,
+                fk_assosiation: testAssosiation.id,
+                recdelete: null,
+                recdeleteUser: null,
+            }
+        });
+
+        expect(dbData?.sortOrder).not.toBeNull();
+        expect(dbData).toEqual(expect.objectContaining({
+            acronym: 'AE',
+            issuedDefault: 1,
+            usingGenerations: false,
+            usingSizes: false,
+            fk_defaultSizeList: null,
+            sortOrder: 4,
+        }));
     });
 
     test('validate moveUp', async () => {
-        await typeListComponent.btn_moveUp('0b95e809-3b83-11ee-ab4b-0068eb8ba754').click();
+        await test.step('do action and validate ui', async () => {
+            await typeListComponent.btn_moveUp('0b95e809-3b83-11ee-ab4b-0068eb8ba754').click();
 
-        const divList = await page.locator('div[data-testid^="div_typeList_row_"]').all();
-        await expect.soft(divList[0]).toHaveAttribute('data-testid', 'div_typeList_row_0b95e809-3b83-11ee-ab4b-0068eb8ba754');
+            const divList = await page.locator('div[data-testid^="div_typeList_row_"]').all();
+            await expect.soft(divList[0]).toHaveAttribute('data-testid', 'div_typeList_row_0b95e809-3b83-11ee-ab4b-0068eb8ba754');
+        });
+        await test.step('validate db ', async () => {
+            const [initial, seccond] = await prisma.$transaction([
+                prisma.uniformType.findUnique({
+                    where: { id: '0b95e809-3b83-11ee-ab4b-0068eb8ba754' }
+                }),
+                prisma.uniformType.findUnique({
+                    where: { id: '036ff236-3b83-11ee-ab4b-0068eb8ba754' }
+                }),
+            ]);
+
+            expect.soft(initial?.sortOrder).toBe(0);
+            expect.soft(seccond?.sortOrder).toBe(1);
+        });
     });
     test('validate moveDown', async () => {
-        await typeListComponent.btn_moveDown('0b95e809-3b83-11ee-ab4b-0068eb8ba754').click();
+        await test.step('do action and validate ui', async () => {
+            await typeListComponent.btn_moveDown('0b95e809-3b83-11ee-ab4b-0068eb8ba754').click();
 
-        const divList = await page.locator('div[data-testid^="div_typeList_row_"]').all();
-        await expect.soft(divList[2]).toHaveAttribute('data-testid', 'div_typeList_row_0b95e809-3b83-11ee-ab4b-0068eb8ba754');
+            const divList = await page.locator('div[data-testid^="div_typeList_row_"]').all();
+            await expect.soft(divList[2]).toHaveAttribute('data-testid', 'div_typeList_row_0b95e809-3b83-11ee-ab4b-0068eb8ba754');
+        });
+        await test.step('validate db ', async () => {
+            const [initial, seccond] = await prisma.$transaction([
+                prisma.uniformType.findUnique({
+                    where: { id: '0b95e809-3b83-11ee-ab4b-0068eb8ba754' }
+                }),
+                prisma.uniformType.findUnique({
+                    where: { id: '0c35d0c1-3b83-11ee-ab4b-0068eb8ba754' }
+                }),
+            ]);
+
+            expect.soft(initial?.sortOrder).toBe(2);
+            expect.soft(seccond?.sortOrder).toBe(1);
+        });
     });
     test('validate delete', async () => {
         const type = { id: '0b95e809-3b83-11ee-ab4b-0068eb8ba754', name: 'Typ2' }
@@ -93,14 +146,14 @@ test.describe('', () => {
             test.use({ storageState: materialAuthFile });
             test('', async ({ page }) => {
                 const typeListComponent = new TypeListComponent(page);
-                await page.goto('/de/admin/uniform');
+                await page.goto('/de/app/admin/uniform');
                 await expect(typeListComponent.btn_create).toBeVisible();
             });
         });
         test.describe('material', async () => {
             test.use({ storageState: inspectorAuthFile });
             test('', async ({ page }) => {
-                await page.goto('/de/admin/uniform');
+                await page.goto('/de/app/admin/uniform');
                 await expect(page.getByTestId('div_403Page')).toBeVisible();
             });
         });

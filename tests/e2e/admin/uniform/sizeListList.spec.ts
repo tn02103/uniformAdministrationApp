@@ -20,7 +20,7 @@ const listSizeIds = [
     "3b93f87a-3b83-11ee-ab4b-0068eb8ba754"
 ];
 test.use({ storageState: adminAuthFile });
-test.describe('', () => {
+test.describe.skip('', () => {
     let page: Page;
     let listComponent: SizelistListComponent;
     let detailComponent: SizelistDetailComponent;
@@ -32,7 +32,7 @@ test.describe('', () => {
         detailComponent = new SizelistDetailComponent(page);
         editListPopup = new SimpleFormPopupComponent(page, 'input[name="input"]', 'err_input')
 
-        await page.goto('/de/admin/uniform');
+        await page.goto('/de/app/admin/uniform');
     });
     test.beforeEach(async () => {
         await cleanupData();

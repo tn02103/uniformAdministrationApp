@@ -38,7 +38,7 @@ export const createUniformType = () => genericSAValidatiorV2(
         let i = 1;
         let name: string;
         do {
-            name = `Typ-${i}`;
+            name = `Typ${i}`;
             i++;
         } while (typeList.find(t => t.name == name));
         return name;

@@ -22,7 +22,7 @@ test.describe('', () => {
         detailComponent = new TypeDetailComponent(page);
         generationComponent = new GenerationListComponent(page);
 
-        await page.goto('/de/admin/uniform');
+        await page.goto('/de/app/admin/uniform');
     });
     test.beforeEach(async () => {
         await cleanupData();

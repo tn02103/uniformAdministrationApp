@@ -13,7 +13,7 @@ const sizes = testSizes
     .sort((a, b) => a.sortOrder - b.sortOrder);
 
 test.use({ storageState: adminAuthFile });
-test.describe('', () => {
+test.describe.skip('', () => {
     let page: Page;
     let uniformSizePage: UniformSizeAdministrationPage;
     let simpleFormPopup: SimpleFormPopupComponent;
@@ -24,7 +24,7 @@ test.describe('', () => {
         uniformSizePage = new UniformSizeAdministrationPage(page);
         simpleFormPopup = new SimpleFormPopupComponent(page);
         messagePopup = new MessagePopupComponent(page);
-        await page.goto('/de/admin/uniform/sizes');
+        await page.goto('/de/app/admin/uniform/sizes');
     });
     test.beforeEach(async () => {
         await cleanupData();

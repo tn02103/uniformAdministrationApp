@@ -1,7 +1,11 @@
 "use client"
 
+import { logout } from "@/actions/auth";
+import { startInspection } from "@/actions/inspection/status";
+import { useInspectionState } from "@/dataFetcher/inspection";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n } from "@/lib/locales/client";
+import { AuthItem } from "@/lib/storageTypes";
 import { faAddressCard, faAngleLeft, faAngleRight, faClipboardCheck, faGear, faPlus, faShirt, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Assosiation } from "@prisma/client";
@@ -9,17 +13,13 @@ import Link from "next/link";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Col, Dropdown } from "react-bootstrap";
+import { toast } from "react-toastify";
+import { mutate } from "swr";
 import Footer from "./Footer";
 import Header from "./Header";
 import NavButton from "./NavButton";
 import NavGroup from "./NavGroup";
 import NavLink from "./NavLink";
-import { useGlobalData } from "../globalDataProvider";
-import { logout } from "@/actions/auth";
-import { mutate } from "swr";
-import { AuthItem } from "@/lib/storageTypes";
-import { startInspection } from "@/actions/inspection/status";
-import { toast } from "react-toastify";
 
 
 type SidebarPropType = {
@@ -31,7 +31,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
     const t = useI18n();
     const [collapsed, setCollapsed] = useState<boolean>(false);
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
-    const { inspectionState } = useGlobalData();
+    const { inspectionState } = useInspectionState();
     const pathname = usePathname();
     const { locale } = useParams();
     const router = useRouter();
@@ -50,7 +50,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
         });
     }
     function startStopInspection() {
-        if (inspectionState.active) {
+        if (inspectionState?.active) {
             // TODO stop inspection
         } else {
             startInspection().then(() => {

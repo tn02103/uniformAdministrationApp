@@ -13,6 +13,7 @@ import { Button, FormControl, InputGroup, OverlayTrigger, Tooltip } from "react-
 import { useForm } from "react-hook-form";
 import useSWR from "swr";
 import { GeneralOverviewCadetType } from "./page";
+import { useInspectionState } from "@/dataFetcher/inspection";
 
 
 const GeneralOverviewTable = ({
@@ -29,7 +30,9 @@ const GeneralOverviewTable = ({
     const searchParam = useSearchParams();
 
     const filter = watch("search")?.replaceAll(" ", "").toLowerCase();
-    const { userRole, inspectionState } = useGlobalData();
+
+    const { inspectionState } = useInspectionState();
+    const { userRole } = useGlobalData();
     const { data: inspectedIdList } = useSWR(
         `inspection/status/idList`,
         () => (userRole >= AuthRole.inspector) ? getInspectedCadetIdList() : null

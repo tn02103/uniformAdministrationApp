@@ -294,7 +294,24 @@ export default {
             },
         },
         dangerConfirmation: {
-
-        }
+            confirmation: {
+                label: "Zum Bestätigen der Aktion, bitte den folgenden Text eingeben:",
+                error: {
+                    required: "Bitte den Text zur Bestätigung eingeben",
+                    pattern: "Der Text stimmt nicht überein"
+                },
+            },
+            deleteUniformType: {
+                header: "Uniformtyp \"{type}\" löschen",
+                message: {
+                    part1: "Soll der Uniformtyp \"{type}\" wirklich gelöscht werden.",
+                    part2: "Hierbei werden alle ",
+                    'part3#one': "{count} Uniformteil",
+                    'part3#other': "{count} Uniformteile",
+                    part4: " dieses Types mit gelöscht"
+                },
+                confirmationText: "Uniformtyp-{type}"
+            }
+        },
     },
 } as const;
