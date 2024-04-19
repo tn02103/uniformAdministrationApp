@@ -232,7 +232,7 @@ const MaterialSelect = ({ index }: { index: number }) => {
     const t = useI18n();
     const { register, setValue, formState: { errors } } = useFormContext<FormType>();
     const { cadetId }: ParamType = useParams();
-    const materialList = useCadetMaterialDescriptionList(cadetId);
+    const { materialList } = useCadetMaterialDescriptionList(cadetId);
 
     if (!materialList) return <></>
     return (

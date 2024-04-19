@@ -1,9 +1,11 @@
 import test, { Page, expect } from "playwright/test";
+import t from "../../../../public/locales/de";
 import { adminAuthFile } from "../../../auth.setup";
 import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
 import { cleanupData } from "../../../testData/cleanupStatic";
-import t from "../../../../public/locales/de";
 import { insertSvenKellerFirstInspection, removeInspection, startInspection } from "../../../testData/dynamicData";
+import { revalidateTag } from "next/cache";
+import { testAssosiation } from "../../../testData/staticData";
 
 test.use({ storageState: adminAuthFile });
 test.describe('', () => {
@@ -25,14 +27,12 @@ test.describe('', () => {
         await page.goto(`de/app/cadet/c4d33a71-3c11-11ee-8084-0068eb8ba754`); // Sven Keller
     });
     test.afterAll(() => page.close());
-    test.beforeEach(async () => {
-        await page.reload();
-        await expect(inspectionComponent.div_step0_loading).not.toBeVisible();
-    });
 
     // TESTS
     test('E2E0262: navigation with activeDeficiencies', async () => {
         await page.goto(`de/app/cadet/c4d33a71-3c11-11ee-8084-0068eb8ba754`); // Sven Keller
+        await expect(inspectionComponent.div_step0_loading).not.toBeVisible();
+
         await test.step('step0 visibility', async () => {
             await Promise.all([
                 expect.soft(inspectionComponent.btn_inspect).toBeVisible(),
@@ -91,6 +91,8 @@ test.describe('', () => {
 
     test('E2E0263: navigation without activeDeficiencies', async () => {
         await page.goto(`/de/app/cadet/0d06427b-3c12-11ee-8084-0068eb8ba754`); // Marie Ackerman
+        await expect(inspectionComponent.div_step0_loading).not.toBeVisible();
+
         await test.step('step0 visibility', async () => {
             await Promise.all([
                 expect.soft(inspectionComponent.btn_inspect).toBeVisible(),
@@ -127,6 +129,8 @@ test.describe('', () => {
 
     test('E2E0276: validate header', async () => {
         await page.goto(`de/app/cadet/c4d33a71-3c11-11ee-8084-0068eb8ba754`); // Sven Keller
+        await expect(inspectionComponent.div_step0_loading).not.toBeVisible();
+
         await test.step('active Inspection not inspected', async () => {
             await expect(inspectionComponent.div_header).toHaveText('Uniformkontrolle');
             await expect(inspectionComponent.btn_inspect).toBeVisible();
@@ -142,7 +146,8 @@ test.describe('', () => {
         });
         await test.step('cadet inspected', async () => {
             await insertSvenKellerFirstInspection();
-            await page.reload();
+            await page.reload();      
+            await expect(inspectionComponent.div_step0_loading).not.toBeVisible();
 
             await expect(inspectionComponent.div_header).toHaveText('Uniformkontrolle');
             await expect(inspectionComponent.btn_inspect).toBeVisible();
@@ -159,5 +164,5 @@ test.describe('', () => {
             await expect(inspectionComponent.btn_inspect).not.toBeVisible();
         });
         await startInspection();
-    })
+    });
 });

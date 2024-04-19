@@ -1,9 +1,10 @@
-import { getCadetMaterialMap } from "@/actions/controllers/CadetMaterialController";
+import { getCadetMaterialList, getCadetMaterialMap } from "@/actions/controllers/CadetMaterialController";
 import { getCadetUniformMap } from "@/actions/controllers/CadetUniformController";
 import { CadetMaterialMap, CadetUniformMap } from "@/types/globalCadetTypes";
 import { UniformLabel } from "@/types/globalUniformTypes";
-import useSWR, { KeyedMutator } from "swr";
+import useSWR, { KeyedMutator, MutatorOptions, mutate } from "swr";
 import { useUniformTypeList } from "./uniformAdmin";
+import { useCallback } from "react";
 
 
 
@@ -58,7 +59,7 @@ export function useCadetUniformComplete(cadetId: string) {
 }
 
 export function useCadetMaterialMap(cadetId: string, initialData?: CadetMaterialMap) {
-    const { data, mutate } = useSWR(
+    const { data } = useSWR(
         `cadet/material/${cadetId}`,
         () => getCadetMaterialMap(cadetId),
         {
@@ -68,21 +69,13 @@ export function useCadetMaterialMap(cadetId: string, initialData?: CadetMaterial
 
     return {
         materialMap: data,
-        mutate
+        mutate: (data: Promise<CadetMaterialMap> | CadetMaterialMap, options?: MutatorOptions) => mutate(
+            (key) => (typeof key === "string") && key.startsWith(`cadet/material/${cadetId}`),
+            data, options)
     }
 }
 
-export function useCadetMaterialDescriptionList(cadetId: string) {
-    const { materialMap } = useCadetMaterialMap(cadetId);
-    if (!materialMap) return [];
-    return Object.values(materialMap).reduce(
-        (list: UniformLabel[], matList) => [
-            ...list,
-            ...matList.map(mat => ({
-                id: mat.id,
-                description: `${mat.groupName}-${mat.typename}`
-            }))
-        ],
-        []
-    );
-}
+export const useCadetMaterialDescriptionList = (cadetId: string) => {
+    const { data } = useSWR(`cadet/material/${cadetId}/list`, () => getCadetMaterialList(cadetId));
+    return { materialList: data };
+};

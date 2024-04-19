@@ -52,7 +52,7 @@ function DangerConfirmationModal({ header, message, confirmationText, onClose, d
                                 <Col>
                                     <FormLabel>
                                         <div>{t('label')}</div>
-                                        <div data-testid="div_confirmationText">"{confirmationText}"</div></FormLabel>
+                                        <div data-testid="div_confirmationText">&quot;{confirmationText}&quot;</div></FormLabel>
                                     <FormControl
                                         id="confirmationInput"
                                         isInvalid={!!(errors?.confirmation)}

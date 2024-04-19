@@ -4,7 +4,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { genericSAValidatior, genericSAValidatiorV2 } from "../validations";
 import { prisma } from "@/lib/db";
 import { InspectionStatus } from "@/types/deficiencyTypes";
-import { unstable_cache } from "next/cache";
+import { revalidateTag, unstable_cache } from "next/cache";
 
 export const getInspectionState = (): Promise<InspectionStatus> => genericSAValidatior(
     AuthRole.user,
@@ -42,8 +42,9 @@ export const getInspectionState = (): Promise<InspectionStatus> => genericSAVali
         inspectedCadets: inspectedCadets['_count'].id,
         activeCadets: activeCadets['_count'].id
     }
-}, ['serverA', 'inspectionState', assosiation], {
-    revalidate: 20
+}, [`serverA.inspectionState.${assosiation}`], {
+    revalidate: process.env.STAGE === "DEV"?0.0000001:30,
+    tags: [`serverA.inspectionState.${assosiation}`]
 })());
 
 export const getInspectedCadetIdList = () => genericSAValidatior(AuthRole.inspector, true, [])
@@ -83,4 +84,5 @@ export const startInspection = () => genericSAValidatiorV2(AuthRole.materialMana
                 }
             });
         }
-    })
+        revalidateTag(`serverA.inspectionState.${assosiation}`);
+    });

@@ -8,6 +8,7 @@ import { NullValueException } from "@/errors/LoadDataException";
 import { PrismaClient } from "@prisma/client";
 import { CadetMaterialMap } from "@/types/globalCadetTypes";
 import { CadetMaterialDBHandler } from "../dbHandlers/CadetMaterialDBHandler";
+import { UniformLabel } from "@/types/globalUniformTypes";
 
 const dbHandler = new CadetMaterialDBHandler();
 export const getCadetMaterialMap = async (cadetId: string): Promise<CadetMaterialMap> => genericSAValidatior(
@@ -15,6 +16,25 @@ export const getCadetMaterialMap = async (cadetId: string): Promise<CadetMateria
     uuidValidationPattern.test(cadetId),
     [{ value: cadetId, type: "cadet" }]
 ).then(async ({ assosiation }) => dbHandler.getMaterialMap(cadetId, assosiation));
+
+export const getCadetMaterialList = async (cadetId: string): Promise<any[]> => genericSAValidatiorV2(
+    AuthRole.user,
+    uuidValidationPattern.test(cadetId),
+    { cadetId }
+).then(({ assosiation }) =>
+    dbHandler.getMaterialMap(cadetId, assosiation)
+).then((map) =>
+    Object.values(map).reduce(
+        (list: UniformLabel[], matList) => [
+            ...list,
+            ...matList.map(mat => ({
+                id: mat.id,
+                description: `${mat.groupName}-${mat.typename}`
+            }))
+        ],
+        []
+    )
+)
 
 export const issueMaterial = async (cadetId: string, newMaterialId: string, quantity: number, oldMaterialId?: string): Promise<CadetMaterialMap | undefined> => genericSAValidatior(
     AuthRole.inspector,
@@ -58,3 +78,4 @@ export const returnMaterial = async (cadetId: string, materialId: string): Promi
     await dbHandler.returnMaterial(mi.id, mi.dateIssued, prisma);
     return dbHandler.getMaterialMap(cadetId, assosiation);
 });
+

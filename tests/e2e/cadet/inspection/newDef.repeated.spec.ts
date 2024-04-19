@@ -3,7 +3,6 @@ import { adminAuthFile } from "../../../auth.setup";
 import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
 import { cleanupData } from "../../../testData/cleanupStatic";
 import { insertSvenKellerFirstInspection, startInspection, svenKellerFirstInspectionData } from "../../../testData/dynamicData";
-import { Pragati_Narrow } from "next/font/google";
 import { testAssosiation, testMaterialGroups } from "../../../testData/staticData";
 
 test.use({ storageState: adminAuthFile });
