@@ -1,15 +1,14 @@
 "use client";
 
+import { getUniformListWithOwner } from "@/actions/uniform/list";
 import { useI18n } from "@/lib/locales/client";
 import { UniformType, UniformWithOwner } from "@/types/globalUniformTypes";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button, Table } from "react-bootstrap";
 import { useSessionStorage } from "usehooks-ts";
-import TableLine from "./tableLine";
-import { getUniformListWithOwner } from "@/actions/uniform/list";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FilterType } from "../_filterPanel";
-import { error } from "console";
+import TableLine from "./tableLine";
 
 export default function ListPanel({
     uniformType,
@@ -62,7 +61,6 @@ export default function ListPanel({
         <Table striped hover>
             <thead className="topoffset-nav sticky-top bg-white">
                 <tr className=" ">
-                    <th className="col-2 col-sm-1 d-md-none fs-7 fw-normal align-middle ps-2 ms-auto">{uniformList ? t('uniformList.numberOfEntries', { count: filteredLines.length }) : ""}</th>
                     <th className="col-3 col-sm-1 px-0">
                         <TableHeaderButton
                             testId="btn_header_number"
@@ -96,7 +94,7 @@ export default function ListPanel({
                             onClick={() => changeSortOrder("comment")} />
                     </th>
                     <th data-testid="div_header_count"
-                        className="d-none d-md-table-cell col-md-2 col-lg-1 col-xl-2 col-xxl-1 fs-7 fw-normal align-middle justify-self-end ps-2 ms-auto"
+                        className="col-md-2 col-lg-1 col-xl-2 col-xxl-1 fs-7 fw-normal align-middle justify-self-end ps-2 ms-auto"
                     >
                         {uniformList ? t('uniformList.numberOfEntries', { count: filteredLines.length }) : ""}
                     </th>

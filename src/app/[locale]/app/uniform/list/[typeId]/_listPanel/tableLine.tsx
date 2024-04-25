@@ -2,14 +2,13 @@
 
 import HighlightedText from "@/components/HighlightedText";
 import { useGlobalData } from "@/components/globalDataProvider";
+import { useModal } from "@/components/modals/modalProvider";
 import { AuthRole } from "@/lib/AuthRoles";
 import { t } from "@/lib/test";
 import { UniformType, UniformWithOwner } from "@/types/globalUniformTypes";
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
-
-import { useParams } from "next/navigation";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 
 export default function TableLine({
@@ -22,12 +21,10 @@ export default function TableLine({
     searchString: string;
 }) {
     const { userRole } = useGlobalData();
-    const { locale } = useParams();
+    const modal = useModal();
 
     return (
         <tr data-testid={`div_uitem_${uniform.id}`}>
-            <td className="col-2 col-sm-1 d-md-none">
-            </td>
             <td data-testid="div_number" className="col-3 col-sm-1 ">
                 <HighlightedText text={String(uniform.number)} highlight={String(searchString)} />
                 {!uniform.active &&
@@ -59,16 +56,13 @@ export default function TableLine({
                         t={t} />
                 }
             </td>
-            <td data-testid="div_comment" className="d-none d-md-table-cell col-3 ">
+            <td data-testid="div_comment" className={`d-none d-md-table-cell col-3 `}>
                 {uniform.comment}
             </td>
-            <td className="d-none d-md-table-cell col-2 col-lg-1 col-xl-2 col-xxl-1">
-                {(userRole >= AuthRole.inspector) &&
-                    <Button variant="outline-seccondary" onClick={() => { }}>
-                        <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
-                    </Button>
-
-                }
+            <td className={`col-2 col-lg-1 col-xl-2 col-xxl-1`}>
+                <Button variant="outline-seccondary" className={(userRole < AuthRole.inspector) ? "d-md-none" : ""} data-testid="btn_open" onClick={() => { modal?.uniformItemDetailModal(uniform.id, uniformType, uniform.issuedEntrys?.[0]?.cadet.id) }}>
+                    <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+                </Button>
             </td>
         </tr>
     )

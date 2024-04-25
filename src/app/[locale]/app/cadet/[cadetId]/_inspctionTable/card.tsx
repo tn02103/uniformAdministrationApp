@@ -1,6 +1,8 @@
 "use client"
 
 import { saveCadetInspection } from "@/actions/controllers/CadetInspectionController";
+import { getCadetMaterialList } from "@/actions/controllers/CadetMaterialController";
+import { getDeficiencyTypeList } from "@/actions/inspection/deficiencyType";
 import { getMaterialGroupIdByTypeId } from "@/actions/material";
 import { useCadetMaterialDescriptionList, useCadetUniformComplete } from "@/dataFetcher/cadet";
 import { useCadetInspection, useUnresolvedDeficienciesByCadet } from "@/dataFetcher/cadetInspection";
@@ -12,7 +14,7 @@ import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DeficiencyCadet } from "@prisma/client";
 import { useParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { mutate } from "swr";
@@ -20,8 +22,6 @@ import CadetInspectionCardHeader from "./header";
 import OldDeficiencyRow from "./oldDeficiencyRow";
 import CadetInspectionStep1 from "./step1";
 import CadetInspectionStep2 from "./step2";
-import { getDeficiencyTypeList } from "@/actions/inspection/deficiencyType";
-import { getCadetMaterialList } from "@/actions/controllers/CadetMaterialController";
 
 export type NewDeficiencyFormType = Deficiency & {
     fk_uniform?: string;
@@ -141,6 +141,7 @@ export default function CadetInspectionCard() {
         <div data-testid="div_cadetInspection" className="container border border-2 rounded">
             <CadetInspectionCardHeader
                 stepState={stepState}
+                disabled={!form.getValues('newDeficiencyList')}
             />
             <FormProvider {...form}>
                 <form onSubmit={form.handleSubmit(submit)}>

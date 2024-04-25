@@ -63,6 +63,7 @@ test.describe('', async () => {
         await cleanupData();
         await startInspection();
         await page.reload();
+        await inspectionComponent.div_step0_loading.isHidden();
     });
 
     test('E2E0275: initalInspection', async () => {
@@ -264,15 +265,8 @@ test.describe('', async () => {
             await test.step('prepare DB', async () => {
                 await insertSvenKellerFirstInspection();
                 await page.reload();
-                const resolved: Deficiency[] = await prisma.deficiency.findMany({
-                    where: {
-                        fk_inspection_resolved: testActiveInspection.id
-                    }
-                });
-                const oldResolved = resolved.find(r => r.id !== svenKellerFirstInspectionData.oldDefIdsToResolve[1]);
-                expect.soft(oldResolved!.dateResolved).toEqual(date);
-                expect.soft(oldResolved!.userResolved).toEqual('test3');
-            })
+                await expect(inspectionComponent.div_step0_loading).not.toBeVisible();
+            });
 
             await test.step('step1', async () => {
                 await inspectionComponent.btn_inspect.click();

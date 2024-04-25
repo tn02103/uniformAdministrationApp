@@ -1,11 +1,10 @@
 import test, { Page, expect } from "playwright/test";
 import t from "../../../../public/locales/de";
-import { adminAuthFile } from "../../../auth.setup";
+import { adminAuthFile, inspectorAuthFile, userAuthFile } from "../../../auth.setup";
 import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
 import { cleanupData } from "../../../testData/cleanupStatic";
 import { insertSvenKellerFirstInspection, removeInspection, startInspection } from "../../../testData/dynamicData";
-import { revalidateTag } from "next/cache";
-import { testAssosiation } from "../../../testData/staticData";
+import CadetDetailPage from "@/app/[locale]/app/cadet/[cadetId]/page";
 
 test.use({ storageState: adminAuthFile });
 test.describe('', () => {
@@ -27,6 +26,25 @@ test.describe('', () => {
         await page.goto(`de/app/cadet/c4d33a71-3c11-11ee-8084-0068eb8ba754`); // Sven Keller
     });
     test.afterAll(() => page.close());
+
+    test.describe.only('validate authRoles', () => {
+        test.describe('', async () => {
+            test.use({ storageState: userAuthFile });
+            test('user', async ({ page }) => {
+                const inspectionComponent = new CadetInspectionComponent(page);
+                await page.goto(`de/app/cadet/c4d33a71-3c11-11ee-8084-0068eb8ba754`); // Sven Keller
+                await expect(inspectionComponent.div_ci).not.toBeVisible();
+            });
+        });
+        test.describe('', async () => {
+            test.use({ storageState: inspectorAuthFile });
+            test('inspector', async ({ page }) => {
+                const inspectionComponent = new CadetInspectionComponent(page);
+                await page.goto(`de/app/cadet/c4d33a71-3c11-11ee-8084-0068eb8ba754`); // Sven Keller
+                await expect(inspectionComponent.div_ci).toBeVisible();
+            });
+        });
+    });
 
     // TESTS
     test('E2E0262: navigation with activeDeficiencies', async () => {
@@ -146,7 +164,7 @@ test.describe('', () => {
         });
         await test.step('cadet inspected', async () => {
             await insertSvenKellerFirstInspection();
-            await page.reload();      
+            await page.reload();
             await expect(inspectionComponent.div_step0_loading).not.toBeVisible();
 
             await expect(inspectionComponent.div_header).toHaveText('Uniformkontrolle');

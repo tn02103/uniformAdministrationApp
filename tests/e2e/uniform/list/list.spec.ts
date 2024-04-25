@@ -1,7 +1,6 @@
 import { Page, expect, test } from "playwright/test";
-import { prisma } from "../../../../src/lib/db";
-import { adminAuthFile } from "../../../auth.setup";
-import { MessagePopupComponent } from "../../../pages/popups/MessagePopup.component";
+import { adminAuthFile, inspectorAuthFile, userAuthFile } from "../../../auth.setup";
+import { viewports } from "../../../global/helper";
 import { UniformListPage } from "../../../pages/uniform/uniformList.page";
 import { cleanupData } from "../../../testData/cleanupStatic";
 
@@ -9,13 +8,11 @@ test.use({ storageState: adminAuthFile });
 test.describe('', async () => {
     let page: Page;
     let uniformListPage: UniformListPage;
-    let messageModal: MessagePopupComponent;
 
     test.beforeAll(async ({ browser }) => {
         const loadPage = async () => {
             page = await (await browser.newContext()).newPage();
             uniformListPage = new UniformListPage(page);
-            messageModal = new MessagePopupComponent(page);
         }
 
         await Promise.all([
@@ -30,7 +27,7 @@ test.describe('', async () => {
         await expect(uniformListPage.div_nodata).not.toBeVisible();
     });
 
-    test('validate sortorder', async () => {
+    test('E2E0308: validate sortorder', async () => {
         const idArray = [
             '45f3053a-3c0d-11ee-8084-0068eb8ba754', //1101
             '45f309c6-3c0d-11ee-8084-0068eb8ba754', //1103
@@ -92,7 +89,7 @@ test.describe('', async () => {
         });
     });
 
-    test('validate headerButtons', async () => {
+    test('E2E0309: validate headerButtons', async () => {
         await uniformListPage.div_header_number.click();
         await expect(page).toHaveURL('/de/app/uniform/list/036ff236-3b83-11ee-ab4b-0068eb8ba754?asc=false');
 
@@ -114,7 +111,7 @@ test.describe('', async () => {
         await uniformListPage.div_header_comment.click();
         await expect(page).toHaveURL('/de/app/uniform/list/036ff236-3b83-11ee-ab4b-0068eb8ba754?asc=true&orderBy=comment');
     });
-    test('validate filter', async () => {
+    test('E2E0310: validate filter', async () => {
         await test.step('initial count', async () => {
             await expect(uniformListPage.div_header_count).toContainText('74');
             await expect(await uniformListPage.div_uitem_list.count()).toBe(74);
@@ -144,11 +141,11 @@ test.describe('', async () => {
             await uniformListPage.txt_search_input.fill('1101');
             await uniformListPage.btn_search_submit.click();
 
-            await expect(uniformListPage.div_header_count).toContainText('4');// BUG: should be 1
+            await expect(uniformListPage.div_header_count).toContainText('1');// BUG: should be 1
             await expect(uniformListPage.div_uitem_list).toHaveCount(1);
         });
     });
-    test('validate uItem data', async () => {
+    test('E2E0311: validate uItem data', async () => {
         await page.waitForTimeout(100);
         await uniformListPage.btn_othersAccordion_header.click();
         await uniformListPage.chk_passiveFilter.setChecked(true);
@@ -173,11 +170,136 @@ test.describe('', async () => {
         await expect(page).toHaveURL('/de/app/cadet/d468ac3c-3c11-11ee-8084-0068eb8ba754');
         await page.goBack();
     });
+    test.describe('', async () => {
+        test.use({ storageState: inspectorAuthFile });
+        test('E2E0313: validate DisplaySizes inspector', async ({ page }) => {
+            const uniformListPage = new UniformListPage(page);
+            const testId = `45f2fdcc-3c0d-11ee-8084-0068eb8ba754`;
+            await page.goto('/de/app/uniform/list/036ff236-3b83-11ee-ab4b-0068eb8ba754');
+            await expect(uniformListPage.div_nodata).not.toBeVisible();
+
+            await test.step('xs', async () => {
+                await page.setViewportSize(viewports.xs);
+                await Promise.all([
+                    expect.soft(uniformListPage.div_uitem_number(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.div_uitem_generation(testId)).not.toBeVisible(),
+                    expect.soft(uniformListPage.div_uitem_size(testId)).not.toBeVisible(),
+                    expect.soft(uniformListPage.div_uitem_comment(testId)).not.toBeVisible(),
+                    expect.soft(uniformListPage.lnk_uitem_owner(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.btn_uitem_open(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_number).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_generation).not.toBeVisible(),
+                    expect.soft(uniformListPage.div_header_size).not.toBeVisible(),
+                    expect.soft(uniformListPage.div_header_comment).not.toBeVisible(),
+                    expect.soft(uniformListPage.div_header_owner).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_count).toBeVisible(),
+                ]);
+            });
+            await test.step('sm', async () => {
+                await page.setViewportSize(viewports.sm);
+                await Promise.all([
+                    expect.soft(uniformListPage.div_uitem_number(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.div_uitem_generation(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.div_uitem_size(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.div_uitem_comment(testId)).not.toBeVisible(),
+                    expect.soft(uniformListPage.lnk_uitem_owner(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.btn_uitem_open(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_number).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_generation).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_size).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_comment).not.toBeVisible(),
+                    expect.soft(uniformListPage.div_header_owner).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_count).toBeVisible(),
+                ]);
+            });
+            await test.step('md', async () => {
+                await page.setViewportSize(viewports.md);
+                await Promise.all([
+                    expect.soft(uniformListPage.div_uitem_number(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.div_uitem_generation(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.div_uitem_size(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.div_uitem_comment(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.lnk_uitem_owner(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.btn_uitem_open(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_number).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_generation).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_size).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_comment).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_owner).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_count).toBeVisible(),
+                ]);
+            });
+        });
+    });
+    test.describe('', async () => {
+        test.use({ storageState: userAuthFile });
+
+        test('E2E0314: validate DisplaySizes user', async ({ page }) => {
+            const uniformListPage = new UniformListPage(page);
+            const testId = `45f2fdcc-3c0d-11ee-8084-0068eb8ba754`;
+            await page.goto('/de/app/uniform/list/036ff236-3b83-11ee-ab4b-0068eb8ba754');
+            await expect(uniformListPage.div_nodata).not.toBeVisible();
+
+            await test.step('xs', async () => {
+                await page.setViewportSize(viewports.xs);
+                await Promise.all([
+                    expect.soft(uniformListPage.div_uitem_number(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.div_uitem_generation(testId)).not.toBeVisible(),
+                    expect.soft(uniformListPage.div_uitem_size(testId)).not.toBeVisible(),
+                    expect.soft(uniformListPage.div_uitem_comment(testId)).not.toBeVisible(),
+                    expect.soft(uniformListPage.lnk_uitem_owner(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.btn_uitem_open(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_number).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_generation).not.toBeVisible(),
+                    expect.soft(uniformListPage.div_header_size).not.toBeVisible(),
+                    expect.soft(uniformListPage.div_header_comment).not.toBeVisible(),
+                    expect.soft(uniformListPage.div_header_owner).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_count).toBeVisible(),
+                ]);
+            });
+            await test.step('sm', async () => {
+                await page.setViewportSize(viewports.sm);
+                await Promise.all([
+                    expect.soft(uniformListPage.div_uitem_number(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.div_uitem_generation(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.div_uitem_size(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.div_uitem_comment(testId)).not.toBeVisible(),
+                    expect.soft(uniformListPage.lnk_uitem_owner(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.btn_uitem_open(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_number).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_generation).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_size).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_comment).not.toBeVisible(),
+                    expect.soft(uniformListPage.div_header_owner).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_count).toBeVisible(),
+                ]);
+            });
+            await test.step('md', async () => {
+                await page.setViewportSize(viewports.md);
+                await Promise.all([
+                    expect.soft(uniformListPage.div_uitem_number(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.div_uitem_generation(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.div_uitem_size(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.div_uitem_comment(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.lnk_uitem_owner(testId)).toBeVisible(),
+                    expect.soft(uniformListPage.btn_uitem_open(testId)).not.toBeVisible(),
+                    expect.soft(uniformListPage.div_header_number).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_generation).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_size).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_comment).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_owner).toBeVisible(),
+                    expect.soft(uniformListPage.div_header_count).toBeVisible(),
+                ]);
+            });
+        });
+    });
+
+    /*
     test.skip('validate delete', async () => {
         await uniformListPage.btn_othersAccordion_header.click();
         await uniformListPage.chk_passiveFilter.setChecked(true);
         await uniformListPage.btn_load.click();
-
+        
         await test.step('disabled with owner', async () => {
             await expect.soft(uniformListPage.btn_uitem_delete('45f323b0-3c0d-11ee-8084-0068eb8ba754')).toBeDisabled();
             await expect.soft(uniformListPage.btn_uitem_delete('45f2fdcc-3c0d-11ee-8084-0068eb8ba754')).toBeDisabled();
@@ -206,5 +328,5 @@ test.describe('', async () => {
             expect(dbData?.recdelete).not.toBeNull();
             expect(dbData?.recdeleteUser).toBe('test4');
         });
-    });
+    });*/
 }); 

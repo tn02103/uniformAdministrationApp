@@ -8,9 +8,11 @@ import { Row } from "react-bootstrap";
 
 
 export default function CadetInspectionCardHeader({
-    stepState: [step, setStep]
+    stepState: [step, setStep],
+    disabled,
 }: {
-    stepState: [number, (n: number) => void]
+    stepState: [number, (n: number) => void];
+    disabled: boolean;
 }) {
     const t = useScopedI18n('cadetDetailPage');
     const { inspectionState } = useInspectionState();
@@ -35,7 +37,7 @@ export default function CadetInspectionCardHeader({
                     {(step == 0) ? t('header.inspection') : t('header.inspecting')}
                     <TooltipIconButton
                         variant={inspected ? "outline-success" : "outline-warning"}
-                        disabled={step !== 0}
+                        disabled={step !== 0 || disabled}
                         tooltipText={inspected
                             ? t('tooltips.inspection.inspected')
                             : t('tooltips.inspection.notInspected')}

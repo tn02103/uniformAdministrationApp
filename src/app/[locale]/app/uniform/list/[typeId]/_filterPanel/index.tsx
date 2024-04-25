@@ -32,7 +32,6 @@ export default function FilterPanel({
     sizeList: UniformSize[];
 }) {
     const searchForm = useForm();
-    const filterForm = useForm<FilterType>();
     const router = useRouter();
     const t = useI18n();
 
@@ -89,9 +88,7 @@ export default function FilterPanel({
                 </Col>
                 {uniformType &&
                     <Col xs={12} sm={6} md={4} xl={12}>
-                        <FormProvider {...filterForm}>
-                            <Filter uniformType={uniformType} sizeList={sizeList} />
-                        </FormProvider>
+                        <Filter uniformType={uniformType} sizeList={sizeList} />
                     </Col>
                 }
             </Row>

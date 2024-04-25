@@ -1,7 +1,8 @@
 import test, { Page, expect } from "playwright/test";
-import { adminAuthFile } from "../../auth.setup";
+import { adminAuthFile, inspectorAuthFile, userAuthFile } from "../../auth.setup";
 import { cleanupData } from "../../testData/cleanupStatic";
 import { CadetListPage } from "../../pages/cadet/cadetList.page";
+import { testAssosiation, testCadets, testDeficiencies } from "../../testData/staticData";
 
 test.use({ storageState: adminAuthFile });
 test.describe('', async () => {
@@ -15,10 +16,10 @@ test.describe('', async () => {
             cadetListPage = new CadetListPage(page);
         }
         await Promise.all([loadPage(), cleanupData()]);
-        await page.goto(`de/app/cadet`);
+        await page.goto(`/de/app/cadet`);
     });
     test.afterAll(async () => page.close());
-    test('validate Data', async () => {
+    test('E2E0101: validate Data', async () => {
         await expect(await cadetListPage.div_cadet_list.count()).toBe(9);
 
         await Promise.all([
@@ -39,10 +40,10 @@ test.describe('', async () => {
             expect.soft(cadetListPage.div_cadet_activeDeficiencyCount('0692ae33-3c12-11ee-8084-0068eb8ba754'))
                 .toHaveText('0'), //Fried Antje
             expect.soft(cadetListPage.div_cadet_activeDeficiencyCount('c4d33a71-3c11-11ee-8084-0068eb8ba754'))
-                .toHaveText('4'), //Sven Keller
+                .toHaveText(String(testDeficiencies.filter(d => /Sven Keller Unresolved/.test(d.comment)).length)), //Sven Keller
         ]);
     });
-    test('validate sortOrder', async () => {
+    test('E2E0102: validate sortOrder', async () => {
         await test.step('default', async () => {
             await Promise.all([
                 expect.soft(cadetListPage.div_cadet_list.nth(0)).toHaveAttribute('data-testid', `div_cadet_0d06427b-3c12-11ee-8084-0068eb8ba754`), //Marie Ackermann
@@ -79,7 +80,7 @@ test.describe('', async () => {
         });
         await page.goto('/de/app/cadet');
     });
-    test('validate headerButton', async () => {
+    test('E2E0103: validate headerButton', async () => {
         await cadetListPage.btn_hdr_lastname.click();
         await expect(page).toHaveURL(/orderBy=lastname&asc=false/);
 
@@ -95,7 +96,7 @@ test.describe('', async () => {
         await cadetListPage.btn_hdr_lastname.click();
         await expect(page).toHaveURL(/orderBy=lastname&asc=true/);
     });
-    test('validate search', async () => {
+    test('E2E0104: validate search', async () => {
         await test.step('normal', async () => {
             await cadetListPage.txt_searchField.fill('lU');
             expect(await cadetListPage.div_cadet_list.count()).toBe(2);
@@ -121,7 +122,7 @@ test.describe('', async () => {
             expect(await cadetListPage.div_cadet_list.count()).toBe(9);
         });
     });
-    test('validate Links', async () => {
+    test('E2E0105: validate Links', async () => {
         await test.step('Marie Ackermann', async () => {
             await cadetListPage.lnk_cadet_firstname('0d06427b-3c12-11ee-8084-0068eb8ba754').click();
             await expect(page).toHaveURL('/de/app/cadet/0d06427b-3c12-11ee-8084-0068eb8ba754');
@@ -139,6 +140,58 @@ test.describe('', async () => {
             await cadetListPage.lnk_cadet_lastname('d468ac3c-3c11-11ee-8084-0068eb8ba754').click();
             await expect(page).toHaveURL('/de/app/cadet/d468ac3c-3c11-11ee-8084-0068eb8ba754');
             await page.goBack();
+        });
+    });
+    test.describe('E2E0106: validate different authRoles', async () => {
+        test.describe('', async () => {
+            test.use({ storageState: userAuthFile });
+            test('Authrole.User', async ({ page }) => {
+                const cadetListPage = new CadetListPage(page);
+                await page.goto('/de/app/cadet');
+                const testId = testCadets.find(c => c.fk_assosiation === testAssosiation.id && c.recdelete === null)!.id;
+
+                await Promise.all([
+                    expect.soft(cadetListPage.btn_hdr_firstname).toBeVisible(),
+                    expect.soft(cadetListPage.btn_hdr_lastname).toBeVisible(),
+                    expect.soft(cadetListPage.div_hdr_lastInspection).not.toBeVisible(),
+                    expect.soft(cadetListPage.div_hdr_uniformComplete).not.toBeVisible(),
+                    expect.soft(cadetListPage.div_hdr_activeDeficiencies).not.toBeVisible(),
+
+                    expect.soft(cadetListPage.lnk_cadet_firstname(testId)).toBeVisible(),
+                    expect.soft(cadetListPage.lnk_cadet_lastname(testId)).toBeVisible(),
+                    expect.soft(cadetListPage.div_cadet_lastInspection(testId)).not.toBeVisible(),
+                    expect.soft(cadetListPage.div_cadet_uniformComplete(testId)).not.toBeVisible(),
+                    expect.soft(cadetListPage.div_cadet_activeDeficiencyCount(testId)).not.toBeVisible(),
+
+                    expect.soft(cadetListPage.btn_clearSerach).toBeVisible(),
+                    expect.soft(cadetListPage.txt_searchField).toBeVisible(),
+                ]);
+            });
+        });
+        test.describe('', async () => {
+            test.use({ storageState: inspectorAuthFile });
+            test('Authrole.Inspector', async ({ page }) => {
+                const cadetListPage = new CadetListPage(page);
+                await page.goto('/de/app/cadet');
+                const testId = testCadets.find(c => c.fk_assosiation === testAssosiation.id && c.recdelete === null)!.id;
+
+                await Promise.all([
+                    expect.soft(cadetListPage.btn_hdr_firstname).toBeVisible(),
+                    expect.soft(cadetListPage.btn_hdr_lastname).toBeVisible(),
+                    expect.soft(cadetListPage.div_hdr_lastInspection).toBeVisible(),
+                    expect.soft(cadetListPage.div_hdr_uniformComplete).toBeVisible(),
+                    expect.soft(cadetListPage.div_hdr_activeDeficiencies).toBeVisible(),
+
+                    expect.soft(cadetListPage.lnk_cadet_firstname(testId)).toBeVisible(),
+                    expect.soft(cadetListPage.lnk_cadet_lastname(testId)).toBeVisible(),
+                    expect.soft(cadetListPage.div_cadet_lastInspection(testId)).toBeVisible(),
+                    expect.soft(cadetListPage.div_cadet_uniformComplete(testId)).toBeVisible(),
+                    expect.soft(cadetListPage.div_cadet_activeDeficiencyCount(testId)).toBeVisible(),
+
+                    expect.soft(cadetListPage.btn_clearSerach).toBeVisible(),
+                    expect.soft(cadetListPage.txt_searchField).toBeVisible(),
+                ]);
+            });
         });
     });
 });

@@ -25,7 +25,7 @@ test.describe('', async () => {
         await expect(uniformListPage.div_nodata).not.toBeVisible();
     });
 
-    test('validate typeSelect', async () => {
+    test('E2E0301: validate typeSelect', async () => {
         await test.step('initial with id', async () => {
             await expect(uniformListPage.sel_type).toHaveValue('036ff236-3b83-11ee-ab4b-0068eb8ba754');
             await expect(uniformListPage.div_pageHeader).toContainText('Typ1');
@@ -47,7 +47,7 @@ test.describe('', async () => {
             await expect(uniformListPage.div_othersAccordion).toBeVisible();
         });
     });
-    test('validate initial filter and sessionStorage', async () => {
+    test('E2E0302: validate initial filter and sessionStorage', async () => {
         await test.step('initial state', async () => {
             await Promise.all([
                 expect.soft(uniformListPage.chk_genFilter('acc01de5-3b83-11ee-ab4b-0068eb8ba754')).toBeChecked(),
@@ -105,7 +105,7 @@ test.describe('', async () => {
             ]);
         });
     });
-    test('validate search input and helpText', async () => {
+    test('E2E0303: validate search input and helpText', async () => {
         await test.step('success- 1110', async () => {
             await uniformListPage.txt_search_input.fill(' 1110');
             await expect.soft(uniformListPage.div_search_helptext).toHaveText('1110');
@@ -152,7 +152,7 @@ test.describe('', async () => {
             await expect.soft(uniformListPage.err_search_invalidInput).toBeVisible();
         });
     });
-    test('validate typeChange via search', async () => {
+    test('E2E0304: validate typeChange via search', async () => {
         await uniformListPage.txt_search_input.fill('AB 10');
         await uniformListPage.btn_search_submit.click();
 
@@ -168,7 +168,7 @@ test.describe('', async () => {
             expect.soft(uniformListPage.chk_activeFilter).toBeChecked(),
         ]);
     });
-    test('validate search filter', async () => {
+    test('E2E0305: validate search filter', async () => {
         await test.step('via button', async () => {
             await uniformListPage.txt_search_input.fill('110');
             await uniformListPage.btn_search_submit.click();
@@ -184,7 +184,7 @@ test.describe('', async () => {
             await expect(page.getByTestId('div_hilight').nth(0)).toHaveText('12');
         });
     });
-    test('validate filter options', async () => {
+    test('E2E0306: validate filter options', async () => {
         await test.step('other filters', async () => {
             await uniformListPage.btn_othersAccordion_header.click();
             await uniformListPage.chk_activeFilter.setChecked(false);
@@ -229,7 +229,7 @@ test.describe('', async () => {
             await expect(uniformListPage.div_sizeAccordion).not.toBeVisible();
         });
     });
-    test('validate selectAll', async () => {
+    test('E2E0307: validate selectAll', async () => {
         await test.step('generation', async () => {
             await uniformListPage.btn_genAccordion_header.click();
             await Promise.all([

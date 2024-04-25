@@ -30,6 +30,7 @@ test.describe('', async () => {
     test.afterAll(() => page.close());
     test.beforeEach(async () => {
         await page.reload();
+        await inspectionComponent.div_step0_loading.isHidden();
         await inspectionComponent.btn_inspect.click();
         await inspectionComponent.btn_step1_continue.click();
     });

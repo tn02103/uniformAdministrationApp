@@ -56,9 +56,11 @@ const CadetDetailPage = async (props: PropType) => {
                 <Col xs={12} md={8} lg={7} xl={3} className="pb-3 pe-md-3 p-0">
                     <CadetDataTable initialData={cadet} />
                 </Col>
-                <Col xs={12} md={8} lg={7} xl={5} className="pb-3 pe-md-3 p-0">
-                    <CadetInspectionCard />
-                </Col>
+                {(user!.role >= AuthRole.inspector) && (props.params.cadetId !== "new") &&
+                    <Col xs={12} md={8} lg={7} xl={5} className="pb-3 pe-md-3 p-0">
+                        <CadetInspectionCard />
+                    </Col>
+                }
                 {(props.params.cadetId !== "new") &&
                     <Col xs={12} md={8} lg={7} xl={4} className="p-0 pb-3">
                         <MaterialTableContainer cadetId={props.params.cadetId} />

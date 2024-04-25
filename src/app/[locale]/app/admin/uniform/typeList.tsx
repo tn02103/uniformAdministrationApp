@@ -8,8 +8,8 @@ import { useModal } from "@/components/modals/modalProvider";
 import { useUniformTypeList } from "@/dataFetcher/uniformAdmin";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
 import { UniformType } from "@/types/globalUniformTypes";
-import { faPlus, faCircleUp, faCircleDown, faArrowUpRightFromSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { Row, Col } from "react-bootstrap";
+import { faArrowUpRightFromSquare, faCircleDown, faCircleUp, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Col, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 
 
@@ -58,14 +58,14 @@ export default function UniformConfigTypeList({
 
         await getUniformCountByType(type.id).then(count =>
             modal?.dangerConfirmationModal(
-                t('modals.dangerConfirmation.deleteUniformType.header', { type: type.name }),
+                t('admin.uniform.type.deleteModal.header', { type: type.name }),
                 <span>
-                    {t('modals.dangerConfirmation.deleteUniformType.message.part1', { type: type.name })}<br />
-                    {t('modals.dangerConfirmation.deleteUniformType.message.part2')}
-                    <span className="fw-bold">{t('modals.dangerConfirmation.deleteUniformType.message.part3', { count })}</span>
-                    {t('modals.dangerConfirmation.deleteUniformType.message.part4')}
+                    {t('admin.uniform.type.deleteModal.message.part1', { type: type.name })}<br />
+                    {t('admin.uniform.type.deleteModal.message.part2')}
+                    <span className="fw-bold">{t('admin.uniform.type.deleteModal.message.part3', { count })}</span>
+                    {t('admin.uniform.type.deleteModal.message.part4')}
                 </span>,
-                t('modals.dangerConfirmation.deleteUniformType.confirmationText', { type: type.name }),
+                t('admin.uniform.type.deleteModal.confirmationText', { type: type.name }),
                 t('common.actions.delete'),
                 deleteMutation,
             )

@@ -2,8 +2,10 @@
 
 import { getInspectedCadetIdList } from "@/actions/inspection/status";
 import { useGlobalData } from "@/components/globalDataProvider";
+import { useInspectionState } from "@/dataFetcher/inspection";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n } from "@/lib/locales/client";
+import { PersonnelListCadet } from "@/types/globalCadetTypes";
 import { faClipboardCheck, faClipboardQuestion, faSearch, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { format } from "date-fns";
@@ -12,15 +14,12 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button, FormControl, InputGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import useSWR from "swr";
-import { GeneralOverviewCadetType } from "./page";
-import { useInspectionState } from "@/dataFetcher/inspection";
 
 
 const GeneralOverviewTable = ({
     data,
 }: {
-
-    data: GeneralOverviewCadetType[];
+    data: PersonnelListCadet[];
 }) => {
     const { register, setValue, watch } = useForm();
     const t = useI18n();
@@ -50,6 +49,11 @@ const GeneralOverviewTable = ({
             router.push(`${pathname}?orderBy=${sortOrder}&asc=false`);
         }
     }
+    const filterCadet = (cadet: PersonnelListCadet, searchParam: string) => (
+        !searchParam
+        || searchParam.length === 0)
+        || cadet.firstname.concat(cadet.lastname).toLowerCase().replaceAll(" ", "").includes(searchParam)
+        || cadet.lastname.concat(cadet.firstname).toLowerCase().replaceAll(" ", "").includes(searchParam)
 
     return (
         <>
@@ -135,13 +139,6 @@ const GeneralOverviewTable = ({
         </>
     );
 }
-
-const filterCadet = (cadet: GeneralOverviewCadetType, searchParam: string) => (
-    !searchParam
-    || searchParam.length === 0)
-    || cadet.firstname.concat(cadet.lastname).toLowerCase().replaceAll(" ", "").includes(searchParam)
-    || cadet.lastname.concat(cadet.firstname).toLowerCase().replaceAll(" ", "").includes(searchParam)
-
 
 const CadetLink = ({ label, id }: { label: string, id: string }) => {
     const t = useI18n();

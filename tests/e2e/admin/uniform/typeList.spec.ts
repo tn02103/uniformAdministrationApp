@@ -32,7 +32,6 @@ test.describe('', () => {
             .filter(type => ((type.fk_assosiation === testAssosiation.id) && (!type.recdelete)))
             .sort((a, b) => a.sortOrder - b.sortOrder);
 
-        await page.pause();
         const divList = await page.locator('div[data-testid^="div_typeList_row_"]').all();
 
         await expect(divList.length).toBe(types.length);
@@ -128,14 +127,14 @@ test.describe('', () => {
                 .toBeVisible();
             await expect
                 .soft(dangerModal.div_header)
-                .toHaveText(translation.header.replace('{{type}}', type.name));
+                .toHaveText(translation.header.replace('{type}', type.name));
             await expect
                 .soft(dangerModal.div_confirmationText)
-                .toContainText(translation.confirmationText.replace('{{type}}', type.name));
+                .toContainText(translation.confirmationText.replace('{type}', type.name));
         });
 
         await test.step('delete and validate', async () => {
-            await dangerModal.txt_confirmation.fill(translation.confirmationText.replace('{{type}}', type.name));
+            await dangerModal.txt_confirmation.fill(translation.confirmationText.replace('{type}', type.name));
             await dangerModal.btn_save.click();
 
             await expect(typeListComponent.div_type(type.id)).not.toBeVisible();
