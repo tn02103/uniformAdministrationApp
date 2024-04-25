@@ -1,5 +1,5 @@
 import { Cadet } from "@/types/globalCadetTypes";
-import { UniformType } from "@/types/globalUniformTypes";
+import { UniformGeneration, UniformType } from "@/types/globalUniformTypes";
 
 export const NameValidation = {
     required: {
@@ -64,5 +64,15 @@ export const uniformTypeValidator = {
         && (typeof type.usingGenerations === "boolean")
         && (typeof type.usingSizes === "boolean")
         && (!type.fk_defaultSizeList || uuidValidationPattern.test(type.fk_defaultSizeList))
+    )
+}
+
+export const uniformGenerationValidator = {
+    test: (gen: UniformGeneration) => (
+        uuidValidationPattern.test(gen.id)
+        && descriptionValidationPattern.test(gen.name)
+        && (!gen.fk_sizeList || uuidValidationPattern.test(gen.fk_sizeList))
+        && (typeof gen.outdated === "boolean")
+        && Number.isInteger(gen.sortOrder)
     )
 }

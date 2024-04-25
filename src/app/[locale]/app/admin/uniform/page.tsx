@@ -1,14 +1,15 @@
 "use client"
 
-import { t } from "@/lib/test";
 import { useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import UniformConfigTypeDetails from "./typeDetail";
 import UniformConfigTypeList from "./typeList";
 import UniformConfigTypeGenerationList from "./generationList";
+import { useI18n } from "@/lib/locales/client";
 
 
 export default function UniformAdminPage() {
+    const t = useI18n();
     const [selectedTypeId, setSelectedTypeId] = useState('');
     const selectedTypeEditableState = useState(false);
     console.log(selectedTypeId);
@@ -16,7 +17,7 @@ export default function UniformAdminPage() {
     return (
         <div className="container-xl content-center bg-light rounded">
             <h1 className="text-center">
-                {t('title.admin.uniform')}
+                {t('admin.uniform.header')}
             </h1>
             <Row className="justify-content-center">
                 <Col xs={12} md={4} lg={3} className="p-0 my-2 px-md-2">

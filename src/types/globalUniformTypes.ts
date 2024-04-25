@@ -64,14 +64,15 @@ export type UniformLabel = {
     description: string,
 }
 // CONFIGURATION
-export const uniformGenerationArgs = Prisma.validator<Prisma.UniformGenerationArgs>()({
+export const uniformGenerationArgs = Prisma.validator<Prisma.UniformGenerationFindManyArgs>()({
     select: {
         id: true,
         name: true,
         fk_sizeList: true,
         outdated: true,
         sortOrder: true,
-    }
+    },
+    orderBy: { sortOrder: "asc" }
 })
 export const uniformTypeArgs = Prisma.validator<Prisma.UniformTypeArgs>()({
     select: {

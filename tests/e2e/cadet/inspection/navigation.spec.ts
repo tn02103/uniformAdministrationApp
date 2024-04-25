@@ -27,7 +27,7 @@ test.describe('', () => {
     });
     test.afterAll(() => page.close());
 
-    test.describe.only('validate authRoles', () => {
+    test.describe('validate authRoles', () => {
         test.describe('', async () => {
             test.use({ storageState: userAuthFile });
             test('user', async ({ page }) => {

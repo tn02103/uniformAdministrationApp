@@ -1,10 +1,12 @@
 "use client"
 
-import { changeUniformGenerationSortOrder } from "@/actions/controllers/UniformConfigController";
+import { changeUniformGenerationSortOrder, createUniformGeneration, deleteUniformGeneration, saveUniformGeneration } from "@/actions/controllers/UniformConfigController";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { Card, CardBody, CardHeader } from "@/components/card";
+import { useModal } from "@/components/modals/modalProvider";
 import { useUniformSizeLists, useUniformType } from "@/dataFetcher/uniformAdmin";
-import { t } from "@/lib/test";
+import { useI18n } from "@/lib/locales/client";
+
 import { UniformGeneration } from "@/types/globalUniformTypes";
 import { faPlus, faCircleUp, faCircleDown, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Row, Col } from "react-bootstrap";
@@ -16,6 +18,8 @@ export default function UniformConfigTypeGenerationList({
 }: {
     selectedTypeId: string;
 }) {
+    const t = useI18n();
+    const modal = useModal();
 
     const { sizeLists } = useUniformSizeLists();
     const { type, mutate } = useUniformType(selectedTypeId);
@@ -28,14 +32,44 @@ export default function UniformConfigTypeGenerationList({
         });
     }
 
-    function createGeneration() {
+    function handleCreate() {
+        if (!type) return;
 
+        const saveMutation = (data: UniformGeneration, typeId: string) => mutate(
+            createUniformGeneration(data.name, data.outdated, data.fk_sizeList, typeId)
+        ).catch((e) => {
+            console.error(e);
+            toast.error(t('common.error.save.unknown'));
+        });
+        modal?.editGenerationModal(null, type, (data: UniformGeneration) => { saveMutation(data, selectedTypeId) });
     }
-    function editGeneration(generation: UniformGeneration) {
+    function handleEdit(generation: UniformGeneration) {
+        if (!type) return;
 
+        const saveMutation = (data: UniformGeneration, typeId: string) => mutate(
+            saveUniformGeneration(data, typeId)
+        ).catch((e) => {
+            console.error(e);
+            toast.error(t('common.error.save.unknown'));
+        });
+        modal?.editGenerationModal(generation, type, (data: UniformGeneration) => { saveMutation(data, selectedTypeId) });
     }
-    function deleteGeneration(generation: UniformGeneration) {
+    function handleDelete(generation: UniformGeneration) {
+        const deleteMutation = () => mutate(
+            deleteUniformGeneration(generation.id),
+        );
 
+        modal?.dangerConfirmationModal(
+            t('admin.uniform.generationList.deleteModal.header', { generation: generation.name }),
+            <span>
+                {t('admin.uniform.generationList.deleteModal.message.part1')}<br />
+                {t('admin.uniform.generationList.deleteModal.message.part2')}<br />
+                {t('admin.uniform.generationList.deleteModal.message.part3')}<br />
+            </span>,
+            t('admin.uniform.generationList.deleteModal.confirmationText', { generation: generation.name }),
+            t('common.actions.delete'),
+            deleteMutation,
+        );
     }
 
 
@@ -43,15 +77,15 @@ export default function UniformConfigTypeGenerationList({
     return (
         <Card>
             <CardHeader
-                title={t('label.uniform.generation_other')}
+                title={t('common.uniform.generation.label', { count: 2 })}
                 tooltipIconButton={
                     <TooltipIconButton
                         icon={faPlus}
                         buttonSize="sm"
                         buttonClass="ms-2"
                         variant="outline-success"
-                        tooltipText={t('label.create')}
-                        onClick={createGeneration}
+                        tooltipText={t('common.actions.create')}
+                        onClick={handleCreate}
                         testId="btn_generation_create" />
                 } />
             <CardBody>
@@ -61,7 +95,7 @@ export default function UniformConfigTypeGenerationList({
                             <TooltipIconButton
                                 buttonSize="sm"
                                 icon={faCircleUp}
-                                tooltipText={t('label.moveUp')}
+                                tooltipText={t('common.actions.moveUp')}
                                 variant="outline-secondary"
                                 disabled={(index === 0) || !gen.id}
                                 onClick={() => changeSortOrder(gen.id, true)}
@@ -70,7 +104,7 @@ export default function UniformConfigTypeGenerationList({
                             <TooltipIconButton
                                 buttonSize="sm"
                                 icon={faCircleDown}
-                                tooltipText={t('label.moveDown')}
+                                tooltipText={t('common.actions.moveDown')}
                                 variant="outline-secondary"
                                 disabled={((index + 1) === generationList.length) || !gen.id}
                                 onClick={() => changeSortOrder(gen.id, false)}
@@ -84,7 +118,7 @@ export default function UniformConfigTypeGenerationList({
                                         {gen.name}
                                     </span>
                                     <span data-testid="div_outdated" className="fst-italic text-warning">
-                                        {gen.outdated ? ` - ${t('label.uniform.generation.outdated')}` : ""}
+                                        {gen.outdated ? ` - ${t('common.uniform.generation.outdated')}` : ""}
                                     </span>
                                 </Col>
                             </Row>
@@ -98,19 +132,19 @@ export default function UniformConfigTypeGenerationList({
                             <TooltipIconButton
                                 buttonSize="sm"
                                 icon={faPencil}
-                                tooltipText={t('label.edit')}
+                                tooltipText={t('common.actions.edit')}
                                 variant="outline-primary"
                                 disabled={!gen.id}
-                                onClick={() => editGeneration(gen)}
+                                onClick={() => handleEdit(gen)}
                                 testId="btn_edit"
                             />
                             <TooltipIconButton
                                 icon={faTrash}
                                 variant="outline-danger"
-                                tooltipText={t('label.delete')}
+                                tooltipText={t('common.actions.delete')}
                                 buttonSize="sm"
                                 disabled={!gen.id}
-                                onClick={() => deleteGeneration(gen)}
+                                onClick={() => handleDelete(gen)}
                                 testId="btn_delete"
                             />
                         </Col>

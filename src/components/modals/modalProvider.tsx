@@ -5,9 +5,10 @@ import { useI18n } from "@/lib/locales/client";
 import SimpleFormModal, { SimpleFormModalProps } from "./simpleFormModal";
 import { CadetMaterial, MaterialGroup } from "@/types/globalMaterialTypes";
 import IssueMaterialModal, { IssueMaterialModalProps } from "./issueMaterial";
-import { UniformType } from "@/types/globalUniformTypes";
+import { UniformGeneration, UniformType } from "@/types/globalUniformTypes";
 import UniformItemDetailModal, { UIDModalProps } from "./uniformItemDetail";
 import DangerConfirmationModal, { DangerConfirmationModalPropType } from "./dangerConfirmationModal";
+import EditGenerationModal, { EditGenerationModalPropType } from "./editGenerationModal";
 
 type ModalContextType = {
     showMessageModal: (header: string, message: string | ReactNode, options: MessageModalOption[], type: MessageModalType) => void,
@@ -17,6 +18,7 @@ type ModalContextType = {
     simpleFormModal: (props: SimpleFormModalProps) => void,
     issueMaterialModal: (cadetId: string, materialGroup: MaterialGroup, issuedMaterialList: CadetMaterial[], oldMaterial?: CadetMaterial) => void,
     uniformItemDetailModal: (uniformId: string, uniformType: UniformType, ownerId: string | null) => void,
+    editGenerationModal: (generation: UniformGeneration | null, uniformType: UniformType, save: (data: UniformGeneration) => void) => void,
 }
 
 type ModalCapsule = {
@@ -154,7 +156,17 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             onClose,
         };
         showModal("UniformItemDetailModal", props);
-    }, [])
+    }, []);
+
+    const editGenerationModal = useCallback((generation: UniformGeneration | null, uniformType: UniformType, save: (data: UniformGeneration) => void) => {
+        const props: EditGenerationModalPropType = {
+            generation,
+            type: uniformType,
+            cancel: onClose,
+            save: (data: UniformGeneration) => { onClose(); save(data); },
+        }
+        showModal("EditGenerationModal", props);
+    }, []);
 
     const onClose = () => {
         setQueue(prevState => prevState.slice(1))
@@ -165,8 +177,8 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             simpleYesNoModal,
             simpleWarningModal,
             dangerConfirmationModal,
-            /*issueUniformModal,
             editGenerationModal,
+            /*issueUniformModal,
             editMaterialTypeModal,
             inspectionReviewPopup,
             changeUserPasswordModal,*/
@@ -178,8 +190,8 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         simpleYesNoModal,
         simpleWarningModal,
         dangerConfirmationModal,
-        /* issueUniformModal,
         editGenerationModal,
+        /* issueUniformModal,
         editMaterialTypeModal,
          inspectionReviewPopup,
          changeUserPasswordModal,*/
@@ -191,10 +203,10 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         switch (modal.modalType) {
             case "DangerConfirmationModal":
                 return <DangerConfirmationModal {...modal.props} onClose={onClose} />
+            case "EditGenerationModal":
+                return <EditGenerationModal {...modal.props} />
             /*      case "IssueUniformModal":
                       return <IssueUniformModal {...modal.props} />
-                  case "EditGenerationModal":
-                      return <EditGenerationModal {...modal.props} />
                   case "EditMaterialTypeModal":
                       return <EditMaterialTypeModal {...modal.props} />
                   case "InspectionReviewPopup":

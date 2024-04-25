@@ -73,7 +73,7 @@ export default function Filter({
                             <Accordion className="mt-3">
                                 {uniformType.usingGenerations &&
                                     <Accordion.Item data-testid={"div_genAccordion"} eventKey="0" >
-                                        <Accordion.Button className="p-2">{t('common.uniform.generation_other')}</Accordion.Button>
+                                        <Accordion.Button className="p-2">{t('common.uniform.generation.label', { count: 2 })}</Accordion.Button>
                                         <FilterAccordionBody
                                             itemList={uniformType.uniformGenerationList}
                                             name={"generations"}
@@ -94,11 +94,11 @@ export default function Filter({
                                     </Accordion.Button>
                                     <Accordion.Body>
                                         <Form.Check
-                                            label={t('common.active.true')}
+                                            label={t('common.uniform.active.true')}
                                             isInvalid={activPassivError}
                                             {...register(`active`)} />
                                         <Form.Check
-                                            label={t('common.active.false')}
+                                            label={t('common.uniform.active.false')}
                                             isInvalid={activPassivError}
                                             {...register(`passive`)} />
                                         <Form.Check

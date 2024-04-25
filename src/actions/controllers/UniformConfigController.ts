@@ -3,9 +3,9 @@
 import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { uniformTypeValidator, uuidValidationPattern } from "@/lib/validations";
-import { UniformType } from "@/types/globalUniformTypes";
-import { PrismaClient } from "@prisma/client";
+import { descriptionValidationPattern, uniformGenerationValidator, uniformTypeValidator, uuidValidationPattern } from "@/lib/validations";
+import { UniformGeneration, UniformType } from "@/types/globalUniformTypes";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { UniformDBHandler } from "../dbHandlers/UniformDBHandler";
 import UniformGenerationDBHandler from "../dbHandlers/UniformGenerationDBHandler";
 import { UniformTypeDBHandler } from "../dbHandlers/UniformTypeDBHandler";
@@ -109,6 +109,41 @@ export const deleteUniformType = (uniformTypeId: string) => genericSAValidatiorV
     return dbHandler.getTypeList(assosiation, client as PrismaClient);
 }));
 
+export const createUniformGeneration = (name: string, outdated: boolean, fk_sizeList: string | null, uniformTypeId: string,): Promise<UniformType[]> => genericSAValidatiorV2(
+    AuthRole.materialManager,
+    (descriptionValidationPattern.test(name)
+        && (typeof outdated === "boolean")
+        && (!fk_sizeList || uuidValidationPattern.test(fk_sizeList))
+        && uuidValidationPattern.test(uniformTypeId)),
+    { uniformTypeId }
+).then(({ assosiation }) => prisma.$transaction(async (client) => {
+    const list = await generationHandler.getGenerationListByType(uniformTypeId, client as PrismaClient);
+    if (list.find(g => g.name === name)) {
+        throw new SaveDataException('Could not create Generation. Duplicated name');
+    }
+    await generationHandler.createGeneration(
+        { name, outdated, fk_sizeList, sortOrder: list.length },
+        uniformTypeId,
+        client as PrismaClient);
+
+    return dbHandler.getTypeList(assosiation, client as PrismaClient);
+}));
+
+export const saveUniformGeneration = (generation: UniformGeneration, uniformTypeId: string,): Promise<UniformType[]> => genericSAValidatiorV2(
+    AuthRole.materialManager,
+    (uniformGenerationValidator.test(generation) && uuidValidationPattern.test(uniformTypeId)),
+    { uniformGenerationId: generation.id, uniformTypeId }
+).then(({ assosiation }) => prisma.$transaction(async (client) => {
+    const list = await generationHandler.getGenerationListByType(uniformTypeId, client as PrismaClient);
+    if (list.find(g => g.id !== generation.id && g.name === generation.name)) {
+        throw new SaveDataException('Could not save Generation. Duplicated name');
+    }
+
+    await generationHandler.updateGeneration(generation, client as PrismaClient);
+
+    return dbHandler.getTypeList(assosiation, client as PrismaClient);
+}));
+
 export const changeUniformGenerationSortOrder = (uniformGenerationId: string, up: boolean): Promise<UniformType[]> => genericSAValidatiorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(uniformGenerationId)
@@ -125,6 +160,20 @@ export const changeUniformGenerationSortOrder = (uniformGenerationId: string, up
 
     // UPDATE sortorder of generation
     await generationHandler.updateSortOrderById(uniformGenerationId, up, client as PrismaClient);
+
+    return dbHandler.getTypeList(assosiation, client as PrismaClient);
+}));
+
+export const deleteUniformGeneration = (uniformGenerationId: string) => genericSAValidatiorV2(
+    AuthRole.materialManager,
+    (uuidValidationPattern.test(uniformGenerationId)),
+    { uniformGenerationId }
+).then(({ assosiation, username }) => prisma.$transaction(async (client) => {
+    const gen = await generationHandler.getGeneration(uniformGenerationId, client as PrismaClient);
+
+    await generationHandler.removeGenerationFromUniformItems(uniformGenerationId, client as PrismaClient);
+    await generationHandler.markAsDeleted(uniformGenerationId, username, client as PrismaClient);
+    await generationHandler.moveGenerationsUp(gen.sortOrder, gen.fk_uniformType, client as PrismaClient);
 
     return dbHandler.getTypeList(assosiation, client as PrismaClient);
 }));

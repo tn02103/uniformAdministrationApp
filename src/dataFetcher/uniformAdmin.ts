@@ -21,7 +21,16 @@ export function useUniformType(typeId: string) {
     }
 }
 
+export function useUniformGenerationListByType(typeId: string) {
+    const { type, mutate } = useUniformType(typeId);
+    return {
+        generationList: type?.uniformGenerationList,
+        mutate,
+    }
+}
+
 export function useUniformSizeLists() {
     const { data } = useSWR('uniform.sizeList.list', getUniformSizeLists);
     return { sizeLists: data };
 }
+

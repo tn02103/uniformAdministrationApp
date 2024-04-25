@@ -53,11 +53,19 @@ export default {
             "item#one": "Uniformteil",
             "item#other": "Uniformteile",
             number: "Nummer",
-            generation: "Generation",
-            generation_other: "Generationen",
+            generation: {
+                "label#one": "Generation",
+                "label#other": "Generationen",
+                outdated: "veraltet",
+            },
             size: "Größe",
             size_other: "Sizes",
+            sizeList: 'Größenliste',
             owner: "Besitzer",
+            active: {
+                true: "Aktiv",
+                false: "Reserve"
+            },
             type: {
                 "type#one": "Uniformtyp",
                 "type#other": "Uniformtypen",
@@ -220,6 +228,7 @@ export default {
     },
     admin: {
         uniform: {
+            header: "Uniformadministration",
             changeSizeListWarning: "Beim Ändern der ausgewählten Größenliste, kann bei Uniformteilen dieser Generation die Information der Größe verlohren gehen",
             type: {
                 deleteModal: {
@@ -244,6 +253,13 @@ export default {
                     },
                     confirmationText: "Generation-{generation}",
                 },
+                updateModal: {
+                    editHeader: "Generation \"{generation}\" bearbeiten",
+                    createHeader: "Neue Generation anlegen",
+                    changeSizeHeader: "Ändern der Größenliste",
+                    changeSizeMessage: "Beim Ändern der ausgewählten Größenliste, kann bei Uniformteilen dieser Generation die Information der Größe verlohren gehen",
+                    nameDuplicationError: "Es existiert bereits eine Generation mit diesem Namen",
+                }
             },
             size: {
                 deleteModal: {

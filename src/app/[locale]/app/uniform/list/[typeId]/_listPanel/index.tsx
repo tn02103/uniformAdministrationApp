@@ -71,7 +71,7 @@ export default function ListPanel({
                         <th className="d-none d-sm-table-cell col-sm-4 col-md-2 ">
                             <TableHeaderButton
                                 testId="btn_header_generation"
-                                label={t('common.uniform.generation')}
+                                label={t('common.uniform.generation.label', { count: 1 })}
                                 onClick={() => changeSortOrder("generation")} />
                         </th>}
                     {uniformType?.usingSizes &&

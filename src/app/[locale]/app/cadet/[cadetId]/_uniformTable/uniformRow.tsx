@@ -145,7 +145,7 @@ const UniformRow = (props: PropType) => {
                                     </Col>
                                     <Col xs={uniformType.usingGenerations ? 6 : 0} sm={6} md={4} lg={3} xxl={editable ? 3 : 2}>
                                         <Row className="fs-8 fw-bold fst-italic">
-                                            {uniformType.usingGenerations ? t('common.uniform.generation') : ""}
+                                            {uniformType.usingGenerations ? t('common.uniform.generation.label', { count: 1 }) : ""}
                                         </Row>
                                         <GenerationRow
                                             uniform={uniform}

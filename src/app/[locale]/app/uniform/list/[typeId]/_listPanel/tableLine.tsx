@@ -4,7 +4,7 @@ import HighlightedText from "@/components/HighlightedText";
 import { useGlobalData } from "@/components/globalDataProvider";
 import { useModal } from "@/components/modals/modalProvider";
 import { AuthRole } from "@/lib/AuthRoles";
-import { t } from "@/lib/test";
+import { useI18n } from "@/lib/locales/client";
 import { UniformType, UniformWithOwner } from "@/types/globalUniformTypes";
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -20,6 +20,7 @@ export default function TableLine({
     uniformType: UniformType;
     searchString: string;
 }) {
+    const t = useI18n();
     const { userRole } = useGlobalData();
     const modal = useModal();
 
@@ -31,7 +32,7 @@ export default function TableLine({
                     <>
                         <br />
                         <span className="badge rounded-pill text-bg-secondary">
-                            passiv
+                            {t('common.uniform.active.false')}
                         </span>
                     </>
                 }
