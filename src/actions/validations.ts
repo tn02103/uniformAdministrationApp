@@ -1,6 +1,6 @@
 "use server";
 
-import { UnauthorizedException } from "@/errors/CustomException";
+import { ExceptionType, UnauthorizedException } from "@/errors/CustomException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { IronSessionUser, getIronSession } from "@/lib/ironSession";
@@ -11,6 +11,7 @@ type AssosiationValidationType = {
     value: string | undefined,
     type: "cadet" | "uniform" | "uType" | "material",
 }
+
 export const genericSAValidatior = async (
     requiredRole: AuthRole,
     typeValidation: boolean,
@@ -58,6 +59,7 @@ export const genericSAValidatiorV2 = async (
         uniformTypeId?: string | string[],
         uniformGenerationId?: string | string[],
         uniformSizeListId?: string | string[] | null,
+        uniformSizeId?: string | string[],
         materialId?: string | string[],
     }
 ): Promise<IronSessionUser> => {
@@ -107,6 +109,10 @@ export const genericSAValidatiorV2 = async (
         validate(assosiationValidations.uniformSizeListId, validateUniformSizeListAssosiation);
     }
 
+    if (assosiationValidations.uniformSizeId) {
+        validate(assosiationValidations.uniformSizeId, validateUniformSizeAssosiation);
+    }
+
     return user;
 }
 
@@ -150,3 +156,8 @@ const validateUniformSizeListAssosiation = async (id: string, fk_assosiation: st
     prisma.uniformSizelist.findUniqueOrThrow({
         where: { id, fk_assosiation }
     })
+
+const validateUniformSizeAssosiation = async (id: string, fk_assosiation: string) =>
+    prisma.uniformSize.findUniqueOrThrow({
+        where: { id, fk_assosiation }
+    });

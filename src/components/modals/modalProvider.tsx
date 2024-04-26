@@ -14,6 +14,7 @@ type ModalContextType = {
     showMessageModal: (header: string, message: string | ReactNode, options: MessageModalOption[], type: MessageModalType) => void,
     simpleYesNoModal: (props: SimpleYesNoPropType) => void,
     simpleWarningModal: (props: SimpleYesNoPropType) => void,
+    simpleErrorModal: (props: SimpleErrorPropType) => void,
     dangerConfirmationModal: (header: string, message: string | ReactNode, confirmationText: string, dangerOption: string, dangerFunction: () => void, cancelOption?: string, cancelFunction?: () => void) => void,
     simpleFormModal: (props: SimpleFormModalProps) => void,
     issueMaterialModal: (cadetId: string, materialGroup: MaterialGroup, issuedMaterialList: CadetMaterial[], oldMaterial?: CadetMaterial) => void,
@@ -39,6 +40,13 @@ type SimpleYesNoPropType = {
     primaryOption?: string,
     primaryFunction: () => void,
     cancelFunction?: () => void,
+}
+
+type SimpleErrorPropType = {
+    header: string;
+    message: string | ReactNode;
+    option?: string;
+    optionFunction?: () => void;
 }
 
 
@@ -98,6 +106,19 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             "warning",
         )
     }, []);
+    const simpleErrorModal = useCallback(({ header, message, option, optionFunction }: SimpleErrorPropType) => {
+        showMessageModal(
+            header,
+            message,
+            [{
+                type: "outline-secondary",
+                option: option ?? t('common.actions.ok'),
+                function: optionFunction ? optionFunction : () => { },
+                testId: "btn_save",
+            }],
+            "error",
+        );
+    }, []);
 
     // COMPLEX MODALS
     const showModal = useCallback((type: ModalTypes, modalProps: any) => {
@@ -110,7 +131,7 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
 
     const simpleFormModal = useCallback(({ elementLabel, elementValidation, header, save, abort, defaultValue }: SimpleFormModalProps) => {
         showModal("SimpleFormModal", {
-            save: (data: { input: string | number }) => { onClose(); save(data); },
+            save: async (data: { input: string | number }) => { onClose(); await save(data); },
             abort: () => { onClose(); abort(); },
             elementLabel,
             elementValidation,
@@ -178,6 +199,7 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             simpleWarningModal,
             dangerConfirmationModal,
             editGenerationModal,
+            simpleErrorModal,
             /*issueUniformModal,
             editMaterialTypeModal,
             inspectionReviewPopup,
@@ -191,6 +213,7 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         simpleWarningModal,
         dangerConfirmationModal,
         editGenerationModal,
+        simpleErrorModal,
         /* issueUniformModal,
         editMaterialTypeModal,
          inspectionReviewPopup,

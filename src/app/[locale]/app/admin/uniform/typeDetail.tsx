@@ -27,7 +27,7 @@ export default function UniformConfigTypeDetails({
 
 
     const { type, mutate } = useUniformType(selectedTypeId);
-    const { sizeLists } = useUniformSizeLists();
+    const { sizelistList } = useUniformSizeLists();
 
     async function save(data: UniformType) {
         if (!data.usingSizes) data.fk_defaultSizeList = null;
@@ -157,7 +157,7 @@ export default function UniformConfigTypeDetails({
                                 </FormLabel>
                                 <FormCheck
                                     type="switch"
-                                    disabled={!sizeLists}
+                                    disabled={!sizelistList}
                                     {...register("usingSizes")}
                                 />
                             </FormGroup>
@@ -176,7 +176,7 @@ export default function UniformConfigTypeDetails({
                                             }
                                         })}
                                     >
-                                        {sizeLists?.map(sizeList =>
+                                        {sizelistList?.map(sizeList =>
                                             <option key={sizeList.id} value={sizeList.id}>{sizeList.name}</option>
                                         )}
                                     </FormSelect>
@@ -226,7 +226,7 @@ export default function UniformConfigTypeDetails({
                             {type.usingSizes &&
                                 <Col data-testid="div_defaultSL" xs={6}>
                                     {type.fk_defaultSizeList
-                                        ? (sizeLists?.find(sl => sl.id === type.fk_defaultSizeList)?.name)
+                                        ? (sizelistList?.find(sl => sl.id === type.fk_defaultSizeList)?.name)
                                         : "-"}
                                 </Col>
                             }

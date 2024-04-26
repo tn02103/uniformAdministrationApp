@@ -1,12 +1,10 @@
 "use server";
 
 import { AuthRole } from "@/lib/AuthRoles";
-import { genericSAValidatior } from "../validations";
-import { uuidValidationPattern } from "@/lib/validations";
 import { prisma } from "@/lib/db";
 import { cache } from "react";
-import { uniformSizeListArgs, uniformTypeArgs } from "@/types/globalUniformTypes";
-import { deprecate } from "util";
+import { genericSAValidatior } from "../validations";
+import { uniformSizelistArgs } from "@/types/globalUniformTypes";
 
 export const getUniformTypes = cache(async () => genericSAValidatior(AuthRole.user, true, [])
     .then(({ assosiation }) => {
@@ -42,7 +40,7 @@ export const getUniformSizeListConfiguration = cache(async () => genericSAValida
             where: {
                 fk_assosiation: assosiation,
             },
-            ...uniformSizeListArgs,
+            ...uniformSizelistArgs,
         });
     })
 )

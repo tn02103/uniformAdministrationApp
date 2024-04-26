@@ -26,6 +26,7 @@ const cadetDescriptionArgs = Prisma.validator<Prisma.CadetArgs>()({
         lastname: true,
     }
 });
+
 export const uniformWithOwnerArgs = Prisma.validator<Prisma.UniformArgs>()({
     select: {
         id: true,
@@ -100,7 +101,7 @@ export const uniformSizeArgs = Prisma.validator<Prisma.UniformSizeArgs>()({
         sortOrder: true,
     }
 });
-export const uniformSizeListArgs = Prisma.validator<Prisma.UniformSizelistArgs>()({
+export const uniformSizelistArgs = Prisma.validator<Prisma.UniformSizelistArgs>()({
     select: {
         id: true,
         name: true,
@@ -114,7 +115,7 @@ export const uniformSizeListArgs = Prisma.validator<Prisma.UniformSizelistArgs>(
 export type UniformType = Prisma.UniformTypeGetPayload<typeof uniformTypeArgs>;
 export type UniformGeneration = Prisma.UniformGenerationGetPayload<typeof uniformGenerationArgs>;
 export type UniformSize = Prisma.UniformSizeGetPayload<typeof uniformSizeArgs>;
-export type UniformSizeList = Prisma.UniformSizelistGetPayload<typeof uniformSizeListArgs>;
+export type UniformSizeList = Prisma.UniformSizelistGetPayload<typeof uniformSizelistArgs>;
 
 export type UniformConfiguration = {
     uniformTypes: UniformType[],

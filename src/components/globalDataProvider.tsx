@@ -41,6 +41,7 @@ const GlobalDataProvider = ({ children, ...props }: GlobalDataProviderPropType) 
         <SWRConfig value={{
             fallback: {
                 "uniform.type.list": props.typeList,
+                "uniform.sizeList.list": props.sizeLists,
                 "inspection.status": props.inspectionState,
             }
         }}>

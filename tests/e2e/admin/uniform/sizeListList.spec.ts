@@ -8,6 +8,9 @@ import { SizelistDetailComponent } from "../../../pages/admin/uniform/SizelistDe
 import { newDescriptionValidationTests } from "../../../global/testSets";
 import { MessagePopupComponent } from "../../../pages/popups/MessagePopup.component";
 import t from "@/../public/locales/de";
+import { prisma } from "@/lib/db";
+import exp from "constants";
+import { uuidValidationPattern } from "@/lib/validations";
 
 const lists = testSizelists.filter(sl => (sl.fk_assosiation === testAssosiation.id));
 const sizeList = lists.find(sl => sl.id === '23a700ff-3b83-11ee-ab4b-0068eb8ba754');
@@ -20,7 +23,7 @@ const listSizeIds = [
     "3b93f87a-3b83-11ee-ab4b-0068eb8ba754"
 ];
 test.use({ storageState: adminAuthFile });
-test.describe.skip('', () => {
+test.describe.only('', () => {
     let page: Page;
     let listComponent: SizelistListComponent;
     let detailComponent: SizelistDetailComponent;
@@ -52,14 +55,30 @@ test.describe.skip('', () => {
         }
     });
     test('validate create sizeList', async () => {
-        await listComponent.btn_create.click();
+        const name = 'newListUnique';
+        await test.step('create and validate ui', async () => {
+            await listComponent.btn_create.click();
 
-        await expect.soft(editListPopup.div_header).toHaveText(t.admin.uniform.sizeList.createModal.header); // Input correct translation germamModal.formModalHeaders.createSizeList);
-        await editListPopup.txt_input.fill('newList');
-        await editListPopup.btn_save.click();
+            await expect.soft(editListPopup.div_header).toHaveText(t.admin.uniform.sizeList.createModal.header); // Input correct translation germamModal.formModalHeaders.createSizeList);
+            await editListPopup.txt_input.fill(name);
+            await editListPopup.btn_save.click();
 
-        const divList = await page.$$('div[data-testid^="div_sizelist_list_"]');
-        await expect(divList.length).toBe(lists.length + 1);
+            await expect(page.locator('div[data-testid^="div_sizelist_list_"]').getByText(name)).toBeVisible();
+            await expect(detailComponent.div_header).toHaveText(name);
+        });
+        await test.step('validate db', async () => {
+            const list = await prisma.uniformSizelist.findFirst({
+                where: {
+                    fk_assosiation: testAssosiation.id,
+                    name
+                },
+                include: { uniformSizes: true }
+            });
+
+            expect(list).not.toBeNull();
+            expect(list?.id).toMatch(uuidValidationPattern);
+            expect(list?.uniformSizes).toStrictEqual([]);
+        });
     });
 
     test('validate data of list', async () => {
@@ -132,28 +151,52 @@ test.describe.skip('', () => {
             await expect.soft(detailComponent.div_selectedSize('585509de-3b83-11ee-ab4b-0068eb8ba754')).not.toBeVisible();
             await expect.soft(detailComponent.div_selectedSize('65942979-3b83-11ee-ab4b-0068eb8ba754')).toBeVisible();
         });
+        await test.step('validate db', async () => {
+            const data = await prisma.uniformSizelist.findUniqueOrThrow({
+                where: { id: sizeList!.id },
+                include: { uniformSizes: true }
+            });
+
+            expect(data.uniformSizes.map(s => s.id)).toEqual(expect.arrayContaining(['65942979-3b83-11ee-ab4b-0068eb8ba754']));
+            expect(data.uniformSizes.map(s => s.id)).not.toEqual(expect.arrayContaining(['585509de-3b83-11ee-ab4b-0068eb8ba754']));
+        });
     });
     test('validate rename', async () => {
-        await listComponent.btn_sizeList_select(sizeList!.id).click();
-        await detailComponent.btn_menu.click();
-        await detailComponent.btn_menu_rename.click();
+        await test.step('rename', async () => {
 
-        await editListPopup.txt_input.fill('newListName');
-        await editListPopup.btn_save.click();
+            await listComponent.btn_sizeList_select(sizeList!.id).click();
+            await detailComponent.btn_menu.click();
+            await detailComponent.btn_menu_rename.click();
 
-        expect(listComponent.div_sizeList_name(sizeList!.id)).toHaveText('newListName');
-        expect(detailComponent.div_header).toHaveText('newListName');
+            await editListPopup.txt_input.fill('newListName');
+            await editListPopup.btn_save.click();
+        });
+
+        await test.step('validate', async () => {
+            await expect(page.locator('div[data-testid^="div_sizelist_list_"]').getByText('newListName')).toBeVisible();
+            await expect(listComponent.div_sizeList_name(sizeList!.id)).toHaveText('newListName');
+            await expect(detailComponent.div_header).toHaveText('newListName');
+
+            const data = await prisma.uniformSizelist.findUniqueOrThrow({
+                where: { id: sizeList?.id }
+            });
+
+            expect(data.name).toEqual('newListName');
+        });
     });
     test('validate delete inUseError', async () => {
         const messageModal = new MessagePopupComponent(page);
-        const inUseError = t.admin.uniform.sizeList.inUseError;
+        const inUseError = t.admin.uniform.sizeList.deleteFailure;
+        const message = inUseError.message.replace('{entity}', 'Uniformtyp').replace('{name}', 'Typ1')
+
         await listComponent.btn_sizeList_select(sizeList!.id).click();
         await detailComponent.btn_menu.click();
         await detailComponent.btn_menu_delete.click();
+        await messageModal.btn_save.click();
 
         await expect.soft(messageModal.div_header).toHaveAttribute("class", /bg-danger/);
         await expect.soft(messageModal.div_header).toHaveText(inUseError.header);
-        await expect.soft(messageModal.div_message).toHaveText(inUseError.message);
+        await expect.soft(messageModal.div_message).toHaveText(message);
         await expect.soft(messageModal.btn_cancel).not.toBeVisible();
         await messageModal.btn_save.click();
 
@@ -167,10 +210,13 @@ test.describe.skip('', () => {
         await detailComponent.btn_menu_delete.click();
 
         await expect.soft(messageModal.div_header).toHaveAttribute("class", /bg-warning/);
-        await expect.soft(messageModal.div_header).toHaveText(deleteWarning.header.replace('{{sizeList}}', 'Liste4'));
-        await expect.soft(messageModal.div_message).toContainText(deleteWarning.message);
+        await expect.soft(messageModal.div_header).toHaveText(deleteWarning.header.replace('{name}', 'Liste4'));
+        await expect.soft(messageModal.div_message).toContainText(deleteWarning.message.line1);
+        await expect.soft(messageModal.div_message).toContainText(deleteWarning.message.line2);
         await messageModal.btn_save.click();
 
         await expect.soft(listComponent.div_sizeList('34097829-3b83-11ee-ab4b-0068eb8ba754')).not.toBeVisible();
+        const data = await prisma.uniformSizelist.findUnique({ where: { id: '34097829-3b83-11ee-ab4b-0068eb8ba754' } });
+        expect(data).toBeNull();
     });
 });

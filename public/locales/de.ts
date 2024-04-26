@@ -3,6 +3,7 @@ export default {
         of: "von",
         comment: "Kommentar",
         description: "Beschreibung",
+        name: "Name",
         type: "Typ",
         loading: "Lädt",
         dates: {
@@ -29,11 +30,13 @@ export default {
             issue: "Ausgeben",
             return: "Zurückziehen",
             replace: "Austauschen",
+            rename: "Umbenennen",
             changeIssued: "Anzahl & Typ verändern",
             delete: "Löschen",
             load: "Laden",
             moveUp: "nach oben verschieben",
             moveDown: "nach unten verschieben",
+            ok: "Verstanden",
         },
         cadet: {
             cadet: "Person",
@@ -60,7 +63,10 @@ export default {
             },
             size: "Größe",
             size_other: "Sizes",
-            sizeList: 'Größenliste',
+            sizelist: {
+                "label": "Größenliste",
+                "multiLabel": "Größenlisten",
+            },
             owner: "Besitzer",
             active: {
                 true: "Aktiv",
@@ -268,16 +274,25 @@ export default {
                 },
             },
             sizeList: {
+                nameDuplicationError: "Es existiert bereits eine Größenliste mit diesem Namen",
+                otherSizes: "weiter Größen",
+                selectedSizes: "ausgewählte Größen",
                 createModal: {
-                    header: "",
+                    header: "Neue Größenliste anlegen",
                 },
-                inUseError: {
+                renameModal: {
                     header: "",
-                    message: "",
                 },
                 deleteWarning: {
-                    header: "",
-                    message: "",
+                    header: "Größenliste \"{name}\" löschen",
+                    message: {
+                        line1: "Bist du sicher, dass die GrößenListe gelöscht werden soll?",
+                        line2: "Diese Aktion ist nicht wieder umkehrbar",
+                    },
+                },
+                deleteFailure: {
+                    header: "Die Größenliste kann nicht gelöscht werden",
+                    message: "Die Größenliste kann nicht gelöscht werden, da sie von dem {entity} {name} noch genutzt wird."
                 }
             },
         },

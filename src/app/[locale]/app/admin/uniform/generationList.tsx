@@ -21,7 +21,7 @@ export default function UniformConfigTypeGenerationList({
     const t = useI18n();
     const modal = useModal();
 
-    const { sizeLists } = useUniformSizeLists();
+    const { sizelistList } = useUniformSizeLists();
     const { type, mutate } = useUniformType(selectedTypeId);
     const generationList = type?.uniformGenerationList;
 
@@ -124,7 +124,7 @@ export default function UniformConfigTypeGenerationList({
                             </Row>
                             <Row>
                                 <span data-testid="div_sizeList" className="fw-light">
-                                    {type.usingSizes && sizeLists?.find(sl => sl.id === gen.fk_sizeList)?.name}
+                                    {type.usingSizes && sizelistList?.find(sl => sl.id === gen.fk_sizeList)?.name}
                                 </span>
                             </Row>
                         </Col>

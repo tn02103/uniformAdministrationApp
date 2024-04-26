@@ -6,13 +6,17 @@ import UniformConfigTypeDetails from "./typeDetail";
 import UniformConfigTypeList from "./typeList";
 import UniformConfigTypeGenerationList from "./generationList";
 import { useI18n } from "@/lib/locales/client";
+import UniformConfigSizelistsList from "./sizelistList";
+import UniformConfigSizelistDetail from "./sizelistDetail";
 
 
 export default function UniformAdminPage() {
     const t = useI18n();
     const [selectedTypeId, setSelectedTypeId] = useState('');
     const selectedTypeEditableState = useState(false);
-    console.log(selectedTypeId);
+
+    const [selectedSizelistId, setSelectedSizelistId] = useState('');
+    const [sizelistEditable, setSizelistEditable] = useState(false);
 
     return (
         <div className="container-xl content-center bg-light rounded">
@@ -38,24 +42,17 @@ export default function UniformAdminPage() {
             </Row>
             <Row className="justify-content-center">
                 <Col xs={12} lg={4} xl={3} className="p-0 my-2 px-lg-2">
-                    {/*<UniformConfigSizeListsList
-                        sizeLists={sizeLists}
-                        editable={sizeListEditable}
-                        selectedSizeListId={selectedSizeListId}
-                        select={setSelectedSizeListId}
-                        add={createSizeList}
-                    />*/}
+                    <UniformConfigSizelistsList
+                        selectedSizelistId={selectedSizelistId}
+                        selectList={setSelectedSizelistId}
+                        editable={sizelistEditable}
+                    />
                 </Col>
                 <Col xs={12} lg={8} xl={9} className="p-0 my-2 px-lg-2">
-                    {/*<UniformConfigSizeListDetail
-                        editable={sizeListEditable}
-                        sizeList={sizeLists?.find(sl => sl.id === selectedSizeListId)}
-                        allSizesList={allSizesList}
-                        edit={() => setSizeListEditable(true)}
-                        save={saveSizeList}
-                        cancel={() => setSizeListEditable(false)}
-                        rename={renameSizeList}
-                        delete={deleteSizeList} />*/}
+                    <UniformConfigSizelistDetail
+                        selectedSizelistId={selectedSizelistId}
+                        editable={sizelistEditable}
+                        setEditable={setSizelistEditable} />
                 </Col>
             </Row>
         </div>

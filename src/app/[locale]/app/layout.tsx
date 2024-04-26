@@ -1,6 +1,6 @@
 import { getUniformTypeList } from "@/actions/controllers/UniformConfigController";
+import { getUniformSizeLists } from "@/actions/controllers/UniformSizeController";
 import { getInspectionState } from "@/actions/inspection/status";
-import { getUniformSizeLists } from "@/actions/uniform/sizeLists";
 import GlobalDataProvider from "@/components/globalDataProvider";
 import Sidebar from "@/components/navigation/Sidebar";
 import { prisma } from "@/lib/db";

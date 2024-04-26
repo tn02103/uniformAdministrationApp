@@ -89,8 +89,8 @@ const CadetUniformTable = ({ ...props }: PropType) => {
         }
     }
 
-    const issueMutation = (data: IssueUniformItemDataType) => {
-        issueUniformItem(data)
+    const issueMutation = async (data: IssueUniformItemDataType) => {
+        await issueUniformItem(data)
             .then((result) => {
                 if (!result.error) {
                     keyedMutator(result as CadetUniformMap);
@@ -125,7 +125,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
             },
             validate: (value) => Number.isInteger(value) || t('common.error.number.pattern'),
         },
-        save: (data) => issueMutation({
+        save: async (data) => issueMutation({
             number: +data.input,
             uniformTypeId: type.id,
             idToReplace: itemToReplace?.id,

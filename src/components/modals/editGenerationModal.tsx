@@ -21,7 +21,7 @@ export default function EditGenerationModal({ generation, type, cancel, save }: 
     const tAction = useScopedI18n('common.actions');
     const tModal = useScopedI18n('admin.uniform.generationList.updateModal');
 
-    const { sizeLists } = useUniformSizeLists();
+    const { sizelistList } = useUniformSizeLists();
 
     function beforeSave(data: UniformGeneration) {
         //doshit
@@ -85,7 +85,7 @@ export default function EditGenerationModal({ generation, type, cancel, save }: 
                     {type.usingSizes &&
                         <FormGroup className="mt-2">
                             <FormLabel className="mb-0">
-                                {t('common.uniform.sizeList')}
+                                {t('common.uniform.sizelist.label')}
                             </FormLabel>
                             <FormSelect
                                 className="w-auto"
@@ -96,7 +96,7 @@ export default function EditGenerationModal({ generation, type, cancel, save }: 
                                         message: t('common.error.pleaseSelect')
                                     }
                                 })}>
-                                {sizeLists?.map(sl =>
+                                {sizelistList?.map(sl =>
                                     <option key={sl.id} value={sl.id}>{sl.name}</option>
                                 )}
                             </FormSelect>
