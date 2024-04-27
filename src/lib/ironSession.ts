@@ -21,6 +21,7 @@ export type IronSessionUser = {
     name: string;
     username: string;
     assosiation: string;
+    acronym: string;
     role: AuthRole;
 }
 

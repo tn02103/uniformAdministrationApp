@@ -1,6 +1,5 @@
 "use server";
 
-import { FormType } from "@/app/[locale]/app/cadet/[cadetId]/_inspctionTable/card";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { descriptionValidationPattern, uuidValidationPattern } from "@/lib/validations";
@@ -8,6 +7,7 @@ import { CadetInspection, Deficiency } from "@/types/deficiencyTypes";
 import { PrismaClient } from "@prisma/client";
 import { CadetInspectionDBHandler } from "../dbHandlers/CadetInspectionDBHandler";
 import { genericSAValidatiorV2 } from "../validations";
+import { FormType } from "@/app/[locale]/[acronym]/cadet/[cadetId]/_inspctionTable/card";
 
 const dbHandler = new CadetInspectionDBHandler();
 export const getUnresolvedDeficienciesByCadet = async (cadetId: string): Promise<Deficiency[]> => genericSAValidatiorV2(

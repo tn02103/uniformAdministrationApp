@@ -165,8 +165,8 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                     />
                                     <NavLink
                                         text={t('sidebar.links.administration.size')}
-                                        href="/admin/uniform/sizes"
-                                        isRoute={pathname === "/admin/uniform/sizes"}
+                                        href="/app/admin/uniform/sizes"
+                                        isRoute={pathname === "/app/admin/uniform/sizes"}
                                         level={2}
                                         requiredRole={AuthRole.materialManager}
                                         collapsed={collapsed}
@@ -174,8 +174,8 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                     />
                                     <NavLink
                                         text={t('sidebar.links.administration.material')}
-                                        href="/admin/material"
-                                        isRoute={pathname === "/admin/material"}
+                                        href="/app/admin/material"
+                                        isRoute={pathname === "/app/admin/material"}
                                         level={2}
                                         requiredRole={AuthRole.materialManager}
                                         collapsed={collapsed}

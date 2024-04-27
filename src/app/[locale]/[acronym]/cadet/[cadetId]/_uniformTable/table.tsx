@@ -101,7 +101,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
                     return;
                 }
             }).catch((e) => {
-                console.log(e);
+                console.error(e);
                 toast.error(modalT('issueUnknown'));
             });
     }

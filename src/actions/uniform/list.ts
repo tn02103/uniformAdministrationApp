@@ -2,10 +2,10 @@
 
 import { AuthRole } from "@/lib/AuthRoles";
 import { genericSAValidatior } from "../validations";
-import { FilterType } from "@/app/[locale]/app/uniform/list/[typeId]/_filterPanel";
 import { uuidValidationPattern } from "@/lib/validations";
 import { prisma } from "@/lib/db";
 import { uniformWithOwnerArgs } from "@/types/globalUniformTypes";
+import { FilterType } from "@/app/[locale]/[acronym]/uniform/list/[typeId]/_filterPanel";
 
 const filterTypeValidator = (filter: FilterType) => (
     (typeof filter.active === "boolean")

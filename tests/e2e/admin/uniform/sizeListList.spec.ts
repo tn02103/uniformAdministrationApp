@@ -23,7 +23,7 @@ const listSizeIds = [
     "3b93f87a-3b83-11ee-ab4b-0068eb8ba754"
 ];
 test.use({ storageState: adminAuthFile });
-test.describe.only('', () => {
+test.describe('', () => {
     let page: Page;
     let listComponent: SizelistListComponent;
     let detailComponent: SizelistDetailComponent;

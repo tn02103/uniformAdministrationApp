@@ -37,7 +37,7 @@ export class LoginPage {
     }
 
     async login(user: string, password: string, url?: string) {
-        await this.page.goto(url ?? '/app/login');
+        await this.page.goto(url ?? '/de/login');
         await this.page.waitForTimeout(2000);
         await this.sel_assosiation.selectOption(testAssosiation.id);
         await this.txt_username.fill(user);

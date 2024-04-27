@@ -38,6 +38,11 @@ export default class UniformSizeDBHandler {
             ...uniformSizeArgs,
             orderBy: { sortOrder: "asc" },
         });
+    getUniformsize = (id: string, client?: PrismaClient) =>
+        (client ?? prisma).uniformSize.findUniqueOrThrow({
+            where: { id },
+            ...uniformSizeArgs,
+        });
 
     createSizelist = (name: string, fk_assosiation: string, client: PrismaClient) =>
         client.uniformSizelist.create({
@@ -56,6 +61,41 @@ export default class UniformSizeDBHandler {
 
     deleteSizelist = (id: string, client: PrismaClient) =>
         client.uniformSizelist.delete({
+            where: { id }
+        });
+
+    createSize = (name: string, sortOrder: number, fk_assosiation: string, client: PrismaClient) =>
+        client.uniformSize.create({
+            data: {
+                name,
+                sortOrder,
+                fk_assosiation,
+            },
+        });
+
+    moveMultipleSizes = (fk_assosiation: string, minSortOrder: number, maxSortOrder: number, up: boolean, client: PrismaClient) =>
+        client.uniformSize.updateMany({
+            where: {
+                fk_assosiation,
+                sortOrder: (maxSortOrder === -1)
+                    ? { gte: minSortOrder }
+                    : { gte: minSortOrder, lte: maxSortOrder }
+            },
+            data: {
+                sortOrder: up
+                    ? { decrement: 1 }
+                    : { increment: 1 }
+            }
+        }).then(r => r.count);
+
+    setSortorder = (id: string, sortOrder: number, client: PrismaClient) =>
+        client.uniformSize.update({
+            where: { id },
+            data: { sortOrder }
+        });
+
+    deleteSize = (id: string, client: PrismaClient) =>
+        client.uniformSize.delete({
             where: { id }
         });
 }

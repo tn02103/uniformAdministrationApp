@@ -36,6 +36,7 @@ export default {
             load: "Laden",
             moveUp: "nach oben verschieben",
             moveDown: "nach unten verschieben",
+            changePosition: "Position wechseln",
             ok: "Verstanden",
         },
         cadet: {
@@ -268,9 +269,18 @@ export default {
                 }
             },
             size: {
+                changePositionModal: {
+                    header: "Position für \"{size}\" ändern",
+                    label: "Position",
+                },
+                createModal: {
+                    header: "Neue Größe anlegen",
+                    label: "Größe",
+                    nameDuplicationError: "Diese Größe existiert bereits",
+                },
                 deleteModal: {
-                    header: "",
-                    message: ""
+                    header: "Größe \"{size}\" löschen",
+                    message: "Soll die Größe wirklich gelöscht werden. Diese Aktion ist nicht wieder umkehrbar."
                 },
             },
             sizeList: {

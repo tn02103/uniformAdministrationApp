@@ -28,6 +28,7 @@ export async function POST(request: Request) {
                 },
                 active: true,
             },
+            include: { assosiation: true }
         });
 
         // VALIDATE CREDENTIALS
@@ -66,6 +67,7 @@ export async function POST(request: Request) {
             name: dbUser.name,
             username: dbUser.username,
             assosiation: assosiation,
+            acronym: dbUser.assosiation.acronym,
             role: dbUser.role,
         }
 

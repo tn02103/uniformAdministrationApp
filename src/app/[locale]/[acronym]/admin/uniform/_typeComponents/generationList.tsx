@@ -8,8 +8,8 @@ import { useUniformSizeLists, useUniformType } from "@/dataFetcher/uniformAdmin"
 import { useI18n } from "@/lib/locales/client";
 
 import { UniformGeneration } from "@/types/globalUniformTypes";
-import { faPlus, faCircleUp, faCircleDown, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { Row, Col } from "react-bootstrap";
+import { faCircleDown, faCircleUp, faPencil, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Col, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 
 

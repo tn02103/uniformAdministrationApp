@@ -31,28 +31,28 @@ setup.beforeAll(async () => {
 setup('authenticate as user', async ({ page }) => {
     await page.context().clearCookies();
     (await page.context().storageState()).origins = [];
-    await new LoginPage(page).userLogin("/de/app/cadet");
+    await new LoginPage(page).userLogin();
     await page.waitForURL("/de/app/cadet");
     await page.context().storageState({ path: userAuthFile });
 });
 setup('authenticate as inspector', async ({ page }) => {
     await page.context().clearCookies();
     (await page.context().storageState()).origins = [];
-    await new LoginPage(page).inspectorLogin("/de/app/cadet");
+    await new LoginPage(page).inspectorLogin();
     await page.waitForURL("/de/app/cadet");
     await page.context().storageState({ path: inspectorAuthFile });
 });
 setup('authenticate as material', async ({ page }) => {
     await page.context().clearCookies();
     (await page.context().storageState()).origins = [];
-    await new LoginPage(page).materialLogin("/de/app/cadet");
+    await new LoginPage(page).materialLogin();
     await page.waitForURL("/de/app/cadet");
     await page.context().storageState({ path: materialAuthFile });
 });
 setup('authenticate as admin', async ({ page }) => {
     await page.context().clearCookies();
     (await page.context().storageState()).origins = [];
-    await new LoginPage(page).adminLogin("/de/app/cadet");
+    await new LoginPage(page).adminLogin();
     await page.waitForURL("/de/app/cadet");
     await page.context().storageState({ path: adminAuthFile });
 });

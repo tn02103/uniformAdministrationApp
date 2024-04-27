@@ -3,6 +3,7 @@ export default {
         of: "von",
         comment: "Kommentar",
         description: "Beschreibung",
+        name: "Name",
         type: "Typ",
         loading: "Lädt",
         dates: {
@@ -29,11 +30,14 @@ export default {
             issue: "Ausgeben",
             return: "Zurückziehen",
             replace: "Austauschen",
+            rename: "Umbenennen",
             changeIssued: "Anzahl & Typ verändern",
             delete: "Löschen",
             load: "Laden",
             moveUp: "nach oben verschieben",
             moveDown: "nach unten verschieben",
+            changePosition: "change position",
+            ok: "Verstanden",
         },
         cadet: {
             cadet: "Person",
@@ -60,7 +64,10 @@ export default {
             },
             size: "Größe",
             size_other: "Sizes",
-            sizeList: 'Größenliste',
+            sizelist: {
+                "label": "Größenliste",
+                "multiLabel": "Größenlisten",
+            },
             owner: "Besitzer",
             active: {
                 true: "Aktiv",
@@ -196,9 +203,9 @@ export default {
             invalid: "Sucheingabe Invalide",
             label: "Suche",
         },
-        'numberOfEntries#one': "{count} Einträge",
+        'numberOfEntries#one': "{count} Eintrag",
         'numberOfEntries#zero': "Keine Einträge",
-        'numberOfEntries#other': "{count} Eintrag",
+        'numberOfEntries#other': "{count} Einträge",
         noData: "Keine Daten geladen",
         header: "Uniformteile",
     },
@@ -263,21 +270,39 @@ export default {
             },
             size: {
                 deleteModal: {
-                    header: "",
-                    message: ""
+                    header: "delete size \"{size}\"",
+                    message: "Soll die Größe wirklich gelöscht werden. Diese Aktion ist nicht wieder umkehrbar."
                 },
+                createModal: {
+                    header: "create new size",
+                    label: "size",
+                    nameDuplicationError: "This size already exists",
+                },
+                changePositionModal: {
+                    header: "change position for \"{size}\"",
+                    label: "position",
+                }
             },
             sizeList: {
+                nameDuplicationError: "Es existiert bereits eine Größenliste mit diesem Namen",
+                otherSizes: "weiter Größen",
+                selectedSizes: "ausgewählte Größen",
                 createModal: {
-                    header: "",
+                    header: "Neue Größenliste anlegen",
                 },
-                inUseError: {
+                renameModal: {
                     header: "",
-                    message: "",
                 },
                 deleteWarning: {
-                    header: "",
-                    message: "",
+                    header: "Größenliste \"{name}\" löschen",
+                    message: {
+                        line1: "Bist du sicher, dass die GrößenListe gelöscht werden soll?",
+                        line2: "Diese Aktion ist nicht wieder umkehrbar",
+                    },
+                },
+                deleteFailure: {
+                    header: "Die Größenliste kann nicht gelöscht werden",
+                    message: "Die Größenliste kann nicht gelöscht werden, da sie von dem {entity} {name} noch genutzt wird."
                 }
             },
         },

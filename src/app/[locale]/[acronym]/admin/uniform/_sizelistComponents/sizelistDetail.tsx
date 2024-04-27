@@ -14,7 +14,6 @@ import { Button, Col, Dropdown, DropdownItem, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 
 
-
 export default function UniformConfigSizelistDetail({
     selectedSizelistId, editable, setEditable,
 }: {

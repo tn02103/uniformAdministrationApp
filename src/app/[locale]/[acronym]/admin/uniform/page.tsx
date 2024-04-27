@@ -1,13 +1,13 @@
 "use client"
 
+import { useI18n } from "@/lib/locales/client";
 import { useState } from "react";
 import { Col, Row } from "react-bootstrap";
-import UniformConfigTypeDetails from "./typeDetail";
-import UniformConfigTypeList from "./typeList";
-import UniformConfigTypeGenerationList from "./generationList";
-import { useI18n } from "@/lib/locales/client";
-import UniformConfigSizelistsList from "./sizelistList";
-import UniformConfigSizelistDetail from "./sizelistDetail";
+import UniformConfigSizelistDetail from "./_sizelistComponents/sizelistDetail";
+import UniformConfigSizelistsList from "./_sizelistComponents/sizelistList";
+import UniformConfigTypeGenerationList from "./_typeComponents/generationList";
+import UniformConfigTypeDetails from "./_typeComponents/typeDetail";
+import UniformConfigTypeList from "./_typeComponents/typeList";
 
 
 export default function UniformAdminPage() {
