@@ -323,7 +323,7 @@ export default {
                 issueUnknown: "Beim Zuordnen des Uniformteils ist ein unbekanntes Problem aufgetreten.",
                 issuedException: {
                     header: "Uniformteil vergeben",
-                    message: "Das Uniformteil wurde bereit an den Kadetten {firstname} {lastname} vergeben.",
+                    message: "Das Uniformteil {type} {number} wurde bereit an den Kadetten {firstname} {lastname} vergeben.",
                     ownerInactive: "Der Kadett ist nicht aktiv",
                     option: {
                         openCadet: "Kadetten öffnen",
@@ -332,11 +332,11 @@ export default {
                 },
                 inactiveException: {
                     header: "Uniformteil Passiv",
-                    message: "Das Uniformteil mit der Nummer {number} ist passiv gesetzt und sollte aus diesem Grund nicht ausgegeben werden. \nSoll das Uniformteil trotzdem dem Kadetten ausgegeben werden?"
+                    message: "Das Uniformteil {type} {number} ist passiv gesetzt und sollte aus diesem Grund nicht ausgegeben werden. \nSoll das Uniformteil trotzdem dem Kadetten ausgegeben werden?"
                 },
                 nullValueException: {
                     header: "Uniformteil nicht gefunden",
-                    message: "Das Uniformteil mit der Nummer {number} existiert nicht. Soll das Uniformteil neu Angelegt werden?",
+                    message: "Das Uniformteil {type} {number} existiert nicht. Soll das Uniformteil neu Angelegt werden?",
                     createOption: "Uniformteil anlegen"
                 },
             },

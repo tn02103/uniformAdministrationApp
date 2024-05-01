@@ -1,37 +1,36 @@
-import test, { Page, expect } from "playwright/test";
-import { adminAuthFile } from "../../../auth.setup";
+import t from "@/../public/locales/de";
+import { UniformType } from "@prisma/client";
+import { expect } from "playwright/test";
+import { adminTest } from "../../../auth.setup";
 import { acronymValidationTest, newNameValidationTests, numberValidationTests } from "../../../global/testSets";
 import { GenerationListComponent } from "../../../pages/admin/uniform/GenerationList.component";
 import { TypeDetailComponent } from "../../../pages/admin/uniform/typeDetail.component";
 import { TypeListComponent } from "../../../pages/admin/uniform/typeList.component";
-import { cleanupData } from "../../../testData/cleanupStatic";
-import { testUniformTypes } from "../../../testData/staticData";
-import t from "@/../public/locales/de";
 
-const type = testUniformTypes.find(t => t.id === '036ff236-3b83-11ee-ab4b-0068eb8ba754')!;
+type Fixture = {
+    type: UniformType;
+    detailComponent: TypeDetailComponent;
+    listComponent: TypeListComponent;
+    generationComponent: GenerationListComponent;
+}
+const test = adminTest.extend<Fixture>({
+    type: async ({ staticData }, use) => {
+        const type = await staticData.getUniformType('AA');
+        if (!type) throw Error('Failed to find type');
+        use(type);
+    },
+    detailComponent: async ({ page }, use) => use(new TypeDetailComponent(page)),
+    listComponent: async ({ page }, use) => use(new TypeListComponent(page)),
+    generationComponent: async ({ page }, use) => use(new GenerationListComponent(page)),
 
-test.use({ storageState: adminAuthFile });
-test.describe('', () => {
-    let page: Page;
-    let listComponent: TypeListComponent;
-    let detailComponent: TypeDetailComponent;
-    let generationComponent: GenerationListComponent;
-    test.beforeAll(async ({ browser }) => {
-        page = await (await browser.newContext()).newPage();
-        listComponent = new TypeListComponent(page);
-        detailComponent = new TypeDetailComponent(page);
-        generationComponent = new GenerationListComponent(page);
-
+});
+test.describe(() => {
+    test.beforeEach(async ({ page, listComponent, type }) => {
         await page.goto('/de/app/admin/uniform');
-    });
-    test.beforeEach(async () => {
-        await cleanupData();
-        await page.reload();
         await listComponent.btn_open(type.id).click();
     });
-    test.afterAll(() => page.close());
 
-    test('validate data and visiblity', async () => {
+    test('validate data and visiblity', async ({ detailComponent, type }) => {
         await test.step('uneditable', async () => {
             await Promise.all([
                 expect.soft(detailComponent.div_name).toBeVisible(),
@@ -71,7 +70,7 @@ test.describe('', () => {
     });
 
     test.describe('validate formValidation', () => {
-        test('name', async () => {
+        test('name', async ({ page, listComponent, detailComponent, type }) => {
             const tests = newNameValidationTests({
                 minLength: 1,
                 maxLength: 10
@@ -94,7 +93,7 @@ test.describe('', () => {
                 });
             }
         });
-        test('acronym', async () => {
+        test('acronym', async ({ page, listComponent, detailComponent, type }) => {
             const tests = acronymValidationTest({ emptyAllowed: false });
             for (const testSet of tests) {
                 await test.step(testSet.testValue, async () => {
@@ -114,7 +113,7 @@ test.describe('', () => {
             }
         });
 
-        test('defaultIssued', async () => {
+        test('defaultIssued', async ({ page, listComponent, detailComponent, type }) => {
             const tests = numberValidationTests({
                 min: 0,
                 max: 10,
@@ -139,7 +138,7 @@ test.describe('', () => {
         });
     });
 
-    test('validate sel_defaultSl hidden when not using sizes', async () => {
+    test('validate sel_defaultSl hidden when not using sizes', async ({ detailComponent }) => {
         await detailComponent.btn_edit.click();
         await expect(detailComponent.chk_usingSizes).toBeChecked();
         await expect(detailComponent.sel_defaultSL).toBeVisible();
@@ -148,7 +147,7 @@ test.describe('', () => {
         await expect(detailComponent.chk_usingSizes).not.toBeChecked();
         await expect(detailComponent.sel_defaultSL).not.toBeVisible();
     });
-    test('validate div_generationList hidden when not using generations', async () => {
+    test('validate div_generationList hidden when not using generations', async ({ generationComponent, detailComponent }) => {
         await expect(generationComponent.btn_create).toBeVisible();
 
         await detailComponent.btn_edit.click();
@@ -158,7 +157,7 @@ test.describe('', () => {
         await expect(detailComponent.div_usingGenerations).toHaveText(t.common.no);
         await expect(generationComponent.btn_create).not.toBeVisible();
     });
-    test('cancel function', async () => {
+    test('cancel function', async ({ detailComponent, type }) => {
         await test.step('change data', async () => {
             await detailComponent.btn_edit.click();
             await detailComponent.txt_name.fill('NewName');
@@ -178,7 +177,7 @@ test.describe('', () => {
             await expect.soft(detailComponent.txt_acronym).toHaveValue(type.acronym);
         });
     });
-    test('save function', async () => {
+    test('save function', async ({ detailComponent, staticData }) => {
         await test.step('change data', async () => {
             await detailComponent.btn_edit.click();
 
@@ -186,7 +185,7 @@ test.describe('', () => {
             await detailComponent.txt_acronym.fill('XX');
             await detailComponent.txt_issuedDefault.fill('3');
             await detailComponent.chk_usingGenerations.click();
-            await detailComponent.sel_defaultSL.selectOption('277a262c-3b83-11ee-ab4b-0068eb8ba754')
+            await detailComponent.sel_defaultSL.selectOption(staticData.ids.sizelistIds[1]);
             await detailComponent.btn_save.click();
         });
         await test.step('validate data changed', async () => {

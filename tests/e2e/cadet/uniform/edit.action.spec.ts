@@ -1,178 +1,214 @@
-import { Page, expect, test } from "playwright/test";
-import { adminAuthFile } from "../../../auth.setup";
+import { Page, expect } from "playwright/test";
+import { adminAuthFile, adminTest } from "../../../auth.setup";
 import { CadetUniformComponent, UniformItemRowComponent } from "../../../pages/cadet/cadetUniform.component";
 import { cleanupData } from "../../../testData/cleanupStatic";
 import { testGenerations, testUniformItems } from "../../../testData/staticData";
+import { prisma } from "@/lib/db";
+import { Uniform } from "@prisma/client";
+import { viewports } from "../../../global/helper";
 
-test.use({ storageState: adminAuthFile });
-test.describe('', () => {
-    /**
-     * The tests check the implementation of the UniformForm Compenten in the CadetUniformTable
-     * The tests only check a small part of the functionality within the component
-     */
-    const testData = {
-        cadetId: '0d06427b-3c12-11ee-8084-0068eb8ba754', // Marie Ackerman
-        uniformId: '45f35815-3c0d-11ee-8084-0068eb8ba754', // Typ1
-    }
-    const uniform = testUniformItems.find(u => u.id === testData.uniformId);
-    if (!uniform) throw Error('uniform not found');
+type Fixture = {
+    uniform: Uniform;
+    uniformComponent: CadetUniformComponent;
+    rowComponent: UniformItemRowComponent;
+};
 
-    let page: Page;
-    let unirowComponent: CadetUniformComponent;
-    let rowComponent: UniformItemRowComponent;
+const test = adminTest.extend<Fixture>({
+    uniform: async ({ staticData }, use) => use(
+        await prisma.uniform.findUniqueOrThrow({
+            where: { id: staticData.ids.uniformIds[0][84] }
+        })
+    ),
+    uniformComponent: async ({ page }, use) => use(new CadetUniformComponent(page)),
+    rowComponent: async ({ page, staticData }, use) => use(new UniformItemRowComponent(page, staticData.ids.uniformIds[0][84])),
 
-    test.beforeAll(async ({ browser }) => {
-        page = await (await browser.newContext()).newPage();
-        unirowComponent = new CadetUniformComponent(page);
-        rowComponent = new UniformItemRowComponent(page, uniform.id);
-    });
-    test.afterAll(async () => page.close());
+});
 
-    test.beforeEach(async () => {
-        await cleanupData();
-        if (page.url().endsWith(testData.cadetId)) {
-            await page.reload();
-        } else {
-            await page.goto(`/de/app/cadet/${testData.cadetId}`);
-        }
+test.describe(() => {
+    test.beforeEach(async ({ page, staticData: { ids } }) => {
+        await page.goto(`/de/app/cadet/${ids.cadetIds[1]}`);
     });
 
 
-    test('validate formData', async () => {
+    test('validate formHandling', async ({ rowComponent, uniform, staticData: { ids } }) => {
+        await test.step('validate inital formState', async () => {
+            await test.step('before editclick', async () => {
+                await expect(rowComponent.btn_save).not.toBeVisible();
+                await expect(rowComponent.btn_cancel).not.toBeVisible();
+                await expect(rowComponent.btn_edit).toBeVisible();
+                await expect(rowComponent.btn_open).toBeVisible();
+            });
+            await rowComponent.btn_edit.click();
+
+            await test.step('after editclick', async () => {
+                await expect(rowComponent.btn_save).toBeVisible();
+                await expect(rowComponent.btn_cancel).toBeVisible();
+                await expect(rowComponent.btn_edit).not.toBeVisible();
+                await expect(rowComponent.btn_open).not.toBeVisible();
+
+                await Promise.all([
+                    expect.soft(rowComponent.sel_generation).toHaveValue(uniform.fk_generation as string),
+                    expect.soft(rowComponent.sel_size).toHaveValue(uniform.fk_size as string),
+                    expect.soft(rowComponent.txt_comment).toHaveValue(uniform.comment as string),
+                ]);
+            });
+        });
+        await test.step('validate sel options', async () => {
+            await test.step('sel_generation', async () => {
+                const generations = await prisma.uniformGeneration.findMany({
+                    where: { fk_uniformType: ids.uniformTypeIds[0], recdelete: null },
+                    orderBy: { sortOrder: "asc" }
+                });
+
+                const options = await rowComponent.sel_generation.locator('option', { hasNotText: 'K.A.' }).all();
+
+                expect(options.length).toBe(generations.length);
+                await Promise.all(
+                    options.map(async (option, index) => {
+                        await expect.soft(option).toHaveAttribute("value", generations[index].id);
+                        await expect.soft(option).toHaveText(generations[index].name);
+                        if (generations[index].outdated) {
+                            await expect.soft(option).toHaveClass(/text-warning/);
+                        }
+                    })
+                );
+            });
+            await test.step('validate initialSizeList', async () => {
+                const options = await rowComponent.sel_size.locator('option', { hasNotText: 'K.A.' }).all();
+                expect(options.length).toBe(5);
+                expect(options[0]).toHaveAttribute("value", ids.sizeIds[16]);
+                expect(options[0]).toHaveText('Größe16');
+                expect(options[2]).toHaveAttribute("value", ids.sizeIds[18]);
+                expect(options[2]).toHaveText('Größe18');
+                expect(options[4]).toHaveAttribute("value", ids.sizeIds[20]);
+                expect(options[4]).toHaveText('Größe20');
+            });
+            await test.step('validate changed generation size list', async () => {
+                await rowComponent.sel_generation.selectOption(ids.uniformGenerationIds[2]);
+                const options = await rowComponent.sel_size.locator('option', { hasNotText: 'K.A.' }).all();
+
+                expect(options.length).toBe(11);
+                expect(options[0]).toHaveAttribute("value", ids.sizeIds[0]);
+                expect(options[0]).toHaveText('0');
+                expect(options[5]).toHaveAttribute("value", ids.sizeIds[5]);
+                expect(options[5]).toHaveText('5');
+                expect(options[10]).toHaveAttribute("value", ids.sizeIds[10]);
+                expect(options[10]).toHaveText('10');
+            });
+            await test.step('validate generation null size list', async () => {
+                await rowComponent.sel_generation.selectOption('');
+                const options = await rowComponent.sel_size.locator('option', { hasNotText: 'K.A.' }).all();
+
+                expect(options.length).toBe(6);
+                expect(options[0]).toHaveAttribute("value", ids.sizeIds[0]);
+                expect(options[0]).toHaveText('0');
+                expect(options[5]).toHaveAttribute("value", ids.sizeIds[5]);
+                expect(options[5]).toHaveText('5');
+            });
+        })
+    });
+
+    test('validate CancelFunction', async ({ rowComponent, uniform, staticData: { ids } }) => {
         await test.step('open form', async () => {
-            await expect(rowComponent.div_uitem).toBeVisible();
             await rowComponent.btn_edit.click();
             await expect(rowComponent.txt_comment).toBeVisible();
         });
-
-        await test.step('validate selected Data', async () => {
-            await Promise.all([
-                expect.soft(rowComponent.sel_generation).toHaveValue(uniform.fk_generation as string),
-                expect.soft(rowComponent.sel_size).toHaveValue(uniform.fk_size as string),
-                expect.soft(rowComponent.txt_comment).toBeVisible(),
-                expect.soft(rowComponent.txt_comment).toHaveValue(uniform.comment as string),
-            ]);
-        });
-    });
-
-    test('validate CancelFunction', async () => {
-        await test.step('open form', async () => {
-            await rowComponent.btn_edit.click();
-            await expect(rowComponent.txt_comment).toBeVisible();
-        });
-
         await test.step('select different Generation and cancel', async () => {
-            await rowComponent.sel_generation.selectOption('acc01de5-3b83-11ee-ab4b-0068eb8ba754');
+            await rowComponent.sel_generation.selectOption(ids.uniformGenerationIds[0]);
             await rowComponent.btn_cancel.click();
         });
-
         await test.step('validate data not changed', async () => {
             await expect.soft(rowComponent.txt_comment).not.toBeVisible();
             await expect.soft(rowComponent.div_generation).toHaveText('Generation1-4');
         });
-
         await test.step('reopen form and validate form is reset', async () => {
             await rowComponent.btn_edit.click();
             await expect(rowComponent.txt_comment).toBeVisible();
             await expect.soft(rowComponent.sel_generation).toHaveValue(uniform.fk_generation as string);
         });
     });
+    test('validate viewport change', async ({ page, rowComponent, uniform, staticData: { ids } }) => {
+        await test.step('open form & change data', async () => {
+            await expect(rowComponent.btn_edit).toBeVisible();
+            await expect(rowComponent.btn_cancel).not.toBeVisible();
+            await expect(rowComponent.btn_save).not.toBeVisible();
 
-    test('validate SaveFunction', async () => {
+            await rowComponent.btn_edit.click();
+
+            await expect(rowComponent.btn_edit).not.toBeVisible();
+            await expect(rowComponent.btn_cancel).toBeVisible();
+            await expect(rowComponent.btn_save).toBeVisible();
+            await expect(rowComponent.txt_comment).toBeVisible();
+        });
+        await test.step('viewport md', async () => {
+            await page.setViewportSize(viewports.md);
+            await expect(rowComponent.btn_edit).not.toBeVisible();
+            await expect(rowComponent.btn_cancel).not.toBeVisible();
+            await expect(rowComponent.btn_save).not.toBeVisible();
+        });
+        await test.step('viewport lg', async () => {
+            await page.setViewportSize(viewports.lg);
+            await expect(rowComponent.btn_edit).toBeVisible();
+            await expect(rowComponent.btn_cancel).not.toBeVisible();
+            await expect(rowComponent.btn_save).not.toBeVisible();
+
+            await rowComponent.btn_edit.click();
+            await expect(rowComponent.btn_edit).not.toBeVisible();
+            await expect(rowComponent.btn_cancel).toBeVisible();
+            await expect(rowComponent.btn_save).toBeVisible();
+        });
+    });
+
+    test('validate edit and save', async ({ rowComponent, staticData: { ids } }) => {
         await test.step('without null values', async () => {
-            await test.step('open form', async () => {
-                await rowComponent.btn_edit.click();
-                await expect(rowComponent.txt_comment).toBeVisible();
-            });
-
             await test.step('change data and save', async () => {
-                await rowComponent.sel_generation.selectOption('acc01de5-3b83-11ee-ab4b-0068eb8ba754');
-                await rowComponent.sel_size.selectOption('37665288-3b83-11ee-ab4b-0068eb8ba754');
+                await rowComponent.btn_edit.click();
+                await rowComponent.sel_generation.selectOption(ids.uniformGenerationIds[0]);
+                await rowComponent.sel_size.selectOption(ids.sizeIds[2]);
+                await rowComponent.txt_comment.fill('some new Comment');
                 await rowComponent.btn_save.click();
+                await expect.soft(rowComponent.txt_comment).not.toBeVisible();
             });
             await test.step('validate data changed', async () => {
-                await expect.soft(rowComponent.txt_comment).not.toBeVisible();
                 await expect.soft(rowComponent.div_generation).toHaveText('Generation1-1');
                 await expect.soft(rowComponent.div_size).toHaveText('2');
+                await expect.soft(rowComponent.div_comment).toHaveText('some new Comment')
+            });
+            await test.step('validate db', async () => {
+                const uniform = await prisma.uniform.findUniqueOrThrow({ where: { id: ids.uniformIds[0][84] } });
+
+                expect(uniform).toEqual(expect.objectContaining({
+                    fk_generation: ids.uniformGenerationIds[0],
+                    fk_size: ids.sizeIds[2],
+                    active: true,
+                    comment: 'some new Comment'
+                }));
             });
         });
         await test.step('with null values', async () => {
-            await test.step('open form', async () => {
-                await rowComponent.btn_edit.click();
-                await expect(rowComponent.txt_comment).toBeVisible();
-            });
-
             await test.step('change data and save', async () => {
+                await rowComponent.btn_edit.click();
                 await rowComponent.sel_generation.selectOption('');
                 await rowComponent.sel_size.selectOption('');
+                await rowComponent.txt_comment.fill('');
                 await rowComponent.btn_save.click();
             });
             await test.step('validate data changed', async () => {
                 await expect.soft(rowComponent.txt_comment).not.toBeVisible();
                 await expect.soft(rowComponent.div_generation).toHaveText('K.A.');
-                await expect.soft(rowComponent.div_size).toHaveText('K.A.')
+                await expect.soft(rowComponent.div_size).toHaveText('K.A.');
+                await expect.soft(rowComponent.div_comment).toHaveText('');
             });
-        });
-    });
+            await test.step('validate db', async () => {
+                const uniform = await prisma.uniform.findUniqueOrThrow({ where: { id: ids.uniformIds[0][84] } });
 
-    test('validate selOptions', async () => {
-        await test.step('open form', async () => {
-            await rowComponent.btn_edit.click();
-            await expect(rowComponent.txt_comment).toBeVisible();
-        });
-
-        await test.step('validate generation', async () => {
-            const generations = testGenerations
-                .filter(g =>
-                    (g.fk_uniformType === '036ff236-3b83-11ee-ab4b-0068eb8ba754')
-                    && (g.recdelete === null)
-                ).sort((a, b) => a.sortOrder - b.sortOrder);
-
-            const options = await rowComponent.sel_generation.locator('option', { hasNotText: 'K.A.' }).all();
-
-            expect(options.length).toBe(generations.length);
-            await Promise.all(
-                options.map(async (option, index) => {
-                    await expect(option).toHaveAttribute("value", generations[index].id);
-                    await expect(option).toHaveText(generations[index].name);
-                    if (generations[index].outdated) {
-                        await expect.soft(option).toHaveClass(/text-warning/);
-                    }
-                })
-            );
-        });
-
-        await test.step('validate initialSizeList', async () => {
-            const options = await rowComponent.sel_size.locator('option', { hasNotText: 'K.A.' }).all();
-            expect(options.length).toBe(5);
-            expect(options[0]).toHaveAttribute("value", "65942979-3b83-11ee-ab4b-0068eb8ba754");
-            expect(options[0]).toHaveText('Größe16');
-            expect(options[2]).toHaveAttribute("value", "6c8c017f-3b83-11ee-ab4b-0068eb8ba754");
-            expect(options[2]).toHaveText('Größe18');
-            expect(options[4]).toHaveAttribute("value", "74c1b7da-3b83-11ee-ab4b-0068eb8ba754");
-            expect(options[4]).toHaveText('Größe20');
-        });
-        await test.step('validate changed generation size list', async () => {
-            await rowComponent.sel_generation.selectOption('b839a899-3b83-11ee-ab4b-0068eb8ba754');
-            const options = await rowComponent.sel_size.locator('option', { hasNotText: 'K.A.' }).all();
-
-            expect(options.length).toBe(11);
-            expect(options[0]).toHaveAttribute("value", "585509de-3b83-11ee-ab4b-0068eb8ba754");
-            expect(options[0]).toHaveText('0');
-            expect(options[5]).toHaveAttribute("value", "3b93f87a-3b83-11ee-ab4b-0068eb8ba754");
-            expect(options[5]).toHaveText('5');
-            expect(options[10]).toHaveAttribute("value", "47c68566-3b83-11ee-ab4b-0068eb8ba754");
-            expect(options[10]).toHaveText('10');
-        });
-        await test.step('validate generation null size list', async () => {
-            await rowComponent.sel_generation.selectOption('');
-            const options = await rowComponent.sel_size.locator('option', { hasNotText: 'K.A.' }).all();
-
-            expect(options.length).toBe(6);
-            expect(options[0]).toHaveAttribute("value", "585509de-3b83-11ee-ab4b-0068eb8ba754");
-            expect(options[0]).toHaveText('0');
-            expect(options[5]).toHaveAttribute("value", "3b93f87a-3b83-11ee-ab4b-0068eb8ba754");
-            expect(options[5]).toHaveText('5');
+                expect(uniform).toEqual(expect.objectContaining({
+                    fk_generation: null,
+                    fk_size: null,
+                    active: true,
+                    comment: ''
+                }));
+            });
         });
     });
 });

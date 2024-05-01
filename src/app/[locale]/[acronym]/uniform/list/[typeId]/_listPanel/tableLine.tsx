@@ -15,7 +15,9 @@ export default function TableLine({
     uniform,
     uniformType,
     searchString,
+    index
 }: {
+    index: number;
     uniform: UniformWithOwner;
     uniformType: UniformType;
     searchString: string;
@@ -27,6 +29,7 @@ export default function TableLine({
     return (
         <tr data-testid={`div_uitem_${uniform.id}`}>
             <td data-testid="div_number" className="col-3 col-sm-1 ">
+                ({index}) - 
                 <HighlightedText text={String(uniform.number)} highlight={String(searchString)} />
                 {!uniform.active &&
                     <>

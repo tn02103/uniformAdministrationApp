@@ -102,9 +102,10 @@ export default function ListPanel({
             </thead>
             <tbody>
                 {(uniformType && filteredLines && filteredLines.length > 0)
-                    ? filteredLines.map((uniform) => {
+                    ? filteredLines.map((uniform, index) => {
                         return (
                             <TableLine
+                                index={index}
                                 key={"tableLine" + uniform.id}
                                 uniform={uniform}
                                 uniformType={uniformType}

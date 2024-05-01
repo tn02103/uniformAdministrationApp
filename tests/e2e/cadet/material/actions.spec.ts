@@ -1,161 +1,153 @@
-import { Locator, Page, expect, test } from "playwright/test";
-import { adminAuthFile } from "../../../auth.setup";
+import { Locator, Page, expect } from "playwright/test";
+import { adminAuthFile, adminTest } from "../../../auth.setup";
 import { CadetMaterialComponent } from "../../../pages/cadet/cadetMaterial.component";
 import { PopupComponent } from "../../../pages/popups/Popup.component";
-import { cleanupData } from "../../../testData/cleanupStatic";
+import { cleanupData, deleteMaterialIssuedTestData } from "../../../testData/cleanupStatic";
 import t from "../../../../public/locales/de";
+import { numberValidationTests } from "../../../global/testSets";
+import { fillMaterialIssued } from "../../../testData/newStaticData";
+import { prisma } from "@/lib/db";
+import { isDataView } from "util/types";
 
-test.use({ storageState: adminAuthFile });
-test.describe('', () => {
-    const groupId = '4b8b8b36-3c03-11ee-8084-0068eb8ba754';
-    let page: Page;
-    let materialComponent: CadetMaterialComponent;
-    let popupComponent: PopupComponent;
-    let sel_type: Locator;
-    let txt_issued: Locator;
-    let err_issued: Locator;
+type Fixture = {
+    materialComponent: CadetMaterialComponent;
+    popupComponent: PopupComponent & {
+        sel_type: Locator;
+        txt_issued: Locator;
+        err_issued: Locator;
+    }
+}
+const test = adminTest.extend<Fixture>({
+    materialComponent: async ({ page }, use) => use(new CadetMaterialComponent(page)),
+    popupComponent: async ({ page }, use) => {
+        const comp = new PopupComponent(page);
+        use({
+            ...comp,
+            sel_type: comp.div_popup.locator('select[name="typeId"]'),
+            txt_issued: comp.div_popup.locator('input[name="issued"]'),
+            err_issued: comp.div_popup.getByTestId('err_issued'),
+        });
+    }
+});
 
-    test.beforeAll(async ({ browser }) => {
-        page = await (await browser.newContext()).newPage();
-
-        materialComponent = new CadetMaterialComponent(page);
-        popupComponent = new PopupComponent(page);
-        sel_type = popupComponent.div_popup.locator('select[name="typeId"]');
-        txt_issued = popupComponent.div_popup.locator('input[name="issued"]');
-        err_issued = popupComponent.div_popup.getByTestId('err_issued');
-
-        await page.goto(`/de/app/cadet/0d06427b-3c12-11ee-8084-0068eb8ba754`); // Marie Ackerman
+test.describe(async () => {
+    const date = new Date();
+    date.setUTCHours(0, 0, 0, 0);
+    test.beforeEach(async ({ page, staticData }) => {
+        await page.goto(`/de/app/cadet/${staticData.ids.cadetIds[1]}`);
     });
-    test.afterAll(() => page.close());
+    const dbIssuedCheck = async (fk_material: string, fk_cadet: string, quantity: number) => {
+        const issued = await prisma.materialIssued.findMany({
+            where: { fk_material, fk_cadet }
+        });
 
-    test.beforeEach(async () => {
-        await cleanupData();
-        await page.reload();
-    });
+        expect(issued).toHaveLength(1);
+        expect(issued[0].dateIssued.getTime() / 1000000).toBeCloseTo(new Date().getTime() / 1000000, 1);
+        expect(issued[0].dateReturned).toBeNull();
+        expect(issued[0].quantity).toBe(quantity);
+    }
+    const dbReturnedCheck = async (fk_material: string, fk_cadet: string, quantity: number) => {
+        const issued = await prisma.materialIssued.findMany({
+            where: { fk_material, fk_cadet }
+        });
 
-    test('Validate form validation', async () => {
-        await test.step('Issued: null Value', async () => {
-            await testIssueField('');
-        });
-        await test.step('Issued: 0', async () => {
-            await testIssueField('0');
-        });
-        await test.step('Issued: negative Value', async () => {
-            await testIssueField('-10');
-        });
-        await test.step('Issued: greater than 255', async () => {
-            await testIssueField('300');
-        });
-        await test.step('Issued: string', async () => {
-            await testIssueField('teststring');
-        });
-        await test.step('Issued: float', async () => {
-            await testIssueField('1.34');
-        });
+        expect(issued).toHaveLength(1);
+        expect(issued[0].dateReturned).not.toBeNull();
+        expect(issued[0].dateReturned!.getTime() / 1000000).toBeCloseTo(new Date().getTime() / 1000000, 1);
+        expect(issued[0].dateIssued).toStrictEqual(new Date('2023-08-16T10:06:37.000Z'));
+        expect(issued[0].quantity).toBe(quantity);
+    }
+
+    test('Validate form validation', async ({ page, materialComponent, popupComponent, staticData: { ids } }) => {
+        const testSets = numberValidationTests({ max: 255, min: 1, strict: false, testEmpty: true });
+
+        for (const set of testSets) {
+            await test.step(`Issued: ${set.testValue}`, async () => {
+                await test.step('open Modal', async () => {
+                    await page.reload();
+                    await materialComponent.btn_group_issue(ids.materialGroupIds[1]).click();
+                    await expect(popupComponent.div_popup).toBeVisible();
+                });
+
+                await test.step('fill Data', async () => {
+                    await popupComponent.txt_issued.fill(String(set.testValue));
+                    await popupComponent.btn_save.click();
+                });
+
+                await test.step('check validation', async () => {
+                    if (set.valid) {
+                        await expect.soft(popupComponent.div_popup).toBeVisible();
+                        await expect.soft(popupComponent.txt_issued).not.toHaveClass(/is-invalid/);
+                        await expect.soft(popupComponent.err_issued).not.toBeVisible();
+                    } else {
+                        await expect.soft(popupComponent.div_popup).toBeVisible();
+                        await expect.soft(popupComponent.txt_issued).toHaveClass(/is-invalid/);
+                        await expect.soft(popupComponent.err_issued).toBeVisible();
+                    }
+                });
+            });
+        }
+
         await test.step('TypeId: not Selected', async () => {
             await test.step('open Modal', async () => {
                 await page.reload();
-                await materialComponent.btn_group_issue(groupId).click();
+                await materialComponent.btn_group_issue(ids.materialGroupIds[0]).click();
                 await expect(popupComponent.div_popup).toBeVisible();
             });
 
             await test.step('fill Data', async () => {
-                await txt_issued.fill('4');
+                await popupComponent.txt_issued.fill('4');
                 await popupComponent.btn_save.click();
             });
 
             await test.step('check validation', async () => {
                 await expect.soft(popupComponent.div_popup).toBeVisible();
-                await expect.soft(sel_type).toHaveClass(/is-invalid/);
+                await expect.soft(popupComponent.sel_type).toHaveClass(/is-invalid/);
             });
-        });
-
-        async function testIssueField(value: string) {
-            await test.step('open Modal', async () => {
-                await page.reload();
-                await materialComponent.btn_group_issue(groupId).click();
-                await expect(popupComponent.div_popup).toBeVisible();
-            });
-
-            await test.step('fill Data', async () => {
-                await sel_type.selectOption('a5630e5c-3c03-11ee-8084-0068eb8ba754');
-                await txt_issued.fill(value);
-                await popupComponent.btn_save.click();
-            });
-
-            await test.step('check validation', async () => {
-                await expect.soft(popupComponent.div_popup).toBeVisible();
-                await expect.soft(txt_issued).toHaveClass(/is-invalid/);
-                await expect.soft(err_issued).toBeVisible();
-            });
-        }
-    });
-
-    test('validate that issued types are disabled', async () => {
-        await test.step('open Modal', async () => {
-            await materialComponent.btn_group_issue(groupId).click();
-            await expect(popupComponent.div_popup).toBeVisible();
-        });
-
-        await test.step('validate', async () => {
-            await expect.soft(sel_type.getByText('Typ1-1')).toBeEnabled();
-            await expect.soft(sel_type.getByText('Typ1-2')).toBeEnabled();
-            await expect.soft(sel_type.getByText('Typ1-3')).toBeDisabled();
-            await expect.soft(sel_type.getByText('Typ1-4')).toBeEnabled();
         });
     });
 
-    test('validate popup', async () => {
+
+    test('validate popup', async ({ materialComponent, popupComponent, staticData: { ids } }) => {
         await test.step('open Modal', async () => {
-            await materialComponent.btn_group_issue(groupId).click();
+            await materialComponent.btn_group_issue(ids.materialGroupIds[0]).click();
             await expect(popupComponent.div_popup).toBeVisible();
         });
-        await test.step('validate', async () => {
+        await test.step('validate popup', async () => {
             await expect.soft(popupComponent.div_header).toHaveText(t.cadetDetailPage.issueMaterial.header.replace('{group}', 'Gruppe1'));
-            await expect.soft(txt_issued).toBeVisible();
-            await expect.soft(sel_type).toBeVisible();
+            await expect.soft(popupComponent.txt_issued).toBeVisible();
+            await expect.soft(popupComponent.sel_type).toBeVisible();
+        });
+
+        await test.step('validate sel_type options', async () => {
+            await expect.soft(popupComponent.sel_type.getByText('Typ1-1')).toBeEnabled();
+            await expect.soft(popupComponent.sel_type.getByText('Typ1-2')).toBeEnabled();
+            await expect.soft(popupComponent.sel_type.getByText('Typ1-3')).toBeDisabled();
+            await expect.soft(popupComponent.sel_type.getByText('Typ1-4')).toBeEnabled();
         });
     });
-
-    test('validate cancelFunction', async () => {
-        const material = '9d09592c-3c03-11ee-8084-0068eb8ba754'; //Typ1-1
-
+    test('validate issue', async ({ materialComponent, popupComponent, staticData: { ids } }) => {
         await test.step('open Modal', async () => {
-            await materialComponent.btn_group_issue(groupId).click();
-            await expect(popupComponent.div_popup).toBeVisible();
-        });
-        await test.step('select and cancel', async () => {
-            await sel_type.selectOption(material);
-            await txt_issued.fill('3');
-            await popupComponent.btn_cancel.click();
-        });
-        await test.step('validate post action', async () => {
-            await expect.soft(popupComponent.div_popup).not.toBeVisible();
-            await expect.soft(materialComponent.div_material(material)).not.toBeVisible();
-        });
-    });
-
-    test('validate saveFunction', async () => {
-        const material = '9d09592c-3c03-11ee-8084-0068eb8ba754'; //Typ1-1
-
-        await test.step('open Modal', async () => {
-            await materialComponent.btn_group_issue(groupId).click();
+            await materialComponent.btn_group_issue(ids.materialGroupIds[0]).click();
             await expect(popupComponent.div_popup).toBeVisible();
         });
         await test.step('select and save', async () => {
-            await sel_type.selectOption(material);
-            await txt_issued.fill('3');
+            await popupComponent.sel_type.selectOption(ids.materialIds[1]);
+            await popupComponent.txt_issued.fill('3');
             await popupComponent.btn_save.click();
         });
-        await test.step('validate post action', async () => {
+        await test.step('validate ui', async () => {
             await expect.soft(popupComponent.div_popup).not.toBeVisible();
-            await expect.soft(materialComponent.div_material(material)).toBeVisible();
+            await expect.soft(materialComponent.div_material(ids.materialIds[1])).toBeVisible();
+        });
+        await test.step('validate db', async () => {
+            await dbIssuedCheck(ids.materialIds[1], ids.cadetIds[1], 3);
         });
     });
 
-    test('validate switch function replace', async () => {
-        const newMaterial = '9d09592c-3c03-11ee-8084-0068eb8ba754'; //Typ1-1
-        const oldMaterial = 'acda1cc8-3c03-11ee-8084-0068eb8ba754'; //Typ1-3
+    test('validate switch function replace', async ({ materialComponent, popupComponent, staticData: { ids } }) => {
+        const newMaterial = ids.materialIds[1]; //Typ1-2
+        const oldMaterial = ids.materialIds[2]; //Typ1-3
 
         await test.step('open Modal', async () => {
             await materialComponent.btn_material_switch(oldMaterial).click();
@@ -163,54 +155,79 @@ test.describe('', () => {
         });
 
         await test.step('validate initial data', async () => {
-            await expect.soft(sel_type).toHaveValue(oldMaterial);
-            await expect.soft(txt_issued).toHaveValue('1');
+            await expect.soft(popupComponent.sel_type).toHaveValue(oldMaterial);
+            await expect.soft(popupComponent.txt_issued).toHaveValue('1');
         });
 
         await test.step('select new values', async () => {
-            await sel_type.selectOption(newMaterial);
-            await txt_issued.fill('2');
+            await popupComponent.sel_type.selectOption(newMaterial);
+            await popupComponent.txt_issued.fill('2');
             await popupComponent.btn_save.click();
         });
 
-        await test.step('validate new data', async () => {
+        await test.step('validate ui', async () => {
             await expect.soft(materialComponent.div_material(oldMaterial)).not.toBeVisible();
             await expect.soft(materialComponent.div_material(newMaterial)).toBeVisible();
             await expect.soft(materialComponent.div_material_issued(newMaterial)).toHaveText('2');
-            await expect.soft(materialComponent.div_material_name(newMaterial)).toHaveText('Typ1-1');
+            await expect.soft(materialComponent.div_material_name(newMaterial)).toHaveText('Typ1-2');
+        });
+        await test.step('validate db', async () => {
+            await dbIssuedCheck(newMaterial, ids.cadetIds[1], 2);
+            await dbReturnedCheck(oldMaterial, ids.cadetIds[1], 1);
         });
     });
 
-    test('validate switch function change issued', async () => {
-        const material = 'acda1cc8-3c03-11ee-8084-0068eb8ba754'; //Typ1-3
-
+    test('validate switch function change issued', async ({ materialComponent, popupComponent, staticData: { ids } }) => {
         await test.step('open Modal', async () => {
-            await materialComponent.btn_material_switch(material).click();
+            await materialComponent.btn_material_switch(ids.materialIds[2]).click();
             await expect(popupComponent.div_popup).toBeVisible();
         });
 
         await test.step('validate initial data', async () => {
-            await expect.soft(sel_type).toHaveValue(material);
-            await expect.soft(txt_issued).toHaveValue('1');
+            await expect.soft(popupComponent.sel_type).toHaveValue(ids.materialIds[2]);
+            await expect.soft(popupComponent.txt_issued).toHaveValue('1');
         });
 
         await test.step('select new values', async () => {
-            await txt_issued.fill('4');
+            await popupComponent.txt_issued.fill('4');
             await popupComponent.btn_save.click();
         });
 
-        await test.step('validate new data', async () => {
-            await expect.soft(materialComponent.div_material(material)).toHaveCount(1);
-            await expect.soft(materialComponent.div_material_issued(material)).toHaveText('4');
-            await expect.soft(materialComponent.div_material_name(material)).toHaveText('Typ1-3');
+        await test.step('validate ui', async () => {
+            await expect.soft(materialComponent.div_material(ids.materialIds[2])).toHaveCount(1);
+            await expect.soft(materialComponent.div_material_issued(ids.materialIds[2])).toHaveText('4');
+            await expect.soft(materialComponent.div_material_name(ids.materialIds[2])).toHaveText('Typ1-3');
+        });
+        await test.step('validate db', async () => {
+            const dbIssued = await prisma.materialIssued.findMany({
+                where: {
+                    fk_cadet: ids.cadetIds[1],
+                    fk_material: ids.materialIds[2],
+                },
+                orderBy: { dateIssued: "asc" }
+            });
+
+            expect(dbIssued).toHaveLength(2);
+
+            expect(dbIssued[0].dateReturned).not.toBeNull();
+            expect(dbIssued[0].dateReturned!.getTime() / 1000000).toBeCloseTo(new Date().getTime() / 1000000, 1);
+            expect(dbIssued[0].dateIssued).toStrictEqual(new Date('2023-08-16T10:06:37.000Z'));
+            expect(dbIssued[0].quantity).toBe(1);
+
+            expect(dbIssued[1].dateIssued.getTime() / 1000000).toBeCloseTo(new Date().getTime() / 1000000,1);
+            expect(dbIssued[1].dateReturned).toBeNull();
+            expect(dbIssued[1].quantity).toBe(4);
         });
     });
 
-    test('validate return function', async () => {
-        const material = 'acda1cc8-3c03-11ee-8084-0068eb8ba754'; //Typ1-3
-
-        await expect.soft(materialComponent.div_material(material)).toBeVisible();
-        await materialComponent.btn_material_return(material).click();
-        await expect.soft(materialComponent.div_material(material)).not.toBeVisible();
+    test('validate return function', async ({ materialComponent, staticData: { ids } }) => {
+        await test.step('return and validate ui', async () => {
+            await expect.soft(materialComponent.div_material(ids.materialIds[2])).toBeVisible();
+            await materialComponent.btn_material_return(ids.materialIds[2]).click();
+            await expect.soft(materialComponent.div_material(ids.materialIds[2])).not.toBeVisible();
+        });
+        await test.step('validate db', async () => {
+            await dbReturnedCheck(ids.materialIds[2], ids.cadetIds[1], 1);
+        });
     });
 });

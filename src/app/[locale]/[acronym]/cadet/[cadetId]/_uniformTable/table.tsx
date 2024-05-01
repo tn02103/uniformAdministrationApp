@@ -15,6 +15,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
 import UniformRow from "./uniformRow";
+import { UniformIssuedExceptionData } from "@/errors/SaveDataException";
 
 
 
@@ -33,14 +34,17 @@ const CadetUniformTable = ({ ...props }: PropType) => {
     if (error)
         throw error;
 
-    const handleIssuedErrors = (error: SAErrorResponseType["error"], data: IssueUniformItemDataType) => {
+    const handleIssuedErrors = (error: SAErrorResponseType["error"], data: IssueUniformItemDataType, typename: string) => {
         switch (error.exceptionType) {
             case ExceptionType.UniformIssuedException:
+                const errorData: UniformIssuedExceptionData = error.data;
                 modal?.showMessageModal(
                     modalT('issuedException.header'),
                     `${modalT('issuedException.message', {
-                        firstname: error.data?.owner?.firstname,
-                        lastname: error.data?.owner?.lastname,
+                        type: errorData.uniform.typename,
+                        number: errorData.uniform.number,
+                        firstname: errorData.owner?.firstname,
+                        lastname: errorData.owner?.lastname,
                     })} 
                         ${!error.data.owner.active ? modalT('issuedException.ownerInactive') : ""}`,
                     [
@@ -60,7 +64,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
                         {
                             type: "outline-danger",
                             option: modalT('issuedException.option.changeOwner'),
-                            function: () => { issueMutation({ ...data, options: { ...data.options, force: true } }) },
+                            function: () => { issueMutation({ ...data, options: { ...data.options, force: true } }, typename) },
                             testId: "btn_save"
                         }
                     ],
@@ -70,18 +74,18 @@ const CadetUniformTable = ({ ...props }: PropType) => {
                 modal?.simpleYesNoModal({
                     type: "error",
                     header: modalT('inactiveException.header'),
-                    message: modalT('inactiveException.message', { number: data.number }),
+                    message: modalT('inactiveException.message', { number: data.number, type: typename }),
                     primaryOption: t('common.actions.issue'),
-                    primaryFunction: () => issueMutation({ ...data, options: { ...data.options, ignoreInactive: true } }),
+                    primaryFunction: () => issueMutation({ ...data, options: { ...data.options, ignoreInactive: true } }, typename),
                 });
                 break;
             case ExceptionType.NullValueException:
                 modal?.simpleYesNoModal({
                     type: "error",
                     header: modalT('nullValueException.header'),
-                    message: modalT('nullValueException.message', { number: error.data.number }),
+                    message: modalT('nullValueException.message', { number: error.data.number, type: typename }),
                     primaryOption: modalT('nullValueException.createOption'),
-                    primaryFunction: () => issueMutation({ ...data, options: { ...data.options, create: true } }),
+                    primaryFunction: () => issueMutation({ ...data, options: { ...data.options, create: true } }, typename),
                 });
                 break;
             default:
@@ -89,7 +93,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
         }
     }
 
-    const issueMutation = async (data: IssueUniformItemDataType) => {
+    const issueMutation = async (data: IssueUniformItemDataType, typename: string) => {
         await issueUniformItem(data)
             .then((result) => {
                 if (!result.error) {
@@ -97,7 +101,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
                     return;
                 } else {
                     const error = (result as SAErrorResponseType).error;
-                    handleIssuedErrors(error, data);
+                    handleIssuedErrors(error, data, typename    );
                     return;
                 }
             }).catch((e) => {
@@ -131,7 +135,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
             idToReplace: itemToReplace?.id,
             cadetId,
             options: { force: false, ignoreInactive: false, create: false }
-        }),
+        }, type.name),
         abort: () => { }
     });
 

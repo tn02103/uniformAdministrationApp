@@ -2,12 +2,12 @@ import { createI18nMiddleware } from "next-international/middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { getIronSession } from "./lib/ironSession";
 import { prisma } from "./lib/db";
+import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
 
 const I18nMiddleware = createI18nMiddleware({
     locales: ['en', 'de'],
     defaultLocale: 'de',
-
 });
 
 export async function middleware(request: NextRequest) {
@@ -27,14 +27,13 @@ export async function middleware(request: NextRequest) {
 
     const pathnameParts = request.nextUrl.pathname.split("/");
     if (request.nextUrl.pathname.endsWith('/uniform/list')) {
-        return NextResponse.rewrite(new URL(`/${response.headers.get('x-next-locale')}/${session.user?.acronym}/uniform/list/null`, request.url));
-    }
-
-    if (pathnameParts[2] === "app") {
+        const urlSring = `/${response.headers.get('x-next-locale')}/${session.user?.acronym}/uniform/list/null`
+        return NextResponse.rewrite(new URL(urlSring, request.url), response);
+    } else if (pathnameParts[2] === "app") {
         if (!session.user) {
             return NextResponse.redirect(new URL('/login', request.url));
         }
-        return NextResponse.rewrite(new URL(request.url.replace('app', session.user.acronym)));
+        return NextResponse.rewrite(new URL(request.url.replace('app', session.user.acronym)), response);
     }
 
     return response;

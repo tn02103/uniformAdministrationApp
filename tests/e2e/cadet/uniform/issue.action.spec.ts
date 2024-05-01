@@ -1,548 +1,514 @@
-import { Page, expect, test } from "playwright/test";
-import { adminAuthFile } from "../../../auth.setup";
-import { CadetDataComponent } from "../../../pages/cadet/cadetData.component";
+import { prisma } from "@/lib/db";
+import { uuidValidationPattern } from "@/lib/validations";
+import { Page, expect } from "playwright/test";
+import t from "../../../../public/locales/de";
+import { adminTest } from "../../../auth.setup";
+import { viewports } from "../../../global/helper";
+import { numberValidationTests } from "../../../global/testSets";
 import { CadetDetailPage } from "../../../pages/cadet/cadetDetail.page";
-import { CadetUniformComponent } from "../../../pages/cadet/cadetUniform.component";
+import { CadetUniformComponent, UniformItemRowComponent } from "../../../pages/cadet/cadetUniform.component";
 import { MessagePopupComponent } from "../../../pages/popups/MessagePopup.component";
 import { SimpleFormPopupComponent } from "../../../pages/popups/SimpleFormPopup.component";
-import { cleanupData } from "../../../testData/cleanupStatic";
-import { testUniformTypes } from "../../../testData/staticData";
-import t from "../../../../public/locales/de";
 
-test.use({ storageState: adminAuthFile });
-test.describe('', () => {
-    const testData = {
-        normal: {
-            cadetId: '0d06427b-3c12-11ee-8084-0068eb8ba754',
-            cadetNamePattern: /Marie Ackerman/,
-            uTypeId: '036ff236-3b83-11ee-ab4b-0068eb8ba754',
-            typePattern: /Typ1/,
-            oldUniformId: '45f35815-3c0d-11ee-8084-0068eb8ba754',
-            newUniformId: '45f31751-3c0d-11ee-8084-0068eb8ba754',
-            newUniformNumber: '1111',
-            oldUniformNumber: '1184',
-        },
-        notExisting: {
-            uniformNumber: '9999',
-            numberPattern: /9999/,
-        },
-        passive: {
-            uniformId: '45f30af6-3c0d-11ee-8084-0068eb8ba754',
-            uniformNumber: '1105',
-            numberPattern: /1105/,
-        },
-        issued: {
-            numberPattern: /1100/,
-            uniformId: '45f2fdcc-3c0d-11ee-8084-0068eb8ba754',
-            uniformNumber: '1100',
-            ownerId: "db998c2f-3c11-11ee-8084-0068eb8ba754",
-            ownerNamePattern: /Maik Finkel/,
-        },
-        passiveAndIssued: {
-            uniformId: '45f31e47-3c0d-11ee-8084-0068eb8ba754',
-            uniformNumber: '1121',
-            numberPatter: /1121/,
-            ownerId: 'd468ac3c-3c11-11ee-8084-0068eb8ba754',
-        }
+type Fixture = {
+    cadetId: string;
+    uniformComponent: CadetUniformComponent;
+    messageComponent: MessagePopupComponent;
+    issuePopupComponent: SimpleFormPopupComponent;
+};
+
+const test = adminTest.extend<Fixture>({
+    cadetId: async ({ staticData }, use) => use(staticData.ids.cadetIds[1]),
+    uniformComponent: async ({ page }, use) => use(new CadetUniformComponent(page)),
+    messageComponent: async ({ page }, use) => use(new MessagePopupComponent(page)),
+    issuePopupComponent: async ({ page }, use) => use(new SimpleFormPopupComponent(page)),
+});
+test.describe(() => {
+    const dbIssuedItemCheck = async (fk_uniform: string, fk_cadet: string) => {
+        const date = new Date();
+        date.setUTCHours(0, 0, 0, 0);
+        const ui = await prisma.uniformIssued.findMany({
+            where: { fk_uniform, fk_cadet },
+        });
+        expect(ui.length).toBe(1);
+        expect.soft(ui[0]).toEqual(expect.objectContaining({
+            id: expect.stringMatching(uuidValidationPattern),
+            dateIssued: date,
+            dateReturned: null,
+            fk_cadet,
+        }));
     }
-    let page: Page;
-    let uniformComponent: CadetUniformComponent;
-    let cadetComponent: CadetDataComponent;
-    let messageComponent: MessagePopupComponent;
-    let issuePopupComponent: SimpleFormPopupComponent;
-
-    test.beforeAll(async ({ browser }) => {
-        page = await (await browser.newContext()).newPage();
-        uniformComponent = new CadetUniformComponent(page);
-        cadetComponent = new CadetDataComponent(page);
-        messageComponent = new MessagePopupComponent(page);
-        issuePopupComponent = new SimpleFormPopupComponent(page);
-    });
-    test.afterAll(async () => page.close());
-    test.beforeEach(async () => {
-        await cleanupData();
-        await page.reload();
-    });
-
-    test('validate Content of IssueUniform Modal', async () => {
-        const uType = testUniformTypes.find(t => t.id == testData.normal.uTypeId);
-
-        await test.step('Validate Popup issue', async () => {
-            await test.step('go to cadet and open modal', async () => {
-                await page.goto(`/de/app/cadet/${testData.normal.cadetId}`);
-                await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
-                await expect(issuePopupComponent.div_popup).toBeVisible();
-            });
-
-            await test.step('validate modal', async () => {
-                await expect.soft(issuePopupComponent.div_header).toHaveText(t.modals.messageModal.uniform.issue.header.replace('{type}', uType?.name as string));
-                await expect.soft(issuePopupComponent.btn_cancel).toBeVisible();
-                await expect.soft(issuePopupComponent.btn_save).toBeVisible();
-                await expect.soft(issuePopupComponent.txt_input).toBeVisible();
-            });
+    const dbIssuedAmountCheck = async (fk_cadet: string, amount: number) => {
+        const uiList = await prisma.uniformIssued.findMany({
+            where: {
+                fk_cadet,
+                dateReturned: null
+            }
         });
-        await test.step('Validate Popup replace', async () => {
-            await test.step('reload page and open modal', async () => {
-                await page.reload();
-                await uniformComponent.btn_uitem_switch(testData.normal.oldUniformId).click();
-                await expect(issuePopupComponent.div_popup).toBeVisible();
-            });
-            await test.step('validate modal', async () => {
-                await expect.soft(issuePopupComponent.div_header).toHaveText(`${uType?.name} ${testData.normal.oldUniformNumber} austauschen`);
-            });
+        expect.soft(uiList.length).toBe(amount);
+    }
+    const dbReturnedCheck = async (fk_uniform: string, fk_cadet: string, dateIssued: Date) => {
+        const date = new Date();
+        date.setUTCHours(0, 0, 0, 0);
+        const ui = await prisma.uniformIssued.findMany({
+            where: { fk_uniform, fk_cadet },
+        });
+        expect(ui.length).toBe(1);
+        expect.soft(ui[0]).toEqual(expect.objectContaining({
+            id: expect.stringMatching(uuidValidationPattern),
+            dateIssued,
+            dateReturned: date,
+            fk_cadet,
+        }));
+    }
+    const dbCommentCheck = async (cadetId: string, uniformNumber: string) => {
+        const cadet = await prisma.cadet.findUniqueOrThrow({ where: { id: cadetId } });
+
+        expect(cadet.comment).toContain('initial-comment');
+        expect(cadet.comment).toContain('Marie Becker');
+        expect(cadet.comment).toContain('Typ1');
+        expect(cadet.comment).toContain(uniformNumber);
+    }
+
+    test.beforeEach(async ({ page, cadetId }) => {
+        await page.goto(`/de/app/cadet/${cadetId}`);
+    });
+    test('E2E0239: return uniformItem Desktop', async ({ uniformComponent, messageComponent, cadetId, staticData: { ids } }) => {
+        await test.step('open and validate modal', async () => {
+            await uniformComponent.btn_uitem_withdraw(ids.uniformIds[0][84]).click();
+            await expect(messageComponent.div_popup).toBeVisible();
+
+            await Promise.all([
+                expect.soft(messageComponent.div_header).toHaveText(t.modals.messageModal.uniform.return.header),
+                expect.soft(messageComponent.div_message).toBeVisible(),
+                expect.soft(messageComponent.div_icon.locator('svg[data-icon="triangle-exclamation"]')).toBeVisible(),
+            ]);
+        });
+        await test.step('return and verify ui', async () => {
+            await messageComponent.btn_save.click();
+            await expect(messageComponent.div_popup).not.toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).not.toBeVisible();
+        });
+        await test.step('verify db', async () => {
+            await dbReturnedCheck(ids.uniformIds[0][84], cadetId, new Date('2023-08-16T00:00:00.000Z'));
         });
     });
+    test('E2E0240: return uniformItem mobile', async ({ page, uniformComponent, messageComponent, cadetId, staticData: { ids } }) => {
+        await page.setViewportSize(viewports.xs);
 
-    test('Check Formvalidation of IssueUniform Modal: ', async () => {
-        await page.goto(`/de/app/cadet/${testData.normal.cadetId}`);
-        const testValues = ['', '-10', '160000000', 'Test string', '1.25'];
+        await test.step('open modal', async () => {
+            await uniformComponent.btn_uitem_menu(ids.uniformIds[0][84]).click();
+            await uniformComponent.btn_uitem_menu_withdraw(ids.uniformIds[0][84]).click();
+            await expect(messageComponent.div_popup).toBeVisible();
+        });
+        await test.step('return and verify ui', async () => {
+            await messageComponent.btn_save.click();
+            await expect(messageComponent.div_popup).not.toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).not.toBeVisible();
+        });
+        await test.step('verify db', async () => {
+            await dbReturnedCheck(ids.uniformIds[0][84], cadetId, new Date('2023-08-16T00:00:00.000Z'));
+        });
+    });
+    test('E2E0218: issue formvalidation', async ({ page, uniformComponent, issuePopupComponent, staticData: { ids } }) => {
+        const testSets = numberValidationTests({ min: 0, max: 9999999, strict: false, testEmpty: true });
 
-        for (const value of testValues) {
-            await test.step(`testValue: "${value}"`, async () => {
+        for (const set of testSets) {
+            await test.step(`testValue: "${set.testValue}"`, async () => {
                 await test.step('relaod and open modal', async () => {
                     await page.reload();
-                    await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
+                    await uniformComponent.btn_utype_issue(ids.uniformTypeIds[0]).click();
                     await expect(issuePopupComponent.div_popup).toBeVisible();
                 });
 
                 await test.step('trigger validation', async () => {
-                    await issuePopupComponent.txt_input.fill(value);
+                    await issuePopupComponent.txt_input.fill(String(set.testValue));
                     await issuePopupComponent.btn_save.click();
                 });
 
                 await test.step('check validation', async () => {
-                    await expect.soft(issuePopupComponent.div_popup).toBeVisible();
-                    await expect.soft(issuePopupComponent.err_input).toBeVisible();
+                    if (set.valid) {
+                        await expect.soft(issuePopupComponent.div_popup).not.toBeVisible();
+                    } else {
+                        await expect.soft(issuePopupComponent.div_popup).toBeVisible();
+                        await expect.soft(issuePopupComponent.err_input).toBeVisible();
+                    }
                 });
             });
         }
     });
-
-    test.describe('Actions without errors', () => {
-        test.beforeEach(async () => {
-            await page.goto(`/de/app/cadet/${testData.normal.cadetId}`);
+    test('E2E0219: Switch UniformItem without errors', async ({ uniformComponent, issuePopupComponent, cadetId, staticData: { ids } }) => {
+        await test.step('verify startData', async () => {
+            await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(3 ${t.common.of} 3)`);
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][11])).not.toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).toBeVisible();
         });
 
-        test('Switch UniformItem', async () => {
-            await test.step('verify startData', async () => {
-                await expect.soft(uniformComponent.div_utype_amount(testData.normal.uTypeId)).toHaveText(`(3 ${t.common.of} 3)`);
-                await expect.soft(uniformComponent.div_uitem(testData.normal.newUniformId)).not.toBeVisible();
-                await expect.soft(uniformComponent.div_uitem(testData.normal.oldUniformId)).toBeVisible();
-            });
+        await test.step('issue uniformItem and validate Modal', async () => {
+            await uniformComponent.btn_uitem_switch(ids.uniformIds[0][84]).click();
+            await expect(issuePopupComponent.div_popup).toBeVisible();
+            await expect(issuePopupComponent.div_header).toHaveText(`Typ1 1184 austauschen`);
 
-            await test.step('issue uniformItem', async () => {
-                await uniformComponent.btn_uitem_switch(testData.normal.oldUniformId).click();
-                await issuePopupComponent.txt_input.fill(testData.normal.newUniformNumber);
-                await issuePopupComponent.btn_save.click();
-            });
+            await issuePopupComponent.txt_input.fill('1111');
+            await issuePopupComponent.btn_save.click();
+        });
 
-            await test.step('verify issued', async () => {
-                await expect.soft(uniformComponent.div_utype_amount(testData.normal.uTypeId)).toHaveText(`(3 ${t.common.of} 3)`);
-                await expect.soft(uniformComponent.div_uitem(testData.normal.newUniformId)).toBeVisible();
-                await expect.soft(uniformComponent.div_uitem(testData.normal.oldUniformId)).not.toBeVisible();
-            });
-        })
-        test('Issue UniformItem', async () => {
-            await test.step('verify startData', async () => {
-                await expect.soft(uniformComponent.div_utype_amount(testData.normal.uTypeId)).toHaveText(`(3 ${t.common.of} 3)`);
-                await expect.soft(uniformComponent.div_uitem(testData.normal.newUniformId)).not.toBeVisible();
-            });
-            await test.step('issue uniformItem', async () => {
-                await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
-                await issuePopupComponent.txt_input.fill(testData.normal.newUniformNumber);
-                await issuePopupComponent.btn_save.click();
-            });
-            await test.step('verify issued', async () => {
-                await expect.soft(uniformComponent.div_utype_amount(testData.normal.uTypeId)).toHaveText(`(4 ${t.common.of} 3)`);
-                await expect.soft(uniformComponent.div_uitem(testData.normal.newUniformId)).toBeVisible();
-            });
+        await test.step('verify ui', async () => {
+            await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(3 ${t.common.of} 3)`);
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][11])).toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).not.toBeVisible();
+        });
+        await test.step('verify db', async () => {
+            await Promise.all([
+                dbIssuedAmountCheck(cadetId, 6),
+                dbIssuedItemCheck(ids.uniformIds[0][11], cadetId),
+                dbReturnedCheck(ids.uniformIds[0][84], cadetId, new Date('2023-08-16T00:00:00.000Z')),
+            ]);
+        });
+    });
+    test('E2E0220: Issue UniformItem without errors', async ({ uniformComponent, issuePopupComponent, cadetId, staticData: { ids } }) => {
+        await test.step('verify startData', async () => {
+            await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(3 ${t.common.of} 3)`);
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][11])).not.toBeVisible();
+        });
+        await test.step('issue uniformItem', async () => {
+            await uniformComponent.btn_utype_issue(ids.uniformTypeIds[0]).click();
+            await expect(issuePopupComponent.div_popup).toBeVisible();
+            await expect(issuePopupComponent.div_header).toHaveText(t.modals.messageModal.uniform.issue.header.replace('{type}', 'Typ1'));
+
+            await issuePopupComponent.txt_input.fill('1111');
+            await issuePopupComponent.btn_save.click();
+        });
+        await test.step('verify ui', async () => {
+            await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(4 ${t.common.of} 3)`);
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][11])).toBeVisible();
+        });
+        await test.step('verify db', async () => {
+            await Promise.all([
+                dbIssuedAmountCheck(cadetId, 7),
+                dbIssuedItemCheck(ids.uniformIds[0][11], cadetId),
+            ]);
         });
     });
 
-    test.describe('Issue UniformItem not existing', () => {
-        test.beforeEach(async () => {
-            await test.step('verify startData', async () => {
-                await page.goto(`/de/app/cadet/${testData.normal.cadetId}`);
-                await expect(uniformComponent.div_utype_amount(testData.normal.uTypeId)).toHaveText(`(3 ${t.common.of} 3)`);
-                await expect(page.getByText(testData.notExisting.uniformNumber)).not.toBeVisible();
-            });
+    test('E2E0223: Switch UniformItem not existing', async ({ page, uniformComponent, issuePopupComponent, messageComponent, cadetId, staticData: { ids } }) => {
+        await test.step('issue uniformItem', async () => {
+            await uniformComponent.btn_uitem_switch(ids.uniformIds[0][84]).click();
+            await issuePopupComponent.txt_input.fill('9999');
+            await issuePopupComponent.btn_save.click();
         });
+        await test.step('verify popup components', async () => {
+            await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
+            await messageComponent.btn_save.click();
+        });
+        await test.step('closePopup | verify not issued', async () => {
+            await expect.soft(messageComponent.div_popup).not.toBeVisible();
+            await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(3 ${t.common.of} 3)`);
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).not.toBeVisible();
+            await expect.soft(page.getByText('9999')).toBeVisible();
+        });
+        await test.step('verify db', async () => {
+            await dbIssuedAmountCheck(cadetId, 6);
+            await dbReturnedCheck(ids.uniformIds[0][84], cadetId, new Date('2023-08-16T00:00:00.000Z'));
 
-        test('Validate erorrMessage Popup and close action', async () => {
-            await test.step('issue uniformItem', async () => {
-                await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
-                await issuePopupComponent.txt_input.fill(testData.notExisting.uniformNumber);
-                await issuePopupComponent.btn_save.click();
+            const date = new Date();
+            date.setUTCHours(0, 0, 0, 0);
+            const uniform = await prisma.uniform.findFirst({
+                where: {
+                    fk_uniformType: ids.uniformTypeIds[0],
+                    number: 9999
+                },
+                include: { issuedEntrys: true }
             });
-            await test.step('verify popup components', async () => {
+            uniform?.issuedEntrys;
+            expect(uniform).not.toBeNull();
+            expect(uniform).toEqual(expect.objectContaining({
+                id: expect.stringMatching(uuidValidationPattern),
+                fk_generation: null,
+                fk_size: null,
+                comment: null,
+                active: true,
+                recdelete: null,
+                recdeleteUser: null,
+                issuedEntrys: [
+                    expect.objectContaining({
+                        id: expect.stringMatching(uuidValidationPattern),
+                        dateIssued: date,
+                        dateReturned: null,
+                        fk_cadet: cadetId,
+                    }),
+                ],
+            }));
+        });
+    });
+
+    test('E2E0224: Issue UniformItem not existing', async ({ page, uniformComponent, issuePopupComponent, messageComponent, cadetId, staticData: { ids } }) => {
+        await test.step('issue uniformItem', async () => {
+            await uniformComponent.btn_utype_issue(ids.uniformTypeIds[0]).click();
+            await issuePopupComponent.txt_input.fill('9999');
+            await issuePopupComponent.btn_save.click();
+        });
+        await test.step('verify errorPopup and submit', async () => {
+            await expect(messageComponent.div_popup).toBeVisible(),
                 await Promise.all([
-                    expect.soft(messageComponent.div_popup).toBeVisible(),
                     expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible(),
                     expect.soft(messageComponent.div_header).toHaveAttribute("class", /bg-danger/),
                     expect.soft(messageComponent.div_header).toHaveText(t.modals.messageModal.uniform.nullValueException.header),
                     expect.soft(messageComponent.btn_save).toHaveText(t.modals.messageModal.uniform.nullValueException.createOption),
-                    expect.soft(messageComponent.div_message).toHaveText(testData.notExisting.numberPattern),
-                    expect.soft(messageComponent.btn_cancel).toBeVisible(),
-                    expect.soft(messageComponent.btn_close).toBeVisible(),
-                    expect.soft(messageComponent.btn_save).toBeVisible(),
+                    expect.soft(messageComponent.div_message).toContainText(/9999/),
                 ]);
-            });
-            await test.step('closePopup | verify not issued', async () => {
-                await messageComponent.btn_close.click();
-                await expect.soft(messageComponent.div_popup).not.toBeVisible();
-                await expect.soft(uniformComponent.div_utype_amount(testData.normal.uTypeId)).toHaveText(`(3 ${t.common.of} 3)`);
-                await expect.soft(page.getByText(testData.notExisting.uniformNumber)).not.toBeVisible();
-            });
+            await messageComponent.btn_save.click();
         });
+        await test.step('verify ui', async () => {
+            await expect.soft(messageComponent.div_popup).not.toBeVisible();
+            await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(4 ${t.common.of} 3)`);
+            await expect.soft(page.getByText('9999')).toBeVisible();
+        });
+        await test.step('verify db', async () => {
+            await dbIssuedAmountCheck(cadetId, 7);
 
-        test('Check cancel Function', async () => {
-            await test.step('issue uniformItem', async () => {
-                await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
-                await issuePopupComponent.txt_input.fill(testData.notExisting.uniformNumber);
-                await issuePopupComponent.btn_save.click();
+            const date = new Date();
+            date.setUTCHours(0, 0, 0, 0);
+            const uniform = await prisma.uniform.findFirst({
+                where: {
+                    fk_uniformType: ids.uniformTypeIds[0],
+                    number: 9999
+                },
+                include: { issuedEntrys: true }
             });
-            await test.step('verify popup components', async () => {
-                await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
-                await messageComponent.btn_cancel.click();
-            });
-            await test.step('closePopup | verify not issued', async () => {
-                await expect.soft(messageComponent.div_popup).not.toBeVisible();
-                await expect.soft(uniformComponent.div_utype_amount(testData.normal.uTypeId)).toHaveText(`(3 ${t.common.of} 3)`);
-                await expect.soft(page.getByText(testData.notExisting.uniformNumber)).not.toBeVisible();
-            });
-        });
-        test('Check with switch function', async () => {
-            await test.step('issue uniformItem', async () => {
-                await uniformComponent.btn_uitem_switch(testData.normal.oldUniformId).click();
-                await issuePopupComponent.txt_input.fill(testData.notExisting.uniformNumber);
-                await issuePopupComponent.btn_save.click();
-            });
-            await test.step('verify popup components', async () => {
-                await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
-                await messageComponent.btn_save.click();
-            });
-            await test.step('closePopup | verify not issued', async () => {
-                await expect.soft(messageComponent.div_popup).not.toBeVisible();
-                await expect.soft(uniformComponent.div_utype_amount(testData.normal.uTypeId)).toHaveText(`(3 ${t.common.of} 3)`);
-                await expect.soft(uniformComponent.div_uitem(testData.normal.oldUniformId)).not.toBeVisible();
-                await expect.soft(page.getByText(testData.notExisting.uniformNumber)).toBeVisible();
-            });
-        });
-        test('Check save Function', async () => {
-            await test.step('issue uniformItem', async () => {
-                await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
-                await issuePopupComponent.txt_input.fill(testData.notExisting.uniformNumber);
-                await issuePopupComponent.btn_save.click();
-            });
-            await test.step('verify popup components', async () => {
-                await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
-                await messageComponent.btn_save.click();
-            });
-            await test.step('closePopup | verify not issued', async () => {
-                await expect.soft(messageComponent.div_popup).not.toBeVisible();
-                await expect.soft(uniformComponent.div_utype_amount(testData.normal.uTypeId)).toHaveText(`(4 ${t.common.of} 3)`);
-                await expect.soft(page.getByText(testData.notExisting.uniformNumber)).toBeVisible();
-            });
+            uniform?.issuedEntrys;
+            expect(uniform).not.toBeNull();
+            expect(uniform).toEqual(expect.objectContaining({
+                id: expect.stringMatching(uuidValidationPattern),
+                fk_generation: null,
+                fk_size: null,
+                comment: null,
+                active: true,
+                recdelete: null,
+                recdeleteUser: null,
+                issuedEntrys: [
+                    expect.objectContaining({
+                        id: expect.stringMatching(uuidValidationPattern),
+                        dateIssued: date,
+                        dateReturned: null,
+                        fk_cadet: cadetId,
+                    }),
+                ],
+            }));
         });
     });
 
-    test.describe('Issue UniformItem passiv', () => {
-        test.beforeEach(async () => {
-            await page.goto(`/de/app/cadet/${testData.normal.cadetId}`);
-
-            await test.step('verify startData', async () => {
-                await expect.soft(uniformComponent.div_uitem(testData.passive.uniformId)).not.toBeVisible();
-                await expect.soft(uniformComponent.div_uitem(testData.normal.oldUniformId)).toBeVisible();
-                await expect.soft(uniformComponent.div_utype_amount(testData.normal.uTypeId)).toHaveText(`(3 ${t.common.of} 3)`);
-            });
+    test('E2E0227: Switch UniformItem passive', async ({ uniformComponent, issuePopupComponent, messageComponent, cadetId, staticData: { ids } }) => {
+        await test.step('issue uniformItem', async () => {
+            await uniformComponent.btn_uitem_switch(ids.uniformIds[0][84]).click();
+            await issuePopupComponent.txt_input.fill('1105');
+            await issuePopupComponent.btn_save.click();
         });
-
-        test('Validate erorrMessage Popup', async () => {
-            await test.step('issue uniformItem', async () => {
-                await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
-                await issuePopupComponent.txt_input.fill(testData.passive.uniformNumber);
-                await issuePopupComponent.btn_save.click();
-            });
-            await test.step('verify popup component', async () => {
+        await test.step('submit popup', async () => {
+            await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
+            await messageComponent.btn_save.click();
+        });
+        await test.step('verify not issued', async () => {
+            await expect.soft(messageComponent.div_popup).not.toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][5])).toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).not.toBeVisible();
+            await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(3 ${t.common.of} 3)`);
+        });
+        await test.step('verify db', async () => {
+            await dbIssuedAmountCheck(cadetId, 6);
+            await dbIssuedItemCheck(ids.uniformIds[0][5], cadetId)
+            await dbReturnedCheck(ids.uniformIds[0][84], cadetId, new Date('2023-08-16T00:00:00.000Z'));
+        });
+    });
+    test('E2E0228: Issue UniformItem passive', async ({ uniformComponent, issuePopupComponent, messageComponent, cadetId, staticData: { ids } }) => {
+        await test.step('issue uniformItem', async () => {
+            await uniformComponent.btn_utype_issue(ids.uniformTypeIds[0]).click();
+            await issuePopupComponent.txt_input.fill('1105');
+            await issuePopupComponent.btn_save.click();
+        });
+        await test.step('verify errorPopup and submit', async () => {
+            expect(messageComponent.div_popup).toBeVisible(),
                 await Promise.all([
-                    expect.soft(messageComponent.div_popup).toBeVisible(),
                     expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible(),
                     expect.soft(messageComponent.div_header).toHaveAttribute("class", /bg-danger/),
                     expect.soft(messageComponent.div_header).toHaveText(t.modals.messageModal.uniform.inactiveException.header),
-                    expect.soft(messageComponent.div_message).toHaveText(testData.passive.numberPattern),
-                    expect.soft(messageComponent.btn_cancel).toBeVisible(),
-                    expect.soft(messageComponent.btn_close).toBeVisible(),
-                    expect.soft(messageComponent.btn_save).toBeVisible(),
+                    expect.soft(messageComponent.div_message).toContainText(/1105/),
                 ]);
-            });
-            await test.step('closePopup | verify not issued', async () => {
-                await messageComponent.btn_close.click();
-                await expect.soft(messageComponent.div_popup).not.toBeVisible();
-                await expect.soft(uniformComponent.div_uitem(testData.passive.uniformId)).not.toBeVisible();
-                await expect.soft(uniformComponent.div_utype_amount(testData.normal.uTypeId)).toHaveText(`(3 ${t.common.of} 3)`);
-            });
+            await messageComponent.btn_save.click();
         });
-        test('Check cancel Function', async () => {
-            await test.step('issue uniformItem', async () => {
-                await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
-                await issuePopupComponent.txt_input.fill(testData.passive.uniformNumber);
-                await issuePopupComponent.btn_save.click();
-            });
-            await test.step('passive exceptionHandling', async () => {
-                await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
-                await messageComponent.btn_cancel.click();
-            });
-            await test.step('verify not issued', async () => {
-                await expect.soft(messageComponent.div_popup).not.toBeVisible();
-                await expect.soft(uniformComponent.div_uitem(testData.passive.uniformId)).not.toBeVisible();
-                await expect.soft(uniformComponent.div_utype_amount(testData.normal.uTypeId)).toHaveText(`(3 ${t.common.of} 3)`);
-            });
+        await test.step('verify ui', async () => {
+            await expect.soft(messageComponent.div_popup).not.toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][5])).toBeVisible();
+            await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(4 ${t.common.of} 3)`);
         });
-        test('Check with switch function', async () => {
-            await test.step('issue uniformItem', async () => {
-                await uniformComponent.btn_uitem_switch(testData.normal.oldUniformId).click();
-                await issuePopupComponent.txt_input.fill(testData.passive.uniformNumber);
-                await issuePopupComponent.btn_save.click();
-            });
-            await test.step('passive exceptionHandling', async () => {
-                await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
-                await messageComponent.btn_save.click();
-            });
-            await test.step('verify not issued', async () => {
-                await expect.soft(messageComponent.div_popup).not.toBeVisible();
-                await expect.soft(uniformComponent.div_uitem(testData.passive.uniformId)).toBeVisible();
-                await expect.soft(uniformComponent.div_uitem(testData.normal.oldUniformId)).not.toBeVisible();
-                await expect.soft(uniformComponent.div_utype_amount(testData.normal.uTypeId)).toHaveText(`(3 ${t.common.of} 3)`);
-            });
+        await test.step('verify db', async () => {
+            await Promise.all([
+                dbIssuedAmountCheck(cadetId, 7),
+                dbIssuedItemCheck(ids.uniformIds[0][5], cadetId),
+            ]);
         });
-        test('Check save Function', async () => {
-            await test.step('issue uniformItem', async () => {
-                await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
-                await issuePopupComponent.txt_input.fill(testData.passive.uniformNumber);
-                await issuePopupComponent.btn_save.click();
-            });
-            await test.step('passive exceptionHandling', async () => {
-                await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
-                await messageComponent.btn_save.click();
-            });
-            await test.step('verify not issued', async () => {
-                await expect.soft(messageComponent.div_popup).not.toBeVisible();
-                await expect.soft(uniformComponent.div_uitem(testData.passive.uniformId)).toBeVisible();
-                await expect.soft(uniformComponent.div_utype_amount(testData.normal.uTypeId)).toHaveText(`(4 ${t.common.of} 3)`);
-            });
+    });
+    test('Check UniformItem issued: open Cadet', async ({ page, uniformComponent, issuePopupComponent, messageComponent, staticData: { ids } }) => {
+        let page2: Page, cadet2Page: CadetDetailPage;
+
+        await test.step('issue UniformItem', async () => {
+            await uniformComponent.btn_utype_issue(ids.uniformTypeIds[0]).click();
+            await issuePopupComponent.txt_input.fill('1100');
+            await issuePopupComponent.btn_save.click();
+        });
+        await test.step('issued exceptionHandling & opening cadet', async () => {
+            await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
+            const page2Promise = page.waitForEvent('popup');
+            await messageComponent.div_popup.getByTestId('btn_openCadet').click();
+            page2 = await page2Promise;
+            cadet2Page = new CadetDetailPage(page2);
+        });
+        await test.step('verify opendCadetPage', async () => {
+            await expect.soft(cadet2Page.page).toHaveURL(`/de/app/cadet/${ids.cadetIds[5]}`);
+            await expect.soft(cadet2Page.divPageHeader).toContainText('Maik Finkel');
         });
     });
 
-    test.describe('Issue UniformItem issued', () => {
-        test.beforeEach(async ({ }) => {
-            await page.goto(`/de/app/cadet/${testData.normal.cadetId}`);
+    test('E2E0232: Issue UniformItem issued', async ({ uniformComponent, issuePopupComponent, messageComponent, cadetId, staticData: { ids } }) => {
+        await test.step('issue UniformItem', async () => {
+            await uniformComponent.btn_utype_issue(ids.uniformTypeIds[0]).click();
+            await issuePopupComponent.txt_input.fill('1100');
+            await issuePopupComponent.btn_save.click();
         });
-
-        test('Validate erorrMessage Popup', async () => {
-            await test.step('issue UniformItem', async () => {
-                await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
-                await issuePopupComponent.txt_input.fill(testData.issued.uniformNumber);
-                await issuePopupComponent.btn_save.click();
-            });
-
-            await test.step('verify components in popup', async () => {
+        await test.step('verify errorPopup and submit', async () => {
+            expect(messageComponent.div_popup).toBeVisible(),
                 await Promise.all([
-                    expect.soft(messageComponent.div_popup).toBeVisible(),
                     expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible(),
                     expect.soft(messageComponent.div_header).toHaveAttribute("class", /bg-danger/),
                     expect.soft(messageComponent.div_header).toHaveText(t.modals.messageModal.uniform.issuedException.header),
-                    expect.soft(messageComponent.div_message).toHaveText(testData.issued.ownerNamePattern),
-                    expect.soft(messageComponent.btn_cancel).toBeVisible(),
-                    expect.soft(messageComponent.btn_close).toBeVisible(),
-                    expect.soft(messageComponent.btn_save).toBeVisible(),
+                    expect.soft(messageComponent.div_message).toContainText('Maik Finkel'),
+                    expect.soft(messageComponent.div_message).toContainText('1100'),
                     expect.soft(messageComponent.div_popup.getByTestId('btn_openCadet')).toBeVisible(),
                 ]);
-            });
-
-            await test.step('closePopup | verify not issued', async () => {
-                await messageComponent.btn_close.click();
-                await expect.soft(messageComponent.div_popup).not.toBeVisible();
-                await expect.soft(uniformComponent.div_uitem(testData.issued.uniformId)).not.toBeVisible();
-            });
+            await messageComponent.btn_save.click();
         });
-        test('Check cancel Function', async () => {
-            await test.step('issue UniformItem', async () => {
-                await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
-                await issuePopupComponent.txt_input.fill(testData.issued.uniformNumber);
-                await issuePopupComponent.btn_save.click();
-            });
-
-            await test.step('issued exceptionHandling and cancel', async () => {
-                await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
-                await messageComponent.btn_cancel.click();
-            });
-
-            await test.step('verify not issued', async () => {
-                await expect.soft(messageComponent.div_popup).not.toBeVisible();
-                await expect.soft(uniformComponent.div_uitem(testData.issued.uniformId)).not.toBeVisible();
-            });
+        await test.step('verify ui', async () => {
+            await expect.soft(messageComponent.div_popup).not.toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][0])).toBeVisible();
         });
-        test('Check openCadet function', async () => {
-            let page2: Page, cadet2Page: CadetDetailPage;
-
-            await test.step('issue UniformItem', async () => {
-                await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
-                await issuePopupComponent.txt_input.fill(testData.issued.uniformNumber);
-                await issuePopupComponent.btn_save.click();
-            });
-            await test.step('issued exceptionHandling & opening cadet', async () => {
-                await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
-                const page2Promise = page.waitForEvent('popup');
-                await messageComponent.div_popup.getByTestId('btn_openCadet').click();
-                page2 = await page2Promise;
-                cadet2Page = new CadetDetailPage(page2);
-            });
-            await test.step('verify opendCadetPage', async () => {
-                await expect.soft(cadet2Page.page).toHaveURL(`/de/app/cadet/${testData.issued.ownerId}`);
-                await expect.soft(cadet2Page.divPageHeader).toContainText(testData.issued.ownerNamePattern);
-            });
+        await test.step('verify db', async () => {
+            await Promise.all([
+                dbIssuedAmountCheck(cadetId, 7),
+                dbIssuedItemCheck(ids.uniformIds[0][0], cadetId),
+                dbReturnedCheck(ids.uniformIds[0][0], ids.cadetIds[5], new Date('2023-08-13T00:00:00.000Z')),
+                dbCommentCheck(ids.cadetIds[5], '1100'),
+            ]);
         });
-        test('Check save function', async () => {
-            await test.step('issue UniformItem', async () => {
-                await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
-                await issuePopupComponent.txt_input.fill(testData.issued.uniformNumber);
-                await issuePopupComponent.btn_save.click();
-            });
-            await test.step('issued exceptionHandling', async () => {
-                await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
-                await messageComponent.btn_save.click();
-            });
-            await test.step('verify issued', async () => {
-                await expect.soft(messageComponent.div_popup).not.toBeVisible();
-                await expect.soft(uniformComponent.div_uitem(testData.issued.uniformId)).toBeVisible();
-            });
-            await test.step('verify comment created', async () => {
-                await page.goto(`/de/app/cadet/${testData.issued.ownerId}`);
-                await expect.soft(cadetComponent.txt_comment).toHaveValue(testData.normal.cadetNamePattern);
-                await expect.soft(cadetComponent.txt_comment).toHaveValue(testData.normal.typePattern);
-                await expect.soft(cadetComponent.txt_comment).toHaveValue(testData.issued.numberPattern);
-            });
+    });
+    test('E2E0233: Switch UniformItem issued', async ({ uniformComponent, issuePopupComponent, messageComponent, cadetId, staticData: { ids } }) => {
+        await test.step('issue UniformItem', async () => {
+            await uniformComponent.btn_uitem_switch(ids.uniformIds[0][84]).click();
+            await issuePopupComponent.txt_input.fill('1100');
+            await issuePopupComponent.btn_save.click();
         });
-        test('Check save with switch function', async () => {
-            await test.step('issue UniformItem', async () => {
-                await uniformComponent.btn_uitem_switch(testData.normal.oldUniformId).click();
-                await issuePopupComponent.txt_input.fill(testData.issued.uniformNumber);
-                await issuePopupComponent.btn_save.click();
-            });
-            await test.step('issued exceptionHandling', async () => {
-                await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
-                await messageComponent.btn_save.click();
-            });
+        await test.step('submit errorPopup', async () => {
+            await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
+            await messageComponent.btn_save.click();
+        });
 
-            await test.step('verify issued', async () => {
-                await expect.soft(messageComponent.div_popup).not.toBeVisible();
-                await expect.soft(uniformComponent.div_uitem(testData.issued.uniformId)).toBeVisible();
-                await expect.soft(uniformComponent.div_uitem(testData.normal.oldUniformId)).not.toBeVisible();
-            });
+        await test.step('verify ui', async () => {
+            await expect.soft(messageComponent.div_popup).not.toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][0])).toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).not.toBeVisible();
+        });
 
-            await test.step('verify comment created', async () => {
-                await page.goto(`/de/app/cadet/${testData.issued.ownerId}`);
-                await expect.soft(cadetComponent.txt_comment).toHaveValue(testData.normal.cadetNamePattern);
-                await expect.soft(cadetComponent.txt_comment).toHaveValue(testData.normal.typePattern);
-                await expect.soft(cadetComponent.txt_comment).toHaveValue(testData.issued.numberPattern);
-            });
+        await test.step('verify db', async () => {
+            await Promise.all([
+                dbIssuedAmountCheck(cadetId, 6),
+                dbIssuedItemCheck(ids.uniformIds[0][0], cadetId),
+                dbReturnedCheck(ids.uniformIds[0][0], ids.cadetIds[5], new Date('2023-08-13T00:00:00.000Z')),
+                dbCommentCheck(ids.cadetIds[5], '1100'),
+            ]);
         });
     });
 
-    test.describe('Test multiexception Handling', () => {
-        test.beforeEach(async ({ }) => {
-            await page.goto(`/de/app/cadet/${testData.normal.cadetId}`);
+    test('E2E0234: multiException-Handling: Issue with passive and issued', async ({ uniformComponent, issuePopupComponent, messageComponent, cadetId, staticData: { ids } }) => {
+        await test.step('issue', async () => {
+            await uniformComponent.btn_utype_issue(ids.uniformTypeIds[0]).click();
+            await issuePopupComponent.txt_input.fill('1121');
+            await issuePopupComponent.btn_save.click();
         });
-
-        test('normal, passive, issued', async () => {
-            await test.step('verify not jet issued', async () => {
-                await expect.soft(uniformComponent.div_uitem(testData.passiveAndIssued.uniformId)).not.toBeVisible();
-            });
-            await test.step('try to issue', async () => {
-                await uniformComponent.btn_utype_issue(testData.normal.uTypeId).click();
-                await issuePopupComponent.txt_input.fill(testData.passiveAndIssued.uniformNumber);
-                await issuePopupComponent.btn_save.click();
-            });
-            await test.step('passive exceptionHandling', async () => {
-                await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
-                await expect.soft(messageComponent.div_header).toHaveText(t.modals.messageModal.uniform.inactiveException.header);
-                await messageComponent.btn_save.click();
-            });
-            await test.step('issued exceptionHandling', async () => {
-                await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
-                await expect.soft(messageComponent.div_header).toHaveText(t.modals.messageModal.uniform.issuedException.header);
-                await messageComponent.btn_save.click();
-            });
-            await test.step('verify issued', async () => {
-                await expect.soft(messageComponent.div_popup).not.toBeVisible();
-                await expect.soft(uniformComponent.div_uitem(testData.passiveAndIssued.uniformId)).toBeVisible();
-            });
-            await test.step('verify comment created', async () => {
-                await page.goto(`/de/app/cadet/${testData.passiveAndIssued.ownerId}`);
-                await expect.soft(cadetComponent.txt_comment).toHaveValue(testData.normal.cadetNamePattern);
-                await expect.soft(cadetComponent.txt_comment).toHaveValue(testData.normal.typePattern);
-                await expect.soft(cadetComponent.txt_comment).toHaveValue(testData.passiveAndIssued.numberPatter);
-            });
+        await test.step('passive exceptionHandling', async () => {
+            await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
+            await expect.soft(messageComponent.div_header).toHaveText(t.modals.messageModal.uniform.inactiveException.header);
+            await messageComponent.btn_save.click();
         });
-
-        test('switch, passive, issued', async () => {
-            await test.step('verify not jet issued', async () => {
-                await expect.soft(uniformComponent.div_uitem(testData.passiveAndIssued.uniformId)).not.toBeVisible();
-                await expect.soft(uniformComponent.div_uitem(testData.normal.oldUniformId)).toBeVisible();
-            });
-            await test.step('try to issue', async () => {
-                await uniformComponent.btn_uitem_switch(testData.normal.oldUniformId).click();
-                await issuePopupComponent.txt_input.fill(testData.passiveAndIssued.uniformNumber);
-                await issuePopupComponent.btn_save.click();
-            });
-            await test.step('passive exceptionHandling', async () => {
-                await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
-                await expect.soft(messageComponent.div_header).toHaveText(t.modals.messageModal.uniform.inactiveException.header);
-                await messageComponent.btn_save.click();
-            });
-            await test.step('issued exceptionHandling', async () => {
-                await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
-                await expect.soft(messageComponent.div_header).toHaveText(t.modals.messageModal.uniform.issuedException.header);
-                await messageComponent.btn_save.click();
-            });
-            await test.step('verify issued', async () => {
-                await expect.soft(messageComponent.div_popup).not.toBeVisible();
-                await expect.soft(uniformComponent.div_uitem(testData.passiveAndIssued.uniformId)).toBeVisible();
-                await expect.soft(uniformComponent.div_uitem(testData.normal.oldUniformId)).not.toBeVisible();
-            });
-            await test.step('verify comment created', async () => {
-                await page.goto(`/de/app/cadet/${testData.passiveAndIssued.ownerId}`);
-                await expect.soft(cadetComponent.txt_comment).toHaveValue(testData.normal.cadetNamePattern);
-                await expect.soft(cadetComponent.txt_comment).toHaveValue(testData.normal.typePattern);
-                await expect.soft(cadetComponent.txt_comment).toHaveValue(testData.passiveAndIssued.numberPatter);
-            });
+        await test.step('issued exceptionHandling', async () => {
+            await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
+            await expect.soft(messageComponent.div_header).toHaveText(t.modals.messageModal.uniform.issuedException.header);
+            await messageComponent.btn_save.click();
+        });
+        await test.step('verify ui', async () => {
+            await expect.soft(messageComponent.div_popup).not.toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][21])).toBeVisible();
+        });
+        await test.step('verify db', async () => {
+            await Promise.all([
+                dbIssuedAmountCheck(cadetId, 7),
+                dbIssuedItemCheck(ids.uniformIds[0][21], cadetId),
+                dbReturnedCheck(ids.uniformIds[0][21], ids.cadetIds[4], new Date('2023-08-13T00:00:00.000Z')),
+                dbCommentCheck(ids.cadetIds[4], '1121'),
+            ]);
         });
     });
 
-    test('validate mobile switch button', async () => {
-        await test.step('Setup - AdminLogin', async () => {
-            await page.goto(`/de/app/cadet/${testData.normal.cadetId}`);
-            await page.setViewportSize({ width: 300, height: 800 });
+    test('E2E0235: multiException-Handling: Switch with passive and issued', async ({ uniformComponent, issuePopupComponent, messageComponent, cadetId, staticData: { ids } }) => {
+        await test.step('switch', async () => {
+            await uniformComponent.btn_uitem_switch(ids.uniformIds[0][84]).click();
+            await issuePopupComponent.txt_input.fill('1121');
+            await issuePopupComponent.btn_save.click();
         });
+        await test.step('passive exceptionHandling', async () => {
+            await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
+            await expect.soft(messageComponent.div_header).toHaveText(t.modals.messageModal.uniform.inactiveException.header);
+            await messageComponent.btn_save.click();
+        });
+        await test.step('issued exceptionHandling', async () => {
+            await expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible();
+            await expect.soft(messageComponent.div_header).toHaveText(t.modals.messageModal.uniform.issuedException.header);
+            await messageComponent.btn_save.click();
+        });
+        await test.step('verify ui', async () => {
+            await expect.soft(messageComponent.div_popup).not.toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][21])).toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).not.toBeVisible();
+        });
+        await test.step('verify db', async () => {
+            await Promise.all([
+                dbIssuedAmountCheck(cadetId, 6),
+                dbIssuedItemCheck(ids.uniformIds[0][21], cadetId),
+                dbReturnedCheck(ids.uniformIds[0][21], ids.cadetIds[4], new Date('2023-08-13T00:00:00.000Z')),
+                dbReturnedCheck(ids.uniformIds[0][84], cadetId, new Date('2023-08-16T00:00:00.000Z')),
+                dbCommentCheck(ids.cadetIds[4], '1121'),
+            ]);
+        });
+    });
+    test('E2E0236: validate mobile switch button', async ({ page, uniformComponent, issuePopupComponent, staticData: { ids } }) => {
+        await page.setViewportSize(viewports.xs);
 
         await test.step('verify startData', async () => {
-            await expect.soft(uniformComponent.div_utype_amount(testData.normal.uTypeId)).toHaveText(`(3 ${t.common.of} 3)`);
-            await expect.soft(uniformComponent.div_uitem(testData.normal.newUniformId)).not.toBeVisible();
-            await expect.soft(uniformComponent.div_uitem(testData.normal.oldUniformId)).toBeVisible();
+            await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(3 ${t.common.of} 3)`);
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][11])).not.toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).toBeVisible();
         });
 
         await test.step('issue uniformItem', async () => {
-            await uniformComponent.btn_uitem_menu(testData.normal.oldUniformId).click();
-            await uniformComponent.btn_uitem_menu_switch(testData.normal.oldUniformId).click();
+            await uniformComponent.btn_uitem_menu(ids.uniformIds[0][84]).click();
+            await uniformComponent.btn_uitem_menu_switch(ids.uniformIds[0][84]).click();
 
-            await issuePopupComponent.txt_input.fill(testData.normal.newUniformNumber);
+            await issuePopupComponent.txt_input.fill('1111');
             await issuePopupComponent.btn_save.click();
         });
 
         await test.step('verify issued', async () => {
-            await expect.soft(uniformComponent.div_utype_amount(testData.normal.uTypeId)).toHaveText(`(3 ${t.common.of} 3)`);
-            await expect.soft(uniformComponent.div_uitem(testData.normal.newUniformId)).toBeVisible();
-            await expect.soft(uniformComponent.div_uitem(testData.normal.oldUniformId)).not.toBeVisible();
+            await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(3 ${t.common.of} 3)`);
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][11])).toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).not.toBeVisible();
         });
     });
 });

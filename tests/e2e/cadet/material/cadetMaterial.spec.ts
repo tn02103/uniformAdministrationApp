@@ -1,129 +1,91 @@
-import { Page, expect, test } from "playwright/test";
-import { adminAuthFile, inspectorAuthFile, userAuthFile } from "../../../auth.setup";
+import { prisma } from "@/lib/db";
+import { expect } from "playwright/test";
+import { adminTest, inspectorTest, userTest } from "../../../auth.setup";
 import { defaultTextColor, getTextColor } from "../../../global/helper";
 import { CadetMaterialComponent } from "../../../pages/cadet/cadetMaterial.component";
-import { cleanupData } from "../../../testData/cleanupStatic";
-import { testAssosiation, testMaterialGroups, testMaterialIssued, testMaterials } from "../../../testData/staticData";
+import { testMaterialGroups } from "../../../testData/staticData";
 
-test.use({ storageState: adminAuthFile });
-test.describe('', () => {
-    const cadetId = '0d06427b-3c12-11ee-8084-0068eb8ba754'; // Marie Ackerman
-    let page: Page;
-    let materialComponent: CadetMaterialComponent;
+type Fixture = {
+    materialComponent: CadetMaterialComponent;
+}
+const test = adminTest.extend<Fixture>({
+    materialComponent: async ({ page }, use) => use(new CadetMaterialComponent(page)),
+});
 
-    test.beforeAll(async ({ browser }) => {
-        await cleanupData();
-        page = await (await browser.newContext()).newPage();
-        materialComponent = new CadetMaterialComponent(page);
+inspectorTest('Authroles: Inspector', async ({ page, staticData: { ids } }) => {
+    const cadetMaterialComponent = new CadetMaterialComponent(page);
+    await page.goto(`/de/app/cadet/${ids.cadetIds[1]}`);
 
-        await page.goto(`/de/app/cadet/${cadetId}`);
+    await test.step('test', async () => {
+        await Promise.all([
+            // div
+            expect.soft(cadetMaterialComponent.div_group(ids.materialGroupIds[1])).toBeVisible(),
+            expect.soft(cadetMaterialComponent.div_group_name(ids.materialGroupIds[1])).toBeVisible(),
+            expect.soft(cadetMaterialComponent.div_material(ids.materialIds[2])).toBeVisible(),
+            expect.soft(cadetMaterialComponent.div_material_name(ids.materialIds[2])).toBeVisible(),
+            expect.soft(cadetMaterialComponent.div_material_issued(ids.materialIds[2])).toBeVisible(),
+            // btn
+            expect.soft(cadetMaterialComponent.btn_group_issue(ids.materialGroupIds[1])).toBeVisible(),
+            expect.soft(cadetMaterialComponent.btn_material_return(ids.materialIds[2])).toBeVisible(),
+            expect.soft(cadetMaterialComponent.btn_material_switch(ids.materialIds[2])).toBeVisible(),
+        ]);
     });
-    test.afterAll(() => page.close());
-    test.beforeEach(async () => {
-        if (page.url().endsWith(cadetId)) {
-            await page.reload();
-        } else {
-            await page.goto(`/de/app/cadet/${cadetId}`);
-        }
-    })
+});
 
-    test.describe('validate different AuthRoles', async () => {
-        const groupId = '4b8b8b36-3c03-11ee-8084-0068eb8ba754'; // Gruppe 1
-        const typeId = 'acda1cc8-3c03-11ee-8084-0068eb8ba754'; // Type 1-3
+userTest('Authroles: User', async ({ page, staticData: { ids } }) => {
+    const cadetMaterialComponent = new CadetMaterialComponent(page);
+    await page.goto(`/de/app/cadet/${ids.cadetIds[1]}`);
 
-        test.describe('Inspector', async () => {
-            test.use({ storageState: inspectorAuthFile });
-            test('', async ({ page }) => {
-                const cadetMaterialComponent = new CadetMaterialComponent(page);
-                await page.goto(`/de/app/cadet/${cadetId}`);
+    await test.step('test', async () => {
+        await Promise.all([
+            // div
+            expect.soft(cadetMaterialComponent.div_group(ids.materialGroupIds[1])).toBeVisible(),
+            expect.soft(cadetMaterialComponent.div_group_name(ids.materialGroupIds[1])).toBeVisible(),
+            expect.soft(cadetMaterialComponent.div_material(ids.materialIds[2])).toBeVisible(),
+            expect.soft(cadetMaterialComponent.div_material_name(ids.materialIds[2])).toBeVisible(),
+            expect.soft(cadetMaterialComponent.div_material_issued(ids.materialIds[2])).toBeVisible(),
+            // btn
+            expect.soft(cadetMaterialComponent.btn_group_issue(ids.materialGroupIds[1])).not.toBeVisible(),
+            expect.soft(cadetMaterialComponent.btn_material_return(ids.materialIds[2])).not.toBeVisible(),
+            expect.soft(cadetMaterialComponent.btn_material_switch(ids.materialIds[2])).not.toBeVisible(),
+        ]);
+    });
+});
 
-                await test.step('test', async () => {
-                    await Promise.all([
-                        // div
-                        expect.soft(cadetMaterialComponent.div_group(groupId)).toBeVisible(),
-                        expect.soft(cadetMaterialComponent.div_group_name(groupId)).toBeVisible(),
-                        expect.soft(cadetMaterialComponent.div_material(typeId)).toBeVisible(),
-                        expect.soft(cadetMaterialComponent.div_material_name(typeId)).toBeVisible(),
-                        expect.soft(cadetMaterialComponent.div_material_issued(typeId)).toBeVisible(),
-                        // btn
-                        expect.soft(cadetMaterialComponent.btn_group_issue(groupId)).toBeVisible(),
-                        expect.soft(cadetMaterialComponent.btn_material_return(typeId)).toBeVisible(),
-                        expect.soft(cadetMaterialComponent.btn_material_switch(typeId)).toBeVisible(),
-                    ]);
-                });
-            });
-        });
-        test.describe('User', async () => {
-            test.use({ storageState: userAuthFile });
-            test('', async ({ page }) => {
-                const cadetMaterialComponent = new CadetMaterialComponent(page);
-                await page.goto(`/de/app/cadet/${cadetId}`);
 
-                await test.step('test', async () => {
-                    await Promise.all([
-                        // div
-                        expect.soft(cadetMaterialComponent.div_group(groupId)).toBeVisible(),
-                        expect.soft(cadetMaterialComponent.div_group_name(groupId)).toBeVisible(),
-                        expect.soft(cadetMaterialComponent.div_material(typeId)).toBeVisible(),
-                        expect.soft(cadetMaterialComponent.div_material_name(typeId)).toBeVisible(),
-                        expect.soft(cadetMaterialComponent.div_material_issued(typeId)).toBeVisible(),
-                        // btn
-                        expect.soft(cadetMaterialComponent.btn_group_issue(groupId)).not.toBeVisible(),
-                        expect.soft(cadetMaterialComponent.btn_material_return(typeId)).not.toBeVisible(),
-                        expect.soft(cadetMaterialComponent.btn_material_switch(typeId)).not.toBeVisible(),
-                    ]);
-                });
-            });
-        });
+test.describe(async () => {
+    test.beforeEach(async ({ page, staticData }) => {
+        await page.goto(`/de/app/cadet/${staticData.ids.cadetIds[1]}`);
     });
 
+    test('validate MarterialGroupRows', async ({ page, materialComponent, staticData: { ids } }) => {
+        await test.step('sortOrder', async () => {
+            expect(page.locator('div[data-testid^="div_matGroup_"]')).toHaveCount(3);
 
-    test.describe('validate MarterialGroupRows', async () => {
-        test('validate sortOrder', async () => {
-            const groupList = testMaterialGroups
-                .filter(g => (!g.recdelete && (g.fk_assosiation === testAssosiation.id)))
-                .sort((a, b) => a.sortOrder - b.sortOrder);
-
-            for (let i = 0; i < groupList.length; i++) {
-                await expect
-                    .soft(materialComponent
-                        .div_groupList
-                        .locator('> div')
-                        .locator(`nth=${i}`))
-                    .toHaveAttribute('data-testid', `div_matGroup_${groupList[i].id}`);
-                await expect
-                    .soft(materialComponent
-                        .div_groupList
-                        .locator('> div')
-                        .locator(`nth=${i}`)
-                        .getByTestId('div_groupName'))
-                    .toHaveText(groupList[i].description);
-            }
+            const divList = await page.locator('div[data-testid^="div_matGroup_"]').all()
+            expect.soft(divList[0]).toHaveAttribute('data-testid', `div_matGroup_${ids.materialGroupIds[0]}`);
+            expect.soft(divList[0].getByTestId('div_groupName')).toHaveText('Gruppe1');
+            expect.soft(divList[1]).toHaveAttribute('data-testid', `div_matGroup_${ids.materialGroupIds[1]}`);
+            expect.soft(divList[1].getByTestId('div_groupName')).toHaveText('Gruppe2');
+            expect.soft(divList[2]).toHaveAttribute('data-testid', `div_matGroup_${ids.materialGroupIds[2]}`);
+            expect.soft(divList[2].getByTestId('div_groupName')).toHaveText('Gruppe3');
         });
-        test('validate deleted Groups', async () => {
-            const groupList = testMaterialGroups
-                .filter(g => g.recdelete)
-                .sort((a, b) => a.sortOrder - b.sortOrder);
-
-            await Promise.all(
-                groupList.map(
-                    (group) => expect.soft(materialComponent.div_group(group.id)).not.toBeVisible()
-                )
-            );
+        await test.step('deleted', async () => {
+            expect(materialComponent.div_group(ids.materialGroupIds[3])).not.toBeVisible();
         });
 
-        test('validate btn_issued dissabled', async () => {
+        await test.step('validate btn_issued dissabled', async () => {
             await expect
-                .soft(materialComponent.btn_group_issue('d87d81f3-3c03-11ee-8084-0068eb8ba754'))
+                .soft(materialComponent.btn_group_issue(ids.materialGroupIds[2]))
                 .toBeDisabled();
         });
 
-        test('validate div_groupName highlighting', async () => {
-            const groupId2 = 'b9a6c18d-3c03-11ee-8084-0068eb8ba754';
-            const groupId3 = 'd87d81f3-3c03-11ee-8084-0068eb8ba754';
+        await test.step('validate div_groupName highlighting', async () => {
+            const groupId2 = ids.materialGroupIds[1];
+            const groupId3 = ids.materialGroupIds[2];
 
             await test.step('one item', async () => {
-                await page.goto('/de/app/cadet/0d06427b-3c12-11ee-8084-0068eb8ba754'); //Marie Ackerman
+                //Marie Becker
                 await expect
                     .soft(materialComponent.div_group_name(groupId2))
                     .not
@@ -134,7 +96,7 @@ test.describe('', () => {
             });
 
             await test.step('no items', async () => {
-                await page.goto('/de/app/cadet/c4d33a71-3c11-11ee-8084-0068eb8ba754'); //Sven Keller
+                await page.goto(`/de/app/cadet/${ids.cadetIds[2]}`); //Sven Keller
                 await expect
                     .soft(materialComponent.div_group_name(groupId2))
                     .not
@@ -145,7 +107,7 @@ test.describe('', () => {
             });
 
             await test.step('multiple not allowed', async () => {
-                await page.goto('/de/app/cadet/0692ae33-3c12-11ee-8084-0068eb8ba754'); //Antje Fried
+                await page.goto(`/de/app/cadet/${ids.cadetIds[0]}`); //Antje Fried
                 await expect
                     .soft(materialComponent.div_group_name(groupId2))
                     .toHaveClass(/text-danger/);
@@ -167,24 +129,26 @@ test.describe('', () => {
         });
     });
 
-    test.describe('validate MarterialItemRows', () => {
-
-        test('validate issued Material sortOrder and displayed data', async () => {
-            const issuedMaterials = testMaterialIssued
-                .filter(mi => mi.fk_cadet === cadetId && !mi.dateReturned)
-                .map(mi => {
-                    return {
-                        quantity: mi.quantity,
-                        ...testMaterials.find(m => m.id === mi.fk_material)
+    test('validate MarterialItemRows', async ({ page, materialComponent, staticData: { ids } }) => {
+        await test.step('validate issued Material sortOrder and displayed data', async () => {
+            const materialList = await prisma.material.findMany({
+                where: {
+                    issuedEntrys: {
+                        some: {
+                            fk_cadet: ids.cadetIds[1],
+                            dateReturned: null
+                        }
                     }
-                });
+                },
+                include: { issuedEntrys: true }
+            });
 
             for (const group of testMaterialGroups) {
                 const typeListLocator = materialComponent
                     .div_group(group.id)
                     .getByTestId('div_typeList')
                     .locator('> div');
-                const materiaList = issuedMaterials
+                const materiaList = materialList
                     .filter(mi => mi.fk_materialGroup === group.id)
                     .sort((a, b) => ((a.sortOrder as number) - (b.sortOrder as number)));
 
@@ -197,64 +161,66 @@ test.describe('', () => {
                         .toHaveText(materiaList[i].typename as string);
                     await expect
                         .soft(typeListLocator.locator(`nth=${i}`).getByTestId('div_issued'))
-                        .toHaveText(materiaList[i].quantity.toString());
+                        .toHaveText(materiaList[i].issuedEntrys[0].quantity.toString());
                 }
             }
         });
-        test('validate returned material', async () => {
-            const returnedMaterial = testMaterialIssued.filter(mi => mi.fk_cadet === cadetId && mi.dateReturned);
+        await test.step('validate returned material', async () => {
+            const returnedMaterial = await prisma.material.findFirstOrThrow({
+                where: {
+                    issuedEntrys: {
+                        some: {
+                            fk_cadet: ids.cadetIds[1],
+                            NOT: { dateReturned: null }
+                        }
+                    }
+                }
+            });
 
-            await Promise.all(
-                returnedMaterial.map(
-                    (material) => expect.soft(materialComponent.div_material(material.id)).not.toBeVisible()
-                )
-            );
+            await expect.soft(materialComponent.div_material(returnedMaterial.id)).not.toBeVisible()
         });
 
-        test('validate issued label highlighting', async () => {
-            await page.goto('/de/app/cadet/0692ae33-3c12-11ee-8084-0068eb8ba754'); //Antje Fried
+        await test.step('validate issued label highlighting', async () => {
+            await page.goto(`/de/app/cadet/${ids.cadetIds[0]}`); //Antje Fried
 
-            await test.step('correct amount', async () => {
-                const materialId = 'd08d5c61-3c03-11ee-8084-0068eb8ba754'; // Typ2-2
+            await test.step('correct amount', async () => { // Typ2-2
                 await expect
-                    .soft(materialComponent.div_material(materialId))
+                    .soft(materialComponent.div_material(ids.materialIds[5]))
                     .toBeVisible();
                 await expect
-                    .soft(materialComponent.div_material_issued(materialId))
+                    .soft(materialComponent.div_material_issued(ids.materialIds[5]))
                     .toHaveText("4");
                 await expect
-                    .soft(await getTextColor(materialComponent.div_material_issued(materialId)))
+                    .soft(await getTextColor(materialComponent.div_material_issued(ids.materialIds[5])))
                     .toBe(defaultTextColor);
             });
-            await test.step('to little', async () => {
-                const materialId = 'cadbd92f-3c03-11ee-8084-0068eb8ba754'; // Typ2-1
+            await test.step('to little', async () => { // Typ2-1
                 await expect
-                    .soft(materialComponent.div_material(materialId))
+                    .soft(materialComponent.div_material(ids.materialIds[4]))
                     .toBeVisible();
                 await expect
-                    .soft(materialComponent.div_material_issued(materialId))
+                    .soft(materialComponent.div_material_issued(ids.materialIds[4]))
                     .toHaveText("2");
                 await expect
-                    .soft(materialComponent.div_material_issued(materialId))
+                    .soft(materialComponent.div_material_issued(ids.materialIds[4]))
                     .toHaveClass(/text-warning/);
                 await expect
-                    .soft(await getTextColor(materialComponent.div_material_issued(materialId)))
+                    .soft(await getTextColor(materialComponent.div_material_issued(ids.materialIds[4])))
                     .not
                     .toBe(defaultTextColor);
             });
-            await test.step('to many', async () => {
-                const materialId = 'd652732e-3c03-11ee-8084-0068eb8ba754'; // Typ2-3
+            await test.step('to many', async () => { // Typ2-3
                 await expect
-                    .soft(materialComponent.div_material(materialId))
+                    .soft(materialComponent.div_material(ids.materialIds[6]))
                     .toBeVisible();
                 await expect
-                    .soft(materialComponent.div_material_issued(materialId))
+                    .soft(materialComponent.div_material_issued(ids.materialIds[6]))
                     .toHaveText("7");
                 await expect
-                    .soft(materialComponent.div_material_issued(materialId))
+                    .soft(materialComponent.div_material_issued(ids.materialIds[6]))
                     .toHaveClass(/text-warning/);
                 await expect
-                    .soft(await getTextColor(materialComponent.div_material_issued(materialId)))
+                    .soft(await getTextColor(materialComponent.div_material_issued(ids.materialIds[6])))
                     .not
                     .toBe(defaultTextColor);
             });
