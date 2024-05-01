@@ -1,200 +1,240 @@
 import { prisma } from "../../src/lib/db";
-import { testAssosiation, testDeficiencyTypes, testMaterials, testUniformItems } from "./staticData";
+import { testAssosiationList } from "./newStaticData";
+import { StaticDataIds } from "./staticDataIds";
 
-export const testActiveInspection = {
-    id: "855823c4-5478-11ee-b196-0068eb8ba754",
-    fk_assosiation: testAssosiation.id,
-    active: true
-}
+export const dynamicDataIds: {
+    inspectionId: string;
+    firstInspection: {
+        id: string;
+        newDefIds: string[]
+    };
+    seccondInspection: {
+        newDefId: string;
+    }
+}[] = [{
+    inspectionId: "bbcea624-b6e0-4113-b870-2b9a7d4e80d1",
+    firstInspection: {
+        id: '8394f9cb-0acf-471c-827e-0f52539d21af',
+        newDefIds: [
+            '004774a8-a63c-4899-ba1d-9976cfc80352',
+            '7ddc0958-24bb-4c30-8f81-01cc609a5c65',
+            'f19b8b1f-372f-448f-ab61-648d6f980565',
+            '488ac991-002f-4ba4-a8ed-e28bc3ad70f1',
+            '1cb7f57b-269e-43a3-9c4a-b1962f8504b1'
+        ]
+    },
+    seccondInspection: {
+        newDefId: "b90045d8-a686-43cf-aea6-878edde2271e"
+    }
+}, {
+    inspectionId: "d0d77a69-550b-4ff7-8d6c-c5742750abf7",
+    firstInspection: {
+        id: 'f5cd254f-eaf0-42c6-bfb0-0c862ea67e56',
+        newDefIds: [
+            '83ea3f04-4159-4d66-a831-3b35833e1a0b',
+            '057379d0-40a3-4b4d-9b62-8229834e0a91',
+            'ae8aec49-485c-47c2-b2fe-b8827d10b450',
+            '9d9568d1-40e3-42f3-8429-5a8cb537b7ea',
+            '275e03df-5cd5-41b9-a936-eb2953c7b946'
+        ]
+    },
+    seccondInspection: {
+        newDefId: "211cd3ef-4672-4714-9c3e-dc6dce757f26"
+    }
+}, {
+    inspectionId: "684783a1-adae-4491-a0f6-1952e655908d",
+    firstInspection: {
+        id: 'ef09e450-75c2-4342-a758-7d9ea30b748c',
+        newDefIds: [
+            '3a99556f-f925-42cc-8cde-9ec5979115d7',
+            '6e1dba5c-c2bb-4696-b15e-aa29988b0586',
+            'd713118f-c9d0-4c7e-be64-e80cbcaedc2e',
+            'de75bf5e-ead9-4a71-aaab-4e0081887af4',
+            '2db20a86-742d-4a9c-9858-683743b9ccd3'
+        ]
+    },
+    seccondInspection: {
+        newDefId: "11cd1b95-f9ad-4290-80cf-336ea509a6a6"
+    }
+}, {
+    inspectionId: "14e53a16-9819-415c-b22f-588ef408dd0d",
+    firstInspection: {
+        id: 'e72fcf2e-a712-4329-9d15-ac855aca148d',
+        newDefIds: [
+            '333fc3e2-0a10-4530-b158-c55086a9bfec',
+            '4ca2024c-5510-495e-b5b8-f50927b05bff',
+            'e25d9f8d-07a2-483a-a3dc-24e01fe25a2e',
+            '2cd7f2ee-86ae-439d-ac8d-77288b850bda',
+            'ac388c14-e06b-4bca-aa05-815eb9a47095'
+        ]
+    },
+    seccondInspection: {
+        newDefId: "f612b658-57c6-4625-aa27-748d86350ed5"
+    }
+}, {
+    inspectionId: "0bdbccf2-033e-405e-9538-e0fbf8ac0d53",
+    firstInspection: {
+        id: '6f6ca125-9bad-4117-ba49-fa7dcb7d844c',
+        newDefIds: [
+            '65279bd6-7da9-45b7-93ac-4321098a876f',
+            '0417a8b8-08a5-4045-abb1-841e6f1c258b',
+            '3d27e261-2b82-4101-9240-fed253c1d0b5',
+            'c46e8eda-64ef-49ed-a51b-74d483381f0c',
+            '19a1263c-e8de-444c-95bd-dee063577286'
+        ]
+    },
+    seccondInspection: {
+        newDefId: "d3403dce-90a8-4fc7-ba73-c3e9956276b9"
+    }
+}];
 
-export const startInspection = async () =>
+
+export const startInspection = async (i: number) =>
     await prisma.inspection.create({
-        data: testActiveInspection,
+        data: {
+            id: dynamicDataIds[i].inspectionId,
+            fk_assosiation: testAssosiationList[i].id,
+            active: true,
+        },
     });
 
-export const removeInspection = async () =>
+export const removeInspection = async (i: number) =>
     prisma.inspection.delete({
-        where: { id: testActiveInspection.id }
+        where: { id: dynamicDataIds[i].inspectionId }
     });
 
-const filterdTypes = testDeficiencyTypes.filter(t => t.fk_assosiation === testAssosiation.id && t.recdelete === null);
-const svenKellerId = 'c4d33a71-3c11-11ee-8084-0068eb8ba754';
-export const svenKellerFirstInspectionData = {
-    cadetInspectionId: 'c4d33a71-9283-11ee-8084-0068eb8ba754',
-    fk_cadet: 'c4d33a71-3c11-11ee-8084-0068eb8ba754',
-    fk_inspection: testActiveInspection.id,
+export const svenKellerFirstInspectionData = (i: number) => ({
+    id: dynamicDataIds[i].firstInspection.id,
+    fk_cadet: StaticDataIds[i].cadetIds[2],
+    fk_inspection: dynamicDataIds[i].inspectionId,
     uniformComplete: false,
     newDeficiencyList: [
         {
-            id: 'c4d33a71-1334-11ee-8084-0068eb8ba754',
-            fk_deficiencyType: filterdTypes.find(t => t.dependend === "cadet" && t.relation === null)!.id,
+            id: dynamicDataIds[i].firstInspection.newDefIds[0],
+            fk_deficiencyType: StaticDataIds[i].deficiencyTypeIds[1],
             description: 'new Deficiency1',
             comment: 'newDef cadet deficiency',
             userCreated: 'test3',
             userUpdated: 'test3',
-            fk_inspection_created: testActiveInspection.id,
+            fk_inspection_created: dynamicDataIds[i].inspectionId,
             DeficiencyCadet: {
                 create: {
-                    fk_cadet: svenKellerId
+                    fk_cadet: StaticDataIds[i].cadetIds[2]
                 }
             }
         },
         {
-            id: 'fs223523-1334-11ee-8084-0068eb8ba754',
-            fk_deficiencyType: filterdTypes.find(t => t.dependend === "uniform" && t.relation === null)!.id,
+            id: dynamicDataIds[i].firstInspection.newDefIds[1],
+            fk_deficiencyType: StaticDataIds[i].deficiencyTypeIds[0],
             description: 'Typ1-1146',
             comment: 'newDef uniform deficiency',
             userCreated: 'test3',
             userUpdated: 'test3',
-            fk_inspection_created: testActiveInspection.id,
+            fk_inspection_created: dynamicDataIds[i].inspectionId,
             DeficiencyUniform: {
                 create: {
-                    fk_uniform: testUniformItems.find(i => i.number === 1146)!.id,
+                    fk_uniform: StaticDataIds[i].uniformIds[0][46],
                 }
             }
         },
         {
-            id: '4c9f3d6f-a757-489b-ae97-f88dc39e74aa',
-            fk_deficiencyType: filterdTypes.find(t => t.dependend === "cadet" && t.relation === "material")!.id,
+            id: dynamicDataIds[i].firstInspection.newDefIds[2],
+            fk_deficiencyType: StaticDataIds[i].deficiencyTypeIds[3],
             description: 'Gruppe3-Typ3-3',
             comment: 'newDef cadetMaterial deficiency not issued',
             userCreated: 'test3',
             userUpdated: 'test3',
-            fk_inspection_created: testActiveInspection.id,
+            fk_inspection_created: dynamicDataIds[i].inspectionId,
             DeficiencyCadet: {
                 create: {
-                    fk_cadet: svenKellerId,
-                    fk_material: testMaterials.find(m => m.typename === "Typ3-3")!.id,
+                    fk_cadet: StaticDataIds[i].cadetIds[2],
+                    fk_material: StaticDataIds[i].materialIds[9],
                 }
             }
         },
         {
-            id: '0b95b1c4-3672-4955-98c4-fe578607d6e8',
-            fk_deficiencyType: filterdTypes.find(t => t.dependend === "cadet" && t.relation === "material")!.id,
+            id: dynamicDataIds[i].firstInspection.newDefIds[3],
+            fk_deficiencyType: StaticDataIds[i].deficiencyTypeIds[3],
             description: 'Gruppe2-Typ2-1',
             comment: 'newDef cadetMaterial deficiency issued',
             userCreated: 'test3',
             userUpdated: 'test3',
-            fk_inspection_created: testActiveInspection.id,
+            fk_inspection_created: dynamicDataIds[i].inspectionId,
             DeficiencyCadet: {
                 create: {
-                    fk_cadet: svenKellerId,
-                    fk_material: testMaterials.find(m => m.typename === "Typ2-1")!.id,
+                    fk_cadet: StaticDataIds[i].cadetIds[2],
+                    fk_material: StaticDataIds[i].materialIds[4],
                 }
             }
         },
         {
-            id: '7624af40-0f9d-43c6-8db5-23da1447a06b',
-            fk_deficiencyType: filterdTypes.find(t => t.dependend === "cadet" && t.relation === "uniform")!.id,
+            id: dynamicDataIds[i].firstInspection.newDefIds[4],
+            fk_deficiencyType: StaticDataIds[i].deficiencyTypeIds[2],
             description: 'Typ1-1148',
             comment: 'newDef cadetUniform deficiency',
             userCreated: 'test3',
             userUpdated: 'test3',
-            fk_inspection_created: testActiveInspection.id,
+            fk_inspection_created: dynamicDataIds[i].inspectionId,
             DeficiencyCadet: {
                 create: {
-                    fk_cadet: svenKellerId,
-                    fk_uniform: testUniformItems.find(i => i.number === 1148)!.id,
+                    fk_cadet: StaticDataIds[i].cadetIds[2],
+                    fk_uniform: StaticDataIds[i].uniformIds[0][48],
                 }
             }
         }
     ],
     oldDefIdsToResolve: [
-        'ccffb98b-3dcf-11ee-ac41-0068eb8ba754',
-        '09868976-3dcf-11ee-ac41-0068eb8ba754'
+        StaticDataIds[i].deficiencyIds[1],
+        StaticDataIds[i].deficiencyIds[5],
     ],
+})
 
-}
-
-export const svenKellerSecondInspectionData = {
-    fk_cadet: svenKellerFirstInspectionData.fk_cadet,
-    oldDefIdToUnsolve: svenKellerFirstInspectionData.oldDefIdsToResolve[0],
-    oldDefIdToSolve: 'ccff6a65-3dcf-11ee-ac41-0068eb8ba754',
+export const svenKellerSecondInspectionData = (i: number) => ({
+    fk_cadet: svenKellerFirstInspectionData(i).fk_cadet,
+    oldDefIdToUnsolve: svenKellerFirstInspectionData(i).oldDefIdsToResolve[0],
+    oldDefIdToSolve: StaticDataIds[i].deficiencyIds[9],
     newDefToDelete: {
-        id: svenKellerFirstInspectionData.newDeficiencyList[4].id,
-        comment: svenKellerFirstInspectionData.newDeficiencyList[4].comment,
+        id: svenKellerFirstInspectionData(i).newDeficiencyList[4].id,
+        comment: svenKellerFirstInspectionData(i).newDeficiencyList[4].comment,
     },
     newDefUpdated: {
-        ...svenKellerFirstInspectionData.newDeficiencyList[1],
+        ...svenKellerFirstInspectionData(i).newDeficiencyList[1],
         description: 'Typ1-1148',
         newComment: 'uniform deficiency Updated comment',
-        fk_uniform: testUniformItems.find(i => i.number === 1148)!.id,
+        fk_uniform: StaticDataIds[i].uniformIds[0][48],
     },
     newDefAdded: {
-        id: '98723938-0f9d-43c6-8db5-23da1447a06b',
-        fk_deficiencyType: filterdTypes.find(t => t.dependend === "cadet" && t.relation === "uniform")!.id,
+        id: dynamicDataIds[i].seccondInspection.newDefId,
+        fk_deficiencyType: StaticDataIds[i].deficiencyTypeIds[2],
         description: 'Typ1-1146',
         comment: 'cadetUniform deficiency newly created',
-        fk_uniform: testUniformItems.find(i => i.number === 1146)!.id,
+        fk_uniform: StaticDataIds[i].uniformIds[0][46],
     }
-}
-/*
-export const svenKellerSecondInspectionData = {
-    cadetInspectionId: 'c4d33a71-9283-11ee-8084-0068eb8ba754',
-    fk_cadet: 'c4d33a71-3c11-11ee-8084-0068eb8ba754',
-    fk_inspection: testActiveInspection.id,
-    uniformComplete: true,
-    newDeficiencyList: [
-        {
-            id: 'c4d33a71-1334-11ee-8084-0068eb8ba754',
-            deficiencyType: { id: testCadetDeficiencyTypes.find(dt => !dt.dependsOnUniformitem)?.id },
-            bodyDescription: 'new Deficiency1',
-            actualDescription: 'new Deficiency1',
-            comment: 'comment for def1',
-            dateCreated: null,
-            dateResolved: null
-        },
-        {
-            id: '63623474-1334-11ee-8084-0068eb8ba754',
-            deficiencyType: { id: testCadetDeficiencyTypes.find(dt => (dt.dependsOnUniformitem && dt.addCommentToUniformitem))?.id },
-            bodyDescription: 'new Deficiency3',
-            actualDescription: 'Typ1-1148',
-            comment: 'comment for def3 updated version',
-            uniformId: "45f3337e-3c0d-11ee-8084-0068eb8ba754",
-            dateCreated: null,
-            dateResolved: null
-        },
-        {
-            deficiencyType: { id: testCadetDeficiencyTypes.find(dt => (dt.dependsOnUniformitem && dt.addCommentToUniformitem))?.id },
-            bodyDescription: 'new Deficiency4',
-            actualDescription: 'Typ1-1148',
-            comment: 'comment for def4',
-            uniformId: "45f3337e-3c0d-11ee-8084-0068eb8ba754",
-            dateCreated: null,
-            dateResolved: null
-        },
-    ],
-    oldDeficiencyList: {
-        '09868976-3dcf-11ee-ac41-0068eb8ba754': true,
-        '345309ab-3dcf-11ee-ac41-0068eb8ba754': false,
-        'ccffb98b-3dcf-11ee-ac41-0068eb8ba754': true,
-        'ccff6a65-3dcf-11ee-ac41-0068eb8ba754': false
-    }
-}*/
+})
 
-export async function insertSvenKellerFirstInspection() {
+export async function insertSvenKellerFirstInspection(i: number) {
     await prisma.deficiency.updateMany({
         where: {
-            id: { in: svenKellerFirstInspectionData.oldDefIdsToResolve }
+            id: { in: svenKellerFirstInspectionData(i).oldDefIdsToResolve }
         },
         data: {
             dateResolved: new Date(),
             userResolved: 'test3',
-            fk_inspection_resolved: testActiveInspection.id,
+            fk_inspection_resolved: dynamicDataIds[i].inspectionId,
         }
     });
 
     await prisma.cadetInspection.create({
         data: {
-            id: svenKellerFirstInspectionData.cadetInspectionId,
-            uniformComplete: svenKellerFirstInspectionData.uniformComplete,
-            fk_cadet: svenKellerFirstInspectionData.fk_cadet,
-            fk_inspection: testActiveInspection.id,
+            id: svenKellerFirstInspectionData(i).id,
+            uniformComplete: svenKellerFirstInspectionData(i).uniformComplete,
+            fk_cadet: svenKellerFirstInspectionData(i).fk_cadet,
+            fk_inspection: dynamicDataIds[i].inspectionId,
         }
     });
 
     await Promise.all(
-        svenKellerFirstInspectionData.newDeficiencyList.map(async (data) =>
+        svenKellerFirstInspectionData(i).newDeficiencyList.map(async (data) =>
             prisma.deficiency.create({ data })
         )
     );

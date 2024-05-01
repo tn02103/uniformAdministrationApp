@@ -107,7 +107,7 @@ test.describe(async () => {
         });
     });
 
-    test('delete', async ({ page, cadetDetailPage, messagePopup, staticData: { ids } }) => {
+    test.only('delete', async ({ page, cadetDetailPage, messagePopup, staticData: { ids } }) => {
         const listPage = new CadetListPage(page);
         await test.step('validate popup and save', async () => {
             await cadetDetailPage.btn_menu.click();

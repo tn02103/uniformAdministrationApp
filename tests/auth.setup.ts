@@ -54,7 +54,6 @@ export type authenticatedFixture = { page: Page, staticData: StaticDataLoader }
 export const dataFixture = setup.extend<{ staticData: StaticDataLoader }>({
     staticData: async ({ }, use) => {
         const i = Number(process.env.TEST_PARALLEL_INDEX ?? 0);
-        console.log("worker using index ", i);
         await cleanupData(i);
 
         const staticData = new StaticDataLoader(i);
@@ -132,7 +131,7 @@ export const userTest = dataFixture.extend<authenticatedFixture>({
     },
 });
 
-
+/*
 setup.skip('authenticate as user', async ({ page }) => {
     await page.context().clearCookies();
     (await page.context().storageState()).origins = [];
@@ -161,3 +160,4 @@ setup.skip('authenticate as admin', async ({ page }) => {
     await page.waitForURL("/de/app/cadet");
     await page.context().storageState({ path: adminAuthFile });
 });
+*/
