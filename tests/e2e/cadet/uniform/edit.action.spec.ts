@@ -1,11 +1,9 @@
-import { Page, expect } from "playwright/test";
-import { adminAuthFile, adminTest } from "../../../auth.setup";
-import { CadetUniformComponent, UniformItemRowComponent } from "../../../pages/cadet/cadetUniform.component";
-import { cleanupData } from "../../../testData/cleanupStatic";
-import { testGenerations, testUniformItems } from "../../../testData/staticData";
 import { prisma } from "@/lib/db";
 import { Uniform } from "@prisma/client";
+import { expect } from "playwright/test";
+import { adminTest } from "../../../auth.setup";
 import { viewports } from "../../../global/helper";
+import { CadetUniformComponent, UniformItemRowComponent } from "../../../pages/cadet/cadetUniform.component";
 
 type Fixture = {
     uniform: Uniform;

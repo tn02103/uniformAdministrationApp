@@ -6,7 +6,7 @@ import { adminTest } from "../../../auth.setup";
 import { viewports } from "../../../global/helper";
 import { numberValidationTests } from "../../../global/testSets";
 import { CadetDetailPage } from "../../../pages/cadet/cadetDetail.page";
-import { CadetUniformComponent, UniformItemRowComponent } from "../../../pages/cadet/cadetUniform.component";
+import { CadetUniformComponent } from "../../../pages/cadet/cadetUniform.component";
 import { MessagePopupComponent } from "../../../pages/popups/MessagePopup.component";
 import { SimpleFormPopupComponent } from "../../../pages/popups/SimpleFormPopup.component";
 
