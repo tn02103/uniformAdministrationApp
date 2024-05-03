@@ -107,7 +107,7 @@ test.describe(async () => {
         });
     });
 
-    test.only('delete', async ({ page, cadetDetailPage, messagePopup, staticData: { ids } }) => {
+    test('delete', async ({ page, cadetDetailPage, messagePopup, staticData: { ids } }) => {
         const listPage = new CadetListPage(page);
         await test.step('validate popup and save', async () => {
             await cadetDetailPage.btn_menu.click();
@@ -208,7 +208,6 @@ test.describe(async () => {
                 where: { id: cadet.id }
             });
 
-
             expect(dbCadet).toEqual(expect.objectContaining({
                 ...testData,
                 recdelete: null,
@@ -217,4 +216,3 @@ test.describe(async () => {
         });
     });
 });
-
