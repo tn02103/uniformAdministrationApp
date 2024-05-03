@@ -32,6 +32,7 @@ test.describe('', () => {
         }
     });
 
+    //E2E0205
     test.describe('validate authRoles', async () => {
         test.describe('', async () => {
             test.use({ storageState: materialAuthFile });
@@ -78,7 +79,7 @@ test.describe('', () => {
         });
     });
 
-
+    //E2E0206
     test('validate save function', async () => {
         await test.step('open popup and save', async () => {
             await cadetDetailPage.btn_menu.click();

@@ -30,6 +30,7 @@ test.describe('', () => {
     });
     test.afterAll(async () => page.close());
 
+    //E2E0203
     test('validate elements editable', async () => {
         await dataComponent.btn_edit.click();
 
@@ -49,6 +50,7 @@ test.describe('', () => {
         await expect.soft(dataComponent.lbl_active).toHaveText(t.common.active.false);
     });
 
+    //E2E0204
     test('validate functions', async () => {
         if (!cadet) throw ("Testdata Cadet not Found");
         await test.step('change data & cancel', async () => {

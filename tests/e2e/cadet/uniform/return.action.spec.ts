@@ -28,6 +28,7 @@ test.describe('', () => {
         }
     });
 
+    // E2E0237
     test('validate Popup and close popup', async () => {
         await test.step('open modal', async () => {
             await uniformComponent.btn_uitem_withdraw(uniformId).click();
@@ -50,6 +51,7 @@ test.describe('', () => {
             await expect.soft(uniformComponent.div_uitem(uniformId)).toBeVisible();
         });
     });
+    // E2E0238
     test('abbort action', async () => {
         await test.step('open modal', async () => {
             await uniformComponent.btn_uitem_withdraw(uniformId).click();
@@ -61,6 +63,7 @@ test.describe('', () => {
             await expect.soft(uniformComponent.div_uitem(uniformId)).toBeVisible();
         });
     });
+    // E2E0239
     test('save action', async () => {
         await test.step('open modal', async () => {
             await uniformComponent.btn_uitem_withdraw(uniformId).click();
@@ -73,6 +76,7 @@ test.describe('', () => {
         });
     });
 
+    // E2E0240
     test('validate mobile buttons', async () => {
         await page.setViewportSize({ width: 300, height: 800 });
 

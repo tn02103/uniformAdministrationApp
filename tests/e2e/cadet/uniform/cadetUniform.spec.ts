@@ -32,7 +32,8 @@ test.describe('', () => {
         }
     });
 
-    test('Test different Displaysizes', async () => {
+    //E2E0207
+    test('validate different Displaysizes', async () => {
         // Test with Marie Ackermann, uniform 1184 of Typ1
         const uniformId = '45f35815-3c0d-11ee-8084-0068eb8ba754';
 
@@ -187,6 +188,7 @@ test.describe('', () => {
     test.describe('Test uniformType Rows', async () => {
         const defaultTextColor = 'rgb(33, 37, 41)';
 
+        // E2E0208
         test('validate correct sortOrder of the typeRows', async () => {
             const types = testUniformTypes.filter(type => (!type.recdelete && (type.fk_assosiation === testAssosiation.id))).sort((a, b) => a.sortOrder - b.sortOrder);
 
@@ -196,6 +198,7 @@ test.describe('', () => {
             }
         });
 
+        // E2E0209
         test('validate deleted Types not shown', async () => {
             const deletedTypes = testUniformTypes.filter(type => type.recdelete);
 
@@ -204,6 +207,7 @@ test.describe('', () => {
             );
         });
 
+        // E2E0210
         test('Check color and text of itemAmount div', async () => {
             await test.step('not enough items: Sven Keller -> Type1', async () => {
                 await page.goto(`/de/app/cadet/c4d33a71-3c11-11ee-8084-0068eb8ba754`);
@@ -234,6 +238,7 @@ test.describe('', () => {
     test.describe('Test uniformItem rows', () => {
         const defaultTextColor = 'rgb(33, 37, 41)';
 
+        // E2E0211
         test('validate correct uniformItems are displayed in correct sortOrder', async () => {
             const typeList = testUniformTypes.filter(type => !type.recdelete);
             const uniformItems: any[] = testUniformIssued
@@ -255,6 +260,7 @@ test.describe('', () => {
             }
         });
 
+        // E2E0212
         test('Validate returned items are not shown', async () => {
             const retunedIds = testUniformIssued.filter(ui => (ui.fk_cadet === testdata.cadetId && ui.dateReturned));
 
@@ -265,6 +271,7 @@ test.describe('', () => {
             );
         });
 
+        //E2E0213
         test('validate data for uniformItem 1184', async () => {
             const uItem = testUniformItems.find(u => u.id === '45f35815-3c0d-11ee-8084-0068eb8ba754');
             if (!uItem) throw Error("Test Item not found");
@@ -280,6 +287,7 @@ test.describe('', () => {
             ]);
         });
 
+        //E2E0214
         test('validate generation hilighting', async () => {
             await test.step('generation not outdated: Marie Ackermann -> 1184', async () => {
                 await page.goto(`/de/app/cadet/${testdata.cadetId}`);
@@ -292,6 +300,7 @@ test.describe('', () => {
             });
         });
 
+        // E2E0215
         test('validate uniformNumber hilighting', async () => {
             await test.step('uniform active: Marie Ackermann -> 1184', async () => {
                 await page.goto(`/de/app/cadet/${testdata.cadetId}`);
@@ -304,6 +313,7 @@ test.describe('', () => {
         });
     });
 
+// E2E0216
     test.describe('Validate different Users', async () => {
         const uniformId = '45f35815-3c0d-11ee-8084-0068eb8ba754'; //1184
 
