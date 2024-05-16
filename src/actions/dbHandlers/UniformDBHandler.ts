@@ -84,7 +84,7 @@ export class UniformDBHandler {
             }
         });
 
-    getUniformId = async (id: string, client?: PrismaClient) => 
+    getUniformById = async (id: string, client?: PrismaClient) => 
         (client?? prisma).uniform.findUnique({
             where: { id },
             ...uniformArgs,

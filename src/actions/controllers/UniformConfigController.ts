@@ -5,7 +5,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { descriptionValidationPattern, uniformGenerationValidator, uniformTypeValidator, uuidValidationPattern } from "@/lib/validations";
 import { UniformGeneration, UniformType } from "@/types/globalUniformTypes";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { UniformDBHandler } from "../dbHandlers/UniformDBHandler";
 import UniformGenerationDBHandler from "../dbHandlers/UniformGenerationDBHandler";
 import { UniformTypeDBHandler } from "../dbHandlers/UniformTypeDBHandler";

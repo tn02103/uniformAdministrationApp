@@ -1,10 +1,10 @@
 "use server";
 
 import { AuthRole } from "@/lib/AuthRoles";
-import { genericSAValidatior, genericSAValidatiorV2 } from "./validations";
 import { prisma } from "@/lib/db";
-import { materialGroupArgs } from "@/types/globalMaterialTypes";
 import { uuidValidationPattern } from "@/lib/validations";
+import { materialGroupArgs } from "@/types/globalMaterialTypes";
+import { genericSAValidatior, genericSAValidatiorV2 } from "./validations";
 
 export const getMaterialConfiguration = async () => genericSAValidatior(AuthRole.user, true, [])
     .then(async ({ assosiation }) => prisma.materialGroup.findMany({

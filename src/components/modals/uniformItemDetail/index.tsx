@@ -1,5 +1,5 @@
 "use client";
-import { deleteUniformItem, getUniformFormValues, getUniformIssueHistory, saveUniformItem } from "@/actions/uniform/item";
+
 import { useGlobalData } from "@/components/globalDataProvider";
 import { AuthRole } from "@/lib/AuthRoles";
 import { getUniformSizeList } from "@/lib/uniformHelper";
@@ -14,6 +14,7 @@ import useSWR, { mutate } from "swr";
 import { useModal } from "../modalProvider";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { deleteUniformItem, getUniformFormValues, getUniformIssueHistory, saveUniformItem } from "@/actions/controllers/UniformController";
 
 export type UIDModalProps = {
     uniformId: string;
@@ -34,7 +35,7 @@ export default function UniformItemDetailModal({ uniformId, uniformType, ownerId
     const { data: uniformHistory } = useSWR(
         `uniform.${uniformId}.history`,
         () => getUniformIssueHistory(uniformId)
-    )
+    );
 
     const [activeTab, setActiveTab] = useState(0);
     const [editable, setEditable] = useState(false);

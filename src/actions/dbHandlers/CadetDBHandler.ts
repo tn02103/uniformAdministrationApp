@@ -70,6 +70,4 @@ export class CadetDBHandler {
                SET comment = CONCAT(comment, ${comment}) 
              WHERE id = ${id}`;
 
-
 }
-

@@ -1,4 +1,5 @@
-import { getInspectionState } from "@/actions/inspection/status";
+
+import { getInspectionState } from "@/actions/controllers/InspectionController";
 import useSWR from "swr";
 
 export function useInspectionState() {

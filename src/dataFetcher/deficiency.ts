@@ -1,5 +1,6 @@
-import { getDeficiencyTypeList } from "@/actions/inspection/deficiencyType"
-import useSWR from "swr"
+
+import { getDeficiencyTypeList } from "@/actions/controllers/InspectionController";
+import useSWR from "swr";
 
 
 export const useDeficiencyTypes = () => {

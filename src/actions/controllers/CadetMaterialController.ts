@@ -1,14 +1,14 @@
 "use server";
 
 import { genericSAValidatior, genericSAValidatiorV2 } from "@/actions/validations";
-import { AuthRole } from "@/lib/AuthRoles";
-import { uuidValidationPattern } from "@/lib/validations";
-import { prisma } from "@/lib/db";
 import { NullValueException } from "@/errors/LoadDataException";
-import { PrismaClient } from "@prisma/client";
+import { AuthRole } from "@/lib/AuthRoles";
+import { prisma } from "@/lib/db";
+import { uuidValidationPattern } from "@/lib/validations";
 import { CadetMaterialMap } from "@/types/globalCadetTypes";
-import { CadetMaterialDBHandler } from "../dbHandlers/CadetMaterialDBHandler";
 import { UniformLabel } from "@/types/globalUniformTypes";
+import { PrismaClient } from "@prisma/client";
+import { CadetMaterialDBHandler } from "../dbHandlers/CadetMaterialDBHandler";
 
 const dbHandler = new CadetMaterialDBHandler();
 export const getCadetMaterialMap = async (cadetId: string): Promise<CadetMaterialMap> => genericSAValidatior(
@@ -34,7 +34,7 @@ export const getCadetMaterialList = async (cadetId: string): Promise<any[]> => g
         ],
         []
     )
-)
+);
 
 export const issueMaterial = async (cadetId: string, newMaterialId: string, quantity: number, oldMaterialId?: string): Promise<CadetMaterialMap | undefined> => genericSAValidatior(
     AuthRole.inspector,
@@ -78,4 +78,3 @@ export const returnMaterial = async (cadetId: string, materialId: string): Promi
     await dbHandler.returnMaterial(mi.id, mi.dateIssued, prisma);
     return dbHandler.getMaterialMap(cadetId, assosiation);
 });
-

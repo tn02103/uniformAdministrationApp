@@ -1,10 +1,9 @@
 "use server";
 
-import { ExceptionType, UnauthorizedException } from "@/errors/CustomException";
+import { UnauthorizedException } from "@/errors/CustomException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { IronSessionUser, getIronSession } from "@/lib/ironSession";
-import { UniformType } from "@/types/globalUniformTypes";
 import { redirect } from "next/navigation";
 
 type AssosiationValidationType = {

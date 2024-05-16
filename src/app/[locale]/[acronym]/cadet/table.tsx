@@ -1,6 +1,7 @@
 "use client"
 
-import { getInspectedCadetIdList } from "@/actions/inspection/status";
+
+import { getInspectedCadetIdList } from "@/actions/controllers/InspectionController";
 import { useGlobalData } from "@/components/globalDataProvider";
 import { useInspectionState } from "@/dataFetcher/inspection";
 import { AuthRole } from "@/lib/AuthRoles";
@@ -14,7 +15,6 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button, FormControl, InputGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import useSWR from "swr";
-
 
 const GeneralOverviewTable = ({
     data,

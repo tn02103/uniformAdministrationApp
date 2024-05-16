@@ -1,9 +1,9 @@
 "use server";
 
 import { AuthRole } from "@/lib/AuthRoles";
-import { genericSAValidatiorV2 } from "../validations";
-import { CadetDBHandler } from "../dbHandlers/CadetDBHandler";
 import { PersonnelListCadet } from "@/types/globalCadetTypes";
+import { CadetDBHandler } from "../dbHandlers/CadetDBHandler";
+import { genericSAValidatiorV2 } from "../validations";
 
 const dbHandler = new CadetDBHandler();
 export const getPersonnelListData = (orderBy: "lastname" | "firstname", asc: boolean): Promise<PersonnelListCadet[]> => genericSAValidatiorV2(

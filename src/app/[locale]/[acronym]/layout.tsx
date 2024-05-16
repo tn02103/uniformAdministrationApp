@@ -1,6 +1,6 @@
+import { getInspectionState } from "@/actions/controllers/InspectionController";
 import { getUniformTypeList } from "@/actions/controllers/UniformConfigController";
 import { getUniformSizeLists } from "@/actions/controllers/UniformSizeController";
-import { getInspectionState } from "@/actions/inspection/status";
 import GlobalDataProvider from "@/components/globalDataProvider";
 import Sidebar from "@/components/navigation/Sidebar";
 import { prisma } from "@/lib/db";

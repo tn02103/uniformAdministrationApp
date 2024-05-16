@@ -2,7 +2,7 @@
 
 import { saveCadetInspection } from "@/actions/controllers/CadetInspectionController";
 import { getCadetMaterialList } from "@/actions/controllers/CadetMaterialController";
-import { getDeficiencyTypeList } from "@/actions/inspection/deficiencyType";
+import { getDeficiencyTypeList } from "@/actions/controllers/InspectionController";
 import { getMaterialGroupIdByTypeId } from "@/actions/material";
 import { useCadetMaterialDescriptionList, useCadetUniformComplete } from "@/dataFetcher/cadet";
 import { useCadetInspection, useUnresolvedDeficienciesByCadet } from "@/dataFetcher/cadetInspection";

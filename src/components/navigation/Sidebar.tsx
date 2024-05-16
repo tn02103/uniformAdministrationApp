@@ -1,7 +1,6 @@
 "use client"
 
 import { logout } from "@/actions/auth";
-import { startInspection } from "@/actions/inspection/status";
 import { useInspectionState } from "@/dataFetcher/inspection";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n } from "@/lib/locales/client";
@@ -20,6 +19,7 @@ import Header from "./Header";
 import NavButton from "./NavButton";
 import NavGroup from "./NavGroup";
 import NavLink from "./NavLink";
+import { startInspection } from "@/actions/controllers/InspectionController";
 
 
 type SidebarPropType = {

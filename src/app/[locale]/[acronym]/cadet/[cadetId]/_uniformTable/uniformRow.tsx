@@ -1,7 +1,7 @@
 "use client"
 
 import { returnUniformItem } from "@/actions/controllers/CadetUniformController";
-import { saveUniformItem } from "@/actions/uniform/item";
+import { saveUniformItem } from "@/actions/controllers/UniformController";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { useGlobalData } from "@/components/globalDataProvider";
 import { useModal } from "@/components/modals/modalProvider";

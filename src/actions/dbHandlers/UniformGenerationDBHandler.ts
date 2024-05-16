@@ -104,5 +104,4 @@ export default class UniformGenerationDBHandler {
                 recdeleteUser: username,
             }
         });
-
 }
