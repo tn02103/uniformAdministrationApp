@@ -1,10 +1,22 @@
-"use server"
+"use server";
 
 import { AuthRole } from "@/lib/AuthRoles";
-import { genericSAValidatior, genericSAValidatiorV2 } from "../validations";
 import { prisma } from "@/lib/db";
-import { InspectionStatus } from "@/types/deficiencyTypes";
+import { DeficiencyType, InspectionStatus, deficiencyTypeArgs } from "@/types/deficiencyTypes";
 import { revalidateTag, unstable_cache } from "next/cache";
+import { genericSAValidatior, genericSAValidatiorV2 } from "../validations";
+
+export const getDeficiencyTypeList = (): Promise<DeficiencyType[]> => genericSAValidatiorV2(AuthRole.inspector, true, {})
+    .then(({ assosiation }) => prisma.deficiencyType.findMany({
+        where: {
+            fk_assosiation: assosiation,
+            recdelete: null,
+        },
+        ...deficiencyTypeArgs,
+        orderBy: {
+            "name": "asc"
+        },
+    }));
 
 export const getInspectionState = (): Promise<InspectionStatus> => genericSAValidatior(
     AuthRole.user,
@@ -43,7 +55,7 @@ export const getInspectionState = (): Promise<InspectionStatus> => genericSAVali
         activeCadets: activeCadets['_count'].id
     }
 }, [`serverA.inspectionState.${assosiation}`], {
-    revalidate: process.env.STAGE === "DEV"?0.0000001:30,
+    revalidate: process.env.STAGE === "DEV" ? 0.0000001 : 30,
     tags: [`serverA.inspectionState.${assosiation}`]
 })());
 

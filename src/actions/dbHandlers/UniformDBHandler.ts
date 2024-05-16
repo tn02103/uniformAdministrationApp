@@ -1,12 +1,10 @@
 import { prisma } from "@/lib/db";
 import { CadetUniformMap } from "@/types/globalCadetTypes";
-import { uniformArgs } from "@/types/globalUniformTypes";
+import { uniformArgs, uniformWithOwnerArgs } from "@/types/globalUniformTypes";
 import { PrismaClient } from "@prisma/client";
 import { isToday } from "date-fns";
 
-
 export class UniformDBHandler {
-
     getMap = async (cadetId: string, client?: PrismaClient) =>
         (client ?? prisma).uniform.findMany({
             ...uniformArgs,
@@ -33,6 +31,50 @@ export class UniformDBHandler {
             }, {}
         ));
 
+    getListWithOwner = async (fk_uniformType: string, hiddenGenerations: string[], hiddenSizes: string[], sqlFilter: object, sortOrder: object, orderByOwner: boolean, asc: boolean) => prisma.uniform.findMany({
+        ...uniformWithOwnerArgs,
+        where: {
+            ...sqlFilter,
+            fk_uniformType,
+            recdelete: null,
+            AND: [{
+                OR: [
+                    { generation: { id: { notIn: hiddenGenerations } } },
+                    hiddenGenerations.includes("null") ? {} : { generation: null },
+                ]
+            }, {
+                OR: [
+                    { size: { id: { notIn: hiddenSizes } } },
+                    hiddenSizes.includes("null") ? {} : { size: null }
+                ]
+            }]
+        },
+        orderBy: sortOrder
+    }).then((data) => {
+        if (!orderByOwner) {
+            return data;
+        }
+
+        return data.sort((a, b) => {
+            const returnValue = (value: number) => asc ? value : -value;
+            if ((a.issuedEntrys.length === 0) && (b.issuedEntrys.length === 0)) {
+                return returnValue(a.number - b.number);
+            } else if (a.issuedEntrys.length === 0) {
+                return returnValue(1);
+            } else if (b.issuedEntrys.length === 0) {
+                return returnValue(-1);
+            } else {
+                const nameA = a.issuedEntrys[0].cadet.lastname + a.issuedEntrys[0].cadet.firstname;
+                const nameB = b.issuedEntrys[0].cadet.lastname + b.issuedEntrys[0].cadet.firstname;
+                if (nameA === nameB) {
+                    return returnValue(a.number - b.number);
+                } else {
+                    return returnValue(nameA.localeCompare(nameB));
+                }
+            }
+        });
+    });
+
     getIssuedEntry = async (fk_uniform: string, fk_cadet: string, client?: PrismaClient) =>
         (client ?? prisma).uniformIssued.findFirstOrThrow({
             where: {
@@ -40,6 +82,12 @@ export class UniformDBHandler {
                 fk_uniform,
                 dateReturned: null,
             }
+        });
+
+    getUniformId = async (id: string, client?: PrismaClient) => 
+        (client?? prisma).uniform.findUnique({
+            where: { id },
+            ...uniformArgs,
         });
 
     getUniformWithIssuedEntriesByTypeAndNumber = async (fk_uniformType: string, number: number, client?: PrismaClient) =>

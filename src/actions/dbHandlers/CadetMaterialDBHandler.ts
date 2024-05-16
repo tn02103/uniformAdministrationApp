@@ -5,10 +5,6 @@ import { PrismaClient } from "@prisma/client";
 import { isToday } from "date-fns";
 
 export class CadetMaterialDBHandler {
-    /*issueMaterial = async (newMaterialId: string, cadetId: string, quantity: number, client?: PrismaClient) 
-        (client?? prisma).
-    
-    }*/
     getMaterialMap = (fk_cadet: string, fk_assosiation: string, client?: PrismaClient) =>
         (client ?? prisma).material.findMany({
             select: {

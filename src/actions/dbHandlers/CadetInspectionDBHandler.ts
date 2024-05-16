@@ -18,6 +18,13 @@ export class CadetInspectionDBHandler {
         }
     });
 
+    getUnresolvedDeficienciesByCadet = (fk_cadet: string) =>
+        prisma.$queryRaw`
+            SELECT * FROM "v_active_deficiency_by_cadet" 
+             WHERE fk_cadet = ${fk_cadet}
+          ORDER BY "dateCreated"
+        `;
+
     getPreviouslyUnresolvedDeficiencies = (cadetId: string, activeInspectionId: string, date: Date): PrismaPromise<Deficiency[]> => prisma.$queryRaw`
         SELECT vdgl."id",
                 dt."id" as "typeId",

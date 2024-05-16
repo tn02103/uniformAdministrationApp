@@ -1,5 +1,6 @@
 "use server";
 
+import { FormType } from "@/app/[locale]/[acronym]/cadet/[cadetId]/_inspctionTable/card";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { descriptionValidationPattern, uuidValidationPattern } from "@/lib/validations";
@@ -7,20 +8,14 @@ import { CadetInspection, Deficiency } from "@/types/deficiencyTypes";
 import { PrismaClient } from "@prisma/client";
 import { CadetInspectionDBHandler } from "../dbHandlers/CadetInspectionDBHandler";
 import { genericSAValidatiorV2 } from "../validations";
-import { FormType } from "@/app/[locale]/[acronym]/cadet/[cadetId]/_inspctionTable/card";
 
 const dbHandler = new CadetInspectionDBHandler();
 export const getUnresolvedDeficienciesByCadet = async (cadetId: string): Promise<Deficiency[]> => genericSAValidatiorV2(
     AuthRole.inspector,
     uuidValidationPattern.test(cadetId),
     { cadetId }
-).then(async () => {
-    return prisma.$queryRaw`
-            SELECT * FROM "v_active_deficiency_by_cadet" 
-             WHERE fk_cadet = ${cadetId}
-             ORDER BY "dateCreated"
-        `
-});
+).then(async () => getUnresolvedDeficienciesByCadet(cadetId));
+
 export const getCadetInspection = async (cadetId: string): Promise<CadetInspection | null> => genericSAValidatiorV2(
     AuthRole.inspector,
     uuidValidationPattern.test(cadetId),
