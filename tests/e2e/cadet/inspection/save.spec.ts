@@ -1,9 +1,8 @@
 import { prisma } from "@/lib/db";
 import { Deficiency } from "@prisma/client";
-import { Page, expect } from "playwright/test";
-import { adminAuthFile, adminTest } from "../../../auth.setup";
+import { expect } from "playwright/test";
+import { adminTest } from "../../../auth.setup";
 import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
-import { cleanupData } from "../../../testData/cleanupStatic";
 import { dynamicDataIds, insertSvenKellerFirstInspection, startInspection, svenKellerFirstInspectionData, svenKellerSecondInspectionData } from "../../../testData/dynamicData";
 
 type Fixture = {
@@ -162,7 +161,7 @@ test('E2E0275: initalInspection', async ({ page, inspectionComponent, testData: 
                 }
             });
 
-            expect(resolved.length).toBe(2);
+            expect(resolved).toHaveLength(2);
             expect(resolved.map(r => r.id)).toStrictEqual(expect.arrayContaining(unresolvedIds.slice(0, 2)));
             resolved.map((res) => {
                 expect(res).toEqual(expect.objectContaining({
@@ -183,7 +182,7 @@ test('E2E0275: initalInspection', async ({ page, inspectionComponent, testData: 
                 }
             });
 
-            expect(defList.length).toBe(5);
+            expect(defList).toHaveLength(5);
 
             await test.step('0: Cadet', async () => {
                 const def = defList.find(d => d.fk_deficiencyType === newDefs.cadet.type);
@@ -328,7 +327,7 @@ test('E2E0281: validate updated inspection', async ({ page, inspectionComponent,
                     }
                 });
 
-                expect(resolved.length).toBe(2);
+                expect(resolved).toHaveLength(2);
                 const idArray = [svenKellerFirstInspectionData(index).oldDefIdsToResolve[1], svenKellerSecondInspectionData(index).oldDefIdToSolve];
                 expect.soft(resolved.map(r => r.id)).toEqual(expect.arrayContaining(idArray));
 

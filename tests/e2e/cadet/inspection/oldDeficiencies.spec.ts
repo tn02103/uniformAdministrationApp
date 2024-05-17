@@ -1,12 +1,9 @@
-import { format } from "date-fns";
-import { Page, expect } from "playwright/test";
+import { expect } from "playwright/test";
 import t from "../../../../public/locales/de";
-import { adminAuthFile, adminTest } from "../../../auth.setup";
+import { adminTest } from "../../../auth.setup";
 import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
-import { cleanupData } from "../../../testData/cleanupStatic";
 import { removeInspection, startInspection } from "../../../testData/dynamicData";
 import { StaticDataLoader } from "../../../testData/staticDataLoader";
-import { resolve } from "path";
 
 type Fixture = {
     inspectionComponent: CadetInspectionComponent;
@@ -41,7 +38,7 @@ test('E2E0265: validate step0 defList prev. Inspction', async ({ page, inspectio
         test.step('visible with correct sortorder', async () => {
             const div_list = inspectionComponent.div_ci.getByTestId(/div_olddef_/);
 
-            await expect((await div_list.all()).length).toBe(unresolvedIds.length);
+            await expect(div_list).toHaveCount(unresolvedIds.length);
             await Promise.all(
                 unresolvedIds.map(async (id, index) =>
                     expect.soft(div_list.locator(`nth=${index}`)).toHaveAttribute('data-testid', `div_olddef_${id}`)
@@ -58,7 +55,7 @@ test('E2E0265: validate step0 defList prev. Inspction', async ({ page, inspectio
     ]);
 });
 
-test('E2E0267: validate step1 devList prev. Inspection', async ({inspectionComponent, staticData: {unresolvedIds, resolvedIds}}) => {
+test('E2E0267: validate step1 devList prev. Inspection', async ({ inspectionComponent, staticData: { unresolvedIds, resolvedIds } }) => {
     await test.step('setup', async () => {
         await inspectionComponent.btn_inspect.click();
     });
@@ -66,7 +63,7 @@ test('E2E0267: validate step1 devList prev. Inspection', async ({inspectionCompo
     await test.step('visible with correct sortorder', async () => {
         const div_list = inspectionComponent.div_ci.getByTestId(/div_olddef_/);
 
-        await expect((await div_list.all()).length).toBe(unresolvedIds.length);
+        await expect(div_list).toHaveCount(unresolvedIds.length);
         await Promise.all(
             unresolvedIds.map(async (id, index) =>
                 expect.soft(div_list.locator(`nth=${index}`)).toHaveAttribute('data-testid', `div_olddef_${id}`)
@@ -87,7 +84,7 @@ test('E2E0267: validate step1 devList prev. Inspection', async ({inspectionCompo
     });
 });
 
-test('E2E0268: validate step1 chk_resolved', async ({inspectionComponent, staticData: {ids}}) => {
+test('E2E0268: validate step1 chk_resolved', async ({ inspectionComponent, staticData: { ids } }) => {
     const id = ids.deficiencyIds[1];
     await inspectionComponent.btn_inspect.click();
     await expect(inspectionComponent.chk_olddef_resolved(id)).not.toBeChecked();
@@ -99,7 +96,7 @@ test('E2E0268: validate step1 chk_resolved', async ({inspectionComponent, static
     await expect(inspectionComponent.lbl_olddef_resolved(id)).toHaveText(t.common.deficiency.resolved.true);
 });
 
-test('E2E0269: validate oldDeficiencyRow data', async ({inspectionComponent, staticData: {ids}}) => {
+test('E2E0269: validate oldDeficiencyRow data', async ({ inspectionComponent, staticData: { ids } }) => {
     await test.step('validate visiblity of components step0', async () => {
         await Promise.all([
             expect.soft(inspectionComponent.chk_olddef_resolved(ids.deficiencyIds[1])).not.toBeVisible(),
@@ -143,7 +140,7 @@ test('E2E0269: validate oldDeficiencyRow data', async ({inspectionComponent, sta
     });
 });
 
-test('E2E0270: validate step2 unresolvedDefCountLabel', async ({inspectionComponent, staticData: {unresolvedIds}}) => {
+test('E2E0270: validate step2 unresolvedDefCountLabel', async ({ inspectionComponent, staticData: { unresolvedIds } }) => {
     await test.step('goto step2 none resolve', async () => {
         await inspectionComponent.btn_inspect.click();
         await inspectionComponent.btn_step1_continue.click();
@@ -181,7 +178,7 @@ test('E2E0270: validate step2 unresolvedDefCountLabel', async ({inspectionCompon
     });
 });
 
-test('E2E0279: validate step2 uniformCompleteLabel', async ({page, inspectionComponent, staticData:{ids}}) => {
+test('E2E0279: validate step2 uniformCompleteLabel', async ({ page, inspectionComponent, staticData: { ids } }) => {
     await test.step('validate complete Uniform', async () => {
         await page.goto(`/de/app/cadet/${ids.cadetIds[1]}`); // Marie Becker
         await inspectionComponent.btn_inspect.click();

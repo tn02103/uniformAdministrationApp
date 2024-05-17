@@ -46,7 +46,7 @@ const test = adminTest.extend<authenticatedFixture & Fixture>({
 test('validate data', async ({ page, components: { generationComponent }, generationList }) => {
     await expect(generationComponent.div_generation(generationList[0].id)).toBeVisible();
     const divList = await page.locator('div[data-testid^="div_generation_"]').all();
-    await expect(divList.length).toBe(generationList.length);
+    await expect(divList).toHaveLength(generationList.length);
 
     for (let i = 0; i < divList.length; i++) {
         await expect

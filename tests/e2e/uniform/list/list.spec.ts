@@ -1,8 +1,7 @@
-import { Page, expect } from "playwright/test";
-import { adminAuthFile, adminTest, inspectorAuthFile, inspectorTest, userAuthFile, userTest } from "../../../auth.setup";
+import { expect } from "playwright/test";
+import { adminTest, inspectorTest, userTest } from "../../../auth.setup";
 import { viewports } from "../../../global/helper";
 import { UniformListPage } from "../../../pages/uniform/uniformList.page";
-import { cleanupData } from "../../../testData/cleanupStatic";
 
 type Fixture = {
     uniformListPage: UniformListPage;
@@ -103,7 +102,7 @@ test.describe(() => {
     test('E2E0310: validate filter', async ({ uniformListPage, staticData: { ids } }) => {
         await test.step('initial count', async () => {
             await expect(uniformListPage.div_header_count).toContainText('74');
-            await expect(await uniformListPage.div_uitem_list.count()).toBe(74);
+            await expect(uniformListPage.div_uitem_list).toHaveCount(74);
         });
 
         await test.step('generation filter', async () => {
@@ -136,7 +135,6 @@ test.describe(() => {
     });
 
     test('E2E0311: validate uItem data', async ({ page, uniformListPage, staticData: { ids } }) => {
-        //   await page.waitForTimeout(100);
         await uniformListPage.btn_othersAccordion_header.click();
         await uniformListPage.chk_passiveFilter.setChecked(true);
         await uniformListPage.btn_load.click();
@@ -159,7 +157,7 @@ test.describe(() => {
         await uniformListPage.lnk_uitem_owner(ids.uniformIds[0][23]).click();
         await expect(page).toHaveURL(`/de/app/cadet/${ids.cadetIds[4]}`);
         await page.goBack();
-    });   
+    });
 });
 
 inspectorTest('E2E0313: validate DisplaySizes inspector', async ({ page, staticData: { ids } }) => {
@@ -221,7 +219,7 @@ inspectorTest('E2E0313: validate DisplaySizes inspector', async ({ page, staticD
     });
 });
 
-userTest('E2E0314: validate DisplaySizes user', async ({ page, staticData: {ids}}) => {
+userTest('E2E0314: validate DisplaySizes user', async ({ page, staticData: { ids } }) => {
     const uniformListPage = new UniformListPage(page);
     const testId = ids.uniformIds[0][0];
     await page.goto(`/de/app/uniform/list/${ids.uniformTypeIds[0]}`);
@@ -279,39 +277,3 @@ userTest('E2E0314: validate DisplaySizes user', async ({ page, staticData: {ids}
         ]);
     });
 });
-
-    /*
-    test.skip('validate delete', async () => {
-        await uniformListPage.btn_othersAccordion_header.click();
-        await uniformListPage.chk_passiveFilter.setChecked(true);
-        await uniformListPage.btn_load.click();
-        
-        await test.step('disabled with owner', async () => {
-            await expect.soft(uniformListPage.btn_uitem_delete('45f323b0-3c0d-11ee-8084-0068eb8ba754')).toBeDisabled();
-            await expect.soft(uniformListPage.btn_uitem_delete('45f2fdcc-3c0d-11ee-8084-0068eb8ba754')).toBeDisabled();
-            await expect.soft(uniformListPage.btn_uitem_delete('45f309c6-3c0d-11ee-8084-0068eb8ba754')).toBeEnabled();
-        });
-
-        await test.step('open and validate popup', async () => {
-            await uniformListPage.btn_uitem_delete('45f309c6-3c0d-11ee-8084-0068eb8ba754').click();
-            await expect(messageModal.div_popup).toBeVisible();
-            await expect.soft(messageModal.div_header).toContainText(/Typ1/);
-            await expect.soft(messageModal.div_header).toContainText(/1103/);
-            await expect.soft(messageModal.div_header).toHaveClass(/bg-danger/);
-        });
-
-        await test.step('delete and validate', async () => {
-            await messageModal.btn_save.click();
-            await expect(messageModal.div_popup).not.toBeVisible();
-            await expect(uniformListPage.div_uitem('45f309c6-3c0d-11ee-8084-0068eb8ba754')).not.toBeVisible();
-
-            const dbData = await prisma.uniform.findUnique({
-                where: {
-                    id: '45f309c6-3c0d-11ee-8084-0068eb8ba754'
-                }
-            });
-            expect(dbData).toBeDefined();
-            expect(dbData?.recdelete).not.toBeNull();
-            expect(dbData?.recdeleteUser).toBe('test4');
-        });
-    });*/

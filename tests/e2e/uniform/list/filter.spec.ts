@@ -148,30 +148,30 @@ test.describe(() => {
         await uniformListPage.btn_search_submit.click();
 
         await expect(uniformListPage.div_pageHeader).toContainText('Typ2'),
-        await expect(page.url()).toContain(ids.uniformTypeIds[1]),
-        await expect(uniformListPage.div_sizeAccordion).not.toBeVisible(),
-        await Promise.all([
-            expect.soft(uniformListPage.chk_genFilter_nullValue).toBeChecked(),
-            expect.soft(uniformListPage.chk_genFilter(ids.uniformGenerationIds[4])).toBeChecked(),
-            expect.soft(uniformListPage.chk_withOwnerFilter).toBeChecked(),
-            expect.soft(uniformListPage.chk_withoutOwnerFilter).toBeChecked(),
-            expect.soft(uniformListPage.chk_passiveFilter).not.toBeChecked(),
-            expect.soft(uniformListPage.chk_activeFilter).toBeChecked(),
-        ]);
+            await expect(page.url()).toContain(ids.uniformTypeIds[1]),
+            await expect(uniformListPage.div_sizeAccordion).not.toBeVisible(),
+            await Promise.all([
+                expect.soft(uniformListPage.chk_genFilter_nullValue).toBeChecked(),
+                expect.soft(uniformListPage.chk_genFilter(ids.uniformGenerationIds[4])).toBeChecked(),
+                expect.soft(uniformListPage.chk_withOwnerFilter).toBeChecked(),
+                expect.soft(uniformListPage.chk_withoutOwnerFilter).toBeChecked(),
+                expect.soft(uniformListPage.chk_passiveFilter).not.toBeChecked(),
+                expect.soft(uniformListPage.chk_activeFilter).toBeChecked(),
+            ]);
     });
     test('E2E0305: validate search filter', async ({ page, uniformListPage, staticData: { ids } }) => {
         await test.step('via button', async () => {
             await uniformListPage.txt_search_input.fill('110');
             await uniformListPage.btn_search_submit.click();
             await expect(uniformListPage.div_uitem(ids.uniformIds[0][12])).not.toBeVisible();
-            expect(await uniformListPage.div_uitem_list.count()).toBe(6);
+            await expect(uniformListPage.div_uitem_list).toHaveCount(6);
             await expect(page.getByTestId('div_hilight').nth(0)).toHaveText('110');
         });
         await test.step('via enter', async () => {
             await uniformListPage.txt_search_input.fill('12');
             await uniformListPage.txt_search_input.press('Enter');
             await expect(uniformListPage.div_uitem(ids.uniformIds[0][12])).toBeVisible();
-            expect(await uniformListPage.div_uitem_list.count()).toBe(8);
+            await expect(uniformListPage.div_uitem_list).toHaveCount(8);
             await expect(page.getByTestId('div_hilight').nth(0)).toHaveText('12');
         });
     });
@@ -196,22 +196,22 @@ test.describe(() => {
         await test.step('gen & size for typ1', async () => {
             await expect(uniformListPage.div_genAccordion).toBeVisible();
             await expect(uniformListPage.div_sizeAccordion).toBeVisible();
-            await expect(await page.locator('input[name^="generations."]').count()).toBe(5);
-            await expect(await page.locator('input[name^="sizes."]').count()).toBe(16);
+            await expect(page.locator('input[name^="generations."]')).toHaveCount(5);
+            await expect(page.locator('input[name^="sizes."]')).toHaveCount(16);
         });
 
         await test.step('gen & size for typ2', async () => {
             await uniformListPage.sel_type.selectOption(ids.uniformTypeIds[1]);
             await expect(uniformListPage.div_genAccordion).toBeVisible();
             await expect(uniformListPage.div_sizeAccordion).not.toBeVisible();
-            await expect(await page.locator('input[name^="generations."]').count()).toBe(3);
+            await expect(page.locator('input[name^="generations."]')).toHaveCount(3);
         });
 
         await test.step('gen & size for typ3', async () => {
             await uniformListPage.sel_type.selectOption(ids.uniformTypeIds[2]);
             await expect(uniformListPage.div_genAccordion).not.toBeVisible();
             await expect(uniformListPage.div_sizeAccordion).toBeVisible();
-            await expect(await page.locator('input[name^="sizes."]').count()).toBe(12);
+            await expect(page.locator('input[name^="sizes."]')).toHaveCount(12);
         });
 
         await test.step('gen & size for typ4', async () => {

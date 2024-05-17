@@ -44,7 +44,7 @@ test.beforeEach(async ({ page }) => {
 
 test('validate lists data', async ({ page, sizelists, listComponent }) => {
     const divList = await page.locator('div[data-testid^="div_sizelist_list_"]').all();
-    expect(divList.length).toBe(sizelists.length);
+    expect(divList).toHaveLength(sizelists.length);
 
     for (let i = 0; i < divList.length; i++) {
         await expect.soft(divList[i]).toHaveAttribute("data-testid", `div_sizelist_list_${sizelists[i].id}`);
@@ -85,8 +85,7 @@ test('validate data of list', async ({ page, listComponent, detailComponent, siz
 
     await expect(detailComponent.div_card).toBeVisible();
     await expect.soft(detailComponent.div_header).toHaveText(sizelist!.name);
-    const divList = await page.$$('div[data-testid^="div_selectedSize_"]');
-    await expect(divList.length).toBe(sizeIdArray.length);
+    await expect(page.locator('div[data-testid^="div_selectedSize_"]')).toHaveCount(sizeIdArray.length);
 
     for (let i = 0; i < sizeIdArray.length; i++) {
         await expect(detailComponent.div_selectedSize(sizeIdArray[i])).toBeVisible();

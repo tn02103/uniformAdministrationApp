@@ -18,7 +18,7 @@ test.beforeEach(async ({ page }) => { await page.goto('/de/app/cadet'); })
 
 
 test('E2E0101: validate Data', async ({ cadetListPage, staticData: { ids }, deficiencyList }) => {
-    await expect(await cadetListPage.div_cadet_list.count()).toBe(9);
+    await expect(cadetListPage.div_cadet_list).toHaveCount(9);
 
     await Promise.all([
         expect.soft(cadetListPage.div_cadet_lastInspection(ids.cadetIds[1]))
@@ -96,33 +96,33 @@ test('E2E0103: validate headerButton', async ({ page, cadetListPage }) => {
 test('E2E0104: validate search', async ({ cadetListPage, staticData: { ids } }) => {
     await test.step('normal', async () => {
         await cadetListPage.txt_searchField.fill('lU');
-        expect(await cadetListPage.div_cadet_list.count()).toBe(2);
+        await expect(cadetListPage.div_cadet_list).toHaveCount(2);
         await expect(cadetListPage.div_cadet(ids.cadetIds[4])).toBeVisible();
         await expect(cadetListPage.div_cadet(ids.cadetIds[3])).toBeVisible();
     });
 
     await test.step('first->last', async () => {
         await cadetListPage.txt_searchField.fill('marieb');
-        expect(await cadetListPage.div_cadet_list.count()).toBe(1);
+        await expect(cadetListPage.div_cadet_list).toHaveCount(1);
         await expect(cadetListPage.div_cadet(ids.cadetIds[1])).toBeVisible();
     });
 
     await test.step('last->first', async () => {
         await cadetListPage.txt_searchField.fill('beckerm');
-        expect(await cadetListPage.div_cadet_list.count()).toBe(1);
+        await expect(cadetListPage.div_cadet_list).toHaveCount(1);
         await expect(cadetListPage.div_cadet(ids.cadetIds[1])).toBeVisible();
     });
 
     await test.step('with spaces', async () => {
         await cadetListPage.txt_searchField.fill('be cke rm');
-        expect(await cadetListPage.div_cadet_list.count()).toBe(1);
+        await expect(cadetListPage.div_cadet_list).toHaveCount(1);
         await expect(cadetListPage.div_cadet(ids.cadetIds[1])).toBeVisible();
     });
-    
+
     await test.step('clear', async () => {
         await cadetListPage.btn_clearSerach.click();
         await expect(cadetListPage.txt_searchField).toHaveValue('');
-        expect(await cadetListPage.div_cadet_list.count()).toBe(9);
+        await expect(cadetListPage.div_cadet_list).toHaveCount(9);
     });
 });
 test('E2E0105: validate Links', async ({ page, cadetListPage, staticData: { ids } }) => {

@@ -33,7 +33,7 @@ test('validate Data', async ({ page, uniformSizePage, sizes }) => {
     await expect(uniformSizePage.div_size(sizes[0].id)).toBeVisible();
 
     const divList = await page.locator('div[data-testid^="div_size_"]').all();
-    await expect(divList.length).toBe(sizes.length);
+    await expect(divList).toHaveLength(sizes.length);
 
     const promises = [];
     for (let i = 0; i < divList.length; i++) {

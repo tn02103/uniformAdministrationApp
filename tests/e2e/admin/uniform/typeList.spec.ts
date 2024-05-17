@@ -26,7 +26,7 @@ test.beforeEach(async({page}) => {
 test('validate right order', async ({page, typeListComponent, types}) => {
     const divList = await page.locator('div[data-testid^="div_typeList_row_"]').all();
 
-    await expect(divList.length).toBe(types.length);
+    await expect(divList).toHaveLength(types.length);
     for (let i = 0; i < divList.length; i++) {
         await expect.soft(await divList[i]).toHaveAttribute('data-testid', `div_typeList_row_${types[i].id}`);
         await expect.soft(typeListComponent.div_typename(types[i].id)).toHaveText(types[i].name);

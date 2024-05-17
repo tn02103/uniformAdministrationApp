@@ -60,7 +60,7 @@ test.describe(() => {
 
                 const options = await rowComponent.sel_generation.locator('option', { hasNotText: 'K.A.' }).all();
 
-                expect(options.length).toBe(generations.length);
+                expect(options).toHaveLength(generations.length);
                 await Promise.all(
                     options.map(async (option, index) => {
                         await expect.soft(option).toHaveAttribute("value", generations[index].id);
@@ -73,7 +73,7 @@ test.describe(() => {
             });
             await test.step('validate initialSizeList', async () => {
                 const options = await rowComponent.sel_size.locator('option', { hasNotText: 'K.A.' }).all();
-                expect(options.length).toBe(5);
+                expect(options).toHaveLength(5);
                 expect(options[0]).toHaveAttribute("value", ids.sizeIds[16]);
                 expect(options[0]).toHaveText('Größe16');
                 expect(options[2]).toHaveAttribute("value", ids.sizeIds[18]);
@@ -85,7 +85,7 @@ test.describe(() => {
                 await rowComponent.sel_generation.selectOption(ids.uniformGenerationIds[2]);
                 const options = await rowComponent.sel_size.locator('option', { hasNotText: 'K.A.' }).all();
 
-                expect(options.length).toBe(11);
+                expect(options).toHaveLength(11);
                 expect(options[0]).toHaveAttribute("value", ids.sizeIds[0]);
                 expect(options[0]).toHaveText('0');
                 expect(options[5]).toHaveAttribute("value", ids.sizeIds[5]);
@@ -97,7 +97,7 @@ test.describe(() => {
                 await rowComponent.sel_generation.selectOption('');
                 const options = await rowComponent.sel_size.locator('option', { hasNotText: 'K.A.' }).all();
 
-                expect(options.length).toBe(6);
+                expect(options).toHaveLength(6);
                 expect(options[0]).toHaveAttribute("value", ids.sizeIds[0]);
                 expect(options[0]).toHaveText('0');
                 expect(options[5]).toHaveAttribute("value", ids.sizeIds[5]);

@@ -1,12 +1,11 @@
-import { Page, expect } from "playwright/test";
-import { adminAuthFile, adminTest } from "../../../auth.setup";
-import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
-import { cleanupData } from "../../../testData/cleanupStatic";
-import { startInspection } from "../../../testData/dynamicData";
+import { prisma } from "@/lib/db";
+import { expect } from "playwright/test";
+import { adminTest } from "../../../auth.setup";
 import { viewports } from "../../../global/helper";
+import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
 import { CadetUniformComponent } from "../../../pages/cadet/cadetUniform.component";
 import { SimpleFormPopupComponent } from "../../../pages/popups/SimpleFormPopup.component";
-import { prisma } from "@/lib/db";
+import { startInspection } from "../../../testData/dynamicData";
 
 type Fixture = {
     inspectionComponent: CadetInspectionComponent;
@@ -76,7 +75,7 @@ test('E2E0274: validate material selects', async ({ inspectionComponent, staticD
     });
     await test.step('content of sel. MaterialId', async () => {
         const x = await inspectionComponent.sel_newDef_material(0).locator('option:not(:disabled)').all();
-        expect(x.length).toBe(2)
+        expect(x).toHaveLength(2)
         expect(x[0]).toHaveText('Gruppe2-Typ2-1');
         expect(x[1]).toHaveText('Andere Materialien');
     });
@@ -115,7 +114,7 @@ test('E2E0274: validate material selects', async ({ inspectionComponent, staticD
                 })
             );
         });
-        expect((await inspectionComponent.sel_newDef_materialType(0).getByRole('option').all()).length).toBe(1);
+        await expect(inspectionComponent.sel_newDef_materialType(0).getByRole('option')).toHaveCount(1);
 
         await validateGroup(ids.materialGroupIds[0], 'Gruppe1');
         await validateGroup(ids.materialGroupIds[1], 'Gruppe2');
@@ -132,7 +131,7 @@ test('E2E0272: validate uniformSelect', async ({ inspectionComponent, staticData
     });
     await test.step('uniformDescriptions', async () => {
         const x = await inspectionComponent.sel_newDef_uniform(0).locator('option').all();
-        expect(x.length).toBe(3)
+        await expect(x).toHaveLength(3)
         expect(x[1]).toHaveText('Typ1-1146');
         expect(x[2]).toHaveText('Typ1-1148');
     });

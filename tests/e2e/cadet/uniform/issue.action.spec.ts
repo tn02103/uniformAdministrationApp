@@ -30,7 +30,7 @@ test.describe(() => {
         const ui = await prisma.uniformIssued.findMany({
             where: { fk_uniform, fk_cadet },
         });
-        expect(ui.length).toBe(1);
+        expect(ui).toHaveLength(1);
         expect.soft(ui[0]).toEqual(expect.objectContaining({
             id: expect.stringMatching(uuidValidationPattern),
             dateIssued: date,
@@ -45,7 +45,7 @@ test.describe(() => {
                 dateReturned: null
             }
         });
-        expect.soft(uiList.length).toBe(amount);
+        expect.soft(uiList).toHaveLength(amount);
     }
     const dbReturnedCheck = async (fk_uniform: string, fk_cadet: string, dateIssued: Date) => {
         const date = new Date();
@@ -53,7 +53,7 @@ test.describe(() => {
         const ui = await prisma.uniformIssued.findMany({
             where: { fk_uniform, fk_cadet },
         });
-        expect(ui.length).toBe(1);
+        expect(ui).toHaveLength(1);
         expect.soft(ui[0]).toEqual(expect.objectContaining({
             id: expect.stringMatching(uuidValidationPattern),
             dateIssued,
