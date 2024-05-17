@@ -5,7 +5,7 @@ import { PopupComponent } from "../../../pages/popups/Popup.component";
 import { cleanupData, deleteMaterialIssuedTestData } from "../../../testData/cleanupStatic";
 import t from "../../../../public/locales/de";
 import { numberValidationTests } from "../../../global/testSets";
-import { fillMaterialIssued } from "../../../testData/newStaticData";
+import { fillMaterialIssued } from "../../../testData/staticData";
 import { prisma } from "@/lib/db";
 import { isDataView } from "util/types";
 

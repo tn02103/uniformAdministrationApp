@@ -1,7 +1,4 @@
 import { Locator, Page } from "playwright/test";
-import { prisma } from "../../../src/lib/db";
-import { testAssosiation } from "../../testData/staticData";
-import { inspect } from "util";
 
 export class CadetInspectionComponent {
     readonly page: Page;

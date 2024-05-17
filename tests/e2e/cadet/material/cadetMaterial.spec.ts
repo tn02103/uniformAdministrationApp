@@ -3,7 +3,6 @@ import { expect } from "playwright/test";
 import { adminTest, inspectorTest, userTest } from "../../../auth.setup";
 import { defaultTextColor, getTextColor } from "../../../global/helper";
 import { CadetMaterialComponent } from "../../../pages/cadet/cadetMaterial.component";
-import { testMaterialGroups } from "../../../testData/staticData";
 
 type Fixture = {
     materialComponent: CadetMaterialComponent;
@@ -129,39 +128,49 @@ test.describe(async () => {
         });
     });
 
-    test('validate MarterialItemRows', async ({ page, materialComponent, staticData: { ids } }) => {
+    test('validate MarterialItemRows', async ({ page, materialComponent, staticData: { ids, fk_assosiation } }) => {
         await test.step('validate issued Material sortOrder and displayed data', async () => {
             const materialList = await prisma.material.findMany({
                 where: {
                     issuedEntrys: {
                         some: {
                             fk_cadet: ids.cadetIds[1],
-                            dateReturned: null
-                        }
-                    }
+                            dateReturned: null,
+                        },
+                    },
                 },
-                include: { issuedEntrys: true }
+                include: {
+                    issuedEntrys: {
+                        where: {
+                            dateReturned: null,
+                            fk_cadet: ids.cadetIds[1],
+                        },
+                    },
+                },
+            });
+            const groupList = await prisma.materialGroup.findMany({
+                where: { fk_assosiation, recdelete: null }
             });
 
-            for (const group of testMaterialGroups) {
+            for (const group of groupList) {
                 const typeListLocator = materialComponent
                     .div_group(group.id)
                     .getByTestId('div_typeList')
                     .locator('> div');
-                const materiaList = materialList
+                const materiaListByGroup = materialList
                     .filter(mi => mi.fk_materialGroup === group.id)
                     .sort((a, b) => ((a.sortOrder as number) - (b.sortOrder as number)));
-
-                for (let i = 0; i < materiaList.length; i++) {
+                    
+                    for (let i = 0; i < materiaListByGroup.length; i++) {
                     await expect
                         .soft(typeListLocator.locator(`nth=${i}`))
-                        .toHaveAttribute('data-testid', `div_material_${materiaList[i].id}`);
+                        .toHaveAttribute('data-testid', `div_material_${materiaListByGroup[i].id}`);
                     await expect
                         .soft(typeListLocator.locator(`nth=${i}`).getByTestId('div_name'))
-                        .toHaveText(materiaList[i].typename as string);
+                        .toHaveText(materiaListByGroup[i].typename as string);
                     await expect
                         .soft(typeListLocator.locator(`nth=${i}`).getByTestId('div_issued'))
-                        .toHaveText(materiaList[i].issuedEntrys[0].quantity.toString());
+                        .toHaveText(materiaListByGroup[i].issuedEntrys[0].quantity.toString());
                 }
             }
         });

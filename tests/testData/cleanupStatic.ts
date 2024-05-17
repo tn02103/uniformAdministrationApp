@@ -1,5 +1,5 @@
 import { prisma } from "../../src/lib/db";
-import { fillAllTables } from "./newStaticData";
+import { fillAllTables } from "./staticData";
 import { StaticDataIds } from "./staticDataIds";
 
 export async function cleanupData(i?: number) {
