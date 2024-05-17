@@ -42,7 +42,6 @@ const test = adminTest.extend<authenticatedFixture & Fixture>({
         use(comp);
     },
 });
-test.describe.configure({mode: 'parallel'});
 
 test('validate data', async ({ page, components: { generationComponent }, generationList }) => {
     await expect(generationComponent.div_generation(generationList[0].id)).toBeVisible();
@@ -188,7 +187,7 @@ inspectorTest('validate AuthRoles: inspector', async ({ page }) => {
 });
 
 
-test('validate formValidation: name', async ({page, typeId, generationList, components: {listComponent, generationComponent, editGenerationPopup}}) => {
+test('validate formValidation: name', async ({ page, typeId, generationList, components: { listComponent, generationComponent, editGenerationPopup } }) => {
     const tests = newDescriptionValidationTests({
         minLength: 1,
         maxLength: 20,
@@ -210,7 +209,7 @@ test('validate formValidation: name', async ({page, typeId, generationList, comp
         });
     }
 });
-test('validate edit', async ({page, typeId, generationList, staticData, components: {generationComponent, editGenerationPopup}}) => {
+test('validate edit', async ({ page, typeId, generationList, staticData, components: { generationComponent, editGenerationPopup } }) => {
     const popupComponent = new MessagePopupComponent(page);
     const genId = generationList[1].id;
     const sizelist = await staticData.getUniformSizelist('Liste2');
@@ -251,7 +250,7 @@ test('validate edit', async ({page, typeId, generationList, staticData, componen
     });
 
 });
-test('validate no sizeList Warning', async ({page, generationList, staticData, components:{generationComponent, editGenerationPopup}}) => {
+test('validate no sizeList Warning', async ({ page, generationList, staticData, components: { generationComponent, editGenerationPopup } }) => {
     const popupComponent = new MessagePopupComponent(page);
     const genId = generationList[1].id;
     const sizelist = await staticData.getUniformSizelist('Liste2');

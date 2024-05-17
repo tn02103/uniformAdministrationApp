@@ -11,20 +11,18 @@ export type UniformIssuedExceptionData = {
     uniform: {
         id: string;
         number: number;
-        typename: string;
     }
     owner: Cadet
 }
 
 export class UniformIssuedException extends CustomException {
     data: UniformIssuedExceptionData;
-    constructor(uniformId: string, uniformNumber: number, typename: string, owner: Cadet) {
+    constructor(uniformId: string, uniformNumber: number, owner: Cadet) {
         super("Uniform already issued", ExceptionType.UniformIssuedException);
         this.data = {
             uniform: {
                 id: uniformId,
                 number: uniformNumber,
-                typename: typename,
             },
             owner: owner,
         }

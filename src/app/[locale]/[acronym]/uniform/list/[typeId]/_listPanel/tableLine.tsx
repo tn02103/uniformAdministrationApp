@@ -15,9 +15,7 @@ export default function TableLine({
     uniform,
     uniformType,
     searchString,
-    index
 }: {
-    index: number;
     uniform: UniformWithOwner;
     uniformType: UniformType;
     searchString: string;
@@ -29,7 +27,6 @@ export default function TableLine({
     return (
         <tr data-testid={`div_uitem_${uniform.id}`}>
             <td data-testid="div_number" className="col-3 col-sm-1 ">
-                ({index}) - 
                 <HighlightedText text={String(uniform.number)} highlight={String(searchString)} />
                 {!uniform.active &&
                     <>
@@ -64,7 +61,12 @@ export default function TableLine({
                 {uniform.comment}
             </td>
             <td className={`col-2 col-lg-1 col-xl-2 col-xxl-1`}>
-                <Button variant="outline-seccondary" className={(userRole < AuthRole.inspector) ? "d-md-none" : ""} data-testid="btn_open" onClick={() => { modal?.uniformItemDetailModal(uniform.id, uniformType, uniform.issuedEntrys?.[0]?.cadet.id) }}>
+                <Button
+                    variant="outline-seccondary"
+                    className={(userRole < AuthRole.inspector) ? "d-md-none" : ""}
+                    data-testid="btn_open"
+                    onClick={() => { modal?.uniformItemDetailModal(uniform.id, uniformType, uniform.issuedEntrys?.[0]?.cadet.id) }}
+                >
                     <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
                 </Button>
             </td>

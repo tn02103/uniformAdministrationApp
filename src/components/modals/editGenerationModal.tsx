@@ -24,7 +24,6 @@ export default function EditGenerationModal({ generation, type, cancel, save }: 
     const { sizelistList } = useUniformSizeLists();
 
     function beforeSave(data: UniformGeneration) {
-        //doshit
         if (generation && type.usingSizes && data.fk_sizeList !== generation.fk_sizeList) {
             modal!.simpleYesNoModal({
                 header: tModal('changeSizeHeader'),

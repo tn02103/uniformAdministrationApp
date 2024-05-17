@@ -93,7 +93,7 @@ export const issueUniformItem = async ({
     // CHECK uniform is not issued
     if (uniform.issuedEntrys.length > 0) {
         if (!force) {
-            throw new UniformIssuedException(uniform.id, number, uniform.type.name, uniform.issuedEntrys[0].cadet);
+            throw new UniformIssuedException(uniform.id, number, uniform.issuedEntrys[0].cadet);
         }
 
         // get name of of newCadet

@@ -1,5 +1,6 @@
 "use client";
 
+import { getUniformListWithOwner } from "@/actions/controllers/UniformController";
 import { useI18n } from "@/lib/locales/client";
 import { UniformType, UniformWithOwner } from "@/types/globalUniformTypes";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -8,7 +9,6 @@ import { Button, Table } from "react-bootstrap";
 import { useSessionStorage } from "usehooks-ts";
 import { FilterType } from "../_filterPanel";
 import TableLine from "./tableLine";
-import { getUniformListWithOwner } from "@/actions/controllers/UniformController";
 
 export default function ListPanel({
     uniformType,
@@ -102,10 +102,9 @@ export default function ListPanel({
             </thead>
             <tbody>
                 {(uniformType && filteredLines && filteredLines.length > 0)
-                    ? filteredLines.map((uniform, index) => {
+                    ? filteredLines.map((uniform) => {
                         return (
                             <TableLine
-                                index={index}
                                 key={"tableLine" + uniform.id}
                                 uniform={uniform}
                                 uniformType={uniformType}

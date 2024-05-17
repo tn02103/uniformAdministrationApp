@@ -7,6 +7,7 @@ import { useModal } from "@/components/modals/modalProvider";
 import { useCadetUniformMap } from "@/dataFetcher/cadet";
 import { useUniformTypeList } from "@/dataFetcher/uniformAdmin";
 import { ExceptionType } from "@/errors/CustomException";
+import { UniformIssuedExceptionData } from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
 import { CadetUniformMap } from "@/types/globalCadetTypes";
@@ -15,7 +16,6 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
 import UniformRow from "./uniformRow";
-import { UniformIssuedExceptionData } from "@/errors/SaveDataException";
 
 
 
@@ -41,7 +41,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
                 modal?.showMessageModal(
                     modalT('issuedException.header'),
                     `${modalT('issuedException.message', {
-                        type: errorData.uniform.typename,
+                        type: typename,
                         number: errorData.uniform.number,
                         firstname: errorData.owner?.firstname,
                         lastname: errorData.owner?.lastname,
@@ -101,7 +101,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
                     return;
                 } else {
                     const error = (result as SAErrorResponseType).error;
-                    handleIssuedErrors(error, data, typename    );
+                    handleIssuedErrors(error, data, typename);
                     return;
                 }
             }).catch((e) => {

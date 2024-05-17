@@ -58,7 +58,7 @@ test('validate create sizeList', async ({ page, listComponent, detailComponent, 
     await test.step('create and validate ui', async () => {
         await listComponent.btn_create.click();
 
-        await expect.soft(editListPopup.div_header).toHaveText(t.admin.uniform.sizeList.createModal.header); // Input correct translation germamModal.formModalHeaders.createSizeList);
+        await expect.soft(editListPopup.div_header).toHaveText(t.admin.uniform.sizeList.createModal.header);
         await editListPopup.txt_input.fill(name);
         await editListPopup.btn_save.click();
 
@@ -114,7 +114,7 @@ test('validate namePopup formVaidation', async ({ page, listComponent, editListP
     }
 });
 
-test('validate edit', async ({ listComponent, detailComponent, sizelist, sizeIdArray, staticData}) => {
+test('validate edit', async ({ listComponent, detailComponent, sizelist, sizeIdArray, staticData }) => {
     await test.step('open editable mode', async () => {
         await listComponent.btn_sizeList_select(sizelist!.id).click();
         await detailComponent.btn_menu.click();
