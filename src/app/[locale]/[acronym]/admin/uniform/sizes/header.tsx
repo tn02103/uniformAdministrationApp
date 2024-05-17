@@ -38,7 +38,7 @@ export default function UniformsizeConfigurationHeader({ sizes }: { sizes: Unifo
             save: async ({ input }) =>
                 createSize(input).catch(e => {
                     console.error(e);
-                    toast.error(t('common.error.save.unknown'));
+                    toast.error(t('common.error.actions.save'));
                 }),
             abort: () => { }
         })

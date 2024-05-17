@@ -28,7 +28,7 @@ export default function UniformConfigTypeGenerationList({
     function changeSortOrder(generationId: string, up: boolean) {
         mutate(changeUniformGenerationSortOrder(generationId, up)).catch((e) => {
             console.error(e);
-            toast.error('Beim ändern der Reihnfolge ist ein unbekannter Fehler aufgetreten.');
+            toast.error(t('common.error.actions.changeSortorder'));
         });
     }
 
@@ -39,7 +39,7 @@ export default function UniformConfigTypeGenerationList({
             createUniformGeneration(data.name, data.outdated, data.fk_sizeList, typeId)
         ).catch((e) => {
             console.error(e);
-            toast.error(t('common.error.save.unknown'));
+            toast.error(t('common.error.actions.save'));
         });
         modal?.editGenerationModal(null, type, (data: UniformGeneration) => { saveMutation(data, selectedTypeId) });
     }
@@ -50,7 +50,7 @@ export default function UniformConfigTypeGenerationList({
             saveUniformGeneration(data, typeId)
         ).catch((e) => {
             console.error(e);
-            toast.error(t('common.error.save.unknown'));
+            toast.error(t('common.error.actions.save'));
         });
         modal?.editGenerationModal(generation, type, (data: UniformGeneration) => { saveMutation(data, selectedTypeId) });
     }

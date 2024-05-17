@@ -43,7 +43,7 @@ export default function UniformConfigSizelistDetail({
             renameSizelist(selectedSizelistId, input)
         ).catch((e) => {
             console.error(e);
-            toast.error(t('common.error.save.unknown'));
+            toast.error(t('common.error.actions.save'));
         });
 
         await modal?.simpleFormModal({
@@ -75,7 +75,7 @@ export default function UniformConfigSizelistDetail({
             saveSizelistSizes(selectedSizelistId, editedSizeslist?.map(s => s.id))
         ).catch(e => {
             console.error(e);
-            toast.error(t('common.error.save.unknown'));
+            toast.error(t('common.error.actions.save'));
         });
     }
     function handleDelete() {

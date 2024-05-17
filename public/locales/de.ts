@@ -114,9 +114,14 @@ export default {
             number: {
                 required: "Bitte eine Zahl angeben",
                 pattern: "Bitte eine valide Zahl eingeben",
+                patternPositive: "Bitte eine gültige positive Zahl eingeben",
                 max: "Die Zahl darf nicht höher als {value} sein",
                 maxLength: "Es sind höchstens {value} Stellige Zahlen erlaubt",
                 min: "Die Zahl muss größer {value} sein",
+            },
+            amount: {
+                required: "Bitte eine Anzahl eingeben",
+                max: "Die Anzahl darf nicht {value} überschreiten",
             },
             string: {
                 required: "Bitte ausfüllen",
@@ -124,14 +129,21 @@ export default {
                 noSpecialChars: "Es dürfen keine Sonderzeichen genutzt werden",
                 commentValidation: "Nicht alle Zeichen die Sie genutzt haben sind erlaubt",
             },
-            save: {
-                unknown: "Beim Speichern ist ein unbekannter Fehler aufgetreten "
+            actions: {
+                changeSortorder: "Beim ändern der Reihnfolge ist ein unbekannter Fehler aufgetreten.",
+                create: "Beim Anlegen  ist ein unbekannter Fehler aufgetreten",
+                delete: "Beim Löschen ist ein unbekannter Fehler aufgetreten",
+                save: "Beim Speichern ist ein unbekannter Fehler aufgetreten",
             },
             uniform: {
                 number: {
                     required: "Bitte die Uniformnummer angeben",
                     maxLength: "Die Nummer darf höchstens 7 Zeichen lang sein",
                     min: "Die Nummer muss größer 0 sein",
+                },
+                acronym: {
+                    pattern: "Das Kürzel darf keine Sonderzeichen oder Zahlen Beinhalten",
+                    length: "Das Kürzel muss 2 Zeichen lang sein",
                 }
             }
         }
@@ -171,6 +183,11 @@ export default {
             newDeficiencies: "neue Mängel",
             "amountUnresolved#other": "- {count} unbehoben",
             "amountUnresolved#zero": "- Alle behoben",
+        },
+        inspection: {
+            noDeficiencies: "Keine Mängel vorhanden",
+            saved: "Inspektion erfolgreich gespeichert",
+            otherMaterials: "Andere Materialien",
         },
         returnUniform: {
             error: "Beim Zurückziehen des Uniformteils ist ein Fehler aufgetreten. Bitte versuchen sie es noch einmal",

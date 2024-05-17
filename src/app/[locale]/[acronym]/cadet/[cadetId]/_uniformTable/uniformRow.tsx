@@ -69,7 +69,7 @@ const UniformRow = (props: PropType) => {
             await mutate(`cadet.${cadetId}.uniform`)
         }).catch((e) => {
             console.error(e);
-            toast.error(t('common.error.save.unknown'));
+            toast.error(t('common.error.actions.save'));
         });
     }
 

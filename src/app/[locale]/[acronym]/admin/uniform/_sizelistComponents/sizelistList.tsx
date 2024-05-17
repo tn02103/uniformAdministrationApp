@@ -30,7 +30,7 @@ export default function UniformConfigSizelistsList({
             selectList(data.id);
         }).catch((e) => {
             console.error(e);
-            toast.error(t('common.error.save.unknown'));
+            toast.error(t('common.error.actions.save'));
         });
 
         modal?.simpleFormModal({

@@ -33,14 +33,14 @@ export default function UniformConfigTypeList({
             selectType(newType.id);
         }).catch((e) => {
             console.error(e);
-            toast.error("Beim anlegen eines neuen Uniformtyps ist ein Fehler aufgetreten");
+            toast.error(t('common.error.actions.create'));
         });
     }
 
     async function changeSortOrder(up: boolean, typeId: string) {
         await mutate(changeUniformTypeSortOrder(typeId, up)).catch((e) => {
             console.error(e);
-            toast.error('Beim ändern der Reihnfolge ist ein unbekannter Fehler aufgetreten.');
+            toast.error(t('common.error.actions.changeSortorder'));
         });
     }
 
@@ -52,7 +52,7 @@ export default function UniformConfigTypeList({
             }
         ).catch((e) => {
             console.error(e);
-            toast.error("Beim löschen des Uniformtyps ist ein unbekannter Fehler aufgetreten");
+            toast.error(t('common.error.actions.delete'));
         });
 
 

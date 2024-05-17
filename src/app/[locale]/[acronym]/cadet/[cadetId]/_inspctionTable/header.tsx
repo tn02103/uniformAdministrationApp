@@ -1,3 +1,5 @@
+"use client";
+
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { useCadetInspection } from "@/dataFetcher/cadetInspection";
 import { useInspectionState } from "@/dataFetcher/inspection";

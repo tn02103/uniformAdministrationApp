@@ -60,7 +60,7 @@ const CadetDataTableForm = (props: PropType) => {
                 router.push(`/${locale}/app/cadet/${result.id}`)
             }).catch(error => {
                 console.error(error);
-                toast.error(t('common.error.save.unknown'));
+                toast.error(t('common.error.actions.save'));
                 setSubmitting(false);
             });
         } else {
@@ -69,7 +69,7 @@ const CadetDataTableForm = (props: PropType) => {
                 setEditable(false);
             }).catch(error => {
                 console.error(error);
-                toast.error(t('common.error.save.unknown'));
+                toast.error(t('common.error.actions.save'));
             }).finally(() => {
                 setSubmitting(false);
             });

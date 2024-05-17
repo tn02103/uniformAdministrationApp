@@ -35,7 +35,7 @@ export default function UniformConfigTypeDetails({
             setEditable(false);
         }).catch((e) => {
             console.error(e);
-            toast.error(t('common.error.save.unknown'));
+            toast.error(t('common.error.actions.save'));
         });
     }
 
@@ -76,15 +76,15 @@ export default function UniformConfigTypeDetails({
                                     {...register("name", {
                                         required: {
                                             value: true,
-                                            message: "Bitte einen Namen angeben"
+                                            message: t('common.error.string.required'),
                                         },
                                         pattern: {
                                             value: nameValidationPattern,
-                                            message: "Der Name darf keine Sonderzeichen beinhalten"
+                                            message: t('common.error.string.noSpecialChars'),
                                         },
                                         maxLength: {
                                             value: 10,
-                                            message: "Der Name darf nicht länger als 10 Zeichen sein"
+                                            message: t('common.error.string.maxLength', {value: 10}),
                                         }
                                     })}
                                 />
@@ -102,15 +102,15 @@ export default function UniformConfigTypeDetails({
                                     {...register("acronym", {
                                         required: {
                                             value: true,
-                                            message: "Es muss ein Küzel angegeben werden"
+                                            message: t('common.error.string.required'),
                                         },
                                         pattern: {
                                             value: acronymValidationPattern,
-                                            message: "Das Kürzel darf keine Sonderzeichen oder Zahlen Beinhalten"
+                                            message: t('common.error.uniform.acronym.pattern'),
                                         },
                                         maxLength: {
                                             value: 2,
-                                            message: "Das Kürzel darf höchstens 2 Zeichen lang sein"
+                                            message: t('common.error.uniform.acronym.length'),
                                         }
                                     })}
                                 />
@@ -129,12 +129,12 @@ export default function UniformConfigTypeDetails({
                                         valueAsNumber: true,
                                         required: {
                                             value: true,
-                                            message: "Bitte eine Anzahl angeben"
+                                            message: t('common.error.amount.required')
                                         },
-                                        validate: (value) => (Number.isInteger(value) && value >= 0) || "Bitte eine gültige positive Zahl eingeben",
+                                        validate: (value) => (Number.isInteger(value) && value >= 0) || t('common.error.number.patternPositive'),
                                         max: {
                                             value: 10,
-                                            message: "Die Zahl darf nicht größer als 10 sein"
+                                            message: t('common.error.amount.max', {value: 10}),
                                         },
                                     })}
                                 />
@@ -172,7 +172,7 @@ export default function UniformConfigTypeDetails({
                                         {...register("fk_defaultSizeList", {
                                             required: {
                                                 value: true,
-                                                message: "Bitte auswählen",
+                                                message: t('common.error.pleaseSelect'),
                                             }
                                         })}
                                     >

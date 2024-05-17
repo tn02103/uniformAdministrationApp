@@ -1,3 +1,5 @@
+"use client";
+
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { useCadetMaterialDescriptionList, useCadetUniformDescriptList } from "@/dataFetcher/cadet";
 import { useDeficiencyTypes } from "@/dataFetcher/deficiency";
@@ -190,7 +192,7 @@ const DescriptionControl = ({ index }: { index: number }) => {
 
 const UniformSelect = ({ index }: { index: number }) => {
     const t = useI18n();
-    const { register, watch, formState: { errors } } = useFormContext<FormType>();
+    const { register, formState: { errors } } = useFormContext<FormType>();
     const { cadetId }: ParamType = useParams();
     const uniformList = useCadetUniformDescriptList(cadetId);
 
@@ -214,7 +216,7 @@ const UniformSelect = ({ index }: { index: number }) => {
                                     message: t('common.error.pleaseSelect')
                                 }
                             })}>
-                        <option value={""} disabled>Bitte Auswählen</option>
+                        <option value={""} disabled>{t('common.error.pleaseSelect')}</option>
                         {uniformList?.map((item) => (
                             <option key={item.id} value={item.id}>{item.description}</option>
                         ))}
@@ -258,11 +260,11 @@ const MaterialSelect = ({ index }: { index: number }) => {
                                     setValue(`newDeficiencyList.${index}.materialType`, "")
                                 }
                             })}>
-                        <option value={""} disabled>Bitte Auswählen</option>
+                        <option value={""} disabled>{t('common.error.pleaseSelect')}</option>
                         {materialList?.map((item) => (
                             <option key={item.id} value={item.id}>{item.description}</option>
                         ))}
-                        <option value={"others"}>Andere Materialien</option>
+                        <option value={"others"}>{t('cadetDetailPage.inspection.otherMaterials')}</option>
                     </Form.Select>
                 </Col>
                 <Col data-testid="err_uItem" className="fs-7 text-danger">
@@ -300,7 +302,7 @@ const MaterialGroupSelect = ({ index }: { index: number }) => {
                                 },
                                 onChange: () => { setValue(`newDeficiencyList.${index}.materialType`, "") }
                             })}>
-                        <option value={""} disabled>Bitte Auswählen</option>
+                        <option value={""} disabled>{t('common.error.pleaseSelect')}</option>
                         {config?.map((group) => (
                             <option key={group.id} value={group.id}>{group.description}</option>
                         ))}
@@ -346,7 +348,7 @@ const MaterialTypeSelect = ({ index }: { index: number }) => {
                                     message: t('common.error.pleaseSelect')
                                 }
                             })}>
-                        <option value={""} disabled>Bitte Auswählen</option>
+                        <option value={""} disabled>{t('common.error.pleaseSelect')}</option>
                         {list.map((mat) => (
                             <option key={mat.id} value={mat.id}>{mat.typename}</option>
                         ))}
@@ -387,7 +389,8 @@ const CommentControl = ({ index }: { index: number }) => {
                                     value: 300,
                                     message: t('common.error.string.maxLength', { value: 300 }),
                                 }
-                            })}
+                            })
+                        }
                     />
                 </Col>
                 <Col data-testid="err_comment" className="fs-7 text-danger">

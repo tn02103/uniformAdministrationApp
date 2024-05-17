@@ -8,7 +8,6 @@ import { useCadetMaterialDescriptionList, useCadetUniformComplete } from "@/data
 import { useCadetInspection, useUnresolvedDeficienciesByCadet } from "@/dataFetcher/cadetInspection";
 import { useDeficiencyTypes } from "@/dataFetcher/deficiency";
 import { useInspectionState } from "@/dataFetcher/inspection";
-import { t } from "@/lib/test";
 import { Deficiency, UniformDeficiency } from "@/types/deficiencyTypes";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -22,6 +21,7 @@ import CadetInspectionCardHeader from "./header";
 import OldDeficiencyRow from "./oldDeficiencyRow";
 import CadetInspectionStep1 from "./step1";
 import CadetInspectionStep2 from "./step2";
+import { useI18n } from "@/lib/locales/client";
 
 export type NewDeficiencyFormType = Deficiency & {
     fk_uniform?: string;
@@ -37,6 +37,7 @@ export type FormType = {
     }
 }
 export default function CadetInspectionCard() {
+    const t = useI18n();
     const form = useForm<FormType>();
     const { cadetId }: { cadetId: string } = useParams();
 
@@ -73,10 +74,10 @@ export default function CadetInspectionCard() {
         { populateCache: false }
     )).then(() => {
         setStep(0);
-        toast.success('Inspection erfolgreich gespeichert');
+        toast.success(t('cadetDetailPage.inspection.saved'));
     }).catch((e) => {
         console.error(e);
-        toast.error(t('error.cadet.inspected'));
+        toast.error(t('common.error.actions.save'));
     });
 
     const resetForm = async () => {
@@ -156,7 +157,7 @@ export default function CadetInspectionCard() {
                                 <OldDeficiencyRow deficiency={def} step={step} key={def.id} />
                             )}
                             {(unresolvedDeficiencies?.length === 0) &&
-                                <div data-testid="div_step0_noDeficiencies" className="fw-bold p-2">{t('msg.cadet.noDeficiencies')}</div>
+                                <div data-testid="div_step0_noDeficiencies" className="fw-bold p-2">{t('cadetDetailPage.inspection.noDeficiencies')}</div>
                             }
                         </div>
                     }

@@ -37,7 +37,7 @@ export default function SizeItem({
             },
             save: async ({ input }) => setSizeSortorder(size.id, +input).catch(e => {
                 console.error(e);
-                toast.error(t('common.error.save.unknown'));
+                toast.error(t('common.error.actions.save'));
             }),
             abort: () => { },
         });
@@ -49,7 +49,7 @@ export default function SizeItem({
             primaryOption: t('common.actions.delete'),
             primaryFunction: () => deleteSize(size.id).catch(e => {
                 console.error(e);
-                toast.error(t('common.error.save.unknown'));
+                toast.error(t('common.error.actions.save'));
             }),
         });
     }
@@ -57,7 +57,7 @@ export default function SizeItem({
     function handleSimpleSA(action: () => Promise<any>) {
         action().catch(e => {
             console.error(e);
-            toast.error(t('common.error.save.unknown'));
+            toast.error(t('common.error.actions.save'));
         });
     }
     return (
