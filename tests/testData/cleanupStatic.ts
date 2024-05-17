@@ -1,17 +1,18 @@
 import { prisma } from "../../src/lib/db";
-import { fillAllTables, testAssosiationList } from "./newStaticData";
+import { fillAllTables } from "./newStaticData";
+import { StaticDataIds } from "./staticDataIds";
 
 export async function cleanupData(i?: number) {
     try {
-        await deleteEverything(i??0);
+        await deleteEverything(i ?? 0);
     } catch (e) {
         console.error(e);
     }
-    await fillAllTables(i??0);
+    await fillAllTables(i ?? 0);
 }
 
 export async function deleteEverything(i: number) {
-   
+
     await deleteStaticInspection(i);
     await Promise.all([
         deleteStaticUniform(i),
@@ -26,7 +27,7 @@ export async function deleteEverything(i: number) {
         where: { id: assosiationCheck(i) }
     });
 }
-const assosiationCheck = (i: number) => ({ in: [testAssosiationList[i].id, testAssosiationList[i].id] });
+const assosiationCheck = (i: number) => ({ in: [StaticDataIds[i].fk_assosiation] });
 
 export async function deleteStaticUniform(i: number) {
     await prisma.uniformIssued.deleteMany({

@@ -1,5 +1,4 @@
 import { prisma } from "../../src/lib/db";
-import { testAssosiationList } from "./newStaticData";
 import { StaticDataIds } from "./staticDataIds";
 
 export const dynamicDataIds: {
@@ -93,7 +92,7 @@ export const startInspection = async (i: number) =>
     await prisma.inspection.create({
         data: {
             id: dynamicDataIds[i].inspectionId,
-            fk_assosiation: testAssosiationList[i].id,
+            fk_assosiation: StaticDataIds[i].fk_assosiation,
             active: true,
         },
     });

@@ -1,5 +1,6 @@
 
 export type StaticDataIdType = {
+    fk_assosiation: string;
     cadetIds: string[];
     deficiencyIds: string[];
     deficiencyTypeIds: string[];
@@ -15,6 +16,7 @@ export type StaticDataIdType = {
 
 export const StaticDataIds: StaticDataIdType[] = [
     {
+        fk_assosiation: '85181337-3aa3-11ee-ab4b-0068eb8ba754',
         "cadetIds": [
             "d8eb1b9a-3365-440c-b7f3-7e6bdcbbdde8",
             "b9c45476-cab9-4af6-b9d5-490898269b63",
@@ -307,6 +309,7 @@ export const StaticDataIds: StaticDataIdType[] = [
             "b44a6b80-5d8c-46e3-9ac4-cbc0686faffd"
         ]
     }, {
+        fk_assosiation: 'db57f622-7d26-4bdb-8e0b-7b0883eca06f',
         "cadetIds": [
             "9fba78f6-e374-45a9-a94c-55f72ccc4440",
             "295a38d0-0767-45cf-ad52-0f20e79c4bb2",
@@ -600,6 +603,7 @@ export const StaticDataIds: StaticDataIdType[] = [
         ]
     },
     {
+        fk_assosiation: 'c18adc6f-fdfa-45eb-8c63-694bc0e01247',
         "cadetIds": [
             "1519480b-6e91-4d5e-8a00-5bc6624c4e3c",
             "9ef49216-0b3f-4f0f-a330-5e9aadc346fa",
@@ -893,6 +897,7 @@ export const StaticDataIds: StaticDataIdType[] = [
         ]
     },
     {
+        fk_assosiation: '477e2f4c-e5b8-4768-8585-70b5a8f03693',
         "cadetIds": [
             "dba7e084-c3dd-4a24-bf18-b0daefa9dbde",
             "a86eebdb-33c2-432a-9074-c26f68c0060e",
@@ -1186,6 +1191,7 @@ export const StaticDataIds: StaticDataIdType[] = [
         ]
     },
     {
+        fk_assosiation: '0d4c22f0-4bf1-4414-a021-ec161d960e09',
         "cadetIds": [
             "02d2a8a5-8a64-4808-8fad-44bc81ac1ac5",
             "09afc031-4c06-4979-8151-f4a07efff000",

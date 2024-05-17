@@ -1,5 +1,5 @@
 import { Locator, Page } from "playwright/test";
-import { testAssosiationList } from "../testData/newStaticData";
+import { StaticDataIds } from "../testData/staticDataIds";
 
 export class LoginPage {
 
@@ -38,10 +38,10 @@ export class LoginPage {
 
     async login(user: string, password: string, url?: string) {
         const i = Number(process.env.TEST_PARALLEL_INDEX ?? 0);
-        const assosiation = testAssosiationList[i];
+        const { fk_assosiation } = StaticDataIds[i];
         await this.page.goto(url ?? '/de/login');
         await this.page.waitForTimeout(2000);
-        await this.sel_assosiation.selectOption(assosiation.id);
+        await this.sel_assosiation.selectOption(fk_assosiation);
         await this.txt_username.fill(user);
         await this.txt_password.fill(password);
         await this.btn_login.click();

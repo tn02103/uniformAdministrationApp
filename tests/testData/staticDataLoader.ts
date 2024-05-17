@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/db";
-import { testAssosiationList } from "./newStaticData";
 import { StaticDataIdType, StaticDataIds } from "./staticDataIds";
 
 export class StaticDataLoader {
@@ -50,10 +49,10 @@ export class StaticDataLoader {
     });
 
     constructor(i: number) {
-        if (i > testAssosiationList.length) throw Error("");
+        if (i > StaticDataIds.length) throw Error("");
 
         this.index = i;
-        this.fk_assosiation = testAssosiationList[i].id;
+        this.fk_assosiation = StaticDataIds[i].fk_assosiation;
         this.ids = StaticDataIds[i];
     }
 }
