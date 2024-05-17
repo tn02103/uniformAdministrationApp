@@ -61,4 +61,4 @@ export const deleteCadet = async (cadetId: string) => genericSAValidatior(
     }),
 ])).then(() => {
     revalidatePath(`/[locale]/app/cadet`);
-})
+});

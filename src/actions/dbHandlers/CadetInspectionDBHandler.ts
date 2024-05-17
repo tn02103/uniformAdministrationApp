@@ -18,7 +18,7 @@ export class CadetInspectionDBHandler {
         }
     });
 
-    getUnresolvedDeficienciesByCadet = (fk_cadet: string) =>
+    getUnresolvedDeficienciesByCadet = (fk_cadet: string): Promise<Deficiency[]> =>
         prisma.$queryRaw`
             SELECT * FROM "v_active_deficiency_by_cadet" 
              WHERE fk_cadet = ${fk_cadet}

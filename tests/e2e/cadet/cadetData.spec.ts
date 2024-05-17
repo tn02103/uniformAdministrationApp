@@ -127,7 +127,7 @@ test.describe(async () => {
 
         await test.step('validate ui', async () => {
             await expect.soft(messagePopup.div_popup).not.toBeVisible();
-            await page.waitForURL(/app\/cadet/)
+            await page.waitForURL(/app\/cadet$/);
             await expect.soft(listPage.div_cadet(ids.cadetIds[1])).not.toBeVisible();
         });
         await test.step('validate db', async () => {
@@ -142,7 +142,7 @@ test.describe(async () => {
         });
     });
 
-    test('edit', async ({ dataComponent, cadet }) => {
+    test('edit', async ({ page, dataComponent, cadet }) => {
         const testData = {
             firstname: 'firstname',
             lastname: 'lastname',
@@ -193,6 +193,7 @@ test.describe(async () => {
             await dataComponent.chk_active.click();
 
             await dataComponent.btn_save.click();
+            await dataComponent.btn_edit.isEnabled();
         });
 
         await test.step('validate ui', async () => {

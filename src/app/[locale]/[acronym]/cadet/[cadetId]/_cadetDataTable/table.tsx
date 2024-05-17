@@ -56,7 +56,7 @@ const CadetDataTableForm = (props: PropType) => {
         setSubmitting(true);
 
         if (cadetId === "new") {
-            createCadet(data).then((result) => {
+            await createCadet(data).then((result) => {
                 router.push(`/${locale}/app/cadet/${result.id}`)
             }).catch(error => {
                 console.error(error);
@@ -64,7 +64,7 @@ const CadetDataTableForm = (props: PropType) => {
                 setSubmitting(false);
             });
         } else {
-            saveCadetData(data).then((result) => {
+            await saveCadetData(data).then((result) => {
                 reset(result);
                 setEditable(false);
             }).catch(error => {
@@ -74,10 +74,6 @@ const CadetDataTableForm = (props: PropType) => {
                 setSubmitting(false);
             });
         }
-    }
-
-    async function createCadetMutation(data: Cadet) {
-
     }
 
     async function changeEditable() {

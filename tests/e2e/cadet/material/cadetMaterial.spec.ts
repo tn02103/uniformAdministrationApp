@@ -166,18 +166,8 @@ test.describe(async () => {
             }
         });
         await test.step('validate returned material', async () => {
-            const returnedMaterial = await prisma.material.findFirstOrThrow({
-                where: {
-                    issuedEntrys: {
-                        some: {
-                            fk_cadet: ids.cadetIds[1],
-                            NOT: { dateReturned: null }
-                        }
-                    }
-                }
-            });
-
-            await expect.soft(materialComponent.div_material(returnedMaterial.id)).not.toBeVisible()
+            await expect.soft(materialComponent.div_material(ids.materialIds[0])).not.toBeVisible();
+            await expect.soft(materialComponent.div_material(ids.materialIds[4])).not.toBeVisible();
         });
 
         await test.step('validate issued label highlighting', async () => {

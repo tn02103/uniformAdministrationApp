@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/db";
 import { CadetUniformMap } from "@/types/globalCadetTypes";
 import { uniformArgs, uniformWithOwnerArgs } from "@/types/globalUniformTypes";
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { isToday } from "date-fns";
+
 
 export class UniformDBHandler {
     getMap = async (cadetId: string, client?: PrismaClient) =>
@@ -31,7 +32,7 @@ export class UniformDBHandler {
             }, {}
         ));
 
-    getListWithOwner = async (fk_uniformType: string, hiddenGenerations: string[], hiddenSizes: string[], sqlFilter: object, sortOrder: object, orderByOwner: boolean, asc: boolean) => prisma.uniform.findMany({
+    getListWithOwner = async (fk_uniformType: string, hiddenGenerations: string[], hiddenSizes: string[], sqlFilter: object, sortOrder: Prisma.UniformOrderByWithRelationInput[] , orderByOwner: boolean, asc: boolean) => prisma.uniform.findMany({
         ...uniformWithOwnerArgs,
         where: {
             ...sqlFilter,

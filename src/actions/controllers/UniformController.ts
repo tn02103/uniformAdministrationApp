@@ -8,6 +8,7 @@ import { IssuedEntryType, UniformFormData, uniformArgs } from "@/types/globalUni
 import { notFound } from "next/navigation";
 import { UniformDBHandler } from "../dbHandlers/UniformDBHandler";
 import { genericSAValidatior, genericSAValidatiorV2 } from "../validations";
+import { Prisma } from "@prisma/client";
 
 const dbHandler = new UniformDBHandler();
 
@@ -66,33 +67,40 @@ export const getUniformListWithOwner = async (uniformTypeId: string, orderBy: st
         }
     }
 
-    let sortOrder;
+    let sortOrder: Prisma.UniformOrderByWithRelationInput[];
+    console.log(orderBy);
+    const ascString = asc?"asc": "desc";
     switch (orderBy) {
         case "generation":
             sortOrder = [
-                { generation: { sortOrder: asc } },
-                { size: { sortOrder: asc } },
-                { number: asc },
-            ]
+                { generation: { sortOrder: ascString } },
+                { size: { sortOrder: ascString } },
+                { number: ascString },
+            ];
+            break;
         case "size":
             sortOrder = [
-                { size: { sortOrder: asc } },
-                { generation: { sortOrder: asc } },
-                { number: asc },
-            ]
+                { size: { sortOrder: ascString } },
+                { generation: { sortOrder: ascString } },
+                { number: ascString },
+            ];
+            break;
         case "comment":
             sortOrder = [
-                { comment: asc },
-                { number: asc },
-            ]
+                { comment: ascString },
+                { number: ascString },
+            ];
+            break;
         case "owner":
             sortOrder = [
-                { number: asc }
+                { number: ascString }
             ];
+            break;
         default:
-            sortOrder = {
-                number: asc,
-            };
+            sortOrder = [{
+                number: ascString,
+            }];
+            break;
     }
     return dbHandler.getListWithOwner(uniformTypeId, hiddenGenerations, hiddenSizes, sqlFilter, sortOrder, orderBy === "owner", asc);
 });

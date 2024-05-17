@@ -15,7 +15,7 @@ const dbHandler = new UniformTypeDBHandler();
 const uniformHandler = new UniformDBHandler();
 const generationHandler = new UniformGenerationDBHandler();
 
-export const getUniformTypeList = () => genericSAValidatiorV2(AuthRole.user, true, {}).then(({ assosiation }) => dbHandler.getTypeList(assosiation));
+export const getUniformTypeList = (): Promise<UniformType[]> => genericSAValidatiorV2(AuthRole.user, true, {}).then(({ assosiation }) => dbHandler.getTypeList(assosiation));
 
 export const createUniformType = () => genericSAValidatiorV2(
     AuthRole.materialManager, true, {}

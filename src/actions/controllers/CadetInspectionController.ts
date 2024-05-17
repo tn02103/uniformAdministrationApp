@@ -14,7 +14,7 @@ export const getUnresolvedDeficienciesByCadet = async (cadetId: string): Promise
     AuthRole.inspector,
     uuidValidationPattern.test(cadetId),
     { cadetId }
-).then(async () => getUnresolvedDeficienciesByCadet(cadetId));
+).then(async () => dbHandler.getUnresolvedDeficienciesByCadet(cadetId));
 
 export const getCadetInspection = async (cadetId: string): Promise<CadetInspection | null> => genericSAValidatiorV2(
     AuthRole.inspector,
