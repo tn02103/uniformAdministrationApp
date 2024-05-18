@@ -10,6 +10,7 @@ import { TypeListComponent } from "../../../pages/admin/uniform/typeList.compone
 import { DangerConfirmationModal } from "../../../pages/popups/DangerConfirmationPopup.component";
 import { EditGenerationPopupComponent } from "../../../pages/popups/EditGenerationPopup.component";
 import { MessagePopupComponent } from "../../../pages/popups/MessagePopup.component";
+import { cleanupUniformTypeConfiguration } from "../../../testData/cleanupStatic";
 
 
 type Fixture = {
@@ -41,6 +42,9 @@ const test = adminTest.extend<authenticatedFixture & Fixture>({
         await comp.listComponent.btn_open(typeId).click();
         use(comp);
     },
+});
+test.afterEach(async ({staticData:{index}}) => {
+    await cleanupUniformTypeConfiguration(index);
 });
 
 test('validate data', async ({ page, components: { generationComponent }, generationList }) => {

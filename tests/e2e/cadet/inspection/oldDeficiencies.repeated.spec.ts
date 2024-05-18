@@ -2,16 +2,12 @@ import { expect } from "playwright/test";
 import { adminTest } from "../../../auth.setup";
 import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
 import { insertSvenKellerFirstInspection, startInspection, svenKellerFirstInspectionData } from "../../../testData/dynamicData";
+import { cleanupInspection } from "../../../testData/cleanupStatic";
 
 type Fixture = {
     inspectionComponent: CadetInspectionComponent;
 };
 const test = adminTest.extend<Fixture>({
-    staticData: async ({ staticData }, use) => {
-        await startInspection(staticData.index);
-        await insertSvenKellerFirstInspection(staticData.index);
-        use(staticData);
-    },
     inspectionComponent: async ({ page, staticData }, use) => {
         const inspectionComponent = new CadetInspectionComponent(page);
         await page.goto(`/de/app/cadet/${staticData.ids.cadetIds[2]}`);
@@ -19,8 +15,16 @@ const test = adminTest.extend<Fixture>({
         await use(inspectionComponent);
     }
 });
+test.beforeAll(async ({ staticData: { index } }) => {
+    await startInspection(index);
+    await insertSvenKellerFirstInspection(index);
+});
+test.afterAll(async ({ staticData: { index } }) => {
+    await cleanupInspection(index);
+});
 
-test('E2E0264: validate step0 defList after Inspction', async ({inspectionComponent, staticData:{index}}) => {
+
+test('E2E0264: validate step0 defList after Inspction', async ({ inspectionComponent, staticData: { index } }) => {
     await test.step('resolved not shown', async () => {
         await expect.soft(
             inspectionComponent.div_oldDeficiency(
@@ -43,7 +47,7 @@ test('E2E0264: validate step0 defList after Inspction', async ({inspectionCompon
     );
 });
 
-test('E2E0266: validate step1 devList after Inspection', async ({inspectionComponent, staticData:{index, ids}}) => {
+test('E2E0266: validate step1 devList after Inspection', async ({ inspectionComponent, staticData: { index, ids } }) => {
     await test.step('setup', async () => {
         await inspectionComponent.btn_inspect.click();
     });

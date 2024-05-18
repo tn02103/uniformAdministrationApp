@@ -1,17 +1,141 @@
+import { revalidatePath } from "next/cache";
 import { prisma } from "../../src/lib/db";
-import { fillAllTables } from "./staticData";
+import { connectionSizesToSizeLists, fillAllTables, fillCadet, fillCadetInspection, fillDeficiencies, fillDeficiencyCadet, fillDeficiencyTypes, fillDeficiencyUniform, fillInspection, fillMaterialIssued, fillUniform, fillUniformGenertion, fillUniformIssued, fillUniformSize, fillUniformSizelists, fillUniformType } from "./staticData";
 import { StaticDataIds } from "./staticDataIds";
 
-export async function cleanupData(i?: number) {
+export async function cleanupData(i: number) {
     try {
-        await deleteEverything(i ?? 0);
+        await deleteAssosiation(i);
     } catch (e) {
         console.error(e);
     }
-    await fillAllTables(i ?? 0);
+    await fillAllTables(i);
 }
 
-export async function deleteEverything(i: number) {
+
+
+
+
+
+export async function cleanupInspection(i: number) {
+    await deleteStaticInspection(i);
+
+    await fillInspection(i);
+    await fillCadetInspection(i);
+    await fillDeficiencyTypes(i);
+    await fillDeficiencies(i);
+    await fillDeficiencyCadet(i);
+    await fillDeficiencyUniform(i);
+}
+
+export async function cleanupCadet(i: number) {
+    const fk_assosiation = StaticDataIds[i].fk_assosiation;
+    await prisma.$transaction([
+        prisma.uniformIssued.deleteMany({
+            where: { cadet: { fk_assosiation } }
+        }),
+        prisma.materialIssued.deleteMany({
+            where: { cadet: { fk_assosiation } }
+        }),
+        prisma.deficiencyCadet.deleteMany({
+            where: { Cadet: { fk_assosiation } }
+        }),
+        prisma.cadetInspection.deleteMany({
+            where: { cadet: { fk_assosiation } }
+        }),
+    ]);
+    await prisma.cadet.deleteMany({
+        where: { fk_assosiation }
+    });
+
+    await fillCadet(i);
+    await fillUniformIssued(i);
+    await fillMaterialIssued(i);
+    await fillDeficiencyCadet(i);
+    await fillCadetInspection(i);
+}
+
+export async function cleanupUniformIssued(i: number) {
+    await deleteUniformIssued(StaticDataIds[i].fk_assosiation);
+    await fillUniformIssued(i);
+}
+
+export async function cleanupUniformTypeConfiguration(i: number, cleanup?: (i: number) => Promise<void>) {
+    const fk_assosiation = StaticDataIds[i].fk_assosiation;
+    await prisma.$transaction([
+        prisma.uniformIssued.deleteMany({
+            where: { cadet: { fk_assosiation } }
+        }),
+        prisma.deficiencyCadet.deleteMany({
+            where: { Deficiency: { DeficiencyType: { fk_assosiation } } }
+        }),
+        prisma.deficiencyUniform.deleteMany({
+            where: { Deficiency: { DeficiencyType: { fk_assosiation } } }
+        }),
+    ]);
+    await prisma.uniform.deleteMany({
+        where: { type: { fk_assosiation } }
+    });
+    await prisma.uniformGeneration.deleteMany({
+        where: { uniformType: { fk_assosiation } }
+    });
+    await prisma.uniformType.deleteMany({
+        where: { fk_assosiation }
+    });
+
+    if (cleanup) {
+        await cleanup(i);
+    }
+
+    await fillUniformType(i);
+    await fillUniformGenertion(i);
+    await fillUniform(i);
+    await Promise.all([
+        fillUniformIssued(i),
+        fillDeficiencyCadet(i),
+        fillDeficiencyUniform(i),
+    ]);
+}
+
+export async function cleanupUniformSizeConfiguration(i: number) {
+    const fk_assosiation = StaticDataIds[i].fk_assosiation;
+    await cleanupUniformTypeConfiguration(i, async (i: number) => {
+        await prisma.uniformSize.deleteMany({
+            where: { fk_assosiation }
+        });
+        await prisma.uniformSizelist.deleteMany({
+            where: { fk_assosiation }
+        });
+
+        await fillUniformSize(i);
+        await fillUniformSizelists(i);
+        await connectionSizesToSizeLists(i);
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// DELETES
+const deleteUniformIssued = (fk_assosiation: string) => prisma.uniformIssued.deleteMany({
+    where: { cadet: { fk_assosiation } }
+});
+
+
+
+
+export async function deleteAssosiation(i: number) {
 
     await deleteStaticInspection(i);
     await Promise.all([

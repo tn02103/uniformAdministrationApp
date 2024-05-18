@@ -4,6 +4,7 @@ import { expect } from "playwright/test";
 import { adminTest } from "../../../auth.setup";
 import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
 import { dynamicDataIds, insertSvenKellerFirstInspection, startInspection, svenKellerFirstInspectionData, svenKellerSecondInspectionData } from "../../../testData/dynamicData";
+import { cleanupInspection } from "../../../testData/cleanupStatic";
 
 type Fixture = {
     inspectionComponent: CadetInspectionComponent;
@@ -25,19 +26,15 @@ type Fixture = {
     }
 };
 const test = adminTest.extend<Fixture>({
-    staticData: async ({ staticData }, use) => {
-        await startInspection(staticData.index);
-        use(staticData);
-    },
-    inspectionComponent: async ({ page, staticData }, use) => {
+    inspectionComponent: async ({ page }, use) => {
         const inspectionComponent = new CadetInspectionComponent(page);
         await use(inspectionComponent);
     },
-    testData: async ({staticData: {ids, index}}, use) => {
+    testData: async ({ staticData: { ids, index } }, use) => {
         const deficiencyIds = ids.deficiencyIds;
         use({
             inspectionId: dynamicDataIds[index].inspectionId,
-             unresolvedIds: [deficiencyIds[5], deficiencyIds[10], deficiencyIds[1], deficiencyIds[9], deficiencyIds[13]],
+            unresolvedIds: [deficiencyIds[5], deficiencyIds[10], deficiencyIds[1], deficiencyIds[9], deficiencyIds[13]],
             newDefs: {
                 cadet: {
                     type: ids.deficiencyTypeIds[1],
@@ -45,7 +42,7 @@ const test = adminTest.extend<Fixture>({
                     comment: "Comment: CadetDeficiency",
                 },
                 cadetUniform: {
-                    type: ids.deficiencyTypeIds[2], 
+                    type: ids.deficiencyTypeIds[2],
                     uniform: ids.uniformIds[0][48],
                     description: "Typ1-1148",
                     comment: "Comment: CadetUniform",
@@ -73,13 +70,19 @@ const test = adminTest.extend<Fixture>({
         })
     }
 });
+test.beforeEach(async ({ staticData: { index } }) => {
+    await startInspection(index);
+});
+test.afterEach(async ({ staticData: { index } }) => {
+    await cleanupInspection(index);
+});
 
 test('E2E0275: initalInspection', async ({ page, inspectionComponent, testData: { unresolvedIds, newDefs, inspectionId }, staticData: { ids } }) => {
-    await test.step('setup', async () => {    
+    await test.step('setup', async () => {
         await page.goto(`/de/app/cadet/${ids.cadetIds[2]}`);
         await inspectionComponent.div_step0_loading.isHidden();
     });
-    
+
     const date = new Date();
     date.setUTCHours(0, 0, 0, 0);
     await test.step('initialize', async () => {
@@ -272,12 +275,12 @@ test('E2E0275: initalInspection', async ({ page, inspectionComponent, testData: 
 });
 
 test('E2E0281: validate updated inspection', async ({ page, inspectionComponent, testData: { inspectionId }, staticData: { index, ids } }) => {
-    await test.step('setup', async () => {    
+    await test.step('setup', async () => {
         await insertSvenKellerFirstInspection(index);
         await page.goto(`/de/app/cadet/${ids.cadetIds[2]}`);
         await inspectionComponent.div_step0_loading.isHidden();
     });
-    
+
     const date = new Date();
     date.setUTCHours(0, 0, 0, 0);
     await test.step('setupData', async () => {

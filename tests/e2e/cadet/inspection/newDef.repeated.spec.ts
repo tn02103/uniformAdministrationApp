@@ -2,16 +2,13 @@ import { expect } from "playwright/test";
 import { adminTest } from "../../../auth.setup";
 import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
 import { insertSvenKellerFirstInspection, startInspection, svenKellerFirstInspectionData } from "../../../testData/dynamicData";
+import { StaticDataLoader } from "../../../testData/staticDataLoader";
+import { cleanupInspection } from "../../../testData/cleanupStatic";
 
 type Fixture = {
     inspectionComponent: CadetInspectionComponent;
 };
 const test = adminTest.extend<Fixture>({
-    staticData: async ({ staticData }, use) => {
-        await startInspection(staticData.index);
-        await insertSvenKellerFirstInspection(staticData.index);
-        use(staticData);
-    },
     inspectionComponent: async ({ page, staticData }, use) => {
         const inspectionComponent = new CadetInspectionComponent(page)
         await page.goto(`/de/app/cadet/${staticData.ids.cadetIds[2]}`);
@@ -19,6 +16,13 @@ const test = adminTest.extend<Fixture>({
         await inspectionComponent.btn_step1_continue.click();
         await use(inspectionComponent);
     }
+});
+test.beforeAll(async ({ staticData }) => {
+    await startInspection(staticData.index);
+    await insertSvenKellerFirstInspection(staticData.index);
+});
+test.afterAll(async ({ staticData: { index } }) => {
+    await cleanupInspection(index);
 });
 
 test('E2E0278: validate typedisabled', async ({ inspectionComponent, staticData: { index } }) => {

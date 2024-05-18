@@ -7,6 +7,7 @@ import { newNameValidationTests, numberValidationTests } from "../../../global/t
 import { UniformSizeAdministrationPage } from "../../../pages/admin/uniform/UniformSizeAdministration.page";
 import { MessagePopupComponent } from "../../../pages/popups/MessagePopup.component";
 import { SimpleFormPopupComponent } from "../../../pages/popups/SimpleFormPopup.component";
+import { cleanupUniformSizeConfiguration } from "../../../testData/cleanupStatic";
 
 type Fixture = {
     sizes: UniformSize[],
@@ -22,12 +23,15 @@ const test = adminTest.extend<Fixture>({
     uniformSizePage: async ({ page }, use) => {
         await use(new UniformSizeAdministrationPage(page));
     },
-    simpleFormPopup: async ({page}, use) => {
+    simpleFormPopup: async ({ page }, use) => {
         await use(new SimpleFormPopupComponent(page));
     }
 });
-test.beforeEach(async ({page}) => {
+test.beforeEach(async ({ page }) => {
     await page.goto('/de/app/admin/uniform/sizes');
+});
+test.afterEach(async ({ staticData: { index } }) => {
+    await cleanupUniformSizeConfiguration(index);
 });
 test('validate Data', async ({ page, uniformSizePage, sizes }) => {
     await expect(uniformSizePage.div_size(sizes[0].id)).toBeVisible();
@@ -44,7 +48,7 @@ test('validate Data', async ({ page, uniformSizePage, sizes }) => {
 
     await Promise.all(promises);
 });
-test('validate SizePannel hover', async ({uniformSizePage, sizes}) => {
+test('validate SizePannel hover', async ({ uniformSizePage, sizes }) => {
     const sizeId = sizes[0].id
     await expect(uniformSizePage.div_size(sizeId)).toBeVisible();
 
@@ -65,7 +69,7 @@ test('validate SizePannel hover', async ({uniformSizePage, sizes}) => {
         expect.soft(uniformSizePage.btn_moveDown(sizeId)).toBeVisible(),
     ]);
 });
-test('validate MoveUp', async ({page, uniformSizePage, sizes, staticData}) => {
+test('validate MoveUp', async ({ page, uniformSizePage, sizes, staticData }) => {
     await test.step('validate initial state', async () => {
         await expect(uniformSizePage.div_index(sizes[0].id)).toContainText('1');
         await expect(uniformSizePage.div_index(sizes[1].id)).toContainText('2');
@@ -98,7 +102,7 @@ test('validate MoveUp', async ({page, uniformSizePage, sizes, staticData}) => {
     });
 });
 
-test('validate MoveDown', async ({page, uniformSizePage, sizes, staticData}) => {
+test('validate MoveDown', async ({ page, uniformSizePage, sizes, staticData }) => {
     await test.step('validate initial state', async () => {
         await expect(uniformSizePage.div_index(sizes[0].id)).toContainText('1');
         await expect(uniformSizePage.div_index(sizes[1].id)).toContainText('2');
@@ -131,7 +135,7 @@ test('validate MoveDown', async ({page, uniformSizePage, sizes, staticData}) => 
     });
 });
 
-test('validate create', async ({page, uniformSizePage, simpleFormPopup, sizes,staticData}) => {
+test('validate create', async ({ page, uniformSizePage, simpleFormPopup, sizes, staticData }) => {
     await test.step('create size', async () => {
         await uniformSizePage.btn_create.click();
         await expect(simpleFormPopup.div_popup).toBeVisible();
@@ -154,7 +158,7 @@ test('validate create', async ({page, uniformSizePage, simpleFormPopup, sizes,st
         expect(size!.sortOrder).toBe(sizes.length + 1);
     });
 });
-test('validate namePopup formValidation', async ({page, uniformSizePage, simpleFormPopup}) => {
+test('validate namePopup formValidation', async ({ page, uniformSizePage, simpleFormPopup }) => {
     const tests = newNameValidationTests({
         minLength: 1,
         maxLength: 10
@@ -175,7 +179,7 @@ test('validate namePopup formValidation', async ({page, uniformSizePage, simpleF
         });
     }
 });
-test('validate setPosition', async ({uniformSizePage, simpleFormPopup, sizes, staticData}) => {
+test('validate setPosition', async ({ uniformSizePage, simpleFormPopup, sizes, staticData }) => {
     await test.step('set position', async () => {
         await uniformSizePage.div_size(sizes[10].id).hover();
         await uniformSizePage.btn_menu(sizes[10].id).click();
@@ -209,7 +213,7 @@ test('validate setPosition', async ({uniformSizePage, simpleFormPopup, sizes, st
         expect(dbSizes[11].id).toEqual(sizes[11].id);
     });
 });
-test('validate setPosition formValidation', async ({page, uniformSizePage, simpleFormPopup, sizes}) => {
+test('validate setPosition formValidation', async ({ page, uniformSizePage, simpleFormPopup, sizes }) => {
     const tests = numberValidationTests({
         testEmpty: true
     });
@@ -233,7 +237,7 @@ test('validate setPosition formValidation', async ({page, uniformSizePage, simpl
     }
 });
 
-test('validate delete Size', async ({page, uniformSizePage, sizes, staticData}) => {
+test('validate delete Size', async ({ page, uniformSizePage, sizes, staticData }) => {
     const messagePopup = new MessagePopupComponent(page);
     const deleteModal = t.admin.uniform.size.deleteModal;
     await test.step('delete size and validate modal', async () => {

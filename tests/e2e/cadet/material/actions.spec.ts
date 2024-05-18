@@ -1,13 +1,11 @@
-import { Locator, Page, expect } from "playwright/test";
-import { adminAuthFile, adminTest } from "../../../auth.setup";
+import { prisma } from "@/lib/db";
+import { Locator, expect } from "playwright/test";
+import t from "../../../../public/locales/de";
+import { adminTest } from "../../../auth.setup";
+import { numberValidationTests } from "../../../global/testSets";
 import { CadetMaterialComponent } from "../../../pages/cadet/cadetMaterial.component";
 import { PopupComponent } from "../../../pages/popups/Popup.component";
-import { cleanupData, deleteMaterialIssuedTestData } from "../../../testData/cleanupStatic";
-import t from "../../../../public/locales/de";
-import { numberValidationTests } from "../../../global/testSets";
 import { fillMaterialIssued } from "../../../testData/staticData";
-import { prisma } from "@/lib/db";
-import { isDataView } from "util/types";
 
 type Fixture = {
     materialComponent: CadetMaterialComponent;
@@ -28,6 +26,16 @@ const test = adminTest.extend<Fixture>({
             err_issued: comp.div_popup.getByTestId('err_issued'),
         });
     }
+});
+
+test.afterEach(async ({ staticData: { index, fk_assosiation } }) => {
+    await prisma.materialIssued.deleteMany({
+        where: {
+            cadet: { fk_assosiation }
+        }
+    });
+
+    await fillMaterialIssued(index);
 });
 
 test.describe(async () => {
@@ -214,7 +222,7 @@ test.describe(async () => {
             expect(dbIssued[0].dateIssued).toStrictEqual(new Date('2023-08-16T10:06:37.000Z'));
             expect(dbIssued[0].quantity).toBe(1);
 
-            expect(dbIssued[1].dateIssued.getTime() / 1000000).toBeCloseTo(new Date().getTime() / 1000000,1);
+            expect(dbIssued[1].dateIssued.getTime() / 1000000).toBeCloseTo(new Date().getTime() / 1000000, 1);
             expect(dbIssued[1].dateReturned).toBeNull();
             expect(dbIssued[1].quantity).toBe(4);
         });

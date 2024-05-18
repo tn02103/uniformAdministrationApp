@@ -6,6 +6,7 @@ import { acronymValidationTest, newNameValidationTests, numberValidationTests } 
 import { GenerationListComponent } from "../../../pages/admin/uniform/GenerationList.component";
 import { TypeDetailComponent } from "../../../pages/admin/uniform/typeDetail.component";
 import { TypeListComponent } from "../../../pages/admin/uniform/typeList.component";
+import { cleanupUniformTypeConfiguration } from "../../../testData/cleanupStatic";
 
 type Fixture = {
     type: UniformType;
@@ -23,6 +24,9 @@ const test = adminTest.extend<Fixture>({
     listComponent: async ({ page }, use) => use(new TypeListComponent(page)),
     generationComponent: async ({ page }, use) => use(new GenerationListComponent(page)),
 
+});
+test.afterEach(async ({staticData:{index}}) => {
+    await cleanupUniformTypeConfiguration(index);
 });
 test.describe(() => {
     test.beforeEach(async ({ page, listComponent, type }) => {

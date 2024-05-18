@@ -6,6 +6,7 @@ import { adminTest, inspectorTest, managerTest } from "../../../auth.setup";
 import { TypeDetailComponent } from "../../../pages/admin/uniform/typeDetail.component";
 import { TypeListComponent } from "../../../pages/admin/uniform/typeList.component";
 import { DangerConfirmationModal } from "../../../pages/popups/DangerConfirmationPopup.component";
+import { cleanupUniformTypeConfiguration } from "../../../testData/cleanupStatic";
 
 type Fixture = {
     types: UniformType[];
@@ -23,6 +24,9 @@ const test = adminTest.extend<Fixture>({
 test.beforeEach(async({page}) => {
     await page.goto('/de/app/admin/uniform');
 })
+test.afterEach(async ({staticData:{index}}) => {
+    await cleanupUniformTypeConfiguration(index);
+});
 test('validate right order', async ({page, typeListComponent, types}) => {
     const divList = await page.locator('div[data-testid^="div_typeList_row_"]').all();
 

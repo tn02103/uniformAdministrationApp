@@ -68,7 +68,6 @@ export const getUniformListWithOwner = async (uniformTypeId: string, orderBy: st
     }
 
     let sortOrder: Prisma.UniformOrderByWithRelationInput[];
-    console.log(orderBy);
     const ascString = asc?"asc": "desc";
     switch (orderBy) {
         case "generation":
@@ -102,6 +101,7 @@ export const getUniformListWithOwner = async (uniformTypeId: string, orderBy: st
             }];
             break;
     }
+    console.log("🚀 ~ ).then ~ sortOrder:", sortOrder, orderBy)
     return dbHandler.getListWithOwner(uniformTypeId, hiddenGenerations, hiddenSizes, sqlFilter, sortOrder, orderBy === "owner", asc);
 });
 

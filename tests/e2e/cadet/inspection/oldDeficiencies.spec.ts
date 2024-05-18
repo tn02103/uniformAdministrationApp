@@ -14,7 +14,6 @@ type Fixture = {
 };
 const test = adminTest.extend<Fixture>({
     staticData: async ({ staticData }: { staticData: StaticDataLoader }, use: (arg0: any) => void) => {
-        await startInspection(staticData.index);
         const { deficiencyIds } = staticData.ids;
         use({
             ...staticData,
@@ -28,6 +27,12 @@ const test = adminTest.extend<Fixture>({
         await inspectionComponent.div_step0_loading.isHidden();
         await use(inspectionComponent);
     }
+});
+test.beforeAll(async ({ staticData: { index } }) => {
+    await startInspection(index);
+});
+test.afterAll(async ({ staticData: { index } }) => {
+    await removeInspection(index);
 });
 
 test('E2E0265: validate step0 defList prev. Inspction', async ({ page, inspectionComponent, staticData: { index, resolvedIds, unresolvedIds } }) => {
@@ -53,9 +58,10 @@ test('E2E0265: validate step0 defList prev. Inspction', async ({ page, inspectio
             ]);
         }),
     ]);
+    await startInspection(index);
 });
 
-test('E2E0267: validate step1 devList prev. Inspection', async ({ inspectionComponent, staticData: { unresolvedIds, resolvedIds } }) => {
+test('E2E0267: validate step1 devList prev. Inspection', async ({inspectionComponent, staticData: { unresolvedIds, resolvedIds } }) => {
     await test.step('setup', async () => {
         await inspectionComponent.btn_inspect.click();
     });

@@ -9,6 +9,7 @@ import { SizelistDetailComponent } from "../../../pages/admin/uniform/SizelistDe
 import { SizelistListComponent } from "../../../pages/admin/uniform/SizelistList.component";
 import { MessagePopupComponent } from "../../../pages/popups/MessagePopup.component";
 import { SimpleFormPopupComponent } from "../../../pages/popups/SimpleFormPopup.component";
+import { cleanupUniformSizeConfiguration } from "../../../testData/cleanupStatic";
 
 type Fixture = {
     sizelists: UniformSizelist[];
@@ -40,6 +41,9 @@ const test = adminTest.extend<Fixture>({
 });
 test.beforeEach(async ({ page }) => {
     await page.goto('/de/app/admin/uniform');
+});
+test.afterEach(async ({ staticData: { index } }) => {
+    await cleanupUniformSizeConfiguration(index);
 });
 
 test('validate lists data', async ({ page, sizelists, listComponent }) => {

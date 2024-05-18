@@ -7,6 +7,7 @@ import { CadetDataComponent } from "../../pages/cadet/cadetData.component";
 import { CadetDetailPage } from "../../pages/cadet/cadetDetail.page";
 import { CadetListPage } from "../../pages/cadet/f";
 import { MessagePopupComponent } from "../../pages/popups/MessagePopup.component";
+import { cleanupCadet } from "../../testData/cleanupStatic";
 
 
 type Fixture = {
@@ -21,7 +22,6 @@ const test = adminTest.extend<Fixture>({
     cadetDetailPage: async ({ page }, use) => use(new CadetDetailPage(page)),
     messagePopup: async ({ page }, use) => use(new MessagePopupComponent(page)),
 });
-
 
 userTest('Authrole: user', async ({ page, staticData: { ids } }) => {
     const dataComponent = new CadetDataComponent(page);
@@ -85,6 +85,9 @@ managerTest('Authrole: materialManager', async ({ page, staticData: { ids } }) =
 test.describe(async () => {
     test.beforeEach(async ({ page, staticData }) => {
         await page.goto(`/de/app/cadet/${staticData.ids.cadetIds[1]}`);
+    });
+    test.afterEach(async ({ staticData: { index } }) => {
+        await cleanupCadet(index);
     });
 
     test('validate data', async ({ dataComponent, cadet }) => {

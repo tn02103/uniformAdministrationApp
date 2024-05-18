@@ -9,6 +9,7 @@ import { CadetDetailPage } from "../../../pages/cadet/cadetDetail.page";
 import { CadetUniformComponent } from "../../../pages/cadet/cadetUniform.component";
 import { MessagePopupComponent } from "../../../pages/popups/MessagePopup.component";
 import { SimpleFormPopupComponent } from "../../../pages/popups/SimpleFormPopup.component";
+import { cleanupData } from "../../../testData/cleanupStatic";
 
 type Fixture = {
     cadetId: string;
@@ -22,6 +23,9 @@ const test = adminTest.extend<Fixture>({
     uniformComponent: async ({ page }, use) => use(new CadetUniformComponent(page)),
     messageComponent: async ({ page }, use) => use(new MessagePopupComponent(page)),
     issuePopupComponent: async ({ page }, use) => use(new SimpleFormPopupComponent(page)),
+});
+test.afterEach(async ({ staticData }) => {
+    await cleanupData(staticData.index);
 });
 test.describe(() => {
     const dbIssuedItemCheck = async (fk_uniform: string, fk_cadet: string) => {

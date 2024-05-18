@@ -5,16 +5,13 @@ import { viewports } from "../../../global/helper";
 import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
 import { CadetUniformComponent } from "../../../pages/cadet/cadetUniform.component";
 import { SimpleFormPopupComponent } from "../../../pages/popups/SimpleFormPopup.component";
-import { startInspection } from "../../../testData/dynamicData";
+import { removeInspection, startInspection } from "../../../testData/dynamicData";
+import { cleanupUniformIssued } from "../../../testData/cleanupStatic";
 
 type Fixture = {
     inspectionComponent: CadetInspectionComponent;
 };
 const test = adminTest.extend<Fixture>({
-    staticData: async ({ staticData }, use) => {
-        await startInspection(staticData.index);
-        use(staticData);
-    },
     inspectionComponent: async ({ page, staticData }, use) => {
         const inspectionComponent = new CadetInspectionComponent(page);
         await page.goto(`/de/app/cadet/${staticData.ids.cadetIds[2]}`);
@@ -22,6 +19,12 @@ const test = adminTest.extend<Fixture>({
         await inspectionComponent.btn_step1_continue.click();
         await use(inspectionComponent);
     }
+});
+test.beforeAll(async ({ staticData: { index } }) => {
+    await startInspection(index);
+});
+test.afterAll(async ({ staticData: { index } }) => {
+    await removeInspection(index);
 });
 
 test('E2E0271: validate add and remove newDef', async ({ page, inspectionComponent }) => {
@@ -148,7 +151,7 @@ test('E2E0272: validate uniformSelect', async ({ inspectionComponent, staticData
     });
 });
 
-test('E2E0273: validate update of uniformSelect Content', async ({ page, inspectionComponent, staticData: { ids } }) => {
+test('E2E0273: validate update of uniformSelect Content', async ({ page, inspectionComponent, staticData: { ids, index } }) => {
     const uniformComponent = new CadetUniformComponent(page);
     const formComponent = new SimpleFormPopupComponent(page);
     await test.step('setup', async () => {
@@ -168,6 +171,7 @@ test('E2E0273: validate update of uniformSelect Content', async ({ page, inspect
                 .locator(`option[value="${ids.uniformIds[0][11]}"]`)
         ).toBeDefined();
     });
+    await cleanupUniformIssued(index);
 });
 
 test.skip('E2E0280: validate formValidations', async () => {

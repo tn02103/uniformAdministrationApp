@@ -3,15 +3,18 @@ import t from "../../../../public/locales/de";
 import { adminTest, inspectorTest, userTest } from "../../../auth.setup";
 import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
 import { insertSvenKellerFirstInspection, removeInspection, startInspection } from "../../../testData/dynamicData";
+import { StaticDataLoader } from "../../../testData/staticDataLoader";
 
 type Fixture = {
     inspectionComponent: CadetInspectionComponent;
+    staticData: StaticDataLoader;
 };
 const test = adminTest.extend<Fixture>({
     inspectionComponent: async ({ page }, use) => use(new CadetInspectionComponent(page)),
-    staticData: async ({ staticData }, use) => {
+    staticData: async ({ staticData }: {staticData: StaticDataLoader}, use: (r: StaticDataLoader) => Promise<void>) => {
         await startInspection(staticData.index);
-        use(staticData);
+        await use(staticData);
+        await removeInspection(staticData.index);
     },
 });
 

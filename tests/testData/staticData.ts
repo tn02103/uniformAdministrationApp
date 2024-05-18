@@ -8,7 +8,7 @@ export async function fillAllTables(i: number) {
 
     await fillCadet(i);
     await fillUniformSize(i);
-    await fillSizelists(i);
+    await fillUniformSizelists(i);
     await connectionSizesToSizeLists(i);
     await fillUniformType(i);
     await fillUniformGenertion(i);
@@ -26,7 +26,7 @@ export async function fillAllTables(i: number) {
     await fillCadetInspection(i);
 }
 
-async function fillAssosiation(i: number) {
+export async function fillAssosiation(i: number) {
     await prisma.assosiation.create({
         data: {
             id: StaticDataIds[i].fk_assosiation,
@@ -37,7 +37,7 @@ async function fillAssosiation(i: number) {
     });
 }
 
-async function fillUser(index: number) {
+export async function fillUser(index: number) {
     const fk_assosiation = StaticDataIds[index].fk_assosiation;
     const password = await bcrypt.hash(process.env.TEST_USER_PASSWORD as string, 12);
     return prisma.user.createMany({
@@ -51,7 +51,7 @@ async function fillUser(index: number) {
     });
 }
 
-async function fillCadet(index: number) {
+export async function fillCadet(index: number) {
     const { fk_assosiation, cadetIds } = StaticDataIds[index];
     await prisma.cadet.createMany({
         data: [
@@ -69,7 +69,7 @@ async function fillCadet(index: number) {
     });
 }
 
-async function fillUniformSize(index: number) {
+export async function fillUniformSize(index: number) {
     const { fk_assosiation, sizeIds } = StaticDataIds[index];
 
     await prisma.uniformSize.createMany({
@@ -99,7 +99,7 @@ async function fillUniformSize(index: number) {
     });
 }
 
-async function fillSizelists(index: number) {
+export async function fillUniformSizelists(index: number) {
     const { fk_assosiation, sizelistIds } = StaticDataIds[index];
 
     await prisma.uniformSizelist.createMany({
@@ -111,7 +111,7 @@ async function fillSizelists(index: number) {
         ]
     });
 }
-async function connectionSizesToSizeLists(index: number) {
+export async function connectionSizesToSizeLists(index: number) {
     const { sizelistIds, sizeIds } = StaticDataIds[index];
 
     await prisma.uniformSizelist.update({
@@ -180,7 +180,7 @@ async function connectionSizesToSizeLists(index: number) {
     });
 }
 
-async function fillUniformType(index: number) {
+export async function fillUniformType(index: number) {
     const { fk_assosiation, uniformTypeIds, sizelistIds } = StaticDataIds[index];
 
     await prisma.uniformType.createMany({
@@ -194,7 +194,7 @@ async function fillUniformType(index: number) {
     });
 }
 
-async function fillUniformGenertion(index: number) {
+export async function fillUniformGenertion(index: number) {
     const { uniformGenerationIds, uniformTypeIds, sizelistIds } = StaticDataIds[index];
 
     await prisma.uniformGeneration.createMany({
@@ -210,7 +210,7 @@ async function fillUniformGenertion(index: number) {
     });
 }
 
-async function fillUniform(index: number) {
+export async function fillUniform(index: number) {
     const { uniformIds, uniformTypeIds, uniformGenerationIds, sizeIds } = StaticDataIds[index];
 
     return prisma.uniform.createMany({
@@ -408,7 +408,7 @@ async function fillUniform(index: number) {
 // Maik Finkel (db998c2f-3c11-11ee-8084-0068eb8ba754) generations to old
 // Uwe Luft (d468ac3c-3c11-11ee-8084-0068eb8ba754) uniformItems deprecated
 // Simone Osterhagen (004220f5-3c12-11ee-8084-0068eb8ba754) deleted
-async function fillUniformIssued(index: number) {
+export async function fillUniformIssued(index: number) {
     const { cadetIds, uniformIds } = StaticDataIds[index];
     return prisma.uniformIssued.createMany({
         data: [
@@ -559,7 +559,7 @@ export async function fillMaterialIssued(index: number) {
     });
 }
 
-async function fillDeficiencyTypes(index: number) {
+export async function fillDeficiencyTypes(index: number) {
     const { deficiencyTypeIds: ids, fk_assosiation } = StaticDataIds[index];
     return prisma.deficiencyType.createMany({
         data: [
@@ -572,7 +572,7 @@ async function fillDeficiencyTypes(index: number) {
     });
 }
 
-async function fillDeficiencies(index: number) {
+export async function fillDeficiencies(index: number) {
     const { deficiencyIds: ids, deficiencyTypeIds: typeIds, inspectionIds } = StaticDataIds[index];
     return prisma.deficiency.createMany({
         data: [
@@ -664,7 +664,7 @@ async function fillDeficiencies(index: number) {
     });
 }
 
-async function fillDeficiencyUniform(index: number) {
+export async function fillDeficiencyUniform(index: number) {
     const { deficiencyIds, uniformIds } = StaticDataIds[index];
     return prisma.deficiencyUniform.createMany({
         data: [
@@ -676,7 +676,7 @@ async function fillDeficiencyUniform(index: number) {
     });
 }
 
-async function fillDeficiencyCadet(index: number) {
+export async function fillDeficiencyCadet(index: number) {
     const { deficiencyIds, cadetIds, uniformIds, materialIds } = StaticDataIds[index];
     return prisma.deficiencyCadet.createMany({
         data: [
@@ -694,7 +694,7 @@ async function fillDeficiencyCadet(index: number) {
     });
 }
 
-async function fillInspection(index: number) {
+export async function fillInspection(index: number) {
     const { inspectionIds: ids, fk_assosiation } = StaticDataIds[index];
     return prisma.inspection.createMany({
         data: [
@@ -704,7 +704,7 @@ async function fillInspection(index: number) {
     });
 }
 
-async function fillCadetInspection(index: number) {
+export async function fillCadetInspection(index: number) {
     const { inspectionIds, cadetIds } = StaticDataIds[index];
     return prisma.cadetInspection.createMany({
         data: [

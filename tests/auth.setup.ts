@@ -1,19 +1,24 @@
 import { Page, test as setup } from 'playwright/test';
 import { uuid } from 'uuidv4';
-import { cleanupData } from './testData/cleanupStatic';
+import { cleanupData, deleteAssosiation } from './testData/cleanupStatic';
 import { StaticDataLoader } from './testData/staticDataLoader';
 
 setup.use({ storageState: { cookies: [], origins: [] } });
 
 export type authenticatedFixture = { page: Page, staticData: StaticDataLoader }
-export const dataFixture = setup.extend<{ staticData: StaticDataLoader }>({
-    staticData: async ({ }, use) => {
+export const dataFixture = setup.extend<{}, { staticData: StaticDataLoader }>({
+    staticData: [async ({ }, use) => {
         const i = Number(process.env.TEST_PARALLEL_INDEX ?? 0);
+        console.log("🚀 ~ authSetup loadStaticData: ~ i:", i);
         await cleanupData(i);
-
+        
         const staticData = new StaticDataLoader(i);
         await use(staticData);
-    },
+        if (i > 0) {
+            console.log("🚀 ~ authSetup deleteStaticData: ~ i:", i);
+            await deleteAssosiation(i);
+        }
+    }, { scope: "worker" }],
 });
 
 export const adminTest = dataFixture.extend<authenticatedFixture>({
@@ -45,7 +50,7 @@ export const managerTest = dataFixture.extend<authenticatedFixture>({
         if (response.status() !== 200)
             throw Error("Failed to authenticate");
 
-     
+
         use(page);
     },
 });

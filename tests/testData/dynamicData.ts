@@ -97,10 +97,14 @@ export const startInspection = async (i: number) =>
         },
     });
 
-export const removeInspection = async (i: number) =>
-    prisma.inspection.delete({
-        where: { id: dynamicDataIds[i].inspectionId }
-    });
+export const removeInspection = async (i: number) => {
+    const insp = await prisma.inspection.findUnique({where: {id: dynamicDataIds[i].inspectionId}});
+    if (insp !== null) {
+        await prisma.inspection.delete({
+            where: { id: dynamicDataIds[i].inspectionId }
+        });
+    }
+}
 
 export const svenKellerFirstInspectionData = (i: number) => ({
     id: dynamicDataIds[i].firstInspection.id,

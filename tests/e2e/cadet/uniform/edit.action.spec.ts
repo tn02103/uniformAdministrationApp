@@ -21,12 +21,26 @@ const test = adminTest.extend<Fixture>({
     rowComponent: async ({ page, staticData }, use) => use(new UniformItemRowComponent(page, staticData.ids.uniformIds[0][84])),
 
 });
+test.afterEach(async ({ staticData: { ids: { uniformIds, uniformTypeIds, uniformGenerationIds, sizeIds } } }) => {
+    await prisma.uniform.update({
+        where: { id: uniformIds[0][84] },
+        data: {
+            number: 1184,
+            fk_uniformType: uniformTypeIds[0],
+            fk_generation: uniformGenerationIds[3],
+            fk_size: sizeIds[20],
+            active: true,
+            comment: 'Bemerkung 1',
+            recdelete: null,
+            recdeleteUser: null
+        }
+    });
+});
 
 test.describe(() => {
     test.beforeEach(async ({ page, staticData: { ids } }) => {
         await page.goto(`/de/app/cadet/${ids.cadetIds[1]}`);
     });
-
 
     test('validate formHandling', async ({ rowComponent, uniform, staticData: { ids } }) => {
         await test.step('validate inital formState', async () => {

@@ -1,5 +1,5 @@
 import test from "playwright/test";
-import { cleanupData, deleteEverything } from "./cleanupStatic";
+import { cleanupData, deleteAssosiation } from "./cleanupStatic";
 
 
 test.skip('cleanup', async () => {
@@ -13,7 +13,7 @@ test.skip('cleanup', async () => {
 test.skip('clear testData', async () => {
     for (let i = 0; i < 5 ;i++) {
         try{
-            await deleteEverything(i);
+            await deleteAssosiation(i);
         } catch(e) {
             console.error(e);
         }
