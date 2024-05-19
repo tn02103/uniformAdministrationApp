@@ -34,6 +34,7 @@ export type StaticDataIdType = {
 };
 
 export type authenticatedFixture = { page: Page, staticData: StaticData }
+
 export const dataFixture = setup.extend<{}, { staticData: StaticData }>({
     staticData: [async ({ }, use) => {
         const i = Number(process.env.TEST_PARALLEL_INDEX ?? 0);
@@ -72,7 +73,7 @@ export const dataFixture = setup.extend<{}, { staticData: StaticData }>({
 
         await use(staticData);
         if (i > 0) {
-            staticData.cleanup.removeAssosiation();
+            await staticData.cleanup.removeAssosiation();
         }
     }, { scope: "worker" }],
 });

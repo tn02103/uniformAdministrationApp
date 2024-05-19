@@ -1,11 +1,10 @@
-import { getAllUniformSizesList } from "@/actions/controllers/UniformSizeController";
+import UniformSizeDBHandler from "@/actions/dbHandlers/UniformSizeDBHandler";
 import { Card, CardBody } from "@/components/card";
+import { prisma } from "@/lib/db";
 import { t } from "@/lib/test";
 import { Col, Row } from "react-bootstrap";
 import UniformsizeConfigurationHeader from "./header";
 import SizeItem from "./sizeItem";
-import UniformSizeDBHandler from "@/actions/dbHandlers/UniformSizeDBHandler";
-import { prisma } from "@/lib/db";
 
 export const dynamic = 'auto';
 

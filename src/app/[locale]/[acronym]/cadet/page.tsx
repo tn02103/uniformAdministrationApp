@@ -1,11 +1,9 @@
 import { getPersonnelListData } from "@/actions/controllers/CadetController";
 import { getI18n } from "@/lib/locales/config";
-import { setStaticParamsLocale } from "next-international/server";
 import Head from "next/head";
 import GeneralOverviewTable from "./table";
 
-const CadetListPage = async ({ params, searchParams }: any) => {
-    setStaticParamsLocale(params.locale);
+const CadetListPage = async ({ searchParams }: any) => {
     const t = await getI18n();
     const orderBy = searchParams.orderBy === "firstname" ? "firstname" : "lastname";
     const asc = searchParams.asc ? searchParams.asc === "true" ? true : false : true;
