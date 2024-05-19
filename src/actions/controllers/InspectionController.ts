@@ -4,7 +4,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { DeficiencyType, InspectionStatus, deficiencyTypeArgs } from "@/types/deficiencyTypes";
 import { revalidateTag, unstable_cache } from "next/cache";
-import { genericSAValidatior, genericSAValidatiorV2 } from "../validations";
+import { genericSAValidatiorV2 } from "../validations";
 
 export const getDeficiencyTypeList = (): Promise<DeficiencyType[]> => genericSAValidatiorV2(AuthRole.inspector, true, {})
     .then(({ assosiation }) => prisma.deficiencyType.findMany({
@@ -18,9 +18,8 @@ export const getDeficiencyTypeList = (): Promise<DeficiencyType[]> => genericSAV
         },
     }));
 
-export const getInspectionState = (): Promise<InspectionStatus> => genericSAValidatior(
-    AuthRole.user,
-    true, []
+export const getInspectionState = (): Promise<InspectionStatus> => genericSAValidatiorV2(
+    AuthRole.user, true, {}
 ).then(async ({ assosiation }): Promise<InspectionStatus> => unstable_cache(async (): Promise<InspectionStatus> => {
     const inspection = await prisma.inspection.findFirst({
         where: {
@@ -59,7 +58,7 @@ export const getInspectionState = (): Promise<InspectionStatus> => genericSAVali
     tags: [`serverA.inspectionState.${assosiation}`]
 })());
 
-export const getInspectedCadetIdList = () => genericSAValidatior(AuthRole.inspector, true, [])
+export const getInspectedCadetIdList = () => genericSAValidatiorV2(AuthRole.inspector, true, {})
     .then(async ({ assosiation }) =>
         prisma.cadetInspection.findMany({
             select: {

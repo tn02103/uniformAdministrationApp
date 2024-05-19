@@ -6,49 +6,6 @@ import { prisma } from "@/lib/db";
 import { IronSessionUser, getIronSession } from "@/lib/ironSession";
 import { redirect } from "next/navigation";
 
-type AssosiationValidationType = {
-    value: string | undefined,
-    type: "cadet" | "uniform" | "uType" | "material",
-}
-
-export const genericSAValidatior = async (
-    requiredRole: AuthRole,
-    typeValidation: boolean,
-    assosiationValidations: AssosiationValidationType[]
-): Promise<IronSessionUser> => {
-    "use server"
-
-    const { user } = await getIronSession();
-    if (!user) {
-        return redirect('/login');
-    } else if (user.role < requiredRole) {
-        throw new UnauthorizedException(`user does not have required role ${requiredRole}`);
-    }
-
-    if (!typeValidation) {
-        throw new Error("Typevalidation failed");
-    }
-
-    await Promise.all(assosiationValidations.map(async ({ value, type }) => {
-        if (!value)
-            return;
-
-        switch (type) {
-            case "cadet":
-                return validateCadetAssosiation(value, user.assosiation);
-            case "uniform":
-                return validateUniformAssosiation(value, user.assosiation);
-            case "uType":
-                return validateUniformTypeAssosiation(value, user.assosiation);
-            case "material":
-                return validateMaterailAssosiation(value, user.assosiation);
-            default:
-                throw Error("Not implemented AssosiationValidation");
-        }
-    }));
-    return user;
-}
-
 export const genericSAValidatiorV2 = async (
     requiredRole: AuthRole,
     typeValidation: boolean,
@@ -59,7 +16,7 @@ export const genericSAValidatiorV2 = async (
         uniformGenerationId?: string | string[],
         uniformSizeListId?: string | string[] | null,
         uniformSizeId?: string | string[],
-        materialId?: string | string[],
+        materialId?: string | (string | undefined)[],
     }
 ): Promise<IronSessionUser> => {
     "use server"
@@ -76,10 +33,10 @@ export const genericSAValidatiorV2 = async (
     }
 
     const validationPromisses: Promise<any>[] = [];
-    const validate = (ids: string | string[], validator: (id: string, assosiationId: string) => Promise<any>) => {
+    const validate = (ids: string | (string | undefined)[], validator: (id: string, assosiationId: string) => Promise<any>) => {
         if (Array.isArray(ids)) {
             validationPromisses.push(
-                ...ids.map((id) => validator(id, user.assosiation))
+                ...ids.filter(id => id != undefined).map((id) => validator(id as string, user.assosiation))
             );
         } else {
             validationPromisses.push(

@@ -1,15 +1,15 @@
 "use server";
 
 import { AuthRole } from "@/lib/AuthRoles";
-import { genericSAValidatior } from "../validations";
-import { uuidValidationPattern } from "@/lib/validations";
 import { prisma } from "@/lib/db";
+import { uuidValidationPattern } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
+import { genericSAValidatiorV2 } from "../validations";
 
-export const deleteCadet = async (cadetId: string) => genericSAValidatior(
+export const deleteCadet = async (cadetId: string) => genericSAValidatiorV2(
     AuthRole.materialManager,
     uuidValidationPattern.test(cadetId),
-    [{ value: cadetId, type: "cadet" }]
+    { cadetId }
 ).then(({ username }) => prisma.$transaction([
     // RETURN uniform
     // -- remove issuedEntrys issued today

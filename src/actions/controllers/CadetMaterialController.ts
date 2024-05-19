@@ -1,6 +1,6 @@
 "use server";
 
-import { genericSAValidatior, genericSAValidatiorV2 } from "@/actions/validations";
+import { genericSAValidatiorV2 } from "@/actions/validations";
 import { NullValueException } from "@/errors/LoadDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
@@ -11,10 +11,10 @@ import { PrismaClient } from "@prisma/client";
 import { CadetMaterialDBHandler } from "../dbHandlers/CadetMaterialDBHandler";
 
 const dbHandler = new CadetMaterialDBHandler();
-export const getCadetMaterialMap = async (cadetId: string): Promise<CadetMaterialMap> => genericSAValidatior(
+export const getCadetMaterialMap = async (cadetId: string): Promise<CadetMaterialMap> => genericSAValidatiorV2(
     AuthRole.user,
     uuidValidationPattern.test(cadetId),
-    [{ value: cadetId, type: "cadet" }]
+    { cadetId }
 ).then(async ({ assosiation }) => dbHandler.getMaterialMap(cadetId, assosiation));
 
 export const getCadetMaterialList = async (cadetId: string): Promise<any[]> => genericSAValidatiorV2(
@@ -36,15 +36,13 @@ export const getCadetMaterialList = async (cadetId: string): Promise<any[]> => g
     )
 );
 
-export const issueMaterial = async (cadetId: string, newMaterialId: string, quantity: number, oldMaterialId?: string): Promise<CadetMaterialMap | undefined> => genericSAValidatior(
+export const issueMaterial = async (cadetId: string, newMaterialId: string, quantity: number, oldMaterialId?: string): Promise<CadetMaterialMap | undefined> => genericSAValidatiorV2(
     AuthRole.inspector,
     (uuidValidationPattern.test(cadetId)
         && uuidValidationPattern.test(newMaterialId)
         && (!oldMaterialId || uuidValidationPattern.test(oldMaterialId))
         && Number.isInteger(quantity) && quantity > 0),
-    [{ value: cadetId, type: "cadet" },
-    { value: newMaterialId, type: "material" },
-    { value: oldMaterialId, type: "material" }]
+    { cadetId, materialId: [newMaterialId, oldMaterialId] }
 ).then(async ({ assosiation }) => prisma.$transaction(async (prismaCl) => {
     if (oldMaterialId) {
         // IssuedMaterial 

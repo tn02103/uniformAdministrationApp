@@ -5,10 +5,10 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { uuidValidationPattern } from "@/lib/validations";
 import { IssuedEntryType, UniformFormData, uniformArgs } from "@/types/globalUniformTypes";
+import { Prisma } from "@prisma/client";
 import { notFound } from "next/navigation";
 import { UniformDBHandler } from "../dbHandlers/UniformDBHandler";
-import { genericSAValidatior, genericSAValidatiorV2 } from "../validations";
-import { Prisma } from "@prisma/client";
+import { genericSAValidatiorV2 } from "../validations";
 
 const dbHandler = new UniformDBHandler();
 
@@ -68,7 +68,7 @@ export const getUniformListWithOwner = async (uniformTypeId: string, orderBy: st
     }
 
     let sortOrder: Prisma.UniformOrderByWithRelationInput[];
-    const ascString = asc?"asc": "desc";
+    const ascString = asc ? "asc" : "desc";
     switch (orderBy) {
         case "generation":
             sortOrder = [
@@ -104,10 +104,10 @@ export const getUniformListWithOwner = async (uniformTypeId: string, orderBy: st
     return dbHandler.getListWithOwner(uniformTypeId, hiddenGenerations, hiddenSizes, sqlFilter, sortOrder, orderBy === "owner", asc);
 });
 
-export const getUniformFormValues = (uniformId: string): Promise<UniformFormData> => genericSAValidatior(
+export const getUniformFormValues = (uniformId: string): Promise<UniformFormData> => genericSAValidatiorV2(
     AuthRole.user,
     (uuidValidationPattern.test(uniformId)),
-    [{ value: uniformId, type: "uniform" }]
+    { uniformId }
 ).then(() => dbHandler.getUniformById(uniformId)).then(data => !data ? notFound() : ({
     id: data.id,
     number: data.number,
@@ -117,10 +117,10 @@ export const getUniformFormValues = (uniformId: string): Promise<UniformFormData
     active: data.active,
 }));
 
-export const getUniformIssueHistory = (uniformId: string): Promise<IssuedEntryType[]> => genericSAValidatior(
+export const getUniformIssueHistory = (uniformId: string): Promise<IssuedEntryType[]> => genericSAValidatiorV2(
     AuthRole.inspector,
     uuidValidationPattern.test(uniformId),
-    [{ value: uniformId, type: "uniform" }]
+    { uniformId }
 ).then(() => prisma.uniformIssued.findMany({
     where: {
         fk_uniform: uniformId,
@@ -138,13 +138,13 @@ export const getUniformIssueHistory = (uniformId: string): Promise<IssuedEntryTy
     cadetId: issueEntry.cadet.id,
 })));
 
-export const saveUniformItem = (data: UniformFormData): Promise<UniformFormData> => genericSAValidatior(
+export const saveUniformItem = (data: UniformFormData): Promise<UniformFormData> => genericSAValidatiorV2(
     AuthRole.inspector,
     (uuidValidationPattern.test(data.id)
         && (!data.generation || uuidValidationPattern.test(data.generation))
         && (!data.size || uuidValidationPattern.test(data.size))
         && typeof data.active === "boolean"),
-    [{ value: data.id, type: "uniform" }]
+    { uniformId: data.id }
 ).then(async () => prisma.uniform.update({
     ...uniformArgs,
     where: {
@@ -165,10 +165,10 @@ export const saveUniformItem = (data: UniformFormData): Promise<UniformFormData>
     active: data.active,
 }));
 
-export const deleteUniformItem = (uniformId: string) => genericSAValidatior(
+export const deleteUniformItem = (uniformId: string) => genericSAValidatiorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(uniformId)),
-    [{ value: uniformId, type: "uniform" }]
+    { uniformId }
 ).then(async ({ username }) => {
     const issued = await prisma.uniformIssued.aggregate({
         where: {
