@@ -17,14 +17,14 @@ export default {
             false: "Inaktiv"
         },
         actions: {
-            cancel: "abbrechen",
-            save: "speichern",
-            edit: "bearbeiten",
+            cancel: "Abbrechen",
+            save: "Speichern",
+            edit: "Bearbeiten",
             create: "Anlegen",
             addNew: "neu hinzufügen",
             open: "Öffnen",
-            prevStep: "zurück",
-            nextStep: "weiter",
+            prevStep: "Zurück",
+            nextStep: "Weiter",
             edit_item: "{item} Bearbeiten",
             issue_item: "{item} Ausgeben",
             issue: "Ausgeben",
@@ -37,6 +37,7 @@ export default {
             moveUp: "nach oben verschieben",
             moveDown: "nach unten verschieben",
             changePosition: "Position wechseln",
+            changePassword: "Passwort ändern",
             ok: "Verstanden",
         },
         cadet: {
@@ -109,6 +110,18 @@ export default {
                 false: "Unbehoben",
             }
         },
+        user: {
+            active: {
+                true: "Aktiv",
+                false: "Gespert",
+            },
+            authRole: {
+                1: "Nutzer",
+                2: "Kontrolleur",
+                3: "Materialverwaltung",
+                4: "Administrator",
+            },
+        },
         error: {
             pleaseSelect: "Bitte Auswählen",
             number: {
@@ -144,6 +157,11 @@ export default {
                 acronym: {
                     pattern: "Das Kürzel darf keine Sonderzeichen oder Zahlen Beinhalten",
                     length: "Das Kürzel muss 2 Zeichen lang sein",
+                }
+            },
+            user: {
+                username: {
+                    pattern: "Der Nutzername darf keine Sonder oder Leerzeichen beinhalten"
                 }
             }
         }
@@ -323,6 +341,15 @@ export default {
                 }
             },
         },
+        user: {
+            header: {
+                page: "Nutzerübersicht",
+                username: "Nutzername",
+                name: "Name",
+                role: "Role",
+                status: "Status",
+            }
+        }
     },
     modals: {
         messageModal: {
