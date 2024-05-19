@@ -2,12 +2,11 @@ import t from "@/../public/locales/de";
 import { prisma } from "@/lib/db";
 import { UniformSize } from "@prisma/client";
 import { expect } from "playwright/test";
-import { adminTest } from "../../../auth.setup";
 import { newNameValidationTests, numberValidationTests } from "../../../global/testSets";
 import { UniformSizeAdministrationPage } from "../../../pages/admin/uniform/UniformSizeAdministration.page";
 import { MessagePopupComponent } from "../../../pages/popups/MessagePopup.component";
 import { SimpleFormPopupComponent } from "../../../pages/popups/SimpleFormPopup.component";
-import { cleanupUniformSizeConfiguration } from "../../../testData/cleanupStatic";
+import { adminTest } from "../../../setup";
 
 type Fixture = {
     sizes: UniformSize[],
@@ -16,9 +15,8 @@ type Fixture = {
 }
 const test = adminTest.extend<Fixture>({
     sizes: async ({ staticData }, use) => {
-        const sizes = await staticData.getUniformSizes()
-            .then(list => list.sort((a, b) => a.sortOrder - b.sortOrder));
-        await use(sizes);
+        const sizes = await staticData.data.uniformSizes.sort((a, b) => a.sortOrder - b.sortOrder);
+        await use(sizes as UniformSize[]);
     },
     uniformSizePage: async ({ page }, use) => {
         await use(new UniformSizeAdministrationPage(page));
@@ -30,9 +28,11 @@ const test = adminTest.extend<Fixture>({
 test.beforeEach(async ({ page }) => {
     await page.goto('/de/app/admin/uniform/sizes');
 });
-test.afterEach(async ({ staticData: { index } }) => {
-    await cleanupUniformSizeConfiguration(index);
+test.afterEach(async ({ staticData: { cleanup } }) => {
+    await cleanup.uniformSizeConfiguration();
 });
+
+
 test('validate Data', async ({ page, uniformSizePage, sizes }) => {
     await expect(uniformSizePage.div_size(sizes[0].id)).toBeVisible();
 

@@ -2,14 +2,13 @@ import { prisma } from "@/lib/db";
 import { uuidValidationPattern } from "@/lib/validations";
 import { Page, expect } from "playwright/test";
 import t from "../../../../public/locales/de";
-import { adminTest } from "../../../auth.setup";
+import { adminTest } from "../../../setup";
 import { viewports } from "../../../global/helper";
 import { numberValidationTests } from "../../../global/testSets";
 import { CadetDetailPage } from "../../../pages/cadet/cadetDetail.page";
 import { CadetUniformComponent } from "../../../pages/cadet/cadetUniform.component";
 import { MessagePopupComponent } from "../../../pages/popups/MessagePopup.component";
 import { SimpleFormPopupComponent } from "../../../pages/popups/SimpleFormPopup.component";
-import { cleanupData } from "../../../testData/cleanupStatic";
 
 type Fixture = {
     cadetId: string;
@@ -25,7 +24,7 @@ const test = adminTest.extend<Fixture>({
     issuePopupComponent: async ({ page }, use) => use(new SimpleFormPopupComponent(page)),
 });
 test.afterEach(async ({ staticData }) => {
-    await cleanupData(staticData.index);
+    await staticData.resetData();
 });
 test.describe(() => {
     const dbIssuedItemCheck = async (fk_uniform: string, fk_cadet: string) => {

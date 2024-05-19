@@ -1,10 +1,9 @@
 import { prisma } from "@/lib/db";
 import { Deficiency } from "@prisma/client";
 import { expect } from "playwright/test";
-import { adminTest } from "../../../auth.setup";
 import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
-import { dynamicDataIds, insertSvenKellerFirstInspection, startInspection, svenKellerFirstInspectionData, svenKellerSecondInspectionData } from "../../../testData/dynamicData";
-import { cleanupInspection } from "../../../testData/cleanupStatic";
+import { adminTest } from "../../../setup";
+import { insertSvenKellerFirstInspection, startInspection, svenKellerFirstInspectionData, svenKellerSecondInspectionData } from "../../../testData/dynamicData";
 
 type Fixture = {
     inspectionComponent: CadetInspectionComponent;
@@ -33,7 +32,7 @@ const test = adminTest.extend<Fixture>({
     testData: async ({ staticData: { ids, index } }, use) => {
         const deficiencyIds = ids.deficiencyIds;
         use({
-            inspectionId: dynamicDataIds[index].inspectionId,
+            inspectionId: ids.dynamic.inspectionId,
             unresolvedIds: [deficiencyIds[5], deficiencyIds[10], deficiencyIds[1], deficiencyIds[9], deficiencyIds[13]],
             newDefs: {
                 cadet: {
@@ -73,8 +72,8 @@ const test = adminTest.extend<Fixture>({
 test.beforeEach(async ({ staticData: { index } }) => {
     await startInspection(index);
 });
-test.afterEach(async ({ staticData: { index } }) => {
-    await cleanupInspection(index);
+test.afterEach(async ({ staticData: { cleanup } }) => {
+    await cleanup.inspection();
 });
 
 test('E2E0275: initalInspection', async ({ page, inspectionComponent, testData: { unresolvedIds, newDefs, inspectionId }, staticData: { ids } }) => {

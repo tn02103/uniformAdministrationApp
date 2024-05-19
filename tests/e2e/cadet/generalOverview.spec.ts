@@ -1,23 +1,16 @@
-import { Deficiency } from "@prisma/client";
 import { expect } from "playwright/test";
-import { adminTest, inspectorTest, userTest } from "../../auth.setup";
 import { CadetListPage } from "../../pages/cadet/cadetList.page";
+import { adminTest, inspectorTest, userTest } from "../../setup";
 
 type Fixture = {
-    deficiencyList: Deficiency[];
     cadetListPage: CadetListPage;
 }
-
 const test = adminTest.extend<Fixture>({
-    deficiencyList: async ({ staticData }, use) => {
-        use(await staticData.getDeficiencyList());
-    },
     cadetListPage: async ({ page }, use) => use(new CadetListPage(page)),
 });
 test.beforeEach(async ({ page }) => { await page.goto('/de/app/cadet'); })
 
-
-test('E2E0101: validate Data', async ({ cadetListPage, staticData: { ids }, deficiencyList }) => {
+test('E2E0101: validate Data', async ({ cadetListPage, staticData: { ids, data } }) => {
     await expect(cadetListPage.div_cadet_list).toHaveCount(9);
 
     await Promise.all([
@@ -38,7 +31,7 @@ test('E2E0101: validate Data', async ({ cadetListPage, staticData: { ids }, defi
         expect.soft(cadetListPage.div_cadet_activeDeficiencyCount(ids.cadetIds[0]))
             .toHaveText('0'), //Fried Antje
         expect.soft(cadetListPage.div_cadet_activeDeficiencyCount(ids.cadetIds[2]))
-            .toHaveText(String(deficiencyList.filter(d => /Sven Keller Unresolved/.test(d.comment)).length)), //Sven Keller
+            .toHaveText(String(data.deficiencies.filter(d => /Sven Keller Unresolved/.test(d.comment)).length)), //Sven Keller
     ]);
 });
 test('E2E0102: validate sortOrder', async ({ page, cadetListPage, staticData: { ids } }) => {

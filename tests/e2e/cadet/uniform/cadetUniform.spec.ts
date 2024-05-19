@@ -2,19 +2,15 @@ import { prisma } from "@/lib/db";
 import { UniformType } from "@prisma/client";
 import { expect } from "playwright/test";
 import t from "../../../../public/locales/de";
-import { adminTest, inspectorTest, managerTest, userTest } from "../../../auth.setup";
+import { adminTest, inspectorTest, managerTest, userTest } from "../../../setup";
 import { getTextColor } from "../../../global/helper";
 import { CadetUniformComponent } from "../../../pages/cadet/cadetUniform.component";
 
 type Fixture = {
     uniformComponent: CadetUniformComponent;
-    typeList: UniformType[];
 }
 
 const test = adminTest.extend<Fixture>({
-    typeList: async ({ staticData }, use) => {
-        use(await staticData.getUniformTypeList());
-    },
     uniformComponent: async ({ page }, use) => use(new CadetUniformComponent(page)),
 });
 
@@ -174,8 +170,8 @@ test.describe(() => {
     test.describe('Test uniformType Rows', async () => {
         const defaultTextColor = 'rgb(33, 37, 41)';
 
-        test('validate correct sortOrder of the typeRows', async ({ uniformComponent, typeList }) => {
-            const types = typeList.filter(type => !type.recdelete).sort((a, b) => a.sortOrder - b.sortOrder);
+        test('validate correct sortOrder of the typeRows', async ({ uniformComponent, staticData: {data} }) => {
+            const types = data.uniformTypes.filter(type => !type.recdelete).sort((a, b) => a.sortOrder - b.sortOrder);
 
             for (let i = 0; i < types.length; i++) {
                 await expect.soft(uniformComponent.div_typeList.locator('> div').locator(`nth=${i}`)).toHaveAttribute('data-testid', `div_utype_${types[i].id}`);
@@ -183,8 +179,8 @@ test.describe(() => {
             }
         });
 
-        test('validate deleted Types not shown', async ({ uniformComponent, typeList }) => {
-            const deletedTypes = typeList.filter(type => type.recdelete);
+        test('validate deleted Types not shown', async ({ uniformComponent, staticData: {data} }) => {
+            const deletedTypes = data.uniformTypes.filter(type => type.recdelete);
 
             await Promise.all(
                 deletedTypes.map((type) => expect.soft(uniformComponent.div_utype(type.id)).not.toBeVisible())
@@ -221,7 +217,7 @@ test.describe(() => {
     test.describe('Test uniformItem rows', () => {
         const defaultTextColor = 'rgb(33, 37, 41)';
 
-        test('validate correct uniformItems are displayed in correct sortOrder', async ({ uniformComponent, typeList, staticData: { ids } }) => {
+        test('validate correct uniformItems are displayed in correct sortOrder', async ({ uniformComponent, staticData: { ids, data } }) => {
             const uniformItems: any[] = await prisma.uniform.findMany({
                 where: {
                     issuedEntrys: {
@@ -233,7 +229,7 @@ test.describe(() => {
                 }
             });
 
-            for (let type of typeList) {
+            for (let type of data.uniformTypes) {
                 await test.step(`validate uniformItems for type: ${type.name}`, async () => {
                     const filteredItems = uniformItems.filter(uitem => uitem?.fk_uniformType == type.id).sort((a, b) => a?.number - b?.number);
 

@@ -3,15 +3,13 @@ import { prisma } from "@/lib/db";
 import { uuidValidationPattern } from "@/lib/validations";
 import { UniformGeneration } from "@prisma/client";
 import { test as baseTest, expect } from "playwright/test";
-import { adminTest, authenticatedFixture, inspectorTest, managerTest } from "../../../auth.setup";
+import { adminTest, authenticatedFixture, inspectorTest, managerTest } from "../../../setup";
 import { newDescriptionValidationTests } from "../../../global/testSets";
 import { GenerationListComponent } from "../../../pages/admin/uniform/GenerationList.component";
 import { TypeListComponent } from "../../../pages/admin/uniform/typeList.component";
 import { DangerConfirmationModal } from "../../../pages/popups/DangerConfirmationPopup.component";
 import { EditGenerationPopupComponent } from "../../../pages/popups/EditGenerationPopup.component";
 import { MessagePopupComponent } from "../../../pages/popups/MessagePopup.component";
-import { cleanupUniformTypeConfiguration } from "../../../testData/cleanupStatic";
-
 
 type Fixture = {
     typeId: string;
@@ -26,10 +24,10 @@ type Fixture = {
 
 const test = adminTest.extend<authenticatedFixture & Fixture>({
     typeId: async ({ staticData }, use) => {
-        await use((await staticData.getUniformType('AA'))!.id)
+        await use(staticData.ids.uniformTypeIds[0]);
     },
     generationList: async ({ staticData, typeId }, use) => {
-        await use((await staticData.getUniformGenerationList()).filter(g => g.fk_uniformType === typeId))
+        await use(staticData.data.uniformGenerations.filter(g => g.fk_uniformType === typeId) as UniformGeneration[]);
     },
     components: async ({ page, typeId }, use) => {
         const comp = {
@@ -43,8 +41,8 @@ const test = adminTest.extend<authenticatedFixture & Fixture>({
         use(comp);
     },
 });
-test.afterEach(async ({staticData:{index}}) => {
-    await cleanupUniformTypeConfiguration(index);
+test.afterEach(async ({ staticData: { cleanup } }) => {
+    await cleanup.uniformTypeConfiguration();
 });
 
 test('validate data', async ({ page, components: { generationComponent }, generationList }) => {
@@ -63,14 +61,13 @@ test('validate data', async ({ page, components: { generationComponent }, genera
     }
 });
 
-test('validate create', async ({ page, components: { generationComponent, editGenerationPopup }, staticData, typeId }) => {
+test('validate create', async ({ page, components: { generationComponent, editGenerationPopup }, staticData: { ids }, typeId }) => {
     const name = 'testGenerationUnique';
-    const sizelist = await staticData.getUniformSizelist('Liste2');
 
     await test.step('create generation & validate ui', async () => {
         await generationComponent.btn_create.click();
         await editGenerationPopup.txt_name.fill(name);
-        await editGenerationPopup.sel_sizeList.selectOption(sizelist!.id)
+        await editGenerationPopup.sel_sizeList.selectOption(ids.sizelistIds[1])
         await editGenerationPopup.chk_outdated.setChecked(true);
         await editGenerationPopup.btn_save.click();
         await expect(page.locator('div[data-testid^="div_generation_"]').getByText(name)).toBeVisible();
@@ -88,7 +85,7 @@ test('validate create', async ({ page, components: { generationComponent, editGe
             name: name,
             sortOrder: 4,
             outdated: true,
-            fk_sizeList: sizelist!.id,
+            fk_sizeList: ids.sizelistIds[1],
             fk_uniformType: typeId
         }));
     });
@@ -213,16 +210,15 @@ test('validate formValidation: name', async ({ page, typeId, generationList, com
         });
     }
 });
-test('validate edit', async ({ page, typeId, generationList, staticData, components: { generationComponent, editGenerationPopup } }) => {
+test('validate edit', async ({ page, typeId, generationList, staticData: { ids }, components: { generationComponent, editGenerationPopup } }) => {
     const popupComponent = new MessagePopupComponent(page);
     const genId = generationList[1].id;
-    const sizelist = await staticData.getUniformSizelist('Liste2');
 
     await baseTest.step('edit generation', async () => {
         await generationComponent.btn_gen_edit(genId).click();
         await editGenerationPopup.txt_name.fill('testGeneration');
         await editGenerationPopup.chk_outdated.click();
-        await editGenerationPopup.sel_sizeList.selectOption(sizelist!.id);
+        await editGenerationPopup.sel_sizeList.selectOption(ids.sizelistIds[1]);
         await editGenerationPopup.btn_save.click();
 
         await baseTest.step('handle sizeList warning', async () => {
@@ -248,20 +244,19 @@ test('validate edit', async ({ page, typeId, generationList, staticData, compone
         expect(dbData).toEqual(expect.objectContaining({
             name: 'testGeneration',
             outdated: true,
-            fk_sizeList: sizelist!.id,
+            fk_sizeList: ids.sizelistIds[1],
             fk_uniformType: typeId
         }));
     });
 
 });
-test('validate no sizeList Warning', async ({ page, generationList, staticData, components: { generationComponent, editGenerationPopup } }) => {
+test('validate no sizeList Warning', async ({ page, generationList, staticData: { ids }, components: { generationComponent, editGenerationPopup } }) => {
     const popupComponent = new MessagePopupComponent(page);
     const genId = generationList[1].id;
-    const sizelist = await staticData.getUniformSizelist('Liste2');
 
     await generationComponent.btn_gen_edit(genId).click();
     await editGenerationPopup.txt_name.fill('testGeneration');
-    await editGenerationPopup.sel_sizeList.selectOption(sizelist!.id);
+    await editGenerationPopup.sel_sizeList.selectOption(ids.sizelistIds[1]);
     await editGenerationPopup.sel_sizeList.selectOption(generationList[1].fk_sizeList);
     await editGenerationPopup.btn_save.click();
     await expect.soft(popupComponent.div_popup).not.toBeVisible();

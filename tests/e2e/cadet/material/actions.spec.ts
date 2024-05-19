@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 import { Locator, expect } from "playwright/test";
 import t from "../../../../public/locales/de";
-import { adminTest } from "../../../auth.setup";
+import { adminTest } from "../../../setup";
 import { numberValidationTests } from "../../../global/testSets";
 import { CadetMaterialComponent } from "../../../pages/cadet/cadetMaterial.component";
 import { PopupComponent } from "../../../pages/popups/Popup.component";

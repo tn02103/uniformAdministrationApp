@@ -2,12 +2,11 @@ import { prisma } from "@/lib/db";
 import { Cadet } from "@prisma/client";
 import { expect, } from "playwright/test";
 import t from "../../../public/locales/de";
-import { adminTest, inspectorTest, managerTest, userTest } from "../../auth.setup";
+import { adminTest, inspectorTest, managerTest, userTest } from "../../setup";
 import { CadetDataComponent } from "../../pages/cadet/cadetData.component";
 import { CadetDetailPage } from "../../pages/cadet/cadetDetail.page";
 import { CadetListPage } from "../../pages/cadet/f";
 import { MessagePopupComponent } from "../../pages/popups/MessagePopup.component";
-import { cleanupCadet } from "../../testData/cleanupStatic";
 
 
 type Fixture = {
@@ -86,8 +85,8 @@ test.describe(async () => {
     test.beforeEach(async ({ page, staticData }) => {
         await page.goto(`/de/app/cadet/${staticData.ids.cadetIds[1]}`);
     });
-    test.afterEach(async ({ staticData: { index } }) => {
-        await cleanupCadet(index);
+    test.afterEach(async ({ staticData: { cleanup } }) => {
+        await cleanup.cadet();
     });
 
     test('validate data', async ({ dataComponent, cadet }) => {

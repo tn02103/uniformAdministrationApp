@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 import { Uniform } from "@prisma/client";
 import { expect } from "playwright/test";
-import { adminTest } from "../../../auth.setup";
+import { adminTest } from "../../../setup";
 import { viewports } from "../../../global/helper";
 import { CadetUniformComponent, UniformItemRowComponent } from "../../../pages/cadet/cadetUniform.component";
 
@@ -12,28 +12,14 @@ type Fixture = {
 };
 
 const test = adminTest.extend<Fixture>({
-    uniform: async ({ staticData }, use) => use(
-        await prisma.uniform.findUniqueOrThrow({
-            where: { id: staticData.ids.uniformIds[0][84] }
-        })
-    ),
+    uniform: async ({ staticData }, use) => use(staticData.data.uniformList.find(u => u.number === 1184)!),
     uniformComponent: async ({ page }, use) => use(new CadetUniformComponent(page)),
     rowComponent: async ({ page, staticData }, use) => use(new UniformItemRowComponent(page, staticData.ids.uniformIds[0][84])),
-
 });
-test.afterEach(async ({ staticData: { ids: { uniformIds, uniformTypeIds, uniformGenerationIds, sizeIds } } }) => {
+test.afterEach(async ({ uniform}) => {
     await prisma.uniform.update({
-        where: { id: uniformIds[0][84] },
-        data: {
-            number: 1184,
-            fk_uniformType: uniformTypeIds[0],
-            fk_generation: uniformGenerationIds[3],
-            fk_size: sizeIds[20],
-            active: true,
-            comment: 'Bemerkung 1',
-            recdelete: null,
-            recdeleteUser: null
-        }
+        where: { id: uniform.id },
+        data: uniform
     });
 });
 
@@ -86,36 +72,42 @@ test.describe(() => {
                 );
             });
             await test.step('validate initialSizeList', async () => {
-                const options = await rowComponent.sel_size.locator('option', { hasNotText: 'K.A.' }).all();
-                expect(options).toHaveLength(5);
-                expect(options[0]).toHaveAttribute("value", ids.sizeIds[16]);
-                expect(options[0]).toHaveText('Größe16');
-                expect(options[2]).toHaveAttribute("value", ids.sizeIds[18]);
-                expect(options[2]).toHaveText('Größe18');
-                expect(options[4]).toHaveAttribute("value", ids.sizeIds[20]);
-                expect(options[4]).toHaveText('Größe20');
+                const options = rowComponent.sel_size.locator('option', { hasNotText: 'K.A.' });
+                await Promise.all([
+                    expect(options).toHaveCount(5),
+                    expect(options.nth(0)).toHaveAttribute("value", ids.sizeIds[16]),
+                    expect(options.nth(0)).toHaveText('Größe16'),
+                    expect(options.nth(2)).toHaveAttribute("value", ids.sizeIds[18]),
+                    expect(options.nth(2)).toHaveText('Größe18'),
+                    expect(options.nth(4)).toHaveAttribute("value", ids.sizeIds[20]),
+                    expect(options.nth(4)).toHaveText('Größe20'),
+                ]);
             });
             await test.step('validate changed generation size list', async () => {
                 await rowComponent.sel_generation.selectOption(ids.uniformGenerationIds[2]);
-                const options = await rowComponent.sel_size.locator('option', { hasNotText: 'K.A.' }).all();
+                const options = rowComponent.sel_size.locator('option', { hasNotText: 'K.A.' });
 
-                expect(options).toHaveLength(11);
-                expect(options[0]).toHaveAttribute("value", ids.sizeIds[0]);
-                expect(options[0]).toHaveText('0');
-                expect(options[5]).toHaveAttribute("value", ids.sizeIds[5]);
-                expect(options[5]).toHaveText('5');
-                expect(options[10]).toHaveAttribute("value", ids.sizeIds[10]);
-                expect(options[10]).toHaveText('10');
+                await Promise.all([
+                    expect(options).toHaveCount(11),
+                    expect(options.nth(0)).toHaveAttribute("value", ids.sizeIds[0]),
+                    expect(options.nth(0)).toHaveText('0'),
+                    expect(options.nth(5)).toHaveAttribute("value", ids.sizeIds[5]),
+                    expect(options.nth(5)).toHaveText('5'),
+                    expect(options.nth(10)).toHaveAttribute("value", ids.sizeIds[10]),
+                    expect(options.nth(10)).toHaveText('10'),
+                ]);
             });
             await test.step('validate generation null size list', async () => {
                 await rowComponent.sel_generation.selectOption('');
-                const options = await rowComponent.sel_size.locator('option', { hasNotText: 'K.A.' }).all();
+                const options = rowComponent.sel_size.locator('option', { hasNotText: 'K.A.' });
 
-                expect(options).toHaveLength(6);
-                expect(options[0]).toHaveAttribute("value", ids.sizeIds[0]);
-                expect(options[0]).toHaveText('0');
-                expect(options[5]).toHaveAttribute("value", ids.sizeIds[5]);
-                expect(options[5]).toHaveText('5');
+                await Promise.all([
+                    expect(options).toHaveCount(6),
+                    expect(options.nth(0)).toHaveAttribute("value", ids.sizeIds[0]),
+                    expect(options.nth(0)).toHaveText('0'),
+                    expect(options.nth(5)).toHaveAttribute("value", ids.sizeIds[5]),
+                    expect(options.nth(5)).toHaveText('5'),
+                ]);
             });
         })
     });

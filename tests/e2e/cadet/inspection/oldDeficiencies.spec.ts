@@ -1,19 +1,19 @@
 import { expect } from "playwright/test";
 import t from "../../../../public/locales/de";
-import { adminTest } from "../../../auth.setup";
+import { adminTest } from "../../../setup";
 import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
 import { removeInspection, startInspection } from "../../../testData/dynamicData";
-import { StaticDataLoader } from "../../../testData/staticDataLoader";
+import { StaticData } from "../../../testData/staticDataLoader";
 
 type Fixture = {
     inspectionComponent: CadetInspectionComponent;
-    staticData: StaticDataLoader & {
+    staticData: StaticData & {
         unresolvedIds: string[];
         resolvedIds: string[];
     }
 };
 const test = adminTest.extend<Fixture>({
-    staticData: async ({ staticData }: { staticData: StaticDataLoader }, use: (arg0: any) => void) => {
+    staticData: async ({ staticData }: { staticData: StaticData }, use: (arg0: any) => void) => {
         const { deficiencyIds } = staticData.ids;
         use({
             ...staticData,
@@ -59,6 +59,8 @@ test('E2E0265: validate step0 defList prev. Inspction', async ({ page, inspectio
         }),
     ]);
     await startInspection(index);
+    await page.reload();
+    await expect(inspectionComponent.div_step0_loading).not.toBeVisible();
 });
 
 test('E2E0267: validate step1 devList prev. Inspection', async ({inspectionComponent, staticData: { unresolvedIds, resolvedIds } }) => {
@@ -82,11 +84,11 @@ test('E2E0267: validate step1 devList prev. Inspection', async ({inspectionCompo
         );
     });
     await test.step('not shown', async () => {
-        await Promise.all([
+        await Promise.all(
             resolvedIds.map(async (id) =>
                 expect.soft(inspectionComponent.div_oldDeficiency(id)).not.toBeVisible()
             )
-        ]);
+        );
     });
 });
 

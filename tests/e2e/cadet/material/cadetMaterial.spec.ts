@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { expect } from "playwright/test";
-import { adminTest, inspectorTest, userTest } from "../../../auth.setup";
+import { adminTest, inspectorTest, userTest } from "../../../setup";
 import { defaultTextColor, getTextColor } from "../../../global/helper";
 import { CadetMaterialComponent } from "../../../pages/cadet/cadetMaterial.component";
 

@@ -2,11 +2,10 @@ import t from "@/../public/locales/de";
 import { prisma } from "@/lib/db";
 import { UniformType } from "@prisma/client";
 import { expect } from "playwright/test";
-import { adminTest, inspectorTest, managerTest } from "../../../auth.setup";
 import { TypeDetailComponent } from "../../../pages/admin/uniform/typeDetail.component";
 import { TypeListComponent } from "../../../pages/admin/uniform/typeList.component";
 import { DangerConfirmationModal } from "../../../pages/popups/DangerConfirmationPopup.component";
-import { cleanupUniformTypeConfiguration } from "../../../testData/cleanupStatic";
+import { adminTest, inspectorTest, managerTest } from "../../../setup";
 
 type Fixture = {
     types: UniformType[];
@@ -15,19 +14,19 @@ type Fixture = {
 }
 
 const test = adminTest.extend<Fixture>({
-    types: async ({staticData}, use) => {
-        use(await staticData.getUniformTypeList().then(l => l.filter(t => t.recdelete === null)));
+    types: async ({ staticData }, use) => {
+        use(staticData.data.uniformTypes.filter(t => t.recdelete === null) as UniformType[]);
     },
-    typeListComponent: async ({page}, use) => use(new TypeListComponent(page)),
-    typeDetailComponent: async ({page}, use) => use(new TypeDetailComponent(page)),
+    typeListComponent: async ({ page }, use) => use(new TypeListComponent(page)),
+    typeDetailComponent: async ({ page }, use) => use(new TypeDetailComponent(page)),
 });
-test.beforeEach(async({page}) => {
+test.beforeEach(async ({ page }) => {
     await page.goto('/de/app/admin/uniform');
 })
-test.afterEach(async ({staticData:{index}}) => {
-    await cleanupUniformTypeConfiguration(index);
+test.afterEach(async ({ staticData: { cleanup } }) => {
+    await cleanup.uniformTypeConfiguration();
 });
-test('validate right order', async ({page, typeListComponent, types}) => {
+test('validate right order', async ({ page, typeListComponent, types }) => {
     const divList = await page.locator('div[data-testid^="div_typeList_row_"]').all();
 
     await expect(divList).toHaveLength(types.length);
@@ -36,7 +35,7 @@ test('validate right order', async ({page, typeListComponent, types}) => {
         await expect.soft(typeListComponent.div_typename(types[i].id)).toHaveText(types[i].name);
     }
 });
-test('validate create', async ({typeListComponent, typeDetailComponent, staticData}) => {
+test('validate create', async ({ typeListComponent, typeDetailComponent, staticData }) => {
     const name = 'Typ5'
 
     await typeListComponent.btn_create.click();
@@ -62,7 +61,7 @@ test('validate create', async ({typeListComponent, typeDetailComponent, staticDa
         sortOrder: 4,
     }));
 });
-test('validate moveUp', async ({page, typeListComponent, staticData: {ids}}) => {
+test('validate moveUp', async ({ page, typeListComponent, staticData: { ids } }) => {
     await test.step('do action and validate ui', async () => {
         await typeListComponent.btn_moveUp(ids.uniformTypeIds[1]).click();
 
@@ -83,7 +82,7 @@ test('validate moveUp', async ({page, typeListComponent, staticData: {ids}}) => 
         expect.soft(seccond?.sortOrder).toBe(1);
     });
 });
-test('validate moveDown', async ({page, typeListComponent, staticData: {ids}}) => {
+test('validate moveDown', async ({ page, typeListComponent, staticData: { ids } }) => {
     await test.step('do action and validate ui', async () => {
         await typeListComponent.btn_moveDown(ids.uniformTypeIds[1]).click();
 
@@ -106,17 +105,17 @@ test('validate moveDown', async ({page, typeListComponent, staticData: {ids}}) =
 });
 
 
-test('validate delete', async ({page, typeListComponent, staticData}) => {
-    const type = await staticData.getUniformType('AB');
+test('validate delete', async ({ page, typeListComponent, staticData: { data } }) => {
+    const type = data.uniformTypes[1];
     if (!type) throw new Error("Could not find type");
     const dangerModal = new DangerConfirmationModal(page);
     const translation = t.admin.uniform.type.deleteModal;
 
     await test.step('open modal', async () => {
-        await expect.soft(typeListComponent.btn_delete(type.id)).not.toBeVisible();
-        await typeListComponent.btn_open(type.id).click();
-        await expect.soft(typeListComponent.btn_delete(type.id)).toBeVisible();
-        await typeListComponent.btn_delete(type.id).click();
+        await expect.soft(typeListComponent.btn_delete(type.id!)).not.toBeVisible();
+        await typeListComponent.btn_open(type.id!).click();
+        await expect.soft(typeListComponent.btn_delete(type.id!)).toBeVisible();
+        await typeListComponent.btn_delete(type.id!).click();
     });
 
     await test.step('validate modal', async () => {
@@ -134,7 +133,7 @@ test('validate delete', async ({page, typeListComponent, staticData}) => {
         await dangerModal.txt_confirmation.fill(translation.confirmationText.replace('{type}', type.name));
         await dangerModal.btn_save.click();
 
-        await expect(typeListComponent.div_type(type.id)).not.toBeVisible();
+        await expect(typeListComponent.div_type(type.id!)).not.toBeVisible();
     });
 });
 

@@ -1,5 +1,5 @@
 import { Locator, Page } from "playwright/test";
-import { StaticDataIds } from "../testData/staticDataIds";
+import StaticDataIds from "../testData/staticDataIds.json";
 
 export class LoginPage {
 

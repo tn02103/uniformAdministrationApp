@@ -1,8 +1,7 @@
 import { expect } from "playwright/test";
-import { adminTest } from "../../../auth.setup";
 import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
+import { adminTest } from "../../../setup";
 import { insertSvenKellerFirstInspection, startInspection, svenKellerFirstInspectionData } from "../../../testData/dynamicData";
-import { cleanupInspection } from "../../../testData/cleanupStatic";
 
 type Fixture = {
     inspectionComponent: CadetInspectionComponent;
@@ -19,8 +18,8 @@ test.beforeAll(async ({ staticData: { index } }) => {
     await startInspection(index);
     await insertSvenKellerFirstInspection(index);
 });
-test.afterAll(async ({ staticData: { index } }) => {
-    await cleanupInspection(index);
+test.afterAll(async ({ staticData: { cleanup } }) => {
+    await cleanup.inspection();
 });
 
 

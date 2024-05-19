@@ -1,9 +1,7 @@
 import { expect } from "playwright/test";
-import { adminTest } from "../../../auth.setup";
 import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
+import { adminTest } from "../../../setup";
 import { insertSvenKellerFirstInspection, startInspection, svenKellerFirstInspectionData } from "../../../testData/dynamicData";
-import { StaticDataLoader } from "../../../testData/staticDataLoader";
-import { cleanupInspection } from "../../../testData/cleanupStatic";
 
 type Fixture = {
     inspectionComponent: CadetInspectionComponent;
@@ -21,8 +19,8 @@ test.beforeAll(async ({ staticData }) => {
     await startInspection(staticData.index);
     await insertSvenKellerFirstInspection(staticData.index);
 });
-test.afterAll(async ({ staticData: { index } }) => {
-    await cleanupInspection(index);
+test.afterAll(async ({ staticData: { cleanup } }) => {
+    await cleanup.inspection();
 });
 
 test('E2E0278: validate typedisabled', async ({ inspectionComponent, staticData: { index } }) => {

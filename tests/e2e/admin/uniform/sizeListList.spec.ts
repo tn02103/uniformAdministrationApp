@@ -1,19 +1,17 @@
 import t from "@/../public/locales/de";
 import { prisma } from "@/lib/db";
 import { uuidValidationPattern } from "@/lib/validations";
-import { UniformSizelist } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { expect } from "playwright/test";
-import { adminTest } from "../../../auth.setup";
 import { newDescriptionValidationTests } from "../../../global/testSets";
 import { SizelistDetailComponent } from "../../../pages/admin/uniform/SizelistDetail.component";
 import { SizelistListComponent } from "../../../pages/admin/uniform/SizelistList.component";
 import { MessagePopupComponent } from "../../../pages/popups/MessagePopup.component";
 import { SimpleFormPopupComponent } from "../../../pages/popups/SimpleFormPopup.component";
-import { cleanupUniformSizeConfiguration } from "../../../testData/cleanupStatic";
+import { adminTest } from "../../../setup";
 
 type Fixture = {
-    sizelists: UniformSizelist[];
-    sizelist: UniformSizelist;
+    sizelists: Prisma.UniformSizelistCreateManyInput[];
     sizeIdArray: string[];
     listComponent: SizelistListComponent;
     detailComponent: SizelistDetailComponent;
@@ -21,13 +19,10 @@ type Fixture = {
 }
 const test = adminTest.extend<Fixture>({
     sizelists: async ({ staticData }, use) => {
-        use(await staticData.getUniformSizelists());
-    },
-    sizelist: async ({ staticData }, use) => {
-        use(await staticData.getUniformSizelist('Liste1') as UniformSizelist);
+        use(staticData.data.uniformSizelists);
     },
     sizeIdArray: async ({ staticData }, use) => {
-        use(staticData.ids.sizeIds.slice(0, 6));
+        use(staticData.data.sizeConnections[0].map(d => d.id));
     },
     listComponent: async ({ page }, use) => {
         use(new SizelistListComponent(page));
@@ -42,8 +37,8 @@ const test = adminTest.extend<Fixture>({
 test.beforeEach(async ({ page }) => {
     await page.goto('/de/app/admin/uniform');
 });
-test.afterEach(async ({ staticData: { index } }) => {
-    await cleanupUniformSizeConfiguration(index);
+test.afterEach(async ({ staticData: { cleanup } }) => {
+    await cleanup.uniformSizeConfiguration();
 });
 
 test('validate lists data', async ({ page, sizelists, listComponent }) => {
@@ -53,7 +48,7 @@ test('validate lists data', async ({ page, sizelists, listComponent }) => {
     for (let i = 0; i < divList.length; i++) {
         await expect.soft(divList[i]).toHaveAttribute("data-testid", `div_sizelist_list_${sizelists[i].id}`);
         await expect
-            .soft(listComponent.div_sizeList_name(sizelists[i].id))
+            .soft(listComponent.div_sizeList_name(sizelists[i].id!))
             .toHaveText(sizelists[i].name);
     }
 });
@@ -84,11 +79,11 @@ test('validate create sizeList', async ({ page, listComponent, detailComponent, 
     });
 });
 
-test('validate data of list', async ({ page, listComponent, detailComponent, sizelist, sizeIdArray }) => {
-    await listComponent.btn_sizeList_select(sizelist!.id).click();
+test('validate data of list', async ({ page, listComponent, detailComponent, sizeIdArray, staticData: { ids } }) => {
+    await listComponent.btn_sizeList_select(ids.sizelistIds[0]).click();
 
     await expect(detailComponent.div_card).toBeVisible();
-    await expect.soft(detailComponent.div_header).toHaveText(sizelist!.name);
+    await expect.soft(detailComponent.div_header).toHaveText('Liste1');
     await expect(page.locator('div[data-testid^="div_selectedSize_"]')).toHaveCount(sizeIdArray.length);
 
     for (let i = 0; i < sizeIdArray.length; i++) {
@@ -117,9 +112,9 @@ test('validate namePopup formVaidation', async ({ page, listComponent, editListP
     }
 });
 
-test('validate edit', async ({ listComponent, detailComponent, sizelist, sizeIdArray, staticData }) => {
+test('validate edit', async ({ listComponent, detailComponent, sizeIdArray, staticData: { ids, data } }) => {
     await test.step('open editable mode', async () => {
-        await listComponent.btn_sizeList_select(sizelist!.id).click();
+        await listComponent.btn_sizeList_select(ids.sizelistIds[0]).click();
         await detailComponent.btn_menu.click();
         await detailComponent.btn_menu_edit.click();
     });
@@ -129,45 +124,44 @@ test('validate edit', async ({ listComponent, detailComponent, sizelist, sizeIdA
             await expect(detailComponent.btn_selectedSize(id)).toBeVisible();
             await expect(detailComponent.btn_backupSize(id)).not.toBeVisible();
         }));
-        await Promise.all((await staticData.getUniformSizes())
-            .filter(size => (!sizeIdArray.includes(size.id)))
+        await Promise.all(data.uniformSizes.filter(size => (!sizeIdArray.includes(size.id!)))
             .map(async (size) => {
-                await expect(detailComponent.btn_selectedSize(size.id)).not.toBeVisible();
-                await expect(detailComponent.btn_backupSize(size.id)).toBeVisible();
+                await expect(detailComponent.btn_selectedSize(size.id!)).not.toBeVisible();
+                await expect(detailComponent.btn_backupSize(size.id!)).toBeVisible();
             })
         );
     });
 
     await test.step('validate changed data', async () => {
-        await detailComponent.btn_selectedSize(staticData.ids.sizeIds[0]).click();
-        await detailComponent.btn_backupSize(staticData.ids.sizeIds[16]).click();
+        await detailComponent.btn_selectedSize(ids.sizeIds[0]).click();
+        await detailComponent.btn_backupSize(ids.sizeIds[16]).click();
 
         await Promise.all([
-            expect.soft(detailComponent.btn_selectedSize(staticData.ids.sizeIds[0])).not.toBeVisible(),
-            expect.soft(detailComponent.btn_backupSize(staticData.ids.sizeIds[0])).toBeVisible(),
-            expect.soft(detailComponent.btn_selectedSize(staticData.ids.sizeIds[16])).toBeVisible(),
-            expect.soft(detailComponent.btn_backupSize(staticData.ids.sizeIds[16])).not.toBeVisible(),
+            expect.soft(detailComponent.btn_selectedSize(ids.sizeIds[0])).not.toBeVisible(),
+            expect.soft(detailComponent.btn_backupSize(ids.sizeIds[0])).toBeVisible(),
+            expect.soft(detailComponent.btn_selectedSize(ids.sizeIds[16])).toBeVisible(),
+            expect.soft(detailComponent.btn_backupSize(ids.sizeIds[16])).not.toBeVisible(),
         ]);
     });
     await test.step('validate save', async () => {
         await detailComponent.btn_save.click();
-        await expect.soft(detailComponent.div_selectedSize(staticData.ids.sizeIds[0])).not.toBeVisible();
-        await expect.soft(detailComponent.div_selectedSize(staticData.ids.sizeIds[16])).toBeVisible();
+        await expect.soft(detailComponent.div_selectedSize(ids.sizeIds[0])).not.toBeVisible();
+        await expect.soft(detailComponent.div_selectedSize(ids.sizeIds[16])).toBeVisible();
     });
     await test.step('validate db', async () => {
         const data = await prisma.uniformSizelist.findUniqueOrThrow({
-            where: { id: sizelist!.id },
+            where: { id: ids.sizelistIds[0] },
             include: { uniformSizes: true }
         });
 
-        expect(data.uniformSizes.map(s => s.id)).toEqual(expect.arrayContaining([staticData.ids.sizeIds[16]]));
-        expect(data.uniformSizes.map(s => s.id)).not.toEqual(expect.arrayContaining([staticData.ids.sizeIds[0]]));
+        expect(data.uniformSizes.map(s => s.id)).toEqual(expect.arrayContaining([ids.sizeIds[16]]));
+        expect(data.uniformSizes.map(s => s.id)).not.toEqual(expect.arrayContaining([ids.sizeIds[0]]));
     });
 });
-test('validate rename', async ({ page, listComponent, detailComponent, editListPopup, sizelist }) => {
+test('validate rename', async ({ page, listComponent, detailComponent, editListPopup, staticData: { ids } }) => {
     await test.step('rename', async () => {
 
-        await listComponent.btn_sizeList_select(sizelist.id).click();
+        await listComponent.btn_sizeList_select(ids.sizelistIds[0]).click();
         await detailComponent.btn_menu.click();
         await detailComponent.btn_menu_rename.click();
 
@@ -177,22 +171,22 @@ test('validate rename', async ({ page, listComponent, detailComponent, editListP
 
     await test.step('validate', async () => {
         await expect(page.locator('div[data-testid^="div_sizelist_list_"]').getByText('newListName')).toBeVisible();
-        await expect(listComponent.div_sizeList_name(sizelist.id)).toHaveText('newListName');
+        await expect(listComponent.div_sizeList_name(ids.sizelistIds[0])).toHaveText('newListName');
         await expect(detailComponent.div_header).toHaveText('newListName');
 
         const data = await prisma.uniformSizelist.findUniqueOrThrow({
-            where: { id: sizelist.id }
+            where: { id: ids.sizelistIds[0] }
         });
 
         expect(data.name).toEqual('newListName');
     });
 });
-test('validate delete inUseError', async ({ page, listComponent, detailComponent, sizelist }) => {
+test('validate delete inUseError', async ({ page, listComponent, detailComponent, staticData: { ids } }) => {
     const messageModal = new MessagePopupComponent(page);
     const inUseError = t.admin.uniform.sizeList.deleteFailure;
     const message = inUseError.message.replace('{entity}', 'Uniformtyp').replace('{name}', 'Typ1')
 
-    await listComponent.btn_sizeList_select(sizelist!.id).click();
+    await listComponent.btn_sizeList_select(ids.sizelistIds[0]).click();
     await detailComponent.btn_menu.click();
     await detailComponent.btn_menu_delete.click();
     await messageModal.btn_save.click();
@@ -203,12 +197,12 @@ test('validate delete inUseError', async ({ page, listComponent, detailComponent
     await expect.soft(messageModal.btn_cancel).not.toBeVisible();
     await messageModal.btn_save.click();
 
-    await expect.soft(listComponent.div_sizeList(sizelist!.id)).toBeVisible();
+    await expect.soft(listComponent.div_sizeList(ids.sizelistIds[0])).toBeVisible();
 });
-test('validate delete warning', async ({ page, listComponent, detailComponent, staticData }) => {
+test('validate delete warning', async ({ page, listComponent, detailComponent, staticData: { ids } }) => {
     const messageModal = new MessagePopupComponent(page);
     const deleteWarning = t.admin.uniform.sizeList.deleteWarning
-    await listComponent.btn_sizeList_select(staticData.ids.sizelistIds[3]).click();
+    await listComponent.btn_sizeList_select(ids.sizelistIds[3]).click();
     await detailComponent.btn_menu.click();
     await detailComponent.btn_menu_delete.click();
 
@@ -218,7 +212,7 @@ test('validate delete warning', async ({ page, listComponent, detailComponent, s
     await expect.soft(messageModal.div_message).toContainText(deleteWarning.message.line2);
     await messageModal.btn_save.click();
 
-    await expect.soft(listComponent.div_sizeList(staticData.ids.sizelistIds[3])).not.toBeVisible();
-    const data = await prisma.uniformSizelist.findUnique({ where: { id: staticData.ids.sizelistIds[3] } });
+    await expect.soft(listComponent.div_sizeList(ids.sizelistIds[3])).not.toBeVisible();
+    const data = await prisma.uniformSizelist.findUnique({ where: { id: ids.sizelistIds[3] } });
     expect(data).toBeNull();
 });

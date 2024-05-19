@@ -1,5 +1,5 @@
 import { expect } from "playwright/test";
-import { adminTest, inspectorTest, userTest } from "../../../auth.setup";
+import { adminTest, inspectorTest, userTest } from "../../../setup";
 import { viewports } from "../../../global/helper";
 import { UniformListPage } from "../../../pages/uniform/uniformList.page";
 
@@ -8,7 +8,6 @@ type Fixture = {
 }
 const test = adminTest.extend<Fixture>({
     uniformListPage: async ({ page }, use) => use(new UniformListPage(page)),
-
 });
 
 test.describe(() => {

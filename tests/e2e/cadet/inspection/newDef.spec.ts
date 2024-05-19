@@ -1,12 +1,11 @@
 import { prisma } from "@/lib/db";
 import { expect } from "playwright/test";
-import { adminTest } from "../../../auth.setup";
 import { viewports } from "../../../global/helper";
 import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
 import { CadetUniformComponent } from "../../../pages/cadet/cadetUniform.component";
 import { SimpleFormPopupComponent } from "../../../pages/popups/SimpleFormPopup.component";
+import { adminTest } from "../../../setup";
 import { removeInspection, startInspection } from "../../../testData/dynamicData";
-import { cleanupUniformIssued } from "../../../testData/cleanupStatic";
 
 type Fixture = {
     inspectionComponent: CadetInspectionComponent;
@@ -151,7 +150,7 @@ test('E2E0272: validate uniformSelect', async ({ inspectionComponent, staticData
     });
 });
 
-test('E2E0273: validate update of uniformSelect Content', async ({ page, inspectionComponent, staticData: { ids, index } }) => {
+test('E2E0273: validate update of uniformSelect Content', async ({ page, inspectionComponent, staticData: { ids, cleanup } }) => {
     const uniformComponent = new CadetUniformComponent(page);
     const formComponent = new SimpleFormPopupComponent(page);
     await test.step('setup', async () => {
@@ -171,7 +170,7 @@ test('E2E0273: validate update of uniformSelect Content', async ({ page, inspect
                 .locator(`option[value="${ids.uniformIds[0][11]}"]`)
         ).toBeDefined();
     });
-    await cleanupUniformIssued(index);
+    await cleanup.uniformIssued();
 });
 
 test.skip('E2E0280: validate formValidations', async () => {

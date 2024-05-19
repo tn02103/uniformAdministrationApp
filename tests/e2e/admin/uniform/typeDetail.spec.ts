@@ -1,12 +1,11 @@
 import t from "@/../public/locales/de";
 import { UniformType } from "@prisma/client";
 import { expect } from "playwright/test";
-import { adminTest } from "../../../auth.setup";
 import { acronymValidationTest, newNameValidationTests, numberValidationTests } from "../../../global/testSets";
 import { GenerationListComponent } from "../../../pages/admin/uniform/GenerationList.component";
 import { TypeDetailComponent } from "../../../pages/admin/uniform/typeDetail.component";
 import { TypeListComponent } from "../../../pages/admin/uniform/typeList.component";
-import { cleanupUniformTypeConfiguration } from "../../../testData/cleanupStatic";
+import { adminTest } from "../../../setup";
 
 type Fixture = {
     type: UniformType;
@@ -16,17 +15,15 @@ type Fixture = {
 }
 const test = adminTest.extend<Fixture>({
     type: async ({ staticData }, use) => {
-        const type = await staticData.getUniformType('AA');
-        if (!type) throw Error('Failed to find type');
-        use(type);
+        use(staticData.data.uniformTypes[0] as UniformType);
     },
     detailComponent: async ({ page }, use) => use(new TypeDetailComponent(page)),
     listComponent: async ({ page }, use) => use(new TypeListComponent(page)),
     generationComponent: async ({ page }, use) => use(new GenerationListComponent(page)),
 
 });
-test.afterEach(async ({staticData:{index}}) => {
-    await cleanupUniformTypeConfiguration(index);
+test.afterEach(async ({ staticData: { cleanup } }) => {
+    await cleanup.uniformTypeConfiguration();
 });
 test.describe(() => {
     test.beforeEach(async ({ page, listComponent, type }) => {

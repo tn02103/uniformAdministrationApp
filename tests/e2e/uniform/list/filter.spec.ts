@@ -1,5 +1,5 @@
 import { expect } from "playwright/test";
-import { adminTest } from "../../../auth.setup";
+import { adminTest } from "../../../setup";
 import { UniformListPage } from "../../../pages/uniform/uniformList.page";
 
 type Fixture = {
