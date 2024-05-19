@@ -121,7 +121,7 @@ export default {
             },
             amount: {
                 required: "Bitte eine Anzahl eingeben",
-                max: "Die Anzahl darf nicht 10 überschreiten",
+                max: "Die Anzahl darf nicht {value} überschreiten",
             },
             string: {
                 required: "Bitte ausfüllen",
