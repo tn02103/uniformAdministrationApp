@@ -1,150 +1,157 @@
-import { Prisma } from "@prisma/client";
 import { prisma } from "../../src/lib/db";
-import { testAssosiation, testCadetDeficiencyTypes } from "./staticData";
+import  StaticDataIds  from "./staticDataIds.json";
 
-export const testActiveInspection = {
-    id: "855823c4-5478-11ee-b196-0068eb8ba754",
-    fk_assosiation: testAssosiation.id,
-}
-
-export const startInspection = async () =>
+export const startInspection = async (i: number) =>
     await prisma.inspection.create({
-        data: testActiveInspection,
+        data: {
+            id: StaticDataIds[i].dynamic.inspectionId,
+            fk_assosiation: StaticDataIds[i].fk_assosiation,
+            active: true,
+        },
     });
 
-export const svenKellerFirstInspectionData = {
-    cadetInspectionId: 'c4d33a71-9283-11ee-8084-0068eb8ba754',
-    fk_cadet: 'c4d33a71-3c11-11ee-8084-0068eb8ba754',
-    fk_inspection: testActiveInspection.id,
+export const removeInspection = async (i: number) => {
+    const insp = await prisma.inspection.findUnique({where: {id: StaticDataIds[i].dynamic.inspectionId}});
+    if (insp !== null) {
+        await prisma.inspection.delete({
+            where: { id: StaticDataIds[i].dynamic.inspectionId }
+        });
+    }
+}
+
+export const svenKellerFirstInspectionData = (i: number) => ({
+    id: StaticDataIds[i].dynamic.firstInspection.id,
+    fk_cadet: StaticDataIds[i].cadetIds[2],
+    fk_inspection: StaticDataIds[i].dynamic.inspectionId,
     uniformComplete: false,
     newDeficiencyList: [
         {
-            id: 'c4d33a71-1334-11ee-8084-0068eb8ba754',
-            deficiencyType: { id: testCadetDeficiencyTypes.find(dt => !dt.dependsOnUniformitem)?.id },
-            bodyDescription: 'new Deficiency1',
-            actualDescription: 'new Deficiency1',
-            comment: 'comment for def1',
-            dateCreated: null,
-            dateResolved: null
+            id: StaticDataIds[i].dynamic.firstInspection.newDefIds[0],
+            fk_deficiencyType: StaticDataIds[i].deficiencyTypeIds[1],
+            description: 'new Deficiency1',
+            comment: 'newDef cadet deficiency',
+            userCreated: 'test3',
+            userUpdated: 'test3',
+            fk_inspection_created: StaticDataIds[i].dynamic.inspectionId,
+            DeficiencyCadet: {
+                create: {
+                    fk_cadet: StaticDataIds[i].cadetIds[2]
+                }
+            }
         },
         {
-            id: 'fs223523-1334-11ee-8084-0068eb8ba754',
-            deficiencyType: { id: testCadetDeficiencyTypes.find(dt => (dt.dependsOnUniformitem && !dt.addCommentToUniformitem))?.id },
-            bodyDescription: 'new Deficiency2',
-            actualDescription: 'Typ1-1148',
-            comment: 'comment for def2',
-            uniformId: "45f3337e-3c0d-11ee-8084-0068eb8ba754",
-            dateCreated: null,
-            dateResolved: null
+            id: StaticDataIds[i].dynamic.firstInspection.newDefIds[1],
+            fk_deficiencyType: StaticDataIds[i].deficiencyTypeIds[0],
+            description: 'Typ1-1146',
+            comment: 'newDef uniform deficiency',
+            userCreated: 'test3',
+            userUpdated: 'test3',
+            fk_inspection_created: StaticDataIds[i].dynamic.inspectionId,
+            DeficiencyUniform: {
+                create: {
+                    fk_uniform: StaticDataIds[i].uniformIds[0][46],
+                }
+            }
         },
         {
-            id: '63623474-1334-11ee-8084-0068eb8ba754',
-            deficiencyType: { id: testCadetDeficiencyTypes.find(dt => (dt.dependsOnUniformitem && dt.addCommentToUniformitem))?.id },
-            bodyDescription: 'new Deficiency3',
-            actualDescription: 'Typ1-1146',
-            comment: 'comment for def3',
-            uniformId: "45f33205-3c0d-11ee-8084-0068eb8ba754",
-            dateCreated: null,
-            dateResolved: null
+            id: StaticDataIds[i].dynamic.firstInspection.newDefIds[2],
+            fk_deficiencyType: StaticDataIds[i].deficiencyTypeIds[3],
+            description: 'Gruppe3-Typ3-3',
+            comment: 'newDef cadetMaterial deficiency not issued',
+            userCreated: 'test3',
+            userUpdated: 'test3',
+            fk_inspection_created: StaticDataIds[i].dynamic.inspectionId,
+            DeficiencyCadet: {
+                create: {
+                    fk_cadet: StaticDataIds[i].cadetIds[2],
+                    fk_material: StaticDataIds[i].materialIds[9],
+                }
+            }
+        },
+        {
+            id: StaticDataIds[i].dynamic.firstInspection.newDefIds[3],
+            fk_deficiencyType: StaticDataIds[i].deficiencyTypeIds[3],
+            description: 'Gruppe2-Typ2-1',
+            comment: 'newDef cadetMaterial deficiency issued',
+            userCreated: 'test3',
+            userUpdated: 'test3',
+            fk_inspection_created: StaticDataIds[i].dynamic.inspectionId,
+            DeficiencyCadet: {
+                create: {
+                    fk_cadet: StaticDataIds[i].cadetIds[2],
+                    fk_material: StaticDataIds[i].materialIds[4],
+                }
+            }
+        },
+        {
+            id: StaticDataIds[i].dynamic.firstInspection.newDefIds[4],
+            fk_deficiencyType: StaticDataIds[i].deficiencyTypeIds[2],
+            description: 'Typ1-1148',
+            comment: 'newDef cadetUniform deficiency',
+            userCreated: 'test3',
+            userUpdated: 'test3',
+            fk_inspection_created: StaticDataIds[i].dynamic.inspectionId,
+            DeficiencyCadet: {
+                create: {
+                    fk_cadet: StaticDataIds[i].cadetIds[2],
+                    fk_uniform: StaticDataIds[i].uniformIds[0][48],
+                }
+            }
         }
     ],
-    oldDeficiencyList: {
-        '09868976-3dcf-11ee-ac41-0068eb8ba754': true,
-        '345309ab-3dcf-11ee-ac41-0068eb8ba754': true,
-        'ccffb98b-3dcf-11ee-ac41-0068eb8ba754': false,
-        'ccff6a65-3dcf-11ee-ac41-0068eb8ba754': false
-    }
-}
-export const svenKellerSecondInspectionData = {
-    cadetInspectionId: 'c4d33a71-9283-11ee-8084-0068eb8ba754',
-    fk_cadet: 'c4d33a71-3c11-11ee-8084-0068eb8ba754',
-    fk_inspection: testActiveInspection.id,
-    uniformComplete: true,
-    newDeficiencyList: [
-        {
-            id: 'c4d33a71-1334-11ee-8084-0068eb8ba754',
-            deficiencyType: { id: testCadetDeficiencyTypes.find(dt => !dt.dependsOnUniformitem)?.id },
-            bodyDescription: 'new Deficiency1',
-            actualDescription: 'new Deficiency1',
-            comment: 'comment for def1',
-            dateCreated: null,
-            dateResolved: null
-        },
-        {
-            id: '63623474-1334-11ee-8084-0068eb8ba754',
-            deficiencyType: { id: testCadetDeficiencyTypes.find(dt => (dt.dependsOnUniformitem && dt.addCommentToUniformitem))?.id },
-            bodyDescription: 'new Deficiency3',
-            actualDescription: 'Typ1-1148',
-            comment: 'comment for def3 updated version',
-            uniformId: "45f3337e-3c0d-11ee-8084-0068eb8ba754",
-            dateCreated: null,
-            dateResolved: null
-        },
-        {
-            deficiencyType: { id: testCadetDeficiencyTypes.find(dt => (dt.dependsOnUniformitem && dt.addCommentToUniformitem))?.id },
-            bodyDescription: 'new Deficiency4',
-            actualDescription: 'Typ1-1148',
-            comment: 'comment for def4',
-            uniformId: "45f3337e-3c0d-11ee-8084-0068eb8ba754",
-            dateCreated: null,
-            dateResolved: null
-        },
+    oldDefIdsToResolve: [
+        StaticDataIds[i].deficiencyIds[1],
+        StaticDataIds[i].deficiencyIds[5],
     ],
-    oldDeficiencyList: {
-        '09868976-3dcf-11ee-ac41-0068eb8ba754': true,
-        '345309ab-3dcf-11ee-ac41-0068eb8ba754': false,
-        'ccffb98b-3dcf-11ee-ac41-0068eb8ba754': true,
-        'ccff6a65-3dcf-11ee-ac41-0068eb8ba754': false
-    }
-}
+})
 
-export function getSvenKellerFistInspectionBody(firstInspection: boolean) {
-    const data = firstInspection ? svenKellerFirstInspectionData : svenKellerSecondInspectionData;
-    return {
-        cadetInspectionId: firstInspection ? null : data.cadetInspectionId,
-        uniformComplete: data.uniformComplete,
-        newDeficiencyList: data.newDeficiencyList.map((def) => {
-            return {
-                id: firstInspection ? null : def.id,
-                deficiencyType: def.deficiencyType,
-                description: def.bodyDescription,
-                uniformId: def.uniformId,
-                comment: def.comment,
-            }
-        }),
-        oldDeficiencyList: data.oldDeficiencyList,
+export const svenKellerSecondInspectionData = (i: number) => ({
+    fk_cadet: svenKellerFirstInspectionData(i).fk_cadet,
+    oldDefIdToUnsolve: svenKellerFirstInspectionData(i).oldDefIdsToResolve[0],
+    oldDefIdToSolve: StaticDataIds[i].deficiencyIds[9],
+    newDefToDelete: {
+        id: svenKellerFirstInspectionData(i).newDeficiencyList[4].id,
+        comment: svenKellerFirstInspectionData(i).newDeficiencyList[4].comment,
+    },
+    newDefUpdated: {
+        ...svenKellerFirstInspectionData(i).newDeficiencyList[1],
+        description: 'Typ1-1148',
+        newComment: 'uniform deficiency Updated comment',
+        fk_uniform: StaticDataIds[i].uniformIds[0][48],
+    },
+    newDefAdded: {
+        id: StaticDataIds[i].dynamic.seccondInspection.newDefId,
+        fk_deficiencyType: StaticDataIds[i].deficiencyTypeIds[2],
+        description: 'Typ1-1146',
+        comment: 'cadetUniform deficiency newly created',
+        fk_uniform: StaticDataIds[i].uniformIds[0][46],
     }
-}
+})
 
-export async function insertSvenKellerFirstInspection() {
-    await prisma.cadetDeficiency.updateMany({
+export async function insertSvenKellerFirstInspection(i: number) {
+    await prisma.deficiency.updateMany({
         where: {
-            id: { in: Object.entries(svenKellerFirstInspectionData.oldDeficiencyList).filter(([key, value]) => (value === true)).map(([key]) => key) }
+            id: { in: svenKellerFirstInspectionData(i).oldDefIdsToResolve }
         },
         data: {
             dateResolved: new Date(),
+            userResolved: 'test3',
+            fk_inspection_resolved: StaticDataIds[i].dynamic.inspectionId,
         }
     });
 
     await prisma.cadetInspection.create({
         data: {
-            id: svenKellerFirstInspectionData.cadetInspectionId,
-            uniformComplete: svenKellerFirstInspectionData.uniformComplete,
-            fk_cadet: svenKellerFirstInspectionData.fk_cadet,
-            fk_inspection: testActiveInspection.id,
-            cadetDeficiency: {
-                createMany: {
-                    data: svenKellerFirstInspectionData.newDeficiencyList.map((def) => {
-                        return {
-                            id: def.id,
-                            fk_deficiencyType: def.deficiencyType.id as string,
-                            description: def.actualDescription,
-                            comment: def.comment,
-                            fk_cadet: svenKellerFirstInspectionData.fk_cadet
-                        }
-                    })
-                }
-            }
+            id: svenKellerFirstInspectionData(i).id,
+            uniformComplete: svenKellerFirstInspectionData(i).uniformComplete,
+            fk_cadet: svenKellerFirstInspectionData(i).fk_cadet,
+            fk_inspection: StaticDataIds[i].dynamic.inspectionId,
         }
     });
+
+    await Promise.all(
+        svenKellerFirstInspectionData(i).newDeficiencyList.map(async (data) =>
+            prisma.deficiency.create({ data })
+        )
+    );
 }

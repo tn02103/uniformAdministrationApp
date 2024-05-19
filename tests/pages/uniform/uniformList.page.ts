@@ -67,54 +67,11 @@ export class UniformListPage {
     div_uitem_comment(uniformId: string) {
         return this.div_uitem(uniformId).getByTestId("div_comment");
     }
-    btn_uitem_showDetailRow(uniformId: string) {
-        return this.div_uitem(uniformId).getByTestId("btn_showDetailRow");
+    btn_uitem_open(uniformId: string) {
+        return this.div_uitem(uniformId).getByTestId("btn_open");
     }
-    btn_uitem_edit(uniformId: string) {
-        return this.div_uitem(uniformId).getByTestId("btn_edit");
-    }
-    btn_uitem_delete(uniformId: string) {
-        return this.div_uitem(uniformId).getByTestId('btn_delete');
-    }
-
-    div_uitem_detail(uniformId: string) {
-        return this.page.getByTestId(`div_detailRow_${uniformId}`);
-    }
-    div_uitem_detail_active(uniformId: string) {
-        return this.div_uitem_detail(uniformId).getByTestId("div_active");
-    }
-    div_uitem_detail_comment(uniformId: string) {
-        return this.div_uitem_detail(uniformId).getByTestId("div_comment");
-    }
-    lnk_uitem_detail_owner(uniformId: string) {
-        return this.div_uitem_detail(uniformId).getByTestId("lnk_owner");
-    }
-    btn_uitem_detail_edit(uniformId: string) {
-        return this.div_uitem_detail(uniformId).getByTestId("btn_edit");
-    }
-
-    div_uForm(uniformId: string) {
-        return this.page.getByTestId(`div_uniformForm_${uniformId}`);
-    }
-    btn_uForm_save(uniformId: string) {
-        return this.div_uForm(uniformId).getByTestId("btn_form_save");
-    }
-    btn_uForm_cancel(uniformId: string) {
-        return this.div_uForm(uniformId).getByTestId("btn_form_cancel");
-    }
-    sel_uForm_generation(uniformId: string) {
-        return this.div_uForm(uniformId).locator(`select[name="generation"]`);
-    }
-    sel_uForm_size(uniformId: string) {
-        return this.div_uForm(uniformId).locator(`select[name="size"]`);
-    }
-    chk_uForm_active(uniformId: string) {
-        return this.div_uForm(uniformId).locator(`input[name="active"]`);
-    }
-    txt_uForm_comment(uniformId: string) {
-        return this.div_uForm(uniformId).locator(`textarea[name="comment"]`);
-    }
-
+ 
+   
     constructor(page: Page) {
         this.page = page;
         this.div_pageHeader = page.getByTestId("div_pageHeader");

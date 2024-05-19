@@ -9,8 +9,8 @@ export default class SaveDataException extends CustomException {
 
 export type UniformIssuedExceptionData = {
     uniform: {
-        id: string,
-        number: number,
+        id: string;
+        number: number;
     }
     owner: Cadet
 }
@@ -22,7 +22,7 @@ export class UniformIssuedException extends CustomException {
         this.data = {
             uniform: {
                 id: uniformId,
-                number: uniformNumber
+                number: uniformNumber,
             },
             owner: owner,
         }

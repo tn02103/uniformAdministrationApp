@@ -9,19 +9,25 @@ datasource db {
 }
 
 model Assosiation {
-    id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    name    String  @unique @db.VarChar(100)
-    acronym String  @db.VarChar(5)
-    useBeta Boolean @default(false)
-    cadet   Cadet[]
-    user    User[]
+    id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    name            String            @unique @db.VarChar(100)
+    acronym         String            @db.VarChar(5)
+    useBeta         Boolean           @default(false)
+    cadet           Cadet[]
+    DeficiencyType  DeficiencyType[]
+    Inspection      Inspection[]
+    MaterialGroup   MaterialGroup[]
+    UniformSize     UniformSize[]
+    UniformSizelist UniformSizelist[]
+    UniformType     UniformType[]
+    user            User[]
 }
 
 model RefreshToken {
     fk_user   String   @db.Char(36)
-    deviceId  String   @db.Char(36)
     token     String   @id @db.Char(50)
     endOfLife DateTime @db.Timestamp(6)
+    deviceId  String   @db.Char(36)
     user      User     @relation(fields: [fk_user], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
     @@index([fk_user])
@@ -55,6 +61,7 @@ model Cadet {
     assosiation     Assosiation       @relation(fields: [fk_assosiation], references: [id])
     cadetDeficiency CadetDeficiency[]
     cadetInspection CadetInspection[]
+    DeficiencyCadet DeficiencyCadet[]
     issuedEntrys    MaterialIssued[]
     uniformIssued   UniformIssued[]
 
@@ -105,41 +112,46 @@ model CadetInspection {
 }
 
 model Inspection {
-    id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_assosiation  String            @db.Char(36)
-    date            DateTime          @default(now()) @db.Date
-    active          Boolean           @default(true)
-    cadetInspection CadetInspection[]
+    id                 String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    fk_assosiation     String            @db.Char(36)
+    date               DateTime          @default(now()) @db.Date
+    active             Boolean           @default(true)
+    cadetInspection    CadetInspection[]
+    DeficiencyCreated  Deficiency[]      @relation("Deficiency_InspectionCreated")
+    DeficiencyResolved Deficiency[]      @relation("Deficiency_InspectionResolved")
+    Assosiation        Assosiation       @relation(fields: [fk_assosiation], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "inspection_fk_assosiation")
 
     @@unique([date, fk_assosiation])
     @@index([fk_assosiation])
 }
 
 model Material {
-    id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    typename         String           @db.VarChar(20)
-    fk_materialGroup String           @db.Char(36)
-    actualQuantity   Int              @db.SmallInt
-    targetQuantity   Int              @db.SmallInt
-    sortOrder        Int              @db.SmallInt
-    recdelete        DateTime?        @db.Timestamp(6)
-    recdeleteUser    String?          @db.VarChar(10)
-    materialGroup    MaterialGroup    @relation(fields: [fk_materialGroup], references: [id], onUpdate: Restrict)
+    id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    typename         String            @db.VarChar(20)
+    fk_materialGroup String            @db.Char(36)
+    actualQuantity   Int               @db.SmallInt
+    targetQuantity   Int               @db.SmallInt
+    sortOrder        Int               @db.SmallInt
+    recdelete        DateTime?         @db.Timestamp(6)
+    recdeleteUser    String?           @db.VarChar(10)
+    DeficiencyCadet  DeficiencyCadet[]
+    materialGroup    MaterialGroup     @relation(fields: [fk_materialGroup], references: [id], onUpdate: Restrict)
     issuedEntrys     MaterialIssued[]
 
     @@index([fk_materialGroup])
 }
 
 model MaterialGroup {
-    id               String     @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    description      String     @db.VarChar(20)
-    fk_assosiation   String     @db.Char(36)
-    issuedDefault    Int?       @db.SmallInt
-    sortOrder        Int        @db.SmallInt
-    recdelete        DateTime?  @db.Timestamp(6)
-    recdeleteUser    String?    @db.VarChar(10)
+    id               String      @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    description      String      @db.VarChar(20)
+    fk_assosiation   String      @db.Char(36)
+    issuedDefault    Int?        @db.SmallInt
+    sortOrder        Int         @db.SmallInt
+    recdelete        DateTime?   @db.Timestamp(6)
+    recdeleteUser    String?     @db.VarChar(10)
     multitypeAllowed Boolean
     typeList         Material[]
+    Assosiation      Assosiation @relation(fields: [fk_assosiation], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "materialgroup_fk_assosiation")
 
     @@index([fk_assosiation])
 }
@@ -159,19 +171,21 @@ model MaterialIssued {
 }
 
 model Uniform {
-    id             String             @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    number         Int                @db.SmallInt
-    fk_uniformType String             @db.Char(36)
-    fk_generation  String?            @db.Char(36)
-    fk_size        String?            @db.Char(36)
-    active         Boolean            @default(true)
-    comment        String?
-    recdelete      DateTime?          @db.Timestamp(6)
-    recdeleteUser  String?            @db.VarChar(10)
-    generation     UniformGeneration? @relation(fields: [fk_generation], references: [id], onDelete: Restrict, onUpdate: Restrict)
-    size           UniformSize?       @relation(fields: [fk_size], references: [id], onUpdate: Restrict)
-    type           UniformType        @relation(fields: [fk_uniformType], references: [id], onUpdate: Restrict)
-    issuedEntrys   UniformIssued[]
+    id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    number            Int
+    fk_uniformType    String              @db.Char(36)
+    fk_generation     String?             @db.Char(36)
+    fk_size           String?             @db.Char(36)
+    active            Boolean             @default(true)
+    comment           String?
+    recdelete         DateTime?           @db.Timestamp(6)
+    recdeleteUser     String?             @db.VarChar(10)
+    DeficiencyCadet   DeficiencyCadet[]
+    DeficiencyUniform DeficiencyUniform[]
+    generation        UniformGeneration?  @relation(fields: [fk_generation], references: [id], onDelete: Restrict, onUpdate: Restrict)
+    size              UniformSize?        @relation(fields: [fk_size], references: [id], onUpdate: Restrict)
+    type              UniformType         @relation(fields: [fk_uniformType], references: [id], onUpdate: Restrict)
+    issuedEntrys      UniformIssued[]
 
     @@index([fk_generation])
     @@index([fk_size])
@@ -215,6 +229,7 @@ model UniformSize {
     fk_assosiation   String            @db.Char(36)
     sortOrder        Int
     uniformList      Uniform[]
+    Assosiation      Assosiation       @relation(fields: [fk_assosiation], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "uniformsize_fk_assosiation")
     uniformSizelists UniformSizelist[] @relation("uniformsizetouniformsizelist")
 
     @@unique([name, fk_assosiation])
@@ -226,6 +241,7 @@ model UniformSizelist {
     name                  String              @db.VarChar(40)
     fk_assosiation        String              @db.Char(36)
     uniformGenerationList UniformGeneration[]
+    Assosiation           Assosiation         @relation(fields: [fk_assosiation], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "uniformsizelist_fk_assosiation")
     uniformTypeList       UniformType[]
     uniformSizes          UniformSize[]       @relation("uniformsizetouniformsizelist")
 
@@ -248,7 +264,70 @@ model UniformType {
     uniformList           Uniform[]
     uniformGenerationList UniformGeneration[]
     defaultSizeList       UniformSizelist?    @relation(fields: [fk_defaultSizeList], references: [id], onDelete: Cascade, onUpdate: Restrict)
+    Assosiation           Assosiation         @relation(fields: [fk_assosiation], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "uniformtype_fk_assosiation")
 
     @@index([fk_defaultSizeList])
     @@index([fk_assosiation])
+}
+
+model Deficiency {
+    id                     String             @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    fk_deficiencyType      String             @db.Char(36)
+    description            String             @db.VarChar(30)
+    comment                String
+    dateCreated            DateTime           @default(now()) @db.Date
+    dateUpdated            DateTime           @default(now()) @db.Date
+    dateResolved           DateTime?          @db.Date
+    userCreated            String             @db.VarChar(10)
+    userUpdated            String             @db.VarChar(10)
+    userResolved           String?            @db.VarChar(10)
+    fk_inspection_created  String?            @db.Char(36)
+    fk_inspection_resolved String?            @db.Char(36)
+    InspectionCreated      Inspection?        @relation("Deficiency_InspectionCreated", fields: [fk_inspection_created], references: [id], map: "deficiency_fk_inspection")
+    InspectionResolved     Inspection?        @relation("Deficiency_InspectionResolved", fields: [fk_inspection_resolved], references: [id], map: "deficiency_fk_inspection_resolved")
+    DeficiencyType         DeficiencyType     @relation(fields: [fk_deficiencyType], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "deficiency_fk_type")
+    DeficiencyCadet        DeficiencyCadet?
+    DeficiencyUniform      DeficiencyUniform?
+}
+
+model DeficiencyCadet {
+    deficiencyId String     @id @db.Char(36)
+    fk_cadet     String     @db.Char(36)
+    fk_uniform   String?    @db.Char(36)
+    fk_material  String?    @db.Char(36)
+    Deficiency   Deficiency @relation(fields: [deficiencyId], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "deficiencycadet_fk_deficiency")
+    Cadet        Cadet      @relation(fields: [fk_cadet], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_deficiencyCadet_cadet")
+    Material     Material?  @relation(fields: [fk_material], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_deficiencyCadet_material")
+    Uniform      Uniform?   @relation(fields: [fk_uniform], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_deficiencyCadet_uniform")
+}
+
+model DeficiencyType {
+    id             String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    fk_assosiation String                  @db.Char(36)
+    name           String                  @db.VarChar(20)
+    dependend      DeficiencyTypeDependend
+    relation       DeficiencyTypeRelation?
+    recdelete      DateTime?               @db.Date
+    recdeleteUser  String?                 @db.VarChar(10)
+    Deficiency     Deficiency[]
+    Assosiation    Assosiation             @relation(fields: [fk_assosiation], references: [id], onUpdate: Restrict)
+
+    @@unique([name, fk_assosiation], map: "DeficiencyType_name_uk")
+}
+
+model DeficiencyUniform {
+    deficiencyId String     @id @db.Char(36)
+    fk_uniform   String     @db.Char(36)
+    Uniform      Uniform    @relation(fields: [fk_uniform], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "DeficiencyUniform_Uniform_fkey")
+    Deficiency   Deficiency @relation(fields: [deficiencyId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "deficiencyuniform_fk_deficiency")
+}
+
+enum DeficiencyTypeDependend {
+    cadet
+    uniform
+}
+
+enum DeficiencyTypeRelation {
+    uniform
+    material
 }

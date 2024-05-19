@@ -1,7 +1,10 @@
 "use client"
 
+import { logout } from "@/actions/auth";
+import { useInspectionState } from "@/dataFetcher/inspection";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n } from "@/lib/locales/client";
+import { AuthItem } from "@/lib/storageTypes";
 import { faAddressCard, faAngleLeft, faAngleRight, faClipboardCheck, faGear, faPlus, faShirt, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Assosiation } from "@prisma/client";
@@ -9,15 +12,14 @@ import Link from "next/link";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Col, Dropdown } from "react-bootstrap";
+import { toast } from "react-toastify";
+import { mutate } from "swr";
 import Footer from "./Footer";
 import Header from "./Header";
 import NavButton from "./NavButton";
 import NavGroup from "./NavGroup";
 import NavLink from "./NavLink";
-import { useGlobalData } from "../globalDataProvider";
-import { logout } from "@/actions/auth";
-import { mutate } from "swr";
-import { AuthItem } from "@/lib/storageTypes";
+import { startInspection } from "@/actions/controllers/InspectionController";
 
 
 type SidebarPropType = {
@@ -29,7 +31,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
     const t = useI18n();
     const [collapsed, setCollapsed] = useState<boolean>(false);
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
-    const { inspectionState } = useGlobalData();
+    const { inspectionState } = useInspectionState();
     const pathname = usePathname();
     const { locale } = useParams();
     const router = useRouter();
@@ -48,7 +50,14 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
         });
     }
     function startStopInspection() {
-
+        if (inspectionState?.active) {
+            // TODO stop inspection
+        } else {
+            startInspection().then(() => {
+                toast.success("Uniformkontrolle erfolgreich gestartet");
+                mutate((key: any) => ((typeof key === "string") && /^(\/api\/inspection\/status)|(\/api\/cadet\/[\w\d-]+\/inspection)$/));
+            });
+        }
     }
 
     return (
@@ -139,7 +148,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                             <NavGroup
                                 title={t('sidebar.links.administration.group')}
                                 icon={faGear}
-                                childSelected={pathname.startsWith("/admin")}
+                                childSelected={pathname.startsWith("/app/admin")}
                                 collapsed={collapsed}
                                 requiredRole={AuthRole.materialManager}
                                 setCollapsed={setCollapsed}
@@ -147,8 +156,8 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                 <ul>
                                     <NavLink
                                         text={t('sidebar.links.administration.uniform')}
-                                        href="/admin/uniform"
-                                        isRoute={pathname === "/admin/uniform"}
+                                        href="/app/admin/uniform"
+                                        isRoute={pathname === "/app/admin/uniform"}
                                         level={2}
                                         collapsed={collapsed}
                                         requiredRole={AuthRole.materialManager}
@@ -156,8 +165,8 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                     />
                                     <NavLink
                                         text={t('sidebar.links.administration.size')}
-                                        href="/admin/uniform/sizes"
-                                        isRoute={pathname === "/admin/uniform/sizes"}
+                                        href="/app/admin/uniform/sizes"
+                                        isRoute={pathname === "/app/admin/uniform/sizes"}
                                         level={2}
                                         requiredRole={AuthRole.materialManager}
                                         collapsed={collapsed}
@@ -165,8 +174,8 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                     />
                                     <NavLink
                                         text={t('sidebar.links.administration.material')}
-                                        href="/admin/material"
-                                        isRoute={pathname === "/admin/material"}
+                                        href="/app/admin/material"
+                                        isRoute={pathname === "/app/admin/material"}
                                         level={2}
                                         requiredRole={AuthRole.materialManager}
                                         collapsed={collapsed}

@@ -5,19 +5,21 @@ import { useI18n } from "@/lib/locales/client";
 import SimpleFormModal, { SimpleFormModalProps } from "./simpleFormModal";
 import { CadetMaterial, MaterialGroup } from "@/types/globalMaterialTypes";
 import IssueMaterialModal, { IssueMaterialModalProps } from "./issueMaterial";
-import { UniformType } from "@/types/globalUniformTypes";
+import { UniformGeneration, UniformType } from "@/types/globalUniformTypes";
 import UniformItemDetailModal, { UIDModalProps } from "./uniformItemDetail";
-
-
+import DangerConfirmationModal, { DangerConfirmationModalPropType } from "./dangerConfirmationModal";
+import EditGenerationModal, { EditGenerationModalPropType } from "./editGenerationModal";
 
 type ModalContextType = {
     showMessageModal: (header: string, message: string | ReactNode, options: MessageModalOption[], type: MessageModalType) => void,
     simpleYesNoModal: (props: SimpleYesNoPropType) => void,
     simpleWarningModal: (props: SimpleYesNoPropType) => void,
-    //dangerConfirmationModal: (header: string, message: string | ReactNode, confirmationText: string, dangerOption: string, dangerFunction: () => void, cancelOption?: string, cancelFunction?: () => void) => void,
+    simpleErrorModal: (props: SimpleErrorPropType) => void,
+    dangerConfirmationModal: (header: string, message: string | ReactNode, confirmationText: string, dangerOption: string, dangerFunction: () => void, cancelOption?: string, cancelFunction?: () => void) => void,
     simpleFormModal: (props: SimpleFormModalProps) => void,
     issueMaterialModal: (cadetId: string, materialGroup: MaterialGroup, issuedMaterialList: CadetMaterial[], oldMaterial?: CadetMaterial) => void,
     uniformItemDetailModal: (uniformId: string, uniformType: UniformType, ownerId: string | null) => void,
+    editGenerationModal: (generation: UniformGeneration | null, uniformType: UniformType, save: (data: UniformGeneration) => void) => void,
 }
 
 type ModalCapsule = {
@@ -38,6 +40,13 @@ type SimpleYesNoPropType = {
     primaryOption?: string,
     primaryFunction: () => void,
     cancelFunction?: () => void,
+}
+
+type SimpleErrorPropType = {
+    header: string;
+    message: string | ReactNode;
+    option?: string;
+    optionFunction?: () => void;
 }
 
 
@@ -97,6 +106,19 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             "warning",
         )
     }, []);
+    const simpleErrorModal = useCallback(({ header, message, option, optionFunction }: SimpleErrorPropType) => {
+        showMessageModal(
+            header,
+            message,
+            [{
+                type: "outline-secondary",
+                option: option ?? t('common.actions.ok'),
+                function: optionFunction ? optionFunction : () => { },
+                testId: "btn_save",
+            }],
+            "error",
+        );
+    }, []);
 
     // COMPLEX MODALS
     const showModal = useCallback((type: ModalTypes, modalProps: any) => {
@@ -109,13 +131,31 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
 
     const simpleFormModal = useCallback(({ elementLabel, elementValidation, header, save, abort, defaultValue }: SimpleFormModalProps) => {
         showModal("SimpleFormModal", {
-            save: (data: { input: string | number }) => { onClose(); save(data); },
+            save: async (data: { input: string | number }) => { onClose(); await save(data); },
             abort: () => { onClose(); abort(); },
             elementLabel,
             elementValidation,
             header,
             defaultValue
         });
+    }, []);
+
+    const dangerConfirmationModal = useCallback((header: string, message: string | ReactNode, confirmationText: string, dangerOption: string, dangerFunction: () => void, cancelOption?: string, cancelFunction?: () => void) => {
+        const props: DangerConfirmationModalPropType = {
+            header,
+            message,
+            confirmationText,
+            cancelOption: {
+                option: cancelOption ?? t('common.actions.cancel'),
+                function: cancelFunction,
+            },
+            dangerOption: {
+                option: dangerOption,
+                function: dangerFunction,
+            },
+            onClose,
+        }
+        showModal("DangerConfirmationModal", props);
     }, []);
 
     const issueMaterialModal = useCallback((cadetId: string, materialGroup: MaterialGroup, issuedMaterialList: CadetMaterial[], oldMaterial?: CadetMaterial) => {
@@ -137,7 +177,17 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             onClose,
         };
         showModal("UniformItemDetailModal", props);
-    }, [])
+    }, []);
+
+    const editGenerationModal = useCallback((generation: UniformGeneration | null, uniformType: UniformType, save: (data: UniformGeneration) => void) => {
+        const props: EditGenerationModalPropType = {
+            generation,
+            type: uniformType,
+            cancel: onClose,
+            save: (data: UniformGeneration) => { onClose(); save(data); },
+        }
+        showModal("EditGenerationModal", props);
+    }, []);
 
     const onClose = () => {
         setQueue(prevState => prevState.slice(1))
@@ -147,12 +197,13 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             showMessageModal,
             simpleYesNoModal,
             simpleWarningModal,
-            /* dangerConfirmationModal,
-             issueUniformModal,
-             editGenerationModal,
-             editMaterialTypeModal,
-             inspectionReviewPopup,
-             changeUserPasswordModal,*/
+            dangerConfirmationModal,
+            editGenerationModal,
+            simpleErrorModal,
+            /*issueUniformModal,
+            editMaterialTypeModal,
+            inspectionReviewPopup,
+            changeUserPasswordModal,*/
             issueMaterialModal,
             simpleFormModal,
             uniformItemDetailModal
@@ -160,9 +211,10 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
     }, [showMessageModal,
         simpleYesNoModal,
         simpleWarningModal,
-        /* dangerConfirmationModal,
-        issueUniformModal,
+        dangerConfirmationModal,
         editGenerationModal,
+        simpleErrorModal,
+        /* issueUniformModal,
         editMaterialTypeModal,
          inspectionReviewPopup,
          changeUserPasswordModal,*/
@@ -172,12 +224,12 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
 
     function renderModal(modal: ModalCapsule) {
         switch (modal.modalType) {
-            /*      case "DangerConfirmationModal":
-                      return <DangerConfirmationModal {...modal.props} onClose={onClose} />
-                  case "IssueUniformModal":
+            case "DangerConfirmationModal":
+                return <DangerConfirmationModal {...modal.props} onClose={onClose} />
+            case "EditGenerationModal":
+                return <EditGenerationModal {...modal.props} />
+            /*      case "IssueUniformModal":
                       return <IssueUniformModal {...modal.props} />
-                  case "EditGenerationModal":
-                      return <EditGenerationModal {...modal.props} />
                   case "EditMaterialTypeModal":
                       return <EditMaterialTypeModal {...modal.props} />
                   case "InspectionReviewPopup":

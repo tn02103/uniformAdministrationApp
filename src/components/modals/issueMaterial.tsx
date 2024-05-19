@@ -1,10 +1,11 @@
+
+import { useI18n } from "@/lib/locales/client";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { CadetMaterial, MaterialGroup } from "../../types/globalMaterialTypes";
-import { issueMaterial } from "@/actions/cadet/material";
-import { useI18n } from "@/lib/locales/client";
 import { mutate } from "swr";
+import { CadetMaterial, MaterialGroup } from "../../types/globalMaterialTypes";
+import { issueMaterial } from "@/actions/controllers/CadetMaterialController";
 
 export type IssueMaterialModalProps = {
     cadetId: string,

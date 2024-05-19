@@ -4,12 +4,12 @@ import { prisma } from "@/lib/db";
 import { cadetValidation, uuidValidationPattern } from "@/lib/validations";
 import { Cadet, cadetArgs } from "@/types/globalCadetTypes";
 import { cache } from "react";
-import { genericSAValidatior } from "../validations";
+import { genericSAValidatiorV2 } from "../validations";
 
-export const getCadetData = cache(async (cadetId: string): Promise<Cadet> => genericSAValidatior(
+export const getCadetData = cache(async (cadetId: string): Promise<Cadet> => genericSAValidatiorV2(
     AuthRole.user,
     (uuidValidationPattern.test(cadetId)),
-    [{ value: cadetId, type: "cadet" }]
+    { cadetId }
 ).then(() => {
     return prisma.cadet.findUniqueOrThrow({
         where: {
@@ -20,10 +20,10 @@ export const getCadetData = cache(async (cadetId: string): Promise<Cadet> => gen
     });
 }));
 
-export const getCadetLastInspectionDate = async (cadetId: string) => genericSAValidatior(
+export const getCadetLastInspectionDate = async (cadetId: string) => genericSAValidatiorV2(
     AuthRole.inspector,
     uuidValidationPattern.test(cadetId),
-    [{ value: cadetId, type: "cadet" }]
+    { cadetId }
 ).then(() => {
     return prisma.inspection.aggregate({
         _max: { date: true },
@@ -37,10 +37,10 @@ export const getCadetLastInspectionDate = async (cadetId: string) => genericSAVa
     }).then((data) => data._max.date);
 });
 
-export const saveCadetData = async (cadet: Cadet) => genericSAValidatior(
+export const saveCadetData = async (cadet: Cadet) => genericSAValidatiorV2(
     AuthRole.inspector,
     cadetValidation.test(cadet),
-    [{ value: cadet.id, type: "cadet" }]
+    { cadetId: cadet.id }
 ).then(() => {
     return prisma.cadet.update({
         ...cadetArgs,
@@ -56,10 +56,10 @@ export const saveCadetData = async (cadet: Cadet) => genericSAValidatior(
     });
 });
 
-export const createCadet = async (cadet: Cadet) => genericSAValidatior(
+export const createCadet = async (cadet: Cadet) => genericSAValidatiorV2(
     AuthRole.inspector,
     cadetValidation.testWithoutId(cadet),
-    []
+    {}
 ).then(({ assosiation }) => prisma.cadet.create({
     ...cadetArgs,
     data: {

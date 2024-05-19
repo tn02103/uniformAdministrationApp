@@ -1,11 +1,12 @@
 "use server";
 
 import { AuthRole } from "@/lib/AuthRoles";
-import { genericSAValidatior } from "./validations";
 import { prisma } from "@/lib/db";
+import { uuidValidationPattern } from "@/lib/validations";
 import { materialGroupArgs } from "@/types/globalMaterialTypes";
+import { genericSAValidatiorV2 } from "./validations";
 
-export const getMaterialConfiguration = async () => genericSAValidatior(AuthRole.user, true, [])
+export const getMaterialConfiguration = async () => genericSAValidatiorV2(AuthRole.user, true, {})
     .then(async ({ assosiation }) => prisma.materialGroup.findMany({
         ...materialGroupArgs,
         where: {
@@ -19,3 +20,12 @@ export const getMaterialConfiguration = async () => genericSAValidatior(AuthRole
         },
         orderBy: { sortOrder: "asc" }
     }))
+
+export const getMaterialGroupIdByTypeId = async (materialId: string): Promise<string> => genericSAValidatiorV2(
+    AuthRole.user,
+    uuidValidationPattern.test(materialId),
+    { materialId }
+).then(async () => prisma.material.findUnique({
+    select: { fk_materialGroup: true },
+    where: { id: materialId },
+})).then(data => data!.fk_materialGroup);

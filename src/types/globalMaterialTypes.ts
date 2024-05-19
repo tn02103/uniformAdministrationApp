@@ -1,9 +1,15 @@
 import { Prisma } from "@prisma/client";
 
-export const dbCadetMaterialArgs = Prisma.validator<Prisma.MaterialArgs>()({
+export const dbCadetMaterialArgs = Prisma.validator<Prisma.MaterialFindManyArgs>()({
     select: {
         id: true,
         typename: true,
+        materialGroup: {
+            select: {
+                description: true,
+                id: true,
+            }
+        },
         issuedEntrys: {
             select: {
                 id: true,
@@ -43,7 +49,7 @@ export const materialGroupArgs = Prisma.validator<Prisma.MaterialGroupArgs>()({
 
 
 export type DBCadetMaterial = Prisma.MaterialGetPayload<typeof dbCadetMaterialArgs>;
-export type MaterialGroup = Prisma.MaterialGroupGetPayload<typeof materialGroupArgs>; 
+export type MaterialGroup = Prisma.MaterialGroupGetPayload<typeof materialGroupArgs>;
 export type Material = Prisma.MaterialGetPayload<typeof materialTypeArgs>;
 
 export interface CadetMaterial {
@@ -51,6 +57,7 @@ export interface CadetMaterial {
     typename: string;
     issued: number;
     groupId: string;
+    groupName: string;
 }
 
 

@@ -1,5 +1,4 @@
-import { createI18nClient } from 'next-international/client';
-import { createI18nServer } from 'next-international/server'
+import { createI18nServer } from 'next-international/server';
 
 export const locales = ["en", "de"];
 

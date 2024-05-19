@@ -6,7 +6,7 @@ import { Col, Row } from "react-bootstrap";
 import LoginForm from "./loginForm";
 
 
-
+export const dynamic = "force-dynamic";
 const LoginPage = async ({ params: { locale } }: { params: { locale: string } }) => {
     setStaticParamsLocale(locale);
     const t = await getI18n();

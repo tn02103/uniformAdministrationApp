@@ -15,6 +15,7 @@ export enum ExceptionType {
     UnauthorizedException,
     UnauthenticatedException,
     InactiveException,
+    InUseException,
 }
 
 export class UnauthorizedException extends CustomException {

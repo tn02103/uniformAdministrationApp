@@ -1,13 +1,15 @@
 import ModalProvider from '@/components/modals/modalProvider';
 import { I18nProviderClient } from '@/lib/locales/client';
+import { getStaticParams } from '@/lib/locales/config';
+import '@fortawesome/fontawesome-svg-core/styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { ToastContainer, Zoom } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import 'react-tooltip/dist/react-tooltip.css';
 import './../../styles/global.scss';
 import './../../styles/globals.css';
-import { getStaticParams } from '@/lib/locales/config';
 
 
 const inter = Inter({ subsets: ['latin'] })

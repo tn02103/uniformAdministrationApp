@@ -7,7 +7,7 @@ export type SimpleFormModalProps = {
     header: string;
     elementLabel: string;
     elementValidation: RegisterOptions<FieldValues, "input">;
-    save: ({ }: { input: any }) => void;
+    save: ({ }: { input: any }) => Promise<any>;
     abort: () => void;
     defaultValue?: { input: string }
 }
