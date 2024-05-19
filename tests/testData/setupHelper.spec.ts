@@ -14,10 +14,11 @@ test.skip('', async () => {
     await staticData.cleanup.removeAssosiation();
 })
 
-test.skip('generateTestIdSet', async () => {
+test.only('generateTestIdSet', async () => {
     const ids: StaticDataIdType[] = StaticDataIds;
     ids.push({
         fk_assosiation: uuid(),
+        userIds: uuidArray(5),
         cadetIds: uuidArray(10),
         sizeIds: uuidArray(21),
         sizelistIds: uuidArray(4),

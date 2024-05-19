@@ -44,6 +44,7 @@ class StaticDataGetter {
     readonly index: number;
     readonly assosiation: Assosiation;
     readonly cadets: Cadet[];
+    readonly userIds: string[];
 
     readonly uniformSizes: UniformSize[];
     readonly uniformSizelists: UniformSizelist[];
@@ -68,10 +69,11 @@ class StaticDataGetter {
 
     constructor(i: number) {
         this.index = i;
-        const { fk_assosiation, cadetIds, sizeIds, sizelistIds, uniformTypeIds, uniformGenerationIds, uniformIds, materialGroupIds, materialIds, deficiencyIds, deficiencyTypeIds, inspectionIds } = StaticDataIds[i];
+        const { fk_assosiation, userIds, cadetIds, sizeIds, sizelistIds, uniformTypeIds, uniformGenerationIds, uniformIds, materialGroupIds, materialIds, deficiencyIds, deficiencyTypeIds, inspectionIds } = StaticDataIds[i];
+        this.userIds = userIds;
 
         this.assosiation = {
-            id: StaticDataIds[i].fk_assosiation,
+            id: fk_assosiation,
             name: `Testautomatisation-${i}`,
             acronym: `test${i}`,
             useBeta: false,
@@ -620,11 +622,11 @@ class StaticDataGetter {
         const fk_assosiation = this.assosiation.id;
         const password = await bcrypt.hash(process.env.TEST_USER_PASSWORD as string, 12);
         return [
-            { fk_assosiation, role: 4, username: 'test4', name: `Test ${this.index} Admin`, password, active: true },
-            { fk_assosiation, role: 3, username: 'test3', name: `Test ${this.index} Verwaltung`, password, active: true },
-            { fk_assosiation, role: 2, username: 'test2', name: `Test ${this.index} Kontrolleur`, password, active: true },
-            { fk_assosiation, role: 1, username: 'test1', name: `Test ${this.index} Nutzer`, password, active: true },
-            { fk_assosiation, role: 1, username: 'test5', name: `Test ${this.index} Gesperrt`, password, active: false },
+            { id: this.userIds[0], fk_assosiation, role: 4, username: 'test4', name: `Test ${this.index} Admin`, password, active: true },
+            { id: this.userIds[1], fk_assosiation, role: 3, username: 'test3', name: `Test ${this.index} Verwaltung`, password, active: true },
+            { id: this.userIds[2], fk_assosiation, role: 2, username: 'test2', name: `Test ${this.index} Kontrolleur`, password, active: true },
+            { id: this.userIds[3], fk_assosiation, role: 1, username: 'test1', name: `Test ${this.index} Nutzer`, password, active: true },
+            { id: this.userIds[4], fk_assosiation, role: 1, username: 'test5', name: `Test ${this.index} Gesperrt`, password, active: false },
         ]
     }
 }
@@ -650,6 +652,10 @@ class StaticDataCleanup {
         await this.loader.deficiencies();
         await this.loader.deficienciesCadet();
         await this.loader.deficienciesUniform();
+    }
+    async user() {
+        await this.deleteUsers();
+        await this.loader.users();
     }
     async cadet() {
         await prisma.$transaction([
