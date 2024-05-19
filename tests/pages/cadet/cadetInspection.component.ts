@@ -80,11 +80,20 @@ export class CadetInspectionComponent {
     err_newDef_type(index: number) {
         return this.div_newDeficiency(index).getByTestId("err_type");
     }
+    err_newDef_description(index: number) {
+        return this.div_newDeficiency(index).getByTestId("err_description");
+    }
     err_newDef_uniform(index: number) {
         return this.div_newDeficiency(index).getByTestId("err_uItem");
     }
-    err_newDef_description(index: number) {
-        return this.div_newDeficiency(index).getByTestId("err_description");
+    err_newDef_material(index: number) {
+        return this.div_newDeficiency(index).getByTestId("err_matId");
+    }
+    err_newDef_materialGroup(index: number) {
+        return this.div_newDeficiency(index).getByTestId("err_matGroup");
+    }
+    err_newDef_materialType(index: number) {
+        return this.div_newDeficiency(index).getByTestId("err_matType");
     }
     err_newDef_comment(index: number) {
         return this.div_newDeficiency(index).getByTestId("err_comment");

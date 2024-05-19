@@ -267,7 +267,7 @@ const MaterialSelect = ({ index }: { index: number }) => {
                         <option value={"others"}>{t('cadetDetailPage.inspection.otherMaterials')}</option>
                     </Form.Select>
                 </Col>
-                <Col data-testid="err_uItem" className="fs-7 text-danger">
+                <Col data-testid="err_matId" className="fs-7 text-danger">
                     {errors?.newDeficiencyList?.[index]?.materialId?.message}
                 </Col>
             </Row>
@@ -308,7 +308,7 @@ const MaterialGroupSelect = ({ index }: { index: number }) => {
                         ))}
                     </Form.Select>
                 </Col>
-                <Col data-testid="err_uItem" className="fs-7 text-danger">
+                <Col data-testid="err_matGroup" className="fs-7 text-danger">
                     {errors?.newDeficiencyList?.[index]?.materialGroup?.message}
                 </Col>
             </Row>
@@ -354,7 +354,7 @@ const MaterialTypeSelect = ({ index }: { index: number }) => {
                         ))}
                     </Form.Select>
                 </Col>
-                <Col data-testid="err_uItem" className="fs-7 text-danger">
+                <Col data-testid="err_matType" className="fs-7 text-danger">
                     {errors?.newDeficiencyList?.[index]?.materialType?.message}
                 </Col>
             </Row>

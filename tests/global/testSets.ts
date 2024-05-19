@@ -1,4 +1,3 @@
-import { type } from "os";
 import { AuthRole } from "../../src/lib/AuthRoles";
 
 export type ValidationTestType = {
@@ -157,6 +156,9 @@ type newDescriptionValidationTestsType = (props: {
     maxLength?: number,
 }) => ValidationTestType[];
 export const newDescriptionValidationTests: newDescriptionValidationTestsType = (props) => {
+    if (props.maxLength && props.maxLength < 7) throw new Error("TestSet does not support maxlength smaler 10");
+    if (props.minLength && props.minLength > 4) throw new Error("TestSet does not support minLength biger than 7");
+
     const longString = "ajhgsdfjkahgsdfjkhawebfkshvbsdvasdgfakjewgfakjgsew";
     const tests = [
         { testValue: "name", valid: true },
@@ -170,9 +172,43 @@ export const newDescriptionValidationTests: newDescriptionValidationTestsType = 
         tests.push({ testValue: longString.substring(0, props.minLength - 1), valid: false });
     }
     if (props.maxLength) {
-        tests.push({ testValue: longString.substring(0, props.maxLength), valid: true });
-        tests.push({ testValue: longString.substring(0, props.maxLength + 1), valid: false });
+        let value = longString;
+        while (value.length < props.maxLength) {
+            value += value;
+        }
+        tests.push({ testValue: value.substring(0, props.maxLength), valid: true });
+        tests.push({ testValue: value.substring(0, props.maxLength + 1), valid: false });
     }
 
+    return tests;
+}
+
+export const CommentValidationTests = (props: { maxLength?: number, minLength?: number }): ValidationTestType[] => {
+    if (props.maxLength && props.maxLength < 10) throw new Error("TestSet does not support maxlength smaler 10");
+    if (props.minLength && props.minLength > 7) throw new Error("TestSet does not support minLength biger than 7");
+
+
+    const longString = "ajhgsdfjkahgsdfjkhawebfkshvbsdvasdgfakjewgfakjgsew";
+    const tests: ValidationTestType[] = [
+        { testValue: "string", valid: true },
+        { testValue: "öäüöÄÜß", valid: true },
+        { testValue: "0123456789", valid: true },
+        { testValue: ".:;-+!?$%€", valid: true },
+        { testValue: "<>\n m/()\"\'", valid: true },
+        { testValue: "stred{}", valid: false },
+        { testValue: "sterf[]", valid: false },
+    ]
+    if (props.minLength) {
+        tests.push({ testValue: longString.substring(0, props.minLength), valid: true });
+        tests.push({ testValue: longString.substring(0, props.minLength - 1), valid: false });
+    }
+    if (props.maxLength) {
+        let value = longString;
+        while (value.length < props.maxLength) {
+            value += value;
+        }
+        tests.push({ testValue: value.substring(0, props.maxLength), valid: true });
+        tests.push({ testValue: value.substring(0, props.maxLength + 1), valid: false });
+    }
     return tests;
 }

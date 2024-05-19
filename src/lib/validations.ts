@@ -17,7 +17,7 @@ export const NameValidation = {
 }
 export const uuidValidationPattern = /^[\w\d-]{12,36}$/;
 export const booleanValidationPattern = /^(true)|(false)$/;
-export const commentValidationPattern = /^[\w<> ,.:;/()&%€$"'\-\n\xC0-\xFF]*$/;
+export const commentValidationPattern = /^[\w<> ,.:;/()&%?!€$+"'\-\n\xC0-\xFF]*$/;
 export const passwordValidationPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
 
 export const descriptionValidationPattern = /^[\w \/\-_\xC0-\xFF]+$/

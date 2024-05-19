@@ -1,11 +1,10 @@
 import { prisma } from "@/lib/db";
 import { Locator, expect } from "playwright/test";
 import t from "../../../../public/locales/de";
-import { adminTest } from "../../../setup";
 import { numberValidationTests } from "../../../global/testSets";
 import { CadetMaterialComponent } from "../../../pages/cadet/cadetMaterial.component";
 import { PopupComponent } from "../../../pages/popups/Popup.component";
-import { fillMaterialIssued } from "../../../testData/staticData";
+import { adminTest } from "../../../setup";
 
 type Fixture = {
     materialComponent: CadetMaterialComponent;
@@ -28,14 +27,8 @@ const test = adminTest.extend<Fixture>({
     }
 });
 
-test.afterEach(async ({ staticData: { index, fk_assosiation } }) => {
-    await prisma.materialIssued.deleteMany({
-        where: {
-            cadet: { fk_assosiation }
-        }
-    });
-
-    await fillMaterialIssued(index);
+test.afterEach(async ({ staticData: { cleanup } }) => {
+    cleanup.materialIssued();
 });
 
 test.describe(async () => {

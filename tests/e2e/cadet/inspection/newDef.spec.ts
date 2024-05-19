@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { expect } from "playwright/test";
 import { viewports } from "../../../global/helper";
+import { CommentValidationTests, newNameValidationTests } from "../../../global/testSets";
 import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
 import { CadetUniformComponent } from "../../../pages/cadet/cadetUniform.component";
 import { SimpleFormPopupComponent } from "../../../pages/popups/SimpleFormPopup.component";
@@ -173,6 +174,86 @@ test('E2E0273: validate update of uniformSelect Content', async ({ page, inspect
     await cleanup.uniformIssued();
 });
 
-test.skip('E2E0280: validate formValidations', async () => {
-    // TODO create test 
+test('E2E0280: validate formValidations', async ({ inspectionComponent, staticData: { ids } }) => {
+    await test.step('sel_type validation', async () => {
+        await inspectionComponent.btn_step2_newDef.click();
+        await expect(inspectionComponent.err_newDef_type(0)).not.toBeVisible();
+        await expect(inspectionComponent.sel_newDef_type(0)).toBeVisible();
+
+        await inspectionComponent.btn_step2_submit.click();
+        await expect(inspectionComponent.err_newDef_type(0)).toBeVisible();
+    });
+    await test.step('description', async () => {
+        await inspectionComponent.sel_newDef_type(0).selectOption(ids.deficiencyTypeIds[1]); // CadetDef
+        await expect(inspectionComponent.txt_newDef_description(0)).toBeVisible();
+
+        const testSets = newNameValidationTests({ maxLength: 30, minLength: 1 });
+
+        for (const set of testSets) {
+            await test.step(set.testValue, async () => {
+                await inspectionComponent.txt_newDef_description(0).fill(set.testValue);
+                if (set.valid) {
+                    await expect(inspectionComponent.err_newDef_description(0)).not.toBeVisible();
+                } else {
+                    await expect(inspectionComponent.err_newDef_description(0)).toBeVisible();
+                }
+            });
+        }
+    });
+
+    await test.step('sel_uniform', async () => {
+        await inspectionComponent.sel_newDef_type(0).selectOption(ids.deficiencyTypeIds[2]); // CadetUniform
+        await expect(inspectionComponent.sel_newDef_uniform(0)).toBeVisible();
+        await expect(inspectionComponent.err_newDef_uniform(0)).not.toBeVisible();
+
+        await inspectionComponent.btn_step2_submit.click();
+        await expect(inspectionComponent.err_newDef_uniform(0)).toBeVisible();
+
+        await inspectionComponent.sel_newDef_uniform(0).selectOption(ids.uniformIds[0][46]);
+        await expect(inspectionComponent.err_newDef_uniform(0)).not.toBeVisible();
+    });
+    await test.step('sel_material', async () => {
+        await inspectionComponent.sel_newDef_type(0).selectOption(ids.deficiencyTypeIds[3]); // CadetMaterial
+        await expect(inspectionComponent.sel_newDef_material(0)).toBeVisible();
+        await expect(inspectionComponent.err_newDef_material(0)).not.toBeVisible();
+
+        await inspectionComponent.btn_step2_submit.click();
+        await expect(inspectionComponent.err_newDef_material(0)).toBeVisible();
+
+        await inspectionComponent.sel_newDef_material(0).selectOption(ids.materialIds[4]);
+        await expect(inspectionComponent.err_newDef_material(0)).not.toBeVisible();
+
+        await inspectionComponent.sel_newDef_material(0).selectOption('others');
+        await expect(inspectionComponent.err_newDef_material(0)).not.toBeVisible();
+    });
+    await test.step('sel_matGroup/ sel_matType', async () => {
+        await expect(inspectionComponent.sel_newDef_materialGroup(0)).toBeVisible();
+        await expect(inspectionComponent.sel_newDef_materialType(0)).toBeVisible();
+
+        await expect(inspectionComponent.err_newDef_materialGroup(0)).not.toBeVisible();
+        await expect(inspectionComponent.err_newDef_materialType(0)).not.toBeVisible();
+
+        await inspectionComponent.btn_step2_submit.click();
+        await expect(inspectionComponent.err_newDef_materialGroup(0)).toBeVisible();
+        await expect(inspectionComponent.err_newDef_materialType(0)).toBeVisible();
+
+        await inspectionComponent.sel_newDef_materialGroup(0).selectOption(ids.materialGroupIds[0]);
+        await expect(inspectionComponent.err_newDef_materialGroup(0)).not.toBeVisible();
+
+        await inspectionComponent.sel_newDef_materialType(0).selectOption(ids.materialIds[0]);
+        await expect(inspectionComponent.err_newDef_materialType(0)).not.toBeVisible();
+    });
+    await test.step('txt_comment', async () => {
+        const testSets = CommentValidationTests({ maxLength: 300 });
+        for (const set of testSets) {
+            await test.step(set.testValue, async () => {
+                await inspectionComponent.txt_newDef_comment(0).fill(set.testValue);
+                if (set.valid) {
+                    await expect(inspectionComponent.err_newDef_comment(0)).not.toBeVisible();
+                } else {
+                    await expect(inspectionComponent.err_newDef_comment(0)).toBeVisible();
+                }
+            });
+        }
+    });
 });

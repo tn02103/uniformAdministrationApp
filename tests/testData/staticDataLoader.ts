@@ -627,9 +627,6 @@ class StaticDataGetter {
             { fk_assosiation, role: 1, username: 'test5', name: `Test ${this.index} Gesperrt`, password, active: false },
         ]
     }
-
-
-
 }
 class StaticDataCleanup {
     readonly data: StaticDataGetter;
@@ -712,6 +709,11 @@ class StaticDataCleanup {
         });
     }
 
+    async materialIssued() {
+        await this.deleteMaterialIssued();
+        await this.loader.materialIssued();
+    }
+
     async removeAssosiation() {
         await this.deleteDeficiency();
         await this.deleteDeficiencyType();
@@ -778,7 +780,7 @@ class StaticDataCleanup {
         where: { fk_assosiation: this.fk_assosiation }
     });
     private deleteUsers = () => prisma.user.deleteMany({
-        where: {fk_assosiation: this.fk_assosiation}
+        where: { fk_assosiation: this.fk_assosiation }
     });
     private deleteAssosiation = () => prisma.assosiation.delete({
         where: { id: this.fk_assosiation }
