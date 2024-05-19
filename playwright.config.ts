@@ -42,35 +42,20 @@ export default defineConfig({
                 viewport: viewports.xxl
             },
         },
-
-        /*  {
+        {
             name: 'firefox',
-            use: { ...devices['Desktop Firefox'] },
-          },
-          {
+            use: {
+                ...devices['Desktop Firefox'],
+                viewport: viewports.xxl
+            },
+        },
+        {
             name: 'webkit',
-            use: { ...devices['Desktop Safari'] },
-          }, */
-
-        /* Test against mobile viewports. */
-        // {
-        //   name: 'Mobile Chrome',
-        //   use: { ...devices['Pixel 5'] },
-        // },
-        // {
-        //   name: 'Mobile Safari',
-        //   use: { ...devices['iPhone 12'] },
-        // },
-
-        /* Test against branded browsers. */
-        // {
-        //   name: 'Microsoft Edge',
-        //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-        // },
-        // {
-        //   name: 'Google Chrome',
-        //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-        // },
+            use: {
+                ...devices['Desktop Safari'],
+                viewport: viewports.xxl
+            },
+        },
     ],
 
     /* Run your local dev server before starting the tests */

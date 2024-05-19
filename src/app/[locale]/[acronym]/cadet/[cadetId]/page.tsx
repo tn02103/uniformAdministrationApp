@@ -4,10 +4,10 @@ import { getIronSession } from "@/lib/ironSession";
 import { notFound } from "next/navigation";
 import { Col, Row } from "react-bootstrap";
 import CadetDataTable from "./_cadetDataTable/table";
+import CadetInspectionCard from "./_inspctionTable/card";
 import MaterialTableContainer from "./_materialTable/container";
 import CadetUniformTableContainer from "./_uniformTable/container";
 import CadetDropDown from "./cadetDropDown";
-import CadetInspectionCard from "./_inspctionTable/card";
 
 type PropType = {
     params: {
@@ -26,9 +26,6 @@ export type ParamType = {
 }*/
 
 const CadetDetailPage = async (props: PropType) => {
-    const x = new Date().getTime()
-    console.log("Page start", x);
-
     const { user } = await getIronSession();
     if (props.params.cadetId !== "new") {
         var cadet = await getCadetData(props.params.cadetId).catch(() => undefined);
@@ -38,8 +35,6 @@ const CadetDetailPage = async (props: PropType) => {
         }
     }
 
-    const y = new Date().getTime();
-    console.log("Page end", y, y - x);
     return (
         <div className="container-xl content-center bg-light rounded pb-xl-3 p-md-4">
             <Row className="position-relative">
