@@ -157,14 +157,15 @@ export default {
                 acronym: {
                     pattern: "The acronym may not contain special characters or numbers",
                     length: "The acronym must be 2 characters long",
-                }
+                },
             },
             user: {
                 username: {
-                    pattern: "The username may not contain special or blank characters"
-                }
-            }
-        }
+                    pattern: "The username may not contain special or blank characters",
+                    duplicate: "The username is allready used by different user",
+                },
+            },
+        },
     },
     login: {
         header: "Login",
@@ -177,7 +178,12 @@ export default {
         error: {
             unknown: "The login attempt failed, please try again.",
             failed: "Username or password are invalid"
-        }
+        },
+    },
+    notFound: {
+        pageHeader: "Page not found",
+        header: "Page not found",
+        message: "This route does not exists",
     },
     generalOverview: {
         header: "Staff",
@@ -266,7 +272,6 @@ export default {
                 material: "Materials",
             },
             userOverview: "Accesses",
-
         },
     },
     admin: {
@@ -349,8 +354,15 @@ export default {
                 name: "Name",
                 role: "Role",
                 status: "State",
-            }
-        }
+            },
+            deleteWarning: {
+                header: "Delete user {user}",
+                message: "Are you sure the user schould be deleted",
+            },
+            error: {
+                changePassword: "Saving of the password failed",
+            },
+        },
     },
     modals: {
         messageModal: {
@@ -394,6 +406,34 @@ export default {
                     pattern: "The text does not match"
                 },
             },
+        },
+        changePassword: {
+            header: {
+                change: "Change password of {user}",
+                create: "Input password for new user",
+            },
+            requirement: {
+                message: "The password must meet the following requirements:",
+                1: "at least 8 characters",
+                2: "upper and lower case characters",
+                3: "at least one number",
+            },
+            label: {
+                password: "Password",
+                confirmation: "Repeat password",
+            },
+            error: {
+                password: {
+                    required: "Please enter a password",
+                    minLength: "The password must be at least 8 characters long",
+                    pattern: "The password does not meet all requirements",
+                },
+                confirmation: {
+                    required: "Please confirm the password",
+                    invalid: "The passwords do not match",
+                },
+            },
+            save: "Save",
         },
     },
 };

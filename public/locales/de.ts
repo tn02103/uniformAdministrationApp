@@ -157,14 +157,15 @@ export default {
                 acronym: {
                     pattern: "Das Kürzel darf keine Sonderzeichen oder Zahlen Beinhalten",
                     length: "Das Kürzel muss 2 Zeichen lang sein",
-                }
+                },
             },
             user: {
                 username: {
-                    pattern: "Der Nutzername darf keine Sonder oder Leerzeichen beinhalten"
-                }
-            }
-        }
+                    pattern: "Der Nutzername darf keine Sonder oder Leerzeichen beinhalten",
+                    duplicate: "Der Nutzername wird bereits von einem anderen Nutzer benutzt",
+                },
+            },
+        },
     },
     login: {
         header: "Login",
@@ -177,7 +178,12 @@ export default {
         error: {
             unknown: "Der Loginversuch ist fehlgeschlagen, bitte versuchen Sie es erneut.",
             failed: "Nutzername oder Passwort sind ungültig"
-        }
+        },
+    },
+    notFound: {
+        pageHeader: "Nicht gefunden",
+        header2: "Seite nicht gefunden",
+        message: "Ihre Route konnte nicht gefunden werden",
     },
     generalOverview: {
         header: "Personal",
@@ -348,8 +354,15 @@ export default {
                 name: "Name",
                 role: "Role",
                 status: "Status",
-            }
-        }
+            },
+            deleteWarning: {
+                header: "Nutzer {user} löschen",
+                message: "Soll der Nutzer wirklich gelöscht werden",
+            },
+            error: {
+                changePassword: "Das Ändern des Passworts ist fehlgeschlagen",
+            },
+        },
     },
     modals: {
         messageModal: {
@@ -394,5 +407,33 @@ export default {
                 },
             },
         },
+        changePassword: {
+            header: {
+                change: "Passwort von {user} ändern",
+                create: "Bitte geben Sie ein Passwort ein",
+            },
+            requirement: {
+                message: "Das Passwort muss die folgenden Anforderungen erfüllen:",
+                1: "mindestens 8 Zeichen",
+                2: "große und kleine Zeichen",
+                3: "mindestens eine Zahl",
+            },
+            label: {
+                password: "Passwort",
+                confirmation: "Passwort wiederholen",
+            },
+            error: {
+                password: {
+                    required: "Bitte ein Passwort eingeben",
+                    minLength: "Das Passwort muss mindestens 8 Zeichen lang sein",
+                    pattern: "Das Passwort erfüllt nicht alle vorraussetzungen",
+                },
+                confirmation: {
+                    required: "Bitte bestätigen Sie das Passwort",
+                    invalid: "Die Passwörter stimmen nicht überein",
+                },
+            },
+            save: "Speichern",
+        }
     },
 } as const;

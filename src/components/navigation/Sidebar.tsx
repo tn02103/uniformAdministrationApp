@@ -186,7 +186,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                             <NavLink
                                 text={t('sidebar.links.userOverview')}
                                 icon={faAddressCard}
-                                href={"/users"}
+                                href={"/app/admin/user"}
                                 collapsed={collapsed}
                                 requiredRole={AuthRole.admin}
                                 isRoute={pathname.startsWith("/users")}
