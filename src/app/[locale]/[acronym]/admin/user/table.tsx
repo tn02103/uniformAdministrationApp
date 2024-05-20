@@ -42,13 +42,15 @@ export default function UserAdminTable({
                 {newUserActive &&
                     <UserAdminTableRow
                         user={undefined}
+                        userList={userList}
                         onCancel={() => setNewUserActive(false)}
                     />
                 }
                 {userList?.map(user =>
                     <UserAdminTableRow
                         key={user.id}
-                        user={user}/>
+                        user={user}
+                        userList={userList}/>
                 )}
             </tbody>
         </Table>

@@ -1,39 +1,78 @@
 "use client";
 
+import { changeUserPassword, createUser, deleteUser, updateUser } from "@/actions/controllers/UserController";
+import { useModal } from "@/components/modals/modalProvider";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
-import { nameValidationPattern, userNameValidationPattern } from "@/lib/validations";
+import { nameValidationPattern, userNameValidationPattern, uuidValidationPattern } from "@/lib/validations";
 import { User } from "@/types/userTypes";
 import { faBars, faCheck, faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { Button, Dropdown, FormControl, FormGroup, FormLabel, FormSelect } from "react-bootstrap";
 import { FieldErrors, UseFormRegister, useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 export default function UserAdminTableRow({
-    user, onCancel, save
+    user, userList, onCancel, save
 }: {
     user: User | undefined;
+    userList: User[];
     onCancel?: () => void;
     save?: () => void;
 }) {
     const t = useI18n();
     const tError = useScopedI18n('common.error');
+    const modal = useModal();
 
     const formId = `user_${user ? user.id : "new"}`;
-    const { register, handleSubmit, reset, formState: { errors } } = useForm<User>({ values: user });
+    const { register, handleSubmit, reset, formState: { errors } } = useForm<User>({ defaultValues: user, mode: "onChange" });
+    const mobileForm = useForm<User>();
+
 
     const [editable, setEditable] = useState(!user);
 
 
     async function handleSave(data: User) {
-
+        data.active = (String(data.active) === "true");
+        
+        if (!user) return handleCreate(data);
+        updateUser(data).catch((error) => {
+            console.error(error);
+            toast.error(t('common.error.actions.save'));
+        });
     }
-    async function handlePasswortChange() {
+    async function handleCreate(data: User) {
+        modal?.changeUserPasswordModal(
+            (password: string) => createUser(data, password).catch((error) => {
+                console.error(error);
+                toast.error(t('common.error.actions.save'));
+            }),
+        );
+    }
 
+    async function handlePasswortChange() {
+        if (!user) return;
+
+        modal?.changeUserPasswordModal(
+            (password: string) => changeUserPassword(user?.id, password).catch((error) => {
+                console.error(error);
+                toast.error(t('admin.user.error.changePassword'));
+            }),
+        )
     }
     async function handleDelete() {
+        if (!user) return;
 
+        modal?.simpleWarningModal({
+            header: t('admin.user.deleteWarning.header', { user: user.name }),
+            message: t('admin.user.deleteWarning.message'),
+            primaryOption: t('common.actions.delete'),
+            primaryFunction: () => deleteUser(user.id).catch((error) => {
+                console.error(error);
+                toast.error(t('common.error.actions.save'));
+            }),
+        });
     }
 
     return (
@@ -41,7 +80,9 @@ export default function UserAdminTableRow({
             <td className={`col-3 col-md-2 ${editable ? "d-none d-md-table-cell" : ""}`}>
                 <UsernameControl
                     formId={formId}
-                    editable={editable}
+                    userList={userList.filter(u => !user || u.id !== user.id)}
+                    disabled={!editable || !!user}
+                    plaintext={!editable}
                     register={register}
                     tError={tError}
                     errors={errors} />
@@ -56,7 +97,7 @@ export default function UserAdminTableRow({
             </td>
             <td className={`col-2 col-md-3 ${editable ? "d-none d-md-table-cell" : "d-none d-md-table-cell"}`}>
                 {(!editable && user)
-                    ? t(`common.user.authRole.${user.role as 1 | 2 | 3 | 4}`)
+                    ? <div className="my-1">{t(`common.user.authRole.${user.role as 1 | 2 | 3 | 4}`)}</div>
                     : <RoleSelect
                         formId={formId}
                         register={register}
@@ -65,7 +106,7 @@ export default function UserAdminTableRow({
             </td>
             <td className={`d-none col-2 ${editable ? "d-md-table-cell" : "d-sm-table-cell"}`}>
                 {(!editable && user)
-                    ? t(`common.user.active.${user.active ? "true" : "false"}`)
+                    ? <div className="my-1">{t(`common.user.active.${user.active ? "true" : "false"}`)}</div>
                     : <ActiveSelect
                         formId={formId}
                         register={register}
@@ -84,7 +125,7 @@ export default function UserAdminTableRow({
                             className="border-0 fw-bold"
                             data-testid="btn_save"
                         >
-                            <FontAwesomeIcon icon={faCheck}  />
+                            <FontAwesomeIcon icon={faCheck} />
                         </Button>
                         <Button
                             size="sm"
@@ -105,7 +146,7 @@ export default function UserAdminTableRow({
                     :
                     <Dropdown drop="start" className="float-end">
                         <Dropdown.Toggle
-                           
+
                             variant="outline-primary"
                             disabled={user?.id === "null"}
                             className="border-0"
@@ -135,63 +176,68 @@ export default function UserAdminTableRow({
                 }
             </td>
             <td colSpan={5} className={editable ? "d-md-none" : "d-none"}>
-                <FormGroup>
-                    <FormLabel className="ms-1 mb-0">{t('admin.user.header.username')}</FormLabel>
-                    <UsernameControl
-                        formId={formId}
-                        editable={editable}
-                        register={register}
-                        tError={tError}
-                        errors={errors} />
-                </FormGroup>
-                <FormGroup>
-                    <FormLabel className="ms-1 mt-1 mb-0">{t('admin.user.header.name')}</FormLabel>
-                    <NameControl
-                        formId={formId}
-                        editable={editable}
-                        register={register}
-                        tError={tError}
-                        errors={errors} />
-                </FormGroup>
-                <FormGroup>
-                    <FormLabel className="ms-1 mt-1 mb-0">{t('admin.user.header.role')}</FormLabel>
-                    <RoleSelect
-                        formId={formId}
-                        register={register}
-                        t={t} />
-                </FormGroup>
-                <FormGroup>
-                    <FormLabel className="ms-1 mt-1 mb-0">{t('admin.user.header.status')}</FormLabel>
-                    <ActiveSelect
-                        formId={formId}
-                        register={register}
-                        t={t} />
-                </FormGroup>
-                <div className="row m-2 mt-4 justify-content-between">
-                    <Button
-                        type="submit"
-                        variant="outline-danger"
-                        data-testid="btn_cancel"
-                        className="col col-auto"
-                        onClick={() => {
-                            if (onCancel) onCancel();
+                <form id={formId + "_mobil"} onSubmit={mobileForm.handleSubmit(handleSave)}>
+                    <FormGroup>
+                        <FormLabel className="ms-1 mb-0">{t('admin.user.header.username')}</FormLabel>
+                        <UsernameControl
+                            formId={formId + "_mobil"}
+                            userList={userList.filter(u => !user || u.id !== user.id)}
+                            plaintext={false}
+                            disabled={!editable || !!user}
+                            register={mobileForm.register}
+                            tError={tError}
+                            errors={mobileForm.formState.errors} />
+                    </FormGroup>
+                    <FormGroup>
+                        <FormLabel className="ms-1 mt-1 mb-0">{t('admin.user.header.name')}</FormLabel>
+                        <NameControl
+                            formId={formId + "_mobil"}
+                            editable={editable}
+                            register={mobileForm.register}
+                            tError={tError}
+                            errors={mobileForm.formState.errors} />
+                    </FormGroup>
+                    <FormGroup>
+                        <FormLabel className="ms-1 mt-1 mb-0">{t('admin.user.header.role')}</FormLabel>
+                        <RoleSelect
+                            formId={formId + "_mobil"}
+                            register={mobileForm.register}
+                            t={t} />
+                    </FormGroup>
+                    <FormGroup>
+                        <FormLabel className="ms-1 mt-1 mb-0">{t('admin.user.header.status')}</FormLabel>
+                        <ActiveSelect
+                            formId={formId + "_mobil"}
+                            register={mobileForm.register}
+                            t={t} />
+                    </FormGroup>
+                    <div className="row m-2 mt-4 justify-content-between">
+                        <Button
+                            type="button"
+                            variant="outline-danger"
+                            data-testid="btn_cancel"
+                            className="col col-auto"
+                            onClick={() => {
+                                if (onCancel) onCancel();
 
-                            reset(user);
-                            setEditable(false);
-                        }}
-                    >
-                        Abbrechen
-                    </Button>
-                    <Button
-                        form={formId}
-                        type="submit"
-                        variant="outline-primary"
-                        className="col col-auto"
-                        data-testid="btn_save"
+                                mobileForm.reset(user);
+                                reset(user);
+                                setEditable(false);
+                            }}
                         >
-                        Speichern
-                    </Button>
-                </div>
+                            Abbrechen
+                        </Button>
+                        <Button
+                            form={formId + "_mobil"}
+                            type="submit"
+                            variant="outline-primary"
+                            className="col col-auto"
+                            data-testid="btn_save"
+                        >
+                            Speichern
+                        </Button>
+                    </div>
+                </form>
             </td>
         </tr>
     );
@@ -199,14 +245,18 @@ export default function UserAdminTableRow({
 
 
 const UsernameControl = ({
+    userList,
     formId,
-    editable,
+    disabled,
+    plaintext,
     register,
     tError,
     errors
 }: {
+    userList: User[];
     formId: string;
-    editable: boolean;
+    disabled: boolean;
+    plaintext: boolean;
     register: UseFormRegister<User>;
     tError: any;
     errors: FieldErrors<User>;
@@ -214,8 +264,8 @@ const UsernameControl = ({
     <>
         <FormControl
             form={formId}
-            plaintext={!editable}
-            disabled={!editable}
+            plaintext={plaintext}
+            disabled={disabled}
             {...register("username", {
                 required: {
                     value: true,
@@ -229,6 +279,7 @@ const UsernameControl = ({
                     value: 6,
                     message: tError('string.maxLength', { value: 6 }),
                 },
+                validate: (value) => userList.every(u => u.username !== value) || tError('user.username.duplicate'),
             })}
         />
         <div data-testid="err_username" className="text-danger fs-7">
@@ -271,7 +322,7 @@ const NameControl = ({
             })}
         />
         <div data-testid="err_username" className="text-danger fs-7">
-            {errors.username?.message}
+            {errors.name?.message}
         </div>
     </>
 );
@@ -286,7 +337,7 @@ const RoleSelect = ({
 }) => (
     <FormSelect
         form={formId}
-        {...register('role', { required: true })}
+        {...register('role', { required: true, valueAsNumber: true })}
     >
         <option value={AuthRole.user}>{t('common.user.authRole.1')}</option>
         <option value={AuthRole.inspector}>{t('common.user.authRole.2')}</option>
