@@ -124,6 +124,7 @@ export default {
         },
         error: {
             pleaseSelect: "Bitte Auswählen",
+            unknown: "Es ist ein unerwarteter Fehler aufgetreten",
             number: {
                 required: "Bitte eine Zahl angeben",
                 pattern: "Bitte eine valide Zahl eingeben",
@@ -135,6 +136,7 @@ export default {
             amount: {
                 required: "Bitte eine Anzahl eingeben",
                 max: "Die Anzahl darf nicht {value} überschreiten",
+                notNegative: "Die Anzahl darf nicht negativ sein",
             },
             string: {
                 required: "Bitte ausfüllen",
@@ -249,6 +251,42 @@ export default {
         'numberOfEntries#other': "{count} Einträge",
         noData: "Keine Daten geladen",
         header: "Uniformteile",
+    },
+    createUniform: {
+        pagination: {
+            known: "Nummern bekannt",
+            generate: "Nummern generieren",
+        },
+        header: {
+            configurator: "Konfiguration",
+            numberInput: "Nummern eingeben",
+            itemAmounts: "Anzahl Uniformteile",
+            revalidteNumbers: "Nummern überprüfen",
+        },
+        label: {
+            add: "hinzufügen",
+            amount: "Anzahl",
+            numberStart: "Nummern (von)",
+            until: "bis",
+            continuous: "Fortlaufende Nummern",
+            continuousTooltip: {
+                line1: "Bei Fortlaufenden Nummern, werden für jede Größe zusammenhängende Nummern gesucht.",
+                line2: "Zwischen den Größen kann es immer noch Sprünge geben.",
+            },
+        },
+        create: {
+            "label": "{count} anlegen",
+            "success#one": "Ein Uniformteil wurden erfolgreich angelegt",
+            "success#other": "{count} Uniformteile wurden erfolgreich angelegt",
+            "failed#one": "Das Uniformteil konnte nicht angelgt werden",
+            "failed#other": "Die Uniformteile konnten nicht angelegt werden",
+        },
+        errors: {
+            "endBiggerStart": "Die Startnummer muss kleine oder gleich der Endnummer sein",
+            "maxItems": "Es dürfen nicht mehr als 99 Uniformteile gleichzeitig erstellt werden",
+            "minNumber": "Es muss mindestens eine Nummer generiert werden",
+            "inUse": "Die Nummer ist bereits vergeben",
+        }
     },
     sidebar: {
         logout: "Abmelden",

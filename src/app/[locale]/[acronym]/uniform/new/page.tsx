@@ -1,12 +1,13 @@
 "use client";
 
-import { t } from "@/lib/test";
+import { useScopedI18n } from "@/lib/locales/client";
 import { useState } from "react";
 import { Col, Pagination, Row } from "react-bootstrap";
 import GeneratedWorkflow from "./_generateWorkflow";
 import KnownIdsWorkflow from "./_knownIdsWorkflow";
 
 export default function Page() {
+    const t = useScopedI18n('createUniform');
     const [generateNumbers, setGenerateNumbers] = useState<boolean | null>(null);
     const stepState = useState<number>(0);
     const [step] = stepState
@@ -24,7 +25,7 @@ export default function Page() {
                                 onClick={() => { if (step == 0) setGenerateNumbers(false) }}
                                 data-testid="btn_tab_knownIds"
                             >
-                                {t('known numbers')}
+                                {t('pagination.known')}
                             </Pagination.Item>
                             <Pagination.Item
                                 disabled={(step !== 0) && !generateNumbers}
@@ -32,7 +33,7 @@ export default function Page() {
                                 onClick={() => { if (step == 0) setGenerateNumbers(true) }}
                                 data-testid="btn_tab_generateIds"
                             >
-                                {t('generatenumbers')}
+                                {t('pagination.generate')}
                             </Pagination.Item>
                         </Pagination>
                     </Row>

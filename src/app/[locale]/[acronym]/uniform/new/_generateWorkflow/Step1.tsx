@@ -1,5 +1,5 @@
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/card";
-import { t } from "@/lib/test";
+import { useI18n } from "@/lib/locales/client";
 import { UniformSizeList } from "@/types/globalUniformTypes";
 import { Button, Col, Form, FormCheck, FormGroup, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
@@ -11,14 +11,15 @@ export type Step1FormType = {
         [key in string]: number;
     };
 };
-const Step1 = ({
+export default function Step1({
     usedSizeList, stepBack, onSubmit, initialMap
 }: {
     usedSizeList?: UniformSizeList;
     stepBack: () => void;
     onSubmit: (data: Step1FormType) => void;
     initialMap: Step1FormType;
-}) => {
+}) {
+    const t = useI18n();
     const { register, handleSubmit, formState: { errors }, watch } = useForm<Step1FormType>({ defaultValues: initialMap, mode: "onChange" });
     const itemCount = Object.values(watch('values'))
         .filter((value) => Number.isInteger(value) && (+value > 0))
@@ -27,28 +28,28 @@ const Step1 = ({
     return (
         <Card id="step1">
             <Form onSubmit={handleSubmit(onSubmit)}>
-                <CardHeader>{t('label.uniform.create.generateStep1.header')}</CardHeader>
+                <CardHeader>{t('createUniform.header.itemAmounts')}</CardHeader>
                 <CardBody>
                     <Row className="m-0 p-0 overflow-x-hidden" style={{ maxHeight: "300px", }}>
                         <Col xs={12} className="mt-3 mb-1">
                             <FormGroup className="d-flex justify-content-center">
                                 <FormCheck
                                     type="switch"
-                                    label={t('label.uniform.create.generateStep1.continuousNumbers')}
+                                    label={t('createUniform.label.continuous')}
                                     data-tooltip-id="tooltip-numbers"
                                     {...register('continuous')} />
                             </FormGroup>
                             <Tooltip id="tooltip-numbers" className="rounded" delayShow={1000}>
-                                {t('label.uniform.create.continuousTooltip.line1')} <br />
-                                {t('label.uniform.create.continuousTooltip.line2')}
+                                {t('createUniform.label.continuousTooltip.line1')} <br />
+                                {t('createUniform.label.continuousTooltip.line2')}
                             </Tooltip>
                         </Col>
                         <Col xs={12} className="fs-7 text-danger text-center mb-3" data-testid="err_itemCount">
                             {(itemCount > 99) &&
-                                t('error.uniform.create.maxItems')
+                                t('createUniform.errors.maxItems')
                             }
                             {(itemCount < 1) &&
-                                t('error.uniform.create.minNumbers')
+                                t('createUniform.errors.minNumber')
                             }
                         </Col>
                         {!usedSizeList
@@ -56,7 +57,7 @@ const Step1 = ({
                             <Col xs={"4"}>
                                 <Form.Group as={Row} className="mb-3" controlId="formPlaintextEmail">
                                     <Form.Label column xs="4">
-                                        {t('label.amount')}
+                                        {t('createUniform.label.amount')}
                                     </Form.Label>
                                     <Col xs="8">
                                         <Form.Control
@@ -66,9 +67,9 @@ const Step1 = ({
                                                 valueAsNumber: true,
                                                 min: {
                                                     value: 1,
-                                                    message: t('error.uniform.create.generateNumbers.nullValue')
+                                                    message: t('createUniform.errors.minNumber')
                                                 },
-                                                validate: (value) => !isNaN(value) || t('error.number.pattern')
+                                                validate: (value) => !isNaN(value) || t('common.error.number.pattern')
                                             })} />
                                     </Col>
                                     <div className="text-danger fs-7" data-testid="err_amount">
@@ -90,9 +91,9 @@ const Step1 = ({
                                                     valueAsNumber: true,
                                                     min: {
                                                         value: 0,
-                                                        message: t('error.uniform.create.generateNumbers.nullValue')
+                                                        message: t('common.error.amount.notNegative')
                                                     },
-                                                    validate: (value) => !isNaN(value) || t('error.number.pattern')
+                                                    validate: (value) => !isNaN(value) || t('common.error.number.pattern')
                                                 })} />
                                             <div className="text-danger fs-7" data-testid={`err_${size.id}`}>
                                                 {errors.values?.[size.id]?.message}
@@ -106,12 +107,12 @@ const Step1 = ({
                 <CardFooter>
                     <Col xs="auto">
                         <Button variant="secondary" onClick={stepBack} data-testid="btn_back">
-                            {t('label.prevStep')}
+                            {t('common.actions.prevStep')}
                         </Button>
                     </Col>
                     <Col xs="auto">
                         <Button type="submit" data-testid="btn_continue" disabled={(itemCount > 99) || (itemCount <= 0)}>
-                            {t('label.nextStep')}
+                            {t('common.actions.nextStep')}
                         </Button>
                     </Col>
                 </CardFooter>
@@ -119,5 +120,3 @@ const Step1 = ({
         </Card >
     )
 }
-
-export default Step1;

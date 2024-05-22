@@ -1,5 +1,5 @@
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/card";
-import { t } from "@/lib/test";
+import { useI18n } from "@/lib/locales/client";
 import { UniformNumbersSizeMap, UniformSizeList } from "@/types/globalUniformTypes";
 import { useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
@@ -15,6 +15,7 @@ export default function Step2({ uniformNumberMap, usedSizeList, stepBack, onCrea
     stepBack: () => void,
     onCreate: (data: UniformNumbersSizeMap) => void;
 }) {
+    const t = useI18n();
     const { register, handleSubmit, watch, reset } = useForm<FormType>();
 
     useEffect(() => {
@@ -37,17 +38,17 @@ export default function Step2({ uniformNumberMap, usedSizeList, stepBack, onCrea
         <Card id="step2">
             <Form onSubmit={handleSubmit(onSubmit)}>
                 <CardHeader>
-                    {t('label.uniform.create.generateStep2.header')}
+                    {t('createUniform.header.revalidteNumbers')}
                 </CardHeader>
                 <CardBody>
                     <Row className="m-0">
                         {usedSizeList &&
                             <Col className="fw-bold p-2" xs={2}>
-                                {t('label.uniform.size_one')}
+                                {t('common.uniform.size')}
                             </Col>
                         }
                         <Col className="fw-bold p-2" xs={10}>
-                            {t('label.uniform.number_one')}
+                            {t('common.uniform.number')}
                         </Col>
                     </Row>
                     {uniformNumberMap?.map((generated) => (
@@ -74,12 +75,12 @@ export default function Step2({ uniformNumberMap, usedSizeList, stepBack, onCrea
                 <CardFooter>
                     <Col xs="auto">
                         <Button variant="secondary" onClick={stepBack} data-testid="btn_back">
-                            {t('label.prevStep')}
+                            {t('common.actions.prevStep')}
                         </Button>
                     </Col>
                     <Col xs="auto">
                         <Button type="submit" data-testid="btn_create">
-                            {t('label.uniform.create.createAction', { count: Object.values(watch()).filter(v => v).length })}
+                            {t('createUniform.create.label', { count: Object.values(watch()).filter(v => v).length })}
                         </Button>
                     </Col>
                 </CardFooter>

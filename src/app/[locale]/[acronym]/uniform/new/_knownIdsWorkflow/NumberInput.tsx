@@ -1,6 +1,6 @@
 import { validateUniformNumberAvaiability } from "@/actions/controllers/UniformIdController";
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/card";
-import { t } from "@/lib/test";
+import { useI18n } from "@/lib/locales/client";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
@@ -25,6 +25,7 @@ export type AvailableNumbers = {
 }
 
 const NumberInput = ({ stepBack, createItems, uniformTypeId }: PropType) => {
+    const t = useI18n();
     const { register, handleSubmit, reset, formState: { errors } } = useForm<FormType>();
     const [numbers, setNumbers] = useState<AvailableNumbers[]>([]);
 
@@ -34,11 +35,11 @@ const NumberInput = ({ stepBack, createItems, uniformTypeId }: PropType) => {
         const numberStart = +data.numberStart;
 
         if (numberStart > numberEnd) {
-            toast.error(t('error.uniform.create.endBiggerStart'));
+            toast.error(t('createUniform.errors.endBiggerStart'));
             return;
         }
         if ((numberEnd - numberStart + numbers.length) >= 99) {
-            toast.error(t('error.uniform.create.maxItems'));
+            toast.error(t('createUniform.errors.maxItems'));
             return;
         }
         reset(undefined);
@@ -56,7 +57,7 @@ const NumberInput = ({ stepBack, createItems, uniformTypeId }: PropType) => {
         validateUniformNumberAvaiability(uniformTypeId, newNumberList).then((result) => {
             setNumbers(prevState => { return [...prevState, ...result] });
         }).catch((error) => {
-            toast.error(t('label.error.unknown'));
+            toast.error(t('common.error.unknown'));
             console.error(error);
         });
     }
@@ -72,29 +73,29 @@ const NumberInput = ({ stepBack, createItems, uniformTypeId }: PropType) => {
     return (
         <Card id="numberInput">
             <CardHeader>
-                {t('label.uniform.create.input.header')}
+                {t('createUniform.header.numberInput')}
             </CardHeader>
             <CardBody>
                 <Form onSubmit={handleSubmit(addIds)}>
                     <Row className="p-3">
                         <Col>
-                            <Form.Label>{t('label.uniform.create.input.numberStart')}:</Form.Label>
+                            <Form.Label>{t('createUniform.label.numberStart')}:</Form.Label>
                             <Form.Control
                                 isInvalid={!!errors.numberStart}
                                 {...register("numberStart", {
                                     required: {
                                         value: true,
-                                        message: t('error.number.required')
+                                        message: t('common.error.number.required')
                                     },
                                     min: {
                                         value: 1,
-                                        message: t('error.number.min', { value: 0 })
+                                        message: t('common.error.number.min', { value: 0 })
                                     },
                                     max: {
                                         value: 99999999,
-                                        message: t('error.number.maxLength', { value: 8 })
+                                        message: t('common.error.number.maxLength', { value: 8 })
                                     },
-                                    validate: (value) => Number.isInteger(+value) || t('error.number.pattern'),
+                                    validate: (value) => Number.isInteger(+value) || t('common.error.number.pattern'),
                                 })}
                             />
                             <div className="text-danger fs-7" data-testid="err_numStart">
@@ -102,19 +103,19 @@ const NumberInput = ({ stepBack, createItems, uniformTypeId }: PropType) => {
                             </div>
                         </Col>
                         <Col>
-                            <Form.Label>{t('label.until')}:</Form.Label>
+                            <Form.Label>{t('createUniform.label.until')}:</Form.Label>
                             <Form.Control
                                 isInvalid={!!errors.numberEnd}
                                 {...register("numberEnd", {
                                     min: {
                                         value: 1,
-                                        message: t('error.number.min', { value: 0 })
+                                        message: t('common.error.number.min', { value: 0 })
                                     },
                                     max: {
                                         value: 99999999,
-                                        message: t('error.number.maxLength', { value: 8 })
+                                        message: t('common.error.number.maxLength', { value: 8 })
                                     },
-                                    validate: (value) => Number.isInteger(+value) || t('error.number.pattern'),
+                                    validate: (value) => Number.isInteger(+value) || t('common.error.number.pattern'),
                                 })}
                             />
                             <div className="text-danger fs-7" data-testid="err_numEnd">
@@ -123,7 +124,7 @@ const NumberInput = ({ stepBack, createItems, uniformTypeId }: PropType) => {
                         </Col>
                         <Col className="d-flex">
                             <Button variant="outline-secondary mt-auto" type="submit" data-testid="btn_numAdd">
-                                {t('label.add')}
+                                {t('createUniform.label.add')}
                             </Button>
                         </Col>
                     </Row>
@@ -144,7 +145,7 @@ const NumberInput = ({ stepBack, createItems, uniformTypeId }: PropType) => {
                                             className="bg-danger fs-8 p-1 fw-bold rounded"
                                             delayShow={500}
                                         >
-                                            {t('label.uniform.create.input.alreadyUsed')}
+                                            {t('createUniform.errors.inUse')}
                                         </Tooltip>
                                     }
                                     <Col className="p-0 justify-content-end hoverColHidden" xs="auto">
@@ -166,7 +167,7 @@ const NumberInput = ({ stepBack, createItems, uniformTypeId }: PropType) => {
             <CardFooter>
                 <Col>
                     <Button variant="outline-secondary" onClick={stepBack} data-testid="btn_back">
-                        {t('label.prevStep')}
+                        {t('common.actions.prevStep')}
                     </Button>
                 </Col>
                 <Col xs={"auto"}>
@@ -176,7 +177,7 @@ const NumberInput = ({ stepBack, createItems, uniformTypeId }: PropType) => {
                         disabled={(numbers.filter(n => !n.used).length === 0)}
                         data-testid="btn_create"
                     >
-                        {t('label.uniform.create.createAction', { count: numbers.filter(n => !n.used).length })}
+                        {t('createUniform.create.label', { count: numbers.filter(n => !n.used).length })}
                     </Button>
                 </Col>
             </CardFooter>

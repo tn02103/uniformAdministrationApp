@@ -1,6 +1,6 @@
 import { createUniformItems } from "@/actions/controllers/UniformController";
 import { generateUniformNumbers } from "@/actions/controllers/UniformIdController";
-import { t } from "@/lib/test";
+import { useI18n } from "@/lib/locales/client";
 import { UniformNumbersSizeMap, UniformSizeList } from "@/types/globalUniformTypes";
 import { useEffect, useState } from "react";
 import { Row } from "react-bootstrap";
@@ -25,6 +25,7 @@ const GeneratedWorkflow = ({
 }: {
     stepState: [number, (b: number) => void];
 }) => {
+    const t = useI18n();
     const [formData, setFormData] = useState<FormDataType>({ uniformNumberMap: [], step1Data: { continuous: false, values: {} } });
     const [usedSizeList, setUsedSizeList] = useState<UniformSizeList>();
 
@@ -52,7 +53,7 @@ const GeneratedWorkflow = ({
             });
 
         if (numberCount.length === 0) {
-            toast.error(t('error.uniform.create.generateNumbers.nullValue'));
+            toast.error(t('createUniform.errors.minNumber'));
             return;
         }
 
@@ -72,7 +73,7 @@ const GeneratedWorkflow = ({
             })
             .catch(error => {
                 console.error(error);
-                toast.error(t('error.unknown'));
+                toast.error(t('common.error.unknown'));
             });
     }
     function handleCreate(uniformNumberMap: UniformNumbersSizeMap) {
@@ -84,12 +85,12 @@ const GeneratedWorkflow = ({
             comment: formData.configurator.comment,
             active: formData.configurator.active,
         }).then((result) => {
-            toast.success(t('label.uniform.create.success', { count: result }));
+            toast.success(t('createUniform.create.success', { count: result }));
             setFormData({ uniformNumberMap: [], step1Data: { continuous: false, values: {} } });
             setStep(0);
         }).catch(error => {
             console.error(error);
-            toast.error(t('error.uniform.create.failed'));
+            toast.error(t('createUniform.create.failed', { count: uniformNumberMap.length }));
         });
     }
 

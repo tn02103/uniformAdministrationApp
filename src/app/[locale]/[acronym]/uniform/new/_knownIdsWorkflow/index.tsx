@@ -1,5 +1,5 @@
 import { createUniformItems } from "@/actions/controllers/UniformController"
-import { t } from "@/lib/test"
+import { useI18n } from "@/lib/locales/client"
 import { useEffect, useState } from "react"
 import { Row } from "react-bootstrap"
 import { toast } from "react-toastify"
@@ -22,6 +22,7 @@ const KnownIdsWorkflow = ({
 }: {
     stepState: [number, (b: number) => void]
 }) => {
+    const t = useI18n();
     const [uniformConfiguration, setUniformConfiguration] = useState<ConfiguratorData>();
 
     function onConfiguratorSubmit(data: ConfiguratorData) {
@@ -46,11 +47,11 @@ const KnownIdsWorkflow = ({
                 active: uniformConfiguration.active,
             }
         ).then((result) => {
-            toast.success(t('label.uniform.create.success', { count: result }));
+            toast.success(t('createUniform.create.success', { count: result }));
             setStep(0);
         }).catch((error) => {
             console.error(error);
-            toast.error(t('error.uniform.create.failed'));
+            toast.error(t('createUniform.create.failed', { count: numbers.length }));
         });
     }
 

@@ -1,6 +1,6 @@
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/card";
 import { useUniformSizeLists, useUniformTypeList } from "@/dataFetcher/uniformAdmin";
-import { t } from "@/lib/test";
+import { useI18n } from "@/lib/locales/client";
 import { getUniformSizeList } from "@/lib/uniformHelper";
 import { uuidValidationPattern } from "@/lib/validations";
 import { UniformSizeList, UniformType } from "@/types/globalUniformTypes";
@@ -23,6 +23,7 @@ const NewUniformConfigurator = ({
     onSubmit: (data: ConfiguratorFormType, usedSizeList?: UniformSizeList) => void,
     withSizes: boolean,
 }) => {
+    const t = useI18n();
     const { register, watch, handleSubmit, setValue, formState: { errors }, getValues } =
         useForm<ConfiguratorFormType>({ defaultValues: { active: true }, mode: "onChange" });
 
@@ -88,7 +89,7 @@ const NewUniformConfigurator = ({
         <Card id="uniformConfigurator" data-testid="div_configurator">
             <CardHeader>
                 <p className={`fs-5 fw-bold text-center align-middle m-0 ${(step == 0) ? "" : "text-secondary"}`}>
-                    {t('label.uniform.create.configurator.header')}
+                    {t('createUniform.header.configurator')}
                 </p>
             </CardHeader>
             <Form onSubmit={handleSubmit((data) => onSubmit(data, sizeList))}>
@@ -97,7 +98,7 @@ const NewUniformConfigurator = ({
                         <Col xs="12">
                             <Row className="mt-2">
                                 <Col xs="4" sm="5" className="text-end p-0">
-                                    <Form.Label className="align-middle m-0">{t('label.uniform.type.type_one')}:</Form.Label>
+                                    <Form.Label className="align-middle m-0">{t('common.uniform.type.type', { count: 1 })}:</Form.Label>
                                 </Col>
                                 <Col xs="8" sm="5">
                                     <Form.Select
@@ -110,7 +111,7 @@ const NewUniformConfigurator = ({
                                             }
                                         )}
                                     >
-                                        <option disabled value={"null"}>{t('error.pleaseSelect')}</option>
+                                        <option disabled value={"null"}>{t('common.error.pleaseSelect')}</option>
                                         {typeList?.map(type =>
                                             <option key={type.id} value={type.id}>{type.name}</option>
                                         )}
@@ -121,7 +122,7 @@ const NewUniformConfigurator = ({
                                 <Col xs="4" sm="5" className="text-end p-0">
                                     <Form.Label
                                         className={`align-middle m-0 ${selectedType?.usingGenerations ? "" : "text-secondary"}`}>
-                                        {t('label.uniform.generation_one')}:
+                                        {t('common.uniform.generation.label', { count: 1 })}:
                                     </Form.Label>
                                 </Col>
                                 <Col xs="8" sm="5">
@@ -134,7 +135,7 @@ const NewUniformConfigurator = ({
                                             pattern: selectedType?.usingGenerations ? uuidValidationPattern : undefined,
                                         })}
                                     >
-                                        <option disabled value={"null"}>{t('error.pleaseSelect')}</option>
+                                        <option disabled value={"null"}>{t('common.error.pleaseSelect')}</option>
                                         {selectedType?.uniformGenerationList.map(gen =>
                                             <option key={gen.id} value={gen.id}>{gen.name}</option>
                                         )}
@@ -145,7 +146,7 @@ const NewUniformConfigurator = ({
                                 <Row className="mt-2">
                                     <Col xs="4" sm="5" className="text-end p-0 ">
                                         <Form.Label className={`align-middle m-0 ${selectedType?.usingSizes ? "" : "text-secondary"}`}>
-                                            {t('label.uniform.size_one')}:
+                                            {t('common.uniform.size')}:
                                         </Form.Label>
                                     </Col>
                                     <Col xs="8" sm="5">
@@ -156,7 +157,7 @@ const NewUniformConfigurator = ({
                                             {...register("sizeId", {
                                                 pattern: selectedType?.usingSizes ? uuidValidationPattern : undefined,
                                             })}>
-                                            <option value={"null"} disabled>{t('error.pleaseSelect')}</option>
+                                            <option value={"null"} disabled>{t('common.error.pleaseSelect')}</option>
                                             {sizeList?.uniformSizes.map(size => {
                                                 return (
                                                     <option key={size.id} value={size.id} className="text-dark">{size.name}</option>
@@ -170,7 +171,7 @@ const NewUniformConfigurator = ({
                                 <Col xs="4" sm="5" className="text-end p-0">
                                     <Form.Label
                                         className={`align-middle m-0`}>
-                                        {t('label.uniform.active.true')}:
+                                        {t('common.uniform.active.true')}:
                                     </Form.Label>
                                 </Col>
                                 <Col xs="8" sm="5">
@@ -183,7 +184,7 @@ const NewUniformConfigurator = ({
                                 <Col xs="4" sm="5" className="text-end p-0">
                                     <Form.Label
                                         className={`align-middle m-0`}>
-                                        {t('label.comment')}:
+                                        {t('common.comment')}:
                                     </Form.Label>
                                 </Col>
                                 <Col sm="7"></Col>
@@ -203,7 +204,7 @@ const NewUniformConfigurator = ({
                         <Col xs={"auto"}></Col>
                         <Col xs={"auto"}>
                             <Button variant="outline-primary" className="border-2" type="submit" data-testid="btn_continue">
-                                {t('label.nextStep')}
+                                {t('common.actions.nextStep')}
                             </Button>
                         </Col>
                     </CardFooter>

@@ -124,6 +124,7 @@ export default {
         },
         error: {
             pleaseSelect: "Please select",
+            unknown: "There has been an unexpected Error",
             number: {
                 required: "Please enter a number",
                 pattern: "Please enter a valid number",
@@ -135,6 +136,7 @@ export default {
             amount: {
                 required: "Please enter a quantity",
                 max: "The quantity must not exceed {value}",
+                notNegative: "The quantity must be a positiv value"
             },
             string: {
                 required: "Please fill in",
@@ -249,6 +251,42 @@ export default {
         'numberOfEntries#other': "{count} entries",
         noData: "No data loaded",
         header: "Uniform parts",
+    },
+    createUniform: {
+        pagination: {
+            known: "Numbers known",
+            generate: "Generate numbers",
+        },
+        header: {
+            configurator: "Configuration",
+            numberInput: "Enter numbers",
+            itemAmounts: "Number of uniform parts",
+            revalidteNumbers: "Check numbers",
+        },
+        label: {
+            add: "add",
+            amount: "Amount",
+            numberStart: "Numbers (from)",
+            until: "until",
+            continuous: "Continuous numbers",
+            continuousTooltip: {
+                line1: "For continuous numbers, consecutive numbers are searched for each size.",
+                line2: "There can still be jumps between the sizes.",
+            },
+        },
+        create: {
+            "label": "Create {count}",
+            "success#one": "One uniform part was successfully created",
+            "success#other": "{count} uniform parts were successfully created",
+            "failed#one": "The uniform part could not be created",
+            "failed#other": "The uniform parts could not be created",
+        },
+        errors: {
+            "endBiggerStart": "The start number must be smaller or equal to the end number",
+            "maxItems": "No more than 99 uniform parts can be created at the same time",
+            "minNumber": "At least one number must be generated",
+            "inUse": "The number is already assigned",
+        }
     },
     sidebar: {
         logout: "Logout",
