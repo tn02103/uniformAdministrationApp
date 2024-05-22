@@ -679,22 +679,17 @@ class StaticDataCleanup {
         await this.loader.uniformIssued();
     }
 
-    async uniformTypeConfiguration(cleanup?: () => Promise<void>) {
+    async uniform(cleanup?: () => Promise<void>) {
         await prisma.$transaction([
             this.deleteUniformIssued(),
             this.deleteDeficiency(),
         ]);
         await this.deleteUniform();
-        await this.deleteUniformGeneration();
-        await this.deleteUniformType();
 
         if (cleanup) {
             await cleanup();
         }
 
-
-        await this.loader.uniformTypes();
-        await this.loader.uniformGenerations();
         await this.loader.uniform();
         await this.loader.deficiencies();
         await Promise.all([
@@ -702,6 +697,20 @@ class StaticDataCleanup {
             this.loader.deficienciesCadet(),
             this.loader.deficienciesUniform(),
         ]);
+    }
+
+    async uniformTypeConfiguration(cleanup?: () => Promise<void>) {
+        await this.uniform(async () => {
+            await this.deleteUniformGeneration();
+            await this.deleteUniformType();
+            
+            if (cleanup) {
+                await cleanup();
+            }
+            
+            await this.loader.uniformTypes();
+            await this.loader.uniformGenerations();
+        });
     }
 
     async uniformSizeConfiguration() {

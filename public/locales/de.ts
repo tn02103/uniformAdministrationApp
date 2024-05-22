@@ -362,6 +362,8 @@ export default {
             error: {
                 changePassword: "Das Ändern des Passworts ist fehlgeschlagen",
             },
+            saved: "Nutzer erfolgreich aktualisiert",
+            created: "Nutzer erfolgreich erstellt",
         },
     },
     modals: {

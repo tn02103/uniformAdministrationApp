@@ -6,7 +6,7 @@ import { useI18n, useScopedI18n } from "@/lib/locales/client";
 export type ChangeUserPasswordModalPropType = {
     nameOfUser?: string,
     onClose: () => void,
-    save: (password: string) => void,
+    save: (password: string) => Promise<any>,
 }
 type FormType = {
     password: string;
@@ -18,10 +18,9 @@ const ChangeUserPasswordModal = ({ nameOfUser, onClose, save }: ChangeUserPasswo
 
     const { register, watch, handleSubmit, formState: { errors }, getFieldState } = useForm<FormType>({ mode: "onTouched" });
 
-    function onSubmit(data: FormType) {
+    async function onSubmit(data: FormType) {
         if (data.password == data.confirmationPassword) {
-            onClose();
-            save(data.password);
+            save(data.password).then(onClose);
         }
     }
 

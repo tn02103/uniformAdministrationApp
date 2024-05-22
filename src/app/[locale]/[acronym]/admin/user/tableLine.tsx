@@ -27,27 +27,31 @@ export default function UserAdminTableRow({
 
     const formId = `user_${user ? user.id : "new"}`;
     const { register, handleSubmit, reset, formState: { errors } } = useForm<User>({ defaultValues: user, mode: "onChange" });
-    const mobileForm = useForm<User>();
-
+    const mobileForm = useForm<User>({ defaultValues: user, mode: "onChange" });
 
     const [editable, setEditable] = useState(!user);
 
-
     async function handleSave(data: User) {
         data.active = (String(data.active) === "true");
-        
+
         if (!user) return handleCreate(data);
-        updateUser(data).catch((error) => {
-            console.error(error);
-            toast.error(t('common.error.actions.save'));
-        });
+        updateUser(data)
+            .then(() => {
+                toast.success(t('admin.user.saved'))
+            }).catch((error) => {
+                console.error(error);
+                toast.error(t('common.error.actions.save'));
+            });
     }
     async function handleCreate(data: User) {
         modal?.changeUserPasswordModal(
-            (password: string) => createUser(data, password).catch((error) => {
-                console.error(error);
-                toast.error(t('common.error.actions.save'));
-            }),
+            (password: string) => createUser(data, password)
+                .then(() => {
+                    toast.success(t('admin.user.created'));
+                }).catch((error) => {
+                    console.error(error);
+                    toast.error(t('common.error.actions.save'));
+                })
         );
     }
 
@@ -59,7 +63,8 @@ export default function UserAdminTableRow({
                 console.error(error);
                 toast.error(t('admin.user.error.changePassword'));
             }),
-        )
+            user.name,
+        );
     }
     async function handleDelete() {
         if (!user) return;
@@ -76,7 +81,7 @@ export default function UserAdminTableRow({
     }
 
     return (
-        <tr>
+        <tr data-testid={`div_user_${user ? user.id : "new"}`}>
             <td className={`col-3 col-md-2 ${editable ? "d-none d-md-table-cell" : ""}`}>
                 <UsernameControl
                     formId={formId}
@@ -85,7 +90,8 @@ export default function UserAdminTableRow({
                     plaintext={!editable}
                     register={register}
                     tError={tError}
-                    errors={errors} />
+                    errors={errors}
+                    mobile={false} />
             </td>
             <td className={`col-8 col-sm-5 col-md-3 ${editable ? "d-none d-md-table-cell" : ""}`}>
                 <NameControl
@@ -93,20 +99,25 @@ export default function UserAdminTableRow({
                     editable={editable}
                     register={register}
                     tError={tError}
-                    errors={errors} />
+                    errors={errors}
+                    mobile={false} />
             </td>
             <td className={`col-2 col-md-3 ${editable ? "d-none d-md-table-cell" : "d-none d-md-table-cell"}`}>
                 {(!editable && user)
-                    ? <div className="my-1">{t(`common.user.authRole.${user.role as 1 | 2 | 3 | 4}`)}</div>
+                    ? <div className="my-1" data-testid="div_role">
+                        {t(`common.user.authRole.${user.role as 1 | 2 | 3 | 4}`)}
+                    </div>
                     : <RoleSelect
                         formId={formId}
                         register={register}
                         t={t} />
                 }
             </td>
-            <td className={`d-none col-2 ${editable ? "d-md-table-cell" : "d-sm-table-cell"}`}>
+            <td className={`d-none col-2 ${editable ? "d-md-table-cell" : "d-sm-table-cell"}`} >
                 {(!editable && user)
-                    ? <div className="my-1">{t(`common.user.active.${user.active ? "true" : "false"}`)}</div>
+                    ? <div className="my-1" data-testid="div_active">
+                        {t(`common.user.active.${user.active ? "true" : "false"}`)}
+                    </div>
                     : <ActiveSelect
                         formId={formId}
                         register={register}
@@ -129,7 +140,7 @@ export default function UserAdminTableRow({
                         </Button>
                         <Button
                             size="sm"
-                            type="submit"
+                            type="button"
                             className="border-0"
                             variant="outline-danger"
                             data-testid="btn_cancel"
@@ -175,7 +186,7 @@ export default function UserAdminTableRow({
                     </Dropdown>
                 }
             </td>
-            <td colSpan={5} className={editable ? "d-md-none" : "d-none"}>
+            <td data-testid="div_mobile" colSpan={5} className={editable ? "d-md-none" : "d-none"}>
                 <form id={formId + "_mobil"} onSubmit={mobileForm.handleSubmit(handleSave)}>
                     <FormGroup>
                         <FormLabel className="ms-1 mb-0">{t('admin.user.header.username')}</FormLabel>
@@ -186,7 +197,8 @@ export default function UserAdminTableRow({
                             disabled={!editable || !!user}
                             register={mobileForm.register}
                             tError={tError}
-                            errors={mobileForm.formState.errors} />
+                            errors={mobileForm.formState.errors}
+                            mobile={true} />
                     </FormGroup>
                     <FormGroup>
                         <FormLabel className="ms-1 mt-1 mb-0">{t('admin.user.header.name')}</FormLabel>
@@ -195,7 +207,8 @@ export default function UserAdminTableRow({
                             editable={editable}
                             register={mobileForm.register}
                             tError={tError}
-                            errors={mobileForm.formState.errors} />
+                            errors={mobileForm.formState.errors}
+                            mobile={true} />
                     </FormGroup>
                     <FormGroup>
                         <FormLabel className="ms-1 mt-1 mb-0">{t('admin.user.header.role')}</FormLabel>
@@ -243,7 +256,6 @@ export default function UserAdminTableRow({
     );
 }
 
-
 const UsernameControl = ({
     userList,
     formId,
@@ -251,7 +263,8 @@ const UsernameControl = ({
     plaintext,
     register,
     tError,
-    errors
+    errors,
+    mobile,
 }: {
     userList: User[];
     formId: string;
@@ -260,6 +273,7 @@ const UsernameControl = ({
     register: UseFormRegister<User>;
     tError: any;
     errors: FieldErrors<User>;
+    mobile: boolean;
 }) => (
     <>
         <FormControl
@@ -282,7 +296,7 @@ const UsernameControl = ({
                 validate: (value) => userList.every(u => u.username !== value) || tError('user.username.duplicate'),
             })}
         />
-        <div data-testid="err_username" className="text-danger fs-7">
+        <div data-testid={`err_username${mobile ? "_mobile" : ""}`} className="text-danger fs-7">
             {errors.username?.message}
         </div>
     </>
@@ -293,13 +307,15 @@ const NameControl = ({
     editable,
     register,
     tError,
-    errors
+    errors,
+    mobile,
 }: {
     formId: string;
     editable: boolean;
     register: UseFormRegister<User>;
     tError: any;
     errors: FieldErrors<User>;
+    mobile: boolean;
 }) => (
     <>
         <FormControl
@@ -321,7 +337,7 @@ const NameControl = ({
                 },
             })}
         />
-        <div data-testid="err_username" className="text-danger fs-7">
+        <div data-testid={`err_name${mobile ? "_mobile" : ""}`} className="text-danger fs-7">
             {errors.name?.message}
         </div>
     </>

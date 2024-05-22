@@ -362,6 +362,8 @@ export default {
             error: {
                 changePassword: "Saving of the password failed",
             },
+            saved: "User updated successfuly",
+            created: "User created successfuly",
         },
     },
     modals: {

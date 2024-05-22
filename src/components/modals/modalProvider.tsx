@@ -21,7 +21,7 @@ type ModalContextType = {
     issueMaterialModal: (cadetId: string, materialGroup: MaterialGroup, issuedMaterialList: CadetMaterial[], oldMaterial?: CadetMaterial) => void,
     uniformItemDetailModal: (uniformId: string, uniformType: UniformType, ownerId: string | null) => void,
     editGenerationModal: (generation: UniformGeneration | null, uniformType: UniformType, save: (data: UniformGeneration) => void) => void,
-    changeUserPasswordModal: (save: (p: string) => void, nameOfUser?: string) => void,
+    changeUserPasswordModal: (save: (p: string) => Promise<any>, nameOfUser?: string) => void,
 }
 
 type ModalCapsule = {
@@ -190,7 +190,7 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         }
         showModal("EditGenerationModal", props);
     }, []);
-    const changeUserPasswordModal = useCallback((save: (password: string) => void, nameOfUser?: string) => {
+    const changeUserPasswordModal = useCallback((save: (password: string) => Promise<any>, nameOfUser?: string) => {
         const props: ChangeUserPasswordModalPropType = {
             nameOfUser,
             onClose,
