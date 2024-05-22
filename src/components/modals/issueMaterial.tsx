@@ -70,6 +70,7 @@ const IssueMaterialModal = ({ cadetId, materialGroup, issuedMaterialList, oldMat
                             <Form.Label>{t('common.material.amountIssued')}:</Form.Label>
                             <Form.Control
                                 isInvalid={!!errors.issued}
+                                inputMode="numeric"
                                 {...register(
                                     "issued",
                                     {

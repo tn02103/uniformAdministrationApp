@@ -63,6 +63,7 @@ export default function Step1({
                                         <Form.Control
                                             isInvalid={!!errors.values?.amount}
                                             defaultValue={0}
+                                            inputMode="numeric"
                                             {...register('values.amount', {
                                                 valueAsNumber: true,
                                                 min: {
@@ -87,6 +88,7 @@ export default function Step1({
                                             <Form.Control
                                                 isInvalid={!!errors.values?.[size.id]}
                                                 defaultValue={0}
+                                                inputMode="numeric"
                                                 {...register(`values.${size.id}`, {
                                                     valueAsNumber: true,
                                                     min: {

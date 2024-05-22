@@ -71,7 +71,7 @@ export default function SearchFilter({ search }: { search: (data: { number: numb
             }
             <Row>
                 <Col className="pe-0">
-                    <Form.Control {...form.register('search')} />
+                    <Form.Control {...form.register('search')} inputMode="search" />
                 </Col>
                 <Col xs={"auto"} className="p-0 me-3">
                     <Button type="submit" variant="outline-seccondary" data-testid="btn_search_submit">

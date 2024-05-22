@@ -125,6 +125,7 @@ export default function UniformConfigTypeDetails({
                                 <FormControl
                                     className="w-25"
                                     isInvalid={!!(errors.issuedDefault)}
+                                    inputMode="numeric"
                                     {...register("issuedDefault", {
                                         valueAsNumber: true,
                                         required: {

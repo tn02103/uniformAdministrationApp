@@ -82,6 +82,7 @@ const NumberInput = ({ stepBack, createItems, uniformTypeId }: PropType) => {
                             <Form.Label>{t('createUniform.label.numberStart')}:</Form.Label>
                             <Form.Control
                                 isInvalid={!!errors.numberStart}
+                                inputMode="numeric"
                                 {...register("numberStart", {
                                     required: {
                                         value: true,
@@ -106,6 +107,7 @@ const NumberInput = ({ stepBack, createItems, uniformTypeId }: PropType) => {
                             <Form.Label>{t('createUniform.label.until')}:</Form.Label>
                             <Form.Control
                                 isInvalid={!!errors.numberEnd}
+                                inputMode="numeric"
                                 {...register("numberEnd", {
                                     min: {
                                         value: 1,

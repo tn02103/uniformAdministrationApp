@@ -1,14 +1,14 @@
 "use client";
-import { ReactNode, createContext, useCallback, useContext, useState } from "react";
-import MessageModal, { MessageModalOption, MessageModalPropType, MessageModalType } from "./messageModal";
 import { useI18n } from "@/lib/locales/client";
-import SimpleFormModal, { SimpleFormModalProps } from "./simpleFormModal";
 import { CadetMaterial, MaterialGroup } from "@/types/globalMaterialTypes";
-import IssueMaterialModal, { IssueMaterialModalProps } from "./issueMaterial";
 import { UniformGeneration, UniformType } from "@/types/globalUniformTypes";
-import UniformItemDetailModal, { UIDModalProps } from "./uniformItemDetail";
+import { ReactNode, createContext, useCallback, useContext, useState } from "react";
 import DangerConfirmationModal, { DangerConfirmationModalPropType } from "./dangerConfirmationModal";
 import EditGenerationModal, { EditGenerationModalPropType } from "./editGenerationModal";
+import IssueMaterialModal, { IssueMaterialModalProps } from "./issueMaterial";
+import MessageModal, { MessageModalOption, MessageModalPropType, MessageModalType } from "./messageModal";
+import SimpleFormModal, { SimpleFormModalProps } from "./simpleFormModal";
+import UniformItemDetailModal, { UIDModalProps } from "./uniformItemDetail";
 import ChangeUserPasswordModal, { ChangeUserPasswordModalPropType } from "./userPassword";
 
 type ModalContextType = {
@@ -131,14 +131,11 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         setQueue(prevState => [...prevState, modal]);
     }, []);
 
-    const simpleFormModal = useCallback(({ elementLabel, elementValidation, header, save, abort, defaultValue }: SimpleFormModalProps) => {
+    const simpleFormModal = useCallback((props: SimpleFormModalProps) => {
         showModal("SimpleFormModal", {
-            save: async (data: { input: string | number }) => { onClose(); await save(data); },
-            abort: () => { onClose(); abort(); },
-            elementLabel,
-            elementValidation,
-            header,
-            defaultValue
+            ...props,
+            save: async (data: { input: string | number }) => { onClose(); await props.save(data); },
+            abort: () => { onClose(); props.abort(); },
         });
     }, []);
 
