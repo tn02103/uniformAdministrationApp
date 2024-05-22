@@ -79,7 +79,6 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                         </div>
 
                         <div className="d-md-none" style={{ height: "20px" }}>
-
                         </div>
                         <ul className="flex-column mb-auto w-100 mt-5 px-2  overflow-y-auto">
                             <NavLink
@@ -109,7 +108,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                 <ul>
                                     <NavLink
                                         text={t('sidebar.links.create.cadet')}
-                                        href="/cadet/null"
+                                        href="/app/cadet/null"
                                         isRoute={pathname === "/cadet/null"}
                                         level={2}
                                         collapsed={collapsed}
@@ -117,7 +116,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                         testId="lnk_createCadet" />
                                     <NavLink
                                         text={t('sidebar.links.create.uniform')}
-                                        href="/uniform/new"
+                                        href="/app/uniform/new"
                                         isRoute={pathname === "/uniform/new"}
                                         level={2}
                                         collapsed={collapsed}

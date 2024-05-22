@@ -22,7 +22,7 @@ export async function middleware(request: NextRequest) {
         if (!session.user) {
             return NextResponse.redirect(new URL('/login', request.url));
         }
-        return NextResponse.redirect(new URL('/app/cadet', request.url));
+        return NextResponse.redirect(new URL('/app', request.url));
     }
 
     const pathnameParts = request.nextUrl.pathname.split("/");

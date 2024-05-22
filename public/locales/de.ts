@@ -275,7 +275,7 @@ export default {
             },
         },
         create: {
-            "label": "{count} anlegen",
+            "label": "{count} Anlegen",
             "success#one": "Ein Uniformteil wurden erfolgreich angelegt",
             "success#other": "{count} Uniformteile wurden erfolgreich angelegt",
             "failed#one": "Das Uniformteil konnte nicht angelgt werden",
