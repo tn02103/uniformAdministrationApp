@@ -134,7 +134,7 @@ export type UniformFormData = {
 export type UniformNumbersSizeMap = {
     sizeId: string;
     numbers: number[];
-}
+}[]
 
 export type IssuedEntryType = {
     dateIssued: Date;
