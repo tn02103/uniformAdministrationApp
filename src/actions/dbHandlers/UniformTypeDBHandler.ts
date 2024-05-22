@@ -1,12 +1,32 @@
 import { prisma } from "@/lib/db";
 import { uniformTypeArgs } from "@/types/globalUniformTypes";
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 export class UniformTypeDBHandler {
     getType = async (id: string, client?: PrismaClient) => (client ?? prisma).uniformType.findUniqueOrThrow({
         where: { id, recdelete: null },
         ...uniformTypeArgs,
     });
+
+    getCompleteTypeWithSizeListAndSizes = async (id: string, client?: Prisma.TransactionClient) =>
+        (client ?? prisma).uniformType.findFirstOrThrow({
+            where: { id, recdelete: null, },
+            include: {
+                uniformGenerationList: {
+                    where: {
+                        recdelete: null
+                    },
+                    include: {
+                        uniformSizeList: {
+                            include: { uniformSizes: true }
+                        },
+                    },
+                },
+                defaultSizeList: {
+                    include: { uniformSizes: true }
+                },
+            }
+        });
 
     getTypeList = async (fk_assosiation: string, client?: PrismaClient) => (client ?? prisma).uniformType.findMany({
         where: { fk_assosiation, recdelete: null },

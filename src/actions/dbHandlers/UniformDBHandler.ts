@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { CadetUniformMap } from "@/types/globalCadetTypes";
-import { uniformArgs, uniformWithOwnerArgs } from "@/types/globalUniformTypes";
+import { UniformNumbersSizeMap, uniformArgs, uniformWithOwnerArgs } from "@/types/globalUniformTypes";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { isToday } from "date-fns";
 
@@ -32,7 +32,7 @@ export class UniformDBHandler {
             }, {}
         ));
 
-    getListWithOwner = async (fk_uniformType: string, hiddenGenerations: string[], hiddenSizes: string[], sqlFilter: object, sortOrder: Prisma.UniformOrderByWithRelationInput[] , orderByOwner: boolean, asc: boolean) => prisma.uniform.findMany({
+    getListWithOwner = async (fk_uniformType: string, hiddenGenerations: string[], hiddenSizes: string[], sqlFilter: object, sortOrder: Prisma.UniformOrderByWithRelationInput[], orderByOwner: boolean, asc: boolean) => prisma.uniform.findMany({
         ...uniformWithOwnerArgs,
         where: {
             ...sqlFilter,
@@ -85,8 +85,8 @@ export class UniformDBHandler {
             }
         });
 
-    getUniformById = async (id: string, client?: PrismaClient) => 
-        (client?? prisma).uniform.findUnique({
+    getUniformById = async (id: string, client?: PrismaClient) =>
+        (client ?? prisma).uniform.findUnique({
             where: { id },
             ...uniformArgs,
         });
@@ -130,6 +130,21 @@ export class UniformDBHandler {
                     }
                 }
             }
+        });
+
+    createUniformItems = (numberMap: UniformNumbersSizeMap, data: { uniformTypeId: string, generationId?: string, comment: string, active: boolean }, client: Prisma.TransactionClient) =>
+        client.uniform.createMany({
+            data: numberMap.reduce((arr: Prisma.UniformCreateManyInput[], map) => [
+                ...arr,
+                ...map.numbers.map(number => ({
+                    number: number,
+                    fk_uniformType: data.uniformTypeId,
+                    fk_generation: data.generationId,
+                    fk_size: (map.sizeId !== "amount") ? map.sizeId : null,
+                    comment: data.comment,
+                    active: data.active,
+                })),
+            ], []),
         });
 
     issue = (fk_uniform: string, fk_cadet: string, client?: PrismaClient) =>
