@@ -13,7 +13,7 @@ export default class GenerateStep1Component {
     readonly btn_generate: Locator;
 
     txt_amount_size(sizeId: string) {
-        return this.div_step1.locator(`input[name="${sizeId}"]`);
+        return this.div_step1.locator(`input[name="values.${sizeId}"]`);
     }
     err_amount_size(sizeId: string) {
         return this.div_step1.getByTestId(`err_${sizeId}`);
@@ -22,7 +22,7 @@ export default class GenerateStep1Component {
         this.page = page;
         this.div_step1 = page.locator('div[id="step1"]');
         this.sel_continuous = this.div_step1.locator('input[name="continuous"]');
-        this.txt_amount_default = this.div_step1.locator('input[name="amount"]');
+        this.txt_amount_default = this.div_step1.locator('input[name="values.amount"]');
         this.err_amount_default = this.div_step1.getByTestId('err_amount');
         this.err_itemCount = this.div_step1.getByTestId('err_itemCount');
 
