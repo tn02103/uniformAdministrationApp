@@ -65,6 +65,7 @@ test('validate create', async ({ page, components: { generationComponent, editGe
     const name = 'testGenerationUnique';
 
     await test.step('create generation & validate ui', async () => {
+        await expect(generationComponent.btn_create).toBeVisible();
         await generationComponent.btn_create.click();
         await editGenerationPopup.txt_name.fill(name);
         await editGenerationPopup.sel_sizeList.selectOption(ids.sizelistIds[1])

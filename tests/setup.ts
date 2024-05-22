@@ -38,9 +38,12 @@ export type authenticatedFixture = { page: Page, staticData: StaticData }
 
 export const dataFixture = setup.extend<{}, { staticData: StaticData }>({
     staticData: [async ({ }, use) => {
-        const i = Number(process.env.TEST_PARALLEL_INDEX ?? 0);
+        const i = process.env.TEST_PARALLEL_INDEX;
+        if (!i) throw new Error("Could not get TEST_PARALLEL_INDEX: " + i);
 
-        while (i >= StaticDataIds.length) {
+        const index = Number(i);
+
+        while (index >= StaticDataIds.length) {
             const ids: StaticDataIdType[] = StaticDataIds;
             ids.push({
                 fk_assosiation: uuid(),
@@ -70,11 +73,11 @@ export const dataFixture = setup.extend<{}, { staticData: StaticData }>({
             await fs.writeFileSync('tests/testData/staticDataIds.json', JSON.stringify(ids, null, 4));
         }
 
-        const staticData = new StaticData(i);
+        const staticData = new StaticData(index);
         await staticData.resetData();
 
         await use(staticData);
-        if (i > 0) {
+        if (index > 0) {
             await staticData.cleanup.removeAssosiation();
         }
     }, { scope: "worker" }],
