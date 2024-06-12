@@ -1,10 +1,11 @@
 "use client";
 import { useI18n } from "@/lib/locales/client";
-import { CadetMaterial, MaterialGroup } from "@/types/globalMaterialTypes";
+import { AdministrationMaterial, CadetMaterial, Material, MaterialGroup } from "@/types/globalMaterialTypes";
 import { UniformGeneration, UniformType } from "@/types/globalUniformTypes";
 import { ReactNode, createContext, useCallback, useContext, useState } from "react";
 import DangerConfirmationModal, { DangerConfirmationModalPropType } from "./dangerConfirmationModal";
 import EditGenerationModal, { EditGenerationModalPropType } from "./editGenerationModal";
+import EditMaterialTypeModal, { EditMaterialTypeModalPropType } from "./editMaterialType";
 import IssueMaterialModal, { IssueMaterialModalProps } from "./issueMaterial";
 import MessageModal, { MessageModalOption, MessageModalPropType, MessageModalType } from "./messageModal";
 import SimpleFormModal, { SimpleFormModalProps } from "./simpleFormModal";
@@ -22,6 +23,7 @@ type ModalContextType = {
     uniformItemDetailModal: (uniformId: string, uniformType: UniformType, ownerId: string | null) => void,
     editGenerationModal: (generation: UniformGeneration | null, uniformType: UniformType, save: (data: UniformGeneration) => void) => void,
     changeUserPasswordModal: (save: (p: string) => Promise<any>, nameOfUser?: string) => void,
+    editMaterialTypeModal: (groupName: string, typeList: Material[], groupId: string, type?: AdministrationMaterial) => void,
 }
 
 type ModalCapsule = {
@@ -173,6 +175,18 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         }
         showModal("EditGenerationModal", props);
     }, []);
+
+    const editMaterialTypeModal = useCallback((groupName: string, typeList: Material[], groupId: string, type?: AdministrationMaterial) => {
+        const props: EditMaterialTypeModalPropType = {
+            type,
+            groupName,
+            groupId,
+            typeList,
+            onClose: onClose,
+        }
+        showModal("EditMaterialTypeModal", props);
+    }, []);
+
     const changeUserPasswordModal = useCallback((save: (password: string) => Promise<any>, nameOfUser?: string) => {
         const props: ChangeUserPasswordModalPropType = {
             nameOfUser,
@@ -193,8 +207,8 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             dangerConfirmationModal,
             editGenerationModal,
             simpleErrorModal,
-            /*issueUniformModal,
             editMaterialTypeModal,
+            /*issueUniformModal,
             inspectionReviewPopup,*/
             changeUserPasswordModal,
             issueMaterialModal,
@@ -207,8 +221,8 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         dangerConfirmationModal,
         editGenerationModal,
         simpleErrorModal,
-        /* issueUniformModal,
         editMaterialTypeModal,
+        /* issueUniformModal,
          inspectionReviewPopup,*/
         changeUserPasswordModal,
         issueMaterialModal,
@@ -221,10 +235,10 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
                 return <DangerConfirmationModal {...modal.props} onClose={onClose} />
             case "EditGenerationModal":
                 return <EditGenerationModal {...modal.props} />
+            case "EditMaterialTypeModal":
+                return <EditMaterialTypeModal {...modal.props} />
             /*      case "IssueUniformModal":
                       return <IssueUniformModal {...modal.props} />
-                  case "EditMaterialTypeModal":
-                      return <EditMaterialTypeModal {...modal.props} />
                   case "InspectionReviewPopup":
                       return <InspectionReviewPopup {...modal.props} />*/
             case "ChangeUserPasswordModal":
