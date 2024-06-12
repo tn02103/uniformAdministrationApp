@@ -385,6 +385,33 @@ export default {
                 }
             },
         },
+        material: {
+            header: {
+                page: "Material Configuration",
+                groupList: "Material Groups",
+                editMaterial: "Edit Material \"{group}-{type}\"",
+                createMaterial: "Create new \"{group}\"",
+            },
+            delete: {
+                group: {
+                    header: "Delete Material Group \"{group}\"",
+                    message: "Should the Material Group \"{group}\" really be deleted? All information related to this Material Group will be lost!",
+                    confirmationText: "MaterialGroup_{group}",
+                },
+                material: {
+                    header: "Delete Material \"{group} - {type}\"",
+                    message: "Should the Material Type \"{type}\" of the Group \"{group}\" really be deleted? All data associated with the Material Type will be irretrievably lost",
+                    confirmationText: "Material_{group}-{type}",
+                },
+            },
+            error: {
+                missingTypes: "No type is available for the Material Group {group}! At least one type is required for each group!",
+                createGroup: "Creating the Material Group has failed",
+                groupNameDuplicate: "The group name is already taken",
+                materialNameDuplicate: "The name is already used by another material of the group",
+                maxIssuedDefault: "The amount of default issued materials must not be greater than {value}", 
+            },
+        },
         user: {
             header: {
                 page: "User overview",

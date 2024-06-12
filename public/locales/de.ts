@@ -381,8 +381,35 @@ export default {
                 },
                 deleteFailure: {
                     header: "Die Größenliste kann nicht gelöscht werden",
-                    message: "Die Größenliste kann nicht gelöscht werden, da sie von dem {entity} {name} noch genutzt wird."
-                }
+                    message: "Die Größenliste kann nicht gelöscht werden, da sie von dem {entity} {name} noch genutzt wird.",
+                },
+            },
+        },
+        material: {
+            header: {
+                page: "Material-Konfiguration",
+                groupList: "Materialgruppen",
+                editMaterial: "Material \"{group}-{type}\" bearbeiten",
+                createMaterial: "Neue(s) \"{group}\" anlegen",
+            },
+            delete: {
+                group: {
+                    header: "Materialgruppe \"{group}\" Löschen",
+                    message: "Soll die MaterialGruppe \"{group}\" wirklich gelöscht werden? Hierbei gehen alle Informationen in Bezug auf diese MaterialGruppe verloren!",
+                    confirmationText: "Materialgruppe_{group}",
+                },
+                material: {
+                    header: "Material \"{group} - {type}\" Löschen",
+                    message: "Soll der MaterialTyp \"{type}\" der Gruppe \"{group}\" wirklich gelöscht werden? Hierbei gehen alle Daten in Verbindung mit dem MaterialTyp unwiederruflich verloren",
+                    confirmationText: "Material_{group}-{type}",
+                },
+            },
+            error: {
+                missingTypes: "Für die MaterialGruppe {group} ist kein Typ vorhanden! Für jede Gruppe wird mind. ein Typ benötigt!",
+                createGroup: "Das Erstellen der Materialgruppe ist fehlgeschlagen",
+                groupNameDuplicate: "Der Gruppename ist bereits vergeben",
+                materialNameDuplicate: "Der Name wird bereits von einem anderen Material der Gruppe verwendet",
+                maxIssuedDefault: "Die Menge standardmäßiger ausgegebenen Materialien darf nicht größer {value} sein", 
             },
         },
         user: {
