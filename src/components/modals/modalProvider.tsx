@@ -16,7 +16,7 @@ type ModalContextType = {
     simpleYesNoModal: (props: SimpleYesNoPropType) => void,
     simpleWarningModal: (props: SimpleYesNoPropType) => void,
     simpleErrorModal: (props: SimpleErrorPropType) => void,
-    dangerConfirmationModal: (header: string, message: string | ReactNode, confirmationText: string, dangerOption: string, dangerFunction: () => void, cancelOption?: string, cancelFunction?: () => void) => void,
+    dangerConfirmationModal: (props: DangerConfirmationModalPropType) => void,
     simpleFormModal: (props: SimpleFormModalProps) => void,
     issueMaterialModal: (cadetId: string, materialGroup: MaterialGroup, issuedMaterialList: CadetMaterial[], oldMaterial?: CadetMaterial) => void,
     uniformItemDetailModal: (uniformId: string, uniformType: UniformType, ownerId: string | null) => void,
@@ -139,21 +139,7 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         });
     }, []);
 
-    const dangerConfirmationModal = useCallback((header: string, message: string | ReactNode, confirmationText: string, dangerOption: string, dangerFunction: () => void, cancelOption?: string, cancelFunction?: () => void) => {
-        const props: DangerConfirmationModalPropType = {
-            header,
-            message,
-            confirmationText,
-            cancelOption: {
-                option: cancelOption ?? t('common.actions.cancel'),
-                function: cancelFunction,
-            },
-            dangerOption: {
-                option: dangerOption,
-                function: dangerFunction,
-            },
-            onClose,
-        }
+    const dangerConfirmationModal = useCallback((props: DangerConfirmationModalPropType) => {
         showModal("DangerConfirmationModal", props);
     }, []);
 

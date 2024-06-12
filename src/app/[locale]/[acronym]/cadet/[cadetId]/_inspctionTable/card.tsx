@@ -3,7 +3,6 @@
 import { saveCadetInspection } from "@/actions/controllers/CadetInspectionController";
 import { getCadetMaterialList } from "@/actions/controllers/CadetMaterialController";
 import { getDeficiencyTypeList } from "@/actions/controllers/InspectionController";
-import { getMaterialGroupIdByTypeId } from "@/actions/material";
 import { useCadetMaterialDescriptionList, useCadetUniformComplete } from "@/dataFetcher/cadet";
 import { useCadetInspection, useUnresolvedDeficienciesByCadet } from "@/dataFetcher/cadetInspection";
 import { useDeficiencyTypes } from "@/dataFetcher/deficiency";
@@ -22,6 +21,7 @@ import OldDeficiencyRow from "./oldDeficiencyRow";
 import CadetInspectionStep1 from "./step1";
 import CadetInspectionStep2 from "./step2";
 import { useI18n } from "@/lib/locales/client";
+import { getMaterialGroupIdByTypeId } from "@/actions/controllers/MaterialController";
 
 export type NewDeficiencyFormType = Deficiency & {
     fk_uniform?: string;
