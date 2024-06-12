@@ -1,4 +1,4 @@
-import { getMaterialConfiguration } from "@/actions/material";
+import { getMaterialConfiguration } from "@/actions/controllers/MaterialController";
 import useSWR from "swr";
 
 
