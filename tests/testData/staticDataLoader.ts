@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { Assosiation, Cadet, Prisma, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@prisma/client";
+import { Assosiation, Cadet, Material, MaterialGroup, Prisma, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@prisma/client";
 import bcrypt from 'bcrypt';
 import { StaticDataIdType } from "../setup";
 import StaticDataIds from "./staticDataIds.json";
@@ -55,8 +55,8 @@ class StaticDataGetter {
     readonly uniformList: Uniform[];
     readonly uniformIssedEntries: Prisma.UniformIssuedCreateManyInput[];
 
-    readonly materialGroups: Prisma.MaterialGroupCreateManyInput[];
-    readonly materialTypes: Prisma.MaterialCreateManyInput[];
+    readonly materialGroups: MaterialGroup[];
+    readonly materialTypes: Material[];
     readonly materialIssuedEntries: Prisma.MaterialIssuedCreateManyInput[];
 
     readonly deficiencyTypes: Prisma.DeficiencyTypeCreateManyInput[];
@@ -703,11 +703,11 @@ class StaticDataCleanup {
         await this.uniform(async () => {
             await this.deleteUniformGeneration();
             await this.deleteUniformType();
-            
+
             if (cleanup) {
                 await cleanup();
             }
-            
+
             await this.loader.uniformTypes();
             await this.loader.uniformGenerations();
         });
@@ -722,6 +722,20 @@ class StaticDataCleanup {
             await this.loader.uniformSizelists();
             await this.loader.connectSizes();
         });
+    }
+
+    async materialConfig() {
+        await this.deleteMaterialIssued();
+        await this.deleteDeficiency();
+        await this.deleteMaterial();
+        await this.deleteMaterialGroup();
+        
+        await this.loader.materialGroups();
+        await this.loader.material();
+        await this.loader.materialIssued();
+        await this.loader.deficiencies();
+        await this.loader.deficienciesCadet();
+        await this.loader.deficienciesUniform();
     }
 
     async materialIssued() {

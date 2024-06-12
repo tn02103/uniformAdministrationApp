@@ -89,8 +89,8 @@ export const uniformOrderByTests: ValidationTestType[] = [
     { testValue: 12, valid: false },
 ]
 
-type numberValidationTestType = (props: { max?: number, min?: number, strict?: boolean, testEmpty?: boolean }) => ValidationTestType[]
-export const numberValidationTests: numberValidationTestType = ({ max, min, strict, testEmpty }) => {
+type numberValidationTestType = (props: { max?: number, min?: number, strict?: boolean, testEmpty?: boolean, emptyValid?: boolean }) => ValidationTestType[]
+export const numberValidationTests: numberValidationTestType = ({ max, min, strict, testEmpty, emptyValid }) => {
     const tests = [
         { testValue: 1, valid: true },
         { testValue: '2', valid: !strict },
@@ -109,7 +109,7 @@ export const numberValidationTests: numberValidationTestType = ({ max, min, stri
         tests.push({ testValue: -3, valid: true });
     }
     if (testEmpty) {
-        tests.push({ testValue: '', valid: false });
+        tests.push({ testValue: '', valid: !!emptyValid });
     }
 
     return tests;
