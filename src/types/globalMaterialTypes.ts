@@ -23,14 +23,14 @@ export const dbCadetMaterialArgs = Prisma.validator<Prisma.MaterialFindManyArgs>
         fk_materialGroup: true,
     }
 });
-export const materialTypeArgs = Prisma.validator<Prisma.MaterialArgs>()({
+export const materialTypeArgs = Prisma.validator<Prisma.MaterialFindManyArgs>()({
     select: {
         id: true,
         typename: true,
         sortOrder: true,
     }
 });
-export const materialGroupArgs = Prisma.validator<Prisma.MaterialGroupArgs>()({
+export const materialGroupArgs = Prisma.validator<Prisma.MaterialGroupFindManyArgs>()({
     select: {
         id: true,
         description: true,
