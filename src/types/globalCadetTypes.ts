@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import { CadetMaterial } from "./globalMaterialTypes";
 import { Uniform } from "./globalUniformTypes";
 
-export const cadetArgs = Prisma.validator<Prisma.CadetArgs>()({
+export const cadetArgs = Prisma.validator<Prisma.CadetFindManyArgs>()({
     select: {
         id: true,
         firstname: true,

@@ -8,7 +8,7 @@ export default async function Layout({
 }) {
 
     const { user } = await getIronSession();
-    if (!user || user.role < AuthRole.materialManager) {
+    if (!user || user.role < AuthRole.admin) {
         // TODO Created Not Authorized 
         return (
             // TODO rewrite to 403 Page

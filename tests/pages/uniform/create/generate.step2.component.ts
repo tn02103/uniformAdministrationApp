@@ -11,7 +11,7 @@ class GenerateStep2Component {
     div_size(sizeId: string) {
         return this.div_step2.getByTestId(`div_size_${sizeId}`);
     }
-    chk_size_number(sizeId: string, number: number) {
+    chk_size_number(sizeId: string, number: number | string) {
         return this.div_size(sizeId).locator(`input[name="${number}"]`);
     }
 

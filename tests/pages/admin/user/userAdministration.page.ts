@@ -10,18 +10,43 @@ export class UserAdministrationPage {
     div_user(userId: string) {
         return this.page.getByTestId(`div_user_${userId}`);
     }
-    div_user_username(userId: string) {
-        return this.div_user(userId).getByTestId('div_username');
+
+    txt_user_username(userId: string) {
+        return this.div_user(userId).locator('input[name="username"]:visible');
     }
-    div_user_name(userId: string) {
-        return this.div_user(userId).getByTestId('div_name');
+    err_user_username(userId: string, mobile: boolean) {
+        if (mobile) {
+            return this.div_user(userId).getByTestId('err_username_mobile');
+        } else {
+            return this.div_user(userId).getByTestId('err_username');
+        }
     }
+    
+    txt_user_name(userId: string) {
+        return this.div_user(userId).locator('input[name="name"]:visible');
+    }
+    err_user_name(userId: string, mobile: boolean) {
+        if (mobile) {
+            return this.div_user(userId).getByTestId('err_name_mobile');
+        } else {
+            return this.div_user(userId).getByTestId('err_name');
+        }
+    }
+    
     div_user_role(userId: string) {
         return this.div_user(userId).getByTestId('div_role');
     }
+    sel_user_role(userId: string) {
+        return this.div_user(userId).locator('select[name="role"]:visible');
+    }
+    
     div_user_active(userId: string) {
         return this.div_user(userId).getByTestId('div_active');
     }
+    sel_user_active(userId: string) {
+        return this.div_user(userId).locator('select[name="active"]:visible');
+    }
+
     btn_user_menu(userId: string) {
         return this.div_user(userId).getByTestId('btn_menu');
     }
@@ -34,29 +59,11 @@ export class UserAdministrationPage {
     btn_user_menu_delete(userId: string) {
         return this.div_user(userId).getByTestId('btn_menu_delete');
     }
-    txt_user_username(userId: string) {
-        return this.div_user(userId).locator('input[name="username"]');
-    }
-    err_user_username(userId: string) {
-        return this.div_user(userId).getByTestId('err_username');
-    }
-    txt_user_name(userId: string) {
-        return this.div_user(userId).locator('input[name="name"]');
-    }
-    err_user_name(userId: string) {
-        return this.div_user(userId).getByTestId('err_name');
-    }
-    sel_user_role(userId: string) {
-        return this.div_user(userId).locator('select[name="role"]');
-    }
-    sel_user_active(userId: string) {
-        return this.div_user(userId).locator('select[name="active"]');
-    }
     btn_user_save(userId: string) {
-        return this.div_user(userId).getByTestId('btn_save');
+        return this.div_user(userId).locator(':visible').getByTestId('btn_save');
     }
     btn_user_cancel(userId: string) {
-        return this.div_user(userId).getByTestId('btn_cancel');
+        return this.div_user(userId).locator(':visible').getByTestId('btn_cancel');
     }
 
     constructor(page: Page) {

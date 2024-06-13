@@ -1,14 +1,16 @@
 "use client";
-import { ReactNode, createContext, useCallback, useContext, useState } from "react";
-import MessageModal, { MessageModalOption, MessageModalPropType, MessageModalType } from "./messageModal";
+
 import { useI18n } from "@/lib/locales/client";
-import SimpleFormModal, { SimpleFormModalProps } from "./simpleFormModal";
 import { CadetMaterial, MaterialGroup } from "@/types/globalMaterialTypes";
-import IssueMaterialModal, { IssueMaterialModalProps } from "./issueMaterial";
 import { UniformGeneration, UniformType } from "@/types/globalUniformTypes";
-import UniformItemDetailModal, { UIDModalProps } from "./uniformItemDetail";
+import { ReactNode, createContext, useCallback, useContext, useState } from "react";
 import DangerConfirmationModal, { DangerConfirmationModalPropType } from "./dangerConfirmationModal";
 import EditGenerationModal, { EditGenerationModalPropType } from "./editGenerationModal";
+import IssueMaterialModal, { IssueMaterialModalProps } from "./issueMaterial";
+import MessageModal, { MessageModalOption, MessageModalPropType, MessageModalType } from "./messageModal";
+import SimpleFormModal, { SimpleFormModalProps } from "./simpleFormModal";
+import UniformItemDetailModal, { UIDModalProps } from "./uniformItemDetail";
+import ChangeUserPasswordModal, { ChangeUserPasswordModalPropType } from "./userPassword";
 
 type ModalContextType = {
     showMessageModal: (header: string, message: string | ReactNode, options: MessageModalOption[], type: MessageModalType) => void,
@@ -20,6 +22,7 @@ type ModalContextType = {
     issueMaterialModal: (cadetId: string, materialGroup: MaterialGroup, issuedMaterialList: CadetMaterial[], oldMaterial?: CadetMaterial) => void,
     uniformItemDetailModal: (uniformId: string, uniformType: UniformType, ownerId: string | null) => void,
     editGenerationModal: (generation: UniformGeneration | null, uniformType: UniformType, save: (data: UniformGeneration) => void) => void,
+    changeUserPasswordModal: (save: (p: string) => Promise<any>, nameOfUser?: string) => void,
 }
 
 type ModalCapsule = {
@@ -188,6 +191,14 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         }
         showModal("EditGenerationModal", props);
     }, []);
+    const changeUserPasswordModal = useCallback((save: (password: string) => Promise<any>, nameOfUser?: string) => {
+        const props: ChangeUserPasswordModalPropType = {
+            nameOfUser,
+            onClose,
+            save,
+        }
+        showModal("ChangeUserPasswordModal", props);
+    }, []);
 
     const onClose = () => {
         setQueue(prevState => prevState.slice(1))
@@ -202,8 +213,8 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             simpleErrorModal,
             /*issueUniformModal,
             editMaterialTypeModal,
-            inspectionReviewPopup,
-            changeUserPasswordModal,*/
+            inspectionReviewPopup,*/
+            changeUserPasswordModal,
             issueMaterialModal,
             simpleFormModal,
             uniformItemDetailModal
@@ -216,8 +227,8 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         simpleErrorModal,
         /* issueUniformModal,
         editMaterialTypeModal,
-         inspectionReviewPopup,
-         changeUserPasswordModal,*/
+         inspectionReviewPopup,*/
+        changeUserPasswordModal,
         issueMaterialModal,
         simpleFormModal,
         uniformItemDetailModal]);
@@ -233,9 +244,9 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
                   case "EditMaterialTypeModal":
                       return <EditMaterialTypeModal {...modal.props} />
                   case "InspectionReviewPopup":
-                      return <InspectionReviewPopup {...modal.props} />
-                      case "ChangeUserPasswordModal":
-                          return <ChangeUserPasswordModal {...modal.props} />*/
+                      return <InspectionReviewPopup {...modal.props} />*/
+            case "ChangeUserPasswordModal":
+                return <ChangeUserPasswordModal {...modal.props} />
             case "SimpleFormModal":
                 return <SimpleFormModal {...modal.props} />
             case "IssueMaterialModal":

@@ -10,6 +10,7 @@ const uuidArray = (i: number) => Array(i).fill("").map(() => uuid());
 
 export type StaticDataIdType = {
     fk_assosiation: string;
+    userIds: string[];
     cadetIds: string[];
     deficiencyIds: string[];
     deficiencyTypeIds: string[];
@@ -43,6 +44,7 @@ export const dataFixture = setup.extend<{}, { staticData: StaticData }>({
             const ids: StaticDataIdType[] = StaticDataIds;
             ids.push({
                 fk_assosiation: uuid(),
+                userIds: uuidArray(5),
                 cadetIds: uuidArray(10),
                 sizeIds: uuidArray(21),
                 sizelistIds: uuidArray(4),

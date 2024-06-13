@@ -1,327 +1,369 @@
 export default {
     common: {
-        of: "von",
-        comment: "Kommentar",
-        description: "Beschreibung",
+        of: "from",
+        comment: "Comment",
+        description: "Description",
         name: "Name",
-        type: "Typ",
-        loading: "Lädt",
+        type: "Type",
+        loading: "Loading",
         dates: {
-            created: "Erstellt am:",
-            updated: "zulest Verändert:",
+            "created": "Created on:",
+            "updated": "Last modified:",
         },
-        yes: "Ja",
-        no: "Nein",
+        yes: "Yes",
+        no: "No",
         active: {
-            true: "Aktiv",
-            false: "Inaktiv"
+            true: "Active",
+            false: "Inactive"
         },
         actions: {
-            cancel: "abbrechen",
-            save: "speichern",
-            edit: "bearbeiten",
-            create: "Anlegen",
-            addNew: "neu hinzufügen",
-            open: "Öffnen",
-            prevStep: "zurück",
-            nextStep: "weiter",
-            edit_item: "{item} Bearbeiten",
-            issue_item: "{item} Ausgeben",
-            issue: "Ausgeben",
-            return: "Zurückziehen",
-            replace: "Austauschen",
-            rename: "Umbenennen",
-            changeIssued: "Anzahl & Typ verändern",
-            delete: "Löschen",
-            load: "Laden",
-            moveUp: "nach oben verschieben",
-            moveDown: "nach unten verschieben",
-            changePosition: "change position",
-            ok: "Verstanden",
+            cancel: "Cancel",
+            save: "Save",
+            edit: "Edit",
+            create: "Create",
+            addNew: "Add new",
+            open: "Open",
+            prevStep: "Back",
+            nextStep: "Next",
+            edit_item: "Edit {item}",
+            issue_item: "Issue {item}",
+            issue: "Issue",
+            return: "Withdraw",
+            replace: "Replace",
+            rename: "Rename",
+            changeIssued: "Change quantity & type",
+            delete: "Delete",
+            load: "Load",
+            moveUp: "Move up",
+            moveDown: "Move down",
+            changePosition: "Change position",
+            changePassword: "Change password",
+            ok: "Understood",
         },
         cadet: {
             cadet: "Person",
-            firstname: "Vorname",
-            lastname: "Nachname",
+            firstname: "First name",
+            lastname: "Last name",
             status: "Status",
-            lastInspection: "Letzte Kontrolle",
-            notInspected: "Bisher noch nicht Kontrolliert",
+            lastInspection: "Last inspection",
+            notInspected: "Not yet inspected",
             uniformComplete: {
-                true: "Uniform vollständig",
-                false: "Uniform unvollständig",
+                true: "Uniform complete",
+                false: "Uniform incomplete",
             },
-            activeDeficiencies: "Aktive Mängel",
-            issueCertificate: "Ausgabebescheinigung",
+            activeDeficiencies: "Active deficiencies",
+            issueCertificate: "Issue certificate",
         },
         uniform: {
-            "item#one": "Uniformteil",
-            "item#other": "Uniformteile",
-            number: "Nummer",
+            "item#one": "Uniform part",
+            "item#other": "Uniform parts",
+            number: "Number",
             generation: {
                 "label#one": "Generation",
-                "label#other": "Generationen",
-                outdated: "veraltet",
+                "label#other": "Generations",
+                outdated: "outdated",
             },
-            size: "Größe",
+            size: "Size",
             size_other: "Sizes",
             sizelist: {
-                "label": "Größenliste",
-                "multiLabel": "Größenlisten",
+                label: "Size list",
+                multiLabel: "Size lists",
             },
-            owner: "Besitzer",
+            owner: "Owner",
             active: {
-                true: "Aktiv",
+                true: "Active",
                 false: "Reserve"
             },
             type: {
-                "type#one": "Uniformtyp",
-                "type#other": "Uniformtypen",
+                "type#one": "Uniform type",
+                "type#other": "Uniform types",
                 name: "Name",
-                acronym: "Kürzel",
-                issuedDefault: "Anz. auszugeben",
-                usingGenerations: "Nutzt Generationen",
-                usingSizes: "Nutzt Größen",
-                defaultSizeList: "Standard GrößenListe"
+                acronym: "Acronym",
+                issuedDefault: "Qty. to be issued",
+                usingGenerations: "Uses generations",
+                usingSizes: "Uses sizes",
+                defaultSizeList: "Standard size list"
             }
         },
         material: {
             material: "Material",
-            type_one: "Typ",
-            type_other: "Typen",
-            issued: "ausgegeben",
-            group_one: "Materialgruppe",
-            group_other: "Materialgruppen",
-            groupname: "Gruppenname",
-            issuedDefault: "Standardmäßig ausgegeben",
-            multitypeAllowed: "Mehrfachvergabe erlaubt",
-            amountIssued: "Mänge Ausgegeben",
+            type_one: "Type",
+            type_other: "Types",
+            issued: "issued",
+            group_one: "Material group",
+            group_other: "Material groups",
+            groupname: "Group name",
+            issuedDefault: "Issued by default",
+            multitypeAllowed: "Multiple assignment allowed",
+            amountIssued: "Amount issued",
             quantity: {
-                actual: "Ist",
-                actualQuantity: "Istmänge",
-                target: "Soll",
-                targetQuantity: "Sollmänge",
-                issued: "Ausgegeben"
+                actual: "Actual",
+                actualQuantity: "Actual quantity",
+                target: "Target",
+                targetQuantity: "Target quantity",
+                issued: "Issued"
             }
         },
         deficiency: {
             resolved: {
-                true: "Behoben",
-                false: "Unbehoben",
+                true: "Resolved",
+                false: "Unresolved",
             }
         },
+        user: {
+            active: {
+                true: "Active",
+                false: "Blocked",
+            },
+            authRole: {
+                1: "User",
+                2: "Inspector",
+                3: "Material management",
+                4: "Administrator",
+            },
+        },
         error: {
-            pleaseSelect: "Bitte Auswählen",
+            pleaseSelect: "Please select",
             number: {
-                required: "Bitte eine Zahl angeben",
-                pattern: "Bitte eine valide Zahl eingeben",
-                patternPositive: "Bitte eine gültige positive Zahl eingeben",
-                max: "Die Zahl darf nicht höher als {value} sein",
-                maxLength: "Es sind höchstens {value} Stellige Zahlen erlaubt",
-                min: "Die Zahl muss größer {value} sein",
+                required: "Please enter a number",
+                pattern: "Please enter a valid number",
+                patternPositive: "Please enter a valid positive number",
+                max: "The number must not be higher than {value}",
+                maxLength: "Only {value} digit numbers are allowed",
+                min: "The number must be greater than {value}",
             },
             amount: {
-                required: "Bitte eine Anzahl eingeben",
-                max: "Die Anzahl darf nicht {value} überschreiten",
+                required: "Please enter a quantity",
+                max: "The quantity must not exceed {value}",
             },
             string: {
-                required: "Bitte ausfüllen",
-                maxLength: "Es sind höchtens {value} Zeichen erlaubt",
-                noSpecialChars: "Es dürfen keine Sonderzeichen genutzt werden",
-                commentValidation: "Nicht alle Zeichen die Sie genutzt haben sind erlaubt",
+                required: "Please fill in",
+                maxLength: "A maximum of {value} characters are allowed",
+                noSpecialChars: "No special characters may be used",
+                commentValidation: "Not all characters you have used are allowed",
             },
             actions: {
-                changeSortorder: "Beim ändern der Reihnfolge ist ein unbekannter Fehler aufgetreten.",
-                create: "Beim Anlegen  ist ein unbekannter Fehler aufgetreten",
-                delete: "Beim Löschen ist ein unbekannter Fehler aufgetreten",
-                save: "Beim Speichern ist ein unbekannter Fehler aufgetreten",
+                changeSortorder: "An unknown error occurred while changing the order.",
+                create: "An unknown error occurred while creating",
+                delete: "An unknown error occurred while deleting",
+                save: "An unknown error occurred while saving",
             },
             uniform: {
                 number: {
-                    required: "Bitte die Uniformnummer angeben",
-                    maxLength: "Die Nummer darf höchstens 7 Zeichen lang sein",
-                    min: "Die Nummer muss größer 0 sein",
+                    required: "Please enter the uniform number",
+                    maxLength: "The number can be a maximum of 7 characters long",
+                    min: "The number must be greater than 0",
                 },
                 acronym: {
-                    pattern: "Das Kürzel darf keine Sonderzeichen oder Zahlen Beinhalten",
-                    length: "Das Kürzel muss 2 Zeichen lang sein",
-                }
-            }
-        }
+                    pattern: "The acronym may not contain special characters or numbers",
+                    length: "The acronym must be 2 characters long",
+                },
+            },
+            user: {
+                username: {
+                    pattern: "The username may not contain special or blank characters",
+                    duplicate: "The username is allready used by different user",
+                },
+            },
+        },
     },
     login: {
         header: "Login",
         label: {
-            assosiation: "Verein",
-            username: "Nutzername",
+            assosiation: "Association",
+            username: "Username",
             password: "Password",
-            login: "Anmelden"
+            login: "Login"
         },
         error: {
-            unknown: "Der Loginversuch ist fehlgeschlagen, bitte versuchen Sie es erneut.",
-            failed: "Nutzername oder Passwort sind ungültig"
-        }
+            unknown: "The login attempt failed, please try again.",
+            failed: "Username or password are invalid"
+        },
+    },
+    notFound: {
+        pageHeader: "Page not found",
+        header: "Page not found",
+        message: "This route does not exists",
     },
     generalOverview: {
-        header: "Personal",
-        openCadet: "Personalübersicht öffnen",
-        issueCertificate: "Ausgabebescheinigung",
+        header: "Staff",
+        openCadet: "Open staff overview",
+        issueCertificate: "Issue certificate",
     },
     cadetDetailPage: {
         delete: {
-            error: "Die Person konnte nicht gelöscht werden",
-            header: "Person löschen",
-            message: "Bist du dir sicher, dass du die Person {firstname} {lastname} entgültig löschen willst?",
+            error: "The person could not be deleted",
+            header: "Delete person",
+            message: "Are you sure you want to permanently delete the person {firstname} {lastname}?",
         },
         header: {
-            uniformTable: "Uniformteile",
-            cadetTable: "Personaldaten",
-            materialTable: "Materialien",
-            inspection: "Uniformkontrolle",
-            inspecting: "VK kontrollieren",
-            deficiencies: "Mängel",
-            oldDeficiencies: "alte Mängel",
-            newDeficiencies: "neue Mängel",
-            "amountUnresolved#other": "- {count} unbehoben",
-            "amountUnresolved#zero": "- Alle behoben",
+            uniformTable: "Uniform parts",
+            cadetTable: "Staff data",
+            materialTable: "Materials",
+            inspection: "Uniform inspection",
+            inspecting: "Inspecting VK",
+            deficiencies: "Deficiencies",
+            oldDeficiencies: "old deficiencies",
+            newDeficiencies: "new deficiencies",
+            "amountUnresolved#other": "- {count} unresolved",
+            "amountUnresolved#zero": "- All resolved",
         },
         inspection: {
-            noDeficiencies: "Keine Mängel vorhanden",
-            saved: "Inspektion erfolgreich gespeichert",
-            otherMaterials: "Andere Materialien",
+            noDeficiencies: "No deficiencies present",
+            saved: "Inspection successfully saved",
+            otherMaterials: "Other materials",
         },
         returnUniform: {
-            error: "Beim Zurückziehen des Uniformteils ist ein Fehler aufgetreten. Bitte versuchen sie es noch einmal",
+            error: "An error occurred while withdrawing the uniform part. Please try again",
         },
         issueMaterial: {
-            header: "{group} ausgeben",
+            header: "Issue {group}",
             error: ""
         },
-        'defaultIssuedWarning#one': "Es sollte {count} Stück ausgegeben werden",
-        'defaultIssuedWarning#other': "Es sollten {count} Stücke ausgegeben werden",
-        'multitypeWarning': "Es sollte nur 1 Typ dieses Materials ausgegeben werden",
+        "defaultIssuedWarning#one": "{count} piece should be issued",
+        'defaultIssuedWarning#other': "There should be {count} pieces issued",
+        multitypeWarning: "Only 1 type of this material should be issued",
         tooltips: {
             inspection: {
-                inspected: "Kadetten kontrolliert:\nInspektion des Kadetten aktualisieren",
-                notInspected: "Kadetten unkontrolliert:\nInspektion des Kadetten starten"
-            }
-        }
+                inspected: "Cadets inspected:\nUpdate cadet inspection",
+                notInspected: "Cadets uninspected:\nStart cadet inspection"
+            },
+        },
     },
     uniformList: {
         filter: "Filter",
-        other: "weitere Filter",
-        withOwner: "mit Besitzer",
-        withoutOwner: "ohne Besitzer",
-        selectAll: "Alle auswählen",
+        other: "other filters",
+        withOwner: "with owner",
+        withoutOwner: "without owner",
+        selectAll: "Select all",
         error: {
-            activ: "Von Aktiv und Passiv muss mindestens ein Option ausgewählt sein!",
-            owner: "Von mit und ohne Benutzer muss mindestens eine Option ausgewählt sein!",
+            activ: "At least one option must be selected from Active and Passive!",
+            owner: "At least one option must be selected from with and without user!",
         },
         search: {
-            invalid: "Sucheingabe Invalide",
-            label: "Suche",
+            invalid: "Search input invalid",
+            label: "Search",
         },
-        'numberOfEntries#one': "{count} Eintrag",
-        'numberOfEntries#zero': "Keine Einträge",
-        'numberOfEntries#other': "{count} Einträge",
-        noData: "Keine Daten geladen",
-        header: "Uniformteile",
+        'numberOfEntries#one': "{count} entry",
+        'numberOfEntries#zero': "No entries",
+        'numberOfEntries#other': "{count} entries",
+        noData: "No data loaded",
+        header: "Uniform parts",
     },
     sidebar: {
-        logout: "Abmelden",
+        logout: "Logout",
         links: {
-            cadetOverview: "Personal",
+            cadetOverview: "Staff",
             uniformOverview: "Uniform",
             create: {
-                group: "Anlegen",
+                group: "Create",
                 cadet: "Person",
                 uniform: "Uniform",
             },
             inspection: {
-                group: "Inspektion",
-                start: "Starten",
-                stop: "Stoppen",
+                group: "Inspection",
+                start: "Start",
+                stop: "Stop",
             },
             administration: {
                 group: "Administration",
                 uniform: "Uniform",
-                size: "Größen",
-                material: "Materialien",
+                size: "Sizes",
+                material: "Materials",
             },
-            userOverview: "Zugänge",
+            userOverview: "Accesses",
         },
     },
     admin: {
         uniform: {
-            header: "Uniformadministration",
-            changeSizeListWarning: "Beim Ändern der ausgewählten Größenliste, kann bei Uniformteilen dieser Generation die Information der Größe verlohren gehen",
+            header: "Uniform administration",
+            changeSizeListWarning: "When changing the selected size list, the size information of uniform parts of this generation may be lost",
             type: {
                 deleteModal: {
-                    header: "Uniformtyp \"{type}\" löschen",
+                    header: "Delete uniform type \"{type}\"",
                     message: {
-                        part1: "Soll der Uniformtyp \"{type}\" wirklich gelöscht werden.",
-                        part2: "Hierbei werden alle ",
-                        'part3#one': "{count} Uniformteil",
-                        'part3#other': "{count} Uniformteile",
-                        part4: " dieses Types mit gelöscht"
+                        part1: "Should the uniform type \"{type}\" really be deleted.",
+                        part2: "All ",
+                        'part3#one': "{count} uniform part",
+                        'part3#other': "{count} uniform parts",
+                        part4: " of this type will be deleted"
                     },
-                    confirmationText: "Uniformtyp-{type}"
+                    confirmationText: "Uniform type-{type}"
                 }
             },
             generationList: {
                 deleteModal: {
-                    header: "Generation \"{generation}\" Löschen",
+                    header: "Delete generation \"{generation}\"",
                     message: {
-                        part1: "Bist du dir sicher dass du diese Generation löschen willst?",
-                        part2: "Diese Aktion ist permanent und nicht wieder umkehrbar. ",
-                        part3: "Alle Uniformteile die dieser Generation zugeordnet sind, bleiben bestehen.",
+                        part1: "Are you sure you want to delete this generation?",
+                        part2: "This action is permanent and cannot be reversed. ",
+                        part3: "All uniform parts assigned to this generation will remain.",
                     },
                     confirmationText: "Generation-{generation}",
                 },
                 updateModal: {
-                    editHeader: "Generation \"{generation}\" bearbeiten",
-                    createHeader: "Neue Generation anlegen",
-                    changeSizeHeader: "Ändern der Größenliste",
-                    changeSizeMessage: "Beim Ändern der ausgewählten Größenliste, kann bei Uniformteilen dieser Generation die Information der Größe verlohren gehen",
-                    nameDuplicationError: "Es existiert bereits eine Generation mit diesem Namen",
+                    editHeader: "Edit generation \"{generation}\"",
+                    createHeader: "Create new generation",
+                    changeSizeHeader: "Change size list",
+                    changeSizeMessage: "When changing the selected size list, the size information of uniform parts of this generation may be lost",
+                    nameDuplicationError: "A generation with this name already exists",
                 }
             },
             size: {
-                deleteModal: {
-                    header: "delete size \"{size}\"",
-                    message: "Soll die Größe wirklich gelöscht werden. Diese Aktion ist nicht wieder umkehrbar."
+                changePositionModal: {
+                    header: "Change position for \"{size}\"",
+                    label: "Position",
                 },
                 createModal: {
-                    header: "create new size",
-                    label: "size",
+                    header: "Create new size",
+                    label: "Size",
                     nameDuplicationError: "This size already exists",
                 },
-                changePositionModal: {
-                    header: "change position for \"{size}\"",
-                    label: "position",
-                }
+                deleteModal: {
+                    header: "Delete size \"{size}\"",
+                    message: "Should the size really be deleted. This action is not reversible."
+                },
             },
             sizeList: {
-                nameDuplicationError: "Es existiert bereits eine Größenliste mit diesem Namen",
-                otherSizes: "weiter Größen",
-                selectedSizes: "ausgewählte Größen",
+                nameDuplicationError: "A size list with this name already exists",
+                otherSizes: "other sizes",
+                selectedSizes: "selected sizes",
                 createModal: {
-                    header: "Neue Größenliste anlegen",
+                    header: "Create new size list",
                 },
                 renameModal: {
                     header: "",
                 },
                 deleteWarning: {
-                    header: "Größenliste \"{name}\" löschen",
+                    header: "Delete size list \"{name}\"",
                     message: {
-                        line1: "Bist du sicher, dass die GrößenListe gelöscht werden soll?",
-                        line2: "Diese Aktion ist nicht wieder umkehrbar",
+                        line1: "Are you sure you want to delete the size list?",
+                        line2: "This action is not reversible",
                     },
                 },
                 deleteFailure: {
-                    header: "Die Größenliste kann nicht gelöscht werden",
-                    message: "Die Größenliste kann nicht gelöscht werden, da sie von dem {entity} {name} noch genutzt wird."
+                    header: "The size list cannot be deleted",
+                    message: "The size list cannot be deleted as it is still being used by the {entity} {name}."
                 }
             },
+        },
+        user: {
+            header: {
+                page: "User overview",
+                username: "Username",
+                name: "Name",
+                role: "Role",
+                status: "State",
+            },
+            deleteWarning: {
+                header: "Delete user {user}",
+                message: "Are you sure the user schould be deleted",
+            },
+            error: {
+                changePassword: "Saving of the password failed",
+            },
+            saved: "User updated successfuly",
+            created: "User created successfuly",
         },
     },
     modals: {
@@ -332,40 +374,68 @@ export default {
                     message: "Are you sure you want to withdraw the uniform part {type} {number}?"
                 },
                 issue: {
-                    header: "{type} ausgeben",
+                    header: "Issue {type}",
                 },
                 replace: {
-                    header: "{type} {number} austauschen",
+                    header: "Replace {type} {number}",
                 },
-                issueUnknown: "Beim Zuordnen des Uniformteils ist ein unbekanntes Problem aufgetreten.",
+                issueUnknown: "An unknown problem occurred when assigning the uniform part.",
                 issuedException: {
-                    header: "Uniformteil vergeben",
-                    message: "Das Uniformteil {type} {number} wurde bereit an den Kadetten {firstname} {lastname} vergeben.",
-                    ownerInactive: "Der Kadett ist nicht aktiv",
+                    header: "Uniform part assigned",
+                    message: "The uniform part {type} {number} has already been assigned to the cadet {firstname} {lastname}.",
+                    ownerInactive: "The cadet is not active",
                     option: {
-                        openCadet: "Kadetten öffnen",
-                        changeOwner: "Besitzer wecheln"
+                        openCadet: "Open cadets",
+                        changeOwner: "Change owner"
                     }
                 },
                 inactiveException: {
-                    header: "Uniformteil Passiv",
-                    message: "Das Uniformteil {type} {number} ist passiv gesetzt und sollte aus diesem Grund nicht ausgegeben werden. \nSoll das Uniformteil trotzdem dem Kadetten ausgegeben werden?"
+                    header: "Uniform part passive",
+                    message: "The uniform part {type} {number} is set to passive and should therefore not be issued. \nShould the uniform part still be issued to the cadet?"
                 },
                 nullValueException: {
-                    header: "Uniformteil nicht gefunden",
-                    message: "Das Uniformteil {type} {number} existiert nicht. Soll das Uniformteil neu Angelegt werden?",
-                    createOption: "Uniformteil anlegen"
+                    header: "Uniform part not found",
+                    message: "The uniform part {type} {number} does not exist. Should the uniform part be created new?",
+                    createOption: "Create uniform part"
                 },
             },
         },
         dangerConfirmation: {
             confirmation: {
-                label: "Zum Bestätigen der Aktion, bitte den folgenden Text eingeben:",
+                label: "To confirm the action, please enter the following text:",
                 error: {
-                    required: "Bitte den Text zur Bestätigung eingeben",
-                    pattern: "Der Text stimmt nicht überein"
+                    required: "Please enter the text for confirmation",
+                    pattern: "The text does not match"
                 },
             },
+        },
+        changePassword: {
+            header: {
+                change: "Change password of {user}",
+                create: "Input password for new user",
+            },
+            requirement: {
+                message: "The password must meet the following requirements:",
+                1: "at least 8 characters",
+                2: "upper and lower case characters",
+                3: "at least one number",
+            },
+            label: {
+                password: "Password",
+                confirmation: "Repeat password",
+            },
+            error: {
+                password: {
+                    required: "Please enter a password",
+                    minLength: "The password must be at least 8 characters long",
+                    pattern: "The password does not meet all requirements",
+                },
+                confirmation: {
+                    required: "Please confirm the password",
+                    invalid: "The passwords do not match",
+                },
+            },
+            save: "Save",
         },
     },
 } as const;

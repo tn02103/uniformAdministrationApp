@@ -21,6 +21,7 @@ export const dataFixture = test.extend<{}, { staticData: StaticData }>({
             ids.push({
                 fk_assosiation: uuid(),
                 cadetIds: uuidArray(10),
+                userIds: uuidArray(5),
                 sizeIds: uuidArray(21),
                 sizelistIds: uuidArray(4),
                 uniformTypeIds: uuidArray(5),

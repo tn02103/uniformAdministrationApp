@@ -10,6 +10,7 @@ export const genericSAValidatiorV2 = async (
     requiredRole: AuthRole,
     typeValidation: boolean,
     assosiationValidations: {
+        userId?: string | string[],
         cadetId?: string | string[],
         uniformId?: string | string[],
         uniformTypeId?: string | string[],
@@ -45,6 +46,10 @@ export const genericSAValidatiorV2 = async (
         }
     }
 
+    if (assosiationValidations.userId) {
+        validate(assosiationValidations.userId, validateUserAssosiation);
+    }
+
     if (assosiationValidations.cadetId) {
         validate(assosiationValidations.cadetId, validateCadetAssosiation);
     }
@@ -72,16 +77,10 @@ export const genericSAValidatiorV2 = async (
     return user;
 }
 
-export const validateUniformAssosiation = async (uniformId: string, assosiationId: string) => prisma.uniform.findUniqueOrThrow({
-    where: {
-        id: uniformId,
-        recdelete: null,
-        type: {
-            fk_assosiation: assosiationId
-        }
-    }
-});
 
+export const validateUserAssosiation = async (id: string, fk_assosiation: string) => prisma.user.findUniqueOrThrow({
+    where: { id, fk_assosiation }
+});
 export const validateCadetAssosiation = async (cadetId: string, assosiationId: string) => prisma.cadet.findUniqueOrThrow({
     where: {
         id: cadetId,
@@ -97,7 +96,15 @@ const validateUniformTypeAssosiation = async (typeId: string, assosiationId: str
         recdelete: null,
     }
 });
-
+export const validateUniformAssosiation = async (uniformId: string, assosiationId: string) => prisma.uniform.findUniqueOrThrow({
+    where: {
+        id: uniformId,
+        recdelete: null,
+        type: {
+            fk_assosiation: assosiationId
+        }
+    }
+});
 const validateMaterailAssosiation = async (materialId: string, assosiationId: string) => prisma.material.findUniqueOrThrow({
     where: {
         id: materialId,
