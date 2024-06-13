@@ -44,6 +44,3 @@ test.skip('generateTestIdSet', async () => {
     console.log("🚀 ~ test.only ~ ids.length:", ids.length)
     await fs.writeFileSync('tests/testData/staticDataIds.json', JSON.stringify(ids, null, 4));
 });
-
-
-

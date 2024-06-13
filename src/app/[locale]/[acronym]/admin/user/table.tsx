@@ -1,12 +1,12 @@
 "use client"
 
 import TooltipIconButton from "@/components/TooltipIconButton"
+import { useI18n, useScopedI18n } from "@/lib/locales/client"
 import { User } from "@/types/userTypes"
 import { faPlus } from "@fortawesome/free-solid-svg-icons"
 import { useState } from "react"
 import { Table } from "react-bootstrap"
 import UserAdminTableRow from "./tableLine"
-import { useI18n, useScopedI18n } from "@/lib/locales/client"
 
 export default function UserAdminTable({
     userList
@@ -50,7 +50,7 @@ export default function UserAdminTable({
                     <UserAdminTableRow
                         key={user.id}
                         user={user}
-                        userList={userList}/>
+                        userList={userList} />
                 )}
             </tbody>
         </Table>

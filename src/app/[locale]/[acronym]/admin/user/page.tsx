@@ -1,7 +1,7 @@
 import { getUserList } from "@/actions/controllers/UserController";
+import { getI18n } from "@/lib/locales/config";
 import { Col, Row } from "react-bootstrap";
 import UserAdminTable from "./table";
-import { getI18n } from "@/lib/locales/config";
 
 export const dynamic = 'auto';
 

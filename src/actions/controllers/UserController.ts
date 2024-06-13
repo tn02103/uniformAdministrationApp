@@ -24,21 +24,23 @@ export const createUser = (data: { username: string, name: string, role: AuthRol
         && (typeof data.active === "boolean")
         && (data.role in AuthRole && typeof data.role === 'number')),
     {}
-).then(async ({ assosiation }) => prisma.$transaction(async (client) => {
-    const userList = await dbHandler.getUsersList(assosiation, client as PrismaClient);
+).then(async ({ assosiation }) => {
+    await prisma.$transaction(async (client) => {
+        const userList = await dbHandler.getUsersList(assosiation, client as PrismaClient);
 
-    if (userList.find(u => u.username === data.username)) {
-        throw new Error("Could not save data Username allready in use");
-    }
+        if (userList.find(u => u.username === data.username)) {
+            throw new Error("Could not save data Username allready in use");
+        }
 
-    await dbHandler.create(
-        data,
-        assosiation,
-        await bcrypt.hash(password, 12),
-        client as PrismaClient
-    );
+        await dbHandler.create(
+            data,
+            assosiation,
+            await bcrypt.hash(password, 12),
+            client as PrismaClient
+        );
+    });
     revalidatePath(`/[locale]/${assosiation}/admin/users`, 'page');
-}));
+});
 
 export const updateUser = (data: User) => genericSAValidatiorV2(
     AuthRole.admin,
