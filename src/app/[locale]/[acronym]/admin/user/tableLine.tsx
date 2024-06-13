@@ -4,7 +4,7 @@ import { changeUserPassword, createUser, deleteUser, updateUser } from "@/action
 import { useModal } from "@/components/modals/modalProvider";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
-import { nameValidationPattern, userNameValidationPattern, uuidValidationPattern } from "@/lib/validations";
+import { nameValidationPattern, userNameValidationPattern } from "@/lib/validations";
 import { User } from "@/types/userTypes";
 import { faBars, faCheck, faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -50,7 +50,7 @@ export default function UserAdminTableRow({
                     toast.success(t('admin.user.created'));
                 }).catch((error) => {
                     console.error(error);
-                    toast.error(t('common.error.actions.save'));
+                    toast.error(t('common.error.actions.create'));
                 })
         );
     }
@@ -157,7 +157,6 @@ export default function UserAdminTableRow({
                     :
                     <Dropdown drop="start" className="float-end">
                         <Dropdown.Toggle
-
                             variant="outline-primary"
                             disabled={user?.id === "null"}
                             className="border-0"
@@ -170,7 +169,6 @@ export default function UserAdminTableRow({
                             <Dropdown.Item
                                 onClick={() => {
                                     setEditable(true);
-                                    //   reset({ ...user, active: user.active.toString() });
                                 }}
                                 data-testid="btn_menu_edit"
                             >

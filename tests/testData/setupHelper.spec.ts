@@ -14,7 +14,7 @@ test.skip('', async () => {
     await staticData.cleanup.removeAssosiation();
 })
 
-test.only('generateTestIdSet', async () => {
+test.skip('generateTestIdSet', async () => {
     const ids: StaticDataIdType[] = StaticDataIds;
     ids.push({
         fk_assosiation: uuid(),
@@ -44,6 +44,3 @@ test.only('generateTestIdSet', async () => {
     console.log("🚀 ~ test.only ~ ids.length:", ids.length)
     await fs.writeFileSync('tests/testData/staticDataIds.json', JSON.stringify(ids, null, 4));
 });
-
-
-

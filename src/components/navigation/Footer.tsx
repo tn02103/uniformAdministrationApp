@@ -23,7 +23,7 @@ const Footer = () => {
             </Link>
             <Dropdown drop="up-centered">
                 <DropdownToggle className="bg-transparent border-0 align-items-center fs-1" >
-                    <FontAwesomeIcon icon={faGear} className={pathname.includes("/app/admin")?"text-primary":""} />
+                    <FontAwesomeIcon icon={faGear} className={pathname.includes("/app/admin") ? "text-primary" : ""} />
                 </DropdownToggle>
                 <DropdownMenu className="fs-4 p-0">
                     <Link className="dropdown-item border-1 border-bottom" href="/app/admin/user">Nutzer</Link>
