@@ -159,7 +159,7 @@ test('password formValidation', async ({ userPage, staticData: { ids } }) => {
         await expect.soft(userPage.passwordPopup.err_confirmation).toBeVisible();
     });
 });
-test('cancel function', async ({ userPage, staticData: { ids } }) => {
+test('cancel function', async ({ userPage, staticData: { ids, index } }) => {
     await test.step('change data and cancel', async () => {
         await userPage.btn_user_menu(ids.userIds[0]).click();
         await userPage.btn_user_menu_edit(ids.userIds[0]).click();
@@ -172,7 +172,7 @@ test('cancel function', async ({ userPage, staticData: { ids } }) => {
 
     await test.step('validate ui', async () => {
         await expect(userPage.txt_user_username(ids.userIds[0])).toHaveValue('test4');
-        await expect(userPage.txt_user_name(ids.userIds[0])).toHaveValue('Test 0 Admin');
+        await expect(userPage.txt_user_name(ids.userIds[0])).toHaveValue(`Test ${index} Admin`);
         await expect(userPage.div_user_active(ids.userIds[0])).toContainText(german.common.user.active.true);
         await expect(userPage.div_user_role(ids.userIds[0])).toContainText(german.common.user.authRole[4]);
     });
@@ -216,11 +216,11 @@ test.describe('save function', async () => {
         })
     );
 });
-test('changePassword', async ({ browser, userPage, staticData: { ids } }) => {
+test('changePassword', async ({ userPage, staticData: { ids, index } }) => {
     await test.step('change Password', async () => {
         await userPage.openUserPasswordModal(ids.userIds[0]);
 
-        await expect(userPage.passwordPopup.div_header).toHaveText(german.modals.changePassword.header.change.replace('{user}', 'Test 0 Admin'));
+        await expect(userPage.passwordPopup.div_header).toHaveText(german.modals.changePassword.header.change.replace('{user}', `Test ${index} Admin`));
 
         await userPage.passwordPopup.txt_password.fill('newPassword123');
         await userPage.passwordPopup.txt_confirmationPassword.fill('newPassword123');
