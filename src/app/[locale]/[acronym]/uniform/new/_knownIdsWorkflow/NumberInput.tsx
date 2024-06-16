@@ -15,7 +15,7 @@ type FormType = {
 }
 type PropType = {
     stepBack: () => void;
-    createItems: (numbers: number[]) => void;
+    handleCreate: (numbers: number[]) => void;
     uniformTypeId: string;
 }
 
@@ -24,7 +24,7 @@ export type AvailableNumbers = {
     used: boolean;
 }
 
-const NumberInput = ({ stepBack, createItems, uniformTypeId }: PropType) => {
+const NumberInput = ({ stepBack, handleCreate, uniformTypeId }: PropType) => {
     const t = useI18n();
     const { register, handleSubmit, reset, formState: { errors } } = useForm<FormType>();
     const [numbers, setNumbers] = useState<AvailableNumbers[]>([]);
@@ -66,8 +66,8 @@ const NumberInput = ({ stepBack, createItems, uniformTypeId }: PropType) => {
         setNumbers(prevState => prevState.filter(num => num.value !== number));
     }
 
-    function onFinish() {
-        createItems(numbers.filter(n => !n.used).map(n => n.value));
+    function onSubmit() {
+        handleCreate(numbers.filter(n => !n.used).map(n => n.value));
     }
 
     return (
@@ -175,7 +175,7 @@ const NumberInput = ({ stepBack, createItems, uniformTypeId }: PropType) => {
                 <Col xs={"auto"}>
                     <Button
                         variant="outline-primary"
-                        onClick={onFinish}
+                        onClick={onSubmit}
                         disabled={(numbers.filter(n => !n.used).length === 0)}
                         data-testid="btn_create"
                     >

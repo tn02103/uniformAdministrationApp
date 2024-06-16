@@ -258,6 +258,7 @@ export default {
             generate: "Nummern generieren",
         },
         header: {
+            page: "Neue Uniformteile anlegen",
             configurator: "Konfiguration",
             numberInput: "Nummern eingeben",
             itemAmounts: "Anzahl Uniformteile",

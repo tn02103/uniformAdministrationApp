@@ -1,4 +1,5 @@
 "use client";
+
 import { useI18n } from "@/lib/locales/client";
 import { AdministrationMaterial, CadetMaterial, Material, MaterialGroup } from "@/types/globalMaterialTypes";
 import { UniformGeneration, UniformType } from "@/types/globalUniformTypes";

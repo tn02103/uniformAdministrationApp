@@ -29,7 +29,7 @@ const GeneratedWorkflow = ({
     const [formData, setFormData] = useState<FormDataType>({ uniformNumberMap: [], step1Data: { continuous: false, values: {} } });
     const [usedSizeList, setUsedSizeList] = useState<UniformSizeList>();
 
-    function onConfiguratorSubmit(data: ConfiguratorFormType, sizelist?: UniformSizeList) {
+    function handleConfiguratorSubmit(data: ConfiguratorFormType, sizelist?: UniformSizeList) {
         if (data.generationId === "null") delete data.generationId;
 
         if (step === 0) {
@@ -38,7 +38,7 @@ const GeneratedWorkflow = ({
             setUsedSizeList(sizelist);
         }
     }
-    function onNumbersGenerated(data: Step1FormType) {
+    function handleGenerateNumbers(data: Step1FormType) {
         if (step !== 1 || !formData.configurator?.typeId)
             return;
 
@@ -57,11 +57,6 @@ const GeneratedWorkflow = ({
             return;
         }
 
-        const props = {
-            numberCount: JSON.stringify(numberCount),
-            uniformTypeId: formData.configurator?.typeId,
-            continuous: data.continuous
-        }
         generateUniformNumbers(formData.configurator?.typeId, numberCount, data.continuous)
             .then(result => {
                 setFormData(prevState => ({
@@ -118,16 +113,15 @@ const GeneratedWorkflow = ({
                 <NewUniformConfigurator
                     step={step}
                     withSizes={false}
-                    onSubmit={onConfiguratorSubmit}
+                    onSubmit={handleConfiguratorSubmit}
                 />
             </Row>
-
             {(step === 1) &&
                 <Row className="mt-4">
                     <Step1
                         usedSizeList={usedSizeList}
                         initialMap={formData.step1Data}
-                        onSubmit={onNumbersGenerated}
+                        onSubmit={handleGenerateNumbers}
                         stepBack={() => setStep(0)}
                     />
                 </Row>

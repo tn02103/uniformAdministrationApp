@@ -8,12 +8,13 @@ import { genericSAValidatiorV2 } from "../validations";
 
 /**
  * Used to automaticly generate numbers for new UniformItems. Does not reserve the number, neither does it create the uniformitems.
+ * @requires AuthRole.inspector
  * @param uniformTypeId 
  * @param numberCount {sizeId: stirng, value: number}[].
  *  Gives the amount of numbers to be created per size. 
  *  If the Uniformtype does not use sizes, the Array has only one element with sizeId="amount"
  * @param continuous if continuous all numbers for one size are continuous. Numbers of different sizes are not continuous
- * @returns 
+ * @returns object of UniformNumberSizeMap
  */
 export const generateUniformNumbers = (uniformTypeId: string, numberCount: { sizeId: string, value: number }[], continuous: boolean) => genericSAValidatiorV2(
     AuthRole.inspector,
@@ -47,6 +48,7 @@ export const generateUniformNumbers = (uniformTypeId: string, numberCount: { siz
 
 /**
  * Used to validate if uniformNumbers are allready in use. Does not reserve the number, neither does it create the uniformItems.
+ * @requires AuthRole.inspector
  * @param uniformTypeId 
  * @param uniformNumbers array of numbers to be checked.
  * @returns for each number provided an object of type {value: number, used: boolean} is returned. 
@@ -79,6 +81,7 @@ export const validateUniformNumberAvaiability = (uniformTypeId: string, uniformN
 
 /**
  * Helper Function for generateUniformNumbers
+ * @private
  * @param startId 
  * @param usedNumbers 
  * @param amount 

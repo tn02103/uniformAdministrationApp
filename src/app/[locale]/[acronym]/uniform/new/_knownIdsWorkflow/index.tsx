@@ -25,7 +25,7 @@ const KnownIdsWorkflow = ({
     const t = useI18n();
     const [uniformConfiguration, setUniformConfiguration] = useState<ConfiguratorData>();
 
-    function onConfiguratorSubmit(data: ConfiguratorData) {
+    function handleConfiguratorSubmit(data: ConfiguratorData) {
         if (data.generationId === "null") delete data.generationId;
 
         if (step === 0) {
@@ -77,13 +77,13 @@ const KnownIdsWorkflow = ({
                 <NewUniformConfigurator
                     step={step}
                     withSizes={true}
-                    onSubmit={onConfiguratorSubmit} />
+                    onSubmit={handleConfiguratorSubmit} />
             </Row>
             {(step == 1) && uniformConfiguration &&
                 <Row className="mt-4">
                     <NumberInput
                         stepBack={() => setStep(0)}
-                        createItems={handleCreate}
+                        handleCreate={handleCreate}
                         uniformTypeId={uniformConfiguration.typeId}
                     />
                 </Row>

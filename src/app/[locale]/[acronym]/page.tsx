@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Col, Row } from "react-bootstrap";
 
 export default function Homepage() {
-
     return (
         <div className="container-lg bg-light rounded p-0 py-4 position-relative">
             <h1 className="text-center">Links</h1>

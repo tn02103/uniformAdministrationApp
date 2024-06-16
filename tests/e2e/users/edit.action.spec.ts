@@ -216,7 +216,7 @@ test.describe('save function', async () => {
         })
     );
 });
-test('changePassword', async ({ browser, userPage, staticData: { ids, index } }) => {
+test('changePassword', async ({ userPage, staticData: { ids, index } }) => {
     await test.step('change Password', async () => {
         await userPage.openUserPasswordModal(ids.userIds[0]);
 
