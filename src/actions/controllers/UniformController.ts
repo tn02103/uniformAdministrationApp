@@ -226,6 +226,8 @@ export const createUniformItems = (numberMap: UniformNumbersSizeMap, data: { uni
     }
 ).then(() => prisma.$transaction(async (client) => {
     const allNumbers = numberMap.reduce((arr: number[], value) => ([...arr, ...value.numbers]), []);
+    // VALiDATE number
+    // with existing
     const existingUniforms = await client.uniform.findMany({
         where: {
             fk_uniformType: data.uniformTypeId,
@@ -236,6 +238,12 @@ export const createUniformItems = (numberMap: UniformNumbersSizeMap, data: { uni
     if (existingUniforms.length > 0) {
         throw new SaveDataException("Number already in use")
     }
+
+    // for duplications
+    const uniqueSet = new Set(allNumbers);
+    if (uniqueSet.size !== allNumbers.length) {
+        throw new SaveDataException('some number is entered multiple times');
+    };
 
     const type = await typeHandler.getCompleteTypeWithSizeListAndSizes(data.uniformTypeId, client);
 

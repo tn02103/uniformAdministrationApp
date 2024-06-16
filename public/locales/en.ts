@@ -258,13 +258,14 @@ export default {
             generate: "Generate numbers",
         },
         header: {
+            page: "create new uniform items",
             configurator: "Configuration",
             numberInput: "Enter numbers",
             itemAmounts: "Number of uniform parts",
             revalidteNumbers: "Check numbers",
         },
         label: {
-            add: "add",
+            add: "Add",
             amount: "Amount",
             numberStart: "Numbers (from)",
             until: "until",
