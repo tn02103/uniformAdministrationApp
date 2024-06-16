@@ -35,6 +35,7 @@ export default function SizeItem({
                 },
                 validate: (value) => Number.isInteger(value) || t('common.error.number.pattern'),
             },
+            inputMode: "numeric",
             save: async ({ input }) => setSizeSortorder(size.id, +input).catch(e => {
                 console.error(e);
                 toast.error(t('common.error.actions.save'));

@@ -54,8 +54,7 @@ export default function UniformConfigTypeList({
             console.error(e);
             toast.error(t('common.error.actions.delete'));
         });
-
-
+        
         await getUniformCountByType(type.id).then(count =>
             modal?.dangerConfirmationModal(
                 t('admin.uniform.type.deleteModal.header', { type: type.name }),

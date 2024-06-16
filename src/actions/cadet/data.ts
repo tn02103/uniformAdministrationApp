@@ -20,7 +20,7 @@ export const getCadetData = cache(async (cadetId: string): Promise<Cadet> => gen
     });
 }));
 
-export const getCadetLastInspectionDate = async (cadetId: string) => genericSAValidatiorV2(
+export const getCadetLastInspectionDate = async (cadetId: string): Promise<{date: Date}|null> => genericSAValidatiorV2(
     AuthRole.inspector,
     uuidValidationPattern.test(cadetId),
     { cadetId }
@@ -34,7 +34,7 @@ export const getCadetLastInspectionDate = async (cadetId: string) => genericSAVa
                 }
             }
         }
-    }).then((data) => data._max.date);
+    }).then((data) => data._max.date? ({date: data._max.date}): null);
 });
 
 export const saveCadetData = async (cadet: Cadet) => genericSAValidatiorV2(

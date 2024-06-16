@@ -62,7 +62,11 @@ const GeneralOverviewTable = ({
                     <InputGroup.Text className="bg-primary-subtle">
                         <FontAwesomeIcon icon={faSearch} className="" />
                     </InputGroup.Text>
-                    <FormControl size="sm" {...register("search")} onKeyDown={(event) => { if (event.key == "Enter") { event.currentTarget.blur() } }} />
+                    <FormControl
+                        inputMode="search"
+                        size="sm"
+                        {...register("search")}
+                        onKeyDown={(event) => { if (event.key == "Enter") { event.currentTarget.blur() } }} />
                     <button data-testid="btn_clearSearch" className="button bg-primary-subtle border border-1 border-seccondary-subtle rounded-end" onClick={() => setValue("search", "")} >
                         <FontAwesomeIcon icon={faXmark} />
                     </button>

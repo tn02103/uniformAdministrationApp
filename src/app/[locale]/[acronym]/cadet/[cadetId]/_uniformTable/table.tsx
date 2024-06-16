@@ -129,6 +129,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
             },
             validate: (value) => Number.isInteger(value) || t('common.error.number.pattern'),
         },
+        inputMode: "numeric",
         save: async (data) => issueMutation({
             number: +data.input,
             uniformTypeId: type.id,

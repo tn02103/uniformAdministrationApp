@@ -8,6 +8,10 @@
 
 # testing
 /coverage
+tests/testData/staticDataIds.json
+playwright/
+playwright-report/
+test-results/
 
 # next.js
 /.next/
@@ -36,6 +40,3 @@ yarn-error.log*
 next-env.d.ts
 .env
 .vscode/
-playwright/
-playwright-report/
-test-results/

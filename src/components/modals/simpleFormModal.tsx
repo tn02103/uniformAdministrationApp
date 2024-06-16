@@ -7,6 +7,7 @@ export type SimpleFormModalProps = {
     header: string;
     elementLabel: string;
     elementValidation: RegisterOptions<FieldValues, "input">;
+    inputMode?: "search" | "text" | "none" | "tel" | "url" | "email" | "numeric";
     save: ({ }: { input: any }) => Promise<any>;
     abort: () => void;
     defaultValue?: { input: string }
@@ -25,6 +26,7 @@ const SimpleFormModal = (props: SimpleFormModalProps) => {
                     <Form.Label>{props.elementLabel}</Form.Label>
                     <Form.Control
                         isInvalid={!!errors.input}
+                        inputMode={props.inputMode}
                         {...register("input", props.elementValidation)} />
                     <div data-testid={`err_input`} className="text-danger fs-7">
                         {errors?.input?.message}

@@ -1,17 +1,26 @@
 "use server";
 
 import { FilterType } from "@/app/[locale]/[acronym]/uniform/list/[typeId]/_filterPanel";
+import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { uuidValidationPattern } from "@/lib/validations";
-import { IssuedEntryType, UniformFormData, uniformArgs } from "@/types/globalUniformTypes";
+import { IssuedEntryType, UniformFormData, UniformNumbersSizeMap, UniformWithOwner, uniformArgs } from "@/types/globalUniformTypes";
 import { Prisma } from "@prisma/client";
 import { notFound } from "next/navigation";
 import { UniformDBHandler } from "../dbHandlers/UniformDBHandler";
+import { UniformTypeDBHandler } from "../dbHandlers/UniformTypeDBHandler";
 import { genericSAValidatiorV2 } from "../validations";
 
 const dbHandler = new UniformDBHandler();
+const typeHandler = new UniformTypeDBHandler();
 
+/**
+ * Function counts the number Uniformitems there are for the given uniformType. 
+ * @requires AuthRole.materialManager
+ * @param uniformTypeId 
+ * @returns number 
+ */
 export const getUniformCountByType = (uniformTypeId: string) => genericSAValidatiorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(uniformTypeId)),
@@ -33,7 +42,17 @@ const filterTypeValidator = (filter: FilterType) => (
     ))
 );
 
-export const getUniformListWithOwner = async (uniformTypeId: string, orderBy: string, asc: boolean, filter: FilterType | null) => genericSAValidatiorV2(
+/**
+ * used to get the data for the uniformList-Overview 
+ * returns all data of unifrom, the owner is returned in the object of issuedEntries as a cadetDescription. 
+ * @requires AuthRole.user
+ * @param uniformTypeId 
+ * @param orderBy number| generation | size | comment | owner
+ * @param asc 
+ * @param filter filterObject of uniformFilter Pannel
+ * @returns UniformWithOwner[]
+ */
+export const getUniformListWithOwner = async (uniformTypeId: string, orderBy: string, asc: boolean, filter: FilterType | null): Promise<UniformWithOwner[]> => genericSAValidatiorV2(
     AuthRole.user,
     (uuidValidationPattern.test(uniformTypeId)
         && (!filter || filterTypeValidator(filter))),
@@ -104,6 +123,12 @@ export const getUniformListWithOwner = async (uniformTypeId: string, orderBy: st
     return dbHandler.getListWithOwner(uniformTypeId, hiddenGenerations, hiddenSizes, sqlFilter, sortOrder, orderBy === "owner", asc);
 });
 
+/**
+ * used to get data of a uniformItem in special UniformFormData type for the uniformItemDetail-Modal
+ * @requires AuthRole.user
+ * @param uniformId 
+ * @returns UniformFormData
+ */
 export const getUniformFormValues = (uniformId: string): Promise<UniformFormData> => genericSAValidatiorV2(
     AuthRole.user,
     (uuidValidationPattern.test(uniformId)),
@@ -117,6 +142,12 @@ export const getUniformFormValues = (uniformId: string): Promise<UniformFormData
     active: data.active,
 }));
 
+/**
+ * used to load the issue-history of an uniformItem in the uniformItemDetail-Modal
+ * @requires AuthRole.inspector
+ * @param uniformId 
+ * @returns an array containing date off issue and return, description of cadet with boolean if deleted.
+ */
 export const getUniformIssueHistory = (uniformId: string): Promise<IssuedEntryType[]> => genericSAValidatiorV2(
     AuthRole.inspector,
     uuidValidationPattern.test(uniformId),
@@ -138,6 +169,12 @@ export const getUniformIssueHistory = (uniformId: string): Promise<IssuedEntryTy
     cadetId: issueEntry.cadet.id,
 })));
 
+/**
+ * used to change the data of a uniformItem.
+ * @requires AuthRole.inspector
+ * @param data 
+ * @returns FormData of the uniform
+ */
 export const saveUniformItem = (data: UniformFormData): Promise<UniformFormData> => genericSAValidatiorV2(
     AuthRole.inspector,
     (uuidValidationPattern.test(data.id)
@@ -165,7 +202,88 @@ export const saveUniformItem = (data: UniformFormData): Promise<UniformFormData>
     active: data.active,
 }));
 
-export const deleteUniformItem = (uniformId: string) => genericSAValidatiorV2(
+/**
+ * Creates multiple UniformItems of a single type
+ * @requires AuthRole.inspector
+ * @param numbers Numbers of the UniformItem for each size. 
+ *  If the Uniformtype does not use sizes, the Array has only one element with sizeId="amount"
+ * @param data Data of the uniformItems that are to be created. The size of the Uniform is included in the param numbers
+ * @returns number of created Items
+ */
+export const createUniformItems = (numberMap: UniformNumbersSizeMap, data: { uniformTypeId: string, generationId?: string, comment: string, active: boolean }): Promise<number> => genericSAValidatiorV2(
+    AuthRole.inspector,
+    (uuidValidationPattern.test(data.uniformTypeId)
+        && (!data.generationId || uuidValidationPattern.test(data.generationId))
+        && (typeof data.active === "boolean")
+        && numberMap.every(n =>
+            (n.sizeId === "amount" || uuidValidationPattern.test(n.sizeId))
+            && n.numbers.every(num => Number.isInteger(num))
+        )),
+    {
+        uniformTypeId: data.uniformTypeId,
+        uniformGenerationId: data.generationId,
+        uniformSizeId: numberMap.filter(n => n.sizeId === "amount").map(n => n.sizeId)
+    }
+).then(() => prisma.$transaction(async (client) => {
+    const allNumbers = numberMap.reduce((arr: number[], value) => ([...arr, ...value.numbers]), []);
+    // VALiDATE number
+    // with existing
+    const existingUniforms = await client.uniform.findMany({
+        where: {
+            fk_uniformType: data.uniformTypeId,
+            number: { in: allNumbers },
+            recdelete: null,
+        }
+    });
+    if (existingUniforms.length > 0) {
+        throw new SaveDataException("Number already in use")
+    }
+
+    // for duplications
+    const uniqueSet = new Set(allNumbers);
+    if (uniqueSet.size !== allNumbers.length) {
+        throw new SaveDataException('some number is entered multiple times');
+    };
+
+    const type = await typeHandler.getCompleteTypeWithSizeListAndSizes(data.uniformTypeId, client);
+
+    // VALIDATE generation
+    let sizeList = type.defaultSizeList;
+    if (!type.usingGenerations) {
+        data.generationId = undefined;
+    } else {
+        const gen = type.uniformGenerationList.find(g => g.id === data.generationId);
+        if (gen) {
+            sizeList = gen.uniformSizeList;
+        } else {
+            data.generationId = undefined;
+        }
+    }
+
+    // VALIDATE size
+    let allowedSizes = [];
+    if (!type.usingSizes) {
+        allowedSizes = ["amount"];
+    } else {
+        if (!sizeList) {
+            throw new SaveDataException('Could not create Uniformitems. Failed to find sizelist for selected type and generation');
+        }
+        allowedSizes = sizeList.uniformSizes.map(s => s.id);
+    }
+    if (!numberMap.every(map => allowedSizes.includes(map.sizeId))) {
+        throw new SaveDataException("Not allowed size used");
+    }
+
+    return dbHandler.createUniformItems(numberMap, data, client).then(d => d.count);
+}));
+
+/**
+ * Marks uniformitem as deleted. May only work if item is not issued.
+ * @requires AuthRole.materialManager
+ * @param uniformId 
+ * @returns 
+ */
+export const deleteUniformItem = (uniformId: string): Promise<void> => genericSAValidatiorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(uniformId)),
     { uniformId }
@@ -190,5 +308,5 @@ export const deleteUniformItem = (uniformId: string) => genericSAValidatiorV2(
                 recdeleteUser: username,
             }
         }),
-    ])
+    ]);
 });

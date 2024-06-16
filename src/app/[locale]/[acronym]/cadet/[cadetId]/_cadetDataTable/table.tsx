@@ -213,8 +213,8 @@ const CadetDataTableForm = (props: PropType) => {
                                 </Row>
                                 <Row>
                                     <Col data-testid="div_lastInspection" className="pb-2">
-                                        {lastInspectionDate
-                                            ? format(new Date(lastInspectionDate), "dd.MM.yyyy")
+                                        {lastInspectionDate?.date
+                                            ? format(new Date(lastInspectionDate.date), "dd.MM.yyyy")
                                             : t('common.cadet.notInspected')}
                                     </Col>
                                 </Row>

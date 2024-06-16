@@ -132,14 +132,11 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         setQueue(prevState => [...prevState, modal]);
     }, []);
 
-    const simpleFormModal = useCallback(({ elementLabel, elementValidation, header, save, abort, defaultValue }: SimpleFormModalProps) => {
+    const simpleFormModal = useCallback((props: SimpleFormModalProps) => {
         showModal("SimpleFormModal", {
-            save: async (data: { input: string | number }) => { onClose(); await save(data); },
-            abort: () => { onClose(); abort(); },
-            elementLabel,
-            elementValidation,
-            header,
-            defaultValue
+            ...props,
+            save: async (data: { input: string | number }) => { onClose(); await props.save(data); },
+            abort: () => { onClose(); props.abort(); },
         });
     }, []);
 
