@@ -20,14 +20,12 @@ export type ParamType = {
     cadetId: string;
     locale: string;
 }
-/*export const generateStaticParams = async ({ params: { locale } }: { params: { locale: string } }) => {
-    return await prisma.cadet.findMany({ select: { id: true }, where: { recdelete: null } })
-        .then((data) => data.map(c => ({ cadetId: c.id })));
-}*/
+
 
 const CadetDetailPage = async (props: PropType) => {
+    const newCadet = props.params.cadetId === "null";
     const { user } = await getIronSession();
-    if (props.params.cadetId !== "new") {
+    if (!newCadet) {
         var cadet = await getCadetData(props.params.cadetId).catch(() => undefined);
 
         if (!cadet) {
@@ -51,17 +49,17 @@ const CadetDetailPage = async (props: PropType) => {
                 <Col xs={12} md={8} lg={7} xl={3} className="pb-3 pe-md-3 p-0">
                     <CadetDataTable initialData={cadet} />
                 </Col>
-                {(user!.role >= AuthRole.inspector) && (props.params.cadetId !== "new") &&
+                {(user!.role >= AuthRole.inspector) && (!newCadet) &&
                     <Col xs={12} md={8} lg={7} xl={5} className="pb-3 pe-md-3 p-0">
                         <CadetInspectionCard />
                     </Col>
                 }
-                {(props.params.cadetId !== "new") &&
+                {(!newCadet) &&
                     <Col xs={12} md={8} lg={7} xl={4} className="p-0 pb-3">
                         <MaterialTableContainer cadetId={props.params.cadetId} />
                     </Col>
                 }
-                {(props.params.cadetId !== "new") &&
+                {(!newCadet) &&
                     <Col xs={12} className="p-0">
                         <CadetUniformTableContainer cadetId={props.params.cadetId} />
                     </Col>

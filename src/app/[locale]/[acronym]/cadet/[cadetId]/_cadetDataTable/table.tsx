@@ -26,28 +26,28 @@ const defaultValue: Cadet = {
 type PropType = {
     initialData?: Cadet;
 }
-const CadetDataTableForm = (props: PropType) => {
-    const { register, watch, handleSubmit, formState: { errors }, reset } = useForm<Cadet>({ defaultValues: props.initialData })
+const CadetDataTableForm = ({ initialData }: PropType) => {
+    const { register, watch, handleSubmit, formState: { errors }, reset } = useForm<Cadet>({ defaultValues: initialData })
     const t = useI18n();
     const router = useRouter();
 
     const { userRole } = useGlobalData();
     const { cadetId, locale }: { cadetId: string, locale: string } = useParams();
     const [submitting, setSubmitting] = useState(false);
-    const [editable, setEditable] = useState((cadetId === "new") ? true : false);
+    const [editable, setEditable] = useState(!initialData);
     const { data: lastInspectionDate, error } = useSWR(
         `cadet/inspection/lastInspection`,
-        (cadetId === "new" || userRole < AuthRole.inspector)
+        (!initialData || userRole < AuthRole.inspector)
             ? null : () => getCadetLastInspectionDate(cadetId).catch((e) => console.log(e)),
     )
 
     // handle cadetIdChange
     useEffect(() => {
-        if (cadetId === "new") {
+        if (!initialData) {
             reset(defaultValue);
             setEditable(true);
         } else {
-            reset(props.initialData);
+            reset(initialData);
             setEditable(false);
         }
     }, [cadetId]);
@@ -55,7 +55,7 @@ const CadetDataTableForm = (props: PropType) => {
     async function updateCadet(data: Cadet) {
         setSubmitting(true);
 
-        if (cadetId === "new") {
+        if (!initialData) {
             await createCadet(data).then((result) => {
                 router.push(`/${locale}/app/cadet/${result.id}`)
             }).catch(error => {
@@ -78,7 +78,7 @@ const CadetDataTableForm = (props: PropType) => {
 
     async function changeEditable() {
         if (editable) {
-            if (cadetId === "new") {
+            if (!initialData) {
                 router.back();
             } else {
                 setEditable(false);
@@ -206,7 +206,7 @@ const CadetDataTableForm = (props: PropType) => {
                                 </Col >
                             </Row >
                         </Col >
-                        {(userRole >= AuthRole.inspector) &&
+                        {(userRole >= AuthRole.inspector) && (!!initialData) &&
                             <Col>
                                 <Row>
                                     <p className="fs-8 fw-bold fst-italic m-0">{t('common.cadet.lastInspection')}</p>
