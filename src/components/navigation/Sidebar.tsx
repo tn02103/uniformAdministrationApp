@@ -87,7 +87,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                 href={"/app/cadet"}
                                 collapsed={collapsed}
                                 requiredRole={AuthRole.user}
-                                isRoute={(!pathname.endsWith("cadet/null") && pathname.startsWith(`/${locale}/app/cadet`))}
+                                isRoute={(!pathname.endsWith("cadet/new") && pathname.startsWith(`/${locale}/app/cadet`))}
                                 testId="lnk_cadet" />
                             <NavLink
                                 text={t('sidebar.links.uniformOverview')}
@@ -100,7 +100,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                             <NavGroup
                                 title={t('sidebar.links.create.group')}
                                 icon={faPlus}
-                                childSelected={(pathname.endsWith("/cadet/null") || pathname.endsWith("/uniform/new"))}
+                                childSelected={(pathname.endsWith("/cadet/new") || pathname.endsWith("/uniform/new"))}
                                 collapsed={collapsed}
                                 requiredRole={AuthRole.inspector}
                                 setCollapsed={setCollapsed}
@@ -108,8 +108,8 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                 <ul>
                                     <NavLink
                                         text={t('sidebar.links.create.cadet')}
-                                        href="/app/cadet/null"
-                                        isRoute={pathname.endsWith("/cadet/null")}
+                                        href="/app/cadet/new"
+                                        isRoute={pathname.endsWith("/cadet/new")}
                                         level={2}
                                         collapsed={collapsed}
                                         requiredRole={AuthRole.inspector}

@@ -23,7 +23,7 @@ export type ParamType = {
 
 
 const CadetDetailPage = async (props: PropType) => {
-    const newCadet = props.params.cadetId === "null";
+    const newCadet = props.params.cadetId === "new";
     const { user } = await getIronSession();
     if (!newCadet) {
         var cadet = await getCadetData(props.params.cadetId).catch(() => undefined);
