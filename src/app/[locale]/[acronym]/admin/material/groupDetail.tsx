@@ -67,7 +67,7 @@ export default function MaterialConfigGroupDetail({
 
         let issuedDefault = null;
         if (data.issuedDefault && Number.isInteger(+data.issuedDefault) && +data.issuedDefault > 0) {
-            issuedDefault = +data.issuedDefault as number;
+            issuedDefault = Number(data.issuedDefault);
         }
 
         setEditable(false);
