@@ -1,4 +1,4 @@
-import { useScopedI18n } from "@/lib/locales/client";
+import { useI18n, useScopedI18n } from "@/lib/locales/client";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode } from "react";
@@ -9,7 +9,7 @@ export type DangerConfirmationModalPropType = {
     header: string,
     message: string | ReactNode,
     confirmationText: string,
-    cancelOption: {
+    cancelOption?: {
         option: string,
         function?: () => void,
     },
@@ -17,16 +17,16 @@ export type DangerConfirmationModalPropType = {
         option: string,
         function: () => void,
     },
-    onClose: () => void,
 };
 
-function DangerConfirmationModal({ header, message, confirmationText, onClose, dangerOption, cancelOption }: DangerConfirmationModalPropType) {
+function DangerConfirmationModal({ header, message, confirmationText, dangerOption, cancelOption, onClose }: DangerConfirmationModalPropType & { onClose: () => void }) {
     const t = useScopedI18n('modals.dangerConfirmation.confirmation');
+    const tAction = useI18n();
 
     const { register, formState: { errors }, handleSubmit } = useForm<{ confirmation: string }>({ mode: "onTouched" });
 
-    const onSubmit = async (data: { confirmation: string }) => {
-        dangerOption.function();
+    const onSubmit = async () => {
+        await dangerOption.function();
         onClose();
     }
 
@@ -80,10 +80,10 @@ function DangerConfirmationModal({ header, message, confirmationText, onClose, d
                         <Col>
                             <Button
                                 variant="outline-seccondary"
-                                onClick={() => { onClose(); cancelOption.function ? cancelOption.function() : undefined }}
+                                onClick={() => { onClose(); cancelOption?.function ? cancelOption.function() : undefined }}
                                 data-testid="btn_cancel"
                             >
-                                {cancelOption.option}
+                                {cancelOption?.option?? tAction('common.actions.cancel')}
                             </Button>
                         </Col>
                         <Col>

@@ -56,18 +56,20 @@ export default function UniformConfigTypeList({
         });
         
         await getUniformCountByType(type.id).then(count =>
-            modal?.dangerConfirmationModal(
-                t('admin.uniform.type.deleteModal.header', { type: type.name }),
-                <span>
+            modal?.dangerConfirmationModal({
+                header: t('admin.uniform.type.deleteModal.header', { type: type.name }),
+                message: <span>
                     {t('admin.uniform.type.deleteModal.message.part1', { type: type.name })}<br />
                     {t('admin.uniform.type.deleteModal.message.part2')}
                     <span className="fw-bold">{t('admin.uniform.type.deleteModal.message.part3', { count })}</span>
                     {t('admin.uniform.type.deleteModal.message.part4')}
                 </span>,
-                t('admin.uniform.type.deleteModal.confirmationText', { type: type.name }),
-                t('common.actions.delete'),
-                deleteMutation,
-            )
+                confirmationText: t('admin.uniform.type.deleteModal.confirmationText', { type: type.name }),
+                dangerOption: {
+                    option: t('common.actions.delete'),
+                    function: deleteMutation,
+                }
+            })
         );
     }
 

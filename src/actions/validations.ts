@@ -18,6 +18,7 @@ export const genericSAValidatiorV2 = async (
         uniformSizeListId?: string | string[] | null,
         uniformSizeId?: string | string[],
         materialId?: string | (string | undefined)[],
+        materialGroupId?: string | string[],
     }
 ): Promise<IronSessionUser> => {
     "use server"
@@ -105,6 +106,14 @@ export const validateUniformAssosiation = async (uniformId: string, assosiationI
         }
     }
 });
+const validateMaterialGroupAssosiation = async (materialGroupId: string, assosiationId: string) =>
+    prisma.materialGroup.findUniqueOrThrow({
+        where: {
+            id: materialGroupId,
+            recdelete: null,
+            fk_assosiation: assosiationId,
+        }
+    });
 const validateMaterailAssosiation = async (materialId: string, assosiationId: string) => prisma.material.findUniqueOrThrow({
     where: {
         id: materialId,

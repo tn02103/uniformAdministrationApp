@@ -59,17 +59,19 @@ export default function UniformConfigTypeGenerationList({
             deleteUniformGeneration(generation.id),
         );
 
-        modal?.dangerConfirmationModal(
-            t('admin.uniform.generationList.deleteModal.header', { generation: generation.name }),
-            <span>
+        modal?.dangerConfirmationModal({
+            header: t('admin.uniform.generationList.deleteModal.header', { generation: generation.name }),
+            message: <span>
                 {t('admin.uniform.generationList.deleteModal.message.part1')}<br />
                 {t('admin.uniform.generationList.deleteModal.message.part2')}<br />
                 {t('admin.uniform.generationList.deleteModal.message.part3')}<br />
             </span>,
-            t('admin.uniform.generationList.deleteModal.confirmationText', { generation: generation.name }),
-            t('common.actions.delete'),
-            deleteMutation,
-        );
+            confirmationText: t('admin.uniform.generationList.deleteModal.confirmationText', { generation: generation.name }),
+            dangerOption: {
+                option: t('common.actions.delete'),
+                function: deleteMutation,
+            }
+        });
     }
 
 

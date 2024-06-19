@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/db";
 import { getI18n } from "@/lib/locales/config";
 import { setStaticParamsLocale } from "next-international/server";
-import Head from "next/head";
 import { Col, Row } from "react-bootstrap";
 import LoginForm from "./loginForm";
 
@@ -14,9 +13,6 @@ const LoginPage = async ({ params: { locale } }: { params: { locale: string } })
 
     return (
         <div>
-            <Head>
-                <title>{t('login.header')}</title>
-            </Head>
             <Row className="justify-content-center">
                 <Col xs={"auto"} className="bg-body-secondary p-3 rounded">
                     <h2>{t('login.header')}</h2>

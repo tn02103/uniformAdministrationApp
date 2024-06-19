@@ -1,7 +1,7 @@
 import { getCadetMaterialMap } from "@/actions/controllers/CadetMaterialController";
-import { getMaterialConfiguration } from "@/actions/material";
 import { getI18n } from "@/lib/locales/config";
 import MaterialTable from "./uiTable";
+import { getMaterialConfiguration } from "@/actions/controllers/MaterialController";
 
 type PropType = {
     cadetId: string;
