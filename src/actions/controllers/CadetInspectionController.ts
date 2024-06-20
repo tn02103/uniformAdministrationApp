@@ -7,7 +7,9 @@ import { descriptionValidationPattern, uuidValidationPattern } from "@/lib/valid
 import { CadetInspection, Deficiency } from "@/types/deficiencyTypes";
 import { PrismaClient } from "@prisma/client";
 import { CadetInspectionDBHandler } from "../dbHandlers/CadetInspectionDBHandler";
-import { genericSAValidatiorV2 } from "../validations";
+import { genericSAValidatiorV2, genericSAValidator } from "../validations";
+import { z } from "zod";
+import { CadetInspectionFormShema } from "@/lib/zod/cadetInspection";
 
 const dbHandler = new CadetInspectionDBHandler();
 export const getUnresolvedDeficienciesByCadet = async (cadetId: string): Promise<Deficiency[]> => genericSAValidatiorV2(
@@ -47,119 +49,115 @@ export const getCadetInspection = async (cadetId: string): Promise<CadetInspecti
         newCadetDeficiencies: data[2] as Deficiency[],
     }
 });
-const saveValidator = (data: FormType) => (
-    Object.entries(data.oldDeficiencyList).every(([key, value]) => (
-        uuidValidationPattern.test(key)
-        && (typeof value === "boolean")
-    ))
-    && data.newDeficiencyList.every((def) => (
-        (!def.id || uuidValidationPattern.test(def.id))
-        && uuidValidationPattern.test(def.typeId)
-        && (!def.description || descriptionValidationPattern.test(def.description))
-        && (!def.fk_uniform || uuidValidationPattern.test(def.fk_uniform))
-        && (!def.fk_material || uuidValidationPattern.test(def.fk_material))
-    ))
-);
-export const saveCadetInspection = async (data: FormType, cadetId: string, uniformComplete: boolean) => genericSAValidatiorV2(
-    AuthRole.inspector,
-    saveValidator(data) && (typeof uniformComplete === "boolean"),
-    { cadetId }
-).then(async ({ assosiation, username }) => {
-    const { oldDeficiencyList, newDeficiencyList } = data;
-    // Check if Inspection is active
-    const inspection = await dbHandler.getActiveInspection(assosiation);
-    if (!inspection) {
-        throw new Error("Could not save CadetInspection since no inspection is active");
-    }
 
-    // LOADING DATA FROM DATABASE
-    let [previousInspectionDeficiencies, activeInspectionDeficiencies]: Deficiency[][] = await prisma.$transaction([
-        dbHandler.getPreviouslyUnresolvedDeficiencies(cadetId, inspection.id, inspection.date),
-        dbHandler.getCadetDeficienciesFromInspection(cadetId, inspection.id)
-    ]);
+const savePropShema = z.object({
+    data: CadetInspectionFormShema,
+    cadetId: z.string().uuid(),
+    uniformComplete: z.boolean(),
+})
 
-    await prisma.$transaction(async (client) => {
-        // INSERT | UPDATE cadet_inspection
-        await dbHandler.upsertCadetInspection(cadetId, inspection.id, uniformComplete, client as PrismaClient);
+export const saveCadetInspection = async (props: { data: FormType, cadetId: string, uniformComplete: boolean }) =>
+    genericSAValidator(
+        AuthRole.inspector,
+        props,
+        savePropShema,
+        { cadetId: props.cadetId }
+    ).then(async ([{ data, cadetId, uniformComplete }, { assosiation, username }]) => {
+        const { oldDeficiencyList, newDeficiencyList } = data;
+        // Check if Inspection is active
+        const inspection = await dbHandler.getActiveInspection(assosiation);
+        if (!inspection) {
+            throw new Error("Could not save CadetInspection since no inspection is active");
+        }
 
-        // RESOLVING OLD DEFICIENCIES
-        if (oldDeficiencyList) {
-            // -- collecting ids of deficiencies that are to be resolved
-            const deficiencyIdsToResolve: string[] = [];
-            const deficiencyIdsToUnresolve: string[] = [];
-            await Object.entries(oldDeficiencyList)
-                .forEach(([id, resolved]) => {
-                    const prevDeficiency = previousInspectionDeficiencies.find(d => d.id === id);
-                    if (!prevDeficiency) {
-                        throw new Error("Failed to find old Deficiency in prevInDefList");
-                    }
+        // LOADING DATA FROM DATABASE
+        let [previousInspectionDeficiencies, activeInspectionDeficiencies]: Deficiency[][] = await prisma.$transaction([
+            dbHandler.getPreviouslyUnresolvedDeficiencies(cadetId, inspection.id, inspection.date),
+            dbHandler.getCadetDeficienciesFromInspection(cadetId, inspection.id)
+        ]);
 
-                    if (resolved) {
-                        if (!prevDeficiency.dateResolved) {
-                            deficiencyIdsToResolve.push(id);
+        await prisma.$transaction(async (client) => {
+            // INSERT | UPDATE cadet_inspection
+            await dbHandler.upsertCadetInspection(cadetId, inspection.id, uniformComplete, client as PrismaClient);
+
+            // RESOLVING OLD DEFICIENCIES
+            if (oldDeficiencyList) {
+                // -- collecting ids of deficiencies that are to be resolved
+                const deficiencyIdsToResolve: string[] = [];
+                const deficiencyIdsToUnresolve: string[] = [];
+                await Object.entries(oldDeficiencyList)
+                    .forEach(([id, resolved]) => {
+                        const prevDeficiency = previousInspectionDeficiencies.find(d => d.id === id);
+                        if (!prevDeficiency) {
+                            throw new Error("Failed to find old Deficiency in prevInDefList");
                         }
-                    } else {
-                        if (prevDeficiency.dateResolved) {
-                            deficiencyIdsToUnresolve.push(id);
+
+                        if (resolved) {
+                            if (!prevDeficiency.dateResolved) {
+                                deficiencyIdsToResolve.push(id);
+                            }
+                        } else {
+                            if (prevDeficiency.dateResolved) {
+                                deficiencyIdsToUnresolve.push(id);
+                            }
+                        }
+                    });
+                // -- resolving & unresolving deficiencies
+                if (deficiencyIdsToResolve.length > 0) {
+                    await dbHandler.resolveDeficiencies(deficiencyIdsToResolve, inspection.id, username, assosiation, client as PrismaClient);
+                }
+                if (deficiencyIdsToUnresolve.length > 0) {
+                    await dbHandler.unresolveDeficiencies(deficiencyIdsToUnresolve, assosiation, client as PrismaClient);
+                }
+            }
+
+            // UPDATE AND CREATE NEW DEFICIENCIES
+            await Promise.all(newDeficiencyList.map(async (def) => {
+                // -- get data
+                const type = await prisma.deficiencyType.findUniqueOrThrow({
+                    where: {
+                        id: def.typeId,
+                        AND: {
+                            fk_assosiation: assosiation,
                         }
                     }
                 });
-            // -- resolving & unresolving deficiencies
-            if (deficiencyIdsToResolve.length > 0) {
-                await dbHandler.resolveDeficiencies(deficiencyIdsToResolve, inspection.id, username, assosiation, client as PrismaClient);
-            }
-            if (deficiencyIdsToUnresolve.length > 0) {
-                await dbHandler.unresolveDeficiencies(deficiencyIdsToUnresolve, assosiation, client as PrismaClient);
-            }
-        }
+                // -- prepare data
+                if (type.dependend === "uniform" || type.relation === "uniform") {
+                    if (!def.fk_uniform) throw Error("Could not save new Deficiency fk_uniform is missing");
+                    def.description = await dbHandler.getUniformLabel(def.fk_uniform, assosiation);
+                }
 
-        // UPDATE AND CREATE NEW DEFICIENCIES
-        await Promise.all(newDeficiencyList.map(async (def) => {
-            // -- get data
-            const type = await prisma.deficiencyType.findUniqueOrThrow({
-                where: {
-                    id: def.typeId,
-                    AND: {
-                        fk_assosiation: assosiation,
+                if (type.relation === "material") {
+                    if (!def.fk_material) throw Error("Could not save new Deficiency fk_material is missing");
+                    def.description = await dbHandler.getMaterialLabel(def.fk_material, assosiation);
+                }
+
+                if (!def.description) throw new Error("Could not save Deficiency description is missing");
+
+                // -- save data
+                const dbDef = await dbHandler.upsertDeficiency(def, username, assosiation, client as PrismaClient, inspection.id);
+                if (type.dependend === "uniform") {
+                    await dbHandler.upsertDeficiencyUniform(dbDef.id, def.fk_uniform!, client as PrismaClient);
+                } else {
+                    const data = {
+                        fk_cadet: cadetId,
+                        fk_uniform: (type.relation === "uniform") ? def.fk_uniform : undefined,
+                        fk_material: (type.relation === "material") ? def.fk_material : undefined,
                     }
-                }
-            });
-            // -- prepare data
-            if (type.dependend === "uniform" || type.relation === "uniform") {
-                if (!def.fk_uniform) throw Error("Could not save new Deficiency fk_uniform is missing");
-                def.description = await dbHandler.getUniformLabel(def.fk_uniform, assosiation);
-            }
 
-            if (type.relation === "material") {
-                if (!def.fk_material) throw Error("Could not save new Deficiency fk_material is missing");
-                def.description = await dbHandler.getMaterialLabel(def.fk_material, assosiation);
-            }
-
-            if (!def.description) throw new Error("Could not save Deficiency description is missing");
-
-            // -- save data
-            const dbDef = await dbHandler.upsertDeficiency(def, username, assosiation, client as PrismaClient, inspection.id);
-            if (type.dependend === "uniform") {
-                await dbHandler.upsertDeficiencyUniform(dbDef.id, def.fk_uniform!, client as PrismaClient);
-            } else {
-                const data = {
-                    fk_cadet: cadetId,
-                    fk_uniform: (type.relation === "uniform") ? def.fk_uniform : undefined,
-                    fk_material: (type.relation === "material") ? def.fk_material : undefined,
+                    await dbHandler.upsertDeficiencyCadet(dbDef.id, data, client as PrismaClient);
                 }
 
-                await dbHandler.upsertDeficiencyCadet(dbDef.id, data, client as PrismaClient);
-            }
+                // -- remove from list
+                if (activeInspectionDeficiencies) {
+                    activeInspectionDeficiencies = activeInspectionDeficiencies.filter(d => d.id !== dbDef.id);
+                }
+            }));
 
-            // -- remove from list
-            if (activeInspectionDeficiencies) {
-                activeInspectionDeficiencies = activeInspectionDeficiencies.filter(d => d.id !== dbDef.id);
+            // DELETE deficiencies not removed from list
+            if (activeInspectionDeficiencies && activeInspectionDeficiencies.length > 0) {
+                await dbHandler.deleteNewDeficiencies(activeInspectionDeficiencies.map(d => d.id!), assosiation, client as PrismaClient);
             }
-        }));
-
-        // DELETE deficiencies not removed from list
-        if (activeInspectionDeficiencies && activeInspectionDeficiencies.length > 0) {
-            await dbHandler.deleteNewDeficiencies(activeInspectionDeficiencies.map(d => d.id!), assosiation, client as PrismaClient);
-        }
+        });
     });
-});

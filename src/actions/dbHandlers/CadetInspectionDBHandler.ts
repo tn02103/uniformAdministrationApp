@@ -132,7 +132,7 @@ export class CadetInspectionDBHandler {
         }
     });
 
-    upsertDeficiency = (deficiency: Deficiency, username: string, fk_assosiation: string, client: PrismaClient, inspectionId?: string) => client.deficiency.upsert({
+    upsertDeficiency = (deficiency: { id: string, typeId: string, description: string, comment: string }, username: string, fk_assosiation: string, client: PrismaClient, inspectionId?: string) => client.deficiency.upsert({
         where: {
             id: deficiency.id ?? "",
             AND: { DeficiencyType: { fk_assosiation } }

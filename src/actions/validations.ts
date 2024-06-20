@@ -5,44 +5,30 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { IronSessionUser, getIronSession } from "@/lib/ironSession";
 import { redirect } from "next/navigation";
+import { z } from "zod";
 
-export const genericSAValidatiorV2 = async (
-    requiredRole: AuthRole,
-    typeValidation: boolean,
-    assosiationValidations: {
-        userId?: string | string[],
-        cadetId?: string | string[],
-        uniformId?: string | string[],
-        uniformTypeId?: string | string[],
-        uniformGenerationId?: string | string[],
-        uniformSizeListId?: string | string[] | null,
-        uniformSizeId?: string | string[],
-        materialId?: string | (string | undefined)[],
-        materialGroupId?: string | string[],
-    }
-): Promise<IronSessionUser> => {
-    "use server"
+type AssosiationValidationDataType = {
+    userId?: string | string[],
+    cadetId?: string | string[],
+    uniformId?: string | string[],
+    uniformTypeId?: string | string[],
+    uniformGenerationId?: string | string[],
+    uniformSizeListId?: string | string[] | null,
+    uniformSizeId?: string | string[],
+    materialId?: string | (string | undefined)[],
+    materialGroupId?: string | string[],
 
-    const { user } = await getIronSession();
-    if (!user) {
-        return redirect('/login');
-    } else if (user.role < requiredRole) {
-        throw new UnauthorizedException(`user does not have required role ${requiredRole}`);
-    }
-
-    if (!typeValidation) {
-        throw new Error("Typevalidation failed");
-    }
-
+}
+function assosiationValidatior(assosiationValidations: AssosiationValidationDataType, fk_assosiation: string) {
     const validationPromisses: Promise<any>[] = [];
     const validate = (ids: string | (string | undefined)[], validator: (id: string, assosiationId: string) => Promise<any>) => {
         if (Array.isArray(ids)) {
             validationPromisses.push(
-                ...ids.filter(id => id != undefined).map((id) => validator(id as string, user.assosiation))
+                ...ids.filter(id => id != undefined).map((id) => validator(id as string, fk_assosiation))
             );
         } else {
             validationPromisses.push(
-                validator(ids, user.assosiation)
+                validator(ids, fk_assosiation)
             );
         }
     }
@@ -74,6 +60,53 @@ export const genericSAValidatiorV2 = async (
     if (assosiationValidations.uniformSizeId) {
         validate(assosiationValidations.uniformSizeId, validateUniformSizeAssosiation);
     }
+
+    return Promise.all(validationPromisses);
+}
+
+export const genericSAValidator = async <T>(
+    requiredRole: AuthRole,
+    data: any,
+    shema: z.ZodType<T>,
+    assosiationValidations: AssosiationValidationDataType
+): Promise<[T, IronSessionUser]> => {
+
+    const { user } = await getIronSession();
+    if (!user) {
+        return redirect('/login');
+    } else if (user.role < requiredRole) {
+        throw new UnauthorizedException(`user does not have required role ${requiredRole}`);
+    }
+
+    const zodResult = shema.safeParse(data);
+    if (!zodResult.success) {
+        throw new Error('Zod validation failed: ' + zodResult.error.message);
+    }
+
+    await assosiationValidatior(assosiationValidations, user.assosiation);
+
+    return [zodResult.data, user];
+}
+
+export const genericSAValidatiorV2 = async (
+    requiredRole: AuthRole,
+    typeValidation: boolean,
+    assosiationValidations: AssosiationValidationDataType,
+): Promise<IronSessionUser> => {
+    "use server"
+
+    const { user } = await getIronSession();
+    if (!user) {
+        return redirect('/login');
+    } else if (user.role < requiredRole) {
+        throw new UnauthorizedException(`user does not have required role ${requiredRole}`);
+    }
+
+    if (!typeValidation) {
+        throw new Error("Typevalidation failed");
+    }
+
+    await assosiationValidatior(assosiationValidations, user.assosiation);
 
     return user;
 }

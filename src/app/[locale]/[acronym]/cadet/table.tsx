@@ -35,8 +35,7 @@ const GeneralOverviewTable = ({
     const { data: inspectedIdList } = useSWR(
         `inspection/status/idList`,
         () => (userRole >= AuthRole.inspector) ? getInspectedCadetIdList() : null
-    )
-
+    );
     function changeSortOrder(sortOrder: string) {
         if (searchParam.has("orderBy") && searchParam.has("asc")) {
             if (searchParam.get("orderBy") === sortOrder) {

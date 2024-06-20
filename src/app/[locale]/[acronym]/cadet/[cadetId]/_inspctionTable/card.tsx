@@ -70,7 +70,7 @@ export default function CadetInspectionCard() {
         resolve(data);
     }).then(async (data) => mutate(
         (key: any) => (typeof key === "string") && (key === `cadet.${cadetId}.inspection` || key === `cadet.${cadetId}.deficiencies.unresolved`),
-        saveCadetInspection(data, cadetId, uniformComplete),
+        saveCadetInspection({ data, cadetId, uniformComplete }),
         { populateCache: false }
     )).then(() => {
         setStep(0);
