@@ -170,7 +170,7 @@ test.describe(() => {
     test.describe('Test uniformType Rows', async () => {
         const defaultTextColor = 'rgb(33, 37, 41)';
 
-        test('validate correct sortOrder of the typeRows', async ({ uniformComponent, staticData: {data} }) => {
+        test('validate correct sortOrder of the typeRows', async ({ uniformComponent, staticData: { data } }) => {
             const types = data.uniformTypes.filter(type => !type.recdelete).sort((a, b) => a.sortOrder - b.sortOrder);
 
             for (let i = 0; i < types.length; i++) {
@@ -179,7 +179,7 @@ test.describe(() => {
             }
         });
 
-        test('validate deleted Types not shown', async ({ uniformComponent, staticData: {data} }) => {
+        test('validate deleted Types not shown', async ({ uniformComponent, staticData: { data } }) => {
             const deletedTypes = data.uniformTypes.filter(type => type.recdelete);
 
             await Promise.all(
@@ -220,7 +220,7 @@ test.describe(() => {
         test('validate correct uniformItems are displayed in correct sortOrder', async ({ uniformComponent, staticData: { ids, data } }) => {
             const uniformItems: any[] = await prisma.uniform.findMany({
                 where: {
-                    issuedEntrys: {
+                    issuedEntries: {
                         some: {
                             fk_cadet: ids.cadetIds[1],
                             dateReturned: null
@@ -247,7 +247,7 @@ test.describe(() => {
         test('Validate returned items are not shown', async ({ uniformComponent, staticData: { ids } }) => {
             const retunedIds = await prisma.uniform.findMany({
                 where: {
-                    issuedEntrys: {
+                    issuedEntries: {
                         some: {
                             fk_cadet: ids.cadetIds[1],
                             NOT: { dateReturned: null }

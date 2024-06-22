@@ -93,7 +93,7 @@ export default function SizeItem({
             </Col>
             <Col className="hoverColHidden">
                 <Dropdown>
-                    <Dropdown.Toggle data-testid="btn_menu" variant="outline-seccondary" className="border-0" id={"SizeList-dropdown"}>
+                    <Dropdown.Toggle data-testid="btn_menu" variant="outline-seccondary" className="border-0" id={"Sizelist-dropdown"}>
                         <FontAwesomeIcon icon={faBars} />
                     </Dropdown.Toggle>
                     <DropdownMenu>

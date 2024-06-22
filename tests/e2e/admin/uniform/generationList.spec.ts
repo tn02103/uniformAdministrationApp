@@ -68,7 +68,7 @@ test('validate create', async ({ page, components: { generationComponent, editGe
         await expect(generationComponent.btn_create).toBeVisible();
         await generationComponent.btn_create.click();
         await editGenerationPopup.txt_name.fill(name);
-        await editGenerationPopup.sel_sizeList.selectOption(ids.sizelistIds[1])
+        await editGenerationPopup.sel_sizelist.selectOption(ids.sizelistIds[1])
         await editGenerationPopup.chk_outdated.setChecked(true);
         await editGenerationPopup.btn_save.click();
         await expect(page.locator('div[data-testid^="div_generation_"]').getByText(name)).toBeVisible();
@@ -86,7 +86,7 @@ test('validate create', async ({ page, components: { generationComponent, editGe
             name: name,
             sortOrder: 4,
             outdated: true,
-            fk_sizeList: ids.sizelistIds[1],
+            fk_sizelist: ids.sizelistIds[1],
             fk_uniformType: typeId
         }));
     });
@@ -219,12 +219,12 @@ test('validate edit', async ({ page, typeId, generationList, staticData: { ids }
         await generationComponent.btn_gen_edit(genId).click();
         await editGenerationPopup.txt_name.fill('testGeneration');
         await editGenerationPopup.chk_outdated.click();
-        await editGenerationPopup.sel_sizeList.selectOption(ids.sizelistIds[1]);
+        await editGenerationPopup.sel_sizelist.selectOption(ids.sizelistIds[1]);
         await editGenerationPopup.btn_save.click();
 
-        await baseTest.step('handle sizeList warning', async () => {
+        await baseTest.step('handle sizelist warning', async () => {
             await expect(popupComponent.div_popup).toBeVisible();
-            await expect(popupComponent.div_message).toHaveText(t.admin.uniform.changeSizeListWarning);
+            await expect(popupComponent.div_message).toHaveText(t.admin.uniform.changeSizelistWarning);
             await popupComponent.btn_save.click();
         });
     });
@@ -233,7 +233,7 @@ test('validate edit', async ({ page, typeId, generationList, staticData: { ids }
     await baseTest.step('validate ui', async () => {
         await expect.soft(generationComponent.div_gen_name(genId)).toHaveText('testGeneration');
         await expect.soft(generationComponent.div_gen_outdated(genId)).toBeVisible();
-        await expect.soft(generationComponent.div_gen_sizeList(genId)).toHaveText('Liste2');
+        await expect.soft(generationComponent.div_gen_sizelist(genId)).toHaveText('Liste2');
     });
 
     await baseTest.step('validate DB', async () => {
@@ -245,20 +245,20 @@ test('validate edit', async ({ page, typeId, generationList, staticData: { ids }
         expect(dbData).toEqual(expect.objectContaining({
             name: 'testGeneration',
             outdated: true,
-            fk_sizeList: ids.sizelistIds[1],
+            fk_sizelist: ids.sizelistIds[1],
             fk_uniformType: typeId
         }));
     });
 
 });
-test('validate no sizeList Warning', async ({ page, generationList, staticData: { ids }, components: { generationComponent, editGenerationPopup } }) => {
+test('validate no sizelist Warning', async ({ page, generationList, staticData: { ids }, components: { generationComponent, editGenerationPopup } }) => {
     const popupComponent = new MessagePopupComponent(page);
     const genId = generationList[1].id;
 
     await generationComponent.btn_gen_edit(genId).click();
     await editGenerationPopup.txt_name.fill('testGeneration');
-    await editGenerationPopup.sel_sizeList.selectOption(ids.sizelistIds[1]);
-    await editGenerationPopup.sel_sizeList.selectOption(generationList[1].fk_sizeList);
+    await editGenerationPopup.sel_sizelist.selectOption(ids.sizelistIds[1]);
+    await editGenerationPopup.sel_sizelist.selectOption(generationList[1].fk_sizelist);
     await editGenerationPopup.btn_save.click();
     await expect.soft(popupComponent.div_popup).not.toBeVisible();
 });

@@ -132,7 +132,7 @@ test.describe(async () => {
         await test.step('validate issued Material sortOrder and displayed data', async () => {
             const materialList = await prisma.material.findMany({
                 where: {
-                    issuedEntrys: {
+                    issuedEntries: {
                         some: {
                             fk_cadet: ids.cadetIds[1],
                             dateReturned: null,
@@ -140,7 +140,7 @@ test.describe(async () => {
                     },
                 },
                 include: {
-                    issuedEntrys: {
+                    issuedEntries: {
                         where: {
                             dateReturned: null,
                             fk_cadet: ids.cadetIds[1],
@@ -160,8 +160,8 @@ test.describe(async () => {
                 const materiaListByGroup = materialList
                     .filter(mi => mi.fk_materialGroup === group.id)
                     .sort((a, b) => ((a.sortOrder as number) - (b.sortOrder as number)));
-                    
-                    for (let i = 0; i < materiaListByGroup.length; i++) {
+
+                for (let i = 0; i < materiaListByGroup.length; i++) {
                     await expect
                         .soft(typeListLocator.locator(`nth=${i}`))
                         .toHaveAttribute('data-testid', `div_material_${materiaListByGroup[i].id}`);
@@ -170,7 +170,7 @@ test.describe(async () => {
                         .toHaveText(materiaListByGroup[i].typename as string);
                     await expect
                         .soft(typeListLocator.locator(`nth=${i}`).getByTestId('div_issued'))
-                        .toHaveText(materiaListByGroup[i].issuedEntrys[0].quantity.toString());
+                        .toHaveText(materiaListByGroup[i].issuedEntries[0].quantity.toString());
                 }
             }
         });

@@ -6,7 +6,7 @@ import { SAErrorResponse, SAInUseError } from "@/errors/ServerActionExceptions";
 import { Entity } from "@/lib/EntityEnum";
 import { useI18n } from "@/lib/locales/client";
 import { descriptionValidationPattern } from "@/lib/validations";
-import { UniformSize, UniformSizeList } from "@/types/globalUniformTypes";
+import { UniformSize, UniformSizelist } from "@/types/globalUniformTypes";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
@@ -47,7 +47,7 @@ export default function UniformConfigSizelistDetail({
         });
 
         await modal?.simpleFormModal({
-            header: t('admin.uniform.sizeList.renameModal.header'),
+            header: t('admin.uniform.sizelist.renameModal.header'),
             elementLabel: t('common.name'),
             elementValidation: {
                 required: {
@@ -62,7 +62,7 @@ export default function UniformConfigSizelistDetail({
                     value: 20,
                     message: t('common.error.string.maxLength', { value: 20 }),
                 },
-                validate: (value) => !dbSizelist.uniformSizes.find(sl => (sl.id !== dbSizelist.id) && (sl.name === value)) || t('admin.uniform.sizeList.nameDuplicationError')
+                validate: (value) => !dbSizelist.uniformSizes.find(sl => (sl.id !== dbSizelist.id) && (sl.name === value)) || t('admin.uniform.sizelist.nameDuplicationError')
             },
             defaultValue: { input: dbSizelist.name },
             abort: () => { },
@@ -87,21 +87,21 @@ export default function UniformConfigSizelistDetail({
                     : t('common.uniform.generation.label', { count: 1 });
 
                 modal?.simpleErrorModal({
-                    header: t('admin.uniform.sizeList.deleteFailure.header'),
-                    message: t('admin.uniform.sizeList.deleteFailure.message', { entity, name: data.name }),
+                    header: t('admin.uniform.sizelist.deleteFailure.header'),
+                    message: t('admin.uniform.sizelist.deleteFailure.message', { entity, name: data.name }),
                 });
                 return;
             }
 
-            mutate(response as UniformSizeList[]);
+            mutate(response as UniformSizelist[]);
             setEditable(false);
         });
 
         modal?.simpleWarningModal({
-            header: t('admin.uniform.sizeList.deleteWarning.header', { name: dbSizelist?.name }),
+            header: t('admin.uniform.sizelist.deleteWarning.header', { name: dbSizelist?.name }),
             message: <span>
-                {t('admin.uniform.sizeList.deleteWarning.message.line1')}<br />
-                {t('admin.uniform.sizeList.deleteWarning.message.line2')}
+                {t('admin.uniform.sizelist.deleteWarning.message.line1')}<br />
+                {t('admin.uniform.sizelist.deleteWarning.message.line2')}
             </span>,
             primaryOption: t('common.actions.delete'),
             primaryFunction: deleteMutation,
@@ -124,7 +124,7 @@ export default function UniformConfigSizelistDetail({
                 testId="div_header"
                 endButton={
                     <Dropdown drop="start" className={`${editable ? "d-none" : ""}`}>
-                        <Dropdown.Toggle data-testid="btn_menu" variant="outline-seccondary" className="border-0" id={"SizeList-dropdown"}>
+                        <Dropdown.Toggle data-testid="btn_menu" variant="outline-seccondary" className="border-0" id={"Sizelist-dropdown"}>
                             <FontAwesomeIcon icon={faBars} />
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
@@ -150,7 +150,7 @@ export default function UniformConfigSizelistDetail({
                     </Row>
                 }
                 <fieldset className="m-3 border-1 border border-dark rounded row g-2">
-                    <legend className="fs-6 fst-italic">{t('admin.uniform.sizeList.selectedSizes')}</legend>
+                    <legend className="fs-6 fst-italic">{t('admin.uniform.sizelist.selectedSizes')}</legend>
                     {editable ?
                         editedSizeslist?.sort((a, b) => a.sortOrder - b.sortOrder).map(size =>
                             <Col xs={"3"} md={2} key={size.id}>
@@ -175,7 +175,7 @@ export default function UniformConfigSizelistDetail({
                 </fieldset>
                 {editable &&
                     <fieldset className="m-3 row g-2 border border-1 border-dark rounded">
-                        <legend className="fs-6 fst-italic">{t('admin.uniform.sizeList.otherSizes')}</legend>
+                        <legend className="fs-6 fst-italic">{t('admin.uniform.sizelist.otherSizes')}</legend>
                         {sizes?.filter(s => !editedSizeslist.find(si => s.id === si.id)).map(size =>
                             <Col xs={"3"} md={2} key={size.id}>
                                 <Button

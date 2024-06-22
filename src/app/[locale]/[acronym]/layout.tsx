@@ -1,6 +1,6 @@
 import { getInspectionState } from "@/actions/controllers/InspectionController";
 import { getUniformTypeList } from "@/actions/controllers/UniformConfigController";
-import { getUniformSizeLists } from "@/actions/controllers/UniformSizeController";
+import { getUniformSizelists } from "@/actions/controllers/UniformSizeController";
 import GlobalDataProvider from "@/components/globalDataProvider";
 import Sidebar from "@/components/navigation/Sidebar";
 import { prisma } from "@/lib/db";
@@ -36,10 +36,10 @@ const Layout = async ({
     }
 
 
-    const [typeList, assosiation, sizeLists, inspectionState] = await Promise.all([
+    const [typeList, assosiation, sizelists, inspectionState] = await Promise.all([
         getUniformTypeList(),
         prisma.assosiation.findUniqueOrThrow({ where: { id: user.assosiation } }),
-        getUniformSizeLists(),
+        getUniformSizelists(),
         getInspectionState(),
     ])
 
@@ -48,7 +48,7 @@ const Layout = async ({
             userRole={user.role}
             useBeta={assosiation.useBeta}
             typeList={typeList}
-            sizeLists={sizeLists}
+            sizelists={sizelists}
             inspectionState={inspectionState}
         >
             <div>

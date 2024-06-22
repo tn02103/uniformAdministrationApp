@@ -1,15 +1,15 @@
-import { UniformConfiguration, UniformSizeList, UniformType } from "../types/globalUniformTypes";
+import { UniformConfiguration, UniformSizelist, UniformType } from "../types/globalUniformTypes";
 
 type Props = {
     generationId?: string;
-    sizeLists: UniformSizeList[];
+    sizelists: UniformSizelist[];
 } & ({ type: UniformType } | ComplextProps)
 type ComplextProps = {
     type: string;
     typeList: UniformType[];
 }
-export const getUniformSizeList = (props: Props) => {
-    const { generationId, sizeLists, type } = props;
+export const getUniformSizelist = (props: Props) => {
+    const { generationId, sizelists, type } = props;
     // get uniformType
     if (!type) {
         return null;
@@ -30,17 +30,17 @@ export const getUniformSizeList = (props: Props) => {
         return null;
     }
 
-    // get sizeList
-    let sizeList
+    // get sizelist
+    let sizelist
     if (uniformType.usingGenerations && generationId) {
         const generation = uniformType.uniformGenerationList.find(gen => gen.id == generationId);
         if (generation) {
-            sizeList = sizeLists.find(list => list.id === generation.fk_sizeList);
+            sizelist = sizelists.find(list => list.id === generation.fk_sizelist);
         }
     }
-    if (!sizeList) {
-        sizeList = sizeLists.find(list => list.id === uniformType!.fk_defaultSizeList);
+    if (!sizelist) {
+        sizelist = sizelists.find(list => list.id === uniformType!.fk_defaultSizelist);
     }
-    return sizeList;
+    return sizelist;
 }
 

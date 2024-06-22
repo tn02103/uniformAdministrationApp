@@ -221,9 +221,9 @@ test.describe(() => {
                     fk_uniformType: ids.uniformTypeIds[0],
                     number: 9999
                 },
-                include: { issuedEntrys: true }
+                include: { issuedEntries: true }
             });
-            uniform?.issuedEntrys;
+            uniform?.issuedEntries;
             expect(uniform).not.toBeNull();
             expect(uniform).toEqual(expect.objectContaining({
                 id: expect.stringMatching(uuidValidationPattern),
@@ -233,7 +233,7 @@ test.describe(() => {
                 active: true,
                 recdelete: null,
                 recdeleteUser: null,
-                issuedEntrys: [
+                issuedEntries: [
                     expect.objectContaining({
                         id: expect.stringMatching(uuidValidationPattern),
                         dateIssued: date,
@@ -277,9 +277,9 @@ test.describe(() => {
                     fk_uniformType: ids.uniformTypeIds[0],
                     number: 9999
                 },
-                include: { issuedEntrys: true }
+                include: { issuedEntries: true }
             });
-            uniform?.issuedEntrys;
+            uniform?.issuedEntries;
             expect(uniform).not.toBeNull();
             expect(uniform).toEqual(expect.objectContaining({
                 id: expect.stringMatching(uuidValidationPattern),
@@ -289,7 +289,7 @@ test.describe(() => {
                 active: true,
                 recdelete: null,
                 recdeleteUser: null,
-                issuedEntrys: [
+                issuedEntries: [
                     expect.objectContaining({
                         id: expect.stringMatching(uuidValidationPattern),
                         dateIssued: date,

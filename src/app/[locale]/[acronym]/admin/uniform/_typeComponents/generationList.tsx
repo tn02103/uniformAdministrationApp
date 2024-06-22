@@ -4,7 +4,7 @@ import { changeUniformGenerationSortOrder, createUniformGeneration, deleteUnifor
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { Card, CardBody, CardHeader } from "@/components/card";
 import { useModal } from "@/components/modals/modalProvider";
-import { useUniformSizeLists, useUniformType } from "@/dataFetcher/uniformAdmin";
+import { useUniformSizelists, useUniformType } from "@/dataFetcher/uniformAdmin";
 import { useI18n } from "@/lib/locales/client";
 
 import { UniformGeneration } from "@/types/globalUniformTypes";
@@ -21,7 +21,7 @@ export default function UniformConfigTypeGenerationList({
     const t = useI18n();
     const modal = useModal();
 
-    const { sizelistList } = useUniformSizeLists();
+    const { sizelistList } = useUniformSizelists();
     const { type, mutate } = useUniformType(selectedTypeId);
     const generationList = type?.uniformGenerationList;
 
@@ -36,7 +36,7 @@ export default function UniformConfigTypeGenerationList({
         if (!type) return;
 
         const saveMutation = (data: UniformGeneration, typeId: string) => mutate(
-            createUniformGeneration(data.name, data.outdated, data.fk_sizeList, typeId)
+            createUniformGeneration(data.name, data.outdated, data.fk_sizelist, typeId)
         ).catch((e) => {
             console.error(e);
             toast.error(t('common.error.actions.save'));
@@ -125,8 +125,8 @@ export default function UniformConfigTypeGenerationList({
                                 </Col>
                             </Row>
                             <Row>
-                                <span data-testid="div_sizeList" className="fw-light">
-                                    {type.usingSizes && sizelistList?.find(sl => sl.id === gen.fk_sizeList)?.name}
+                                <span data-testid="div_sizelist" className="fw-light">
+                                    {type.usingSizes && sizelistList?.find(sl => sl.id === gen.fk_sizelist)?.name}
                                 </span>
                             </Row>
                         </Col>

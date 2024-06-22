@@ -7,10 +7,9 @@ import { useCadetMaterialDescriptionList, useCadetUniformComplete } from "@/data
 import { useCadetInspection, useUnresolvedDeficienciesByCadet } from "@/dataFetcher/cadetInspection";
 import { useDeficiencyTypes } from "@/dataFetcher/deficiency";
 import { useInspectionState } from "@/dataFetcher/inspection";
-import { Deficiency, UniformDeficiency } from "@/types/deficiencyTypes";
+import { Deficiency, UniformDeficiency, CadetDeficiency } from "@/types/deficiencyTypes";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { DeficiencyCadet } from "@prisma/client";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -99,7 +98,7 @@ export default function CadetInspectionCard() {
                 }
 
                 if (type.relation === "material") {
-                    const matId: string = (def as unknown as DeficiencyCadet).fk_material!;
+                    const matId: string = (def as unknown as CadetDeficiency).fk_material!;
                     if (matId) {
                         const m = matList.find(m => m.id === matId);
                         if (m) {

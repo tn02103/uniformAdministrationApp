@@ -1,10 +1,10 @@
 "use client";
 
-import { createUniformSizeList } from "@/actions/controllers/UniformSizeController";
+import { createUniformSizelist } from "@/actions/controllers/UniformSizeController";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { Card, CardBody, CardHeader } from "@/components/card";
 import { useModal } from "@/components/modals/modalProvider";
-import { useUniformSizeLists } from "@/dataFetcher/uniformAdmin";
+import { useUniformSizelists } from "@/dataFetcher/uniformAdmin";
 import { useI18n } from "@/lib/locales/client";
 import { descriptionValidationPattern } from "@/lib/validations";
 import { faArrowUpRightFromSquare, faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -22,10 +22,10 @@ export default function UniformConfigSizelistsList({
     const t = useI18n();
     const modal = useModal();
 
-    const { sizelistList, mutate } = useUniformSizeLists();
+    const { sizelistList, mutate } = useUniformSizelists();
 
     function handleCreate() {
-        const saveMutation = async ({ input }: { input: string }) => createUniformSizeList(input).then((data) => {
+        const saveMutation = async ({ input }: { input: string }) => createUniformSizelist(input).then((data) => {
             mutate([...sizelistList ?? [], data].sort((a, b) => a.name.localeCompare(b.name)));
             selectList(data.id);
         }).catch((e) => {
@@ -34,7 +34,7 @@ export default function UniformConfigSizelistsList({
         });
 
         modal?.simpleFormModal({
-            header: t('admin.uniform.sizeList.createModal.header'),
+            header: t('admin.uniform.sizelist.createModal.header'),
             elementLabel: t('common.name'),
             elementValidation: {
                 required: {
@@ -49,7 +49,7 @@ export default function UniformConfigSizelistsList({
                     value: 20,
                     message: t('common.error.string.maxLength', { value: 20 }),
                 },
-                validate: (value) => !sizelistList!.find(sl => (sl.name === value)) || t('admin.uniform.sizeList.nameDuplicationError')
+                validate: (value) => !sizelistList!.find(sl => (sl.name === value)) || t('admin.uniform.sizelist.nameDuplicationError')
             },
             abort: () => { },
             save: saveMutation,

@@ -163,7 +163,7 @@ test('select options', async ({ createPage, staticData: { ids } }) => {
             await configurator.sel_size.selectOption(ids.sizeIds[5]);
         });
         await test.step('Generation1-3', async () => {
-            // sizeListChange with sameSize
+            // sizelistChange with sameSize
             await configurator.sel_generation.selectOption(ids.uniformGenerationIds[2]);
             await Promise.all([
                 expect.soft(configurator.sel_size_option(ids.sizeIds[0])).toBeAttached(), // Size -> 0
@@ -174,7 +174,7 @@ test('select options', async ({ createPage, staticData: { ids } }) => {
             ]);
         });
         await test.step('Generation1-4', async () => {
-            // sizeListChange with different size
+            // sizelistChange with different size
             await configurator.sel_generation.selectOption(ids.uniformGenerationIds[3]);
 
             await Promise.all([

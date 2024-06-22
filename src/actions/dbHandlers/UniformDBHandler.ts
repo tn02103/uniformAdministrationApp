@@ -10,7 +10,7 @@ export class UniformDBHandler {
         (client ?? prisma).uniform.findMany({
             ...uniformArgs,
             where: {
-                issuedEntrys: {
+                issuedEntries: {
                     some: {
                         fk_cadet: cadetId,
                         dateReturned: null
@@ -58,15 +58,15 @@ export class UniformDBHandler {
 
         return data.sort((a, b) => {
             const returnValue = (value: number) => asc ? value : -value;
-            if ((a.issuedEntrys.length === 0) && (b.issuedEntrys.length === 0)) {
+            if ((a.issuedEntries.length === 0) && (b.issuedEntries.length === 0)) {
                 return returnValue(a.number - b.number);
-            } else if (a.issuedEntrys.length === 0) {
+            } else if (a.issuedEntries.length === 0) {
                 return returnValue(1);
-            } else if (b.issuedEntrys.length === 0) {
+            } else if (b.issuedEntries.length === 0) {
                 return returnValue(-1);
             } else {
-                const nameA = a.issuedEntrys[0].cadet.lastname + a.issuedEntrys[0].cadet.firstname;
-                const nameB = b.issuedEntrys[0].cadet.lastname + b.issuedEntrys[0].cadet.firstname;
+                const nameA = a.issuedEntries[0].cadet.lastname + a.issuedEntries[0].cadet.firstname;
+                const nameB = b.issuedEntries[0].cadet.lastname + b.issuedEntries[0].cadet.firstname;
                 if (nameA === nameB) {
                     return returnValue(a.number - b.number);
                 } else {
@@ -99,7 +99,7 @@ export class UniformDBHandler {
                 recdelete: null,
             },
             include: {
-                issuedEntrys: {
+                issuedEntries: {
                     where: {
                         dateReturned: null
                     },
@@ -124,7 +124,7 @@ export class UniformDBHandler {
         (client ?? prisma).uniform.create({
             data: {
                 ...data,
-                issuedEntrys: {
+                issuedEntries: {
                     create: {
                         fk_cadet
                     }

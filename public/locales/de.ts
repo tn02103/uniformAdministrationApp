@@ -82,7 +82,7 @@ export default {
                 issuedDefault: "Anz. auszugeben",
                 usingGenerations: "Nutzt Generationen",
                 usingSizes: "Nutzt Größen",
-                defaultSizeList: "Standard GrößenListe"
+                defaultSizelist: "Standard GrößenListe"
             }
         },
         material: {
@@ -316,7 +316,7 @@ export default {
     admin: {
         uniform: {
             header: "Uniformadministration",
-            changeSizeListWarning: "Beim Ändern der ausgewählten Größenliste, kann bei Uniformteilen dieser Generation die Information der Größe verlohren gehen",
+            changeSizelistWarning: "Beim Ändern der ausgewählten Größenliste, kann bei Uniformteilen dieser Generation die Information der Größe verlohren gehen",
             type: {
                 deleteModal: {
                     header: "Uniformtyp \"{type}\" löschen",
@@ -363,7 +363,7 @@ export default {
                     message: "Soll die Größe wirklich gelöscht werden. Diese Aktion ist nicht wieder umkehrbar."
                 },
             },
-            sizeList: {
+            sizelist: {
                 nameDuplicationError: "Es existiert bereits eine Größenliste mit diesem Namen",
                 otherSizes: "weiter Größen",
                 selectedSizes: "ausgewählte Größen",
@@ -410,7 +410,7 @@ export default {
                 createGroup: "Das Erstellen der Materialgruppe ist fehlgeschlagen",
                 groupNameDuplicate: "Der Gruppename ist bereits vergeben",
                 materialNameDuplicate: "Der Name wird bereits von einem anderen Material der Gruppe verwendet",
-                maxIssuedDefault: "Die Menge standardmäßiger ausgegebenen Materialien darf nicht größer {value} sein", 
+                maxIssuedDefault: "Die Menge standardmäßiger ausgegebenen Materialien darf nicht größer {value} sein",
             },
         },
         user: {

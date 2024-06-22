@@ -1,9 +1,9 @@
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/card";
-import { useUniformSizeLists, useUniformTypeList } from "@/dataFetcher/uniformAdmin";
+import { useUniformSizelists, useUniformTypeList } from "@/dataFetcher/uniformAdmin";
 import { useI18n } from "@/lib/locales/client";
-import { getUniformSizeList } from "@/lib/uniformHelper";
+import { getUniformSizelist } from "@/lib/uniformHelper";
 import { uuidValidationPattern } from "@/lib/validations";
-import { UniformSizeList, UniformType } from "@/types/globalUniformTypes";
+import { UniformSizelist, UniformType } from "@/types/globalUniformTypes";
 import { useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
@@ -20,7 +20,7 @@ const NewUniformConfigurator = ({
     onSubmit, step, withSizes
 }: {
     step: number,
-    onSubmit: (data: ConfiguratorFormType, usedSizeList?: UniformSizeList) => void,
+    onSubmit: (data: ConfiguratorFormType, usedSizelist?: UniformSizelist) => void,
     withSizes: boolean,
 }) => {
     const t = useI18n();
@@ -28,9 +28,9 @@ const NewUniformConfigurator = ({
         useForm<ConfiguratorFormType>({ defaultValues: { active: true }, mode: "onChange" });
 
     const { typeList } = useUniformTypeList();
-    const { sizelistList } = useUniformSizeLists();
+    const { sizelistList } = useUniformSizelists();
     const [selectedType, setSelectedType] = useState<UniformType | null>(null);
-    const [sizeList, setSizeList] = useState<UniformSizeList>();
+    const [sizelist, setSizelist] = useState<UniformSizelist>();
 
 
     // update selected Values
@@ -60,29 +60,29 @@ const NewUniformConfigurator = ({
     const generationChanged = async (genId: string) => {
         if (!selectedType || !sizelistList) return;
 
-        const newSizeList = getUniformSizeList({ generationId: genId, sizeLists: sizelistList, type: selectedType });
+        const newSizelist = getUniformSizelist({ generationId: genId, sizelists: sizelistList, type: selectedType });
 
-        // no sizeList
-        if (!newSizeList) {
-            setSizeList(undefined);
+        // no sizelist
+        if (!newSizelist) {
+            setSizelist(undefined);
             setValue("sizeId", "null", { shouldValidate: true });
             return;
         }
-        // same sizeList
-        if (sizeList && newSizeList.id === sizeList.id) {
+        // same sizelist
+        if (sizelist && newSizelist.id === sizelist.id) {
             return;
         }
 
-        // different sizeList
-        await setSizeList(newSizeList);
+        // different sizelist
+        await setSizelist(newSizelist);
         const oldSize = getValues("sizeId");
 
-        if (newSizeList.uniformSizes.find(s => s.id == oldSize)) {
+        if (newSizelist.uniformSizes.find(s => s.id == oldSize)) {
             setValue("sizeId", oldSize, { shouldValidate: true });
         } else {
             setValue("sizeId", "null", { shouldValidate: true });
         }
-        return newSizeList;
+        return newSizelist;
     }
 
     return (
@@ -92,7 +92,7 @@ const NewUniformConfigurator = ({
                     {t('createUniform.header.configurator')}
                 </p>
             </CardHeader>
-            <Form onSubmit={handleSubmit((data) => onSubmit(data, sizeList))}>
+            <Form onSubmit={handleSubmit((data) => onSubmit(data, sizelist))}>
                 <CardBody>
                     <Row className="bg-white border-top border-1 border-dark p-2 m-0">
                         <Col xs="12">
@@ -158,7 +158,7 @@ const NewUniformConfigurator = ({
                                                 pattern: selectedType?.usingSizes ? uuidValidationPattern : undefined,
                                             })}>
                                             <option value={"null"} disabled>{t('common.error.pleaseSelect')}</option>
-                                            {sizeList?.uniformSizes.map(size => {
+                                            {sizelist?.uniformSizes.map(size => {
                                                 return (
                                                     <option key={size.id} value={size.id} className="text-dark">{size.name}</option>
                                                 );

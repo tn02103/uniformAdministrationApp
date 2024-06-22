@@ -7,8 +7,8 @@ import { useGlobalData } from "@/components/globalDataProvider";
 import { useModal } from "@/components/modals/modalProvider";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
-import { getUniformSizeList } from "@/lib/uniformHelper";
-import { Uniform, UniformFormData, UniformSizeList, UniformType } from "@/types/globalUniformTypes";
+import { getUniformSizelist } from "@/lib/uniformHelper";
+import { Uniform, UniformFormData, UniformSizelist, UniformType } from "@/types/globalUniformTypes";
 import { faArrowUpRightFromSquare, faBars, faCheck, faPencil, faRightLeft, faRightToBracket, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
@@ -305,31 +305,31 @@ const SizeRow = ({
     uniform: Uniform;
     uniformType: UniformType;
 }) => {
-    const { sizeLists } = useGlobalData();
+    const { sizelists } = useGlobalData();
     const { watch, setValue, getValues, register } = useFormContext<UniformFormData>();
 
-    const [usedSizeList, setUsedSizeList] = useState<UniformSizeList>();
+    const [usedSizelist, setUsedSizelist] = useState<UniformSizelist>();
 
 
     const generationChanged = async (generationId?: string) => {
-        const newSizeList = getUniformSizeList({
+        const newSizelist = getUniformSizelist({
             generationId,
             type: uniformType,
-            sizeLists: sizeLists,
+            sizelists: sizelists,
         });
-        // no sizeList
-        if (!newSizeList) {
-            setUsedSizeList(undefined);
+        // no sizelist
+        if (!newSizelist) {
+            setUsedSizelist(undefined);
             setValue("size", "", { shouldValidate: true });
             return;
         }
-        // same sizeList
-        if (usedSizeList && newSizeList.id === usedSizeList.id) {
+        // same sizelist
+        if (usedSizelist && newSizelist.id === usedSizelist.id) {
             return;
         }
 
-        // different sizeList
-        await setUsedSizeList(newSizeList);
+        // different sizelist
+        await setUsedSizelist(newSizelist);
     }
 
     useEffect(() => {
@@ -339,16 +339,16 @@ const SizeRow = ({
     }, [watch("generation")]);
 
     useEffect(() => {
-        if (usedSizeList) {
+        if (usedSizelist) {
             const oldSize = getValues("size");
 
-            if (usedSizeList.uniformSizes.find(s => s.id == oldSize)) {
+            if (usedSizelist.uniformSizes.find(s => s.id == oldSize)) {
                 setValue("size", oldSize, { shouldValidate: true });
             } else {
                 setValue("size", "", { shouldValidate: true });
             }
         }
-    }, [usedSizeList])
+    }, [usedSizelist])
 
 
     if (!uniformType.usingSizes) return (
@@ -368,13 +368,13 @@ const SizeRow = ({
         </Row>
     )
 
-    const selectedSize = usedSizeList?.uniformSizes.find(s => s.id === watch("size"));
+    const selectedSize = usedSizelist?.uniformSizes.find(s => s.id === watch("size"));
 
     return (
         <Row data-testid={"div_size"} className="pe-3">
             <Form.Select {...register('size')} className={!selectedSize ? "text-danger" : ""}>
                 <option value={""} className="text-danger">K.A.</option>
-                {usedSizeList?.uniformSizes.map((size) =>
+                {usedSizelist?.uniformSizes.map((size) =>
                     <option key={size.id} value={size.id} className="text-black">
                         {size.name}
                     </option>

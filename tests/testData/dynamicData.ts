@@ -1,5 +1,5 @@
 import { prisma } from "../../src/lib/db";
-import  StaticDataIds  from "./staticDataIds.json";
+import StaticDataIds from "./staticDataIds.json";
 
 export const startInspection = async (i: number) =>
     await prisma.inspection.create({
@@ -11,7 +11,7 @@ export const startInspection = async (i: number) =>
     });
 
 export const removeInspection = async (i: number) => {
-    const insp = await prisma.inspection.findUnique({where: {id: StaticDataIds[i].dynamic.inspectionId}});
+    const insp = await prisma.inspection.findUnique({ where: { id: StaticDataIds[i].dynamic.inspectionId } });
     if (insp !== null) {
         await prisma.inspection.delete({
             where: { id: StaticDataIds[i].dynamic.inspectionId }
@@ -146,6 +146,7 @@ export async function insertSvenKellerFirstInspection(i: number) {
             uniformComplete: svenKellerFirstInspectionData(i).uniformComplete,
             fk_cadet: svenKellerFirstInspectionData(i).fk_cadet,
             fk_inspection: StaticDataIds[i].dynamic.inspectionId,
+            userInspected: 'test3'
         }
     });
 

@@ -20,8 +20,8 @@ export class GenerationListComponent {
     div_gen_outdated(generationId: string) {
         return this.div_generation(generationId).getByTestId('div_outdated');
     }
-    div_gen_sizeList(generationId: string) {
-        return this.div_generation(generationId).getByTestId('div_sizeList');
+    div_gen_sizelist(generationId: string) {
+        return this.div_generation(generationId).getByTestId('div_sizelist');
     }
     btn_gen_edit(generationId: string) {
         return this.div_generation(generationId).getByTestId('btn_edit');

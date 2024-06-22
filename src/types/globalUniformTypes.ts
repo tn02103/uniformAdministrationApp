@@ -36,7 +36,7 @@ export const uniformWithOwnerArgs = Prisma.validator<Prisma.UniformFindManyArgs>
         type: typeDescriptionArgs,
         generation: generationDescriptionArgs,
         size: sizeDescriptionArgs,
-        issuedEntrys: {
+        issuedEntries: {
             select: {
                 cadet: cadetDescriptionArgs,
             },
@@ -69,7 +69,7 @@ export const uniformGenerationArgs = Prisma.validator<Prisma.UniformGenerationFi
     select: {
         id: true,
         name: true,
-        fk_sizeList: true,
+        fk_sizelist: true,
         outdated: true,
         sortOrder: true,
     },
@@ -83,7 +83,7 @@ export const uniformTypeArgs = Prisma.validator<Prisma.UniformTypeFindManyArgs>(
         issuedDefault: true,
         usingGenerations: true,
         usingSizes: true,
-        fk_defaultSizeList: true,
+        fk_defaultSizelist: true,
         uniformGenerationList: {
             ...uniformGenerationArgs,
             where: {
@@ -115,11 +115,11 @@ export const uniformSizelistArgs = Prisma.validator<Prisma.UniformSizelistFindMa
 export type UniformType = Prisma.UniformTypeGetPayload<typeof uniformTypeArgs>;
 export type UniformGeneration = Prisma.UniformGenerationGetPayload<typeof uniformGenerationArgs>;
 export type UniformSize = Prisma.UniformSizeGetPayload<typeof uniformSizeArgs>;
-export type UniformSizeList = Prisma.UniformSizelistGetPayload<typeof uniformSizelistArgs>;
+export type UniformSizelist = Prisma.UniformSizelistGetPayload<typeof uniformSizelistArgs>;
 
 export type UniformConfiguration = {
     uniformTypes: UniformType[],
-    uniformSizeLists: UniformSizeList[],
+    uniformSizelists: UniformSizelist[],
 };
 
 export type UniformFormData = {

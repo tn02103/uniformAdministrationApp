@@ -1,6 +1,6 @@
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/card";
 import { useI18n } from "@/lib/locales/client";
-import { UniformSizeList } from "@/types/globalUniformTypes";
+import { UniformSizelist } from "@/types/globalUniformTypes";
 import { Button, Col, Form, FormCheck, FormGroup, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { Tooltip } from "react-tooltip";
@@ -12,9 +12,9 @@ export type Step1FormType = {
     };
 };
 export default function Step1({
-    usedSizeList, stepBack, onSubmit, initialMap
+    usedSizelist, stepBack, onSubmit, initialMap
 }: {
-    usedSizeList?: UniformSizeList;
+    usedSizelist?: UniformSizelist;
     stepBack: () => void;
     onSubmit: (data: Step1FormType) => void;
     initialMap: Step1FormType;
@@ -52,7 +52,7 @@ export default function Step1({
                                 t('createUniform.errors.minNumber')
                             }
                         </Col>
-                        {!usedSizeList
+                        {!usedSizelist
                             ?
                             <Col xs={"4"}>
                                 <Form.Group as={Row} className="mb-3" controlId="formPlaintextEmail">
@@ -78,7 +78,7 @@ export default function Step1({
                                     </div>
                                 </Form.Group>
                             </Col>
-                            : usedSizeList?.uniformSizes.map(size => (
+                            : usedSizelist?.uniformSizes.map(size => (
                                 <Col key={size.id} xs={"4"}>
                                     <Form.Group as={Row} className="mb-3" controlId="formPlaintextEmail">
                                         <Form.Label column xs="4" className="fw-bold text-end px-0">

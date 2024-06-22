@@ -14,6 +14,12 @@ test.skip('', async () => {
     await staticData.cleanup.removeAssosiation();
 })
 
+test.skip('fillDB with static data', async () => {
+    const staticData = new StaticData(0);
+    await staticData.resetData();
+    console.log("finished");
+});
+
 test.skip('generateTestIdSet', async () => {
     const ids: StaticDataIdType[] = StaticDataIds;
     ids.push({

@@ -61,8 +61,8 @@ class StaticDataGetter {
 
     readonly deficiencyTypes: Prisma.DeficiencyTypeCreateManyInput[];
     readonly deficiencies: Prisma.DeficiencyCreateManyInput[];
-    readonly deficienciesCadet: Prisma.DeficiencyCadetCreateManyInput[];
-    readonly deficienciesUniform: Prisma.DeficiencyUniformCreateManyInput[];
+    readonly cadetDeficiencies: Prisma.CadetDeficiencyCreateManyInput[];
+    readonly uniformDeficiencies: Prisma.UniformDeficiencyCreateManyInput[];
 
     readonly inspections: Prisma.InspectionCreateManyInput[];
     readonly cadetInspections: Prisma.CadetInspectionCreateManyInput[];
@@ -159,20 +159,20 @@ class StaticDataGetter {
             ]
         ]
         this.uniformTypes = [
-            { id: uniformTypeIds[0], fk_assosiation, name: 'Typ1', acronym: 'AA', issuedDefault: 3, usingGenerations: true, usingSizes: true, fk_defaultSizeList: sizelistIds[0], sortOrder: 0, recdelete: null, recdeleteUser: null },
-            { id: uniformTypeIds[1], fk_assosiation, name: 'Typ2', acronym: 'AB', issuedDefault: 1, usingGenerations: true, usingSizes: false, fk_defaultSizeList: null, sortOrder: 1, recdelete: null, recdeleteUser: null },
-            { id: uniformTypeIds[2], fk_assosiation, name: 'Typ3', acronym: 'AC', issuedDefault: 1, usingGenerations: false, usingSizes: true, fk_defaultSizeList: sizelistIds[1], sortOrder: 2, recdelete: null, recdeleteUser: null },
-            { id: uniformTypeIds[3], fk_assosiation, name: 'Typ4', acronym: 'AD', issuedDefault: 1, usingGenerations: false, usingSizes: false, fk_defaultSizeList: null, sortOrder: 3, recdelete: null, recdeleteUser: null },
-            { id: uniformTypeIds[4], fk_assosiation, name: 'Typ5', acronym: 'AE', issuedDefault: 1, usingGenerations: false, usingSizes: false, fk_defaultSizeList: null, sortOrder: 2, recdelete: new Date('2023-08-15 16:07:58'), recdeleteUser: 'test4' },
+            { id: uniformTypeIds[0], fk_assosiation, name: 'Typ1', acronym: 'AA', issuedDefault: 3, usingGenerations: true, usingSizes: true, fk_defaultSizelist: sizelistIds[0], sortOrder: 0, recdelete: null, recdeleteUser: null },
+            { id: uniformTypeIds[1], fk_assosiation, name: 'Typ2', acronym: 'AB', issuedDefault: 1, usingGenerations: true, usingSizes: false, fk_defaultSizelist: null, sortOrder: 1, recdelete: null, recdeleteUser: null },
+            { id: uniformTypeIds[2], fk_assosiation, name: 'Typ3', acronym: 'AC', issuedDefault: 1, usingGenerations: false, usingSizes: true, fk_defaultSizelist: sizelistIds[1], sortOrder: 2, recdelete: null, recdeleteUser: null },
+            { id: uniformTypeIds[3], fk_assosiation, name: 'Typ4', acronym: 'AD', issuedDefault: 1, usingGenerations: false, usingSizes: false, fk_defaultSizelist: null, sortOrder: 3, recdelete: null, recdeleteUser: null },
+            { id: uniformTypeIds[4], fk_assosiation, name: 'Typ5', acronym: 'AE', issuedDefault: 1, usingGenerations: false, usingSizes: false, fk_defaultSizelist: null, sortOrder: 2, recdelete: new Date('2023-08-15 16:07:58'), recdeleteUser: 'test4' },
         ];
         this.uniformGenerations = [
-            { id: uniformGenerationIds[0], fk_uniformType: uniformTypeIds[0], name: 'Generation1-1', fk_sizeList: sizelistIds[0], outdated: true, sortOrder: 0, recdelete: null, recdeleteUser: null },
-            { id: uniformGenerationIds[1], fk_uniformType: uniformTypeIds[0], name: 'Generation1-2', fk_sizeList: sizelistIds[0], outdated: false, sortOrder: 1, recdelete: null, recdeleteUser: null },
-            { id: uniformGenerationIds[2], fk_uniformType: uniformTypeIds[0], name: 'Generation1-3', fk_sizeList: sizelistIds[1], outdated: false, sortOrder: 2, recdelete: null, recdeleteUser: null },
-            { id: uniformGenerationIds[3], fk_uniformType: uniformTypeIds[0], name: 'Generation1-4', fk_sizeList: sizelistIds[2], outdated: false, sortOrder: 3, recdelete: null, recdeleteUser: null },
-            { id: uniformGenerationIds[4], fk_uniformType: uniformTypeIds[1], name: 'Generation2-1', fk_sizeList: null, outdated: true, sortOrder: 0, recdelete: null, recdeleteUser: null },
-            { id: uniformGenerationIds[5], fk_uniformType: uniformTypeIds[1], name: 'Generation2-2', fk_sizeList: null, outdated: false, sortOrder: 1, recdelete: null, recdeleteUser: null },
-            { id: uniformGenerationIds[6], fk_uniformType: uniformTypeIds[1], name: 'Generation2-3', fk_sizeList: null, outdated: true, sortOrder: 2, recdelete: new Date('2023-08-15 16:07:58'), recdeleteUser: 'test4' },
+            { id: uniformGenerationIds[0], fk_uniformType: uniformTypeIds[0], name: 'Generation1-1', fk_sizelist: sizelistIds[0], outdated: true, sortOrder: 0, recdelete: null, recdeleteUser: null },
+            { id: uniformGenerationIds[1], fk_uniformType: uniformTypeIds[0], name: 'Generation1-2', fk_sizelist: sizelistIds[0], outdated: false, sortOrder: 1, recdelete: null, recdeleteUser: null },
+            { id: uniformGenerationIds[2], fk_uniformType: uniformTypeIds[0], name: 'Generation1-3', fk_sizelist: sizelistIds[1], outdated: false, sortOrder: 2, recdelete: null, recdeleteUser: null },
+            { id: uniformGenerationIds[3], fk_uniformType: uniformTypeIds[0], name: 'Generation1-4', fk_sizelist: sizelistIds[2], outdated: false, sortOrder: 3, recdelete: null, recdeleteUser: null },
+            { id: uniformGenerationIds[4], fk_uniformType: uniformTypeIds[1], name: 'Generation2-1', fk_sizelist: null, outdated: true, sortOrder: 0, recdelete: null, recdeleteUser: null },
+            { id: uniformGenerationIds[5], fk_uniformType: uniformTypeIds[1], name: 'Generation2-2', fk_sizelist: null, outdated: false, sortOrder: 1, recdelete: null, recdeleteUser: null },
+            { id: uniformGenerationIds[6], fk_uniformType: uniformTypeIds[1], name: 'Generation2-3', fk_sizelist: null, outdated: true, sortOrder: 2, recdelete: new Date('2023-08-15 16:07:58'), recdeleteUser: 'test4' },
         ];
         this.uniformList = [
             { id: uniformIds[0][0], number: 1100, fk_uniformType: uniformTypeIds[0], fk_generation: uniformGenerationIds[0], fk_size: sizeIds[1], active: true, comment: '', recdelete: null, recdeleteUser: null },
@@ -581,7 +581,7 @@ class StaticDataGetter {
                 userCreated: 'test4', userUpdated: 'test4', userResolved: null
             },
         ];
-        this.deficienciesCadet = [
+        this.cadetDeficiencies = [
             { deficiencyId: deficiencyIds[4], fk_cadet: cadetIds[1], fk_uniform: null, fk_material: null },
             { deficiencyId: deficiencyIds[5], fk_cadet: cadetIds[2], fk_uniform: null, fk_material: null },
             { deficiencyId: deficiencyIds[6], fk_cadet: cadetIds[2], fk_uniform: null, fk_material: null },
@@ -593,7 +593,7 @@ class StaticDataGetter {
             { deficiencyId: deficiencyIds[12], fk_cadet: cadetIds[5], fk_uniform: null, fk_material: materialIds[0] },
             { deficiencyId: deficiencyIds[13], fk_cadet: cadetIds[2], fk_uniform: null, fk_material: null },
         ];
-        this.deficienciesUniform = [
+        this.uniformDeficiencies = [
             { deficiencyId: deficiencyIds[0], fk_uniform: uniformIds[0][84] },
             { deficiencyId: deficiencyIds[1], fk_uniform: uniformIds[0][46] },
             { deficiencyId: deficiencyIds[2], fk_uniform: uniformIds[0][46] },
@@ -605,16 +605,16 @@ class StaticDataGetter {
             { id: inspectionIds[1], fk_assosiation, date: new Date('2023-08-13T00:00:00.000Z'), active: false },
         ];
         this.cadetInspections = [
-            { fk_inspection: inspectionIds[0], fk_cadet: cadetIds[1], uniformComplete: true },
-            { fk_inspection: inspectionIds[0], fk_cadet: cadetIds[2], uniformComplete: false },
-            { fk_inspection: inspectionIds[0], fk_cadet: cadetIds[3], uniformComplete: true },
-            { fk_inspection: inspectionIds[0], fk_cadet: cadetIds[6], uniformComplete: false },
-            { fk_inspection: inspectionIds[0], fk_cadet: cadetIds[9], uniformComplete: false },
-            { fk_inspection: inspectionIds[1], fk_cadet: cadetIds[1], uniformComplete: true },
-            { fk_inspection: inspectionIds[1], fk_cadet: cadetIds[3], uniformComplete: true },
-            { fk_inspection: inspectionIds[1], fk_cadet: cadetIds[5], uniformComplete: true },
-            { fk_inspection: inspectionIds[1], fk_cadet: cadetIds[7], uniformComplete: true },
-            { fk_inspection: inspectionIds[1], fk_cadet: cadetIds[9], uniformComplete: false },
+            { fk_inspection: inspectionIds[0], fk_cadet: cadetIds[1], uniformComplete: true, userInspected: 'test2' },
+            { fk_inspection: inspectionIds[0], fk_cadet: cadetIds[2], uniformComplete: false, userInspected: 'test2' },
+            { fk_inspection: inspectionIds[0], fk_cadet: cadetIds[3], uniformComplete: true, userInspected: 'test2' },
+            { fk_inspection: inspectionIds[0], fk_cadet: cadetIds[6], uniformComplete: false, userInspected: 'test2' },
+            { fk_inspection: inspectionIds[0], fk_cadet: cadetIds[9], uniformComplete: false, userInspected: 'test2' },
+            { fk_inspection: inspectionIds[1], fk_cadet: cadetIds[1], uniformComplete: true, userInspected: 'test2' },
+            { fk_inspection: inspectionIds[1], fk_cadet: cadetIds[3], uniformComplete: true, userInspected: 'test2' },
+            { fk_inspection: inspectionIds[1], fk_cadet: cadetIds[5], uniformComplete: true, userInspected: 'test2' },
+            { fk_inspection: inspectionIds[1], fk_cadet: cadetIds[7], uniformComplete: true, userInspected: 'test2' },
+            { fk_inspection: inspectionIds[1], fk_cadet: cadetIds[9], uniformComplete: false, userInspected: 'test2' },
         ];
     }
 
@@ -661,8 +661,8 @@ class StaticDataCleanup {
         await prisma.$transaction([
             this.deleteUniformIssued(),
             this.deleteMaterialIssued(),
-            prisma.deficiencyCadet.deleteMany({
-                where: { Cadet: { fk_assosiation: this.data.assosiation.id } }
+            prisma.cadetDeficiency.deleteMany({
+                where: { cadet: { fk_assosiation: this.data.assosiation.id } }
             }),
             this.deleteCadetInspection(),
         ]);
@@ -729,7 +729,7 @@ class StaticDataCleanup {
         await this.deleteDeficiency();
         await this.deleteMaterial();
         await this.deleteMaterialGroup();
-        
+
         await this.loader.materialGroups();
         await this.loader.material();
         await this.loader.materialIssued();
@@ -764,7 +764,7 @@ class StaticDataCleanup {
         await this.deleteAssosiation();
     }
     private deleteDeficiency = () => prisma.deficiency.deleteMany({
-        where: { DeficiencyType: { fk_assosiation: this.fk_assosiation } }
+        where: { type: { fk_assosiation: this.fk_assosiation } }
     });
     private deleteDeficiencyType = () => prisma.deficiencyType.deleteMany({
         where: { fk_assosiation: this.fk_assosiation }
@@ -794,7 +794,7 @@ class StaticDataCleanup {
         where: { type: { fk_assosiation: this.fk_assosiation } }
     });
     private deleteUniformGeneration = () => prisma.uniformGeneration.deleteMany({
-        where: { uniformType: { fk_assosiation: this.fk_assosiation } }
+        where: { type: { fk_assosiation: this.fk_assosiation } }
     });
     private deleteUniformType = () => prisma.uniformType.deleteMany({
         where: { fk_assosiation: this.fk_assosiation }
@@ -931,13 +931,13 @@ class StaticDataLoader {
         });
     }
     async deficienciesCadet() {
-        await prisma.deficiencyCadet.createMany({
-            data: this.data.deficienciesCadet,
+        await prisma.cadetDeficiency.createMany({
+            data: this.data.cadetDeficiencies,
         });
     }
     async deficienciesUniform() {
-        await prisma.deficiencyUniform.createMany({
-            data: this.data.deficienciesUniform,
+        await prisma.uniformDeficiency.createMany({
+            data: this.data.uniformDeficiencies,
         });
     }
     async inspection() {

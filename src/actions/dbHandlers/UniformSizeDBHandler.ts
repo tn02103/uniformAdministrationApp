@@ -10,23 +10,23 @@ export default class UniformSizeDBHandler {
             orderBy: { name: "asc" }
         });
 
-    getTypeUsingSizelist = (fk_defaultSizeList: string, fk_assosiation: string, client?: PrismaClient) =>
+    getTypeUsingSizelist = (fk_defaultSizelist: string, fk_assosiation: string, client?: PrismaClient) =>
         (client ?? prisma).uniformType.findFirst({
             where: {
                 fk_assosiation,
-                fk_defaultSizeList,
+                fk_defaultSizelist,
                 recdelete: null
             }
         });
 
-    getGenerationUsingSizelist = (fk_sizeList: string, fk_assosiation: string, client?: PrismaClient) =>
+    getGenerationUsingSizelist = (fk_sizelist: string, fk_assosiation: string, client?: PrismaClient) =>
         (client ?? prisma).uniformGeneration.findFirst({
             where: {
-                uniformType: {
+                type: {
                     fk_assosiation,
                     recdelete: null,
                 },
-                fk_sizeList,
+                fk_sizelist,
                 recdelete: null
             }
         });

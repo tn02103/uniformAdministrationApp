@@ -65,7 +65,7 @@ test.describe(() => {
                 expect.soft(detailComponent.txt_issuedDefault).toHaveValue(type.issuedDefault.toString()),
                 expect.soft(detailComponent.chk_usingGenerations).toBeChecked(),
                 expect.soft(detailComponent.chk_usingSizes).toBeChecked(),
-                expect.soft(detailComponent.sel_defaultSL).toHaveValue(type.fk_defaultSizeList as string)
+                expect.soft(detailComponent.sel_defaultSL).toHaveValue(type.fk_defaultSizelist as string)
             ]);
         });
     });

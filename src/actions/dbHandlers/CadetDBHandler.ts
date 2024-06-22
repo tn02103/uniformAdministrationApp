@@ -27,6 +27,7 @@ export class CadetDBHandler {
                 : [{ firstname: asc }, { lastname: asc }]
         })
 
+    // Export to view
     getPersonnelList = (fk_assosiation: string, orderBy: "lastname" | "firstname", asc: boolean): Promise<PersonnelListCadet[]> =>
         prisma.$queryRawUnsafe<PersonnelListCadet[]>(`
                     SELECT c."id",

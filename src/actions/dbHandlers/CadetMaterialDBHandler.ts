@@ -9,8 +9,8 @@ export class CadetMaterialDBHandler {
         (client ?? prisma).material.findMany({
             select: {
                 ...dbCadetMaterialArgs.select,
-                issuedEntrys: {
-                    ...dbCadetMaterialArgs.select.issuedEntrys,
+                issuedEntries: {
+                    ...dbCadetMaterialArgs.select.issuedEntries,
                     where: {
                         fk_cadet,
                         dateReturned: null,
@@ -26,7 +26,7 @@ export class CadetMaterialDBHandler {
             where: {
                 recdelete: null,
                 materialGroup: { fk_assosiation },
-                issuedEntrys: {
+                issuedEntries: {
                     some: {
                         fk_cadet,
                         dateReturned: null,
@@ -43,7 +43,7 @@ export class CadetMaterialDBHandler {
                     ...item,
                     groupId: item.materialGroup.id,
                     groupName: item.materialGroup.description,
-                    issued: item.issuedEntrys[0].quantity,
+                    issued: item.issuedEntries[0].quantity,
                 });
                 return map;
             }, {})

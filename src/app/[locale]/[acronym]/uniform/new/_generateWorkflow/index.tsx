@@ -1,7 +1,7 @@
 import { createUniformItems } from "@/actions/controllers/UniformController";
 import { generateUniformNumbers } from "@/actions/controllers/UniformIdController";
 import { useI18n } from "@/lib/locales/client";
-import { UniformNumbersSizeMap, UniformSizeList } from "@/types/globalUniformTypes";
+import { UniformNumbersSizeMap, UniformSizelist } from "@/types/globalUniformTypes";
 import { useEffect, useState } from "react";
 import { Row } from "react-bootstrap";
 import { toast } from "react-toastify";
@@ -27,15 +27,15 @@ const GeneratedWorkflow = ({
 }) => {
     const t = useI18n();
     const [formData, setFormData] = useState<FormDataType>({ uniformNumberMap: [], step1Data: { continuous: false, values: {} } });
-    const [usedSizeList, setUsedSizeList] = useState<UniformSizeList>();
+    const [usedSizelist, setUsedSizelist] = useState<UniformSizelist>();
 
-    function handleConfiguratorSubmit(data: ConfiguratorFormType, sizelist?: UniformSizeList) {
+    function handleConfiguratorSubmit(data: ConfiguratorFormType, sizelist?: UniformSizelist) {
         if (data.generationId === "null") delete data.generationId;
 
         if (step === 0) {
             setFormData({ configurator: data, uniformNumberMap: [], step1Data: { continuous: false, values: {} } });
             setStep(1);
-            setUsedSizeList(sizelist);
+            setUsedSizelist(sizelist);
         }
     }
     function handleGenerateNumbers(data: Step1FormType) {
@@ -119,7 +119,7 @@ const GeneratedWorkflow = ({
             {(step === 1) &&
                 <Row className="mt-4">
                     <Step1
-                        usedSizeList={usedSizeList}
+                        usedSizelist={usedSizelist}
                         initialMap={formData.step1Data}
                         onSubmit={handleGenerateNumbers}
                         stepBack={() => setStep(0)}
@@ -130,7 +130,7 @@ const GeneratedWorkflow = ({
                 <Row className="mt-4">
                     <Step2
                         uniformNumberMap={formData.uniformNumberMap}
-                        usedSizeList={usedSizeList}
+                        usedSizelist={usedSizelist}
                         stepBack={() => setStep(1)}
                         onCreate={handleCreate}
                     />

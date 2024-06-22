@@ -24,7 +24,7 @@ export interface Deficiency {
     userUpdated?: Date;
     userResolved?: Date;
 }
-export interface DeficiencyCadet extends Deficiency {
+export interface CadetDeficiency extends Deficiency {
     fk_cadet: string;
     fk_material?: string;
     fk_uniform?: string;
