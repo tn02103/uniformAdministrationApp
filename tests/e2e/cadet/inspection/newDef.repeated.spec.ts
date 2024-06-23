@@ -66,7 +66,7 @@ test('E2E0277: validate data for repeated inspection', async ({ inspectionCompon
             await Promise.all([
                 expect.soft(inspectionComponent.txt_newDef_description(i)).not.toBeVisible(),
                 expect.soft(inspectionComponent.sel_newDef_uniform(i)).toBeVisible(),
-                expect.soft(inspectionComponent.sel_newDef_uniform(i)).toHaveValue(newDefs[4].DeficiencyCadet!.create.fk_uniform!),
+                expect.soft(inspectionComponent.sel_newDef_uniform(i)).toHaveValue(newDefs[4].cadetDeficiency!.create.fk_uniform!),
             ]);
         }),
         test.step('validate uniformDef', async () => {
@@ -76,7 +76,7 @@ test('E2E0277: validate data for repeated inspection', async ({ inspectionCompon
             await Promise.all([
                 expect.soft(inspectionComponent.txt_newDef_description(i)).not.toBeVisible(),
                 expect.soft(inspectionComponent.sel_newDef_uniform(i)).toBeVisible(),
-                expect.soft(inspectionComponent.sel_newDef_uniform(i)).toHaveValue(newDefs[1].DeficiencyUniform!.create.fk_uniform!),
+                expect.soft(inspectionComponent.sel_newDef_uniform(i)).toHaveValue(newDefs[1].uniformDeficiency!.create.fk_uniform!),
             ]);
         }),
         test.step('validate cadetMaterialDef not issued', async () => {
@@ -90,7 +90,7 @@ test('E2E0277: validate data for repeated inspection', async ({ inspectionCompon
                 expect.soft(inspectionComponent.sel_newDef_materialType(i)).toBeVisible(),
                 expect.soft(inspectionComponent.sel_newDef_material(i)).toHaveValue('others'),
                 expect.soft(inspectionComponent.sel_newDef_materialGroup(i)).toHaveValue(ids.materialGroupIds[2]),
-                expect.soft(inspectionComponent.sel_newDef_materialType(i)).toHaveValue(newDefs[2].DeficiencyCadet!.create.fk_material!),
+                expect.soft(inspectionComponent.sel_newDef_materialType(i)).toHaveValue(newDefs[2].cadetDeficiency!.create.fk_material!),
             ]);
         }),
         test.step('validate cadetMaterialDef issued', async () => {
@@ -102,7 +102,7 @@ test('E2E0277: validate data for repeated inspection', async ({ inspectionCompon
                 expect.soft(inspectionComponent.sel_newDef_material(i)).toBeVisible(),
                 expect.soft(inspectionComponent.sel_newDef_materialGroup(i)).not.toBeVisible(),
                 expect.soft(inspectionComponent.sel_newDef_materialType(i)).not.toBeVisible(),
-                expect.soft(inspectionComponent.sel_newDef_material(i)).toHaveValue(newDefs[3].DeficiencyCadet!.create.fk_material!),
+                expect.soft(inspectionComponent.sel_newDef_material(i)).toHaveValue(newDefs[3].cadetDeficiency!.create.fk_material!),
             ]);
         }),
     ]);

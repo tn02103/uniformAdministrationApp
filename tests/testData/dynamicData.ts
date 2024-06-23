@@ -33,7 +33,7 @@ export const svenKellerFirstInspectionData = (i: number) => ({
             userCreated: 'test3',
             userUpdated: 'test3',
             fk_inspection_created: StaticDataIds[i].dynamic.inspectionId,
-            DeficiencyCadet: {
+            cadetDeficiency: {
                 create: {
                     fk_cadet: StaticDataIds[i].cadetIds[2]
                 }
@@ -47,7 +47,7 @@ export const svenKellerFirstInspectionData = (i: number) => ({
             userCreated: 'test3',
             userUpdated: 'test3',
             fk_inspection_created: StaticDataIds[i].dynamic.inspectionId,
-            DeficiencyUniform: {
+            uniformDeficiency: {
                 create: {
                     fk_uniform: StaticDataIds[i].uniformIds[0][46],
                 }
@@ -61,7 +61,7 @@ export const svenKellerFirstInspectionData = (i: number) => ({
             userCreated: 'test3',
             userUpdated: 'test3',
             fk_inspection_created: StaticDataIds[i].dynamic.inspectionId,
-            DeficiencyCadet: {
+            cadetDeficiency: {
                 create: {
                     fk_cadet: StaticDataIds[i].cadetIds[2],
                     fk_material: StaticDataIds[i].materialIds[9],
@@ -76,7 +76,7 @@ export const svenKellerFirstInspectionData = (i: number) => ({
             userCreated: 'test3',
             userUpdated: 'test3',
             fk_inspection_created: StaticDataIds[i].dynamic.inspectionId,
-            DeficiencyCadet: {
+            cadetDeficiency: {
                 create: {
                     fk_cadet: StaticDataIds[i].cadetIds[2],
                     fk_material: StaticDataIds[i].materialIds[4],
@@ -91,7 +91,7 @@ export const svenKellerFirstInspectionData = (i: number) => ({
             userCreated: 'test3',
             userUpdated: 'test3',
             fk_inspection_created: StaticDataIds[i].dynamic.inspectionId,
-            DeficiencyCadet: {
+            cadetDeficiency: {
                 create: {
                     fk_cadet: StaticDataIds[i].cadetIds[2],
                     fk_uniform: StaticDataIds[i].uniformIds[0][48],

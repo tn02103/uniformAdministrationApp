@@ -179,8 +179,8 @@ test('E2E0275: initalInspection', async ({ page, inspectionComponent, testData: 
                     fk_inspection_created: inspectionId,
                 },
                 include: {
-                    DeficiencyCadet: true,
-                    DeficiencyUniform: true,
+                    cadetDeficiency: true,
+                    uniformDeficiency: true,
                 }
             });
 
@@ -201,12 +201,12 @@ test('E2E0275: initalInspection', async ({ page, inspectionComponent, testData: 
                     dateUpdated: date,
                     dateResolved: null,
                     fk_inspection_resolved: null,
-                    DeficiencyCadet: expect.objectContaining({
+                    cadetDeficiency: expect.objectContaining({
                         fk_cadet: ids.cadetIds[2],
                         fk_uniform: null,
                         fk_material: null,
                     }),
-                    DeficiencyUniform: null,
+                    uniformDeficiency: null,
                 }));
             });
             await test.step('1: cadetUniform', async () => {
@@ -216,8 +216,8 @@ test('E2E0275: initalInspection', async ({ page, inspectionComponent, testData: 
                 expect.soft(def).toEqual(expect.objectContaining({
                     description: newDefs.cadetUniform.description,
                     id: expect.any(String),
-                    DeficiencyUniform: null,
-                    DeficiencyCadet: expect.objectContaining({
+                    uniformDeficiency: null,
+                    cadetDeficiency: expect.objectContaining({
                         fk_cadet: ids.cadetIds[2],
                         fk_uniform: newDefs.cadetUniform.uniform,
                         fk_material: null,
@@ -232,8 +232,8 @@ test('E2E0275: initalInspection', async ({ page, inspectionComponent, testData: 
                     description: newDefs.cadetMaterialIssued.description,
                     id: expect.any(String),
                     fk_deficiencyType: newDefs.cadetMaterialIssued.type,
-                    DeficiencyUniform: null,
-                    DeficiencyCadet: expect.objectContaining({
+                    uniformDeficiency: null,
+                    cadetDeficiency: expect.objectContaining({
                         fk_cadet: ids.cadetIds[2],
                         fk_uniform: null,
                         fk_material: newDefs.cadetMaterialIssued.material
@@ -248,8 +248,8 @@ test('E2E0275: initalInspection', async ({ page, inspectionComponent, testData: 
                     id: expect.any(String),
                     fk_deficiencyType: newDefs.cadetMaterialOther.type,
                     description: newDefs.cadetMaterialOther.description,
-                    DeficiencyUniform: null,
-                    DeficiencyCadet: expect.objectContaining({
+                    uniformDeficiency: null,
+                    cadetDeficiency: expect.objectContaining({
                         fk_cadet: ids.cadetIds[2],
                         fk_uniform: null,
                         fk_material: newDefs.cadetMaterialOther.materialType
@@ -263,10 +263,10 @@ test('E2E0275: initalInspection', async ({ page, inspectionComponent, testData: 
                 expect.soft(def).toEqual(expect.objectContaining({
                     id: expect.any(String),
                     description: newDefs.uniform.description,
-                    DeficiencyUniform: expect.objectContaining({
+                    uniformDeficiency: expect.objectContaining({
                         fk_uniform: newDefs.uniform.uniform,
                     }),
-                    DeficiencyCadet: null,
+                    cadetDeficiency: null,
                 }));
             });
         }),
@@ -361,8 +361,8 @@ test('E2E0281: validate updated inspection', async ({ page, inspectionComponent,
                         id: compare.id,
                     },
                     include: {
-                        DeficiencyCadet: true,
-                        DeficiencyUniform: true,
+                        cadetDeficiency: true,
+                        uniformDeficiency: true,
                     }
                 });
 
@@ -378,10 +378,10 @@ test('E2E0281: validate updated inspection', async ({ page, inspectionComponent,
                     dateResolved: null,
                     fk_inspection_created: inspectionId,
                     fk_inspection_resolved: null,
-                    DeficiencyUniform: expect.objectContaining({
+                    uniformDeficiency: expect.objectContaining({
                         fk_uniform: compare.fk_uniform,
                     }),
-                    DeficiencyCadet: null,
+                    cadetDeficiency: null,
                 }));
             }),
             test.step('newDef created', async () => {
@@ -392,8 +392,8 @@ test('E2E0281: validate updated inspection', async ({ page, inspectionComponent,
                         fk_inspection_created: inspectionId
                     },
                     include: {
-                        DeficiencyCadet: true,
-                        DeficiencyUniform: true,
+                        cadetDeficiency: true,
+                        uniformDeficiency: true,
                     }
                 });
 
@@ -411,7 +411,7 @@ test('E2E0281: validate updated inspection', async ({ page, inspectionComponent,
                     dateResolved: null,
                     fk_inspection_resolved: null,
                     fk_inspection_created: inspectionId,
-                    DeficiencyCadet: expect.objectContaining({
+                    cadetDeficiency: expect.objectContaining({
                         deficiencyId: expect.any(String),
                         fk_cadet: ids.cadetIds[2],
                         fk_uniform: compare.fk_uniform,

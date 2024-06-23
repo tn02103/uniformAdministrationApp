@@ -20,58 +20,28 @@ export class CadetInspectionDBHandler {
 
     getUnresolvedDeficienciesByCadet = (fk_cadet: string): Promise<Deficiency[]> =>
         prisma.$queryRaw`
-            SELECT * FROM "v_active_deficiency_by_cadet" 
+            SELECT * FROM inspection.v_deficiency_by_cadet 
              WHERE fk_cadet = ${fk_cadet}
+             AND "dateResolved" IS NULL
           ORDER BY "dateCreated"
         `;
 
     getPreviouslyUnresolvedDeficiencies = (cadetId: string, activeInspectionId: string, date: Date): PrismaPromise<Deficiency[]> => prisma.$queryRaw`
-        SELECT vdgl."id",
-                dt."id" as "typeId",
-                dt."name" as "typeName",
-                vdgl."description",
-                vdgl."comment",
-                vdgl."dateCreated",
-                vdgl."userCreated",
-                vdgl."dateUpdated",
-                vdgl."userUpdated",
-                vdgl."dateResolved",
-                vdgl."userResolved",
-                vdgl."fk_cadet",
-                vdgl."fk_uniform",
-                vdgl."fk_material"
-           FROM "v_deficiency_genericList" as vdgl
-          JOIN "DeficiencyType" dt
-            ON dt.id = vdgl."fk_deficiencyType"
-         WHERE ((vdgl."fk_inspection_created" IS NULL AND vdgl."dateCreated" < ${date})
-                OR (vdgl."fk_inspection_created" != ${activeInspectionId}))
-           AND (vdgl."dateResolved" IS NULL
-                OR vdgl."fk_inspection_resolved" = ${activeInspectionId})
-        AND vdgl.fk_cadet = ${cadetId}
-        ORDER BY vdgl."dateCreated"
-        
-    `
+        SELECT vdbc.*
+           FROM inspection.v_deficiency_by_cadet as vdbc
+         WHERE ((vdbc."fk_inspectionCreated" IS NULL AND vdbc."dateCreated" < ${date})
+                OR (vdbc."fk_inspectionCreated" != ${activeInspectionId}))
+           AND (vdbc."dateResolved" IS NULL
+                OR vdbc."fk_inspectionResolved" = ${activeInspectionId})
+        AND vdbc.fk_cadet = ${cadetId}
+        ORDER BY vdbc."dateCreated"
+    `;
 
     getCadetDeficienciesFromInspection = (cadetId: string, activeInspectionId: string): PrismaPromise<Deficiency[]> => prisma.$queryRaw`
-     SELECT vdgl."id",
-            dt."id" as "typeId",
-            dt."name" as "typeName",
-            vdgl."description",
-            vdgl."comment",
-            vdgl."dateCreated",
-            vdgl."userCreated",
-            vdgl."dateUpdated",
-            vdgl."userUpdated",
-            vdgl."dateResolved",
-            vdgl."userResolved",
-            vdgl."fk_cadet",
-            vdgl."fk_uniform",
-            vdgl."fk_material"
-       FROM "v_deficiency_genericList" as vdgl
-       JOIN "DeficiencyType" dt
-         ON dt.id = vdgl."fk_deficiencyType"
-      WHERE vdgl."fk_inspection_created" = ${activeInspectionId}
-        AND vdgl."fk_cadet" = ${cadetId}
+     SELECT *
+       FROM inspection.v_deficiency_by_cadet as vdbc
+      WHERE vdbc."fk_inspectionCreated" = ${activeInspectionId}
+        AND vdbc.fk_cadet = ${cadetId}
 `
     getUniformLabel = (id: string, fk_assosiation: string) => prisma.uniform.findUniqueOrThrow({
         where: {
