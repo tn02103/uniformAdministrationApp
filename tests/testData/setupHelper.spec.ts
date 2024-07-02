@@ -1,8 +1,8 @@
 import test from "playwright/test";
 import { v4 as uuid } from "uuid";
-import { StaticDataIdType } from "../setup";
 import StaticDataIds from "./staticDataIds.json";
 import { StaticData } from "./staticDataLoader";
+import { StaticDataIdType, getStaticDataIds } from "./staticDataGenerator";
 const fs = require('fs');
 
 
@@ -22,31 +22,7 @@ test.skip('fillDB with static data', async () => {
 
 test.skip('generateTestIdSet', async () => {
     const ids: StaticDataIdType[] = StaticDataIds;
-    ids.push({
-        fk_assosiation: uuid(),
-        userIds: uuidArray(5),
-        cadetIds: uuidArray(10),
-        sizeIds: uuidArray(21),
-        sizelistIds: uuidArray(4),
-        uniformTypeIds: uuidArray(5),
-        uniformGenerationIds: uuidArray(7),
-        uniformIds: [87, 16, 66, 13].map((value) => uuidArray(value)),
-        materialGroupIds: uuidArray(4),
-        materialIds: uuidArray(10),
-        deficiencyTypeIds: uuidArray(5),
-        deficiencyIds: uuidArray(14),
-        inspectionIds: uuidArray(2),
-        dynamic: {
-            inspectionId: uuid(),
-            firstInspection: {
-                id: uuid(),
-                newDefIds: uuidArray(5),
-            },
-            seccondInspection: {
-                newDefId: uuid(),
-            }
-        }
-    });
+    ids.push(getStaticDataIds());
     console.log("🚀 ~ test.only ~ ids.length:", ids.length)
     await fs.writeFileSync('tests/testData/staticDataIds.json', JSON.stringify(ids, null, 4));
 });
