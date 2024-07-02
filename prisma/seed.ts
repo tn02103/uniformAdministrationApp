@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import StaticDataGenerator, { getStaticDataIds } from '../tests/testData/staticDataGenerator';
+const bcrypt = require('bcrypt');
 
 const prismaClient = new PrismaClient()
 async function main() {
@@ -15,14 +16,14 @@ async function main() {
                 acronym: "vkme",
             }
         });
-
+        const password = await bcrypt.hash(process.env.USER_PASSWORD, 15);
         await prisma.user.createMany({
             data: [
-                { fk_assosiation, role: 4, username: 'admin', name: `VK Admin`, password: 'password', active: true },
-                { fk_assosiation, role: 3, username: 'mana', name: `VK Verwaltung`, password: 'password', active: true },
-                { fk_assosiation, role: 2, username: 'insp', name: `VK Kontrolleur`, password: 'password', active: true },
-                { fk_assosiation, role: 1, username: 'user', name: `VK Nutzer`, password: 'password', active: true },
-                { fk_assosiation, role: 1, username: 'blck', name: `VK Gesperrt`, password: 'password', active: false },
+                { fk_assosiation, role: 4, username: 'admin', name: `VK Admin`, password, active: true },
+                { fk_assosiation, role: 3, username: 'mana', name: `VK Verwaltung`, password, active: true },
+                { fk_assosiation, role: 2, username: 'insp', name: `VK Kontrolleur`, password, active: true },
+                { fk_assosiation, role: 1, username: 'user', name: `VK Nutzer`, password, active: true },
+                { fk_assosiation, role: 1, username: 'blck', name: `VK Gesperrt`, password, active: false },
             ]
         })
 
