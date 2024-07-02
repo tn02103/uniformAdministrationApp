@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
+### First Steps
+- create .env
+- run `npm i`
+- connect to database or create database
+### Start Project:
+- `npm run dev` to start in development mode
+- `npm run build` & `npm run start` to start project as Production build
 
-First, run the development server:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## .env
+```
+DATABASE_URL=postgres://{{username}}:{{password}}@{{url}}/{{database}}"
+STAGE={{DEV | BETA | PRO}}
+IRON_SESSION_COOKIE_NAME=name of the ironSession cookie
+IRON_SESSION_KEY=complex password at least 32 characters long
+REFRESH_TOKEN_KEY=secret to generate refreshtoken at least 32 characters long
+NEXT_PUBLIC_LOCAL_AUTH_KEY=key for localstorage where authItem is placed
+TEST_USER_PASSWORD=password used by tests
+USER_PASSWORD=password used in db Seed
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Database/ Prisma
+### To initialize:
+- add DATABASE_URL to .env
+- run `npx prisma db push` to create tables
+- run `npx prisma db seed` to fill tables with DEV-Data
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Migrations
+-> comming soon
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Playwright
+To initialize:
+- run command `npx playwright install`
+- create `staticDataIds.json` in test -> testData and run test `generateTestIdSet` one time
+- make sure you have a production build -> run `npm run build`
 
-## Learn More
+To run test use command `npx playwright test`
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
