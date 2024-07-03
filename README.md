@@ -12,13 +12,15 @@
 ## .env
 ```
 DATABASE_URL=postgres://{{username}}:{{password}}@{{url}}/{{database}}"
+DATABASE_URL_SHADOW=Database for prisma migrations
 STAGE={{DEV | BETA | PRO}}
 IRON_SESSION_COOKIE_NAME=name of the ironSession cookie
 IRON_SESSION_KEY=complex password at least 32 characters long
 REFRESH_TOKEN_KEY=secret to generate refreshtoken at least 32 characters long
 NEXT_PUBLIC_LOCAL_AUTH_KEY=key for localstorage where authItem is placed
-TEST_USER_PASSWORD=password used by tests
 USER_PASSWORD=password used in db Seed
+TEST_USER_PASSWORD=password used by tests
+TEST_WORKERS=amount of playwrigt workers
 ```
 
 ## Database/ Prisma
