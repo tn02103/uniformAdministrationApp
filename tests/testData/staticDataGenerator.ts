@@ -580,16 +580,16 @@ export default class StaticDataGenerator {
     }
     cadetInspection() {
         return [
-            { fk_inspection: this.ids.inspectionIds[0], fk_cadet: this.ids.cadetIds[1], uniformComplete: true, userInspected: 'test2' },
-            { fk_inspection: this.ids.inspectionIds[0], fk_cadet: this.ids.cadetIds[2], uniformComplete: false, userInspected: 'test2' },
-            { fk_inspection: this.ids.inspectionIds[0], fk_cadet: this.ids.cadetIds[3], uniformComplete: true, userInspected: 'test2' },
-            { fk_inspection: this.ids.inspectionIds[0], fk_cadet: this.ids.cadetIds[6], uniformComplete: false, userInspected: 'test2' },
-            { fk_inspection: this.ids.inspectionIds[0], fk_cadet: this.ids.cadetIds[9], uniformComplete: false, userInspected: 'test2' },
-            { fk_inspection: this.ids.inspectionIds[1], fk_cadet: this.ids.cadetIds[1], uniformComplete: true, userInspected: 'test2' },
-            { fk_inspection: this.ids.inspectionIds[1], fk_cadet: this.ids.cadetIds[3], uniformComplete: true, userInspected: 'test2' },
-            { fk_inspection: this.ids.inspectionIds[1], fk_cadet: this.ids.cadetIds[5], uniformComplete: true, userInspected: 'test2' },
-            { fk_inspection: this.ids.inspectionIds[1], fk_cadet: this.ids.cadetIds[7], uniformComplete: true, userInspected: 'test2' },
-            { fk_inspection: this.ids.inspectionIds[1], fk_cadet: this.ids.cadetIds[9], uniformComplete: false, userInspected: 'test2' },
+            { fk_inspection: this.ids.inspectionIds[0], fk_cadet: this.ids.cadetIds[1], uniformComplete: true, inspector: 'test2' },
+            { fk_inspection: this.ids.inspectionIds[0], fk_cadet: this.ids.cadetIds[2], uniformComplete: false, inspector: 'test2' },
+            { fk_inspection: this.ids.inspectionIds[0], fk_cadet: this.ids.cadetIds[3], uniformComplete: true, inspector: 'test2' },
+            { fk_inspection: this.ids.inspectionIds[0], fk_cadet: this.ids.cadetIds[6], uniformComplete: false, inspector: 'test2' },
+            { fk_inspection: this.ids.inspectionIds[0], fk_cadet: this.ids.cadetIds[9], uniformComplete: false, inspector: 'test2' },
+            { fk_inspection: this.ids.inspectionIds[1], fk_cadet: this.ids.cadetIds[1], uniformComplete: true, inspector: 'test2' },
+            { fk_inspection: this.ids.inspectionIds[1], fk_cadet: this.ids.cadetIds[3], uniformComplete: true, inspector: 'test2' },
+            { fk_inspection: this.ids.inspectionIds[1], fk_cadet: this.ids.cadetIds[5], uniformComplete: true, inspector: 'test2' },
+            { fk_inspection: this.ids.inspectionIds[1], fk_cadet: this.ids.cadetIds[7], uniformComplete: true, inspector: 'test2' },
+            { fk_inspection: this.ids.inspectionIds[1], fk_cadet: this.ids.cadetIds[9], uniformComplete: false, inspector: 'test2' },
         ];
     }
 }

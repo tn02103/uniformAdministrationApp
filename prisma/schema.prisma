@@ -1,352 +1,352 @@
 generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["multiSchema"]
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
-    provider          = "postgresql"
-    url               = env("DATABASE_URL")
-    shadowDatabaseUrl = env("DATABASE_URL_SHADOW")
-    schemas           = ["authentication", "base", "inspection"]
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("DATABASE_URL_SHADOW")
+  schemas           = ["authentication", "base", "inspection"]
 }
 
 model Assosiation {
-    id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    name            String            @unique @db.VarChar(100)
-    acronym         String            @db.VarChar(5)
-    useBeta         Boolean           @default(false) @map("use_beta")
-    user            User[]
-    cadet           Cadet[]
-    materialGroup   MaterialGroup[]
-    uniformSize     UniformSize[]
-    uniformSizelist UniformSizelist[]
-    uniformType     UniformType[]
-    deficiencyType  DeficiencyType[]
-    inspection      Inspection[]
+  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+  name            String            @unique @db.VarChar(100)
+  acronym         String            @db.VarChar(5)
+  useBeta         Boolean           @default(false) @map("use_beta")
+  user            User[]
+  cadet           Cadet[]
+  materialGroup   MaterialGroup[]
+  uniformSize     UniformSize[]
+  uniformSizelist UniformSizelist[]
+  uniformType     UniformType[]
+  deficiencyType  DeficiencyType[]
+  inspection      Inspection[]
 
-    @@map("assosiation")
-    @@schema("authentication")
+  @@map("assosiation")
+  @@schema("authentication")
 }
 
 model RefreshToken {
-    fk_user   String   @db.Char(36)
-    token     String   @id @db.Char(50)
-    endOfLife DateTime @map("end_of_live") @db.Timestamp(6)
-    deviceId  String   @map("device_id") @db.Char(36)
-    user      User     @relation(fields: [fk_user], references: [id], onDelete: Cascade)
+  fk_user   String   @db.Char(36)
+  token     String   @id @db.Char(50)
+  endOfLife DateTime @map("end_of_live") @db.Timestamp(6)
+  deviceId  String   @map("device_id") @db.Char(36)
+  user      User     @relation(fields: [fk_user], references: [id], onDelete: Cascade)
 
-    @@index([fk_user])
-    @@map("refresh_token")
-    @@schema("authentication")
+  @@index([fk_user])
+  @@map("refresh_token")
+  @@schema("authentication")
 }
 
 model User {
-    id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_assosiation   String         @map("fk_assosiation") @db.Char(36)
-    username         String         @db.VarChar(10)
-    name             String         @db.VarChar(20)
-    password         String         @db.VarChar(100)
-    role             Int            @db.SmallInt
-    active           Boolean
-    failedLoginCount Int            @default(0) @map("failed_login_count")
-    refreshToken     RefreshToken[]
-    assosiation      Assosiation    @relation(fields: [fk_assosiation], references: [id], onUpdate: Restrict)
+  id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+  fk_assosiation   String         @map("fk_assosiation") @db.Char(36)
+  username         String         @db.VarChar(10)
+  name             String         @db.VarChar(20)
+  password         String         @db.VarChar(100)
+  role             Int            @db.SmallInt
+  active           Boolean
+  failedLoginCount Int            @default(0) @map("failed_login_count")
+  refreshToken     RefreshToken[]
+  assosiation      Assosiation    @relation(fields: [fk_assosiation], references: [id], onUpdate: Restrict)
 
-    @@unique([username, fk_assosiation])
-    @@index([fk_assosiation])
-    @@map("user")
-    @@schema("authentication")
+  @@unique([username, fk_assosiation])
+  @@index([fk_assosiation])
+  @@map("user")
+  @@schema("authentication")
 }
 
 model Cadet {
-    id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_assosiation  String            @db.Char(36)
-    firstname       String            @db.VarChar(30)
-    lastname        String            @db.VarChar(30)
-    active          Boolean           @default(true)
-    comment         String            @default("")
-    recdelete       DateTime?         @db.Timestamp(6)
-    recdeleteUser   String?           @map("recdelete_user") @db.VarChar(10)
-    assosiation     Assosiation       @relation(fields: [fk_assosiation], references: [id])
-    materialIssued  MaterialIssued[]
-    uniformIssued   UniformIssued[]
-    cadetDeficiency CadetDeficiency[]
-    cadetInspection CadetInspection[]
+  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+  fk_assosiation  String            @db.Char(36)
+  firstname       String            @db.VarChar(30)
+  lastname        String            @db.VarChar(30)
+  active          Boolean           @default(true)
+  comment         String            @default("")
+  recdelete       DateTime?         @db.Timestamp(6)
+  recdeleteUser   String?           @map("recdelete_user") @db.VarChar(10)
+  assosiation     Assosiation       @relation(fields: [fk_assosiation], references: [id])
+  materialIssued  MaterialIssued[]
+  uniformIssued   UniformIssued[]
+  cadetDeficiency CadetDeficiency[]
+  cadetInspection CadetInspection[]
 
-    @@index([fk_assosiation])
-    @@map("cadet")
-    @@schema("base")
+  @@index([fk_assosiation])
+  @@map("cadet")
+  @@schema("base")
 }
 
 model UniformType {
-    id                    String              @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_assosiation        String              @db.Char(36)
-    acronym               String              @db.VarChar(2)
-    name                  String              @db.VarChar(10)
-    issuedDefault         Int                 @default(1) @map("issued_default")
-    usingGenerations      Boolean             @map("using_generation")
-    usingSizes            Boolean             @map("using_size")
-    sortOrder             Int                 @map("sort_order")
-    recdelete             DateTime?           @db.Timestamp(6)
-    recdeleteUser         String?             @map("recdelete_user") @db.VarChar(10)
-    fk_defaultSizelist    String?             @map("fk_default_sizelist") @db.Char(36)
-    uniformList           Uniform[]
-    uniformGenerationList UniformGeneration[]
-    assosiation           Assosiation         @relation(fields: [fk_assosiation], references: [id], onUpdate: Restrict)
-    defaultSizelist       UniformSizelist?    @relation(fields: [fk_defaultSizelist], references: [id], onUpdate: SetNull)
+  id                    String              @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+  fk_assosiation        String              @db.Char(36)
+  acronym               String              @db.VarChar(2)
+  name                  String              @db.VarChar(10)
+  issuedDefault         Int                 @default(1) @map("issued_default")
+  usingGenerations      Boolean             @map("using_generation")
+  usingSizes            Boolean             @map("using_size")
+  sortOrder             Int                 @map("sort_order")
+  recdelete             DateTime?           @db.Timestamp(6)
+  recdeleteUser         String?             @map("recdelete_user") @db.VarChar(10)
+  fk_defaultSizelist    String?             @map("fk_default_sizelist") @db.Char(36)
+  uniformList           Uniform[]
+  uniformGenerationList UniformGeneration[]
+  assosiation           Assosiation         @relation(fields: [fk_assosiation], references: [id], onUpdate: Restrict)
+  defaultSizelist       UniformSizelist?    @relation(fields: [fk_defaultSizelist], references: [id], onUpdate: SetNull)
 
-    @@index([fk_defaultSizelist])
-    @@index([fk_assosiation])
-    @@map("uniform_type")
-    @@schema("base")
+  @@index([fk_defaultSizelist])
+  @@index([fk_assosiation])
+  @@map("uniform_type")
+  @@schema("base")
 }
 
 model UniformGeneration {
-    id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_uniformType String           @map("fk_uniform_type") @db.Char(36)
-    name           String           @db.VarChar(20)
-    fk_sizelist    String?          @db.Char(36)
-    sortOrder      Int              @map("sort_order") @db.SmallInt
-    outdated       Boolean          @default(false)
-    recdelete      DateTime?        @db.Timestamp(6)
-    recdeleteUser  String?          @map("recdelete_user") @db.VarChar(10)
-    uniformList    Uniform[]
-    sizelist       UniformSizelist? @relation(fields: [fk_sizelist], references: [id], onUpdate: SetNull)
-    type           UniformType      @relation(fields: [fk_uniformType], references: [id], onUpdate: Restrict)
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+  fk_uniformType String           @map("fk_uniform_type") @db.Char(36)
+  name           String           @db.VarChar(20)
+  fk_sizelist    String?          @db.Char(36)
+  sortOrder      Int              @map("sort_order") @db.SmallInt
+  outdated       Boolean          @default(false)
+  recdelete      DateTime?        @db.Timestamp(6)
+  recdeleteUser  String?          @map("recdelete_user") @db.VarChar(10)
+  uniformList    Uniform[]
+  sizelist       UniformSizelist? @relation(fields: [fk_sizelist], references: [id], onUpdate: SetNull)
+  type           UniformType      @relation(fields: [fk_uniformType], references: [id], onUpdate: Restrict)
 
-    @@index([fk_sizelist])
-    @@index([fk_uniformType])
-    @@map("uniform_generation")
-    @@schema("base")
+  @@index([fk_sizelist])
+  @@index([fk_uniformType])
+  @@map("uniform_generation")
+  @@schema("base")
 }
 
 model UniformSize {
-    id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_assosiation   String            @db.Char(36)
-    name             String            @db.VarChar(10)
-    sortOrder        Int               @map("sort_order")
-    uniformList      Uniform[]
-    assosiation      Assosiation       @relation(fields: [fk_assosiation], references: [id], onUpdate: Restrict)
-    uniformSizelists UniformSizelist[] @relation("uniformsizetouniformsizelist")
+  id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+  fk_assosiation   String            @db.Char(36)
+  name             String            @db.VarChar(10)
+  sortOrder        Int               @map("sort_order")
+  uniformList      Uniform[]
+  assosiation      Assosiation       @relation(fields: [fk_assosiation], references: [id], onUpdate: Restrict)
+  uniformSizelists UniformSizelist[] @relation("uniformsizetouniformsizelist")
 
-    @@unique([name, fk_assosiation])
-    @@index([fk_assosiation])
-    @@map("uniform_size")
-    @@schema("base")
+  @@unique([name, fk_assosiation])
+  @@index([fk_assosiation])
+  @@map("uniform_size")
+  @@schema("base")
 }
 
 model UniformSizelist {
-    id                    String              @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_assosiation        String              @db.Char(36)
-    name                  String              @db.VarChar(40)
-    uniformGenerationList UniformGeneration[]
-    assosiation           Assosiation         @relation(fields: [fk_assosiation], references: [id], onUpdate: Restrict)
-    uniformTypeList       UniformType[]
-    uniformSizes          UniformSize[]       @relation("uniformsizetouniformsizelist")
+  id                    String              @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+  fk_assosiation        String              @db.Char(36)
+  name                  String              @db.VarChar(40)
+  uniformGenerationList UniformGeneration[]
+  assosiation           Assosiation         @relation(fields: [fk_assosiation], references: [id], onUpdate: Restrict)
+  uniformTypeList       UniformType[]
+  uniformSizes          UniformSize[]       @relation("uniformsizetouniformsizelist")
 
-    @@unique([name, fk_assosiation])
-    @@index([fk_assosiation])
-    @@map("uniform_sizelist")
-    @@schema("base")
+  @@unique([name, fk_assosiation])
+  @@index([fk_assosiation])
+  @@map("uniform_sizelist")
+  @@schema("base")
 }
 
 model Uniform {
-    id                  String              @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    number              Int
-    fk_uniformType      String              @map("fk_uniform_type") @db.Char(36)
-    fk_generation       String?             @db.Char(36)
-    fk_size             String?             @db.Char(36)
-    active              Boolean             @default(true)
-    comment             String?
-    recdelete           DateTime?           @db.Timestamp(6)
-    recdeleteUser       String?             @map("recdelete_user") @db.VarChar(10)
-    generation          UniformGeneration?  @relation(fields: [fk_generation], references: [id], onDelete: Restrict, onUpdate: Restrict)
-    size                UniformSize?        @relation(fields: [fk_size], references: [id], onUpdate: Restrict)
-    type                UniformType         @relation(fields: [fk_uniformType], references: [id], onUpdate: Restrict)
-    issuedEntries       UniformIssued[]
-    cadetDeficiencies   CadetDeficiency[]
-    uniformDeficiencies UniformDeficiency[]
+  id                  String              @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+  number              Int
+  fk_uniformType      String              @map("fk_uniform_type") @db.Char(36)
+  fk_generation       String?             @db.Char(36)
+  fk_size             String?             @db.Char(36)
+  active              Boolean             @default(true)
+  comment             String?
+  recdelete           DateTime?           @db.Timestamp(6)
+  recdeleteUser       String?             @map("recdelete_user") @db.VarChar(10)
+  generation          UniformGeneration?  @relation(fields: [fk_generation], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  size                UniformSize?        @relation(fields: [fk_size], references: [id], onUpdate: Restrict)
+  type                UniformType         @relation(fields: [fk_uniformType], references: [id], onUpdate: Restrict)
+  issuedEntries       UniformIssued[]
+  cadetDeficiencies   CadetDeficiency[]
+  uniformDeficiencies UniformDeficiency[]
 
-    @@index([fk_generation])
-    @@index([fk_size])
-    @@index([fk_uniformType])
-    @@map("uniform")
-    @@schema("base")
+  @@index([fk_generation])
+  @@index([fk_size])
+  @@index([fk_uniformType])
+  @@map("uniform")
+  @@schema("base")
 }
 
 model UniformIssued {
-    id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_cadet     String    @db.Char(36)
-    fk_uniform   String    @db.Char(36)
-    dateIssued   DateTime  @default(now()) @map("date_issued") @db.Date
-    dateReturned DateTime? @map("date_returned") @db.Date
-    cadet        Cadet     @relation(fields: [fk_cadet], references: [id], onDelete: Cascade, onUpdate: Restrict)
-    uniform      Uniform   @relation(fields: [fk_uniform], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+  fk_cadet     String    @db.Char(36)
+  fk_uniform   String    @db.Char(36)
+  dateIssued   DateTime  @default(now()) @map("date_issued") @db.Date
+  dateReturned DateTime? @map("date_returned") @db.Date
+  cadet        Cadet     @relation(fields: [fk_cadet], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  uniform      Uniform   @relation(fields: [fk_uniform], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
-    @@unique([fk_cadet, fk_uniform, dateIssued])
-    @@index([fk_cadet])
-    @@index([fk_uniform])
-    @@map("uniform_issued")
-    @@schema("base")
+  @@unique([fk_cadet, fk_uniform, dateIssued])
+  @@index([fk_cadet])
+  @@index([fk_uniform])
+  @@map("uniform_issued")
+  @@schema("base")
 }
 
 model MaterialGroup {
-    id               String      @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_assosiation   String      @db.Char(36)
-    description      String      @db.VarChar(20)
-    issuedDefault    Int?        @map("issued_default") @db.SmallInt
-    sortOrder        Int         @map("sort_order") @db.SmallInt
-    recdelete        DateTime?   @db.Timestamp(6)
-    recdeleteUser    String?     @map("recdelete_user") @db.VarChar(10)
-    multitypeAllowed Boolean     @map("multitype_allowed")
-    typeList         Material[]
-    assosiation      Assosiation @relation(fields: [fk_assosiation], references: [id], onUpdate: Restrict)
+  id               String      @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+  fk_assosiation   String      @db.Char(36)
+  description      String      @db.VarChar(20)
+  issuedDefault    Int?        @map("issued_default") @db.SmallInt
+  sortOrder        Int         @map("sort_order") @db.SmallInt
+  recdelete        DateTime?   @db.Timestamp(6)
+  recdeleteUser    String?     @map("recdelete_user") @db.VarChar(10)
+  multitypeAllowed Boolean     @map("multitype_allowed")
+  typeList         Material[]
+  assosiation      Assosiation @relation(fields: [fk_assosiation], references: [id], onUpdate: Restrict)
 
-    @@index([fk_assosiation])
-    @@map("material_group")
-    @@schema("base")
+  @@index([fk_assosiation])
+  @@map("material_group")
+  @@schema("base")
 }
 
 model Material {
-    id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    typename         String            @db.VarChar(20)
-    fk_materialGroup String            @map("fk_material_group") @db.Char(36)
-    actualQuantity   Int               @map("quantity_actual") @db.SmallInt
-    targetQuantity   Int               @map("quantity_target") @db.SmallInt
-    sortOrder        Int               @map("sort_order") @db.SmallInt
-    recdelete        DateTime?         @db.Timestamp(6)
-    recdeleteUser    String?           @map("recdelete_user") @db.VarChar(10)
-    materialGroup    MaterialGroup     @relation(fields: [fk_materialGroup], references: [id], onUpdate: Restrict)
-    issuedEntries    MaterialIssued[]
-    cadetDeficiency  CadetDeficiency[]
+  id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+  typename         String            @db.VarChar(20)
+  fk_materialGroup String            @map("fk_material_group") @db.Char(36)
+  actualQuantity   Int               @map("quantity_actual") @db.SmallInt
+  targetQuantity   Int               @map("quantity_target") @db.SmallInt
+  sortOrder        Int               @map("sort_order") @db.SmallInt
+  recdelete        DateTime?         @db.Timestamp(6)
+  recdeleteUser    String?           @map("recdelete_user") @db.VarChar(10)
+  materialGroup    MaterialGroup     @relation(fields: [fk_materialGroup], references: [id], onUpdate: Restrict)
+  issuedEntries    MaterialIssued[]
+  cadetDeficiency  CadetDeficiency[]
 
-    @@index([fk_materialGroup])
-    @@map("material")
-    @@schema("base")
+  @@index([fk_materialGroup])
+  @@map("material")
+  @@schema("base")
 }
 
 model MaterialIssued {
-    id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_material  String    @db.Char(36)
-    fk_cadet     String    @db.Char(36)
-    quantity     Int       @db.SmallInt
-    dateIssued   DateTime  @default(now()) @map("date_issued") @db.Timestamp(6)
-    dateReturned DateTime? @map("date_returned") @db.Timestamp(6)
-    cadet        Cadet     @relation(fields: [fk_cadet], references: [id], onDelete: Cascade, onUpdate: Restrict)
-    material     Material  @relation(fields: [fk_material], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+  fk_material  String    @db.Char(36)
+  fk_cadet     String    @db.Char(36)
+  quantity     Int       @db.SmallInt
+  dateIssued   DateTime  @default(now()) @map("date_issued") @db.Timestamp(6)
+  dateReturned DateTime? @map("date_returned") @db.Timestamp(6)
+  cadet        Cadet     @relation(fields: [fk_cadet], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  material     Material  @relation(fields: [fk_material], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
-    @@unique([fk_material, fk_cadet, dateIssued])
-    @@index([fk_cadet])
-    @@map("material_issued")
-    @@schema("base")
+  @@unique([fk_material, fk_cadet, dateIssued])
+  @@index([fk_cadet])
+  @@map("material_issued")
+  @@schema("base")
 }
 
 model Inspection {
-    id                 String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_assosiation     String            @db.Char(36)
-    date               DateTime          @default(now()) @db.Date
-    timeStart          DateTime?         @map("time_start")
-    timeEnd            DateTime?         @map("time_end")
-    active             Boolean           @default(true)
-    cadetInspection    CadetInspection[]
-    deficiencyCreated  Deficiency[]      @relation("Deficiency_InspectionCreated")
-    deficiencyResolved Deficiency[]      @relation("Deficiency_InspectionResolved")
-    assosiation        Assosiation       @relation(fields: [fk_assosiation], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  id                 String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+  fk_assosiation     String            @db.Char(36)
+  date               DateTime          @default(now()) @db.Date
+  timeStart          DateTime?         @map("time_start")
+  timeEnd            DateTime?         @map("time_end")
+  active             Boolean           @default(true)
+  cadetInspection    CadetInspection[]
+  deficiencyCreated  Deficiency[]      @relation("Deficiency_InspectionCreated")
+  deficiencyResolved Deficiency[]      @relation("Deficiency_InspectionResolved")
+  assosiation        Assosiation       @relation(fields: [fk_assosiation], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
-    @@unique([date, fk_assosiation])
-    @@index([fk_assosiation])
-    @@map("inspection")
-    @@schema("inspection")
+  @@unique([date, fk_assosiation])
+  @@index([fk_assosiation])
+  @@map("inspection")
+  @@schema("inspection")
 }
 
 model CadetInspection {
-    id              String     @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_inspection   String     @db.Char(36)
-    fk_cadet        String     @db.Char(36)
-    uniformComplete Boolean    @map("uniform_complete")
-    userInspected   String     @db.VarChar(10)
-    cadet           Cadet      @relation(fields: [fk_cadet], references: [id], onDelete: Cascade, onUpdate: Restrict)
-    inspection      Inspection @relation(fields: [fk_inspection], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  id              String     @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+  fk_inspection   String     @db.Char(36)
+  fk_cadet        String     @db.Char(36)
+  uniformComplete Boolean    @map("uniform_complete")
+  inspector       String     @db.VarChar(10)
+  cadet           Cadet      @relation(fields: [fk_cadet], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  inspection      Inspection @relation(fields: [fk_inspection], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
-    @@unique([fk_inspection, fk_cadet])
-    @@index([fk_cadet])
-    @@map("cadet_inspection")
-    @@schema("inspection")
+  @@unique([fk_inspection, fk_cadet])
+  @@index([fk_cadet])
+  @@map("cadet_inspection")
+  @@schema("inspection")
 }
 
 model DeficiencyType {
-    id             String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_assosiation String                  @db.Char(36)
-    name           String                  @db.VarChar(20)
-    dependend      DeficiencyTypeDependend
-    relation       DeficiencyTypeRelation?
-    recdelete      DateTime?               @db.Date
-    recdeleteUser  String?                 @map("recdelete_user") @db.VarChar(10)
-    deficiencyList Deficiency[]
-    assosiation    Assosiation             @relation(fields: [fk_assosiation], references: [id], onUpdate: Restrict)
+  id             String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+  fk_assosiation String                   @db.Char(36)
+  name           String                   @db.VarChar(20)
+  dependend      deficiencytype_dependend
+  relation       deficiencytype_relation?
+  recdelete      DateTime?                @db.Date
+  recdeleteUser  String?                  @map("recdelete_user") @db.VarChar(10)
+  deficiencyList Deficiency[]
+  assosiation    Assosiation              @relation(fields: [fk_assosiation], references: [id], onUpdate: Restrict)
 
-    @@unique([name, fk_assosiation])
-    @@map("deficiency_type")
-    @@schema("inspection")
+  @@unique([name, fk_assosiation])
+  @@map("deficiency_type")
+  @@schema("inspection")
 }
 
 model Deficiency {
-    id                     String             @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_deficiencyType      String             @map("fk_deficiency_type") @db.Char(36)
-    description            String             @db.VarChar(30)
-    comment                String
-    dateCreated            DateTime           @default(now()) @map("date_created") @db.Date
-    dateUpdated            DateTime           @default(now()) @map("date_updated") @db.Date
-    dateResolved           DateTime?          @map("date_resolved") @db.Date
-    userCreated            String             @map("user_created") @db.VarChar(10)
-    userUpdated            String             @map("user_updated") @db.VarChar(10)
-    userResolved           String?            @map("user_resolved") @db.VarChar(10)
-    fk_inspection_created  String?            @db.Char(36)
-    fk_inspection_resolved String?            @db.Char(36)
-    cadetDeficiency        CadetDeficiency?
-    type                   DeficiencyType     @relation(fields: [fk_deficiencyType], references: [id], onUpdate: Restrict)
-    inspectionCreated      Inspection?        @relation("Deficiency_InspectionCreated", fields: [fk_inspection_created], references: [id], onUpdate: Restrict)
-    inspectionResolved     Inspection?        @relation("Deficiency_InspectionResolved", fields: [fk_inspection_resolved], references: [id], onUpdate: Restrict)
-    uniformDeficiency      UniformDeficiency?
+  id                     String             @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+  fk_deficiencyType      String             @map("fk_deficiency_type") @db.Char(36)
+  description            String             @db.VarChar(30)
+  comment                String
+  dateCreated            DateTime           @default(now()) @map("date_created") @db.Date
+  dateUpdated            DateTime           @default(now()) @map("date_updated") @db.Date
+  dateResolved           DateTime?          @map("date_resolved") @db.Date
+  userCreated            String             @map("user_created") @db.VarChar(10)
+  userUpdated            String             @map("user_updated") @db.VarChar(10)
+  userResolved           String?            @map("user_resolved") @db.VarChar(10)
+  fk_inspection_created  String?            @db.Char(36)
+  fk_inspection_resolved String?            @db.Char(36)
+  cadetDeficiency        CadetDeficiency?
+  type                   DeficiencyType     @relation(fields: [fk_deficiencyType], references: [id], onUpdate: Restrict)
+  inspectionCreated      Inspection?        @relation("Deficiency_InspectionCreated", fields: [fk_inspection_created], references: [id], onUpdate: Restrict)
+  inspectionResolved     Inspection?        @relation("Deficiency_InspectionResolved", fields: [fk_inspection_resolved], references: [id], onUpdate: Restrict)
+  uniformDeficiency      UniformDeficiency?
 
-    @@map("deficiency")
-    @@schema("inspection")
+  @@map("deficiency")
+  @@schema("inspection")
 }
 
 model CadetDeficiency {
-    deficiencyId String     @id @map("deficiency_id") @db.Char(36)
-    fk_cadet     String     @db.Char(36)
-    fk_uniform   String?    @db.Char(36)
-    fk_material  String?    @db.Char(36)
-    deficiency   Deficiency @relation(fields: [deficiencyId], references: [id], onDelete: Cascade, onUpdate: Restrict)
-    cadet        Cadet      @relation(fields: [fk_cadet], references: [id], onDelete: Cascade, onUpdate: Restrict)
-    material     Material?  @relation(fields: [fk_material], references: [id], onDelete: Restrict, onUpdate: Restrict)
-    uniform      Uniform?   @relation(fields: [fk_uniform], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  deficiencyId String     @id @map("deficiency_id") @db.Char(36)
+  fk_cadet     String     @db.Char(36)
+  fk_uniform   String?    @db.Char(36)
+  fk_material  String?    @db.Char(36)
+  deficiency   Deficiency @relation(fields: [deficiencyId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  cadet        Cadet      @relation(fields: [fk_cadet], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  material     Material?  @relation(fields: [fk_material], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  uniform      Uniform?   @relation(fields: [fk_uniform], references: [id], onDelete: Restrict, onUpdate: Restrict)
 
-    @@map("cadet_deficiency")
-    @@schema("inspection")
+  @@map("cadet_deficiency")
+  @@schema("inspection")
 }
 
 model UniformDeficiency {
-    deficiencyId String     @id @map("deficiency_id") @db.Char(36)
-    fk_uniform   String     @db.Char(36)
-    deficiency   Deficiency @relation(fields: [deficiencyId], references: [id], onDelete: Cascade, onUpdate: Restrict)
-    uniform      Uniform    @relation(fields: [fk_uniform], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  deficiencyId String     @id @map("deficiency_id") @db.Char(36)
+  fk_uniform   String     @db.Char(36)
+  deficiency   Deficiency @relation(fields: [deficiencyId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  uniform      Uniform    @relation(fields: [fk_uniform], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
-    @@map("uniform_deficiency")
-    @@schema("inspection")
+  @@map("uniform_deficiency")
+  @@schema("inspection")
 }
 
-enum DeficiencyTypeDependend {
-    cadet
-    uniform
+enum deficiencytype_dependend {
+  cadet
+  uniform
 
-    @@schema("inspection")
+  @@schema("inspection")
 }
 
-enum DeficiencyTypeRelation {
-    uniform
-    material
+enum deficiencytype_relation {
+  uniform
+  material
 
-    @@schema("inspection")
+  @@schema("inspection")
 }

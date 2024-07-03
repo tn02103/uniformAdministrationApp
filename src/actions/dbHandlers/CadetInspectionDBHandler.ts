@@ -75,7 +75,7 @@ export class CadetInspectionDBHandler {
             fk_cadet: cadetId,
             fk_inspection: inspectionId,
             uniformComplete: uniformComplete,
-            userInspected: username,
+            inspector: username,
         }
     });
 

@@ -146,7 +146,7 @@ export async function insertSvenKellerFirstInspection(i: number) {
             uniformComplete: svenKellerFirstInspectionData(i).uniformComplete,
             fk_cadet: svenKellerFirstInspectionData(i).fk_cadet,
             fk_inspection: StaticDataIds[i].dynamic.inspectionId,
-            userInspected: 'test3'
+            inspector: 'test3'
         }
     });
 
