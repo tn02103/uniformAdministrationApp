@@ -310,6 +310,7 @@ export default {
                 uniform: "Uniform",
                 size: "Größen",
                 material: "Materialien",
+                deficiency: "Mängel",
             },
             userOverview: "Zugänge",
         },
@@ -350,6 +351,7 @@ export default {
                 }
             },
             size: {
+                header: "Größen",
                 changePositionModal: {
                     header: "Position für \"{size}\" ändern",
                     label: "Position",

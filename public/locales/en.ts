@@ -290,28 +290,29 @@ export default {
         }
     },
     sidebar: {
-        logout: "Logout",
+        logout: "logout",
         changeLanguage: "change Language",
         links: {
-            cadetOverview: "Staff",
-            uniformOverview: "Uniform",
+            cadetOverview: "staff",
+            uniformOverview: "uniform",
             create: {
-                group: "Create",
-                cadet: "Person",
-                uniform: "Uniform",
+                group: "create",
+                cadet: "person",
+                uniform: "uniform",
             },
             inspection: {
-                group: "Inspection",
-                start: "Start",
-                stop: "Stop",
+                group: "inspection",
+                start: "start",
+                stop: "stop",
             },
             administration: {
-                group: "Administration",
-                uniform: "Uniform",
-                size: "Sizes",
-                material: "Materials",
+                group: "administration",
+                uniform: "uniform",
+                size: "sizes",
+                material: "materials",
+                deficiency: "deficiency"
             },
-            userOverview: "Accesses",
+            userOverview: "accesses",
         },
     },
     admin: {
@@ -350,6 +351,7 @@ export default {
                 }
             },
             size: {
+                header: "Sizes",
                 changePositionModal: {
                     header: "Change position for \"{size}\"",
                     label: "Position",
@@ -369,10 +371,10 @@ export default {
                 otherSizes: "other sizes",
                 selectedSizes: "selected sizes",
                 createModal: {
-                    header: "Create new size list",
+                    header: "create new size list",
                 },
                 renameModal: {
-                    header: "",
+                    header: "rename sizelist",
                 },
                 deleteWarning: {
                     header: "Delete size list \"{name}\"",

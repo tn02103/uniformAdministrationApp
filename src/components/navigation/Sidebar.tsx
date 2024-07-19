@@ -21,6 +21,7 @@ import NavGroup from "./NavGroup";
 import NavLink from "./NavLink";
 import { startInspection } from "@/actions/controllers/InspectionController";
 import { useModal } from "../modals/modalProvider";
+import { regex } from "uuidv4";
 
 
 type SidebarPropType = {
@@ -150,7 +151,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                             <NavGroup
                                 title={t('sidebar.links.administration.group')}
                                 icon={faGear}
-                                childSelected={pathname.startsWith("/app/admin")}
+                                childSelected={/^\/\w{2}\/admin\//.test(pathname)}
                                 collapsed={collapsed}
                                 requiredRole={AuthRole.materialManager}
                                 setCollapsed={setCollapsed}
@@ -159,7 +160,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                     <NavLink
                                         text={t('sidebar.links.administration.uniform')}
                                         href="/app/admin/uniform"
-                                        isRoute={pathname === "/app/admin/uniform"}
+                                        isRoute={pathname.endsWith("/app/admin/uniform")}
                                         level={2}
                                         collapsed={collapsed}
                                         requiredRole={AuthRole.materialManager}
@@ -168,7 +169,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                     <NavLink
                                         text={t('sidebar.links.administration.size')}
                                         href="/app/admin/uniform/sizes"
-                                        isRoute={pathname === "/app/admin/uniform/sizes"}
+                                        isRoute={pathname.endsWith("/app/admin/uniform/sizes")}
                                         level={2}
                                         requiredRole={AuthRole.materialManager}
                                         collapsed={collapsed}
@@ -177,16 +178,16 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                     <NavLink
                                         text={t('sidebar.links.administration.material')}
                                         href="/app/admin/material"
-                                        isRoute={pathname === "/app/admin/material"}
+                                        isRoute={pathname.endsWith("/app/admin/material")}
                                         level={2}
                                         requiredRole={AuthRole.materialManager}
                                         collapsed={collapsed}
                                         testId="lnk_adminMaterial"
                                     />
                                     <NavLink
-                                        text={'Mängel'}
+                                        text={t('sidebar.links.administration.deficiency')}
                                         href="/app/admin/deficiency"
-                                        isRoute={pathname === "/app/admin/deficiency"}
+                                        isRoute={pathname.endsWith("/app/admin/deficiency")}
                                         level={2}
                                         requiredRole={AuthRole.materialManager}
                                         collapsed={collapsed}
