@@ -1,7 +1,7 @@
 "use client";
 import { AuthRole } from "@/lib/AuthRoles";
 import { InspectionStatus } from "@/types/deficiencyTypes";
-import { UniformSizeList, UniformType } from "@/types/globalUniformTypes";
+import { UniformSizelist, UniformType } from "@/types/globalUniformTypes";
 import { Context, createContext, useCallback, useContext } from "react";
 import { SWRConfig } from "swr";
 
@@ -10,7 +10,7 @@ import { SWRConfig } from "swr";
 type GlobalDataProviderContextType = {
     userRole: AuthRole;
     useBeta: boolean;
-    sizeLists: UniformSizeList[]
+    sizelists: UniformSizelist[]
 }
 
 type GlobalDataProviderPropType = {
@@ -18,7 +18,7 @@ type GlobalDataProviderPropType = {
     typeList: UniformType[];
     userRole: AuthRole;
     useBeta: boolean;
-    sizeLists: UniformSizeList[];
+    sizelists: UniformSizelist[];
     inspectionState: InspectionStatus;
 }
 
@@ -32,7 +32,7 @@ const GlobalDataProvider = ({ children, ...props }: GlobalDataProviderPropType) 
             userRole: props.userRole,
             useBeta: props.useBeta,
 
-            sizeLists: props.sizeLists,
+            sizelists: props.sizelists,
         }
     }, [props.userRole]);
 
@@ -41,7 +41,7 @@ const GlobalDataProvider = ({ children, ...props }: GlobalDataProviderPropType) 
         <SWRConfig value={{
             fallback: {
                 "uniform.type.list": props.typeList,
-                "uniform.sizeList.list": props.sizeLists,
+                "uniform.sizelist.list": props.sizelists,
                 "inspection.status": props.inspectionState,
             }
         }}>

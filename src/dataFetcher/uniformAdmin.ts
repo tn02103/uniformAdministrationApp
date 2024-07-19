@@ -1,5 +1,5 @@
 import { getUniformTypeList } from "@/actions/controllers/UniformConfigController";
-import { getAllUniformSizesList, getUniformSizeLists } from "@/actions/controllers/UniformSizeController";
+import { getAllUniformSizesList, getUniformSizelists } from "@/actions/controllers/UniformSizeController";
 import { UniformSize, UniformType } from "@/types/globalUniformTypes";
 
 import useSWR from "swr";
@@ -29,14 +29,14 @@ export function useUniformGenerationListByType(typeId: string) {
     }
 }
 
-export function useUniformSizeLists() {
-    const { data, mutate } = useSWR('uniform.sizeList.list', getUniformSizeLists);
+export function useUniformSizelists() {
+    const { data, mutate } = useSWR('uniform.sizelist.list', getUniformSizelists);
     return { sizelistList: data, mutate };
 }
 
 
 export function useUniformSizelist(id: string) {
-    const { sizelistList, mutate } = useUniformSizeLists();
+    const { sizelistList, mutate } = useUniformSizelists();
     return {
         sizelist: sizelistList?.find(sl => sl.id === id),
         mutate

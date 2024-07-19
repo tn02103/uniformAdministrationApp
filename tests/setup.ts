@@ -2,37 +2,13 @@ import { Page, test as setup } from 'playwright/test';
 import { v4 as uuid } from "uuid";
 import StaticDataIds from './testData/staticDataIds.json';
 import { StaticData } from './testData/staticDataLoader';
+import { StaticDataIdType, getStaticDataIds } from './testData/staticDataGenerator';
 const fs = require('fs');
 
 setup.use({ storageState: { cookies: [], origins: [] } });
 
 const uuidArray = (i: number) => Array(i).fill("").map(() => uuid());
 
-export type StaticDataIdType = {
-    fk_assosiation: string;
-    userIds: string[];
-    cadetIds: string[];
-    deficiencyIds: string[];
-    deficiencyTypeIds: string[];
-    inspectionIds: string[];
-    materialGroupIds: string[];
-    materialIds: string[];
-    sizeIds: string[];
-    sizelistIds: string[];
-    uniformGenerationIds: string[];
-    uniformIds: string[][];
-    uniformTypeIds: string[];
-    dynamic: {
-        inspectionId: string;
-        firstInspection: {
-            id: string;
-            newDefIds: string[];
-        };
-        seccondInspection: {
-            newDefId: string;
-        }
-    }
-};
 
 export type authenticatedFixture = { page: Page, staticData: StaticData }
 
@@ -45,31 +21,7 @@ export const dataFixture = setup.extend<{}, { staticData: StaticData }>({
 
         while (index >= StaticDataIds.length) {
             const ids: StaticDataIdType[] = StaticDataIds;
-            ids.push({
-                fk_assosiation: uuid(),
-                userIds: uuidArray(5),
-                cadetIds: uuidArray(10),
-                sizeIds: uuidArray(21),
-                sizelistIds: uuidArray(4),
-                uniformTypeIds: uuidArray(5),
-                uniformGenerationIds: uuidArray(7),
-                uniformIds: [87, 16, 66, 13].map((value) => uuidArray(value)),
-                materialGroupIds: uuidArray(4),
-                materialIds: uuidArray(10),
-                deficiencyTypeIds: uuidArray(5),
-                deficiencyIds: uuidArray(14),
-                inspectionIds: uuidArray(2),
-                dynamic: {
-                    inspectionId: uuid(),
-                    firstInspection: {
-                        id: uuid(),
-                        newDefIds: uuidArray(5),
-                    },
-                    seccondInspection: {
-                        newDefId: uuid(),
-                    }
-                }
-            });
+            ids.push(getStaticDataIds());
             await fs.writeFileSync('tests/testData/staticDataIds.json', JSON.stringify(ids, null, 4));
         }
 

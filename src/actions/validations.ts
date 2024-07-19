@@ -15,7 +15,7 @@ export const genericSAValidatiorV2 = async (
         uniformId?: string | string[],
         uniformTypeId?: string | string[],
         uniformGenerationId?: string | string[],
-        uniformSizeListId?: string | string[] | null,
+        uniformSizelistId?: string | string[] | null,
         uniformSizeId?: string | string[],
         materialId?: string | (string | undefined)[],
         materialGroupId?: string | string[],
@@ -67,8 +67,8 @@ export const genericSAValidatiorV2 = async (
         validate(assosiationValidations.materialId, validateMaterailAssosiation);
     }
 
-    if (assosiationValidations.uniformSizeListId && assosiationValidations.uniformSizeListId !== null) {
-        validate(assosiationValidations.uniformSizeListId, validateUniformSizeListAssosiation);
+    if (assosiationValidations.uniformSizelistId && assosiationValidations.uniformSizelistId !== null) {
+        validate(assosiationValidations.uniformSizelistId, validateUniformSizelistAssosiation);
     }
 
     if (assosiationValidations.uniformSizeId) {
@@ -124,7 +124,7 @@ const validateMaterailAssosiation = async (materialId: string, assosiationId: st
     }
 });
 
-const validateUniformSizeListAssosiation = async (id: string, fk_assosiation: string) =>
+const validateUniformSizelistAssosiation = async (id: string, fk_assosiation: string) =>
     prisma.uniformSizelist.findUniqueOrThrow({
         where: { id, fk_assosiation }
     })

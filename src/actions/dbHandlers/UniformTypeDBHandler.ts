@@ -8,7 +8,7 @@ export class UniformTypeDBHandler {
         ...uniformTypeArgs,
     });
 
-    getCompleteTypeWithSizeListAndSizes = async (id: string, client?: Prisma.TransactionClient) =>
+    getCompleteTypeWithSizelistAndSizes = async (id: string, client?: Prisma.TransactionClient) =>
         (client ?? prisma).uniformType.findFirstOrThrow({
             where: { id, recdelete: null, },
             include: {
@@ -17,12 +17,12 @@ export class UniformTypeDBHandler {
                         recdelete: null
                     },
                     include: {
-                        uniformSizeList: {
+                        sizelist: {
                             include: { uniformSizes: true }
                         },
                     },
                 },
-                defaultSizeList: {
+                defaultSizelist: {
                     include: { uniformSizes: true }
                 },
             }
@@ -47,7 +47,7 @@ export class UniformTypeDBHandler {
         }
     });
 
-    updateData = async (id: string, data: { name: string, acronym: string, issuedDefault: number, usingGenerations: boolean, usingSizes: boolean, fk_defaultSizeList: string | null }, client: PrismaClient) =>
+    updateData = async (id: string, data: { name: string, acronym: string, issuedDefault: number, usingGenerations: boolean, usingSizes: boolean, fk_defaultSizelist: string | null }, client: PrismaClient) =>
         client.uniformType.update({
             where: { id },
             data

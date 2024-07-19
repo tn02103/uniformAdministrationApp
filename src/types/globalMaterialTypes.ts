@@ -10,7 +10,7 @@ export const dbCadetMaterialArgs = Prisma.validator<Prisma.MaterialFindManyArgs>
                 id: true,
             }
         },
-        issuedEntrys: {
+        issuedEntries: {
             select: {
                 id: true,
                 quantity: true,

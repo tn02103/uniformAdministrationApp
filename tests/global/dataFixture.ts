@@ -1,9 +1,8 @@
 import test from "playwright/test";
-import { StaticData } from "../testData/staticDataLoader";
 import { uuid } from "uuidv4";
-import { StaticDataIdType } from "../setup";
+import { StaticDataIdType } from "../testData/staticDataGenerator";
 import StaticDataIds from '../testData/staticDataIds.json';
-import { CadetDataComponent } from "../pages/cadet/cadetData.component";
+import { StaticData } from "../testData/staticDataLoader";
 
 const fs = require('fs');
 const uuidArray = (i: number) => Array(i).fill("").map(() => uuid());

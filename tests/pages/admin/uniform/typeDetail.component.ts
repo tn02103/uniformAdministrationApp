@@ -50,7 +50,7 @@ export class TypeDetailComponent {
         this.txt_issuedDefault = this.div_card.locator('input[name="issuedDefault"]');
         this.chk_usingSizes = this.div_card.locator('input[name="usingSizes"]');
         this.chk_usingGenerations = this.div_card.locator('input[name="usingGenerations"]');
-        this.sel_defaultSL = this.div_card.locator('select[name="fk_defaultSizeList"]');
+        this.sel_defaultSL = this.div_card.locator('select[name="fk_defaultSizelist"]');
 
         this.err_name = this.div_card.getByTestId("err_name");
         this.err_acronym = this.div_card.getByTestId("err_acronym");

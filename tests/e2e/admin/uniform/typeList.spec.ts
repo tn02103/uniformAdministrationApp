@@ -57,7 +57,7 @@ test('validate create', async ({ typeListComponent, typeDetailComponent, staticD
         issuedDefault: 1,
         usingGenerations: false,
         usingSizes: false,
-        fk_defaultSizeList: null,
+        fk_defaultSizelist: null,
         sortOrder: 4,
     }));
 });

@@ -39,7 +39,7 @@ test('formValidation', async ({ groupDetailComponent }) => {
         }
     });
     await test.step('issuedDefault', async () => {
-        const testSets = numberValidationTests({ min: 0, max: 30, testEmpty: true, strict: false, emptyValid: true });
+        const testSets = numberValidationTests({ min: 0, max: 200, testEmpty: true, strict: false, emptyValid: true });
 
         for (const set of testSets) {
             await test.step(set.testValue, async () => {

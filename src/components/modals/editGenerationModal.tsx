@@ -1,6 +1,6 @@
 "use client";
 
-import { useUniformSizeLists } from "@/dataFetcher/uniformAdmin";
+import { useUniformSizelists } from "@/dataFetcher/uniformAdmin";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
 import { descriptionValidationPattern } from "@/lib/validations";
 import { UniformGeneration, UniformType } from "@/types/globalUniformTypes";
@@ -21,10 +21,10 @@ export default function EditGenerationModal({ generation, type, cancel, save }: 
     const tAction = useScopedI18n('common.actions');
     const tModal = useScopedI18n('admin.uniform.generationList.updateModal');
 
-    const { sizelistList } = useUniformSizeLists();
+    const { sizelistList } = useUniformSizelists();
 
     function beforeSave(data: UniformGeneration) {
-        if (generation && type.usingSizes && data.fk_sizeList !== generation.fk_sizeList) {
+        if (generation && type.usingSizes && data.fk_sizelist !== generation.fk_sizelist) {
             modal!.simpleYesNoModal({
                 header: tModal('changeSizeHeader'),
                 message: tModal('changeSizeMessage'),
@@ -88,8 +88,8 @@ export default function EditGenerationModal({ generation, type, cancel, save }: 
                             </FormLabel>
                             <FormSelect
                                 className="w-auto"
-                                isInvalid={!!(errors.fk_sizeList)}
-                                {...register("fk_sizeList", {
+                                isInvalid={!!(errors.fk_sizelist)}
+                                {...register("fk_sizelist", {
                                     required: {
                                         value: true,
                                         message: t('common.error.pleaseSelect')
@@ -99,8 +99,8 @@ export default function EditGenerationModal({ generation, type, cancel, save }: 
                                     <option key={sl.id} value={sl.id}>{sl.name}</option>
                                 )}
                             </FormSelect>
-                            <div data-testid="err_sizeList" className="text-danger fs-7">
-                                {errors.fk_sizeList?.message}
+                            <div data-testid="err_sizelist" className="text-danger fs-7">
+                                {errors.fk_sizelist?.message}
                             </div>
                         </FormGroup>
                     }

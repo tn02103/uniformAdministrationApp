@@ -1,5 +1,5 @@
 import { prisma } from "../../src/lib/db";
-import  StaticDataIds  from "./staticDataIds.json";
+import StaticDataIds from "./staticDataIds.json";
 
 export const startInspection = async (i: number) =>
     await prisma.inspection.create({
@@ -11,7 +11,7 @@ export const startInspection = async (i: number) =>
     });
 
 export const removeInspection = async (i: number) => {
-    const insp = await prisma.inspection.findUnique({where: {id: StaticDataIds[i].dynamic.inspectionId}});
+    const insp = await prisma.inspection.findUnique({ where: { id: StaticDataIds[i].dynamic.inspectionId } });
     if (insp !== null) {
         await prisma.inspection.delete({
             where: { id: StaticDataIds[i].dynamic.inspectionId }
@@ -33,7 +33,7 @@ export const svenKellerFirstInspectionData = (i: number) => ({
             userCreated: 'test3',
             userUpdated: 'test3',
             fk_inspection_created: StaticDataIds[i].dynamic.inspectionId,
-            DeficiencyCadet: {
+            cadetDeficiency: {
                 create: {
                     fk_cadet: StaticDataIds[i].cadetIds[2]
                 }
@@ -47,7 +47,7 @@ export const svenKellerFirstInspectionData = (i: number) => ({
             userCreated: 'test3',
             userUpdated: 'test3',
             fk_inspection_created: StaticDataIds[i].dynamic.inspectionId,
-            DeficiencyUniform: {
+            uniformDeficiency: {
                 create: {
                     fk_uniform: StaticDataIds[i].uniformIds[0][46],
                 }
@@ -61,7 +61,7 @@ export const svenKellerFirstInspectionData = (i: number) => ({
             userCreated: 'test3',
             userUpdated: 'test3',
             fk_inspection_created: StaticDataIds[i].dynamic.inspectionId,
-            DeficiencyCadet: {
+            cadetDeficiency: {
                 create: {
                     fk_cadet: StaticDataIds[i].cadetIds[2],
                     fk_material: StaticDataIds[i].materialIds[9],
@@ -76,7 +76,7 @@ export const svenKellerFirstInspectionData = (i: number) => ({
             userCreated: 'test3',
             userUpdated: 'test3',
             fk_inspection_created: StaticDataIds[i].dynamic.inspectionId,
-            DeficiencyCadet: {
+            cadetDeficiency: {
                 create: {
                     fk_cadet: StaticDataIds[i].cadetIds[2],
                     fk_material: StaticDataIds[i].materialIds[4],
@@ -91,7 +91,7 @@ export const svenKellerFirstInspectionData = (i: number) => ({
             userCreated: 'test3',
             userUpdated: 'test3',
             fk_inspection_created: StaticDataIds[i].dynamic.inspectionId,
-            DeficiencyCadet: {
+            cadetDeficiency: {
                 create: {
                     fk_cadet: StaticDataIds[i].cadetIds[2],
                     fk_uniform: StaticDataIds[i].uniformIds[0][48],
@@ -146,6 +146,7 @@ export async function insertSvenKellerFirstInspection(i: number) {
             uniformComplete: svenKellerFirstInspectionData(i).uniformComplete,
             fk_cadet: svenKellerFirstInspectionData(i).fk_cadet,
             fk_inspection: StaticDataIds[i].dynamic.inspectionId,
+            inspector: 'test3'
         }
     });
 

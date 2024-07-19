@@ -20,58 +20,28 @@ export class CadetInspectionDBHandler {
 
     getUnresolvedDeficienciesByCadet = (fk_cadet: string): Promise<Deficiency[]> =>
         prisma.$queryRaw`
-            SELECT * FROM "v_active_deficiency_by_cadet" 
+            SELECT * FROM inspection.v_deficiency_by_cadet 
              WHERE fk_cadet = ${fk_cadet}
+             AND "dateResolved" IS NULL
           ORDER BY "dateCreated"
         `;
 
     getPreviouslyUnresolvedDeficiencies = (cadetId: string, activeInspectionId: string, date: Date): PrismaPromise<Deficiency[]> => prisma.$queryRaw`
-        SELECT vdgl."id",
-                dt."id" as "typeId",
-                dt."name" as "typeName",
-                vdgl."description",
-                vdgl."comment",
-                vdgl."dateCreated",
-                vdgl."userCreated",
-                vdgl."dateUpdated",
-                vdgl."userUpdated",
-                vdgl."dateResolved",
-                vdgl."userResolved",
-                vdgl."fk_cadet",
-                vdgl."fk_uniform",
-                vdgl."fk_material"
-           FROM "v_deficiency_genericList" as vdgl
-          JOIN "DeficiencyType" dt
-            ON dt.id = vdgl."fk_deficiencyType"
-         WHERE ((vdgl."fk_inspection_created" IS NULL AND vdgl."dateCreated" < ${date})
-                OR (vdgl."fk_inspection_created" != ${activeInspectionId}))
-           AND (vdgl."dateResolved" IS NULL
-                OR vdgl."fk_inspection_resolved" = ${activeInspectionId})
-        AND vdgl.fk_cadet = ${cadetId}
-        ORDER BY vdgl."dateCreated"
-        
-    `
+        SELECT vdbc.*
+           FROM inspection.v_deficiency_by_cadet as vdbc
+         WHERE ((vdbc."fk_inspectionCreated" IS NULL AND vdbc."dateCreated" < ${date})
+                OR (vdbc."fk_inspectionCreated" != ${activeInspectionId}))
+           AND (vdbc."dateResolved" IS NULL
+                OR vdbc."fk_inspectionResolved" = ${activeInspectionId})
+        AND vdbc.fk_cadet = ${cadetId}
+        ORDER BY vdbc."dateCreated"
+    `;
 
     getCadetDeficienciesFromInspection = (cadetId: string, activeInspectionId: string): PrismaPromise<Deficiency[]> => prisma.$queryRaw`
-     SELECT vdgl."id",
-            dt."id" as "typeId",
-            dt."name" as "typeName",
-            vdgl."description",
-            vdgl."comment",
-            vdgl."dateCreated",
-            vdgl."userCreated",
-            vdgl."dateUpdated",
-            vdgl."userUpdated",
-            vdgl."dateResolved",
-            vdgl."userResolved",
-            vdgl."fk_cadet",
-            vdgl."fk_uniform",
-            vdgl."fk_material"
-       FROM "v_deficiency_genericList" as vdgl
-       JOIN "DeficiencyType" dt
-         ON dt.id = vdgl."fk_deficiencyType"
-      WHERE vdgl."fk_inspection_created" = ${activeInspectionId}
-        AND vdgl."fk_cadet" = ${cadetId}
+     SELECT *
+       FROM inspection.v_deficiency_by_cadet as vdbc
+      WHERE vdbc."fk_inspectionCreated" = ${activeInspectionId}
+        AND vdbc.fk_cadet = ${cadetId}
 `
     getUniformLabel = (id: string, fk_assosiation: string) => prisma.uniform.findUniqueOrThrow({
         where: {
@@ -91,7 +61,7 @@ export class CadetInspectionDBHandler {
         include: { materialGroup: true }
     }).then(d => `${d.materialGroup.description}-${d.typename}`);
 
-    upsertCadetInspection = (cadetId: string, inspectionId: string, uniformComplete: boolean, client: PrismaClient) => client.cadetInspection.upsert({
+    upsertCadetInspection = (cadetId: string, inspectionId: string, uniformComplete: boolean, username: string, client: PrismaClient) => client.cadetInspection.upsert({
         where: {
             fk_inspection_fk_cadet: {
                 fk_inspection: inspectionId,
@@ -99,19 +69,21 @@ export class CadetInspectionDBHandler {
             }
         },
         update: {
-            uniformComplete: uniformComplete
+            uniformComplete: uniformComplete,
+            inspector: username,
         },
         create: {
             fk_cadet: cadetId,
             fk_inspection: inspectionId,
             uniformComplete: uniformComplete,
+            inspector: username,
         }
     });
 
     resolveDeficiencies = (idsToResolve: string[], inspectionId: string, username: string, fk_assosiation: string, client: PrismaClient) => client.deficiency.updateMany({
         where: {
             id: { in: idsToResolve },
-            DeficiencyType: { fk_assosiation }
+            type: { fk_assosiation }
         },
         data: {
             dateResolved: new Date(),
@@ -123,7 +95,7 @@ export class CadetInspectionDBHandler {
     unresolveDeficiencies = (idsToUnsolve: string[], fk_assosiation: string, client: PrismaClient) => client.deficiency.updateMany({
         where: {
             id: { in: idsToUnsolve },
-            DeficiencyType: { fk_assosiation }
+            type: { fk_assosiation }
         },
         data: {
             dateResolved: null,
@@ -135,7 +107,7 @@ export class CadetInspectionDBHandler {
     upsertDeficiency = (deficiency: Deficiency, username: string, fk_assosiation: string, client: PrismaClient, inspectionId?: string) => client.deficiency.upsert({
         where: {
             id: deficiency.id ?? "",
-            AND: { DeficiencyType: { fk_assosiation } }
+            AND: { type: { fk_assosiation } }
         },
         create: {
             fk_deficiencyType: deficiency.typeId,
@@ -153,7 +125,7 @@ export class CadetInspectionDBHandler {
         }
     });
 
-    upsertDeficiencyUniform = (deficiencyId: string, fk_uniform: string, client: PrismaClient) => client.deficiencyUniform.upsert({
+    upsertDeficiencyUniform = (deficiencyId: string, fk_uniform: string, client: PrismaClient) => client.uniformDeficiency.upsert({
         where: { deficiencyId },
         create: {
             deficiencyId,
@@ -172,7 +144,7 @@ export class CadetInspectionDBHandler {
             fk_uniform?: string,
         },
         client: PrismaClient
-    ) => client.deficiencyCadet.upsert({
+    ) => client.cadetDeficiency.upsert({
         where: { deficiencyId },
         create: {
             deficiencyId,
@@ -191,7 +163,7 @@ export class CadetInspectionDBHandler {
             id: {
                 in: idList
             },
-            DeficiencyType: { fk_assosiation }
+            type: { fk_assosiation }
         }
     });
 }

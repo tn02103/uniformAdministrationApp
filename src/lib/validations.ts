@@ -63,7 +63,7 @@ export const uniformTypeValidator = {
         && Number.isInteger(type.issuedDefault)
         && (typeof type.usingGenerations === "boolean")
         && (typeof type.usingSizes === "boolean")
-        && (!type.fk_defaultSizeList || uuidValidationPattern.test(type.fk_defaultSizeList))
+        && (!type.fk_defaultSizelist || uuidValidationPattern.test(type.fk_defaultSizelist))
     )
 }
 
@@ -71,7 +71,7 @@ export const uniformGenerationValidator = {
     test: (gen: UniformGeneration) => (
         uuidValidationPattern.test(gen.id)
         && descriptionValidationPattern.test(gen.name)
-        && (!gen.fk_sizeList || uuidValidationPattern.test(gen.fk_sizeList))
+        && (!gen.fk_sizelist || uuidValidationPattern.test(gen.fk_sizelist))
         && (typeof gen.outdated === "boolean")
         && Number.isInteger(gen.sortOrder)
     )

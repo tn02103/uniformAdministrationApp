@@ -72,13 +72,13 @@ export const getUniformListWithOwner = async (uniformTypeId: string, orderBy: st
         }
 
         if (!filter.withOwner) {
-            sqlFilter["issuedEntrys"] = {
+            sqlFilter["issuedEntries"] = {
                 none: {
                     dateReturned: null,
                 }
             };
         } else if (!filter.withoutOwner) {
-            sqlFilter["issuedEntrys"] = {
+            sqlFilter["issuedEntries"] = {
                 some: {
                     dateReturned: null,
                 }
@@ -245,16 +245,16 @@ export const createUniformItems = (numberMap: UniformNumbersSizeMap, data: { uni
         throw new SaveDataException('some number is entered multiple times');
     };
 
-    const type = await typeHandler.getCompleteTypeWithSizeListAndSizes(data.uniformTypeId, client);
+    const type = await typeHandler.getCompleteTypeWithSizelistAndSizes(data.uniformTypeId, client);
 
     // VALIDATE generation
-    let sizeList = type.defaultSizeList;
+    let sizelist = type.defaultSizelist;
     if (!type.usingGenerations) {
         data.generationId = undefined;
     } else {
         const gen = type.uniformGenerationList.find(g => g.id === data.generationId);
         if (gen) {
-            sizeList = gen.uniformSizeList;
+            sizelist = gen.sizelist;
         } else {
             data.generationId = undefined;
         }
@@ -265,10 +265,10 @@ export const createUniformItems = (numberMap: UniformNumbersSizeMap, data: { uni
     if (!type.usingSizes) {
         allowedSizes = ["amount"];
     } else {
-        if (!sizeList) {
+        if (!sizelist) {
             throw new SaveDataException('Could not create Uniformitems. Failed to find sizelist for selected type and generation');
         }
-        allowedSizes = sizeList.uniformSizes.map(s => s.id);
+        allowedSizes = sizelist.uniformSizes.map(s => s.id);
     }
     if (!numberMap.every(map => allowedSizes.includes(map.sizeId))) {
         throw new SaveDataException("Not allowed size used");

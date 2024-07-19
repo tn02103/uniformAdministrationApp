@@ -69,16 +69,16 @@ export const changeUniformTypeSortOrder = (uniformTypeId: string, up: boolean) =
 export const updateUniformType = (data: UniformType): Promise<UniformType[]> => genericSAValidatiorV2(
     AuthRole.materialManager,
     uniformTypeValidator.test(data),
-    { uniformTypeId: data.id, uniformSizeListId: data.fk_defaultSizeList }
+    { uniformTypeId: data.id, uniformSizelistId: data.fk_defaultSizelist }
 ).then(({ assosiation }) => prisma.$transaction(async (client) => {
     const list = await dbHandler.getTypeList(assosiation, client as PrismaClient);
 
     if (list.find(t => t.id !== data.id && t.name === data.name)) {
-        throw new SaveDataException("Name allready used by different sizeList");
+        throw new SaveDataException("Name allready used by different sizelist");
     }
 
     if (list.find(t => t.id !== data.id && t.acronym === data.acronym)) {
-        throw new SaveDataException("Acronym allready used by different sizeList");
+        throw new SaveDataException("Acronym allready used by different sizelist");
     }
 
     await dbHandler.updateData(data.id, {
@@ -87,7 +87,7 @@ export const updateUniformType = (data: UniformType): Promise<UniformType[]> => 
         issuedDefault: data.issuedDefault,
         usingGenerations: data.usingGenerations,
         usingSizes: data.usingSizes,
-        fk_defaultSizeList: data.fk_defaultSizeList,
+        fk_defaultSizelist: data.fk_defaultSizelist,
     }, client as PrismaClient);
     return dbHandler.getTypeList(assosiation, client as PrismaClient);
 }));
@@ -109,11 +109,11 @@ export const deleteUniformType = (uniformTypeId: string) => genericSAValidatiorV
     return dbHandler.getTypeList(assosiation, client as PrismaClient);
 }));
 
-export const createUniformGeneration = (name: string, outdated: boolean, fk_sizeList: string | null, uniformTypeId: string,): Promise<UniformType[]> => genericSAValidatiorV2(
+export const createUniformGeneration = (name: string, outdated: boolean, fk_sizelist: string | null, uniformTypeId: string,): Promise<UniformType[]> => genericSAValidatiorV2(
     AuthRole.materialManager,
     (descriptionValidationPattern.test(name)
         && (typeof outdated === "boolean")
-        && (!fk_sizeList || uuidValidationPattern.test(fk_sizeList))
+        && (!fk_sizelist || uuidValidationPattern.test(fk_sizelist))
         && uuidValidationPattern.test(uniformTypeId)),
     { uniformTypeId }
 ).then(({ assosiation }) => prisma.$transaction(async (client) => {
@@ -122,7 +122,7 @@ export const createUniformGeneration = (name: string, outdated: boolean, fk_size
         throw new SaveDataException('Could not create Generation. Duplicated name');
     }
     await generationHandler.createGeneration(
-        { name, outdated, fk_sizeList, sortOrder: list.length },
+        { name, outdated, fk_sizelist, sortOrder: list.length },
         uniformTypeId,
         client as PrismaClient);
 

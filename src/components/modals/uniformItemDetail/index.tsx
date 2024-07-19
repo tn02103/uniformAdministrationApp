@@ -2,8 +2,8 @@
 
 import { useGlobalData } from "@/components/globalDataProvider";
 import { AuthRole } from "@/lib/AuthRoles";
-import { getUniformSizeList } from "@/lib/uniformHelper";
-import { UniformFormData, UniformSizeList, UniformType } from "@/types/globalUniformTypes";
+import { getUniformSizelist } from "@/lib/uniformHelper";
+import { UniformFormData, UniformSizelist, UniformType } from "@/types/globalUniformTypes";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -27,7 +27,7 @@ export default function UniformItemDetailModal({ uniformId, uniformType, ownerId
     const modal = useModal();
     const router = useRouter();
 
-    const { sizeLists, userRole } = useGlobalData();
+    const { sizelists, userRole } = useGlobalData();
     const { data: uniform } = useSWR(
         `uniform.${uniformId}.formValues`,
         () => getUniformFormValues(uniformId)
@@ -39,7 +39,7 @@ export default function UniformItemDetailModal({ uniformId, uniformType, ownerId
 
     const [activeTab, setActiveTab] = useState(0);
     const [editable, setEditable] = useState(false);
-    const [sizeList, setSizeList] = useState<UniformSizeList>();
+    const [sizelist, setSizelist] = useState<UniformSizelist>();
 
     async function handleDelete() {
         modal?.simpleWarningModal({
@@ -82,33 +82,33 @@ export default function UniformItemDetailModal({ uniformId, uniformType, ownerId
     }, [watch("generation")]);
 
     const generationChanged = async (generationId: string) => {
-        const newSizeList = getUniformSizeList({
+        const newSizelist = getUniformSizelist({
             generationId,
             type: uniformType,
-            sizeLists: sizeLists,
+            sizelists: sizelists,
         });
 
-        // no sizeList
-        if (!newSizeList) {
-            setSizeList(undefined);
+        // no sizelist
+        if (!newSizelist) {
+            setSizelist(undefined);
             setValue("size", "null", { shouldValidate: true });
             return;
         }
-        // same sizeList
-        if (sizeList && newSizeList.id === sizeList.id) {
+        // same sizelist
+        if (sizelist && newSizelist.id === sizelist.id) {
             return;
         }
 
-        // different sizeList
-        await setSizeList(newSizeList);
+        // different sizelist
+        await setSizelist(newSizelist);
         const oldSize = getValues("size");
 
-        if (newSizeList.uniformSizes.find(s => s.id == oldSize)) {
+        if (newSizelist.uniformSizes.find(s => s.id == oldSize)) {
             setValue("size", oldSize, { shouldValidate: true });
         } else {
             setValue("size", "null", { shouldValidate: true });
         }
-        return newSizeList;
+        return newSizelist;
     }
 
     if (!uniform) return (<></>)
@@ -172,11 +172,11 @@ export default function UniformItemDetailModal({ uniformId, uniformType, ownerId
                                     {editable ?
                                         <FormSelect {...register('size')}>
                                             <option>K.A.</option>
-                                            {sizeList?.uniformSizes.map((size) => (
+                                            {sizelist?.uniformSizes.map((size) => (
                                                 <option key={size.id} value={size.id}>{size.name}</option>
                                             ))}
                                         </FormSelect>
-                                        : sizeList?.uniformSizes.find(s => s.id === uniform.size)?.name}
+                                        : sizelist?.uniformSizes.find(s => s.id === uniform.size)?.name}
                                 </Col>
                                 <Label>Kommentar:</Label>
                                 <Col xs={6}>

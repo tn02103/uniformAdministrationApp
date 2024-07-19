@@ -82,7 +82,7 @@ export default {
                 issuedDefault: "Qty. to be issued",
                 usingGenerations: "Uses generations",
                 usingSizes: "Uses sizes",
-                defaultSizeList: "Standard size list"
+                defaultSizelist: "Standard size list"
             }
         },
         material: {
@@ -316,7 +316,7 @@ export default {
     admin: {
         uniform: {
             header: "Uniform administration",
-            changeSizeListWarning: "When changing the selected size list, the size information of uniform parts of this generation may be lost",
+            changeSizelistWarning: "When changing the selected size list, the size information of uniform parts of this generation may be lost",
             type: {
                 deleteModal: {
                     header: "Delete uniform type \"{type}\"",
@@ -363,7 +363,7 @@ export default {
                     message: "Should the size really be deleted. This action is not reversible."
                 },
             },
-            sizeList: {
+            sizelist: {
                 nameDuplicationError: "A size list with this name already exists",
                 otherSizes: "other sizes",
                 selectedSizes: "selected sizes",
@@ -410,7 +410,7 @@ export default {
                 createGroup: "Creating the Material Group has failed",
                 groupNameDuplicate: "The group name is already taken",
                 materialNameDuplicate: "The name is already used by another material of the group",
-                maxIssuedDefault: "The amount of default issued materials must not be greater than {value}", 
+                maxIssuedDefault: "The amount of default issued materials must not be greater than {value}",
             },
         },
         user: {

@@ -19,12 +19,12 @@ export default class UniformGenerationDBHandler {
             ...uniformGenerationArgs,
         });
 
-    createGeneration = async (data: { name: string, outdated: boolean, fk_sizeList: string | null, sortOrder: number }, fk_uniformType: string, client: PrismaClient) =>
+    createGeneration = async (data: { name: string, outdated: boolean, fk_sizelist: string | null, sortOrder: number }, fk_uniformType: string, client: PrismaClient) =>
         client.uniformGeneration.create({
             data: {
                 name: data.name,
                 outdated: data.outdated,
-                fk_sizeList: data.fk_sizeList,
+                fk_sizelist: data.fk_sizelist,
                 sortOrder: data.sortOrder,
                 fk_uniformType
             }
@@ -47,7 +47,7 @@ export default class UniformGenerationDBHandler {
             data: {
                 name: generation.name,
                 outdated: generation.outdated,
-                fk_sizeList: generation.fk_sizeList
+                fk_sizelist: generation.fk_sizelist
             }
         });
 

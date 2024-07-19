@@ -16,7 +16,7 @@ const test = adminTest.extend<Fixture>({
     uniformComponent: async ({ page }, use) => use(new CadetUniformComponent(page)),
     rowComponent: async ({ page, staticData }, use) => use(new UniformItemRowComponent(page, staticData.ids.uniformIds[0][84])),
 });
-test.afterEach(async ({ uniform}) => {
+test.afterEach(async ({ uniform }) => {
     await prisma.uniform.update({
         where: { id: uniform.id },
         data: uniform
@@ -71,7 +71,7 @@ test.describe(() => {
                     })
                 );
             });
-            await test.step('validate initialSizeList', async () => {
+            await test.step('validate initialSizelist', async () => {
                 const options = rowComponent.sel_size.locator('option', { hasNotText: 'K.A.' });
                 await Promise.all([
                     expect(options).toHaveCount(5),

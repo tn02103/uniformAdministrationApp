@@ -24,12 +24,12 @@ export const generateUniformNumbers = (uniformTypeId: string, numberCount: { siz
     // getting Data
     const year = (+(new Date().getFullYear()) % 100);
     let usedNumbers: number[] = await prisma.$queryRaw<{ partialNumber: string }[]>` 
-        SELECT SUBSTRING(CAST("number" AS TEXT), 3) AS "partialNumber"
-          FROM "Uniform"
-         WHERE "number" > 999
-           AND LEFT(CAST("number" AS TEXT), 2) = CAST(${year} AS TEXT)
-           AND "fk_uniformType" = ${uniformTypeId}
-           AND "recdelete" IS NULL
+        SELECT SUBSTRING(CAST(number AS TEXT), 3) AS "partialNumber"
+          FROM base.uniform
+         WHERE number > 999
+           AND LEFT(CAST(number AS TEXT), 2) = CAST(${year} AS TEXT)
+           AND fk_uniform_type = ${uniformTypeId}
+           AND recdelete IS NULL
            `.then((data) => data.map(x => +x.partialNumber));
 
     const numbersArray: UniformNumbersSizeMap = [];

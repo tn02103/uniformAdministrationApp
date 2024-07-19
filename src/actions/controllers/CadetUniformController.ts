@@ -91,9 +91,9 @@ export const issueUniformItem = async ({
     }
 
     // CHECK uniform is not issued
-    if (uniform.issuedEntrys.length > 0) {
+    if (uniform.issuedEntries.length > 0) {
         if (!force) {
-            throw new UniformIssuedException(uniform.id, number, uniform.issuedEntrys[0].cadet);
+            throw new UniformIssuedException(uniform.id, number, uniform.issuedEntries[0].cadet);
         }
 
         // get name of of newCadet
@@ -101,13 +101,13 @@ export const issueUniformItem = async ({
 
         // add comment to other cadet
         const comment = `<<Das Uniformteil ${uniform.type.name} ${uniform.number} wurde dem Kadetten ${cadet.firstname} ${cadet.lastname} Überschrieben>>`;
-        const addcommentFeedback = await cadetDBHandler.concatCadetComment(uniform.issuedEntrys[0].fk_cadet, comment, client as PrismaClient);
+        const addcommentFeedback = await cadetDBHandler.concatCadetComment(uniform.issuedEntries[0].fk_cadet, comment, client as PrismaClient);
         if (addcommentFeedback !== 1) {
             throw new Error("Could not add comment to previous owner");
         }
 
         // return uniformItem from other cadet
-        await dbHandler.return(uniform.issuedEntrys[0].id, uniform.issuedEntrys[0].dateIssued, client as PrismaClient);
+        await dbHandler.return(uniform.issuedEntries[0].id, uniform.issuedEntries[0].dateIssued, client as PrismaClient);
     }
 
     // ISSUE uniform item

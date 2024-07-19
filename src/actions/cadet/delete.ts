@@ -12,7 +12,7 @@ export const deleteCadet = async (cadetId: string) => genericSAValidatiorV2(
     { cadetId }
 ).then(({ username }) => prisma.$transaction([
     // RETURN uniform
-    // -- remove issuedEntrys issued today
+    // -- remove issuedEntries issued today
     prisma.uniformIssued.deleteMany({
         where: {
             fk_cadet: cadetId,
@@ -31,7 +31,7 @@ export const deleteCadet = async (cadetId: string) => genericSAValidatiorV2(
     }),
 
     // RETURN material
-    // -- remove issuedEntrys issued today
+    // -- remove issuedEntries issued today
     prisma.materialIssued.deleteMany({
         where: {
             fk_cadet: cadetId,

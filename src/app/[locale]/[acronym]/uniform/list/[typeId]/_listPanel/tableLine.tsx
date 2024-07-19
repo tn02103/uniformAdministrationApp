@@ -48,11 +48,11 @@ export default function TableLine({
                 </td>
             }
             <td className=" col-7 col-sm-4 col-md-3 ">
-                {(uniform.issuedEntrys && uniform.issuedEntrys.length > 0) &&
+                {(uniform.issuedEntries && uniform.issuedEntries.length > 0) &&
                     <OpenCadetLink
-                        id={uniform.issuedEntrys[0].cadet.id}
-                        lastname={uniform.issuedEntrys[0].cadet.lastname}
-                        firstname={uniform.issuedEntrys[0].cadet.firstname}
+                        id={uniform.issuedEntries[0].cadet.id}
+                        lastname={uniform.issuedEntries[0].cadet.lastname}
+                        firstname={uniform.issuedEntries[0].cadet.firstname}
                         testId="lnk_owner"
                         t={t} />
                 }
@@ -65,7 +65,7 @@ export default function TableLine({
                     variant="outline-seccondary"
                     className={(userRole < AuthRole.inspector) ? "d-md-none" : ""}
                     data-testid="btn_open"
-                    onClick={() => { modal?.uniformItemDetailModal(uniform.id, uniformType, uniform.issuedEntrys?.[0]?.cadet.id) }}
+                    onClick={() => { modal?.uniformItemDetailModal(uniform.id, uniformType, uniform.issuedEntries?.[0]?.cadet.id) }}
                 >
                     <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
                 </Button>

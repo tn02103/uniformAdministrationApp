@@ -3,7 +3,7 @@
 import { updateUniformType } from "@/actions/controllers/UniformConfigController";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/card";
-import { useUniformSizeLists, useUniformType } from "@/dataFetcher/uniformAdmin";
+import { useUniformSizelists, useUniformType } from "@/dataFetcher/uniformAdmin";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
 import { acronymValidationPattern, nameValidationPattern } from "@/lib/validations";
 import { UniformType } from "@/types/globalUniformTypes";
@@ -27,10 +27,10 @@ export default function UniformConfigTypeDetails({
 
 
     const { type, mutate } = useUniformType(selectedTypeId);
-    const { sizelistList } = useUniformSizeLists();
+    const { sizelistList } = useUniformSizelists();
 
     async function save(data: UniformType) {
-        if (!data.usingSizes) data.fk_defaultSizeList = null;
+        if (!data.usingSizes) data.fk_defaultSizelist = null;
         mutate(updateUniformType(data)).then(() => {
             setEditable(false);
         }).catch((e) => {
@@ -84,7 +84,7 @@ export default function UniformConfigTypeDetails({
                                         },
                                         maxLength: {
                                             value: 10,
-                                            message: t('common.error.string.maxLength', {value: 10}),
+                                            message: t('common.error.string.maxLength', { value: 10 }),
                                         }
                                     })}
                                 />
@@ -135,7 +135,7 @@ export default function UniformConfigTypeDetails({
                                         validate: (value) => (Number.isInteger(value) && value >= 0) || t('common.error.number.patternPositive'),
                                         max: {
                                             value: 10,
-                                            message: t('common.error.amount.max', {value: 10}),
+                                            message: t('common.error.amount.max', { value: 10 }),
                                         },
                                     })}
                                 />
@@ -165,24 +165,24 @@ export default function UniformConfigTypeDetails({
                             {watch("usingSizes") &&
                                 <FormGroup className="mt-2">
                                     <FormLabel className="mb-0">
-                                        {tType('defaultSizeList')}:
+                                        {tType('defaultSizelist')}:
                                     </FormLabel>
                                     <FormSelect
                                         className="w-auto"
-                                        isInvalid={!!(errors?.fk_defaultSizeList)}
-                                        {...register("fk_defaultSizeList", {
+                                        isInvalid={!!(errors?.fk_defaultSizelist)}
+                                        {...register("fk_defaultSizelist", {
                                             required: {
                                                 value: true,
                                                 message: t('common.error.pleaseSelect'),
                                             }
                                         })}
                                     >
-                                        {sizelistList?.map(sizeList =>
-                                            <option key={sizeList.id} value={sizeList.id}>{sizeList.name}</option>
+                                        {sizelistList?.map(sizelist =>
+                                            <option key={sizelist.id} value={sizelist.id}>{sizelist.name}</option>
                                         )}
                                     </FormSelect>
                                     <div data-testid="err_defaultSL" className="text-danger fs-7">
-                                        {errors.fk_defaultSizeList?.message}
+                                        {errors.fk_defaultSizelist?.message}
                                     </div>
                                 </FormGroup>
                             }
@@ -221,13 +221,13 @@ export default function UniformConfigTypeDetails({
                             </Col>
                             {type.usingSizes &&
                                 <Col xs={6} className="text-end p-0">
-                                    {tType('defaultSizeList')}:
+                                    {tType('defaultSizelist')}:
                                 </Col>
                             }
                             {type.usingSizes &&
                                 <Col data-testid="div_defaultSL" xs={6}>
-                                    {type.fk_defaultSizeList
-                                        ? (sizelistList?.find(sl => sl.id === type.fk_defaultSizeList)?.name)
+                                    {type.fk_defaultSizelist
+                                        ? (sizelistList?.find(sl => sl.id === type.fk_defaultSizelist)?.name)
                                         : "-"}
                                 </Col>
                             }

@@ -1,6 +1,6 @@
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/card";
 import { useI18n } from "@/lib/locales/client";
-import { UniformNumbersSizeMap, UniformSizeList } from "@/types/globalUniformTypes";
+import { UniformNumbersSizeMap, UniformSizelist } from "@/types/globalUniformTypes";
 import { useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { UseFormRegister, UseFormWatch, useForm } from "react-hook-form";
@@ -9,9 +9,9 @@ type FormType = {
     [key in string]: boolean
 }
 
-export default function Step2({ uniformNumberMap, usedSizeList, stepBack, onCreate }: {
+export default function Step2({ uniformNumberMap, usedSizelist, stepBack, onCreate }: {
     uniformNumberMap: UniformNumbersSizeMap,
-    usedSizeList?: UniformSizeList,
+    usedSizelist?: UniformSizelist,
     stepBack: () => void,
     onCreate: (data: UniformNumbersSizeMap) => void;
 }) {
@@ -42,7 +42,7 @@ export default function Step2({ uniformNumberMap, usedSizeList, stepBack, onCrea
                 </CardHeader>
                 <CardBody>
                     <Row className="m-0">
-                        {usedSizeList &&
+                        {usedSizelist &&
                             <Col className="fw-bold p-2" xs={2}>
                                 {t('common.uniform.size')}
                             </Col>
@@ -57,12 +57,12 @@ export default function Step2({ uniformNumberMap, usedSizeList, stepBack, onCrea
                             className="m-0 border-top border-2 py-3"
                             data-testid={`div_size_${generated.sizeId}`}
                         >
-                            {usedSizeList &&
+                            {usedSizelist &&
                                 <Col className="fw-bold text-right" xs={2}>
-                                    {usedSizeList.uniformSizes.find(s => s.id === generated.sizeId)?.name}
+                                    {usedSizelist.uniformSizes.find(s => s.id === generated.sizeId)?.name}
                                 </Col>
                             }
-                            <Col className="" xs={usedSizeList ? 10 : 12}>
+                            <Col className="" xs={usedSizelist ? 10 : 12}>
                                 <Row>
                                     {generated.numbers.map((uNumber) => (
                                         <SizeSelect key={String(uNumber)} uNumber={uNumber} register={register} watch={watch} />

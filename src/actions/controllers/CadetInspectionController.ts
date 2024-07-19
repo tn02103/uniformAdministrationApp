@@ -80,7 +80,7 @@ export const saveCadetInspection = async (data: FormType, cadetId: string, unifo
 
     await prisma.$transaction(async (client) => {
         // INSERT | UPDATE cadet_inspection
-        await dbHandler.upsertCadetInspection(cadetId, inspection.id, uniformComplete, client as PrismaClient);
+        await dbHandler.upsertCadetInspection(cadetId, inspection.id, uniformComplete, username, client as PrismaClient);
 
         // RESOLVING OLD DEFICIENCIES
         if (oldDeficiencyList) {
