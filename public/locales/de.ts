@@ -431,6 +431,23 @@ export default {
             saved: "Nutzer erfolgreich aktualisiert",
             created: "Nutzer erfolgreich erstellt",
         },
+        deficiency: {
+            header: {
+                page: "Mangeltypen",
+                name: "Name",
+                dependend: "Abhängig von",
+                relation: "Bezieht sich auf",
+            },
+            info: {
+                dependend: "Gibt an wovon der Mangel direkt abhängt. Z.B. Bei Uniformteilen, bleibt der Mangel immer für das Uniformteil behalten, auch wenn sich der Besitzer ändert",
+                relation: "Gibt an ob sich der Mangel einer Person indirekt auf eine anderes Entität bezieht. Z.B beim Typ 'UT zu klein' wäre der Mangel abhängig von der Person, aber bezieht sich indirekt auf ein Uniformteil "
+            },
+            entity: {
+                cadet: "Person",
+                uniform: "Uniformteil",
+                material: "Material",
+            }
+        },
     },
     modals: {
         messageModal: {
