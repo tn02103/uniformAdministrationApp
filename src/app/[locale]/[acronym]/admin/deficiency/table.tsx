@@ -20,19 +20,19 @@ export default function DefTypeAdminTable({
     const [newVisible, setNewVisible] = useState(false);
 
     return (
-        <Table striped className="border rounded border-3">
-            <thead className="topoffset-nav sticky-top bg-white m-1">
+        <Table striped className="border rounded border-3" style={{minWidth: 700}}>
+            <thead className="sticky-top bg-white m-1">
                 <tr className="border-bottom border-2 border-dark">
                     <th>{t('header.name')}</th>
                     <th>
                         {t('header.dependend')}
-                        <span className="fa-layers fa-fw ms-2" data-toggle={"tooltip"} title={t('info.dependend')} >
+                        <span className="d-none d-lg-inline-block fa-layers fa-fw ms-2" data-toggle={"tooltip"} title={t('info.dependend')} >
                             <FontAwesomeIcon icon={faCircle} />
                             <FontAwesomeIcon icon={faInfo} transform={"shrink-6 "} />
                         </span>
                     </th>
                     <th>{t('header.relation')}
-                        <span className="fa-layers fa-fw ms-2" data-toggle={"tooltip"} title={t('info.relation')} >
+                        <span className="d-none d-lg-inline-block fa-layers fa-fw ms-2" data-toggle={"tooltip"} title={t('info.relation')} >
                             <FontAwesomeIcon icon={faCircle} />
                             <FontAwesomeIcon icon={faInfo} transform={"shrink-6 "} />
                         </span>
