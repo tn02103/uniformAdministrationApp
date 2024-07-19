@@ -12,7 +12,6 @@ import { Button, FormControl, FormSelect } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { z } from "zod";
-var moment = require('moment');
 
 const defaultValue: AdminDeficiencytypeFormSchema = {
     name: "",
@@ -37,6 +36,7 @@ export default function DefTypeAdminTableRow({
         resolver: zodResolver(FormSchema)
     });
     const t = useScopedI18n('admin.deficiency');
+    const tActions = useScopedI18n('common.actions');
     const modal = useModal();
 
     const [editable, setEditable] = useState(!type);
@@ -138,10 +138,10 @@ export default function DefTypeAdminTableRow({
                 <td colSpan={3} className="align-middle text-end">
                     <form id={formName} onSubmit={handleSubmit(handleSave)}>
                         <Button variant="outline-primary" size="sm" type="submit">
-                            Speichern
+                            {tActions('save')}
                         </Button>
                         <Button variant="outline-danger" className="ms-2" size="sm" type="button" onClick={handleCancel}>
-                            Abbrechen
+                            {tActions('cancel')}
                         </Button>
                     </form>
                 </td>
@@ -152,7 +152,7 @@ export default function DefTypeAdminTableRow({
                     <td className={"align-middle " + (type?.recdelete ? "text-secondary d-nonexs d-md-table-cell" : "d-nonexs d-sm-table-cell")}>{type.resolved}</td>
                     {(type.recdelete)
                         ? <td className="text-secondary">
-                            gelöscht am: <br />
+                            {t('deleted')}<br />
                             {format(type.recdelete, "dd.MM.yyyy")}
                         </td>
                         : <td className="text-end d-nonexs d-md-table-cell">

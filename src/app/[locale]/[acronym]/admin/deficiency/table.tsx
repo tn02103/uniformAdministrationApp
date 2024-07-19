@@ -6,9 +6,9 @@ import { AdminDeficiencyType } from "@/types/deficiencyTypes";
 import { faCircle } from "@fortawesome/free-regular-svg-icons";
 import { faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState } from "react";
 import { Table } from "react-bootstrap";
 import DefTypeAdminTableRow from "./tableRow";
-import { useState } from "react";
 
 export default function DefTypeAdminTable({
     typeList
@@ -20,7 +20,7 @@ export default function DefTypeAdminTable({
     const [newVisible, setNewVisible] = useState(false);
 
     return (
-        <Table striped className="border rounded border-3" style={{minWidth: 700}}>
+        <Table striped className="border rounded border-3" style={{ minWidth: 700 }}>
             <thead className="sticky-top bg-white m-1">
                 <tr className="border-bottom border-2 border-dark">
                     <th>{t('header.name')}</th>
@@ -38,10 +38,10 @@ export default function DefTypeAdminTable({
                         </span>
                     </th>
                     <th className="d-nonexs d-sm-table-cell">
-                        Aktiv
+                        {t('header.active')}
                     </th>
                     <th className="d-nonexs d-sm-table-cell">
-                        Behoben
+                        {t('header.resolved')}
                     </th>
                     <th className="text-end d-nonexs d-md-table-cell d">
                         <TooltipActionButton

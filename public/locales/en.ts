@@ -433,11 +433,14 @@ export default {
             created: "User created successfuly",
         },
         deficiency: {
+            deleted: "deleted on: ",
             header: {
                 page: "deficiency types",
                 name: "name",
                 dependend: "depends on",
                 relation: "relates to",
+                active: "active",
+                resolved: "resolved",
             },
             info: {
                 dependend: "Indicates what the defect directly depends on. For example, in the case of uniform parts, the defect always remains with the uniform part, even if the owner changes.",

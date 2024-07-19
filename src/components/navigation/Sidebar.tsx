@@ -217,7 +217,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                             <Dropdown.Item onClick={handleLogout} data-testid="btn_logout" className="text-white bg-navy-secondary">
                                                 {t('sidebar.logout')}
                                             </Dropdown.Item>
-                                            <Dropdown.Item onClick={modal?.changeLanguage} data-testid="btn_changeSize" className="text-white bg-navy-secondary">
+                                            <Dropdown.Item onClick={modal?.changeLanguage} data-testid="btn_changeSize" className="text-white bg-navy-secondary my-2 my-lg-0">
                                                 {t('sidebar.changeLanguage')}
                                             </Dropdown.Item>
                                         </Dropdown.Menu>

@@ -433,11 +433,14 @@ export default {
             created: "Nutzer erfolgreich erstellt",
         },
         deficiency: {
+            deleted: "gelöscht am: ",
             header: {
                 page: "Mangeltypen",
                 name: "Name",
                 dependend: "Abhängig von",
                 relation: "Bezieht sich auf",
+                active: "Aktiv",
+                resolved: "Behoben",
             },
             info: {
                 dependend: "Gibt an wovon der Mangel direkt abhängt. Z.B. Bei Uniformteilen, bleibt der Mangel immer für das Uniformteil behalten, auch wenn sich der Besitzer ändert",
@@ -447,7 +450,7 @@ export default {
                 cadet: "Person",
                 uniform: "Uniformteil",
                 material: "Material",
-            }
+            },
         },
     },
     modals: {
