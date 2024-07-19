@@ -291,6 +291,7 @@ export default {
     },
     sidebar: {
         logout: "Abmelden",
+        changeLanguage: "Sprache wechseln",
         links: {
             cadetOverview: "Personal",
             uniformOverview: "Uniform",
@@ -519,6 +520,16 @@ export default {
                 },
             },
             save: "Speichern",
-        }
+        },
+        changeLanguage: {
+            header: "Sprache wechseln",
+            label: "Sprache",
+            options: {
+                de: "Deutsch",
+                en: "Englisch",
+            },
+            cancel: "Abbrechen", 
+            change: "Ändern",
+        },
     },
 } as const;

@@ -12,6 +12,7 @@ import MessageModal, { MessageModalOption, MessageModalPropType, MessageModalTyp
 import SimpleFormModal, { SimpleFormModalProps } from "./simpleFormModal";
 import UniformItemDetailModal, { UIDModalProps } from "./uniformItemDetail";
 import ChangeUserPasswordModal, { ChangeUserPasswordModalPropType } from "./userPassword";
+import ChangeLanguageModal from "./changeLanguageModal";
 
 type ModalContextType = {
     showMessageModal: (header: string, message: string | ReactNode, options: MessageModalOption[], type: MessageModalType) => void,
@@ -25,6 +26,7 @@ type ModalContextType = {
     editGenerationModal: (generation: UniformGeneration | null, uniformType: UniformType, save: (data: UniformGeneration) => void) => void,
     changeUserPasswordModal: (save: (p: string) => Promise<any>, nameOfUser?: string) => void,
     editMaterialTypeModal: (groupName: string, typeList: Material[], groupId: string, type?: AdministrationMaterial) => void,
+    changeLanguage: () => void,
 }
 
 type ModalCapsule = {
@@ -32,7 +34,7 @@ type ModalCapsule = {
     props: any,
 }
 type ModalTypes = "DangerConfirmationModal" | "EditGenerationModal" | "EditMaterialTypeModal" | "InspectionReviewPopup" | "IssueMaterialModal"
-    | "IssueUniformModal" | "ChangeUserPasswordModal" | "SimpleFormModal" | "UniformItemDetailModal"
+    | "IssueUniformModal" | "ChangeUserPasswordModal" | "SimpleFormModal" | "UniformItemDetailModal" | "ChangeLanguageModal"
 
 export const ModalContext = createContext<ModalContextType | undefined>(undefined);
 export const useModal = () => useContext(ModalContext);
@@ -196,6 +198,9 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         }
         showModal("ChangeUserPasswordModal", props);
     }, []);
+    const changeLanguage = useCallback(() => {
+        showModal("ChangeLanguageModal", {});
+    }, [])
 
     const onClose = () => {
         setQueue(prevState => prevState.slice(1))
@@ -214,7 +219,8 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             changeUserPasswordModal,
             issueMaterialModal,
             simpleFormModal,
-            uniformItemDetailModal
+            uniformItemDetailModal,
+            changeLanguage,
         }
     }, [showMessageModal,
         simpleYesNoModal,
@@ -228,7 +234,9 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         changeUserPasswordModal,
         issueMaterialModal,
         simpleFormModal,
-        uniformItemDetailModal]);
+        uniformItemDetailModal,
+        changeLanguage
+    ]);
 
     function renderModal(modal: ModalCapsule) {
         switch (modal.modalType) {
@@ -250,6 +258,8 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
                 return <IssueMaterialModal {...modal.props} />
             case "UniformItemDetailModal":
                 return <UniformItemDetailModal {...modal.props} />
+            case "ChangeLanguageModal":
+                return <ChangeLanguageModal onClose={onClose} />
         }
     }
 

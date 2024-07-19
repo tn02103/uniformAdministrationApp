@@ -20,6 +20,7 @@ import NavButton from "./NavButton";
 import NavGroup from "./NavGroup";
 import NavLink from "./NavLink";
 import { startInspection } from "@/actions/controllers/InspectionController";
+import { useModal } from "../modals/modalProvider";
 
 
 type SidebarPropType = {
@@ -29,6 +30,7 @@ type SidebarPropType = {
 }
 const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
     const t = useI18n();
+    const modal = useModal();
     const [collapsed, setCollapsed] = useState<boolean>(false);
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
     const { inspectionState } = useInspectionState();
@@ -59,6 +61,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
             });
         }
     }
+
 
     return (
         <div className="row p-0 m-0">
@@ -213,6 +216,9 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                         <Dropdown.Menu className="bg-navy-secondary border-white text-white">
                                             <Dropdown.Item onClick={handleLogout} data-testid="btn_logout" className="text-white bg-navy-secondary">
                                                 {t('sidebar.logout')}
+                                            </Dropdown.Item>
+                                            <Dropdown.Item onClick={modal?.changeLanguage} data-testid="btn_changeSize" className="text-white bg-navy-secondary">
+                                                {t('sidebar.changeLanguage')}
                                             </Dropdown.Item>
                                         </Dropdown.Menu>
                                     </Dropdown>

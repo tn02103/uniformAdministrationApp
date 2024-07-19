@@ -291,6 +291,7 @@ export default {
     },
     sidebar: {
         logout: "Logout",
+        changeLanguage: "change Language",
         links: {
             cadetOverview: "Staff",
             uniformOverview: "Uniform",
@@ -519,6 +520,16 @@ export default {
                 },
             },
             save: "Save",
+        },
+        changeLanguage: {
+            header: "Switch language",
+            label: "language",
+            options: {
+                de: "German",
+                en: "English",
+            },
+            cancel: "cancel", 
+            change: "change",
         },
     },
 } as const;
