@@ -180,6 +180,15 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                         collapsed={collapsed}
                                         testId="lnk_adminMaterial"
                                     />
+                                    <NavLink
+                                        text={'Mängel'}
+                                        href="/app/admin/deficiency"
+                                        isRoute={pathname === "/app/admin/deficiency"}
+                                        level={2}
+                                        requiredRole={AuthRole.materialManager}
+                                        collapsed={collapsed}
+                                        testId="lnk_adminDeficiency"
+                                    />
                                 </ul>
                             </NavGroup>
                             <NavLink
