@@ -69,7 +69,8 @@ export class CadetInspectionDBHandler {
             }
         },
         update: {
-            uniformComplete: uniformComplete
+            uniformComplete: uniformComplete,
+            inspector: username,
         },
         create: {
             fk_cadet: cadetId,

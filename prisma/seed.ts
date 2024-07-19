@@ -93,4 +93,4 @@ async function main() {
     });
 }
 
-main();
+main().then(() => prismaClient.$disconnect());
