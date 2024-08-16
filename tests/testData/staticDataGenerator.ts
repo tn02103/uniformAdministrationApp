@@ -28,7 +28,7 @@ export type StaticDataIdType = {
         }
     }
 };
-export function getStaticDataIds () {
+export function getStaticDataIds() {
     return {
         fk_assosiation: uuid(),
         userIds: uuidArray(5),
@@ -40,7 +40,7 @@ export function getStaticDataIds () {
         uniformIds: [87, 16, 66, 13].map((value) => uuidArray(value)),
         materialGroupIds: uuidArray(4),
         materialIds: uuidArray(10),
-        deficiencyTypeIds: uuidArray(5),
+        deficiencyTypeIds: uuidArray(7),
         deficiencyIds: uuidArray(14),
         inspectionIds: uuidArray(2),
         dynamic: {
@@ -402,7 +402,6 @@ export default class StaticDataGenerator {
             { id: this.ids.materialIds[7], typename: 'Typ3-1', fk_materialGroup: this.ids.materialGroupIds[2], actualQuantity: 0, targetQuantity: 0, sortOrder: 0, recdelete: null, recdeleteUser: null },
             { id: this.ids.materialIds[8], typename: 'Typ3-2', fk_materialGroup: this.ids.materialGroupIds[2], actualQuantity: 0, targetQuantity: 0, sortOrder: 1, recdelete: null, recdeleteUser: null },
             { id: this.ids.materialIds[9], typename: 'Typ3-3', fk_materialGroup: this.ids.materialGroupIds[2], actualQuantity: 0, targetQuantity: 0, sortOrder: 2, recdelete: null, recdeleteUser: null },
-
         ]
     }
 
@@ -458,7 +457,9 @@ export default class StaticDataGenerator {
             { id: this.ids.deficiencyTypeIds[1], fk_assosiation: this.ids.fk_assosiation, name: 'Cadet', dependend: 'cadet', relation: null, recdelete: null, recdeleteUser: null },
             { id: this.ids.deficiencyTypeIds[2], fk_assosiation: this.ids.fk_assosiation, name: 'CadetUniform', dependend: 'cadet', relation: 'uniform', recdelete: null, recdeleteUser: null },
             { id: this.ids.deficiencyTypeIds[3], fk_assosiation: this.ids.fk_assosiation, name: 'CadetMaterial', dependend: 'cadet', relation: 'material', recdelete: null, recdeleteUser: null },
-            { id: this.ids.deficiencyTypeIds[4], fk_assosiation: this.ids.fk_assosiation, name: 'deleted', dependend: 'cadet', relation: null, recdelete: new Date('2023-08-13T09:58:00.000Z'), recdeleteUser: 'test4' },
+            { id: this.ids.deficiencyTypeIds[4], fk_assosiation: this.ids.fk_assosiation, name: 'inactive', dependend: 'cadet', relation: null, recdelete: new Date('2023-08-13T09:58:00.000Z'), recdeleteUser: 'test4' },
+            { id: this.ids.deficiencyTypeIds[5], fk_assosiation: this.ids.fk_assosiation, name: 'XX unused type', dependend: 'cadet', relation: 'material', recdelete: null, recdeleteUser: null },
+            { id: this.ids.deficiencyTypeIds[6], fk_assosiation: this.ids.fk_assosiation, name: 'inactive seccond', dependend: 'cadet', relation: 'material', recdelete: new Date('2023-08-01T09:58:00.000Z'), recdeleteUser: 'test4' },
         ]
     }
     deficiency() {

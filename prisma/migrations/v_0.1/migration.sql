@@ -1,12 +1,12 @@
 
 -- CREATE SHEMA
-CREATE SCHEMA authentication;
+CREATE SCHEMA IF NOT EXISTS authentication;
 ALTER SCHEMA authentication OWNER TO "uniformServer";
 
-CREATE SCHEMA base;
+CREATE SCHEMA IF NOT EXISTS base;
 ALTER SCHEMA base OWNER TO "uniformServer";
 
-CREATE SCHEMA inspection;
+CREATE SCHEMA IF NOT EXISTS inspection;
 ALTER SCHEMA inspection OWNER TO "uniformServer";
 
 -- CREATE TYPES
