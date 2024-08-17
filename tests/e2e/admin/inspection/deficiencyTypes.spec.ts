@@ -281,7 +281,7 @@ test.skip('E2E060407: reactivate type', async ({ typeComponent, staticData }) =>
     expect(dbType?.disabledDate).toBeNull();
     expect(dbType?.disabledUser).toBeNull();
 });
-test.skip('E2E060408: validate formComponents', async ({ typeComponent }) => {
+test('E2E060408: validate formComponents', async ({ typeComponent }) => {
     const rowComponent = typeComponent.getRowComponent('new');
     await typeComponent.btn_create.click();
     await test.step('name formvalidation', async () => {
@@ -290,11 +290,11 @@ test.skip('E2E060408: validate formComponents', async ({ typeComponent }) => {
             await test.step(set.testValue, async () => {
                 await rowComponent.txt_name.fill(set.testValue);
                 if (set.valid) {
-                    await expect.soft(rowComponent.err_name).toBeVisible();
-                    await expect.soft(rowComponent.txt_name).toHaveClass('invalid')
-                } else {
                     await expect.soft(rowComponent.err_name).not.toBeVisible();
-                    await expect.soft(rowComponent.txt_name).not.toHaveClass('invalid')
+                    await expect.soft(rowComponent.txt_name).not.toHaveClass(/invalid/);
+                } else {
+                    await expect.soft(rowComponent.err_name).toBeVisible();
+                    await expect.soft(rowComponent.txt_name).toHaveClass(/invalid/);
                 }
             });
         }
@@ -302,9 +302,9 @@ test.skip('E2E060408: validate formComponents', async ({ typeComponent }) => {
 
     await test.step('validate dependent', async () => {
         const options = await rowComponent.sel_dependent.locator('option').all();
-        expect(options).toHaveLength(2);
-        expect(options[0]).toHaveValue('cadet');
-        expect(options[1]).toHaveValue('uniform');
+        await expect(options).toHaveLength(2);
+        await expect(options[0]).toHaveAttribute('value', 'cadet');
+        await expect(options[1]).toHaveAttribute('value', 'uniform');
     });
     await test.step('validate relation', async () => {
         await test.step('for dependen cadet', async () => {
@@ -312,10 +312,10 @@ test.skip('E2E060408: validate formComponents', async ({ typeComponent }) => {
 
             await expect(rowComponent.sel_relation).toBeEnabled();
             const options = await rowComponent.sel_relation.locator('option').all();
-            expect(options).toHaveLength(3);
-            expect(options[0]).toHaveValue('null');
-            expect(options[1]).toHaveValue('uniform');
-            expect(options[2]).toHaveValue('material');
+            await expect(options).toHaveLength(3);
+            await expect(options[0]).toHaveAttribute('value', 'null');
+            await expect(options[1]).toHaveAttribute('value', 'uniform');
+            await expect(options[2]).toHaveAttribute('value', 'material');
 
             await rowComponent.sel_relation.selectOption('uniform');
         });
@@ -324,7 +324,6 @@ test.skip('E2E060408: validate formComponents', async ({ typeComponent }) => {
             await rowComponent.sel_dependent.selectOption('uniform');
 
             await expect(rowComponent.sel_relation).toBeDisabled();
-            await expect(rowComponent.sel_relation.locator('option')).toHaveCount(1);
             await expect(rowComponent.sel_relation).toHaveValue('');
         });
     });

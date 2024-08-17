@@ -32,8 +32,6 @@ export default function DefTypeAdminTableRow({
     type: AdminDeficiencyType | null;
     hideNew: () => void;
 }) {
-    console.log("🚀 ~ type:", type);
-
     const { register, reset, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormSchema>({
         values: type ?? defaultValue,
         mode: "onChange",
@@ -46,14 +44,11 @@ export default function DefTypeAdminTableRow({
     const [editable, setEditable] = useState(!type);
     const formName = `form_deftype_${type ? type.id : "new"}`;
 
-
     useEffect(() => {
         if (watch('dependent') !== "cadet") {
             setValue('relation', null);
         }
     }, [watch('dependent')]);
-
-
 
     async function handleSave(data: FormSchema) {
         if (data.relation === "null") data.relation = null;
