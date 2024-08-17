@@ -12,6 +12,11 @@ import { uuidValidationPattern } from "@/lib/validations";
 
 const dbHandler = new DeficiencyTypeDBHandler();
 
+/**
+ * Used to get the DeficiencyTypeList used in admin/deficiency
+ * @requires AuthRole.materialManager
+ * @returns 
+ */
 export const getDeficiencyAdmintypeList = (): Promise<AdminDeficiencyType[]> => genericSAValidatiorV2(
     AuthRole.materialManager, true, {}
 ).then(({ assosiation }) => dbHandler.getDeficiencyAdmintypeList(assosiation));
@@ -41,7 +46,7 @@ export const saveDeficiencyType = (props: SaveDeficiencyTypePropSchema) =>
                 throw new Error("Could not update deficiencyType: not Found");
             }
 
-            
+
             if (dbType.active > 0 || dbType.resolved > 0) {
                 if (data.dependent !== dbType.dependent || data.relation !== dbType.relation)
                     throw new Error("Could not update deficiencyType: change not allowed for used type");
@@ -51,8 +56,6 @@ export const saveDeficiencyType = (props: SaveDeficiencyTypePropSchema) =>
         });
         revalidatePath(`/[locale]/${assosiation}/app/admin/deficiency`, 'page');
     });
-
-
 
 export const createDeficiencyType = (props: AdminDeficiencytypeFormSchema) =>
     genericSAValidator(
@@ -75,11 +78,90 @@ export const createDeficiencyType = (props: AdminDeficiencytypeFormSchema) =>
         return value;
     });
 
-export const deleteDeficiencyType = (typeId: string) => genericSAValidatiorV2(
-    AuthRole.materialManager,
-    uuidValidationPattern.test(typeId),
-    { deficiencytypeId: typeId }
-).then(async ({ username, assosiation }) => {
-    await dbHandler.markDeleted(typeId, username, prisma);
+/**
+ * DAL-Methode: Used to deactivate a deficiencyType. No new Deficiencies can of a deactivated type, but already existing deficiencies stay active.
+ * revalidates path ../admin/deficiency
+ * @requires AuthRole.inspector
+ * @param props id of the deficiencyType
+ * @returns void
+ */
+export const deactivateDeficiencyType = (props: string) => genericSAValidator(
+    AuthRole.inspector,
+    props,
+    z.string().uuid(),
+    { deficiencytypeId: props }
+).then(async ([id, user]) => {
+    const type = await prisma.deficiencyType.findUniqueOrThrow({
+        where: { id }
+    });
+    if (type.disabledDate) {
+        throw new Error("Type already disabled");
+    }
+    await prisma.deficiencyType.update({
+        where: { id },
+        data: {
+            disabledDate: new Date(),
+            disabledUser: user.username,
+        }
+    });
+    revalidatePath(`/[locale]/${user.assosiation}/app/admin/deficiency`, 'page');
+});
+
+/**
+ * DAL-Method: used to reactivate a deficiencyType. After this action new deficiencies can be of this type.
+ * revalidates path ../admin/deficiency
+ * @requires AuthRole.inspector
+ * @param props id of type
+ * @returns void
+ */
+export const reactivateDeficiencyType = (props: string) => genericSAValidator(
+    AuthRole.inspector,
+    props,
+    z.string().uuid(),
+    { deficiencytypeId: props }
+).then(async ([id, { assosiation }]) => {
+    await prisma.deficiencyType.update({
+        where: { id },
+        data: {
+            disabledDate: null,
+            disabledUser: null,
+        }
+    });
     revalidatePath(`/[locale]/${assosiation}/app/admin/deficiency`, 'page');
 });
+
+/**
+ * DAL-Method: Permanently deletes deficicyType and ALL deficiencies of this type.
+ * A rollback is NOT POSSIBLE
+ * revalidates path ../admin/deficiency
+ * @requires AuthRole.inspector
+ * @param props id of type
+ * @returns void
+ */
+export const deleteDeficiencyType = (props: string) => genericSAValidator(
+    AuthRole.materialManager,
+    props,
+    z.string().uuid(),
+    { deficiencytypeId: props }
+).then(async ([id, { assosiation }]) => prisma.$transaction(async (client) => {
+    const type = await client.deficiencyType.findUniqueOrThrow({
+        where: { id },
+        include: {
+            deficiencyList: true
+        }
+    });
+
+    if (!type.disabledDate && type.deficiencyList.length > 0) {
+        throw new Error("DeficiencyType can not be deleted. Type is active with deficiencies");
+    }
+
+    await client.deficiency.deleteMany({
+        where: {
+            fk_deficiencyType: id,
+        }
+    });
+    await client.deficiencyType.delete({
+        where: { id }
+    });
+    revalidatePath(`/[locale]/${assosiation}/app/admin/deficiency`, 'page');
+}));

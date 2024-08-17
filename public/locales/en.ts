@@ -450,11 +450,22 @@ export default {
                 dependent: "Indicates what the defect directly depends on. For example, in the case of uniform parts, the defect always remains with the uniform part, even if the owner changes.",
                 relation: "Indicates whether a person’s defect indirectly relates to another entity. For example, in the case of the type 'Item too small' the defect would depend on the person but indirectly relate to a uniform part."
             },
+            errors: {
+                deactivate: "Der Typ konnte nicht deaktiviert werden. Laden Sie die Seite neu und versuchen es erneut",
+                delete: "Das Löschen des Typs ist fehlgeschlagen. Versuchen Sie es nach einem relaod erneut",
+                reactivate: "Der Typ konnte nicht reaktiviert werden. Laden sie die Seite neu und versuchen es erneut",
+            },
             entity: {
                 cadet: "person",
                 uniform: "uniform",
                 material: "material",
-            }
+            },
+            delete: {
+                header: "Typ {type} löschen",
+                'message#zero': "Soll der Typ wirklich gelöscht werden? Diese Aktion ist nicht wieder umkehrbar.",
+                'message#one': "Soll der Typ wirklich gelöscht werden? Hierbei wird der eine vorhandene Mangel ebenfalls gelöscht. Diese Aktion ist nicht wieder umkehrbar.",
+                'message#other': "Soll der Typ wirklich gelöscht werden? Hierbei werden alle {count} vorhandenen Mängel ebenfalls gelöscht. Diese Aktion ist nicht wieder umkehrbar.",
+            },
         },
     },
     modals: {

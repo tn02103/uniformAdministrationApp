@@ -1,4 +1,4 @@
-import { createDeficiencyType, deleteDeficiencyType, saveDeficiencyType } from "@/actions/controllers/DeficiencyTypeController";
+import { createDeficiencyType, deactivateDeficiencyType, deleteDeficiencyType, reactivateDeficiencyType, saveDeficiencyType } from "@/actions/controllers/DeficiencyTypeController";
 import ErrorMessage from "@/components/errorMessage";
 import { useModal } from "@/components/modals/modalProvider";
 import { TooltipActionButton } from "@/components/TooltipIconButton";
@@ -80,14 +80,29 @@ export default function DefTypeAdminTableRow({
         if (!type) return;
 
         modal?.simpleWarningModal({
-            header: '',
-            message: '',
+            header: t('delete.header', {type: type.name}),
+            message: t('delete.message', {count: type.active + type.resolved}),
             primaryFunction: () => deleteDeficiencyType(type.id).catch((e) => {
                 console.error(e);
-                toast.error('Das Löschen des Elements ist fehlgeschlagen')
+                toast.error(t('errors.delete'));
             })
         });
     }
+    async function handleDeactivate() {
+        if (!type) return;
+
+        deactivateDeficiencyType(type.id).catch(() => {
+            toast.error(t('errors.deactivate'));
+        });
+    }
+    async function handleReactivate() {
+        if (!type) return;
+
+        reactivateDeficiencyType(type.id).catch(() => {
+            toast.error(t('errors.reactivate'));
+        })
+    }
+
     return (
         <tr className={"align-middle" + (type?.disabledDate ? "text-secondary" : "")} data-testid={`div_type_${type?.id ?? "new"}`}>
             <td className="align-middle">
@@ -175,12 +190,11 @@ export default function DefTypeAdminTableRow({
 
                         </td>
                     }
-
                     <td className="text-end">
                         {(type.disabledDate) &&
                             <TooltipActionButton
                                 variantKey="reactivate"
-                                onClick={() => { }} />
+                                onClick={handleReactivate} />
                         }
                         {(!type.disabledDate) &&
                             <TooltipActionButton
@@ -195,7 +209,7 @@ export default function DefTypeAdminTableRow({
                         {(!type.disabledDate && (type.active + type.resolved) > 0) &&
                             <TooltipActionButton
                                 variantKey="deactivate"
-                                onClick={() => { }} />
+                                onClick={handleDeactivate} />
                         }
                     </td>
                 </>

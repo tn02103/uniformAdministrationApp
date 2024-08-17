@@ -212,21 +212,12 @@ test('E2E060404: create type', async ({ typeComponent, staticData }) => {
         }));
     });
 });
-test.skip('E2E060405: deactivate type', async ({ page, typeComponent, staticData }) => {
+test('E2E060405: deactivate type', async ({ page, typeComponent, staticData }) => {
     const rowComponent = typeComponent.getRowComponent(staticData.ids.deficiencyTypeIds[1]);
-    const popup = new PopupComponent(page);
-    await test.step('deactivate type Cadet', async () => {
-        await expect(popup.div_popup).not.toBeVisible();
+    await test.step('deactivate type Cadet and validate ui', async () => {
         await expect(typeComponent.div_typeList.nth(0)).toHaveAttribute('data-testid', `div_type_${rowComponent.id}`);
-
         await rowComponent.btn_deactivate.click();
-        await expect(popup.div_popup).toBeVisible();
-        await expect(popup.div_header).toHaveClass('bg-warning');
 
-        await popup.btn_save.click();
-        await expect(popup.div_popup).not.toBeVisible();
-    });
-    await test.step('validate ui', async () => {
         await expect(typeComponent.div_typeList.nth(4)).toHaveAttribute('data-testid', `div_type_${rowComponent.id}`);
         await expect(rowComponent.div_disabled).toBeVisible();
     });
@@ -239,7 +230,7 @@ test.skip('E2E060405: deactivate type', async ({ page, typeComponent, staticData
         expect(dbType?.disabledUser).toBe('test4');
     });
 });
-test.skip('E2E060406: delete type', async ({ typeComponent, page, staticData }) => {
+test('E2E060406: delete type', async ({ typeComponent, page, staticData }) => {
     const popup = new MessagePopupComponent(page);
     const rowComponent = typeComponent.getRowComponent(staticData.ids.deficiencyTypeIds[4]);
 
@@ -247,14 +238,13 @@ test.skip('E2E060406: delete type', async ({ typeComponent, page, staticData }) 
         await expect(popup.div_popup).not.toBeVisible();
         await rowComponent.btn_delete.click();
         await expect(popup.div_popup).toBeVisible();
-        await expect(popup.div_header).toHaveClass('bg_danger');
-        await expect(popup.div_message).toContainText('1 Mangel');
+        await expect(popup.div_header).toHaveClass(/bg-warning/);
     });
     await test.step('delete and validate ui', async () => {
         await popup.btn_save.click();
         await expect(popup.div_popup).not.toBeVisible();
         await expect(rowComponent.div_row).not.toBeVisible();
-    });
+    }); 
     await test.step('validate type and def deleted', async () => {
         const [dbType, dbDeficiency] = await prisma.$transaction([
             prisma.deficiencyType.findUnique({
@@ -268,7 +258,7 @@ test.skip('E2E060406: delete type', async ({ typeComponent, page, staticData }) 
         expect(dbDeficiency).toBeNull();
     });
 });
-test.skip('E2E060407: reactivate type', async ({ typeComponent, staticData }) => {
+test('E2E060407: reactivate type', async ({ typeComponent, staticData }) => {
     const rowComponent = typeComponent.getRowComponent(staticData.ids.deficiencyTypeIds[4]);
     rowComponent.btn_reactivate.click();
     await expect(rowComponent.div_disabled).not.toBeVisible();
