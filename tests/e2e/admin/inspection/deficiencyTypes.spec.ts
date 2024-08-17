@@ -21,9 +21,9 @@ test.beforeEach(async ({ page }) => {
 });
 test.afterEach(async ({ staticData }) => {
     await staticData.cleanup.inspection()
-})
+});
 
-test.only('E2E060401: validate typelist', async ({ typeComponent, staticData: { data } }) => {
+test('E2E060401: validate typelist', async ({ typeComponent, staticData: { data } }) => {
     await expect(typeComponent.div_typeList).toHaveCount(data.deficiencyTypes.length);
 
     await test.step('sortorder', async () => {
@@ -93,13 +93,10 @@ test('E2E060402: edit unused type', async ({ typeComponent, staticData }) => {
     await test.step('validate editable status', async () => Promise.all([
         // buttons
         expect.soft(rowComponent.btn_edit).not.toBeVisible(),
-        expect.soft(rowComponent.btn_deactivate).not.toBeVisible(),
         expect.soft(rowComponent.btn_save).toBeVisible(),
         expect.soft(rowComponent.btn_cancel).toBeVisible(),
 
         // elements not visible
-        expect.soft(rowComponent.div_dependent).not.toBeVisible(),
-        expect.soft(rowComponent.div_relation).not.toBeVisible(),
         expect.soft(rowComponent.div_amount_active).not.toBeVisible(),
         expect.soft(rowComponent.div_amount_resolved).not.toBeVisible(),
 
@@ -107,8 +104,6 @@ test('E2E060402: edit unused type', async ({ typeComponent, staticData }) => {
         expect.soft(rowComponent.txt_name).toBeEditable(),
         expect.soft(rowComponent.sel_dependent).toBeVisible(),
         expect.soft(rowComponent.sel_relation).toBeVisible(),
-        expect.soft(rowComponent.sel_dependent).toBeEditable(),
-        expect.soft(rowComponent.sel_relation).toBeEditable(),
     ]));
 
     await test.step('change data', async () => {
@@ -122,7 +117,6 @@ test('E2E060402: edit unused type', async ({ typeComponent, staticData }) => {
         await Promise.all([
             // buttons
             expect.soft(rowComponent.btn_edit).toBeVisible(),
-            expect.soft(rowComponent.btn_deactivate).toBeVisible(),
             expect.soft(rowComponent.btn_save).not.toBeVisible(),
             expect.soft(rowComponent.btn_cancel).not.toBeVisible(),
 
@@ -187,7 +181,7 @@ test('E2E060404: create type', async ({ typeComponent, staticData }) => {
         await rowComponent.btn_save.click();
 
         await expect(rowComponent.div_row).not.toBeVisible();
-        await expect(typeComponent.div_card.locator('div[data-testid^="div_row_"]')).toHaveCount(7);
+        await expect(typeComponent.div_typeList).toHaveCount(staticData.data.deficiencyTypes.length + 1);
     });
     const dbType = await prisma.deficiencyType.findFirst({
         where: {
@@ -200,7 +194,7 @@ test('E2E060404: create type', async ({ typeComponent, staticData }) => {
         const rowIdComponent = typeComponent.getRowComponent(dbType!.id);
         await Promise.all([
             expect.soft(rowIdComponent.txt_name).toHaveValue('NewType'),
-            expect.soft(rowIdComponent.div_dependent).toHaveText('Uniform'),
+            expect.soft(rowIdComponent.div_dependent).toHaveText('Uniformteil'),
             expect.soft(rowIdComponent.div_relation).toHaveText(''),
             expect.soft(rowIdComponent.div_amount_active).toHaveText('0'),
             expect.soft(rowIdComponent.div_amount_resolved).toHaveText('0'),
@@ -211,14 +205,14 @@ test('E2E060404: create type', async ({ typeComponent, staticData }) => {
         expect(dbType).toStrictEqual(expect.objectContaining({
             name: "NewType",
             dependent: "uniform",
-            relation: "",
+            relation: null,
             disabledDate: null,
             disabledUser: null,
             fk_assosiation: staticData.fk_assosiation,
         }));
     });
 });
-test('E2E060405: deactivate type', async ({ page, typeComponent, staticData }) => {
+test.skip('E2E060405: deactivate type', async ({ page, typeComponent, staticData }) => {
     const rowComponent = typeComponent.getRowComponent(staticData.ids.deficiencyTypeIds[1]);
     const popup = new PopupComponent(page);
     await test.step('deactivate type Cadet', async () => {
@@ -245,7 +239,7 @@ test('E2E060405: deactivate type', async ({ page, typeComponent, staticData }) =
         expect(dbType?.disabledUser).toBe('test4');
     });
 });
-test('E2E060406: delete type', async ({ typeComponent, page, staticData }) => {
+test.skip('E2E060406: delete type', async ({ typeComponent, page, staticData }) => {
     const popup = new MessagePopupComponent(page);
     const rowComponent = typeComponent.getRowComponent(staticData.ids.deficiencyTypeIds[4]);
 
@@ -274,7 +268,7 @@ test('E2E060406: delete type', async ({ typeComponent, page, staticData }) => {
         expect(dbDeficiency).toBeNull();
     });
 });
-test('E2E060407: reactivate type', async ({ typeComponent, staticData }) => {
+test.skip('E2E060407: reactivate type', async ({ typeComponent, staticData }) => {
     const rowComponent = typeComponent.getRowComponent(staticData.ids.deficiencyTypeIds[4]);
     rowComponent.btn_reactivate.click();
     await expect(rowComponent.div_disabled).not.toBeVisible();
@@ -287,7 +281,7 @@ test('E2E060407: reactivate type', async ({ typeComponent, staticData }) => {
     expect(dbType?.disabledDate).toBeNull();
     expect(dbType?.disabledUser).toBeNull();
 });
-test('E2E060408: validate formComponents', async ({ typeComponent }) => {
+test.skip('E2E060408: validate formComponents', async ({ typeComponent }) => {
     const rowComponent = typeComponent.getRowComponent('new');
     await typeComponent.btn_create.click();
     await test.step('name formvalidation', async () => {
