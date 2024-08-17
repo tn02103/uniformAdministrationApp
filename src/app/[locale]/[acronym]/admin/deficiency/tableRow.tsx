@@ -136,7 +136,7 @@ export default function DefTypeAdminTableRow({
                 }
             </td>
             {editable &&
-                <td colSpan={3} className="align-middle text-end">
+                <td colSpan={4} className="align-middle text-end">
                     <form id={formName} onSubmit={handleSubmit(handleSave)}>
                         <Button
                             variant="outline-primary"
