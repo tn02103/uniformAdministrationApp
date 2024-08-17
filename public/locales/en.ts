@@ -23,6 +23,8 @@ export default {
             create: "Create",
             addNew: "Add new",
             open: "Open",
+            reactivate: "Reaktivieren",
+            deactivate: "Deaktivieren",
             prevStep: "Back",
             nextStep: "Next",
             edit_item: "Edit {item}",
@@ -435,17 +437,17 @@ export default {
             created: "User created successfuly",
         },
         deficiency: {
-            deleted: "deleted on: ",
+            disabled: "disabled on: ",
             header: {
                 page: "deficiency types",
                 name: "name",
-                dependend: "depends on",
+                dependent: "depends on",
                 relation: "relates to",
                 active: "active",
                 resolved: "resolved",
             },
             info: {
-                dependend: "Indicates what the defect directly depends on. For example, in the case of uniform parts, the defect always remains with the uniform part, even if the owner changes.",
+                dependent: "Indicates what the defect directly depends on. For example, in the case of uniform parts, the defect always remains with the uniform part, even if the owner changes.",
                 relation: "Indicates whether a person’s defect indirectly relates to another entity. For example, in the case of the type 'Item too small' the defect would depend on the person but indirectly relate to a uniform part."
             },
             entity: {

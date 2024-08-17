@@ -125,7 +125,7 @@ test('E2E0274: validate material selects', async ({ inspectionComponent, staticD
 });
 
 test('E2E0272: validate uniformSelect', async ({ inspectionComponent, staticData: { ids } }) => {
-    await test.step('dependend uniform', async () => {
+    await test.step('dependent uniform', async () => {
         await inspectionComponent.btn_step2_newDef.click();
         await inspectionComponent.sel_newDef_type(0).selectOption(ids.deficiencyTypeIds[0]);
 

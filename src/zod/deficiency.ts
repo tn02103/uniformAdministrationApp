@@ -6,7 +6,7 @@ export const AdminDeficiencytypeFormSchema = z.object({
         .min(1, "string.required")
         .max(20, "string.maxLength;value:20")
         .regex(/[\w \/\-_\xC0-\xFF]*/),
-    dependend: z.enum(["uniform", "cadet"]),
+    dependent: z.enum(["uniform", "cadet"]),
     relation: z.enum(["uniform", "material"]).nullable(),
 })
 

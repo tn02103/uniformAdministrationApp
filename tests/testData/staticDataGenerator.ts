@@ -453,13 +453,13 @@ export default class StaticDataGenerator {
 
     deficiencyType(): Prisma.DeficiencyTypeCreateManyInput[] {
         return [
-            { id: this.ids.deficiencyTypeIds[0], fk_assosiation: this.ids.fk_assosiation, name: 'Uniform', dependend: 'uniform', relation: null, recdelete: null, recdeleteUser: null },
-            { id: this.ids.deficiencyTypeIds[1], fk_assosiation: this.ids.fk_assosiation, name: 'Cadet', dependend: 'cadet', relation: null, recdelete: null, recdeleteUser: null },
-            { id: this.ids.deficiencyTypeIds[2], fk_assosiation: this.ids.fk_assosiation, name: 'CadetUniform', dependend: 'cadet', relation: 'uniform', recdelete: null, recdeleteUser: null },
-            { id: this.ids.deficiencyTypeIds[3], fk_assosiation: this.ids.fk_assosiation, name: 'CadetMaterial', dependend: 'cadet', relation: 'material', recdelete: null, recdeleteUser: null },
-            { id: this.ids.deficiencyTypeIds[4], fk_assosiation: this.ids.fk_assosiation, name: 'inactive', dependend: 'cadet', relation: null, recdelete: new Date('2023-08-13T09:58:00.000Z'), recdeleteUser: 'test4' },
-            { id: this.ids.deficiencyTypeIds[5], fk_assosiation: this.ids.fk_assosiation, name: 'XX unused type', dependend: 'cadet', relation: 'material', recdelete: null, recdeleteUser: null },
-            { id: this.ids.deficiencyTypeIds[6], fk_assosiation: this.ids.fk_assosiation, name: 'inactive seccond', dependend: 'cadet', relation: 'material', recdelete: new Date('2023-08-01T09:58:00.000Z'), recdeleteUser: 'test4' },
+            { id: this.ids.deficiencyTypeIds[0], fk_assosiation: this.ids.fk_assosiation, name: 'Uniform', dependent: 'uniform', relation: null, disabledDate: null, disabledUser: null },
+            { id: this.ids.deficiencyTypeIds[1], fk_assosiation: this.ids.fk_assosiation, name: 'Cadet', dependent: 'cadet', relation: null, disabledDate: null, disabledUser: null },
+            { id: this.ids.deficiencyTypeIds[2], fk_assosiation: this.ids.fk_assosiation, name: 'CadetUniform', dependent: 'cadet', relation: 'uniform', disabledDate: null, disabledUser: null },
+            { id: this.ids.deficiencyTypeIds[3], fk_assosiation: this.ids.fk_assosiation, name: 'CadetMaterial', dependent: 'cadet', relation: 'material', disabledDate: null, disabledUser: null },
+            { id: this.ids.deficiencyTypeIds[4], fk_assosiation: this.ids.fk_assosiation, name: 'inactive', dependent: 'cadet', relation: null, disabledDate: new Date('2023-08-13T09:58:00.000Z'), disabledUser: 'test4' },
+            { id: this.ids.deficiencyTypeIds[5], fk_assosiation: this.ids.fk_assosiation, name: 'XX unused type', dependent: 'cadet', relation: 'material', disabledDate: null, disabledUser: null },
+            { id: this.ids.deficiencyTypeIds[6], fk_assosiation: this.ids.fk_assosiation, name: 'inactive seccond', dependent: 'cadet', relation: 'material', disabledDate: new Date('2023-08-01T09:58:00.000Z'), disabledUser: 'test4' },
         ]
     }
     deficiency() {

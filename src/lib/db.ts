@@ -1,6 +1,5 @@
 
-import { Prisma, PrismaClient } from "@prisma/client";
-import { DefaultArgs, Omit } from "@prisma/client/runtime/library";
+import { PrismaClient } from "@prisma/client";
 
 const globalForPrisma = global as unknown as {
     prisma: PrismaClient
@@ -8,6 +7,6 @@ const globalForPrisma = global as unknown as {
 
 export const prisma = globalForPrisma.prisma || new PrismaClient();
 
-if (process.env.NODE_ENV !== 'production') {
-    globalForPrisma.prisma = prisma;
-}
+    if (process.env.NODE_ENV !== 'production') {
+        globalForPrisma.prisma = prisma;
+    }

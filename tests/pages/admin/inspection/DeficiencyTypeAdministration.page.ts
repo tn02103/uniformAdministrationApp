@@ -12,7 +12,7 @@ export class DeficiencyTypeAdministrationPage {
         this.page = page;
 
         this.div_card = page.getByTestId('div_defTypeCard');
-        this.div_typeList = page.locator('div[data-testid^="div_type_"]');
+        this.div_typeList = page.locator('tr[data-testid^="div_type_"]');
         this.btn_create = this.div_card.getByTestId('btn_create');
     }
     getRowComponent(id: string) {
@@ -35,7 +35,7 @@ class DeficiencyTypeRowComponent {
 
     readonly btn_edit: Locator;
     readonly btn_delete: Locator;
-    readonly btn_activate: Locator;
+    readonly btn_reactivate: Locator;
     readonly btn_deactivate: Locator;
     readonly btn_save: Locator;
     readonly btn_cancel: Locator;
@@ -52,11 +52,11 @@ class DeficiencyTypeRowComponent {
         this.div_relation = this.div_row.getByTestId('div_relation');
         this.sel_relation = this.div_row.locator('select[name="relation"]');
 
-        this.div_amount_active = this.div_row.locator('div_amount_active');
-        this.div_amount_resolved = this.div_row.locator('div_amount_resolved');
+        this.div_amount_active = this.div_row.getByTestId('div_amount_active');
+        this.div_amount_resolved = this.div_row.getByTestId('div_amount_resolved');
         this.btn_edit = this.div_row.getByTestId('btn_edit');
         this.btn_delete = this.div_row.getByTestId('btn_delete');
-        this.btn_activate = this.div_row.getByTestId('btn_activate');
+        this.btn_reactivate = this.div_row.getByTestId('btn_reactivate');
         this.btn_deactivate = this.div_row.getByTestId('btn_deactivate');
         this.btn_save = this.div_row.getByTestId('btn_save');
         this.btn_cancel = this.div_row.getByTestId('btn_cancel');

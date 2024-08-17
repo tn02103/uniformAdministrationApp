@@ -20,13 +20,13 @@ export default function DefTypeAdminTable({
     const [newVisible, setNewVisible] = useState(false);
 
     return (
-        <Table striped className="border rounded border-3" style={{ minWidth: 700 }}>
+        <Table striped className="border rounded border-3" style={{ minWidth: 700 }} data-testid="div_defTypeCard">
             <thead className="sticky-top bg-white m-1">
                 <tr className="border-bottom border-2 border-dark">
                     <th>{t('header.name')}</th>
                     <th>
-                        {t('header.dependend')}
-                        <span className="d-none d-lg-inline-block fa-layers fa-fw ms-2" data-toggle={"tooltip"} title={t('info.dependend')} >
+                        {t('header.dependent')}
+                        <span className="d-none d-lg-inline-block fa-layers fa-fw ms-2" data-toggle={"tooltip"} title={t('info.dependent')} >
                             <FontAwesomeIcon icon={faCircle} />
                             <FontAwesomeIcon icon={faInfo} transform={"shrink-6 "} />
                         </span>
@@ -43,7 +43,8 @@ export default function DefTypeAdminTable({
                     <th className="d-nonexs d-sm-table-cell">
                         {t('header.resolved')}
                     </th>
-                    <th className="text-end d-nonexs d-md-table-cell d">
+                    <th></th>
+                    <th className="text-end d-nonexs d-md-table-cell" style={{ minWidth: "90px" }}>
                         <TooltipActionButton
                             variantKey="create"
                             disabled={newVisible}
@@ -59,7 +60,7 @@ export default function DefTypeAdminTable({
                     <DefTypeAdminTableRow type={type} key={type.id} hideNew={() => setNewVisible(false)} />
                 )}
             </tbody>
-        </Table>
+        </Table >
     )
 }
 

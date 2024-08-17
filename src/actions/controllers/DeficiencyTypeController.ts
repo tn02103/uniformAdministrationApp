@@ -43,7 +43,7 @@ export const saveDeficiencyType = (props: SaveDeficiencyTypePropSchema) =>
 
             
             if (dbType.active > 0 || dbType.resolved > 0) {
-                if (data.dependend !== dbType.dependend || data.relation !== dbType.relation)
+                if (data.dependent !== dbType.dependent || data.relation !== dbType.relation)
                     throw new Error("Could not update deficiencyType: change not allowed for used type");
             }
 

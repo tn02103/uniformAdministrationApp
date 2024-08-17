@@ -5,7 +5,7 @@ import engl from "@/../public/locales/en";
 import { useCurrentLocale } from "@/lib/locales/client";
 import { useCallback, useEffect, useState } from "react";
 
-export default function ErrorMessage({ error }: { error?: string }) {
+export default function ErrorMessage({ error, testId }: { error?: string , testId: string}) {
     const locale = useCurrentLocale();
 
     const [message, setMessage] = useState('');
@@ -61,7 +61,7 @@ export default function ErrorMessage({ error }: { error?: string }) {
     }, [error, locale])
 
     return (
-        <div className="text-danger fs-7">
+        <div className="text-danger fs-7" data-testid={testId}>
             {message}
         </div>
     )

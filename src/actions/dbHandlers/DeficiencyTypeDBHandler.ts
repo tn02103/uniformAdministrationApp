@@ -9,17 +9,17 @@ export class DeficiencyTypeDBHandler {
         (client ?? prisma).$queryRaw<AdminDeficiencyType[]>`
              SELECT dt.id,
                     dt.name,
-                    dt.dependend,
+                    dt.dependent,
                     dt.relation,
-                    dt.recdelete,
-                    dt.recdelete_user as recdeleteUser,
+                    dt.disabled_date as "disabledDate",
+                    dt.disabled_user as "disabledUser",
                     SUM(CASE WHEN d.date_resolved IS NULL AND d.id IS NOT NULL THEN 1 ELSE 0 END) active,
                     COUNT(d.date_resolved) resolved
                FROM inspection.deficiency_type dt
           LEFT JOIN inspection.deficiency d ON dt.id = d.fk_deficiency_type
               WHERE dt.fk_assosiation = ${fk_assosiation}
            GROUP BY dt.id
-           ORDER BY dt.recdelete DESC, dt.name ASC
+           ORDER BY dt.disabled_date DESC, dt.name ASC
         `.then((data) =>
             data.map((t) => ({
                 ...t,
@@ -45,8 +45,8 @@ export class DeficiencyTypeDBHandler {
         client.deficiencyType.update({
             where: { id },
             data: {
-                recdelete: new Date(),
-                recdeleteUser: username,
+                disabledDate: new Date(),
+                disabledUser: username,
             }
         });
 }

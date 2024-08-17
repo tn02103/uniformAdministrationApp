@@ -23,18 +23,18 @@ test.afterEach(async ({ staticData }) => {
     await staticData.cleanup.inspection()
 })
 
-test('E2E060401: validate typelist', async ({ typeComponent, staticData: { data } }) => {
+test.only('E2E060401: validate typelist', async ({ typeComponent, staticData: { data } }) => {
     await expect(typeComponent.div_typeList).toHaveCount(data.deficiencyTypes.length);
 
     await test.step('sortorder', async () => {
         await Promise.all([
-            expect.soft(typeComponent.div_typeList.nth(0)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[1]}`),
-            expect.soft(typeComponent.div_typeList.nth(1)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[3]}`),
-            expect.soft(typeComponent.div_typeList.nth(2)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[2]}`),
-            expect.soft(typeComponent.div_typeList.nth(3)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[0]}`),
-            expect.soft(typeComponent.div_typeList.nth(4)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[5]}`),
-            expect.soft(typeComponent.div_typeList.nth(5)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[4]}`),
-            expect.soft(typeComponent.div_typeList.nth(6)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[6]}`),
+            expect.soft(typeComponent.div_typeList.nth(0)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[1].id}`),
+            expect.soft(typeComponent.div_typeList.nth(1)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[3].id}`),
+            expect.soft(typeComponent.div_typeList.nth(2)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[2].id}`),
+            expect.soft(typeComponent.div_typeList.nth(3)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[0].id}`),
+            expect.soft(typeComponent.div_typeList.nth(4)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[5].id}`),
+            expect.soft(typeComponent.div_typeList.nth(5)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[4].id}`),
+            expect.soft(typeComponent.div_typeList.nth(6)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[6].id}`),
         ]);
     });
 
@@ -45,12 +45,12 @@ test('E2E060401: validate typelist', async ({ typeComponent, staticData: { data 
             const resolved = data.deficiencies.filter(t => t.fk_deficiencyType == type.id && t.dateResolved !== null);
 
             const promises = [];
-            promises.push(expect.soft(rowComponent.txt_name).toHaveText(type.name));
+            promises.push(expect.soft(rowComponent.txt_name).toHaveValue(type.name));
             promises.push(expect.soft(rowComponent.div_amount_active).toHaveText(String(active.length)));
-            promises.push(expect.soft(rowComponent.div_amount_resolved).toHaveText(String(resolved)));
+            promises.push(expect.soft(rowComponent.div_amount_resolved).toHaveText(String(resolved.length)));
 
-            if (type.dependend)
-                promises.push(expect.soft(rowComponent.div_dependent).toHaveText(german.admin.deficiency.entity[type.dependend]));
+            if (type.dependent)
+                promises.push(expect.soft(rowComponent.div_dependent).toHaveText(german.admin.deficiency.entity[type.dependent]));
             else
                 promises.push(expect.soft(rowComponent.div_dependent).toHaveText(''));
 
@@ -64,12 +64,12 @@ test('E2E060401: validate typelist', async ({ typeComponent, staticData: { data 
                 promises.push(expect.soft(rowComponent.div_disabled).toContainText(format(type.disabledDate, "dd.MM.yyyy")));
                 promises.push(expect.soft(rowComponent.btn_edit).not.toBeVisible());
                 promises.push(expect.soft(rowComponent.btn_deactivate).not.toBeVisible());
-                promises.push(expect.soft(rowComponent.btn_activate).toBeVisible());
+                promises.push(expect.soft(rowComponent.btn_reactivate).toBeVisible());
                 promises.push(expect.soft(rowComponent.btn_delete).toBeVisible());
             } else {
                 promises.push(expect.soft(rowComponent.div_disabled).not.toBeVisible());
                 promises.push(expect.soft(rowComponent.btn_edit).toBeVisible());
-                promises.push(expect.soft(rowComponent.btn_activate).not.toBeVisible());
+                promises.push(expect.soft(rowComponent.btn_reactivate).not.toBeVisible());
 
                 if (active.length > 0) {
                     promises.push(expect.soft(rowComponent.btn_deactivate).toBeVisible());
@@ -144,7 +144,7 @@ test('E2E060402: edit unused type', async ({ typeComponent, staticData }) => {
         });
         expect(dbData).not.toBeNull();
         expect(dbData?.name).toBe('NewName');
-        expect(dbData!.dependend).toBe('uniform');
+        expect(dbData!.dependent).toBe('uniform');
         expect(dbData!.relation).toBeNull();
     });
 });
@@ -210,7 +210,7 @@ test('E2E060404: create type', async ({ typeComponent, staticData }) => {
         dbType?.fk_assosiation
         expect(dbType).toStrictEqual(expect.objectContaining({
             name: "NewType",
-            dependend: "uniform",
+            dependent: "uniform",
             relation: "",
             disabledDate: null,
             disabledUser: null,
@@ -276,7 +276,7 @@ test('E2E060406: delete type', async ({ typeComponent, page, staticData }) => {
 });
 test('E2E060407: reactivate type', async ({ typeComponent, staticData }) => {
     const rowComponent = typeComponent.getRowComponent(staticData.ids.deficiencyTypeIds[4]);
-    rowComponent.btn_activate.click();
+    rowComponent.btn_reactivate.click();
     await expect(rowComponent.div_disabled).not.toBeVisible();
     await expect(typeComponent.div_typeList.nth(3)).toHaveAttribute('data-testid', `div_type_${rowComponent.id}`);
 
@@ -306,7 +306,7 @@ test('E2E060408: validate formComponents', async ({ typeComponent }) => {
         }
     });
 
-    await test.step('validate dependend', async () => {
+    await test.step('validate dependent', async () => {
         const options = await rowComponent.sel_dependent.locator('option').all();
         expect(options).toHaveLength(2);
         expect(options[0]).toHaveValue('cadet');
@@ -326,7 +326,7 @@ test('E2E060408: validate formComponents', async ({ typeComponent }) => {
             await rowComponent.sel_relation.selectOption('uniform');
         });
 
-        await test.step('for dependend uniform', async () => {
+        await test.step('for dependent uniform', async () => {
             await rowComponent.sel_dependent.selectOption('uniform');
 
             await expect(rowComponent.sel_relation).toBeDisabled();
