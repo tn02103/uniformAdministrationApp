@@ -60,17 +60,17 @@ export default function NewDeficiencyRow({
                     onClick={remove}
                     testId="btn_delete_mobile" />
             </Col>
-            {(selectedDefType && (selectedDefType.dependend === "cadet") && (selectedDefType.relation === null)) &&
+            {(selectedDefType && (selectedDefType.dependent === "cadet") && (selectedDefType.relation === null)) &&
                 <Col xs={"12"} sm={6}>
                     <DescriptionControl index={index} />
                 </Col>
             }
-            {(selectedDefType && ((selectedDefType.dependend === "uniform") || (selectedDefType.relation === "uniform"))) &&
+            {(selectedDefType && ((selectedDefType.dependent === "uniform") || (selectedDefType.relation === "uniform"))) &&
                 <Col xs={"10"} sm={5}>
                     <UniformSelect index={index} />
                 </Col>
             }
-            {(selectedDefType && ((selectedDefType.dependend === "cadet") && (selectedDefType.relation === "material"))) &&
+            {(selectedDefType && ((selectedDefType.dependent === "cadet") && (selectedDefType.relation === "material"))) &&
                 <Col xs={"10"} sm={5}>
                     <MaterialSelect index={index} />
                 </Col>
@@ -83,13 +83,13 @@ export default function NewDeficiencyRow({
                     onClick={remove}
                     testId="btn_delete" />
             </Col>
-            {(selectedDefType && ((selectedDefType.dependend === "cadet") && (selectedDefType.relation === "material")))
+            {(selectedDefType && ((selectedDefType.dependent === "cadet") && (selectedDefType.relation === "material")))
                 && (watch(`newDeficiencyList.${index}.materialId`) === "others") &&
                 <Col xs={"10"} sm={5}>
                     <MaterialGroupSelect index={index} />
                 </Col>
             }
-            {(selectedDefType && ((selectedDefType.dependend === "cadet") && (selectedDefType.relation === "material")))
+            {(selectedDefType && ((selectedDefType.dependent === "cadet") && (selectedDefType.relation === "material")))
                 && (watch(`newDeficiencyList.${index}.materialId`) === "others") &&
                 <Col xs={"10"} sm={5}>
                     <MaterialTypeSelect index={index} />

@@ -23,6 +23,8 @@ export default {
             create: "Anlegen",
             addNew: "neu hinzufügen",
             open: "Öffnen",
+            reactivate: "Reaktivieren",
+            deactivate: "Deaktivieren",
             prevStep: "Zurück",
             nextStep: "Weiter",
             edit_item: "{item} Bearbeiten",
@@ -291,6 +293,7 @@ export default {
     },
     sidebar: {
         logout: "Abmelden",
+        changeLanguage: "Sprache wechseln",
         links: {
             cadetOverview: "Personal",
             uniformOverview: "Uniform",
@@ -309,6 +312,7 @@ export default {
                 uniform: "Uniform",
                 size: "Größen",
                 material: "Materialien",
+                deficiency: "Mängel",
             },
             userOverview: "Zugänge",
         },
@@ -349,6 +353,7 @@ export default {
                 }
             },
             size: {
+                header: "Größen",
                 changePositionModal: {
                     header: "Position für \"{size}\" ändern",
                     label: "Position",
@@ -431,6 +436,37 @@ export default {
             saved: "Nutzer erfolgreich aktualisiert",
             created: "Nutzer erfolgreich erstellt",
         },
+        deficiency: {
+            disabled: "deaktiviert am: ",
+            header: {
+                page: "Mangeltypen",
+                name: "Name",
+                dependent: "Abhängig von",
+                relation: "Bezieht sich auf",
+                active: "Aktiv",
+                resolved: "Behoben",
+            },
+            info: {
+                dependent: "Gibt an wovon der Mangel direkt abhängt. Z.B. Bei Uniformteilen, bleibt der Mangel immer für das Uniformteil behalten, auch wenn sich der Besitzer ändert",
+                relation: "Gibt an ob sich der Mangel einer Person indirekt auf eine anderes Entität bezieht. Z.B beim Typ 'UT zu klein' wäre der Mangel abhängig von der Person, aber bezieht sich indirekt auf ein Uniformteil "
+            },
+            errors: {
+                deactivate: "The type could not be deactivated. Reload the page and try again.",
+                delete: "Failed to delete the type. Try again after a reload.",
+                reactivate: "The type could not be reactivated. Reload the page and try again.",
+            },            
+            entity: {
+                cadet: "Person",
+                uniform: "Uniformteil",
+                material: "Material",
+            },
+            delete: {
+                header: "Delete type {type}",
+                'message#zero': "Do you really want to delete the type? This action cannot be undone.",
+                'message#one': "Do you really want to delete the type? This will also delete the one existing defect. This action cannot be undone.",
+                'message#other': "Do you really want to delete the type? This will also delete all {count} existing defects. This action cannot be undone.",
+            },
+        },
     },
     modals: {
         messageModal: {
@@ -502,6 +538,16 @@ export default {
                 },
             },
             save: "Speichern",
-        }
+        },
+        changeLanguage: {
+            header: "Sprache wechseln",
+            label: "Sprache",
+            options: {
+                de: "Deutsch",
+                en: "Englisch",
+            },
+            cancel: "Abbrechen", 
+            change: "Ändern",
+        },
     },
 } as const;

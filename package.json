@@ -14,8 +14,10 @@
     },
     "dependencies": {
         "@fortawesome/fontawesome-svg-core": "^6.2.0",
+        "@fortawesome/free-regular-svg-icons": "^6.2.0",
         "@fortawesome/free-solid-svg-icons": "^6.2.0",
         "@fortawesome/react-fontawesome": "^0.2.0",
+        "@hookform/resolvers": "^3.9.0",
         "@prisma/client": "^5.8.0",
         "bcrypt": "^5.1.1",
         "bootstrap": "^5.3.2",
@@ -41,7 +43,8 @@
         "swr": "^2.2.4",
         "timers": "^0.1.1",
         "usehooks-ts": "^2.13.0",
-        "uuidv4": "^6.2.13"
+        "uuidv4": "^6.2.13",
+        "zod": "^3.23.8"
     },
     "devDependencies": {
         "@types/bcrypt": "^5.0.2",

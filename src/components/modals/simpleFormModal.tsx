@@ -27,7 +27,7 @@ const SimpleFormModal = (props: SimpleFormModalProps) => {
                     <Form.Control
                         isInvalid={!!errors.input}
                         inputMode={props.inputMode}
-                        {...register("input", props.elementValidation)} />
+                        {...register("input", props.elementValidation as any)} />
                     <div data-testid={`err_input`} className="text-danger fs-7">
                         {errors?.input?.message}
                     </div>

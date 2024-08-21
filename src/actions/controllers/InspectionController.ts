@@ -11,7 +11,7 @@ export const getDeficiencyTypeList = (): Promise<DeficiencyType[]> => genericSAV
     .then(({ assosiation }) => prisma.deficiencyType.findMany({
         where: {
             fk_assosiation: assosiation,
-            recdelete: null,
+            disabledDate: null,
         },
         ...deficiencyTypeArgs,
         orderBy: {

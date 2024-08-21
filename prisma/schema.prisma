@@ -4,10 +4,10 @@ generator client {
 }
 
 datasource db {
-    provider          = "postgresql"
-    url               = env("DATABASE_URL")
-    shadowDatabaseUrl = env("DATABASE_URL_SHADOW")
-    schemas           = ["authentication", "base", "inspection"]
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+    // shadowDatabaseUrl = env("DATABASE_URL_SHADOW")
+    schemas  = ["authentication", "base", "inspection"]
 }
 
 model Assosiation {
@@ -292,10 +292,10 @@ model DeficiencyType {
     id             String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
     fk_assosiation String                   @db.Char(36)
     name           String                   @db.VarChar(20)
-    dependend      deficiencytype_dependend
+    dependent      deficiencytype_dependent
     relation       deficiencytype_relation?
-    recdelete      DateTime?                @db.Date
-    recdeleteUser  String?                  @map("recdelete_user") @db.VarChar(10)
+    disabledDate   DateTime?                @map("disabled_date") @db.Date
+    disabledUser   String?                  @map("disabled_user") @db.VarChar(10)
     deficiencyList Deficiency[]
     assosiation    Assosiation              @relation(fields: [fk_assosiation], references: [id], onUpdate: Restrict)
 
@@ -351,7 +351,7 @@ model UniformDeficiency {
     @@schema("inspection")
 }
 
-enum deficiencytype_dependend {
+enum deficiencytype_dependent {
     cadet
     uniform
 
