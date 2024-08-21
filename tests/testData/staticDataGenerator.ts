@@ -28,7 +28,7 @@ export type StaticDataIdType = {
         }
     }
 };
-export function getStaticDataIds () {
+export function getStaticDataIds() {
     return {
         fk_assosiation: uuid(),
         userIds: uuidArray(5),
@@ -574,8 +574,8 @@ export default class StaticDataGenerator {
     }
     inspection() {
         return [
-            { id: this.ids.inspectionIds[0], fk_assosiation: this.ids.fk_assosiation, date: new Date('2023-06-18T00:00:00.000Z'), active: false },
-            { id: this.ids.inspectionIds[1], fk_assosiation: this.ids.fk_assosiation, date: new Date('2023-08-13T00:00:00.000Z'), active: false },
+            { id: this.ids.inspectionIds[0], fk_assosiation: this.ids.fk_assosiation, name: "Quartal 1", date: new Date('2023-06-18T00:00:00.000Z'), active: false },
+            { id: this.ids.inspectionIds[1], fk_assosiation: this.ids.fk_assosiation, name: "Quartal 2", date: new Date('2023-08-13T00:00:00.000Z'), active: false },
         ];
     }
     cadetInspection() {

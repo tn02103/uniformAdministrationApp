@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { DeficiencyType, InspectionStatus, deficiencyTypeArgs } from "@/types/deficiencyTypes";
 import { revalidateTag, unstable_cache } from "next/cache";
 import { genericSAValidatiorV2 } from "../validations";
+import { Prisma } from "@prisma/client";
 
 export const getDeficiencyTypeList = (): Promise<DeficiencyType[]> => genericSAValidatiorV2(AuthRole.inspector, true, {})
     .then(({ assosiation }) => prisma.deficiencyType.findMany({
@@ -73,6 +74,20 @@ export const getInspectedCadetIdList = () => genericSAValidatiorV2(AuthRole.insp
         }).then((data) => data.map(c => c.fk_cadet))
     );
 
+const plannedInspectionTypeArgs = Prisma.validator<Prisma.InspectionFindManyArgs>()({
+    include: {
+        deregistrations: true,
+    }
+});
+export type PlannedInspectionType = Prisma.InspectionGetPayload<typeof plannedInspectionTypeArgs>;
+
+export const getPlannedInspectionList = () => genericSAValidatiorV2(
+    AuthRole.materialManager, true, {}
+).then(async () => prisma.inspection.findMany({
+    ...plannedInspectionTypeArgs,
+    orderBy: { date: "asc" }
+}));
+
 export const startInspection = () => genericSAValidatiorV2(AuthRole.materialManager, true, {})
     .then(async ({ assosiation }) => {
         const i = await prisma.inspection.findFirst({
@@ -91,7 +106,8 @@ export const startInspection = () => genericSAValidatiorV2(AuthRole.materialMana
         } else {
             await prisma.inspection.create({
                 data: {
-                    fk_assosiation: assosiation
+                    fk_assosiation: assosiation,
+                    name: "",
                 }
             });
         }

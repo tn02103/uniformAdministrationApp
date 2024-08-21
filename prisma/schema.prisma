@@ -72,6 +72,7 @@ model Cadet {
     uniformIssued   UniformIssued[]
     cadetDeficiency CadetDeficiency[]
     cadetInspection CadetInspection[]
+    deregistrations Deregistration[]
 
     @@index([fk_assosiation])
     @@map("cadet")
@@ -245,6 +246,7 @@ model Inspection {
     id                 String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
     fk_assosiation     String            @db.Char(36)
     date               DateTime          @default(now()) @db.Date
+    name               String
     timeStart          DateTime?         @map("time_start")
     timeEnd            DateTime?         @map("time_end")
     active             Boolean           @default(true)
@@ -252,10 +254,22 @@ model Inspection {
     deficiencyCreated  Deficiency[]      @relation("Deficiency_InspectionCreated")
     deficiencyResolved Deficiency[]      @relation("Deficiency_InspectionResolved")
     assosiation        Assosiation       @relation(fields: [fk_assosiation], references: [id], onDelete: Cascade, onUpdate: Restrict)
+    deregistrations    Deregistration[]
 
     @@unique([date, fk_assosiation])
     @@index([fk_assosiation])
     @@map("inspection")
+    @@schema("inspection")
+}
+
+model Deregistration {
+    fk_cadet      String
+    fk_inspection String     @db.Char(36)
+    cadet         Cadet      @relation(fields: [fk_cadet], references: [id])
+    inspection    Inspection @relation(fields: [fk_inspection], references: [id])
+
+    @@id([fk_cadet, fk_inspection])
+    @@map("deregistratios")
     @@schema("inspection")
 }
 
