@@ -29,7 +29,7 @@ const EditMaterialTypeModal = ({ type, groupName, groupId, typeList, ...props }:
         await updateMaterial(type.id, data.typename, data.actualQuantity, data.targetQuantity).then(() => {
             props.onClose();
         }).catch((e) => {
-            console.log(e);
+            console.error(e);
             toast.error(t('common.error.actions.save'));
         });
     }
@@ -37,7 +37,7 @@ const EditMaterialTypeModal = ({ type, groupName, groupId, typeList, ...props }:
         await createMaterial(groupId, data.typename, data.actualQuantity, data.targetQuantity).then(() => {
             props.onClose();
         }).catch((e) => {
-            console.log(e);
+            console.error(e);
             toast.error(t('common.error.actions.create'));
         });
     }

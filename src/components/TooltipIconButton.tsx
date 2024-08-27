@@ -3,11 +3,12 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode } from "react";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { faPlus, faCircleUp, faCircleDown, faEdit, faTrash, faArrowUpRightFromSquare, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faCircleUp, faCircleDown, faEdit, faTrash, faArrowUpRightFromSquare, faEye, faEyeSlash, faCirclePlay } from "@fortawesome/free-solid-svg-icons";
 import { propTypes } from "react-bootstrap/esm/Image";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
 import germanTranslation from "@/../public/locales/de";
 import { Variant } from "react-bootstrap/esm/types";
+import { startInspection } from "@/actions/controllers/InspectionController";
 
 type PropType = {
     icon: IconProp,
@@ -63,7 +64,7 @@ const Variants: {
     [key in string]: {
         icon: IconProp,
         variant: string,
-        tooltipKey: "edit" | "create" | "moveUp" | "moveDown" | "open" | "delete" | "reactivate" | "deactivate",
+        tooltipKey: "edit" | "create" | "moveUp" | "moveDown" | "open" | "delete" | "reactivate" | "deactivate" | "startInspection",
         testId: string,
     }
 } = {
@@ -114,7 +115,13 @@ const Variants: {
         variant: "outline-secondary",
         tooltipKey: "deactivate",
         testId: "btn_deactivate",
-    }
+    },
+    startInspection: {
+        icon: faCirclePlay,
+        variant: "outline-success",
+        tooltipKey: "startInspection",
+        testId: "btn_start"
+    },
 }
 export const TooltipActionButton = ({ onClick, disabled, variantKey, testId, buttonClass, iconClass, buttonSize }: SimplePropType) => {
     const t = useScopedI18n("common.actions");

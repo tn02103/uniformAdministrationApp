@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const prismaClient = new PrismaClient()
 async function main() {
     const ids = getStaticDataIds()
+    ids.fk_assosiation = process.env.ASSOSIATION_ID ?? ids.fk_assosiation;
     const generator = new StaticDataGenerator(ids);
     const { fk_assosiation, sizeIds, sizelistIds } = ids;
 

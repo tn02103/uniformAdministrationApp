@@ -8,6 +8,7 @@ export type SimpleFormModalProps = {
     elementLabel: string;
     elementValidation: RegisterOptions<FieldValues, "input">;
     inputMode?: "search" | "text" | "none" | "tel" | "url" | "email" | "numeric";
+    type?: string,
     save: ({ }: { input: any }) => Promise<any>;
     abort: () => void;
     defaultValue?: { input: string }
@@ -25,6 +26,7 @@ const SimpleFormModal = (props: SimpleFormModalProps) => {
                 <Modal.Body>
                     <Form.Label>{props.elementLabel}</Form.Label>
                     <Form.Control
+                        type={props.type}
                         isInvalid={!!errors.input}
                         inputMode={props.inputMode}
                         {...register("input", props.elementValidation as any)} />

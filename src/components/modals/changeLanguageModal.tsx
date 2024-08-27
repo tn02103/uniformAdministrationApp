@@ -20,7 +20,6 @@ export default function ChangeLanguageModal({ onClose }: { onClose: () => void }
     type locales = 'de' | 'en';
 
     function onSubmit(data: { locale: locales }) {
-        console.log('Changeing locale', data);
         changeLocale(data.locale);
     }
 

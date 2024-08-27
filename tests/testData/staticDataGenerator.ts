@@ -1,4 +1,5 @@
-import { Prisma } from "@prisma/client";
+import { Inspection, Prisma } from "@prisma/client";
+import moment from "moment";
 import { v4 as uuid } from "uuid";
 
 const uuidArray = (i: number) => Array(i).fill("").map(() => uuid());
@@ -42,7 +43,7 @@ export function getStaticDataIds() {
         materialIds: uuidArray(10),
         deficiencyTypeIds: uuidArray(7),
         deficiencyIds: uuidArray(14),
-        inspectionIds: uuidArray(2),
+        inspectionIds: uuidArray(6),
         dynamic: {
             inspectionId: uuid(),
             firstInspection: {
@@ -575,9 +576,13 @@ export default class StaticDataGenerator {
     }
     inspection() {
         return [
-            { id: this.ids.inspectionIds[0], fk_assosiation: this.ids.fk_assosiation, name: "Quartal 1", date: new Date('2023-06-18T00:00:00.000Z'), active: false },
-            { id: this.ids.inspectionIds[1], fk_assosiation: this.ids.fk_assosiation, name: "Quartal 2", date: new Date('2023-08-13T00:00:00.000Z'), active: false },
-        ];
+            { id: this.ids.inspectionIds[0], fk_assosiation: this.ids.fk_assosiation, name: "Quartal 1", date: new Date('2023-06-18T00:00:00.000Z'), timeStart: moment.utc("07:58:30", 'HH:mm:ss').toDate(), timeEnd: moment.utc("13:06:34", "HH:mm:ss").toDate(), active: false },
+            { id: this.ids.inspectionIds[1], fk_assosiation: this.ids.fk_assosiation, name: "Quartal 2", date: new Date('2023-08-13T00:00:00.000Z'), timeStart: moment.utc("07:58:30", 'HH:mm:ss').toDate(), timeEnd: moment.utc("13:06:34", "HH:mm:ss").toDate(), active: false },
+            { id: this.ids.inspectionIds[2], fk_assosiation: this.ids.fk_assosiation, name: "expired", date: new Date('2023-08-17T00:00:00.000Z'), timeStart: null, timeEnd: null, active: false },
+            { id: this.ids.inspectionIds[3], fk_assosiation: this.ids.fk_assosiation, name: "unfinished", date: moment().subtract(10, "day").toDate(), timeStart:  moment.utc("08:58:30", 'HH:mm:ss').toDate(), timeEnd: null, active: false },
+            { id: this.ids.inspectionIds[4], fk_assosiation: this.ids.fk_assosiation, name: "today", date: moment.utc().toDate(), timeStart: null, timeEnd: null, active: false },
+            { id: this.ids.inspectionIds[5], fk_assosiation: this.ids.fk_assosiation, name: "planned", date: moment().add(10, "day").toDate(), timeStart: null, timeEnd: null, active: false },
+        ] satisfies Inspection[];
     }
     cadetInspection() {
         return [

@@ -442,8 +442,9 @@ CREATE TABLE inspection.inspection (
     id character(36) DEFAULT gen_random_uuid() NOT NULL,
     fk_assosiation character(36) NOT NULL,
     date date DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    time_start timestamp(3) without time zone,
-    time_end timestamp(3) without time zone,
+    name TEXT NOT NULL,
+    time_start TIME without time zone,
+    time_end TIME without time zone,
     active boolean DEFAULT true NOT NULL
 );
 ALTER TABLE inspection.inspection OWNER TO "uniformServer";
@@ -451,6 +452,7 @@ INSERT INTO inspection.inspection
 SELECT id,
     fk_assosiation,
     date,
+    null,
     null,
     null,
     active
@@ -477,6 +479,22 @@ SELECT d.id,
 FROM public."CadetDeficiency" d
     JOIN inspection.deficiency_type dt ON dt.id = d."fk_deficiencyType"
 WHERE dt.dependent = 'uniform';
+-- CreateTable
+CREATE TABLE "inspection"."deregistration" (
+    "fk_cadet" TEXT NOT NULL,
+    "fk_inspection" CHAR(36) NOT NULL,
+    CONSTRAINT "deregistration_pkey" PRIMARY KEY ("fk_cadet", "fk_inspection")
+);
+-- CreateTable
+CREATE TABLE "base"."assosiation_configuration" (
+    "assosiationId" CHAR(36) NOT NULL,
+    "sendEmailAfterInspection" BOOLEAN NOT NULL,
+    "inspectionReportEmails" TEXT [],
+    CONSTRAINT "assosiation_configuration_pkey" PRIMARY KEY ("assosiationId")
+);
+-- AddForeignKey
+ALTER TABLE "base"."assosiation_configuration"
+ADD CONSTRAINT "assosiation_configuration_assosiationId_fkey" FOREIGN KEY ("assosiationId") REFERENCES "authentication"."assosiation"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 --INDEXES
 ALTER TABLE ONLY authentication.assosiation
 ADD CONSTRAINT assosiation_pkey PRIMARY KEY (id);
@@ -619,6 +637,10 @@ ALTER TABLE ONLY inspection.uniform_deficiency
 ADD CONSTRAINT uniform_deficiency_deficiency_id_fkey FOREIGN KEY (deficiency_id) REFERENCES inspection.deficiency(id) ON UPDATE RESTRICT ON DELETE CASCADE;
 ALTER TABLE ONLY inspection.uniform_deficiency
 ADD CONSTRAINT uniform_deficiency_fk_uniform_fkey FOREIGN KEY (fk_uniform) REFERENCES base.uniform(id) ON UPDATE RESTRICT ON DELETE CASCADE;
+ALTER TABLE "inspection"."deregistration"
+ADD CONSTRAINT "deregistration_fk_cadet_fkey" FOREIGN KEY ("fk_cadet") REFERENCES "base"."cadet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "inspection"."deregistration"
+ADD CONSTRAINT "deregistration_fk_inspection_fkey" FOREIGN KEY ("fk_inspection") REFERENCES "inspection"."inspection"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 -- View: inspection.v_deficiency_by_cadet
 CREATE OR REPLACE VIEW inspection.v_deficiency_by_cadet AS
 SELECT d.id,

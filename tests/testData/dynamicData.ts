@@ -6,6 +6,7 @@ export const startInspection = async (i: number) =>
         data: {
             id: StaticDataIds[i].dynamic.inspectionId,
             fk_assosiation: StaticDataIds[i].fk_assosiation,
+            name: "Test",
             active: true,
         },
     });

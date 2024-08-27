@@ -1,20 +1,24 @@
 "use client";
-import { PlannedInspectionType } from "@/actions/controllers/InspectionController";
+
+import { PlannedInspectionType } from "@/actions/controllers/PlannedInspectionController";
 import { TooltipActionButton } from "@/components/TooltipIconButton";
-import { Col, Row, Table } from "react-bootstrap";
-import PlannedInspectionTableRow from "./plannedRow";
+import { usePlannedInspectionList } from "@/dataFetcher/inspection";
 import { useState } from "react";
+import { Col, Row } from "react-bootstrap";
+import PlannedInspectionTableRow from "./plannedRow";
 
 export default function PlannedInspectionTable({
-    inspections
+    ...props
 }: {
     inspections: PlannedInspectionType[]
 }) {
 
     const [showNewLine, setShowNewLine] = useState(false);
+    const { inspectionList } = usePlannedInspectionList(props.inspections);
+
 
     return (
-        <div>
+        <div data-testid="div_plannedTable">
             <Row className="bg-white border-bottom border-1 border-dark p-2">
                 <Col className="fs-bold">Status</Col>
                 <Col className="fs-bold">Date</Col>
@@ -25,9 +29,14 @@ export default function PlannedInspectionTable({
             {showNewLine &&
                 <PlannedInspectionTableRow inspection={null} closeNewLine={() => setShowNewLine(false)} />
             }
-            {inspections.map((insp) => (
-                <PlannedInspectionTableRow inspection={insp} />
+            {(inspectionList && inspectionList.length > 0) && inspectionList?.map((insp) => (
+                <PlannedInspectionTableRow inspection={insp} key={insp.id} />
             ))}
+            {(inspectionList?.length === 0) &&
+                <Row data-testid="div_noData">
+                    Keine Inspektionen geplannt
+                </Row>
+            }
         </div >
     )
 }

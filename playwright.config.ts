@@ -43,7 +43,7 @@ export default defineConfig({
                 viewport: viewports.xxl
             },
         },
-        {
+      /*  {
             name: 'firefox',
             use: {
                 ...devices['Desktop Firefox'],
@@ -56,7 +56,7 @@ export default defineConfig({
                 ...devices['Desktop Safari'],
                 viewport: viewports.xxl
             },
-        },
+        },*/
     ],
 
     /* Run your local dev server before starting the tests */

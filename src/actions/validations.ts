@@ -18,6 +18,7 @@ type AssosiationValidationDataType = {
     materialId?: string | (string | undefined)[],
     materialGroupId?: string | string[],
     deficiencytypeId?: string | string[],
+    inspectionId?: string | string[],
 }
 
 
@@ -65,6 +66,9 @@ function assosiationValidatior(assosiationValidations: AssosiationValidationData
 
     if (assosiationValidations.deficiencytypeId) {
         validate(assosiationValidations.deficiencytypeId, validateDeficiencytypeAssosiation);
+    }
+    if (assosiationValidations.inspectionId) {
+        validate(assosiationValidations.inspectionId, validateInspectionAssosiation);
     }
     return Promise.all(validationPromisses);
 }
@@ -178,4 +182,8 @@ const validateDeficiencytypeAssosiation = async (id: string, fk_assosiation: str
         where: {
             id, fk_assosiation
         }
+    });
+const validateInspectionAssosiation = async (id: string, fk_assosiation: string) =>
+    prisma.inspection.findUniqueOrThrow({
+        where: { id, fk_assosiation }
     });

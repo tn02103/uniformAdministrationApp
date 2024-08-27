@@ -16,7 +16,7 @@ type useCadetUniformMapReturnType = {
 export function useCadetUniformMap(cadetId: string, initialData?: CadetUniformMap): useCadetUniformMapReturnType {
     const { data, mutate, error } = useSWR(
         `cadet.${cadetId}.uniform`,
-        () => getCadetUniformMap(cadetId).catch(e => { console.log("cought SAError", e, Object.entries(e)); throw e }),
+        () => getCadetUniformMap(cadetId).catch(e => { console.error("cought SAError", e, Object.entries(e)); throw e }),
         {
             fallbackData: initialData,
         }

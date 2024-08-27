@@ -41,6 +41,7 @@ export default {
             changePosition: "Position wechseln",
             changePassword: "Passwort ändern",
             ok: "Verstanden",
+            startInspection: "Inspektion Starten",
         },
         cadet: {
             cadet: "Person",

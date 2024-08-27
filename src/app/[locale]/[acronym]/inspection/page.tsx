@@ -1,24 +1,11 @@
 
-import { prisma } from "@/lib/db";
-import { getIronSession } from "@/lib/ironSession";
+import { getPlannedInspectionList } from "@/actions/controllers/PlannedInspectionController";
 import { Col, Row } from "react-bootstrap";
 import PlannedInspectionTable from "./plannedTable";
-import { PlannedInspectionType } from "@/actions/controllers/InspectionController";
 
 
 export default async function InspectionAdministrationPage() {
-    const session = await getIronSession();
-    const plannedInspections = await prisma.inspection.findMany({
-        where: {
-            fk_assosiation: session.user?.assosiation,
-            date: { gte: new Date() },
-        },
-        include: {
-            deregistrations: true
-        }
-    });
-
-
+    const plannedInspections = await getPlannedInspectionList();
 
     return (
         <div className="container-lg content-center bg-light rounded px-md-3 px-xl-5 p-0">
@@ -31,5 +18,5 @@ export default async function InspectionAdministrationPage() {
                 </Col>
             </Row>
         </div>
-    )
+    );
 }

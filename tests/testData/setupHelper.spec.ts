@@ -1,12 +1,10 @@
 import test from "playwright/test";
-import { v4 as uuid } from "uuid";
+import { StaticDataIdType, getStaticDataIds } from "./staticDataGenerator";
 import StaticDataIds from "./staticDataIds.json";
 import { StaticData } from "./staticDataLoader";
-import { StaticDataIdType, getStaticDataIds } from "./staticDataGenerator";
 const fs = require('fs');
 
 
-const uuidArray = (i: number) => Array(i).fill("").map(() => uuid());
 
 test.skip('', async () => {
     const staticData = new StaticData(0);
@@ -20,7 +18,7 @@ test.skip('fillDB with static data', async () => {
     console.log("finished");
 });
 
-test.skip('generateTestIdSet', async () => {
+test.only('generateTestIdSet', async () => {
     const ids: StaticDataIdType[] = StaticDataIds;
     ids.push(getStaticDataIds());
     console.log("🚀 ~ test.only ~ ids.length:", ids.length)
