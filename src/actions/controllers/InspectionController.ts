@@ -2,15 +2,13 @@
 
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
+import { sendInspectionReviewMail } from "@/lib/email/inspectionReview";
 import { DeficiencyType, deficiencyTypeArgs, InspectionStatus } from "@/types/deficiencyTypes";
+import dayjs from "@/lib/dayjs";
 import { revalidateTag, unstable_cache } from "next/cache";
-import { genericSAValidatiorV2, genericSAValidator } from "../validations";
 import { z } from "zod";
 import { InspectionDBHandler } from "../dbHandlers/InspectionDBHandler";
-import { generateInspectionReviewXLSX } from "@/lib/fileCreations/inspectionReview";
-import { sendInspectionReviewMail } from "@/lib/email/inspectionReview";
-import moment from "moment";
-
+import { genericSAValidatiorV2, genericSAValidator } from "../validations";
 const dbHandler = new InspectionDBHandler();
 
 export const getDeficiencyTypeList = (): Promise<DeficiencyType[]> => genericSAValidatiorV2(AuthRole.inspector, true, {})
@@ -31,7 +29,9 @@ export const getInspectionState = (): Promise<InspectionStatus> => genericSAVali
     const inspection = await prisma.inspection.findFirst({
         where: {
             fk_assosiation: assosiation,
-            active: true,
+            date: new Date(),
+            timeStart: { not: null },
+            timeEnd: null
         }
     });
     if (!inspection) {
@@ -51,12 +51,18 @@ export const getInspectionState = (): Promise<InspectionStatus> => genericSAVali
                 fk_assosiation: assosiation,
                 active: true,
                 recdelete: null,
-            }
+                deregistrations: {
+                    none: {
+                        fk_inspection: inspection.id,
+                    },
+                },
+            },
         }),
     ]);
 
     return {
         ...inspection,
+        active: true,
         inspectedCadets: inspectedCadets['_count'].id,
         activeCadets: activeCadets['_count'].id
     }
@@ -73,10 +79,12 @@ export const getInspectedCadetIdList = () => genericSAValidatiorV2(AuthRole.insp
             },
             where: {
                 inspection: {
-                    active: true,
                     fk_assosiation: assosiation,
-                }
-            }
+                    date: new Date(),
+                    timeEnd: null,
+                    timeStart: { not: null },
+                },
+            },
         }).then((data) => data.map(c => c.fk_cadet))
     );
 
@@ -130,7 +138,7 @@ export const closeInspection = (props: CloseInspectionPropShema) => genericSAVal
     // update Inspection
     await prisma.inspection.update({
         where: { id: data.id },
-        data: { timeEnd: moment.utc(data.time, 'HH:mm').toDate()}
+        data: { timeEnd: dayjs.utc(data.time, 'HH:mm').toDate() }
     });
     // send Mails
     const config = await prisma.assosiationConfiguration.findUnique({

@@ -81,6 +81,12 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                             </Link>
                             <hr className="text-white fw-bold" />
                         </div>
+                        {inspectionState?.active &&
+                            <div data-testid="div_inspection" className=" align-self-center d-none d-lg-inline">
+                                {collapsed ? "" : 'Kontrolle: '}
+                                {inspectionState.inspectedCadets}/{inspectionState.activeCadets}
+                            </div>
+                        }
 
                         <div className="d-md-none" style={{ height: "20px" }}>
                         </div>

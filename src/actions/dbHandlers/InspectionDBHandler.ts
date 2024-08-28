@@ -52,7 +52,8 @@ export class InspectionDBHandler {
                       WHERE dr.fk_inspection = i.id) as "deregisteredCadets",
                     (SELECT COUNT(c.id)
                        FROM base.cadet c
-                      WHERE c.fk_assosiation = i.fk_assosiation) as "activeCadets",
+                      WHERE c.fk_assosiation = i.fk_assosiation
+                        AND c.recdelete IS NULL) as "activeCadets",
          	        (SELECT COUNT(cd.id)
                        FROM inspection.deficiency cd
                       WHERE cd.fk_inspection_resolved = i.id) as "newlyResolvedDeficiencies",
@@ -76,7 +77,7 @@ export class InspectionDBHandler {
         client.$queryRaw<any[]>`
          SELECT v.*,
 	            CASE
-		            WHEN v."fk_inspectionCreated" = '579f9674-b092-47b3-8600-27e462b59054'
+		            WHEN v."fk_inspectionCreated" = ${id}
 		            THEN 1
 		            ELSE 0
 	            END as "new",
@@ -92,7 +93,7 @@ export class InspectionDBHandler {
             comment: d.comment,
             description: d.description,
             dateCreated: d.dateCreated,
-            new: true,
+            new: d.new,
             deficiencyType: {
                 id: d.fk_deficiencyType,
                 name: d.typeName,

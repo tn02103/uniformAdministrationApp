@@ -26,7 +26,11 @@ async function main() {
                 { fk_assosiation, role: 1, username: 'user', name: `VK Nutzer`, password, active: true },
                 { fk_assosiation, role: 1, username: 'blck', name: `VK Gesperrt`, password, active: false },
             ]
-        })
+        });
+
+        await prisma.assosiationConfiguration.create({
+            data: generator.assosiationConfiguration(),
+        });
 
         await prisma.cadet.createMany({
             data: generator.cadet()

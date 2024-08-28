@@ -492,9 +492,7 @@ CREATE TABLE "base"."assosiation_configuration" (
     "inspectionReportEmails" TEXT [],
     CONSTRAINT "assosiation_configuration_pkey" PRIMARY KEY ("assosiationId")
 );
--- AddForeignKey
-ALTER TABLE "base"."assosiation_configuration"
-ADD CONSTRAINT "assosiation_configuration_assosiationId_fkey" FOREIGN KEY ("assosiationId") REFERENCES "authentication"."assosiation"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
 --INDEXES
 ALTER TABLE ONLY authentication.assosiation
 ADD CONSTRAINT assosiation_pkey PRIMARY KEY (id);
@@ -641,6 +639,8 @@ ALTER TABLE "inspection"."deregistration"
 ADD CONSTRAINT "deregistration_fk_cadet_fkey" FOREIGN KEY ("fk_cadet") REFERENCES "base"."cadet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 ALTER TABLE "inspection"."deregistration"
 ADD CONSTRAINT "deregistration_fk_inspection_fkey" FOREIGN KEY ("fk_inspection") REFERENCES "inspection"."inspection"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "base"."assosiation_configuration"
+ADD CONSTRAINT "assosiation_configuration_assosiationId_fkey" FOREIGN KEY ("assosiationId") REFERENCES "authentication"."assosiation"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 -- View: inspection.v_deficiency_by_cadet
 CREATE OR REPLACE VIEW inspection.v_deficiency_by_cadet AS
 SELECT d.id,

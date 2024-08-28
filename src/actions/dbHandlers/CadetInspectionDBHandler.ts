@@ -5,8 +5,10 @@ import { PrismaClient, PrismaPromise } from "@prisma/client";
 export class CadetInspectionDBHandler {
     getActiveInspection = (fk_assosiation: string) => prisma.inspection.findFirst({
         where: {
-            active: true,
             fk_assosiation,
+            date: new Date(),
+            timeEnd: null,
+            timeStart: { not: null },
         }
     });
 

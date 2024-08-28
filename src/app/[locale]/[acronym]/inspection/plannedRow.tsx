@@ -6,11 +6,11 @@ import ErrorMessage from "@/components/errorMessage";
 import { useModal } from "@/components/modals/modalProvider";
 import { TooltipActionButton } from "@/components/TooltipIconButton";
 import { usePlannedInspectionList } from "@/dataFetcher/inspection";
+import dayjs from "@/lib/dayjs";
 import { PlannedInspectionFormShema, plannedInspectionFormShema } from "@/zod/inspection";
 import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
-import moment from 'moment/min/moment-with-locales';
 import { useEffect, useRef, useState } from "react";
 import { Badge, Button, Col, FormControl, OverlayTrigger, Row } from "react-bootstrap";
 import Calendar from 'react-calendar';
@@ -110,7 +110,7 @@ export default function PlannedInspectionTableRow({
             elementLabel: 'Endzeit:',
             elementValidation: {},
             defaultValue: {
-                input: moment().isSame(inspection?.date, "day") ? moment().format('HH:mm') : ''
+                input: dayjs().isSame(inspection?.date, "day") ? dayjs().format('HH:mm') : ''
             },
             type: "time",
             async save({ input }) {
@@ -132,7 +132,7 @@ export default function PlannedInspectionTableRow({
                     <InspectionBadge inspection={inspection} handleStart={handleStart} />
                 </Col>
                 <Col> {(!editable && inspection)
-                    ? <span data-testid="div_date">{moment(inspection.date).locale('de').format("dd DD.MM.yyyy")}</span>
+                    ? <span data-testid="div_date">{dayjs(inspection.date).locale('de').format("dd DD.MM.YYYY")}</span>
                     : <div>
                         <Controller
                             name="date"
@@ -191,15 +191,15 @@ function InspectionBadge({ inspection, handleStart }: { inspection: PlannedInspe
         if (inspection.timeEnd) {
             return <Badge pill bg="success" data-testid="lbl_completed">Abgeschlossen</Badge>
         }
-        if (moment().isSame(inspection?.date, "day")) {
+        if (dayjs().isSame(inspection?.date, "day")) {
             return <Badge pill bg="success" data-testid="lbl_active">Aktiv</Badge>
         } else {
             return <Badge pill bg="warning" data-testid="lbl_notCompleted">Nicht abgeschlossen</Badge>
         }
-    } else if (moment().isAfter(inspection?.date, "day")) {
+    } else if (dayjs().isAfter(inspection?.date, "day")) {
         return <Badge pill bg="danger" data-testid="lbl_expired">Abgelaufen</Badge>
     }
-    /*if (moment().isSame(inspection.date, "day")) {
+    /*if (dayjs().isSame(inspection.date, "day")) {
         return (
             <Button size="sm" className="rounded" variant="outline-primary" onClick={handleStart}>
                 Starten
@@ -252,11 +252,11 @@ function DatePicker({ onChange, value, error }: { onChange: any, value: string |
     function handleOnChangeCalendar(value: any, event: React.MouseEvent) {
         setShowCalendar(false);
         const date = new Date(value.getTime() - value.getTimezoneOffset() * 60000);
-        onChange(moment.utc(date).toDate());
+        onChange(dayjs.utc(date).toDate());
     }
     function handleInputOnChange(val: any) {
         if (/^\d{1,2}\.\d{1,2}\.\d{4}$/.test(val)) {
-            const mom = moment.utc(val, ["DD.MM.yyyy", "D.M.yyyy",], true);
+            const mom = dayjs(val, ["DD.MM.YYYY", "D.M.YYYY"], true).utc(true);
             if (mom.isValid()) {
                 return onChange(mom.toDate());
             }
@@ -272,7 +272,7 @@ function DatePicker({ onChange, value, error }: { onChange: any, value: string |
                     name={"date"}
                     className={`form-control ${error ? "isInvaild" : ""}`}
                     onChange={(e) => handleInputOnChange(e.target.value)}
-                    value={(typeof value === "string") ? value : moment(value).format('DD.MM.yyyy')}
+                    value={(typeof value === "string") ? value : dayjs(value).format('DD.MM.YYYY')}
                 />
                 <button type="button" className="input-group-text" onClick={() => setShowCalendar(prev => !prev)}>
                     <FontAwesomeIcon icon={faCalendar} />
@@ -287,7 +287,7 @@ function DatePicker({ onChange, value, error }: { onChange: any, value: string |
                 <div className="position-absolute" ref={refCalendar as any} >
                     {showCalendar &&
                         <Calendar
-                            minDate={moment().toDate()}
+                            minDate={dayjs().toDate()}
                             onChange={handleOnChangeCalendar}
                             value={value} />
                     }
@@ -321,7 +321,7 @@ function ButtonColumn({ editable, inspection, nameDuplicationError, handleCancel
         );
     }
 
-    const isToday = moment().isSame(inspection.date, "day");
+    const isToday = dayjs().isSame(inspection.date, "day");
     if (inspection.timeStart) {
         if (inspection.timeEnd) {
             return (

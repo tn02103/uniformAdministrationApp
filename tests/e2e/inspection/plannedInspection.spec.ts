@@ -1,9 +1,9 @@
 import { expect } from "playwright/test";
 import { PlannedInspectionTestComponent } from "../../pages/inspection/plannedInspection.component";
 import { adminTest } from "../../setup";
-import moment from 'moment/min/moment-with-locales';
 import { prisma } from "@/lib/db";
 
+import dayjs from "@/lib/dayjs";
 
 type Fixture = {
     plannedComponent: PlannedInspectionTestComponent;
@@ -26,7 +26,7 @@ test('validate Data', async ({ page, plannedComponent, staticData: { data, ids }
         const rowComponent = plannedComponent.getRowComponent(inspection.id);
         await Promise.all([
             expect.soft(rowComponent.div_name).toHaveText(inspection.name),
-            expect.soft(rowComponent.div_date).toHaveText(moment(inspection.date).locale('de').format('dd DD.MM.yyyy')),
+            expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.yyyy')),
 
             expect.soft(rowComponent.lbl_expired).toBeVisible(),
             expect.soft(rowComponent.lbl_active).not.toBeVisible(),
@@ -49,7 +49,7 @@ test('validate Data', async ({ page, plannedComponent, staticData: { data, ids }
 
         await Promise.all([
             expect.soft(rowComponent.div_name).toHaveText(inspection.name),
-            expect.soft(rowComponent.div_date).toHaveText(moment(inspection.date).locale('de').format('dd DD.MM.yyyy')),
+            expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.yyyy')),
 
             expect.soft(rowComponent.lbl_expired).not.toBeVisible(),
             expect.soft(rowComponent.lbl_active).not.toBeVisible(),
@@ -71,7 +71,7 @@ test('validate Data', async ({ page, plannedComponent, staticData: { data, ids }
         const rowComponent = plannedComponent.getRowComponent(inspection.id);
         await Promise.all([
             expect.soft(rowComponent.div_name).toHaveText(inspection.name),
-            expect.soft(rowComponent.div_date).toHaveText(moment(inspection.date).locale('de').format('dd DD.MM.yyyy')),
+            expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.yyyy')),
 
             expect.soft(rowComponent.lbl_expired).not.toBeVisible(),
             expect.soft(rowComponent.lbl_active).not.toBeVisible(),
@@ -93,7 +93,7 @@ test('validate Data', async ({ page, plannedComponent, staticData: { data, ids }
         const rowComponent = plannedComponent.getRowComponent(inspection.id);
         await Promise.all([
             expect.soft(rowComponent.div_name).toHaveText(inspection.name),
-            expect.soft(rowComponent.div_date).toHaveText(moment(inspection.date).locale('de').format('dd DD.MM.yyyy')),
+            expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.yyyy')),
 
             expect.soft(rowComponent.lbl_expired).not.toBeVisible(),
             expect.soft(rowComponent.lbl_active).not.toBeVisible(),
@@ -118,14 +118,14 @@ test('validate Data', async ({ page, plannedComponent, staticData: { data, ids }
         await test.step('prepare Data', async () => {
             await prisma.inspection.update({
                 where: { id: inspection.id },
-                data: { timeStart: moment.utc("02:00:00", 'HH:mm:ss').toDate() }
+                data: { timeStart: dayjs.utc("02:00:00", 'HH:mm:ss').toDate() }
             });
             await page.reload();
         });
 
         await Promise.all([
             expect.soft(rowComponent.div_name).toHaveText(inspection.name),
-            expect.soft(rowComponent.div_date).toHaveText(moment(inspection.date).locale('de').format('dd DD.MM.yyyy')),
+            expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.yyyy')),
 
             expect.soft(rowComponent.lbl_expired).not.toBeVisible(),
             expect.soft(rowComponent.lbl_active).toBeVisible(),
@@ -152,8 +152,8 @@ test('validate Data', async ({ page, plannedComponent, staticData: { data, ids }
                     id: inspection.id,
                 },
                 data: {
-                    timeStart: moment.utc("02:00:00", 'HH:mm:ss').toDate(),
-                    timeEnd: moment.utc("04:00:00", 'HH:mm:ss').toDate(),
+                    timeStart: dayjs.utc("02:00:00", 'HH:mm:ss').toDate(),
+                    timeEnd: dayjs.utc("04:00:00", 'HH:mm:ss').toDate(),
                 }
             });
             await page.reload();
@@ -161,7 +161,7 @@ test('validate Data', async ({ page, plannedComponent, staticData: { data, ids }
 
         await Promise.all([
             expect.soft(rowComponent.div_name).toHaveText(inspection.name),
-            expect.soft(rowComponent.div_date).toHaveText(moment(inspection.date).locale('de').format('dd DD.MM.yyyy')),
+            expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.yyyy')),
 
             expect.soft(rowComponent.lbl_expired).not.toBeVisible(),
             expect.soft(rowComponent.lbl_active).not.toBeVisible(),
