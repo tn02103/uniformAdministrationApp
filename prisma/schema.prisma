@@ -276,8 +276,9 @@ model Inspection {
 model Deregistration {
     fk_cadet      String
     fk_inspection String     @db.Char(36)
-    cadet         Cadet      @relation(fields: [fk_cadet], references: [id])
-    inspection    Inspection @relation(fields: [fk_inspection], references: [id])
+    cadet         Cadet      @relation(fields: [fk_cadet], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    inspection    Inspection @relation(fields: [fk_inspection], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    date          DateTime   @default(now())
 
     @@id([fk_cadet, fk_inspection])
     @@map("deregistration")

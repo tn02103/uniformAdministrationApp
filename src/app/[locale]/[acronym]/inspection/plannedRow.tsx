@@ -2,18 +2,17 @@
 
 import { closeInspection, startInspection } from "@/actions/controllers/InspectionController";
 import { createInspection, deleteInspection, PlannedInspectionType, updatePlannedInspection } from "@/actions/controllers/PlannedInspectionController";
+import DatePicker from "@/components/datePicker/datePicker";
 import ErrorMessage from "@/components/errorMessage";
 import { useModal } from "@/components/modals/modalProvider";
 import { TooltipActionButton } from "@/components/TooltipIconButton";
 import { usePlannedInspectionList } from "@/dataFetcher/inspection";
 import dayjs from "@/lib/dayjs";
 import { PlannedInspectionFormShema, plannedInspectionFormShema } from "@/zod/inspection";
-import { faCalendar } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useRef, useState } from "react";
+import React from "react";
+import { useEffect, useState } from "react";
 import { Badge, Button, Col, FormControl, OverlayTrigger, Row } from "react-bootstrap";
-import Calendar from 'react-calendar';
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
@@ -21,9 +20,11 @@ import { toast } from "react-toastify";
 export default function PlannedInspectionTableRow({
     inspection,
     closeNewLine,
+    openDeregistrationModal,
 }: {
     inspection: PlannedInspectionType | null;
     closeNewLine?: () => void;
+    openDeregistrationModal?: (id: string) => void;
 }) {
     const modal = useModal();
     const { register, handleSubmit, control, reset, formState, watch } = useForm<PlannedInspectionFormShema>({
@@ -153,7 +154,6 @@ export default function PlannedInspectionTableRow({
                                 validate: (value) => {
                                     if (!inspectionList?.find(i => (i.name === value) && (i.id !== inspection?.id)))
                                         return "Der Name ist bereits vergeben"
-
                                 }
                             })} />
                     }
@@ -165,7 +165,7 @@ export default function PlannedInspectionTableRow({
                     }
                 </Col>
                 {(!editable && inspection) &&
-                    <DeragistrationCol inspection={inspection} />
+                    <DeragistrationCol inspection={inspection} openDeregistrationModal={() => {console.log("open modal for", inspection); openDeregistrationModal!(inspection.id)}} />
                 }
                 <ButtonColumn editable={editable}
                     handleCancel={handleCancel}
@@ -212,7 +212,7 @@ function InspectionBadge({ inspection, handleStart }: { inspection: PlannedInspe
     )
 }
 
-function DeragistrationCol({ inspection }: { inspection: PlannedInspectionType }) {
+function DeragistrationCol({ inspection, openDeregistrationModal }: { inspection: PlannedInspectionType, openDeregistrationModal: () => void }) {
 
     return (
         <OverlayTrigger
@@ -220,82 +220,19 @@ function DeragistrationCol({ inspection }: { inspection: PlannedInspectionType }
             delay={{ show: 1000, hide: 150 }}
             overlay={
                 <span className="bg-white p-2 border border-1 border-gray">
-                    Dario Meysing<br />Joline Becker<br />Jan Wieger<br />Lars Wieger
+                    {inspection.deregistrations.map(c => <React.Fragment key={c.fk_cadet}>{c.cadet.firstname} {c.cadet.lastname} <br /></React.Fragment>)}
                 </span>
             }
         >
             <Col>
-                <a className="link-opacity-100 text-primary link-opacity-25-hover" onClick={() => { console.log("test") }}>
-                    12 VK
+                <a className="link-opacity-100 text-primary link-opacity-25-hover" onClick={openDeregistrationModal}>
+                    {inspection.deregistrations.length} VK
                 </a>
             </Col>
         </OverlayTrigger>
     )
 }
 
-function DatePicker({ onChange, value, error }: { onChange: any, value: string | Date, error?: string }) {
-    const [showCalendar, setShowCalendar] = useState(false);
-    const refCalendar = useRef();
-
-    useEffect(() => {
-        const handler = (e: MouseEvent) => {
-            if (refCalendar.current && !(refCalendar.current as any).contains(e.target)) {
-                setShowCalendar(false);
-            }
-        }
-        document.addEventListener('mousedown', handler);
-        return () => {
-            document.removeEventListener('mousedown', handler);
-        }
-    });
-
-    function handleOnChangeCalendar(value: any, event: React.MouseEvent) {
-        setShowCalendar(false);
-        const date = new Date(value.getTime() - value.getTimezoneOffset() * 60000);
-        onChange(dayjs.utc(date).toDate());
-    }
-    function handleInputOnChange(val: any) {
-        if (/^\d{1,2}\.\d{1,2}\.\d{4}$/.test(val)) {
-            const mom = dayjs(val, ["DD.MM.YYYY", "D.M.YYYY"], true).utc(true);
-            if (mom.isValid()) {
-                return onChange(mom.toDate());
-            }
-        }
-        return onChange(val);
-    }
-
-    return (
-        <div className="position-relativ">
-            <div className="input-group flex">
-                <input
-                    type="string"
-                    name={"date"}
-                    className={`form-control ${error ? "isInvaild" : ""}`}
-                    onChange={(e) => handleInputOnChange(e.target.value)}
-                    value={(typeof value === "string") ? value : dayjs(value).format('DD.MM.YYYY')}
-                />
-                <button type="button" className="input-group-text" onClick={() => setShowCalendar(prev => !prev)}>
-                    <FontAwesomeIcon icon={faCalendar} />
-                </button>
-            </div>
-            {error &&
-                <div className="text-danger fs-7">
-                    {error}
-                </div>
-            }
-            <div style={{ display: "contents" }} >
-                <div className="position-absolute" ref={refCalendar as any} >
-                    {showCalendar &&
-                        <Calendar
-                            minDate={dayjs().toDate()}
-                            onChange={handleOnChangeCalendar}
-                            value={value} />
-                    }
-                </div>
-            </div>
-        </div>
-    )
-}
 
 type ButtonColumnPropType = {
     handleCancel: () => void;

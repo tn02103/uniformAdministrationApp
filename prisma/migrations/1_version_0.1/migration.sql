@@ -483,6 +483,7 @@ WHERE dt.dependent = 'uniform';
 CREATE TABLE "inspection"."deregistration" (
     "fk_cadet" TEXT NOT NULL,
     "fk_inspection" CHAR(36) NOT NULL,
+      "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "deregistration_pkey" PRIMARY KEY ("fk_cadet", "fk_inspection")
 );
 -- CreateTable
@@ -636,9 +637,9 @@ ADD CONSTRAINT uniform_deficiency_deficiency_id_fkey FOREIGN KEY (deficiency_id)
 ALTER TABLE ONLY inspection.uniform_deficiency
 ADD CONSTRAINT uniform_deficiency_fk_uniform_fkey FOREIGN KEY (fk_uniform) REFERENCES base.uniform(id) ON UPDATE RESTRICT ON DELETE CASCADE;
 ALTER TABLE "inspection"."deregistration"
-ADD CONSTRAINT "deregistration_fk_cadet_fkey" FOREIGN KEY ("fk_cadet") REFERENCES "base"."cadet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ADD CONSTRAINT "deregistration_fk_cadet_fkey" FOREIGN KEY ("fk_cadet") REFERENCES "base"."cadet"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE "inspection"."deregistration"
-ADD CONSTRAINT "deregistration_fk_inspection_fkey" FOREIGN KEY ("fk_inspection") REFERENCES "inspection"."inspection"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ADD CONSTRAINT "deregistration_fk_inspection_fkey" FOREIGN KEY ("fk_inspection") REFERENCES "inspection"."inspection"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE "base"."assosiation_configuration"
 ADD CONSTRAINT "assosiation_configuration_assosiationId_fkey" FOREIGN KEY ("assosiationId") REFERENCES "authentication"."assosiation"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 -- View: inspection.v_deficiency_by_cadet

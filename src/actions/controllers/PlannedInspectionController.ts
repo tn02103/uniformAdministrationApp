@@ -2,16 +2,20 @@
 
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
+import { cadetLableArgs } from "@/types/globalCadetTypes";
 import { PlannedInspectionFormShema, plannedInspectionFormShema } from "@/zod/inspection";
-import { z } from "zod";
-import { genericSAValidatiorV2, genericSAValidator } from "../validations";
 import { Prisma } from "@prisma/client";
-import { Fredericka_the_Great } from "next/font/google";
+import { TypeOf, z } from "zod";
+import { genericSAValidatiorV2, genericSAValidator } from "../validations";
 
 
 const plannedInspectionTypeArgs = Prisma.validator<Prisma.InspectionFindManyArgs>()({
     include: {
-        deregistrations: true,
+        deregistrations: {
+            include: {
+                cadet: cadetLableArgs
+            },
+        },
     }
 });
 export type PlannedInspectionType = Prisma.InspectionGetPayload<typeof plannedInspectionTypeArgs>;
@@ -137,3 +141,47 @@ export const deleteInspection = (props: string) => genericSAValidator(
     return plannedInspectionListQuery(assosiation, client);
 }));
 
+const updateCadetRegistrationPropShema = z.object({
+    cadetId: z.string().uuid(),
+    inspectionId: z.string().uuid(),
+    deregister: z.boolean(),
+});
+type updateCadetRegistrationPropShema = z.infer<typeof updateCadetRegistrationPropShema>
+export const updateCadetRegistrationForInspection = (props: updateCadetRegistrationPropShema) => genericSAValidator(
+    AuthRole.materialManager,
+    props,
+    updateCadetRegistrationPropShema,
+    { cadetId: props.cadetId, inspectionId: props.inspectionId }
+).then(([data,]) => prisma.$transaction(async (client) => {
+    console.log("🚀 ~ updateCadetRegistrationForInspection ~ data:", data)
+    const deregistration = await client.deregistration.findUnique({
+        where: {
+            fk_cadet_fk_inspection: {
+                fk_cadet: data.cadetId,
+                fk_inspection: data.inspectionId
+            }
+        }
+    });
+
+    if (data.deregister) {
+        if (deregistration) return true;
+
+        return client.deregistration.create({
+            data: {
+                fk_cadet: data.cadetId,
+                fk_inspection: data.inspectionId,
+            }
+        });
+    } else {
+        if (!deregistration) return true;
+
+        return client.deregistration.delete({
+            where: {
+                fk_cadet_fk_inspection: {
+                    fk_cadet: data.cadetId,
+                    fk_inspection: data.inspectionId,
+                }
+            }
+        });
+    }
+}))

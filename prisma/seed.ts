@@ -8,6 +8,7 @@ async function main() {
     ids.fk_assosiation = process.env.ASSOSIATION_ID ?? ids.fk_assosiation;
     const generator = new StaticDataGenerator(ids);
     const { fk_assosiation, sizeIds, sizelistIds } = ids;
+    const password = await bcrypt.hash(process.env.USER_PASSWORD, 15);
 
     await prismaClient.$transaction(async (prisma) => {
         await prisma.assosiation.create({
@@ -17,7 +18,6 @@ async function main() {
                 acronym: "vkme",
             }
         });
-        const password = await bcrypt.hash(process.env.USER_PASSWORD, 15);
         await prisma.user.createMany({
             data: [
                 { fk_assosiation, role: 4, username: 'admin', name: `VK Admin`, password, active: true },
@@ -95,7 +95,7 @@ async function main() {
         await prisma.uniformDeficiency.createMany({
             data: generator.uniformDeficiency(),
         });
-    });
+    }, {timeout: 15000});
 }
 
 main().then(() => prismaClient.$disconnect());

@@ -1,8 +1,10 @@
 "use client"
 
 import { logout } from "@/actions/auth";
+import { closeInspection, startInspection } from "@/actions/controllers/InspectionController";
 import { useInspectionState } from "@/dataFetcher/inspection";
 import { AuthRole } from "@/lib/AuthRoles";
+import dayjs from "@/lib/dayjs";
 import { useI18n } from "@/lib/locales/client";
 import { AuthItem } from "@/lib/storageTypes";
 import { faAddressCard, faAngleLeft, faAngleRight, faClipboardCheck, faGear, faPlus, faShirt, faUser } from "@fortawesome/free-solid-svg-icons";
@@ -14,14 +16,12 @@ import { useState } from "react";
 import { Col, Dropdown } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { mutate } from "swr";
+import { useModal } from "../modals/modalProvider";
 import Footer from "./Footer";
 import Header from "./Header";
 import NavButton from "./NavButton";
 import NavGroup from "./NavGroup";
 import NavLink from "./NavLink";
-import { startInspection } from "@/actions/controllers/InspectionController";
-import { useModal } from "../modals/modalProvider";
-import { regex } from "uuidv4";
 
 
 type SidebarPropType = {
@@ -53,13 +53,34 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
         });
     }
     function startStopInspection() {
-        if (inspectionState?.active) {
-            // TODO stop inspection
-        } else {
-            startInspection().then(() => {
-                toast.success("Uniformkontrolle erfolgreich gestartet");
-                mutate((key: any) => ((typeof key === "string") && /^(\/api\/inspection\/status)|(\/api\/cadet\/[\w\d-]+\/inspection)$/));
+        if (inspectionState?.active || inspectionState?.state === "unfinished") {
+            modal?.simpleFormModal({
+                header: 'Uniformkontrolle Beenden',
+                elementLabel: 'Endzeit:',
+                elementValidation: {},
+                defaultValue: {
+                    input: inspectionState.active ? dayjs().format('HH:mm') : "",
+                },
+                type: "time",
+                async save({ input }) {
+                    closeInspection({
+                        time: input,
+                        id: inspectionState.id,
+                    }).then(() => {
+                        toast.success('');
+                    }).catch((e) => {
+                        console.error(e);
+                    });
+                },
+                abort() { },
             });
+        } else {
+            if (inspectionState?.state === "planned") {
+                startInspection().then(() => {
+                    toast.success("Uniformkontrolle erfolgreich gestartet");
+                    mutate((key: any) => ((typeof key === "string") && /^(\/api\/inspection\/status)|(\/api\/cadet\/[\w\d-]+\/inspection)$/));
+                });
+            } 
         }
     }
 
@@ -143,15 +164,27 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                 setCollapsed={setCollapsed}
                                 testId="btn_inspectionGroup">
                                 <ul>
-                                    <NavButton
-                                        text={inspectionState?.active
-                                            ? t('sidebar.links.inspection.stop')
-                                            : t('sidebar.links.inspection.start')}
-                                        onClick={startStopInspection}
-                                        isRoute={false}
+                                    <NavLink
+                                        text={t('sidebar.links.inspection.inspection')}
+                                        href="/app/inspection"
+                                        isRoute={pathname.endsWith("/app/inspection")}
                                         level={2}
                                         collapsed={collapsed}
-                                        testId="btn_inspection" />
+                                        requiredRole={AuthRole.inspector}
+                                        testId="lnk_inspection" />
+                                    {(inspectionState?.active || inspectionState?.state === "unfinished" || inspectionState?.state === "planned") &&
+                                        <NavButton
+                                            text={inspectionState?.active
+                                                ? t('sidebar.links.inspection.stop')
+                                                : (inspectionState?.state === "planned")
+                                                    ? t('sidebar.links.inspection.start')
+                                                    : t('sidebar.links.inspection.unfinished')}
+                                            onClick={startStopInspection}
+                                            isRoute={false}
+                                            level={2}
+                                            collapsed={collapsed}
+                                            testId="btn_inspection" />
+                                    }
                                 </ul>
                             </NavGroup>
                             <NavGroup

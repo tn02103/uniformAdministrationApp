@@ -49,6 +49,11 @@ export type CadetInspection = {
 
 export type InspectionStatus = {
     active: false,
+    state: 'none' | 'planned' | 'finished'
+} | {
+    active: false,
+    state: 'unfinished',
+    id: string,
 } | {
     active: true,
     id: string,

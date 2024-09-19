@@ -51,9 +51,9 @@ const GeneralOverviewTable = ({
     }
     const filterCadet = (cadet: PersonnelListCadet, searchParam: string) => (
         !searchParam
-        || searchParam.length === 0)
+        || searchParam.length === 0
         || cadet.firstname.concat(cadet.lastname).toLowerCase().replaceAll(" ", "").includes(searchParam)
-        || cadet.lastname.concat(cadet.firstname).toLowerCase().replaceAll(" ", "").includes(searchParam)
+        || cadet.lastname.concat(cadet.firstname).toLowerCase().replaceAll(" ", "").includes(searchParam))
 
     return (
         <>

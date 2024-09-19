@@ -2,6 +2,7 @@
 import { getPlannedInspectionList } from "@/actions/controllers/PlannedInspectionController";
 import { Col, Row } from "react-bootstrap";
 import PlannedInspectionTable from "./plannedTable";
+import { getPersonnelNameList } from "@/actions/controllers/CadetController";
 
 
 export default async function InspectionAdministrationPage() {
@@ -14,7 +15,7 @@ export default async function InspectionAdministrationPage() {
             </div>
             <Row className="p-4 justify-content-center">
                 <Col xs={10}>
-                    <PlannedInspectionTable inspections={plannedInspections} />
+                    <PlannedInspectionTable inspections={plannedInspections} cadets={await getPersonnelNameList()} />
                 </Col>
             </Row>
         </div>

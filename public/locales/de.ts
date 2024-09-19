@@ -306,7 +306,9 @@ export default {
             inspection: {
                 group: "Inspektion",
                 start: "Starten",
+                unfinished: "Alte Kontrolle Beenden",
                 stop: "Stoppen",
+                inspection: "Verwaltung",
             },
             administration: {
                 group: "Administration",

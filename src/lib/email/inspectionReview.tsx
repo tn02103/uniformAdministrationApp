@@ -68,9 +68,6 @@ function InspectionReviewMailBody(inspreview: InspectionReview) {
                     <td>{inspreview.resolvedDeficiencies}</td>
                 </tr>
             </table>
-            <button>
-                TestButton
-            </button>
         </Html>
     )
 }

@@ -306,6 +306,8 @@ export default {
                 group: "inspection",
                 start: "start",
                 stop: "stop",
+                unfinished: "finishe old inspection",
+                inspection: "administration",
             },
             administration: {
                 group: "administration",

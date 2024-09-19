@@ -24,18 +24,44 @@ export const getDeficiencyTypeList = (): Promise<DeficiencyType[]> => genericSAV
     }));
 
 export const getInspectionState = (): Promise<InspectionStatus> => genericSAValidatiorV2(
-    AuthRole.user, true, {}
+    AuthRole.inspector, true, {}
 ).then(async ({ assosiation }): Promise<InspectionStatus> => unstable_cache(async (): Promise<InspectionStatus> => {
     const inspection = await prisma.inspection.findFirst({
         where: {
             fk_assosiation: assosiation,
             date: new Date(),
-            timeStart: { not: null },
-            timeEnd: null
         }
     });
+    const unfinished = await prisma.inspection.findFirst({
+        where: {
+            timeStart: { not: null },
+            timeEnd: null,
+            date: { lt: new Date() },
+        },
+    });
+    if (unfinished) {
+        return {
+            active: false,
+            state: 'unfinished',
+            id: unfinished.id
+        }
+    }
     if (!inspection) {
-        return { active: false };
+        return {
+            active: false,
+            state: 'none',
+        };
+    }
+    else if (!inspection.timeStart) {
+        return {
+            active: false,
+            state: 'planned',
+        };
+    } else if (inspection.timeEnd) {
+        return {
+            active: false,
+            state: 'finished',
+        };
     }
 
     const [inspectedCadets, activeCadets] = await prisma.$transaction([
