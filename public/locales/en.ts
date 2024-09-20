@@ -23,6 +23,8 @@ export default {
             create: "Create",
             addNew: "Add new",
             open: "Open",
+            reactivate: "Reaktivieren",
+            deactivate: "Deaktivieren",
             prevStep: "Back",
             nextStep: "Next",
             edit_item: "Edit {item}",
@@ -290,27 +292,29 @@ export default {
         }
     },
     sidebar: {
-        logout: "Logout",
+        logout: "logout",
+        changeLanguage: "change Language",
         links: {
-            cadetOverview: "Staff",
-            uniformOverview: "Uniform",
+            cadetOverview: "staff",
+            uniformOverview: "uniform",
             create: {
-                group: "Create",
-                cadet: "Person",
-                uniform: "Uniform",
+                group: "create",
+                cadet: "person",
+                uniform: "uniform",
             },
             inspection: {
-                group: "Inspection",
-                start: "Start",
-                stop: "Stop",
+                group: "inspection",
+                start: "start",
+                stop: "stop",
             },
             administration: {
-                group: "Administration",
-                uniform: "Uniform",
-                size: "Sizes",
-                material: "Materials",
+                group: "administration",
+                uniform: "uniform",
+                size: "sizes",
+                material: "materials",
+                deficiency: "deficiency"
             },
-            userOverview: "Accesses",
+            userOverview: "accesses",
         },
     },
     admin: {
@@ -349,6 +353,7 @@ export default {
                 }
             },
             size: {
+                header: "Sizes",
                 changePositionModal: {
                     header: "Change position for \"{size}\"",
                     label: "Position",
@@ -368,10 +373,10 @@ export default {
                 otherSizes: "other sizes",
                 selectedSizes: "selected sizes",
                 createModal: {
-                    header: "Create new size list",
+                    header: "create new size list",
                 },
                 renameModal: {
-                    header: "",
+                    header: "rename sizelist",
                 },
                 deleteWarning: {
                     header: "Delete size list \"{name}\"",
@@ -430,6 +435,37 @@ export default {
             },
             saved: "User updated successfuly",
             created: "User created successfuly",
+        },
+        deficiency: {
+            disabled: "disabled on: ",
+            header: {
+                page: "deficiency types",
+                name: "name",
+                dependent: "depends on",
+                relation: "relates to",
+                active: "active",
+                resolved: "resolved",
+            },
+            info: {
+                dependent: "Indicates what the defect directly depends on. For example, in the case of uniform parts, the defect always remains with the uniform part, even if the owner changes.",
+                relation: "Indicates whether a person’s defect indirectly relates to another entity. For example, in the case of the type 'Item too small' the defect would depend on the person but indirectly relate to a uniform part."
+            },
+            errors: {
+                deactivate: "Der Typ konnte nicht deaktiviert werden. Laden Sie die Seite neu und versuchen es erneut",
+                delete: "Das Löschen des Typs ist fehlgeschlagen. Versuchen Sie es nach einem relaod erneut",
+                reactivate: "Der Typ konnte nicht reaktiviert werden. Laden sie die Seite neu und versuchen es erneut",
+            },
+            entity: {
+                cadet: "person",
+                uniform: "uniform",
+                material: "material",
+            },
+            delete: {
+                header: "Typ {type} löschen",
+                'message#zero': "Soll der Typ wirklich gelöscht werden? Diese Aktion ist nicht wieder umkehrbar.",
+                'message#one': "Soll der Typ wirklich gelöscht werden? Hierbei wird der eine vorhandene Mangel ebenfalls gelöscht. Diese Aktion ist nicht wieder umkehrbar.",
+                'message#other': "Soll der Typ wirklich gelöscht werden? Hierbei werden alle {count} vorhandenen Mängel ebenfalls gelöscht. Diese Aktion ist nicht wieder umkehrbar.",
+            },
         },
     },
     modals: {
@@ -502,6 +538,16 @@ export default {
                 },
             },
             save: "Save",
+        },
+        changeLanguage: {
+            header: "Switch language",
+            label: "language",
+            options: {
+                de: "German",
+                en: "English",
+            },
+            cancel: "cancel", 
+            change: "change",
         },
     },
 } as const;

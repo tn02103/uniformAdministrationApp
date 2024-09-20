@@ -29,7 +29,7 @@ export const dataFixture = setup.extend<{}, { staticData: StaticData }>({
         await staticData.resetData();
 
         await use(staticData);
-        if (index > 0) {
+        if (index >= 0) {
             await staticData.cleanup.removeAssosiation();
         }
     }, { scope: "worker" }],

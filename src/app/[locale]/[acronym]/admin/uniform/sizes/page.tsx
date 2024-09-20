@@ -1,7 +1,7 @@
 import UniformSizeDBHandler from "@/actions/dbHandlers/UniformSizeDBHandler";
 import { Card, CardBody } from "@/components/card";
 import { prisma } from "@/lib/db";
-import { t } from "@/lib/test";
+import { getI18n } from "@/lib/locales/config";
 import { Col, Row } from "react-bootstrap";
 import UniformsizeConfigurationHeader from "./header";
 import SizeItem from "./sizeItem";
@@ -9,6 +9,7 @@ import SizeItem from "./sizeItem";
 export const dynamic = 'auto';
 
 export default async function UniformsizeConfigurationPage({ params }: { params: { acronym: string } }) {
+    const t = await getI18n();
     const dbHandler = new UniformSizeDBHandler();
     const assosiation = await prisma.assosiation.findFirstOrThrow({ where: { acronym: params.acronym } });
     const sizes = await dbHandler.getAllUniformSizesByAssosiation(assosiation.id);
@@ -28,7 +29,7 @@ export default async function UniformsizeConfigurationPage({ params }: { params:
     return (
         <div className="container-lg content-center bg-light rounded">
             <h1 className="text-center">
-                {t('title.admin.size')}
+                {t('admin.uniform.size.header')}
             </h1>
             <Row className="justify-content-center">
                 <Col xs={11} sm={12} md={10} lg={8} xl={12} >

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { Assosiation, Cadet, Material, MaterialGroup, Prisma, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@prisma/client";
+import { Assosiation, Cadet, DeficiencyType, Material, MaterialGroup, Prisma, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@prisma/client";
 import bcrypt from 'bcrypt';
 import StaticDataGenerator, { StaticDataIdType } from "./staticDataGenerator";
 import StaticDataIds from "./staticDataIds.json";
@@ -59,7 +59,7 @@ class StaticDataGetter {
     readonly materialTypes: Material[];
     readonly materialIssuedEntries: Prisma.MaterialIssuedCreateManyInput[];
 
-    readonly deficiencyTypes: Prisma.DeficiencyTypeCreateManyInput[];
+    readonly deficiencyTypes: DeficiencyType[];
     readonly deficiencies: Prisma.DeficiencyCreateManyInput[];
     readonly cadetDeficiencies: Prisma.CadetDeficiencyCreateManyInput[];
     readonly uniformDeficiencies: Prisma.UniformDeficiencyCreateManyInput[];
@@ -136,7 +136,7 @@ class StaticDataGetter {
         this.materialTypes = generator.material();
         this.materialIssuedEntries = generator.materialIssued();
 
-        this.deficiencyTypes = generator.deficiencyType() as Prisma.DeficiencyTypeCreateManyInput[];
+        this.deficiencyTypes = generator.deficiencyType() as DeficiencyType[];
         this.deficiencies = generator.deficiency();
         this.cadetDeficiencies = generator.cadetDeficiency();
         this.uniformDeficiencies = generator.uniformDeficiency();

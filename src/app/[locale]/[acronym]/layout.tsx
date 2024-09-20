@@ -38,10 +38,14 @@ const Layout = async ({
 
     const [typeList, assosiation, sizelists, inspectionState] = await Promise.all([
         getUniformTypeList(),
-        prisma.assosiation.findUniqueOrThrow({ where: { id: user.assosiation } }),
+        prisma.assosiation.findUnique({ where: { id: user.assosiation } }),
         getUniformSizelists(),
         getInspectionState(),
     ])
+
+    if (!assosiation) {
+        redirect(`/login`);
+    }
 
     return (
         <GlobalDataProvider

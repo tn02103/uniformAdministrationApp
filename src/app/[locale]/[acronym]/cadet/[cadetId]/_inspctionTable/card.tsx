@@ -93,7 +93,7 @@ export default function CadetInspectionCard() {
                     ...def,
                 }
 
-                if (type.dependend === "uniform" || type.relation === "uniform") {
+                if (type.dependent === "uniform" || type.relation === "uniform") {
                     deficiency.fk_uniform = (def as UniformDeficiency).fk_uniform;
                 }
 

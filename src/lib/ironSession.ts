@@ -8,7 +8,7 @@ const sessionOptions: SessionOptions = {
     cookieOptions: {
         secure: process.env.STAGE !== "DEV",
         maxAge: (3600 * 6),
-        sameSite: "Strict"
+        sameSite: "strict"
     }
 }
 

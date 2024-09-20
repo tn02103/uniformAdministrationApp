@@ -125,7 +125,7 @@ export const saveCadetInspection = async (data: FormType, cadetId: string, unifo
                 }
             });
             // -- prepare data
-            if (type.dependend === "uniform" || type.relation === "uniform") {
+            if (type.dependent === "uniform" || type.relation === "uniform") {
                 if (!def.fk_uniform) throw Error("Could not save new Deficiency fk_uniform is missing");
                 def.description = await dbHandler.getUniformLabel(def.fk_uniform, assosiation);
             }
@@ -139,7 +139,7 @@ export const saveCadetInspection = async (data: FormType, cadetId: string, unifo
 
             // -- save data
             const dbDef = await dbHandler.upsertDeficiency(def, username, assosiation, client as PrismaClient, inspection.id);
-            if (type.dependend === "uniform") {
+            if (type.dependent === "uniform") {
                 await dbHandler.upsertDeficiencyUniform(dbDef.id, def.fk_uniform!, client as PrismaClient);
             } else {
                 const data = {

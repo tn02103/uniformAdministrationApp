@@ -3,7 +3,7 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode } from "react";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { faPlus, faCircleUp, faCircleDown, faEdit, faTrash, faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faCircleUp, faCircleDown, faEdit, faTrash, faArrowUpRightFromSquare, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { propTypes } from "react-bootstrap/esm/Image";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
 import germanTranslation from "@/../public/locales/de";
@@ -63,7 +63,7 @@ const Variants: {
     [key in string]: {
         icon: IconProp,
         variant: string,
-        tooltipKey: "edit" | "create" | "moveUp" | "moveDown" | "open" | "delete",
+        tooltipKey: "edit" | "create" | "moveUp" | "moveDown" | "open" | "delete" | "reactivate" | "deactivate",
         testId: string,
     }
 } = {
@@ -103,7 +103,18 @@ const Variants: {
         tooltipKey: "delete",
         testId: "btn_delete"
     },
-
+    reactivate: {
+        icon: faEye,
+        variant: "outline-secondary",
+        tooltipKey: "reactivate",
+        testId: "btn_reactivate",
+    },
+    deactivate: {
+        icon: faEyeSlash,
+        variant: "outline-secondary",
+        tooltipKey: "deactivate",
+        testId: "btn_deactivate",
+    }
 }
 export const TooltipActionButton = ({ onClick, disabled, variantKey, testId, buttonClass, iconClass, buttonSize }: SimplePropType) => {
     const t = useScopedI18n("common.actions");
@@ -113,7 +124,6 @@ export const TooltipActionButton = ({ onClick, disabled, variantKey, testId, but
     return (
         <OverlayTrigger
             delay={{ show: 1000, hide: 150 }}
-            trigger={"focus"}
             overlay={
                 <Tooltip className="d-none d-lg-inline">{translation}</Tooltip>
             }

@@ -4,12 +4,19 @@ export const deficiencyTypeArgs = Prisma.validator<Prisma.DeficiencyTypeFindMany
     select: {
         id: true,
         name: true,
-        dependend: true,
+        dependent: true,
         relation: true,
     }
 });
 
 export type DeficiencyType = Prisma.DeficiencyTypeGetPayload<typeof deficiencyTypeArgs>;
+
+export interface AdminDeficiencyType extends DeficiencyType {
+    resolved: number;
+    active: number;
+    disabledUser: string;
+    disabledDate: Date;
+}
 
 export interface Deficiency {
     id?: string;
