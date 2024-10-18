@@ -1,6 +1,6 @@
 import { expect } from "playwright/test";
-import { PlannedInspectionTestComponent } from "../../pages/inspection/plannedInspection.component";
-import { adminTest } from "../../setup";
+import { PlannedInspectionTestComponent } from "../../_playwrightConfig/pages/inspection/plannedInspection.component";
+import { adminTest } from "../../_playwrightConfig/setup";
 import { prisma } from "@/lib/db";
 
 import dayjs from "@/lib/dayjs";

@@ -2,11 +2,11 @@ import german from "@/../public/locales/de";
 import { prisma } from "@/lib/db";
 import { format } from "date-fns";
 import { expect } from "playwright/test";
-import { DeficiencyTypeAdministrationPage } from "../../../pages/admin/inspection/DeficiencyTypeAdministration.page";
-import { adminTest } from "../../../setup";
-import { PopupComponent } from "../../../pages/popups/Popup.component";
-import { MessagePopupComponent } from "../../../pages/popups/MessagePopup.component";
-import { newDescriptionValidationTests } from "../../../global/testSets";
+import { DeficiencyTypeAdministrationPage } from "../../../_playwrightConfig/pages/admin/inspection/DeficiencyTypeAdministration.page";
+import { adminTest } from "../../../_playwrightConfig/setup";
+import { PopupComponent } from "../../../_playwrightConfig/pages/popups/Popup.component";
+import { MessagePopupComponent } from "../../../_playwrightConfig/pages/popups/MessagePopup.component";
+import { newDescriptionValidationTests } from "../../../_playwrightConfig/global/testSets";
 
 type Fixture = {
     typeComponent: DeficiencyTypeAdministrationPage

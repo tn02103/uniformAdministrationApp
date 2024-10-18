@@ -1,11 +1,11 @@
 import t from "@/../public/locales/de";
 import { UniformType } from "@prisma/client";
 import { expect } from "playwright/test";
-import { acronymValidationTest, newNameValidationTests, numberValidationTests } from "../../../global/testSets";
-import { GenerationListComponent } from "../../../pages/admin/uniform/GenerationList.component";
-import { TypeDetailComponent } from "../../../pages/admin/uniform/typeDetail.component";
-import { TypeListComponent } from "../../../pages/admin/uniform/typeList.component";
-import { adminTest } from "../../../setup";
+import { acronymValidationTest, newNameValidationTests, numberValidationTests } from "../../../_playwrightConfig/global/testSets";
+import { GenerationListComponent } from "../../../_playwrightConfig/pages/admin/uniform/GenerationList.component";
+import { TypeDetailComponent } from "../../../_playwrightConfig/pages/admin/uniform/typeDetail.component";
+import { TypeListComponent } from "../../../_playwrightConfig/pages/admin/uniform/typeList.component";
+import { adminTest } from "../../../_playwrightConfig/setup";
 
 type Fixture = {
     type: UniformType;

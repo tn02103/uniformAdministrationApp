@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/db";
 import { Uniform } from "@prisma/client";
 import { expect } from "playwright/test";
-import { adminTest } from "../../../setup";
-import { viewports } from "../../../global/helper";
-import { CadetUniformComponent, UniformItemRowComponent } from "../../../pages/cadet/cadetUniform.component";
+import { adminTest } from "../../../_playwrightConfig/setup";
+import { viewports } from "../../../_playwrightConfig/global/helper";
+import { CadetUniformComponent, UniformItemRowComponent } from "../../../_playwrightConfig/pages/cadet/cadetUniform.component";
 
 type Fixture = {
     uniform: Uniform;

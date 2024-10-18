@@ -1,10 +1,10 @@
 import { prisma } from "@/lib/db";
 import { Locator, expect } from "playwright/test";
 import t from "../../../../public/locales/de";
-import { numberValidationTests } from "../../../global/testSets";
-import { CadetMaterialComponent } from "../../../pages/cadet/cadetMaterial.component";
-import { PopupComponent } from "../../../pages/popups/Popup.component";
-import { adminTest } from "../../../setup";
+import { numberValidationTests } from "../../../_playwrightConfig/global/testSets";
+import { CadetMaterialComponent } from "../../../_playwrightConfig/pages/cadet/cadetMaterial.component";
+import { PopupComponent } from "../../../_playwrightConfig/pages/popups/Popup.component";
+import { adminTest } from "../../../_playwrightConfig/setup";
 
 type Fixture = {
     materialComponent: CadetMaterialComponent;

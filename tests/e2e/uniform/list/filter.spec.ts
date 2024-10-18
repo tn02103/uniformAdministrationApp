@@ -1,6 +1,6 @@
 import { expect } from "playwright/test";
-import { adminTest } from "../../../setup";
-import { UniformListPage } from "../../../pages/uniform/uniformList.page";
+import { adminTest } from "../../../_playwrightConfig/setup";
+import { UniformListPage } from "../../../_playwrightConfig/pages/uniform/uniformList.page";
 
 type Fixture = {
     uniformListPage: UniformListPage;

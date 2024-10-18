@@ -1,7 +1,7 @@
 import { expect } from "playwright/test";
-import { numberValidationTests } from "../../../global/testSets";
-import { CreateUniformPage } from "../../../pages/uniform/create/index.page";
-import { adminTest } from "../../../setup";
+import { numberValidationTests } from "../../../_playwrightConfig/global/testSets";
+import { CreateUniformPage } from "../../../_playwrightConfig/pages/uniform/create/index.page";
+import { adminTest } from "../../../_playwrightConfig/setup";
 
 type Fixture = {
     createPage: CreateUniformPage,

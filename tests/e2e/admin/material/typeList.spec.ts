@@ -1,11 +1,11 @@
 import { expect } from "playwright/test";
 import { prisma } from "../../../../src/lib/db";
-import { ValidationTestType, newDescriptionValidationTests, numberValidationTests } from "../../../global/testSets";
-import { MaterialGroupListComponent } from "../../../pages/admin/material/MaterialGroupList.component";
-import { MaterialListComponent } from "../../../pages/admin/material/MaterialList.component";
-import { DangerConfirmationModal } from "../../../pages/popups/DangerConfirmationPopup.component";
-import { EditMaterialPopupComponent } from "../../../pages/popups/EditMaterialPopup.component";
-import { adminTest } from "../../../setup";
+import { ValidationTestType, newDescriptionValidationTests, numberValidationTests } from "../../../_playwrightConfig/global/testSets";
+import { MaterialGroupListComponent } from "../../../_playwrightConfig/pages/admin/material/MaterialGroupList.component";
+import { MaterialListComponent } from "../../../_playwrightConfig/pages/admin/material/MaterialList.component";
+import { DangerConfirmationModal } from "../../../_playwrightConfig/pages/popups/DangerConfirmationPopup.component";
+import { EditMaterialPopupComponent } from "../../../_playwrightConfig/pages/popups/EditMaterialPopup.component";
+import { adminTest } from "../../../_playwrightConfig/setup";
 import german from "@/../public/locales/de";
 
 

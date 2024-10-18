@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/db";
 import { Deficiency } from "@prisma/client";
 import { expect } from "playwright/test";
-import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
-import { adminTest } from "../../../setup";
-import { insertSvenKellerFirstInspection, startInspection, svenKellerFirstInspectionData, svenKellerSecondInspectionData } from "../../../testData/dynamicData";
+import { CadetInspectionComponent } from "../../../_playwrightConfig/pages/cadet/cadetInspection.component";
+import { adminTest } from "../../../_playwrightConfig/setup";
+import { insertSvenKellerFirstInspection, startInspection, svenKellerFirstInspectionData, svenKellerSecondInspectionData } from "../../../_playwrightConfig/testData/dynamicData";
 
 type Fixture = {
     inspectionComponent: CadetInspectionComponent;

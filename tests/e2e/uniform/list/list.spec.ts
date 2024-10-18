@@ -1,7 +1,7 @@
 import { expect } from "playwright/test";
-import { adminTest, inspectorTest, userTest } from "../../../setup";
-import { viewports } from "../../../global/helper";
-import { UniformListPage } from "../../../pages/uniform/uniformList.page";
+import { adminTest, inspectorTest, userTest } from "../../../_playwrightConfig/setup";
+import { viewports } from "../../../_playwrightConfig/global/helper";
+import { UniformListPage } from "../../../_playwrightConfig/pages/uniform/uniformList.page";
 
 type Fixture = {
     uniformListPage: UniformListPage;

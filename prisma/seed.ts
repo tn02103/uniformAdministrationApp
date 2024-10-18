@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import StaticDataGenerator, { getStaticDataIds } from '../tests/testData/staticDataGenerator';
+import StaticDataGenerator, { getStaticDataIds } from '../tests/_playwrightConfig/testData/staticDataGenerator';
 const bcrypt = require('bcrypt');
 
 const prismaClient = new PrismaClient()

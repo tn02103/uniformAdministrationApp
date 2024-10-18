@@ -1,11 +1,11 @@
 import german from "@/../public/locales/de";
 import { expect } from "playwright/test";
 import { prisma } from "../../../../src/lib/db";
-import { newDescriptionValidationTests, numberValidationTests } from "../../../global/testSets";
-import { MaterialGroupDetailComponent } from "../../../pages/admin/material/MaterialGroupDetail.components";
-import { MaterialGroupListComponent } from "../../../pages/admin/material/MaterialGroupList.component";
-import { DangerConfirmationModal } from "../../../pages/popups/DangerConfirmationPopup.component";
-import { adminTest } from "../../../setup";
+import { newDescriptionValidationTests, numberValidationTests } from "../../../_playwrightConfig/global/testSets";
+import { MaterialGroupDetailComponent } from "../../../_playwrightConfig/pages/admin/material/MaterialGroupDetail.components";
+import { MaterialGroupListComponent } from "../../../_playwrightConfig/pages/admin/material/MaterialGroupList.component";
+import { DangerConfirmationModal } from "../../../_playwrightConfig/pages/popups/DangerConfirmationPopup.component";
+import { adminTest } from "../../../_playwrightConfig/setup";
 
 type Fixture = {
     groupListComponent: MaterialGroupListComponent;

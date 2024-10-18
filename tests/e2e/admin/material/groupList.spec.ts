@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/db";
 import { expect } from "playwright/test";
-import { MaterialGroupDetailComponent } from "../../../pages/admin/material/MaterialGroupDetail.components";
-import { MaterialGroupListComponent } from "../../../pages/admin/material/MaterialGroupList.component";
-import { adminTest } from "../../../setup";
+import { MaterialGroupDetailComponent } from "../../../_playwrightConfig/pages/admin/material/MaterialGroupDetail.components";
+import { MaterialGroupListComponent } from "../../../_playwrightConfig/pages/admin/material/MaterialGroupList.component";
+import { adminTest } from "../../../_playwrightConfig/setup";
 
 type Fixture = {
     groupListComponent: MaterialGroupListComponent;

@@ -1,5 +1,6 @@
-import { defineConfig, devices } from 'playwright/test';
-import { viewports } from './tests/global/helper';
+import { defineConfig, devices } from '@playwright/experimental-ct-react';
+import { viewports } from './tests/_playwrightConfig/global/helper';
+import path from 'path';
 
 /**
  * Read environment variables from file.
@@ -11,7 +12,7 @@ import { viewports } from './tests/global/helper';
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-    testDir: './tests',
+    testDir: './tests/e2e',
     /* Run tests in files in parallel */
     //fullyParallel: true,
     /* Fail the build on CI if you accidentally left test.only in the source code. */

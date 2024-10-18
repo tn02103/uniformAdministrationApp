@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/db";
 import { expect } from "playwright/test";
-import { adminTest, inspectorTest, userTest } from "../../../setup";
-import { defaultTextColor, getTextColor } from "../../../global/helper";
-import { CadetMaterialComponent } from "../../../pages/cadet/cadetMaterial.component";
+import { adminTest, inspectorTest, userTest } from "../../../_playwrightConfig/setup";
+import { defaultTextColor, getTextColor } from "../../../_playwrightConfig/global/helper";
+import { CadetMaterialComponent } from "../../../_playwrightConfig/pages/cadet/cadetMaterial.component";
 
 type Fixture = {
     materialComponent: CadetMaterialComponent;

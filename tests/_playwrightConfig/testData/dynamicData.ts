@@ -1,4 +1,4 @@
-import { prisma } from "../../src/lib/db";
+import { prisma } from "../../../src/lib/db";
 import StaticDataIds from "./staticDataIds.json";
 
 export const startInspection = async (i: number) =>

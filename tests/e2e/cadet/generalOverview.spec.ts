@@ -1,6 +1,6 @@
 import { expect } from "playwright/test";
-import { CadetListPage } from "../../pages/cadet/cadetList.page";
-import { adminTest, inspectorTest, userTest } from "../../setup";
+import { CadetListPage } from "../../_playwrightConfig/pages/cadet/cadetList.page";
+import { adminTest, inspectorTest, userTest } from "../../_playwrightConfig/setup";
 
 type Fixture = {
     cadetListPage: CadetListPage;

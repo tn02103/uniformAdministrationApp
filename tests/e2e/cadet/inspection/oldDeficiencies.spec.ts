@@ -1,9 +1,9 @@
 import { expect } from "playwright/test";
 import t from "../../../../public/locales/de";
-import { adminTest } from "../../../setup";
-import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
-import { removeInspection, startInspection } from "../../../testData/dynamicData";
-import { StaticData } from "../../../testData/staticDataLoader";
+import { adminTest } from "../../../_playwrightConfig/setup";
+import { CadetInspectionComponent } from "../../../_playwrightConfig/pages/cadet/cadetInspection.component";
+import { removeInspection, startInspection } from "../../../_playwrightConfig/testData/dynamicData";
+import { StaticData } from "../../../_playwrightConfig/testData/staticDataLoader";
 
 type Fixture = {
     inspectionComponent: CadetInspectionComponent;

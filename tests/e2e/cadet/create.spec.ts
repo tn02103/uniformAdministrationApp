@@ -1,10 +1,10 @@
 import { expect } from "playwright/test";
-import { CadetDataComponent } from "../../pages/cadet/cadetData.component";
-import { CadetDetailPage } from "../../pages/cadet/cadetDetail.page";
-import { adminTest } from "../../setup";
+import { CadetDataComponent } from "../../_playwrightConfig/pages/cadet/cadetData.component";
+import { CadetDetailPage } from "../../_playwrightConfig/pages/cadet/cadetDetail.page";
+import { adminTest } from "../../_playwrightConfig/setup";
 import germ from "@/../public/locales/de";
 import { prisma } from "@/lib/db";
-import { SidebarPage } from "../../pages/global/Sidebar.component";
+import { SidebarPage } from "../../_playwrightConfig/pages/global/Sidebar.component";
 import { experimental_taintObjectReference } from "react";
 
 type Fixture = {

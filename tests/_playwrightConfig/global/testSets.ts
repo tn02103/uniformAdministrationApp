@@ -1,4 +1,4 @@
-import { AuthRole } from "../../src/lib/AuthRoles";
+import { AuthRole } from "../../../src/lib/AuthRoles";
 
 export type ValidationTestType = {
     testValue: any;
