@@ -40,3 +40,8 @@ yarn-error.log*
 next-env.d.ts
 .env
 .vscode/
+node_modules/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+tests/_playwrightConfig/testData/staticDataIds.json
