@@ -9,6 +9,7 @@ import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
 import { redirect } from "next/navigation";
 import { ReactNode } from "react";
+import { AuthRole } from "@/lib/AuthRoles";
 
 export const dynamic = "force-dynamic";
 
@@ -41,7 +42,7 @@ const Layout = async ({
         getUniformTypeList(),
         prisma.assosiation.findUnique({ where: { id: user.assosiation } }),
         getUniformSizelists(),
-        getInspectionState(),
+        (user.role > AuthRole.user) ? getInspectionState() : null,
     ])
 
     if (!assosiation) {
