@@ -41,6 +41,7 @@ export default {
             changePosition: "Change position",
             changePassword: "Change password",
             ok: "Understood",
+            startInspection: "start inspection",
         },
         cadet: {
             cadet: "Person",
@@ -467,6 +468,18 @@ export default {
                 'message#zero': "Soll der Typ wirklich gelöscht werden? Diese Aktion ist nicht wieder umkehrbar.",
                 'message#one': "Soll der Typ wirklich gelöscht werden? Hierbei wird der eine vorhandene Mangel ebenfalls gelöscht. Diese Aktion ist nicht wieder umkehrbar.",
                 'message#other': "Soll der Typ wirklich gelöscht werden? Hierbei werden alle {count} vorhandenen Mängel ebenfalls gelöscht. Diese Aktion ist nicht wieder umkehrbar.",
+            },
+        },
+    },
+    inspection: {
+        planned: {
+            badge: {
+                new: "new",
+                planned: "planned",
+                active: "active",
+                finished: "finished",
+                unfinished: "unfinished",
+                expired: "expired",
             },
         },
     },

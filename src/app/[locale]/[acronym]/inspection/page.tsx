@@ -1,7 +1,7 @@
 
 import { getPlannedInspectionList } from "@/actions/controllers/PlannedInspectionController";
 import { Col, Row } from "react-bootstrap";
-import PlannedInspectionTable from "./plannedTable";
+import PlannedInspectionTable from "./_planned/plannedTable";
 import { getPersonnelNameList } from "@/actions/controllers/CadetController";
 
 

@@ -10,11 +10,11 @@ import { usePlannedInspectionList } from "@/dataFetcher/inspection";
 import dayjs from "@/lib/dayjs";
 import { PlannedInspectionFormShema, plannedInspectionFormShema } from "@/zod/inspection";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
-import { useEffect, useState } from "react";
-import { Badge, Button, Col, FormControl, OverlayTrigger, Row } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Button, Col, FormControl, OverlayTrigger, Row } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { InspectionBadge } from "./badgeCol";
 
 
 export default function PlannedInspectionTableRow({
@@ -127,10 +127,10 @@ export default function PlannedInspectionTableRow({
     }
 
     return (
-        <form onSubmit={handleSubmit(handleSave, (e) => console.log(e))}>
+        <form onSubmit={handleSubmit(handleSave)}>
             <Row className="bg-white p-2 border-buttom border-1" data-testid={`div_inspection_${inspection?.id ?? "new"}`}>
                 <Col xs={2}>
-                    <InspectionBadge inspection={inspection} handleStart={handleStart} />
+                    <InspectionBadge inspection={inspection}/>
                 </Col>
                 <Col> {(!editable && inspection)
                     ? <span data-testid="div_date">{dayjs(inspection.date).locale('de').format("dd DD.MM.YYYY")}</span>
@@ -165,7 +165,7 @@ export default function PlannedInspectionTableRow({
                     }
                 </Col>
                 {(!editable && inspection) &&
-                    <DeragistrationCol inspection={inspection} openDeregistrationModal={() => {console.log("open modal for", inspection); openDeregistrationModal!(inspection.id)}} />
+                    <DeragistrationCol inspection={inspection} openDeregistrationModal={() => openDeregistrationModal!(inspection.id)} />
                 }
                 <ButtonColumn editable={editable}
                     handleCancel={handleCancel}
@@ -182,35 +182,6 @@ export default function PlannedInspectionTableRow({
 }
 
 
-function InspectionBadge({ inspection, handleStart }: { inspection: PlannedInspectionType | null, handleStart: () => void }) {
-    if (!inspection) {
-        return <Badge pill bg="success" data-testid="lbl_new">Neu</Badge>
-    }
-
-    if (inspection.timeStart) {
-        if (inspection.timeEnd) {
-            return <Badge pill bg="success" data-testid="lbl_completed">Abgeschlossen</Badge>
-        }
-        if (dayjs().isSame(inspection?.date, "day")) {
-            return <Badge pill bg="success" data-testid="lbl_active">Aktiv</Badge>
-        } else {
-            return <Badge pill bg="warning" data-testid="lbl_notCompleted">Nicht abgeschlossen</Badge>
-        }
-    } else if (dayjs().isAfter(inspection?.date, "day")) {
-        return <Badge pill bg="danger" data-testid="lbl_expired">Abgelaufen</Badge>
-    }
-    /*if (dayjs().isSame(inspection.date, "day")) {
-        return (
-            <Button size="sm" className="rounded" variant="outline-primary" onClick={handleStart}>
-                Starten
-            </Button>
-        );
-    }*/
-
-    return (
-        <Badge pill bg="secondary" data-testid="lbl_planned">Geplannt</Badge>
-    )
-}
 
 function DeragistrationCol({ inspection, openDeregistrationModal }: { inspection: PlannedInspectionType, openDeregistrationModal: () => void }) {
 

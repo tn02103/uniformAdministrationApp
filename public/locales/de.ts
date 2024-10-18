@@ -471,6 +471,18 @@ export default {
             },
         },
     },
+    inspection: {
+        planned: {
+            badge: {
+                new: "Neu",
+                planned: "Geplant",
+                active: "Aktiv",
+                finished: "Abgeschlossen",
+                unfinished: "nicht Abgeschlossen",
+                expired: "Abgelaufen",
+            }
+        }
+    },
     modals: {
         messageModal: {
             uniform: {

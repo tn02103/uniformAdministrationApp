@@ -6,7 +6,6 @@ import { generateInspectionReviewXLSX } from "../fileCreations/inspectionReview"
 import { getMailAgend } from "./mailagend";
 
 export async function sendInspectionReviewMail(emails: string[], inspreview: InspectionReview) {
-console.log("🚀 ~ sendInspectionReviewMail ~ emails:", emails)
 
     const workbook = generateInspectionReviewXLSX(inspreview);
     const buffer = await workbook.xlsx.writeBuffer();

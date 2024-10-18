@@ -5,7 +5,7 @@ import { faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import dayjs from "dayjs";
 import { useState } from "react";
-import { Modal, ModalHeader, ModalBody, Button, Row, Col, ModalFooter, Form } from "react-bootstrap";
+import { Button, Col, Form, Modal, ModalBody, ModalFooter, ModalHeader, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
@@ -18,7 +18,6 @@ export default function DeregistrationModal({
     cadetList: CadetLabel[];
     onHide: () => void;
 }) {
-    console.log("🚀 ~ inspection:", inspection)
     const { register, watch, setValue } = useForm<{ searchParam: string }>();
     const [showList, setShowList] = useState(false);
     const { mutate } = usePlannedInspectionList();
@@ -35,14 +34,12 @@ export default function DeregistrationModal({
     }
 
     function handleDeregister(cadetId: string) {
-        console.log("🚀 ~ handleDeregister ~ cadetId:", cadetId)
         const deregister = !inspection.deregistrations.some(ci => ci.fk_cadet === cadetId)
         updateCadetRegistrationForInspection({
             cadetId,
             inspectionId: inspection.id,
             deregister
         }).then(() => {
-            console.log("test", deregister);
             mutate();
         }).catch(e => {
             console.error(e);
@@ -55,20 +52,26 @@ export default function DeregistrationModal({
     }
 
     return (
-        <Modal show={true} onHide={onHide}>
-            <ModalHeader closeButton className="text-center">
+        <Modal show={true} onHide={onHide} data-testid="div_popup">
+            <ModalHeader closeButton className="text-center" data-testid="div_header">
                 <h3 className="text-center">Abmeldungen</h3>
             </ModalHeader>
-            <ModalBody>
+            <ModalBody data-testid="div_body">
                 <div className="position-relativ w-auto">
                     <div className="input-group flex">
                         <Form.Control {...register('searchParam')} onFocus={() => setShowList(true)} onBlur={async () => { window.setTimeout(() => setShowList(false), 250) }} />
                     </div>
                     <div>
-                        <div style={{ display: "contents" }} className={showList ? "" : "d-none"} >
-                            <div className="position-absolute bg-white border border-1 d-flex flex-column w-50 " >
+                        <div style={{ display: "contents" }} className={showList ? "" : "d-none"} data-testid="div_select_cadetlist">
+                            <div className="position-absolute bg-white border border-1 d-flex flex-column w-50 "  >
                                 {cadetList.filter(filterFunktion).map((cadet) =>
-                                    <Button key={cadet.id} onClick={() => { console.log("Test23"); handleDeregister(cadet.id) }} variant="light" className="rounded-0 text-start row p-0 m-0">
+                                    <Button
+                                        key={cadet.id}
+                                        onClick={() => handleDeregister(cadet.id)}
+                                        variant="light"
+                                        className="rounded-0 text-start row p-0 m-0"
+                                        data-testid={`btn_select_cadet_${cadet.id}`}
+                                    >
                                         <Row className="p-2">
                                             <Col xs={1}>
                                                 {inspection.deregistrations.some(ci => ci.fk_cadet === cadet.id) &&
@@ -85,13 +88,13 @@ export default function DeregistrationModal({
                         </div>
                     </div>
                 </div>
-                <div>
+                <div data-testid="div_deregistered">
                     {inspection.deregistrations.map(({ cadet, date }) =>
-                        <div key={cadet.id} className=" border-top border-dark p-1 row">
-                            <Col>
+                        <div key={cadet.id} className=" border-top border-dark p-1 row" data-testid={`div_deregistered_${cadet.id}`}>
+                            <Col data-testid="div_name">
                                 {cadet.lastname} {cadet.firstname}
                             </Col>
-                            <Col>
+                            <Col data-testid="div_date">
                                 am {dayjs(date).format('DD.MM.YYYY')}
                             </Col>
                         </div>

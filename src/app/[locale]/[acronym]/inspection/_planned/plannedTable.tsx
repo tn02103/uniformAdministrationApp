@@ -1,20 +1,13 @@
 "use client";
 
-import { PlannedInspectionType, updateCadetRegistrationForInspection } from "@/actions/controllers/PlannedInspectionController";
+import { PlannedInspectionType } from "@/actions/controllers/PlannedInspectionController";
 import { TooltipActionButton } from "@/components/TooltipIconButton";
 import { usePlannedInspectionList } from "@/dataFetcher/inspection";
 import { CadetLabel } from "@/types/globalCadetTypes";
-import { faX } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
-import { Button, Col, Form, Modal, ModalBody, ModalFooter, ModalHeader, Row } from "react-bootstrap";
-import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
-import PlannedInspectionTableRow from "./plannedRow";
-import { format } from "path";
-import { formatDate } from "date-fns";
-import dayjs from "dayjs";
+import { Col, Row } from "react-bootstrap";
 import DeregistrationModal from "./deregistrationModal";
+import PlannedInspectionTableRow from "./plannedRow";
 
 export default function PlannedInspectionTable({
     ...props
@@ -23,12 +16,10 @@ export default function PlannedInspectionTable({
     cadets: CadetLabel[]
 }) {
     const [deragistrationModalInspectionId, setDeregistrationModalInspectionId] = useState<string | null>(null);
-    console.log("🚀 ~ deragistrationModalInspectionId:", deragistrationModalInspectionId)
-
+  
     const [showNewLine, setShowNewLine] = useState(false);
     const { inspectionList } = usePlannedInspectionList(props.inspections);
-    console.log("🚀 ~ inspectionList:", inspectionList)
-
+   
 
     return (
         <div data-testid="div_plannedTable">

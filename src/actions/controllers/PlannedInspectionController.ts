@@ -142,7 +142,7 @@ export const deleteInspection = (props: string) => genericSAValidator(
 }));
 
 const updateCadetRegistrationPropShema = z.object({
-    cadetId: z.string().uuid(),
+    cadetId: z.string().uuid(), 
     inspectionId: z.string().uuid(),
     deregister: z.boolean(),
 });
@@ -153,7 +153,6 @@ export const updateCadetRegistrationForInspection = (props: updateCadetRegistrat
     updateCadetRegistrationPropShema,
     { cadetId: props.cadetId, inspectionId: props.inspectionId }
 ).then(([data,]) => prisma.$transaction(async (client) => {
-    console.log("🚀 ~ updateCadetRegistrationForInspection ~ data:", data)
     const deregistration = await client.deregistration.findUnique({
         where: {
             fk_cadet_fk_inspection: {
