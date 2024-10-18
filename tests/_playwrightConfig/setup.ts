@@ -6,10 +6,6 @@ import { StaticDataIdType, getStaticDataIds } from './testData/staticDataGenerat
 const fs = require('fs');
 
 setup.use({ storageState: { cookies: [], origins: [] } });
-
-const uuidArray = (i: number) => Array(i).fill("").map(() => uuid());
-
-
 export type authenticatedFixture = { page: Page, staticData: StaticData }
 
 export const dataFixture = setup.extend<{}, { staticData: StaticData }>({
@@ -22,7 +18,7 @@ export const dataFixture = setup.extend<{}, { staticData: StaticData }>({
         while (index >= StaticDataIds.length) {
             const ids: StaticDataIdType[] = StaticDataIds;
             ids.push(getStaticDataIds());
-            await fs.writeFileSync('tests/testData/staticDataIds.json', JSON.stringify(ids, null, 4));
+            await fs.writeFileSync('tests/_playwrightConfig/testData/staticDataIds.json', JSON.stringify(ids, null, 4));
         }
 
         const staticData = new StaticData(index);

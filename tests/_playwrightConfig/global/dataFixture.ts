@@ -32,7 +32,6 @@ export const dataFixture = test.extend<{}, { staticData: StaticData }>({
                 deficiencyIds: uuidArray(14),
                 inspectionIds: uuidArray(2),
                 dynamic: {
-                    inspectionId: uuid(),
                     firstInspection: {
                         id: uuid(),
                         newDefIds: uuidArray(5),

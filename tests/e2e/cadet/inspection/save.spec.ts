@@ -29,10 +29,10 @@ const test = adminTest.extend<Fixture>({
         const inspectionComponent = new CadetInspectionComponent(page);
         await use(inspectionComponent);
     },
-    testData: async ({ staticData: { ids, index } }, use) => {
+    testData: async ({ staticData: { ids } }, use) => {
         const deficiencyIds = ids.deficiencyIds;
         use({
-            inspectionId: ids.dynamic.inspectionId,
+            inspectionId: ids.inspectionIds[4],
             unresolvedIds: [deficiencyIds[5], deficiencyIds[10], deficiencyIds[1], deficiencyIds[9], deficiencyIds[13]],
             newDefs: {
                 cadet: {

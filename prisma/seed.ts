@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import StaticDataGenerator, { getStaticDataIds } from '../tests/_playwrightConfig/testData/staticDataGenerator';
-const bcrypt = require('bcrypt');
+import bcrypt from "bcrypt";
 
 const prismaClient = new PrismaClient()
 async function main() {
@@ -8,7 +8,7 @@ async function main() {
     ids.fk_assosiation = process.env.ASSOSIATION_ID ?? ids.fk_assosiation;
     const generator = new StaticDataGenerator(ids);
     const { fk_assosiation, sizeIds, sizelistIds } = ids;
-    const password = await bcrypt.hash(process.env.USER_PASSWORD, 15);
+    const password = await bcrypt.hash(process.env.USER_PASSWORD as string, 15);
 
     await prismaClient.$transaction(async (prisma) => {
         await prisma.assosiation.create({
@@ -95,7 +95,7 @@ async function main() {
         await prisma.uniformDeficiency.createMany({
             data: generator.uniformDeficiency(),
         });
-    }, {timeout: 15000});
+    }, { timeout: 15000 });
 }
 
 main().then(() => prismaClient.$disconnect());

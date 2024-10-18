@@ -1,8 +1,9 @@
+import { prisma } from "@/lib/db";
 import { expect } from "playwright/test";
 import t from "../../../../public/locales/de";
-import { adminTest } from "../../../_playwrightConfig/setup";
 import { CadetInspectionComponent } from "../../../_playwrightConfig/pages/cadet/cadetInspection.component";
-import { removeInspection, startInspection } from "../../../_playwrightConfig/testData/dynamicData";
+import { adminTest } from "../../../_playwrightConfig/setup";
+import { startInspection } from "../../../_playwrightConfig/testData/dynamicData";
 import { StaticData } from "../../../_playwrightConfig/testData/staticDataLoader";
 
 type Fixture = {
@@ -31,12 +32,16 @@ const test = adminTest.extend<Fixture>({
 test.beforeAll(async ({ staticData: { index } }) => {
     await startInspection(index);
 });
-test.afterAll(async ({ staticData: { index } }) => {
-    await removeInspection(index);
+test.afterAll(async ({ staticData }) => {
+    staticData.cleanup.inspection();
 });
 
-test('E2E0265: validate step0 defList prev. Inspction', async ({ page, inspectionComponent, staticData: { index, resolvedIds, unresolvedIds } }) => {
-    await removeInspection(index);
+test('E2E0265: validate step0 defList prev. Inspction', async ({ page, inspectionComponent, staticData: { index, resolvedIds, unresolvedIds, ids } }) => {
+    await prisma.inspection.update({
+        where: { id: ids.inspectionIds[4] },
+        data: { timeStart: null }
+    });
+
     await page.reload();
     await expect(inspectionComponent.div_step0_loading).not.toBeVisible();
     await Promise.all([
@@ -63,7 +68,7 @@ test('E2E0265: validate step0 defList prev. Inspction', async ({ page, inspectio
     await expect(inspectionComponent.div_step0_loading).not.toBeVisible();
 });
 
-test('E2E0267: validate step1 devList prev. Inspection', async ({inspectionComponent, staticData: { unresolvedIds, resolvedIds } }) => {
+test('E2E0267: validate step1 devList prev. Inspection', async ({ inspectionComponent, staticData: { unresolvedIds, resolvedIds } }) => {
     await test.step('setup', async () => {
         await inspectionComponent.btn_inspect.click();
     });

@@ -1,29 +1,22 @@
 import { prisma } from "../../../src/lib/db";
 import StaticDataIds from "./staticDataIds.json";
 
-export const startInspection = async (i: number) =>
-    await prisma.inspection.create({
-        data: {
-            id: StaticDataIds[i].dynamic.inspectionId,
-            fk_assosiation: StaticDataIds[i].fk_assosiation,
-            name: "Test",
-            active: true,
-        },
+export async function startInspection(i: number) {
+    await prisma.inspection.update({
+        where: { id: StaticDataIds[i].inspectionIds[4] },
+        data: { timeStart: new Date() }
     });
-
-export const removeInspection = async (i: number) => {
-    const insp = await prisma.inspection.findUnique({ where: { id: StaticDataIds[i].dynamic.inspectionId } });
-    if (insp !== null) {
-        await prisma.inspection.delete({
-            where: { id: StaticDataIds[i].dynamic.inspectionId }
-        });
-    }
 }
-
+export async function finishInspection(i: number) {
+    await prisma.inspection.update({
+        where: { id: StaticDataIds[i].inspectionIds[4] },
+        data: { timeEnd: new Date() }
+    });
+}
 export const svenKellerFirstInspectionData = (i: number) => ({
     id: StaticDataIds[i].dynamic.firstInspection.id,
     fk_cadet: StaticDataIds[i].cadetIds[2],
-    fk_inspection: StaticDataIds[i].dynamic.inspectionId,
+    fk_inspection: StaticDataIds[i].inspectionIds[4],
     uniformComplete: false,
     newDeficiencyList: [
         {
@@ -33,7 +26,7 @@ export const svenKellerFirstInspectionData = (i: number) => ({
             comment: 'newDef cadet deficiency',
             userCreated: 'test3',
             userUpdated: 'test3',
-            fk_inspection_created: StaticDataIds[i].dynamic.inspectionId,
+            fk_inspection_created: StaticDataIds[i].inspectionIds[4],
             cadetDeficiency: {
                 create: {
                     fk_cadet: StaticDataIds[i].cadetIds[2]
@@ -47,7 +40,7 @@ export const svenKellerFirstInspectionData = (i: number) => ({
             comment: 'newDef uniform deficiency',
             userCreated: 'test3',
             userUpdated: 'test3',
-            fk_inspection_created: StaticDataIds[i].dynamic.inspectionId,
+            fk_inspection_created: StaticDataIds[i].inspectionIds[4],
             uniformDeficiency: {
                 create: {
                     fk_uniform: StaticDataIds[i].uniformIds[0][46],
@@ -61,7 +54,7 @@ export const svenKellerFirstInspectionData = (i: number) => ({
             comment: 'newDef cadetMaterial deficiency not issued',
             userCreated: 'test3',
             userUpdated: 'test3',
-            fk_inspection_created: StaticDataIds[i].dynamic.inspectionId,
+            fk_inspection_created: StaticDataIds[i].inspectionIds[4],
             cadetDeficiency: {
                 create: {
                     fk_cadet: StaticDataIds[i].cadetIds[2],
@@ -76,7 +69,7 @@ export const svenKellerFirstInspectionData = (i: number) => ({
             comment: 'newDef cadetMaterial deficiency issued',
             userCreated: 'test3',
             userUpdated: 'test3',
-            fk_inspection_created: StaticDataIds[i].dynamic.inspectionId,
+            fk_inspection_created: StaticDataIds[i].inspectionIds[4],
             cadetDeficiency: {
                 create: {
                     fk_cadet: StaticDataIds[i].cadetIds[2],
@@ -91,7 +84,7 @@ export const svenKellerFirstInspectionData = (i: number) => ({
             comment: 'newDef cadetUniform deficiency',
             userCreated: 'test3',
             userUpdated: 'test3',
-            fk_inspection_created: StaticDataIds[i].dynamic.inspectionId,
+            fk_inspection_created: StaticDataIds[i].inspectionIds[4],
             cadetDeficiency: {
                 create: {
                     fk_cadet: StaticDataIds[i].cadetIds[2],
@@ -137,7 +130,7 @@ export async function insertSvenKellerFirstInspection(i: number) {
         data: {
             dateResolved: new Date(),
             userResolved: 'test3',
-            fk_inspection_resolved: StaticDataIds[i].dynamic.inspectionId,
+            fk_inspection_resolved: StaticDataIds[i].inspectionIds[4],
         }
     });
 
@@ -146,7 +139,7 @@ export async function insertSvenKellerFirstInspection(i: number) {
             id: svenKellerFirstInspectionData(i).id,
             uniformComplete: svenKellerFirstInspectionData(i).uniformComplete,
             fk_cadet: svenKellerFirstInspectionData(i).fk_cadet,
-            fk_inspection: StaticDataIds[i].dynamic.inspectionId,
+            fk_inspection: StaticDataIds[i].inspectionIds[4],
             inspector: 'test3'
         }
     });

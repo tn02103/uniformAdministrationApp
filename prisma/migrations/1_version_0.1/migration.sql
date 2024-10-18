@@ -444,8 +444,7 @@ CREATE TABLE inspection.inspection (
     date date DEFAULT CURRENT_TIMESTAMP NOT NULL,
     name TEXT NOT NULL,
     time_start TIME without time zone,
-    time_end TIME without time zone,
-    active boolean DEFAULT true NOT NULL
+    time_end TIME without time zone
 );
 ALTER TABLE inspection.inspection OWNER TO "uniformServer";
 INSERT INTO inspection.inspection
@@ -454,8 +453,7 @@ SELECT id,
     date,
     null,
     null,
-    null,
-    active
+    null
 FROM public."Inspection";
 --
 -- TOC entry 236 (class 1259 OID 21344)

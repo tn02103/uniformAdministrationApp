@@ -260,7 +260,6 @@ model Inspection {
     name               String
     timeStart          DateTime?         @map("time_start") @db.Time()
     timeEnd            DateTime?         @map("time_end") @db.Time()
-    active             Boolean           @default(true)
     cadetInspection    CadetInspection[]
     deficiencyCreated  Deficiency[]      @relation("Deficiency_InspectionCreated")
     deficiencyResolved Deficiency[]      @relation("Deficiency_InspectionResolved")

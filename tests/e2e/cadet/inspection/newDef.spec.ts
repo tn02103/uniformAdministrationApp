@@ -6,7 +6,7 @@ import { CadetInspectionComponent } from "../../../_playwrightConfig/pages/cadet
 import { CadetUniformComponent } from "../../../_playwrightConfig/pages/cadet/cadetUniform.component";
 import { SimpleFormPopupComponent } from "../../../_playwrightConfig/pages/popups/SimpleFormPopup.component";
 import { adminTest } from "../../../_playwrightConfig/setup";
-import { removeInspection, startInspection } from "../../../_playwrightConfig/testData/dynamicData";
+import { startInspection } from "../../../_playwrightConfig/testData/dynamicData";
 
 type Fixture = {
     inspectionComponent: CadetInspectionComponent;
@@ -23,8 +23,8 @@ const test = adminTest.extend<Fixture>({
 test.beforeAll(async ({ staticData: { index } }) => {
     await startInspection(index);
 });
-test.afterAll(async ({ staticData: { index } }) => {
-    await removeInspection(index);
+test.afterAll(async ({ staticData }) => {
+    staticData.cleanup.inspection();
 });
 
 test('E2E0271: validate add and remove newDef', async ({ page, inspectionComponent }) => {

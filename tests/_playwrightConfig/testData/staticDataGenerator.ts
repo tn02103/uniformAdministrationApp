@@ -23,7 +23,6 @@ export type StaticDataIdType = {
     uniformIds: string[][];
     uniformTypeIds: string[];
     dynamic: {
-        inspectionId: string;
         firstInspection: {
             id: string;
             newDefIds: string[];
@@ -68,10 +67,10 @@ export default class StaticDataGenerator {
     }
 
     assosiationConfiguration() {
-        return  {
+        return {
             assosiationId: this.ids.fk_assosiation,
             sendEmailAfterInspection: true,
-            inspectionReportEmails: [process.env.EMAI_ADRESS_TESTS??''],
+            inspectionReportEmails: [process.env.EMAI_ADRESS_TESTS ?? ''],
         } satisfies AssosiationConfiguration
     }
 
@@ -588,12 +587,11 @@ export default class StaticDataGenerator {
     }
     inspection() {
         return [
-            { id: this.ids.inspectionIds[0], fk_assosiation: this.ids.fk_assosiation, name: "Quartal 1", date: new Date('2023-06-18T00:00:00.000Z'), timeStart: dayjs.utc("07:58:30", 'HH:mm:ss').toDate(), timeEnd: dayjs.utc("13:06:34", "HH:mm:ss").toDate(), active: false },
-            { id: this.ids.inspectionIds[1], fk_assosiation: this.ids.fk_assosiation, name: "Quartal 2", date: new Date('2023-08-13T00:00:00.000Z'), timeStart: dayjs.utc("07:58:30", 'HH:mm:ss').toDate(), timeEnd: dayjs.utc("13:06:34", "HH:mm:ss").toDate(), active: false },
-            { id: this.ids.inspectionIds[2], fk_assosiation: this.ids.fk_assosiation, name: "expired", date: new Date('2023-08-17T00:00:00.000Z'), timeStart: null, timeEnd: null, active: false },
-            { id: this.ids.inspectionIds[3], fk_assosiation: this.ids.fk_assosiation, name: "unfinished", date: dayjs().subtract(10, "day").toDate(), timeStart: dayjs.utc("08:58:30", 'HH:mm:ss').toDate(), timeEnd: null, active: false },
-            { id: this.ids.inspectionIds[4], fk_assosiation: this.ids.fk_assosiation, name: "today", date: dayjs.utc().toDate(), timeStart: null, timeEnd: null, active: false },
-            { id: this.ids.inspectionIds[5], fk_assosiation: this.ids.fk_assosiation, name: "planned", date: dayjs().add(10, "day").toDate(), timeStart: null, timeEnd: null, active: false },
+            { id: this.ids.inspectionIds[0], fk_assosiation: this.ids.fk_assosiation, name: "Quartal 1", date: new Date('2023-06-18T00:00:00.000Z'), timeStart: dayjs.utc("07:58:30", 'HH:mm:ss').toDate(), timeEnd: dayjs.utc("13:06:34", "HH:mm:ss").toDate() },
+            { id: this.ids.inspectionIds[1], fk_assosiation: this.ids.fk_assosiation, name: "Quartal 2", date: new Date('2023-08-13T00:00:00.000Z'), timeStart: dayjs.utc("07:58:30", 'HH:mm:ss').toDate(), timeEnd: dayjs.utc("13:06:34", "HH:mm:ss").toDate() },
+            { id: this.ids.inspectionIds[2], fk_assosiation: this.ids.fk_assosiation, name: "expired", date: new Date('2023-08-17T00:00:00.000Z'), timeStart: null, timeEnd: null },
+            { id: this.ids.inspectionIds[3], fk_assosiation: this.ids.fk_assosiation, name: "planned", date: dayjs().add(10, "day").toDate(), timeStart: null, timeEnd: null },
+            { id: this.ids.inspectionIds[4], fk_assosiation: this.ids.fk_assosiation, name: "today", date: dayjs.utc().toDate(), timeStart: null, timeEnd: null },
         ] satisfies Inspection[];
     }
     cadetInspection() {

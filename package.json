@@ -6,9 +6,8 @@
         "dev": "next dev -p 3021",
         "build": "prisma generate && next build",
         "start": "next start -p 3021",
-        "test": "playwright test",
-        "lint": "next lint",
-        "test-ct": "playwright test -c playwright-ct.config.ts"
+        "test:e2e": "playwright test",
+        "lint": "next lint"
     },
     "prisma": {
         "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"

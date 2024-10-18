@@ -1,7 +1,7 @@
+import { prisma } from "@/lib/db";
 import { expect } from "playwright/test";
 import { PlannedInspectionTestComponent } from "../../_playwrightConfig/pages/inspection/plannedInspection.component";
 import { adminTest } from "../../_playwrightConfig/setup";
-import { prisma } from "@/lib/db";
 
 import dayjs from "@/lib/dayjs";
 
@@ -13,20 +13,19 @@ const test = adminTest.extend<Fixture>({
 });
 test.beforeEach(({ page }) => page.goto('/de/app/inspection'));
 
-test('validate Data', async ({ page, plannedComponent, staticData: { data, ids } }) => {
-    await test.step('sortOrder', async () => {
-        await expect(plannedComponent.div_row_list).toHaveCount(4);
+test.describe('validate Data', async () => {
+    test('sortOrder', async ({ plannedComponent, staticData: { ids } }) => {
+        await expect(plannedComponent.div_row_list).toHaveCount(3);
         await expect(plannedComponent.div_row_list.nth(0)).toHaveAttribute('data-testid', `div_inspection_${ids.inspectionIds[2]}`);
-        await expect(plannedComponent.div_row_list.nth(1)).toHaveAttribute('data-testid', `div_inspection_${ids.inspectionIds[3]}`);
-        await expect(plannedComponent.div_row_list.nth(2)).toHaveAttribute('data-testid', `div_inspection_${ids.inspectionIds[4]}`);
-        await expect(plannedComponent.div_row_list.nth(3)).toHaveAttribute('data-testid', `div_inspection_${ids.inspectionIds[5]}`);
+        await expect(plannedComponent.div_row_list.nth(1)).toHaveAttribute('data-testid', `div_inspection_${ids.inspectionIds[4]}`);
+        await expect(plannedComponent.div_row_list.nth(2)).toHaveAttribute('data-testid', `div_inspection_${ids.inspectionIds[3]}`);
     });
-    await test.step('expired', async () => {
+    test('expired', async ({ plannedComponent, staticData: { data } }) => {
         const inspection = data.inspections[2];
         const rowComponent = plannedComponent.getRowComponent(inspection.id);
         await Promise.all([
             expect.soft(rowComponent.div_name).toHaveText(inspection.name),
-            expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.yyyy')),
+            expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.YYYY')),
 
             expect.soft(rowComponent.lbl_expired).toBeVisible(),
             expect.soft(rowComponent.lbl_active).not.toBeVisible(),
@@ -43,13 +42,20 @@ test('validate Data', async ({ page, plannedComponent, staticData: { data, ids }
             expect.soft(rowComponent.btn_complete).not.toBeVisible(),
         ]);
     });
-    await test.step('not Finished', async () => {
-        const inspection = data.inspections[3];
+    test('not Finished', async ({ page, plannedComponent, staticData: { data } }) => {
+        const inspection = data.inspections[1];
+        await test.step('prepare Data', async () => {
+            await prisma.inspection.update({
+                where: { id: inspection.id },
+                data: { timeEnd: null }
+            });
+            await page.reload();
+        });
         const rowComponent = plannedComponent.getRowComponent(inspection.id);
 
         await Promise.all([
             expect.soft(rowComponent.div_name).toHaveText(inspection.name),
-            expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.yyyy')),
+            expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.YYYY')),
 
             expect.soft(rowComponent.lbl_expired).not.toBeVisible(),
             expect.soft(rowComponent.lbl_active).not.toBeVisible(),
@@ -66,12 +72,12 @@ test('validate Data', async ({ page, plannedComponent, staticData: { data, ids }
             expect.soft(rowComponent.btn_complete).toBeVisible(),
         ]);
     });
-    await test.step('planned', async () => {
-        const inspection = data.inspections[5];
+    test('planned', async ({ plannedComponent, staticData: { data } }) => {
+        const inspection = data.inspections[3];
         const rowComponent = plannedComponent.getRowComponent(inspection.id);
         await Promise.all([
             expect.soft(rowComponent.div_name).toHaveText(inspection.name),
-            expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.yyyy')),
+            expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.YYYY')),
 
             expect.soft(rowComponent.lbl_expired).not.toBeVisible(),
             expect.soft(rowComponent.lbl_active).not.toBeVisible(),
@@ -88,12 +94,12 @@ test('validate Data', async ({ page, plannedComponent, staticData: { data, ids }
             expect.soft(rowComponent.btn_complete).not.toBeVisible(),
         ]);
     });
-    await test.step('todays', async () => {
+    test('todays', async ({ plannedComponent, staticData: { data } }) => {
         const inspection = data.inspections[4];
         const rowComponent = plannedComponent.getRowComponent(inspection.id);
         await Promise.all([
             expect.soft(rowComponent.div_name).toHaveText(inspection.name),
-            expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.yyyy')),
+            expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.YYYY')),
 
             expect.soft(rowComponent.lbl_expired).not.toBeVisible(),
             expect.soft(rowComponent.lbl_active).not.toBeVisible(),
@@ -111,7 +117,7 @@ test('validate Data', async ({ page, plannedComponent, staticData: { data, ids }
 
         ]);
     });
-    await test.step('active', async () => {
+    test('active', async ({ page, plannedComponent, staticData: { data } }) => {
         const inspection = data.inspections[4];
         const rowComponent = plannedComponent.getRowComponent(inspection.id);
 
@@ -125,7 +131,7 @@ test('validate Data', async ({ page, plannedComponent, staticData: { data, ids }
 
         await Promise.all([
             expect.soft(rowComponent.div_name).toHaveText(inspection.name),
-            expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.yyyy')),
+            expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.YYYY')),
 
             expect.soft(rowComponent.lbl_expired).not.toBeVisible(),
             expect.soft(rowComponent.lbl_active).toBeVisible(),
@@ -142,7 +148,7 @@ test('validate Data', async ({ page, plannedComponent, staticData: { data, ids }
             expect.soft(rowComponent.btn_complete).toBeVisible(),
         ]);
     });
-    await test.step('completed', async () => {
+    test('completed', async ({ page, plannedComponent, staticData: { data } }) => {
         const inspection = data.inspections[4];
         const rowComponent = plannedComponent.getRowComponent(inspection.id);
 
@@ -161,7 +167,7 @@ test('validate Data', async ({ page, plannedComponent, staticData: { data, ids }
 
         await Promise.all([
             expect.soft(rowComponent.div_name).toHaveText(inspection.name),
-            expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.yyyy')),
+            expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.YYYY')),
 
             expect.soft(rowComponent.lbl_expired).not.toBeVisible(),
             expect.soft(rowComponent.lbl_active).not.toBeVisible(),
