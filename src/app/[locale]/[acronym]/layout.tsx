@@ -2,7 +2,7 @@ import { getInspectionState } from "@/actions/controllers/InspectionController";
 import { getUniformTypeList } from "@/actions/controllers/UniformConfigController";
 import { getUniformSizelists } from "@/actions/controllers/UniformSizeController";
 import GlobalDataProvider from "@/components/globalDataProvider";
-import Sidebar from "@/components/navigation/Sidebar";
+import Overlay from "@/components/navigation/Overlay";
 import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
 import { redirect } from "next/navigation";
@@ -57,10 +57,10 @@ const Layout = async ({
         >
             <div>
                 {modal}
-                <div className="container-fluid p-0 m-0 p-md-auto">
-                    <Sidebar assosiation={assosiation} username={user.name} >
+                <div className="d-flex flex-column overflow-hidden">
+                    <Overlay association={assosiation} username={user.name} >
                         {children}
-                    </Sidebar>
+                    </Overlay>
                 </div>
             </div>
         </GlobalDataProvider>

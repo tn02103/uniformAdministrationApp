@@ -295,6 +295,7 @@ export default {
         logout: "Abmelden",
         changeLanguage: "Sprache wechseln",
         links: {
+            home: "Startseite",
             cadetOverview: "Personal",
             uniformOverview: "Uniform",
             create: {

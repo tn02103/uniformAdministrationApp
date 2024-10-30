@@ -1,77 +1,150 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { ReactElement } from "react";
+import { AuthRole } from "../../lib/AuthRoles";
 import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ReactElement, useEffect, useState } from "react";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { AuthRole } from "../../lib/AuthRoles";
+import { useState } from "react";
 import { useGlobalData } from "../globalDataProvider";
+import { ButtonGroup, Dropdown } from "react-bootstrap";
+import DropdownButton from 'react-bootstrap/DropdownButton';
 
-type NavGroupProps = {
-    title: string;
+type BaseNavGroupProps = {
+    text: string;
     icon: IconProp;
     childSelected: boolean;
-    collapsed: boolean;
     requiredRole: AuthRole;
-    setCollapsed: (value: boolean) => void;
-    children: ReactElement;
+    children: ReactElement | ReactElement[];
     testId: string;
 }
-const NavGroup = ({ title, icon, childSelected, collapsed, setCollapsed, children, requiredRole, testId }: NavGroupProps) => {
-    const [showChildren, setShowChilden] = useState<boolean>();
+
+export const NavGroup = ({
+    text,
+    icon,
+    childSelected,
+    requiredRole,
+    testId,
+    children
+}: BaseNavGroupProps) => {
+    const [isExpanded, setIsExpanded] = useState<boolean>(false);
     const { userRole } = useGlobalData();
 
-    useEffect(() => {
-        if (collapsed && showChildren) {
-            setShowChilden(false);
-        }
-    }, [collapsed])
-
-    function onHeaderClicked() {
-        if (showChildren) {
-            setShowChilden(false);
-        } else {
-            setShowChilden(true);
-
-            if (collapsed) {
-                setCollapsed(false);
-            }
-        }
-    }
-
-    if (userRole < requiredRole) {
-        return <></>;
-    }
+    if (userRole < requiredRole) return null;
 
     return (
-        <OverlayTrigger
-            show={collapsed ? undefined : false}
-            delay={{ show: 250, hide: 0 }}
-            overlay={
-                <Tooltip>{title}</Tooltip>
-            }
-        >
-            <li className="list-group-item rounded my-1 w-100">
-                <button data-testid={testId}
-                    className={`btn text-white d-flex  w-100 m-0 px-2 py-1 fs-6 
-                        ${collapsed ? "justify-content-center" : "justify-content-between"}
-                        ${childSelected ? (showChildren ? "fw-bold" : "fw-bold bg-primary") : ""}`}
-                    onClick={onHeaderClicked}>
-                    <div>
-                        <FontAwesomeIcon icon={icon} width={20} size="xl" className={` ${collapsed ? "" : "pe-2"}`} />
-                        {!collapsed && title}
-                    </div>
-                    <div>
-                        {!collapsed &&
-                            < FontAwesomeIcon icon={showChildren ? faAngleUp : faAngleDown} size="sm" className="align-end me-1 ms-3" />
-                        }
-                    </div>
-                </button>
-                {showChildren &&
-                    children
-                }
-            </li>
-        </OverlayTrigger>
+        <li className={`list-group-item w-100 position-relative mb-3`} style={{ height: 'auto' }}>
+            <div
+                data-testid={testId}
+                className="d-flex align-items-center justify-content-center w-100 ps-3 pe-3 py-1 overlay-button-effects rounded"
+                onClick={() => setIsExpanded(prev => !prev)}
+                aria-expanded={isExpanded}
+                style={{ cursor: 'pointer', height: 26 }}
+            >
+                <div className="d-flex align-items-center h-100">
+                    <FontAwesomeIcon
+                        icon={icon}
+                        className="me-3"
+                    />
+                    <h3 className="mb-0 h-100 lh-1">{text}</h3>
+                </div>
+                <FontAwesomeIcon
+                    icon={isExpanded ? faAngleUp : faAngleDown}
+                    className="ms-auto"
+                />
+                {childSelected && !isExpanded && (
+                    <div className="w-100 h-100 bg-white opacity-25 position-absolute top-0 start-0 rounded" />
+                )}
+            </div>
+            {isExpanded && (
+                <ul className="flex-column w-100 ps-4 pt-3">
+                    {children}
+                </ul>
+            )}
+        </li>
     );
-}
+};
 
-export default NavGroup;
+export const NavGroupSmall = ({
+    text,
+    icon,
+    childSelected,
+    requiredRole,
+    testId,
+    children
+}: BaseNavGroupProps) => {
+    const { userRole } = useGlobalData();
+
+    if (userRole < requiredRole) return null;
+
+    return (
+        <>        
+            <style>
+                {`
+                    .dropdown-no-arrow::after {
+                        display: none !important;
+                    }
+                `}
+            </style>
+            <Dropdown className="list-group-item overlay-button-effects rounded w-100 position-relative mb-3" style={{ height: 42, zIndex: 1050 }} drop='end'>
+                <Dropdown.Toggle
+                    data-testid={testId}
+                    className="d-flex align-items-center justify-content-center bg-transparent border-0 h-100 w-100 dropdown-no-arrow"
+                    style={{ cursor: 'pointer' }}
+                >
+                    <div className="d-flex flex-column align-items-center justify-content-center h-100 w-100" style={{ gap: '2px' }}>
+                        {icon && <FontAwesomeIcon icon={icon} />}
+                        <h4 className='m-0'>{text}</h4>
+                    </div>
+                    {childSelected && (
+                        <div className="w-100 h-100 bg-white opacity-25 position-absolute top-0 start-0 rounded" />
+                    )}
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="p-0" renderOnMount popperConfig={{ strategy: 'fixed' }}>
+                    {children}
+                </Dropdown.Menu>
+            </Dropdown>
+        </>
+    );
+};
+
+export const NavGroupSmallText = ({ // TODO Spacing is VERY slightly off. ANNOYING!
+    text,
+    icon,
+    childSelected,
+    requiredRole,
+    testId,
+    children
+}: BaseNavGroupProps) => {
+    const { userRole } = useGlobalData();
+
+    if (userRole < requiredRole) return null;
+
+    return (
+        <>
+            <style>
+                {`
+                    .dropdown-no-arrow::after {
+                        display: none !important;
+                    }
+                `}
+            </style>
+            <Dropdown className="list-group-item overlay-button-effects rounded h-100 px-3 flex-fill position-relative" drop='up-centered'>
+                <Dropdown.Toggle
+                    data-testid={testId}
+                    className="d-flex align-items-center justify-content-center h-100 w-100 bg-transparent border-0 p-0 dropdown-no-arrow"
+                    style={{ cursor: 'pointer' }}
+                >   
+                    <div className="d-flex flex-column align-items-center justify-content-evenly h-100 w-100" style={{ paddingTop: '2px', gap: '3px' }}>
+                        {icon && <FontAwesomeIcon icon={icon} />}
+                        <h4 className="lh-1 m-0" style={{ fontSize: 15 }}>{text}</h4>
+                    </div>
+                    {childSelected && (
+                        <div className="w-100 h-100 bg-white opacity-25 position-absolute top-0 start-0 rounded" />
+                    )}
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="w-100 p-0" renderOnMount popperConfig={{ strategy: 'fixed' }}>
+                    {children}
+                </Dropdown.Menu>
+            </Dropdown>
+        </>
+    );
+};

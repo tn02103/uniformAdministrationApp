@@ -1,0 +1,10 @@
+.overlay svg {
+    height: 1.8rem;
+    width: 1.8rem;
+    aspect-ratio: 1/1;
+    vertical-align: middle;
+}
+
+.overlay-button-effects:hover {
+    background-color: rgba(255, 255, 255, .1);
+}
