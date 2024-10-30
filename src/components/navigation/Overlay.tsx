@@ -77,7 +77,7 @@ const Overlay = ({ association, username, children }: SidebarPropType) => {
             text: t('sidebar.links.home'),
             href: "/app",
             requiredRole: AuthRole.user,
-            testId: "lnk_cadet"
+            testId: "" // TODO Create test
         },
         {
             type: 'link',
