@@ -189,7 +189,11 @@ const Overlay = ({ association, username, children }: SidebarPropType) => {
                     {children}
                     <div className="overlay bg-blue text-white d-flex flex-grow-1 justify-content-between fixed-bottom p-3" style={{ overflowX: 'scroll', height: 60 }}>
                         <Nav navData={navData} screenType={screenType} />
+                        <div className="border-start border-black border-opacity-25 d-flex justify-content-center align-items-center mx-3 ps-5 pe-4  h-100">
+                            <FontAwesomeIcon icon={faSignOut} onClick={handleLogout} cursor="pointer" />
+                        </div>
                     </div>
+                    
                 </div>
             )}
     
