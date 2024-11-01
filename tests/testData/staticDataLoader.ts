@@ -2,7 +2,7 @@ import { prisma } from "@/lib/db";
 import { Assosiation, Cadet, DeficiencyType, Material, MaterialGroup, Prisma, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@prisma/client";
 import bcrypt from 'bcrypt';
 import StaticDataGenerator, { StaticDataIdType } from "./staticDataGenerator";
-import StaticDataIds from "./staticDataIds.json";
+const fs = require('fs');
 
 export class StaticData {
 
@@ -14,12 +14,21 @@ export class StaticData {
     readonly cleanup: StaticDataCleanup;
 
     constructor(i: number) {
-        if (i > StaticDataIds.length) throw Error("");
+
+        if (!fs.existsSync('./tests/testData/staticDataIds.json')) {
+            throw Error('No Static Ids found');
+        }
+        const staticDataIds = require('./staticDataIds.json');
+        if (i > staticDataIds.length) throw Error("ID-Array not long enough");
+        if (!(staticDataIds satisfies StaticDataIdType[])) {
+            throw Error('Ids do not satify the type');
+        }
+
 
         this.index = i;
-        this.fk_assosiation = StaticDataIds[i].fk_assosiation;
-        this.ids = StaticDataIds[i];
-        this.data = new StaticDataGetter(i);
+        this.ids = staticDataIds[i];
+        this.fk_assosiation = staticDataIds[i].fk_assosiation;
+        this.data = new StaticDataGetter(i, this.ids);
         this.fill = new StaticDataLoader(this.data);
         this.cleanup = new StaticDataCleanup(this.data, this.fill)
     }
@@ -67,9 +76,9 @@ class StaticDataGetter {
     readonly inspections: Prisma.InspectionCreateManyInput[];
     readonly cadetInspections: Prisma.CadetInspectionCreateManyInput[];
 
-    constructor(i: number) {
+    constructor(i: number, ids: StaticDataIdType) {
         this.index = i;
-        const { fk_assosiation, userIds, cadetIds, sizeIds, sizelistIds, uniformTypeIds, uniformGenerationIds, uniformIds, materialGroupIds, materialIds, deficiencyIds, deficiencyTypeIds, inspectionIds } = StaticDataIds[i];
+        const { fk_assosiation, userIds, sizeIds, sizelistIds } = ids;
         this.userIds = userIds;
 
         this.assosiation = {
@@ -79,7 +88,7 @@ class StaticDataGetter {
             useBeta: false,
         };
 
-        const generator = new StaticDataGenerator(StaticDataIds[i]);
+        const generator = new StaticDataGenerator(ids);
 
         this.cadets = generator.cadet();
         this.uniformSizes = generator.uniformSize();

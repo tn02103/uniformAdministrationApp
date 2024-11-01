@@ -1,14 +1,10 @@
 import { Page, test as setup } from 'playwright/test';
 import { v4 as uuid } from "uuid";
-import StaticDataIds from './testData/staticDataIds.json';
 import { StaticData } from './testData/staticDataLoader';
 import { StaticDataIdType, getStaticDataIds } from './testData/staticDataGenerator';
 const fs = require('fs');
 
 setup.use({ storageState: { cookies: [], origins: [] } });
-
-const uuidArray = (i: number) => Array(i).fill("").map(() => uuid());
-
 
 export type authenticatedFixture = { page: Page, staticData: StaticData }
 
@@ -19,10 +15,17 @@ export const dataFixture = setup.extend<{}, { staticData: StaticData }>({
 
         const index = Number(i);
 
-        while (index >= StaticDataIds.length) {
-            const ids: StaticDataIdType[] = StaticDataIds;
+        
+        let staticDataIds = [];
+        if (!fs.existsSync('./tests/testData/staticDataIds.json')) {
+            fs.writeFileSync('./tests/testData/staticDataIds.json', '[]');
+        }
+        staticDataIds = require('./testData/staticDataIds.json');
+
+        while (index >= staticDataIds.length) {
+            const ids: StaticDataIdType[] = staticDataIds;
             ids.push(getStaticDataIds());
-            await fs.writeFileSync('tests/testData/staticDataIds.json', JSON.stringify(ids, null, 4));
+            await fs.writeFileSync('./Tests/testData/staticDataIds.json', JSON.stringify(ids, null, 4));
         }
 
         const staticData = new StaticData(index);
