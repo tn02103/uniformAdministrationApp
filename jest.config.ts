@@ -6,7 +6,13 @@ import type { Config } from 'jest';
  */
 
 const customJestConfig: Config = {
+    collectCoverage: true,
     coverageProvider: 'v8',
+    coverageReporters: ['html-spa','text'],
+    coveragePathIgnorePatterns: [
+        "**/_playwrightConfig/**",
+        "**/_jestConfig/**"
+    ],
     maxWorkers: 1,
     projects: [
         "<rootDir>/jest.frontend.config.ts",
@@ -22,4 +28,3 @@ const customJestConfig: Config = {
 };
 
 module.exports = customJestConfig;
-
