@@ -6,6 +6,8 @@ import { prisma } from "@/lib/db";
 import { plannedInspectionFormShema } from "@/zod/inspection";
 import { z } from "zod";
 import { PlannedInspectionDBQuery } from "./_dbQuerys";
+import SaveDataException from "@/errors/SaveDataException";
+import dayjs from "dayjs";
 
 const dbQuery = new PlannedInspectionDBQuery();
 
@@ -29,20 +31,22 @@ export const updatePlannedInspection = (props: propSchema) => genericSAValidator
     propSchema,
     { inspectionId: props.id }
 ).then(async ([{ id, data }, { assosiation }]) => prisma.$transaction(async (client) => {
-    const nameDuplication = await client.inspection.findFirst({
+    const inspList = await client.inspection.findMany({
         where: {
             fk_assosiation: assosiation,
-            name: data.name,
             id: { not: id }
         }
     });
-    if (nameDuplication) {
-        throw new Error('Could not save Inspection. Name is duplicated')
+    if (inspList.find(i => i.name === data.name)) {
+        throw new SaveDataException('Could not save Inspection. Name is duplicated');
+    }
+    if (inspList.find(i => dayjs(i.date).isSame(data.date, "day"))) {
+        throw new SaveDataException('Could not save Inspection. Date is duplicated');
     }
 
     const inspection = await client.inspection.findUnique({ where: { id } });
     if (inspection?.timeStart) {
-        throw new Error('Name and Date of Inspections that have been started can not be updated');
+        throw new SaveDataException('Could not save Inspection. Inspection started');
     }
     await client.inspection.update({
         where: { id },
