@@ -95,6 +95,9 @@ async function main() {
         await prisma.uniformDeficiency.createMany({
             data: generator.uniformDeficiency(),
         });
+        await prisma.deregistration.createMany({
+            data: generator.deregistrations(),
+        });
     }, { timeout: 15000 });
 }
 

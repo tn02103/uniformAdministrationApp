@@ -66,6 +66,7 @@ class StaticDataGetter {
 
     readonly inspections: Inspection[];
     readonly cadetInspections: Prisma.CadetInspectionCreateManyInput[];
+    readonly deregistrations: Prisma.DeregistrationCreateManyInput[];
 
     constructor(i: number) {
         this.index = i;
@@ -143,6 +144,7 @@ class StaticDataGetter {
 
         this.inspections = generator.inspection();
         this.cadetInspections = generator.cadetInspection();
+        this.deregistrations = generator.deregistrations();
     }
 
     async users() {
@@ -175,6 +177,7 @@ class StaticDataCleanup {
 
         await this.loader.inspection();
         await this.loader.cadetInspections();
+        await this.loader.deregistration();
         await this.loader.deficiencyTypes();
         await this.loader.deficiencies();
         await this.loader.deficienciesCadet();
@@ -366,6 +369,7 @@ class StaticDataLoader {
         await this.materialIssued();
 
         await this.inspection();
+        await this.deregistration();
         await this.deficiencyTypes();
         await this.deficiencies();
         await this.deficienciesUniform();
@@ -475,6 +479,11 @@ class StaticDataLoader {
     async cadetInspections() {
         await prisma.cadetInspection.createMany({
             data: this.data.cadetInspections,
+        });
+    }
+    async deregistration() {
+        await prisma.deregistration.createMany({
+            data: this.data.deregistrations,
         });
     }
 }

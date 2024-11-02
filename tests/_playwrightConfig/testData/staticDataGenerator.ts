@@ -1,4 +1,4 @@
-import { AssosiationConfiguration, Inspection, Prisma } from "@prisma/client";
+import { AssosiationConfiguration, Deregistration, Inspection, Prisma } from "@prisma/client";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -607,5 +607,14 @@ export default class StaticDataGenerator {
             { fk_inspection: this.ids.inspectionIds[1], fk_cadet: this.ids.cadetIds[7], uniformComplete: true, inspector: 'test2' },
             { fk_inspection: this.ids.inspectionIds[1], fk_cadet: this.ids.cadetIds[9], uniformComplete: false, inspector: 'test2' },
         ];
+    }
+    deregistrations() {
+        return [
+            { fk_cadet: this.ids.cadetIds[6], fk_inspection: this.ids.inspectionIds[4], date: dayjs().subtract(5, "day").toDate() },
+            { fk_cadet: this.ids.cadetIds[8], fk_inspection: this.ids.inspectionIds[4], date: dayjs().subtract(5, "day").toDate() },
+            { fk_cadet: this.ids.cadetIds[9], fk_inspection: this.ids.inspectionIds[4], date: dayjs().subtract(5, "day").toDate() },
+            { fk_cadet: this.ids.cadetIds[6], fk_inspection: this.ids.inspectionIds[2], date: dayjs().subtract(5, "day").toDate() },
+            { fk_cadet: this.ids.cadetIds[8], fk_inspection: this.ids.inspectionIds[2], date: dayjs().subtract(5, "day").toDate() },
+        ] satisfies Deregistration[]
     }
 }
