@@ -7,6 +7,7 @@
         "build": "prisma generate && next build",
         "start": "next start -p 3021",
         "test:e2e": "playwright test",
+        "test:jest": "jest",
         "lint": "next lint"
     },
     "prisma": {

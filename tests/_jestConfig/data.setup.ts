@@ -1,5 +1,3 @@
-
-
 import { AuthRole } from "@/lib/AuthRoles";
 import { StaticData } from "../_playwrightConfig/testData/staticDataLoader";
 
@@ -7,6 +5,11 @@ const staticData = new StaticData(0);
 
 beforeAll(async () => {
     await staticData.resetData();
+});
+afterAll(async () => {
+    try {
+        await staticData.cleanup.removeAssosiation();
+    } catch (e) { };
 });
 jest.mock('@/lib/ironSession', () => ({
     getIronSession: () => ({

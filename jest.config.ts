@@ -6,6 +6,8 @@ import type { Config } from 'jest';
  */
 
 const customJestConfig: Config = {
+    coverageProvider: 'v8',
+    maxWorkers: 1,
     projects: [
         "<rootDir>/jest.frontend.config.ts",
         "<rootDir>/jest.backend.config.ts",

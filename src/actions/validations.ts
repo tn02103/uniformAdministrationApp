@@ -90,7 +90,6 @@ export const genericSAValidator = async <T>(
 
     const zodResult = shema.safeParse(data);
     if (!zodResult.success) {
-        
         throw zodResult.error;
     }
 
