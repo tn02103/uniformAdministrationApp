@@ -7,6 +7,8 @@ import { PlannedInspectionFormShema, plannedInspectionFormShema } from "@/zod/in
 import { Prisma } from "@prisma/client";
 import { TypeOf, z } from "zod";
 import { genericSAValidatiorV2, genericSAValidator } from "../validations";
+import SaveDataException from "@/errors/SaveDataException";
+import dayjs from "dayjs";
 
 
 const plannedInspectionTypeArgs = Prisma.validator<Prisma.InspectionFindManyArgs>()({
@@ -55,14 +57,19 @@ export const createInspection = (props: PlannedInspectionFormShema) => genericSA
     plannedInspectionFormShema,
     {}
 ).then(async ([data, user]) => prisma.$transaction(async (client) => {
-    const insp = await client.inspection.findFirst({
+    const inspList = await client.inspection.findMany({
         where: {
-            name: data.name,
             fk_assosiation: user.assosiation,
         }
     });
-    if (insp) {
-        throw new Error('Could not create inspection. Name already in use');
+    if (inspList.find(i => i.name === data.name)) {
+        throw new SaveDataException('Could not create inspection. Name already in use');
+    }
+    if (inspList.find(i => dayjs(i.date).isSame(data.date, "day"))) {
+        throw new SaveDataException("Could not create Inspection. Date already in use");
+    }
+    if (dayjs().isAfter(data.date, "day")) {
+        throw new SaveDataException("Could not create Inspection. Date is in the past");
     }
 
     await client.inspection.create({
@@ -142,7 +149,7 @@ export const deleteInspection = (props: string) => genericSAValidator(
 }));
 
 const updateCadetRegistrationPropShema = z.object({
-    cadetId: z.string().uuid(), 
+    cadetId: z.string().uuid(),
     inspectionId: z.string().uuid(),
     deregister: z.boolean(),
 });

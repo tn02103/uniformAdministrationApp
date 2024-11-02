@@ -90,7 +90,8 @@ export const genericSAValidator = async <T>(
 
     const zodResult = shema.safeParse(data);
     if (!zodResult.success) {
-        throw new Error('Zod validation failed: ' + zodResult.error.message);
+        
+        throw zodResult.error;
     }
 
     await assosiationValidatior(assosiationValidations, user.assosiation);

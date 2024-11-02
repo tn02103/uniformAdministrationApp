@@ -45,3 +45,4 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 tests/_playwrightConfig/testData/staticDataIds.json
+test-report.html
