@@ -1,6 +1,5 @@
 "use client";
 
-import { PlannedInspectionType } from "@/actions/controllers/PlannedInspectionController";
 import { TooltipActionButton } from "@/components/TooltipIconButton";
 import { usePlannedInspectionList } from "@/dataFetcher/inspection";
 import { CadetLabel } from "@/types/globalCadetTypes";
@@ -8,6 +7,7 @@ import { useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import DeregistrationModal from "./deregistrationModal";
 import PlannedInspectionTableRow from "./plannedRow";
+import { PlannedInspectionType } from "@/types/inspectionTypes";
 
 export default function PlannedInspectionTable({
     ...props

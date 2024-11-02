@@ -1,8 +1,8 @@
 
-import { getPlannedInspectionList } from "@/actions/controllers/PlannedInspectionController";
 import { Col, Row } from "react-bootstrap";
 import PlannedInspectionTable from "./_planned/plannedTable";
 import { getPersonnelNameList } from "@/actions/controllers/CadetController";
+import { getPlannedInspectionList } from "@/dal/inspection/planned/get";
 
 
 export default async function InspectionAdministrationPage() {

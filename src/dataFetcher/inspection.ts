@@ -1,6 +1,7 @@
 
 import { getInspectionState } from "@/actions/controllers/InspectionController";
-import { getPlannedInspectionList, PlannedInspectionType } from "@/actions/controllers/PlannedInspectionController";
+import { getPlannedInspectionList } from "@/dal/inspection/planned/get";
+import { PlannedInspectionType } from "@/types/inspectionTypes";
 import useSWR from "swr";
 
 export function useInspectionState() {

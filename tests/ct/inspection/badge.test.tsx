@@ -1,6 +1,6 @@
 import german from "@/../public/locales/de";
-import { PlannedInspectionType } from "@/actions/controllers/PlannedInspectionController";
 import { InspectionBadge } from "@/app/[locale]/[acronym]/inspection/_planned/badgeCol";
+import { PlannedInspectionType } from "@/types/inspectionTypes";
 import '@testing-library/jest-dom';
 import { render, screen } from "@testing-library/react";
 import dayjs from "dayjs";

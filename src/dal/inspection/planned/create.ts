@@ -35,9 +35,6 @@ export const createInspection = (props: PlannedInspectionFormShema) => genericSA
     if (inspList.find(i => dayjs(i.date).isSame(data.date, "day"))) {
         throw new SaveDataException("Could not create Inspection. Date already in use");
     }
-    if (dayjs().isAfter(data.date, "day")) {
-        throw new SaveDataException("Could not create Inspection. Date is in the past");
-    }
 
     await client.inspection.create({
         data: {

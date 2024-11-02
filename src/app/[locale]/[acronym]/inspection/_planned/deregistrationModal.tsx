@@ -1,6 +1,7 @@
-import { PlannedInspectionType, updateCadetRegistrationForInspection } from "@/actions/controllers/PlannedInspectionController";
+import { updateCadetRegistrationForInspection } from "@/dal/inspection/planned/updateDeregistration";
 import { usePlannedInspectionList } from "@/dataFetcher/inspection";
 import { CadetLabel } from "@/types/globalCadetTypes";
+import { PlannedInspectionType } from "@/types/inspectionTypes";
 import { faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import dayjs from "dayjs";

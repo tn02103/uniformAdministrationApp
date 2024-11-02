@@ -1,7 +1,6 @@
 "use client"
 
 import { closeInspection, startInspection } from "@/actions/controllers/InspectionController";
-import { createInspection, deleteInspection, PlannedInspectionType, updatePlannedInspection } from "@/actions/controllers/PlannedInspectionController";
 import DatePicker from "@/components/datePicker/datePicker";
 import ErrorMessage from "@/components/errorMessage";
 import { useModal } from "@/components/modals/modalProvider";
@@ -15,6 +14,10 @@ import { Button, Col, FormControl, OverlayTrigger, Row } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { InspectionBadge } from "./badgeCol";
+import { updatePlannedInspection } from "@/dal/inspection/planned/update";
+import { createInspection } from "@/dal/inspection/planned/create";
+import { deleteInspection } from "@/dal/inspection/planned/delete";
+import { PlannedInspectionType } from "@/types/inspectionTypes";
 
 
 export default function PlannedInspectionTableRow({

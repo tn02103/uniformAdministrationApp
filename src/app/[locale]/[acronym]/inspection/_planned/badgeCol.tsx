@@ -1,7 +1,7 @@
 "use client";
 
-import { PlannedInspectionType } from "@/actions/controllers/PlannedInspectionController";
 import { useScopedI18n } from "@/lib/locales/client";
+import { PlannedInspectionType } from "@/types/inspectionTypes";
 import dayjs from "dayjs";
 import { Badge } from "react-bootstrap";
 
