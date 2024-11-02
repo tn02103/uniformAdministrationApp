@@ -23,7 +23,6 @@ export const getDeficiencyTypeList = (): Promise<DeficiencyType[]> => genericSAV
         },
     }));
 
-
 export const getInspectedCadetIdList = () => genericSAValidatiorV2(AuthRole.inspector, true, {})
     .then(async ({ assosiation }) =>
         prisma.cadetInspection.findMany({
