@@ -56,10 +56,12 @@ export type InspectionStatus = {
     id: string,
 } | {
     active: true,
+    state: 'active',
     id: string,
     date: Date,
     inspectedCadets: number,
     activeCadets: number,
+    deregistrations: number,
 }
 
 export type InspectionInformation = {

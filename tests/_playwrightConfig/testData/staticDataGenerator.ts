@@ -611,9 +611,11 @@ export default class StaticDataGenerator {
     deregistrations() {
         return [
             { fk_cadet: this.ids.cadetIds[6], fk_inspection: this.ids.inspectionIds[4], date: dayjs().subtract(5, "day").toDate() },
+            { fk_cadet: this.ids.cadetIds[7], fk_inspection: this.ids.inspectionIds[4], date: dayjs().subtract(5, "day").toDate() },
             { fk_cadet: this.ids.cadetIds[8], fk_inspection: this.ids.inspectionIds[4], date: dayjs().subtract(5, "day").toDate() },
             { fk_cadet: this.ids.cadetIds[9], fk_inspection: this.ids.inspectionIds[4], date: dayjs().subtract(5, "day").toDate() },
             { fk_cadet: this.ids.cadetIds[6], fk_inspection: this.ids.inspectionIds[2], date: dayjs().subtract(5, "day").toDate() },
+            { fk_cadet: this.ids.cadetIds[7], fk_inspection: this.ids.inspectionIds[2], date: dayjs().subtract(5, "day").toDate() },
             { fk_cadet: this.ids.cadetIds[8], fk_inspection: this.ids.inspectionIds[2], date: dayjs().subtract(5, "day").toDate() },
         ] satisfies Deregistration[]
     }

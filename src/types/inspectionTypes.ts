@@ -2,12 +2,25 @@ import { Prisma } from "@prisma/client";
 import { cadetLableArgs } from "./globalCadetTypes";
 
 export const plannedInspectionTypeArgs = Prisma.validator<Prisma.InspectionFindManyArgs>()({
-    include: {
+    select: {
+        id: true,
+        name: true,
+        date: true,
+        timeEnd: true,
+        timeStart: true,
         deregistrations: {
-            include: {
-                cadet: cadetLableArgs
+            where: {
+                cadet: {
+                    recdelete: null,
+                    active: true,
+                }
             },
-        },
+            include: {
+                cadet: {
+                    ...cadetLableArgs,
+                }
+            }
+        }
     }
 });
 export type PlannedInspectionType = Prisma.InspectionGetPayload<typeof plannedInspectionTypeArgs>;
