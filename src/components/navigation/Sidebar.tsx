@@ -1,7 +1,7 @@
 "use client"
 
 import { logout } from "@/actions/auth";
-import { closeInspection, startInspection } from "@/actions/controllers/InspectionController";
+import { closeInspection } from "@/actions/controllers/InspectionController";
 import { useInspectionState } from "@/dataFetcher/inspection";
 import { AuthRole } from "@/lib/AuthRoles";
 import dayjs from "@/lib/dayjs";
@@ -22,6 +22,7 @@ import Header from "./Header";
 import NavButton from "./NavButton";
 import NavGroup from "./NavGroup";
 import NavLink from "./NavLink";
+import { startInspection } from "@/dal/inspection/start";
 
 
 type SidebarPropType = {

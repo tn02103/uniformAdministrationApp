@@ -1,6 +1,6 @@
 "use client"
 
-import { closeInspection, startInspection } from "@/actions/controllers/InspectionController";
+import { closeInspection } from "@/actions/controllers/InspectionController";
 import DatePicker from "@/components/datePicker/datePicker";
 import ErrorMessage from "@/components/errorMessage";
 import { useModal } from "@/components/modals/modalProvider";
@@ -18,6 +18,7 @@ import { updatePlannedInspection } from "@/dal/inspection/planned/update";
 import { createInspection } from "@/dal/inspection/planned/create";
 import { deleteInspection } from "@/dal/inspection/planned/delete";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
+import { startInspection } from "@/dal/inspection/start";
 
 
 export default function PlannedInspectionTableRow({

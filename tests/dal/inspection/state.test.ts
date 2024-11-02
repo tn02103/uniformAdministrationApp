@@ -4,9 +4,7 @@ import { prisma } from "@/lib/db";
 import dayjs from "dayjs";
 
 
-jest.mock('next/cache', () => ({
-    unstable_cache: jest.fn((fun: () => any, ...x: any) => fun),
-}));
+
 
 const staticData = new StaticData(0);
 const inspectionIds = staticData.ids.inspectionIds;

@@ -1,11 +1,11 @@
 "use server";
 
 import { AuthRole } from "@/lib/AuthRoles";
+import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
 import { sendInspectionReviewMail } from "@/lib/email/inspectionReview";
-import { DeficiencyType, deficiencyTypeArgs, InspectionStatus } from "@/types/deficiencyTypes";
-import dayjs from "@/lib/dayjs";
-import { revalidateTag, unstable_cache } from "next/cache";
+import { DeficiencyType, deficiencyTypeArgs } from "@/types/deficiencyTypes";
+import { revalidateTag } from "next/cache";
 import { z } from "zod";
 import { InspectionDBHandler } from "../dbHandlers/InspectionDBHandler";
 import { genericSAValidatiorV2, genericSAValidator } from "../validations";
@@ -39,35 +39,6 @@ export const getInspectedCadetIdList = () => genericSAValidatiorV2(AuthRole.insp
             },
         }).then((data) => data.map(c => c.fk_cadet))
     );
-
-
-export const startInspection = () => genericSAValidatiorV2(
-    AuthRole.materialManager,
-    true,
-    {}
-).then(async ({ assosiation }) => prisma.$transaction(async (client) => {
-    const i = await client.inspection.findFirst({
-        where: {
-            date: new Date(),
-        },
-    });
-
-    if (!i) {
-        throw new Error('Could not start inspection. No Planned Insepctions Today');
-    }
-    if (i.timeStart) {
-        throw new Error('Inspection already started.');
-    }
-
-    await client.inspection.update({
-        where: { id: i.id },
-        data: {
-            timeStart: new Date(),
-        },
-    });
-
-    revalidateTag(`serverA.inspectionState.${assosiation}`);
-}));
 
 const closeInspectionPropShema = z.object({
     time: z.string(),
