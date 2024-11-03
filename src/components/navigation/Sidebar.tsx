@@ -1,7 +1,8 @@
 "use client"
 
 import { logout } from "@/actions/auth";
-import { closeInspection } from "@/actions/controllers/InspectionController";
+import { startInspection } from "@/dal/inspection/start";
+import { stopInspection } from "@/dal/inspection/stop";
 import { useInspectionState } from "@/dataFetcher/inspection";
 import { AuthRole } from "@/lib/AuthRoles";
 import dayjs from "@/lib/dayjs";
@@ -22,7 +23,6 @@ import Header from "./Header";
 import NavButton from "./NavButton";
 import NavGroup from "./NavGroup";
 import NavLink from "./NavLink";
-import { startInspection } from "@/dal/inspection/start";
 
 
 type SidebarPropType = {
@@ -64,7 +64,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                 },
                 type: "time",
                 async save({ input }) {
-                    closeInspection({
+                    stopInspection({
                         time: input,
                         id: inspectionState.id,
                     }).then(() => {
@@ -81,7 +81,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                     toast.success("Uniformkontrolle erfolgreich gestartet");
                     mutate((key: any) => ((typeof key === "string") && /^(\/api\/inspection\/status)|(\/api\/cadet\/[\w\d-]+\/inspection)$/));
                 });
-            } 
+            }
         }
     }
 

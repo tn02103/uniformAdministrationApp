@@ -1,12 +1,17 @@
 "use client"
 
-import { closeInspection } from "@/actions/controllers/InspectionController";
 import DatePicker from "@/components/datePicker/datePicker";
 import ErrorMessage from "@/components/errorMessage";
 import { useModal } from "@/components/modals/modalProvider";
 import { TooltipActionButton } from "@/components/TooltipIconButton";
+import { createInspection } from "@/dal/inspection/planned/create";
+import { deleteInspection } from "@/dal/inspection/planned/delete";
+import { updatePlannedInspection } from "@/dal/inspection/planned/update";
+import { startInspection } from "@/dal/inspection/start";
+import { stopInspection } from "@/dal/inspection/stop";
 import { usePlannedInspectionList } from "@/dataFetcher/inspection";
 import dayjs from "@/lib/dayjs";
+import { PlannedInspectionType } from "@/types/inspectionTypes";
 import { PlannedInspectionFormShema, plannedInspectionFormShema } from "@/zod/inspection";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
@@ -14,11 +19,6 @@ import { Button, Col, FormControl, OverlayTrigger, Row } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { InspectionBadge } from "./badgeCol";
-import { updatePlannedInspection } from "@/dal/inspection/planned/update";
-import { createInspection } from "@/dal/inspection/planned/create";
-import { deleteInspection } from "@/dal/inspection/planned/delete";
-import { PlannedInspectionType } from "@/types/inspectionTypes";
-import { startInspection } from "@/dal/inspection/start";
 
 
 export default function PlannedInspectionTableRow({
@@ -119,7 +119,7 @@ export default function PlannedInspectionTableRow({
             },
             type: "time",
             async save({ input }) {
-                closeInspection({
+                stopInspection({
                     time: input,
                     id: inspection.id,
                 }).then(() => mutate()).catch((e) => {
@@ -134,7 +134,7 @@ export default function PlannedInspectionTableRow({
         <form onSubmit={handleSubmit(handleSave)}>
             <Row className="bg-white p-2 border-buttom border-1" data-testid={`div_inspection_${inspection?.id ?? "new"}`}>
                 <Col xs={2}>
-                    <InspectionBadge inspection={inspection}/>
+                    <InspectionBadge inspection={inspection} />
                 </Col>
                 <Col> {(!editable && inspection)
                     ? <span data-testid="div_date">{dayjs(inspection.date).locale('de').format("dd DD.MM.YYYY")}</span>
