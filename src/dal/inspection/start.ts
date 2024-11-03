@@ -1,3 +1,5 @@
+"user server";
+
 import { genericSAValidatiorV2 } from "@/actions/validations";
 import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
