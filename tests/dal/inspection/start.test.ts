@@ -2,7 +2,6 @@ import { startInspection } from "@/dal/inspection/start";
 import { prisma } from "@/lib/db";
 import dayjs from "dayjs";
 import { StaticData } from "../../_playwrightConfig/testData/staticDataLoader";
-import { setTimeout } from "timers/promises";
 
 const staticData = new StaticData(0);
 afterEach(() => staticData.cleanup.inspection());
@@ -57,13 +56,9 @@ it('finished todays inspection', async () => {
     expect(dbData?.timeEnd).toBeNull();
 });
 it('no Inspection planned for today', async () => {
-    const x = await prisma.inspection.delete({
+    await prisma.inspection.delete({
         where: { id: staticData.ids.inspectionIds[4] }
     });
-    const y = await prisma.inspection.findMany({ where: { fk_assosiation: staticData.fk_assosiation } });
-    console.log("🚀 ~ it ~ y:", y)
-    await setTimeout(2000);
-    expect(x).toBeDefined();
     const result = await startInspection().catch(e => e);
     expect(result.exceptionType).toBe(1);
     expect(result.message).toBe('Could not start inspection: No Planned Insepctions Today');

@@ -70,7 +70,7 @@ export default class StaticDataGenerator {
         return {
             assosiationId: this.ids.fk_assosiation,
             sendEmailAfterInspection: true,
-            inspectionReportEmails: [process.env.EMAI_ADRESS_TESTS ?? ''],
+            inspectionReportEmails: [process.env.EMAIL_ADRESS_TESTS ?? 'admin@example.com'],
         } satisfies AssosiationConfiguration
     }
 

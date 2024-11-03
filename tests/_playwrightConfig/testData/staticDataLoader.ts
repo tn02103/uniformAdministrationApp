@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { Assosiation, Cadet, DeficiencyType, Inspection, Material, MaterialGroup, Prisma, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@prisma/client";
+import { Assosiation, AssosiationConfiguration, Cadet, DeficiencyType, Inspection, Material, MaterialGroup, Prisma, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@prisma/client";
 import bcrypt from 'bcrypt';
 import StaticDataGenerator, { StaticDataIdType } from "./staticDataGenerator";
 import StaticDataIds from "./staticDataIds.json";
@@ -43,6 +43,7 @@ class StaticDataGetter {
 
     readonly index: number;
     readonly assosiation: Assosiation;
+    readonly assosiationConfiguration: AssosiationConfiguration;
     readonly cadets: Cadet[];
     readonly userIds: string[];
 
@@ -70,7 +71,8 @@ class StaticDataGetter {
 
     constructor(i: number) {
         this.index = i;
-        const { fk_assosiation, userIds, cadetIds, sizeIds, sizelistIds, uniformTypeIds, uniformGenerationIds, uniformIds, materialGroupIds, materialIds, deficiencyIds, deficiencyTypeIds, inspectionIds } = StaticDataIds[i];
+        const generator = new StaticDataGenerator(StaticDataIds[i]);
+        const { fk_assosiation, userIds, sizeIds, sizelistIds } = StaticDataIds[i];
         this.userIds = userIds;
 
         this.assosiation = {
@@ -80,8 +82,8 @@ class StaticDataGetter {
             useBeta: false,
         };
 
-        const generator = new StaticDataGenerator(StaticDataIds[i]);
 
+        this.assosiationConfiguration = generator.assosiationConfiguration();
         this.cadets = generator.cadet();
         this.uniformSizes = generator.uniformSize();
 
@@ -291,6 +293,7 @@ class StaticDataCleanup {
 
         await this.deleteCadet();
         await this.deleteUsers();
+        await this.deleteAssosiationConfiguration();
         await this.deleteAssosiation();
     }
     private deleteDeficiency = () => prisma.deficiency.deleteMany({
@@ -341,6 +344,9 @@ class StaticDataCleanup {
     private deleteUsers = () => prisma.user.deleteMany({
         where: { fk_assosiation: this.fk_assosiation }
     });
+    private deleteAssosiationConfiguration = () => prisma.assosiationConfiguration.delete({
+        where: { assosiationId: this.fk_assosiation }
+    });
     private deleteAssosiation = () => prisma.assosiation.delete({
         where: { id: this.fk_assosiation }
     });
@@ -354,6 +360,7 @@ class StaticDataLoader {
 
     async all() {
         await this.assosiation();
+        await this.assosiationConfiguration();
         await this.users();
 
         await this.cadets();
@@ -379,6 +386,11 @@ class StaticDataLoader {
     async assosiation() {
         await prisma.assosiation.create({
             data: this.data.assosiation,
+        });
+    }
+    async assosiationConfiguration() {
+        await prisma.assosiationConfiguration.create({
+            data: this.data.assosiationConfiguration,
         });
     }
     async users() {

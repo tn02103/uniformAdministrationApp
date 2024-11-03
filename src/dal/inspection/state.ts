@@ -1,6 +1,5 @@
 "use server";
 import { genericSAValidatiorV2 } from "@/actions/validations";
-import DeregistrationModal from "@/app/[locale]/[acronym]/inspection/_planned/deregistrationModal";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { InspectionStatus } from "@/types/deficiencyTypes";
