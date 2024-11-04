@@ -1,7 +1,7 @@
 import { updatePlannedInspection } from "@/dal/inspection/planned/update";
-import { StaticData } from "../../../_playwrightConfig/testData/staticDataLoader";
-import dayjs from "dayjs";
 import { prisma } from "@/lib/db";
+import dayjs from "dayjs";
+import { StaticData } from "../../../_playwrightConfig/testData/staticDataLoader";
 
 const staticData = new StaticData(0);
 const initialData = {
@@ -11,6 +11,8 @@ const initialData = {
     },
     id: staticData.ids.inspectionIds[2],
 }
+afterEach(() => staticData.cleanup.inspection());
+
 it('valid call', async () => {
     const result = await updatePlannedInspection(initialData);
     expect(Array.isArray(result)).toBeTruthy();

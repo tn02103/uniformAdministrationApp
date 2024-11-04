@@ -18,7 +18,7 @@ test.skip('fillDB with static data', async () => {
     console.log("finished");
 });
 
-test.only('generateTestIdSet', async () => {
+test.skip('generateTestIdSet', async () => {
     const ids: StaticDataIdType[] = StaticDataIds;
     ids.push(getStaticDataIds());
     console.log("🚀 ~ test.only ~ ids.length:", ids.length)

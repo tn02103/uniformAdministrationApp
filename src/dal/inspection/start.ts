@@ -28,7 +28,6 @@ export const startInspection = () => genericSAValidatiorV2(
             fk_assosiation: assosiation,
         },
     });
-    console.log(i);
     if (!i) {
         throw new SaveDataException('Could not start inspection: No Planned Insepctions Today');
     }
@@ -37,7 +36,7 @@ export const startInspection = () => genericSAValidatiorV2(
             throw new SaveDataException('Could not start inspection: Inspection already started');
 
         await client.inspection.update({
-            where: {id: i.id},
+            where: { id: i.id },
             data: {
                 timeEnd: null,
             }

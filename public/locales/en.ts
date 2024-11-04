@@ -474,6 +474,9 @@ export default {
         },
     },
     inspection: {
+        header: {
+            planned: 'planned inspections',
+        },
         planned: {
             badge: {
                 new: "new",
@@ -490,6 +493,10 @@ export default {
                 time: {
                     finished: 'finishing Time:',
                 },
+                state: 'State',
+                date: 'Date',
+                name: 'Name',
+                noInspections: 'No inspections planned',
             },
             errors: {
                 deregistration: "The person could not be deregistered from the inspection",

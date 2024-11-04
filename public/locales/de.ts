@@ -474,6 +474,9 @@ export default {
         },
     },
     inspection: {
+        header: {
+            planned: 'Geplannte Kontrollen',
+        },
         planned: {
             badge: {
                 new: "Neu",
@@ -490,6 +493,10 @@ export default {
                 time: {
                     finished: 'Endzeit:',
                 },
+                state: 'Status',
+                date: 'Datum',
+                name: 'Name',
+                noInspections: 'Keine Inspektionen geplannt',
             },
             errors: {
                 deregistration: 'Die Person konnte nicht von der Inspektion abgemeldet werden',

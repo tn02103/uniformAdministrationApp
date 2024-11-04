@@ -63,7 +63,7 @@ it('not started', async () => {
     expect(result.exceptionType).toBe(ExceptionType.SaveDataException);
     expect(result.message).toMatch(/Inspection has not jet been started/);
 });
-it(' allready finished', async () => {
+it('allready finished', async () => {
     const { success, result } = await runServerAction(() =>
         stopInspection({ ...defaultParams, id: staticData.ids.inspectionIds[0] })
     );

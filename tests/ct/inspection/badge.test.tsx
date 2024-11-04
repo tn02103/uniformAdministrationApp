@@ -8,7 +8,7 @@ import dayjs from "dayjs";
 const defaultValues = { id: "", fk_assosiation: "", active: true, name: '', deregistrations: [] };
 
 
-it('renders a heading', () => {
+it('new', () => {
     render(
         <InspectionBadge inspection={null} />
     );

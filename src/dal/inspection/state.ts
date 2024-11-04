@@ -8,19 +8,21 @@ import { unstable_cache } from "next/cache";
 export const getInspectionState = (): Promise<InspectionStatus> => genericSAValidatiorV2(
     AuthRole.inspector, true, {}
 ).then(async ({ assosiation }): Promise<InspectionStatus> => unstable_cache(async (): Promise<InspectionStatus> => {
-    const inspection = await prisma.inspection.findFirst({
-        where: {
-            fk_assosiation: assosiation,
-            date: new Date(),
-        }
-    });
-    const unfinished = await prisma.inspection.findFirst({
-        where: {
-            timeStart: { not: null },
-            timeEnd: null,
-            date: { lt: new Date() },
-        },
-    });
+    const [inspection, unfinished] = await prisma.$transaction([
+        prisma.inspection.findFirst({
+            where: {
+                fk_assosiation: assosiation,
+                date: new Date(),
+            }
+        }),
+        prisma.inspection.findFirst({
+            where: {
+                timeStart: { not: null },
+                timeEnd: null,
+                date: { lt: new Date() },
+            },
+        }),
+    ]);
     if (unfinished) {
         return {
             active: false,
@@ -66,7 +68,7 @@ export const getInspectionState = (): Promise<InspectionStatus> => genericSAVali
             where: {
                 fk_inspection: inspection.id,
                 cadet: {
-                    active: true, 
+                    active: true,
                     recdelete: null,
                 }
             }

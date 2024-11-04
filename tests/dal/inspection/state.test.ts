@@ -1,10 +1,7 @@
 import { getInspectionState } from "@/dal/inspection/state";
-import { StaticData } from "../../_playwrightConfig/testData/staticDataLoader";
 import { prisma } from "@/lib/db";
 import dayjs from "dayjs";
-
-
-
+import { StaticData } from "../../_playwrightConfig/testData/staticDataLoader";
 
 const staticData = new StaticData(0);
 const inspectionIds = staticData.ids.inspectionIds;
