@@ -1,6 +1,5 @@
 import { defineConfig, devices } from '@playwright/experimental-ct-react';
 import { viewports } from './tests/_playwrightConfig/global/helper';
-import path from 'path';
 
 /**
  * Read environment variables from file.
@@ -44,7 +43,7 @@ export default defineConfig({
                 viewport: viewports.xxl
             },
         },
-      /*  {
+        {
             name: 'firefox',
             use: {
                 ...devices['Desktop Firefox'],
@@ -57,7 +56,7 @@ export default defineConfig({
                 ...devices['Desktop Safari'],
                 viewport: viewports.xxl
             },
-        },*/
+        },
     ],
 
     /* Run your local dev server before starting the tests */

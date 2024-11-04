@@ -16,7 +16,6 @@ const customJestConfig: Config = { // CONFIGURATION FOR DATA-ACCESS-LAYER
     },
     testMatch: [
         "**/tests/dal/**/*.[jt]s?(x)",
-        //   "** /?(*.)+(spec|test).[tj]s?(x)"
     ],
 }
 
