@@ -9,7 +9,7 @@ import { StaticData } from "../../_playwrightConfig/testData/staticDataLoader";
 const staticData = new StaticData(0);
 const dbQuery = new DBQuery();
 const defaultParams = {
-    time: '12:00:00',
+    time: '12:00',
     id: staticData.ids.inspectionIds[4],
 }
 jest.mock('@/lib/email/inspectionReview', () => ({
@@ -30,7 +30,7 @@ const runServerAction = (func: () => Promise<any>) => func()
 it('valid call', async () => {
     await prisma.inspection.update({
         where: { id: staticData.ids.inspectionIds[4] },
-        data: { timeStart: dayjs.utc('09:00:00', 'HH:mm:ss').toDate() }
+        data: { timeStart: dayjs.utc('09:00', 'HH:mm').toDate() }
     });
     const { success } = await runServerAction(() => stopInspection(defaultParams));
     expect(success).toBeTruthy();
@@ -40,12 +40,12 @@ it('valid call', async () => {
     });
     expect(dbData).not.toBeNull();
     expect(dbData?.timeEnd).not.toBeNull();
-    expect(dayjs.utc(dbData?.timeStart).format('HH:mm:ss')).toBe('09:00:00');
+    expect(dayjs.utc(dbData?.timeStart).format('HH:mm')).toBe('09:00');
 });
 it('validate sendEmail function called', async () => {
     await prisma.inspection.update({
         where: { id: staticData.ids.inspectionIds[4] },
-        data: { timeStart: dayjs.utc('09:00:00', 'HH:mm:ss').toDate() }
+        data: { timeStart: dayjs.utc('09:00', 'HH:mm').toDate() }
     });
     const { success } = await runServerAction(() => stopInspection(defaultParams));
     expect(success).toBeTruthy();
@@ -74,11 +74,11 @@ it(' allready finished', async () => {
 it('endTime is before startTime', async () => {
     await prisma.inspection.update({
         where: { id: staticData.ids.inspectionIds[4] },
-        data: { timeStart: dayjs.utc('09:00:00', 'HH:mm:ss').toDate() }
+        data: { timeStart: dayjs.utc('09:00', 'HH:mm').toDate() }
     });
 
     const { success, result } = await runServerAction(() =>
-        stopInspection({ ...defaultParams, time: '05:00:00' })
+        stopInspection({ ...defaultParams, time: '05:00' })
     );
     expect(success).toBeFalsy();
     expect(result.exceptionType).toBe(ExceptionType.SaveDataException);
@@ -90,7 +90,7 @@ describe('', () => {
     it('wrong assosiation', async () => {
         await prisma.inspection.update({
             where: { id: wrongAssosiation.ids.inspectionIds[4] },
-            data: { timeStart: dayjs.utc('09:00:00', 'HH:mm:ss').toDate() }
+            data: { timeStart: dayjs.utc('09:00', 'HH:mm').toDate() }
         });
         const { result, success } = await runServerAction(() =>
             stopInspection({ ...defaultParams, id: wrongAssosiation.ids.inspectionIds[4] })

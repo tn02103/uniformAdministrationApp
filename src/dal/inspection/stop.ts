@@ -5,9 +5,9 @@ import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { sendInspectionReviewMail } from "@/lib/email/inspectionReview";
-import dayjs from "dayjs";
 import { z } from "zod";
 import { DBQuery } from "./_dbQuerys";
+import dayjs from "@/lib/dayjs";
 
 const dbHandler = new DBQuery();
 const stopInspectionPropShema = z.object({
@@ -30,8 +30,9 @@ export const stopInspection = (props: stopInspectionPropShema) => genericSAValid
     if (inspection.timeEnd) {
         throw new SaveDataException('Could not finish inspection: Inspection already finished');
     }
-    const starttime = dayjs(dayjs(inspection.timeStart).format('HH:mm:ss'), "HH:mm:ss");// remove Date-information from time
-    if (dayjs(data.time, "HH:mm:ss").isBefore(starttime, "second")) {
+
+    const startTime = dayjs.utc(inspection.timeStart).format('HH:mm');
+    if (startTime > data.time) {
         throw new SaveDataException('Could not finish inspection: Endtime is before starttime of inspection');
     }
 

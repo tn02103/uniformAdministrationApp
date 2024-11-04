@@ -33,6 +33,8 @@ export default {
             return: "Zurückziehen",
             replace: "Austauschen",
             rename: "Umbenennen",
+            restart: "Wieder starten",
+            finish: "Beenden",
             changeIssued: "Anzahl & Typ verändern",
             delete: "Löschen",
             load: "Laden",
@@ -480,8 +482,27 @@ export default {
                 finished: "Abgeschlossen",
                 unfinished: "nicht Abgeschlossen",
                 expired: "Abgelaufen",
-            }
-        }
+            },
+            label: {
+                deregistrations: 'Abmeldungen',
+                onDay: "am {day}",
+                finishInspection: 'Uniformkontrolle Beenden',
+                time: {
+                    finished: 'Endzeit:',
+                },
+            },
+            errors: {
+                deregistration: 'Die Person konnte nicht von der Inspektion abgemeldet werden',
+                register: 'Die Abmeldung der Person konnte nicht zurückgenommen werden',
+                start: 'Die Kontrolle konte nicht gestartet werden',
+                nameDuplication: 'Der Name wird bereits von einer anderen Kontrolle verwendet',
+                endBeforStart: 'Die Endzeit muss nach der Startzeit um {startTime} sein',
+                unfinished: {
+                    header: 'Alte Kontrolle akiv',
+                    message: 'Es ist noch eine alte Uniformkontrolle aktiv. Bitte Beenden Sie zuerst die Alte Kontrolle bevor sie eine neue Starten!',
+                },
+            },
+        },
     },
     modals: {
         messageModal: {

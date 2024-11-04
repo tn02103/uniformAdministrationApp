@@ -1,12 +1,13 @@
 import { updateCadetRegistrationForInspection } from "@/dal/inspection/planned/updateDeregistration";
 import { usePlannedInspectionList } from "@/dataFetcher/inspection";
+import { useScopedI18n } from "@/lib/locales/client";
 import { CadetLabel } from "@/types/globalCadetTypes";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
 import { faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import dayjs from "dayjs";
 import { useState } from "react";
-import { Button, Col, Form, Modal, ModalBody, ModalFooter, ModalHeader, Row } from "react-bootstrap";
+import { Button, Col, Form, Modal, ModalBody, ModalHeader, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
@@ -19,7 +20,8 @@ export default function DeregistrationModal({
     cadetList: CadetLabel[];
     onHide: () => void;
 }) {
-    const { register, watch, setValue } = useForm<{ searchParam: string }>();
+    const t = useScopedI18n('inspection.planned');
+    const { register, watch } = useForm<{ searchParam: string }>();
     const [showList, setShowList] = useState(false);
     const { mutate } = usePlannedInspectionList();
 
@@ -45,9 +47,9 @@ export default function DeregistrationModal({
         }).catch(e => {
             console.error(e);
             if (deregister) {
-                toast.error('Die Person konnte nicht von der Inspektion abgemeldet werden');
+                toast.error(t('errors.deregistration'));
             } else {
-                toast.error('Die Abmeldung der Person konnte nicht zurückgenommen werden');
+                toast.error(t('errors.register'));
             }
         })
     }
@@ -55,7 +57,7 @@ export default function DeregistrationModal({
     return (
         <Modal show={true} onHide={onHide} data-testid="div_popup">
             <ModalHeader closeButton className="text-center" data-testid="div_header">
-                <h3 className="text-center">Abmeldungen</h3>
+                <h3 className="text-center">{t('label.deregistrations')}</h3>
             </ModalHeader>
             <ModalBody data-testid="div_body">
                 <div className="position-relativ w-auto">
@@ -96,14 +98,12 @@ export default function DeregistrationModal({
                                 {cadet.lastname} {cadet.firstname}
                             </Col>
                             <Col data-testid="div_date">
-                                am {dayjs(date).format('DD.MM.YYYY')}
+                                {t('label.onDay', { day: dayjs(date).format('DD.MM.YYYY') })}
                             </Col>
                         </div>
                     )}
                 </div>
             </ModalBody>
-            <ModalFooter>
-            </ModalFooter>
         </Modal>
-    )
+    );
 }

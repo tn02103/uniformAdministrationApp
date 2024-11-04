@@ -3,7 +3,6 @@
 import DatePicker from "@/components/datePicker/datePicker";
 import ErrorMessage from "@/components/errorMessage";
 import { useModal } from "@/components/modals/modalProvider";
-import { TooltipActionButton } from "@/components/TooltipIconButton";
 import { createInspection } from "@/dal/inspection/planned/create";
 import { deleteInspection } from "@/dal/inspection/planned/delete";
 import { updatePlannedInspection } from "@/dal/inspection/planned/update";
@@ -11,15 +10,17 @@ import { startInspection } from "@/dal/inspection/start";
 import { stopInspection } from "@/dal/inspection/stop";
 import { usePlannedInspectionList } from "@/dataFetcher/inspection";
 import dayjs from "@/lib/dayjs";
+import { useScopedI18n } from "@/lib/locales/client";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
 import { PlannedInspectionFormShema, plannedInspectionFormShema } from "@/zod/inspection";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect, useState } from "react";
-import { Button, Col, FormControl, OverlayTrigger, Row } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Col, FormControl, Row } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { InspectionBadge } from "./badgeCol";
-
+import { InspectionBadge } from "./ColBadge";
+import { ButtonColumn } from "./ColButtons";
+import { DeragistrationCol } from "./ColDeregistrations";
 
 export default function PlannedInspectionTableRow({
     inspection,
@@ -30,6 +31,8 @@ export default function PlannedInspectionTableRow({
     closeNewLine?: () => void;
     openDeregistrationModal?: (id: string) => void;
 }) {
+    const t = useScopedI18n('inspection.planned');
+    const tError = useScopedI18n('common.error');
     const modal = useModal();
     const { register, handleSubmit, control, reset, formState, watch } = useForm<PlannedInspectionFormShema>({
         resolver: zodResolver(plannedInspectionFormShema),
@@ -72,14 +75,14 @@ export default function PlannedInspectionTableRow({
             setEditable(false);
             mutate(updatePlannedInspection({ data, id: inspection.id }))
                 .catch(() => {
-                    toast.error('Beim Speichern ist ein Unbekannter Fehler aufgetreten');
+                    toast.error(tError('actions.save'));
                 });
         } else {
             mutate(createInspection(data))
                 .then(() => {
                     closeNewLine!();
                 }).catch(() => {
-                    toast.error('Die Inspektion konnte nicht erstellt werden. Bitte versuchen Sie es erneut.')
+                    toast.error(tError('actions.create'))
                 });
         }
     }
@@ -88,7 +91,7 @@ export default function PlannedInspectionTableRow({
         mutate(
             deleteInspection(inspection?.id)
         ).catch(() => {
-            toast.error('Die Inspektion konnte nicht gelöscht werden');
+            toast.error(tError('actions.delete'));
         });
     }
 
@@ -97,23 +100,27 @@ export default function PlannedInspectionTableRow({
 
         if (inspectionList?.find(i => i.timeStart && !i.timeEnd)) {
             return modal?.simpleErrorModal({
-                header: 'Alte Kontrolle akiv',
-                message: 'Es ist noch eine alte Uniformkontrolle aktiv. Bitte Beenden Sie zuerst die Alte Kontrolle bevor sie eine neue Starten!',
+                header: t('errors.unfinished.header'),
+                message: t('errors.unfinished.message'),
             });
         }
 
         startInspection()
             .then(() => mutate())
-            .catch(() => toast.error('Die Kontrolle konnte nicht gestartet werden.'));
+            .catch(() => toast.error(t('errors.start')));
     }
 
     function handleFinish() {
         if (!inspection) return;
+        const startTime = dayjs.utc(inspection.timeStart).format('HH:mm');
+        const compareTime = (value: string) => (startTime < value);
 
         modal?.simpleFormModal({
-            header: 'Uniformkontrolle Beenden',
-            elementLabel: 'Endzeit:',
-            elementValidation: {},
+            header: t('label.finishInspection'),
+            elementLabel: t('label.time.finished'),
+            elementValidation: {
+                validate: (value) => compareTime(value) || t('errors.endBeforStart', { startTime }),
+            },
             defaultValue: {
                 input: dayjs().isSame(inspection?.date, "day") ? dayjs().format('HH:mm') : ''
             },
@@ -157,14 +164,14 @@ export default function PlannedInspectionTableRow({
                             {...register('name', {
                                 validate: (value) => {
                                     if (!inspectionList?.find(i => (i.name === value) && (i.id !== inspection?.id)))
-                                        return "Der Name ist bereits vergeben"
+                                        return t('errors.nameDuplication');
                                 }
                             })} />
                     }
                     <ErrorMessage error={formState.errors.name?.message} testId="err_name" />
                     {nameDuplicationError &&
                         <div className="fs-7 text-danger" data-testid="err_name_duplication">
-                            Der Name ist bereits vergeben.
+                            {t('errors.nameDuplication')}
                         </div>
                     }
                 </Col>
@@ -182,80 +189,5 @@ export default function PlannedInspectionTableRow({
                 />
             </Row>
         </form>
-    )
-}
-
-
-
-function DeragistrationCol({ inspection, openDeregistrationModal }: { inspection: PlannedInspectionType, openDeregistrationModal: () => void }) {
-
-    return (
-        <OverlayTrigger
-            placement="bottom-start"
-            delay={{ show: 1000, hide: 150 }}
-            overlay={
-                <span className="bg-white p-2 border border-1 border-gray">
-                    {inspection.deregistrations.map(c => <React.Fragment key={c.fk_cadet}>{c.cadet.firstname} {c.cadet.lastname} <br /></React.Fragment>)}
-                </span>
-            }
-        >
-            <Col>
-                <a className="link-opacity-100 text-primary link-opacity-25-hover" onClick={openDeregistrationModal}>
-                    {inspection.deregistrations.length} VK
-                </a>
-            </Col>
-        </OverlayTrigger>
-    )
-}
-
-
-type ButtonColumnPropType = {
-    handleCancel: () => void;
-    handleEdit: () => void;
-    handleDelete: () => void;
-    handleStart: () => void;
-    handleFinish: () => void;
-    editable: boolean;
-    inspection: PlannedInspectionType | null;
-    nameDuplicationError: boolean
-};
-function ButtonColumn({ editable, inspection, nameDuplicationError, handleCancel, handleEdit, handleDelete, handleStart, handleFinish }: ButtonColumnPropType) {
-    if (editable || !inspection) {
-        return (
-            <Col>
-                <Button type="submit" variant="outline-primary" className="mx-2" disabled={nameDuplicationError}>
-                    Speichern
-                </Button>
-                <Button type="button" variant="outline-danger" onClick={handleCancel}>
-                    Abbrechen
-                </Button>
-            </Col>
-        );
-    }
-
-    const isToday = dayjs().isSame(inspection.date, "day");
-    if (inspection.timeStart) {
-        if (inspection.timeEnd) {
-            return (
-                <Col>
-                    <Button data-testid="btn_restart">Wieder Starten</Button>
-                </Col>
-            );
-        } else {
-            return (
-                <Col>
-                    <Button variant={isToday ? "success" : "warning"} size="sm" data-testid="btn_complete" onClick={handleFinish}>Kontrolle Beenden</Button>
-                </Col>
-            );
-        }
-    }
-    return (
-        <Col>
-            <TooltipActionButton variantKey="edit" onClick={handleEdit} />
-            <TooltipActionButton variantKey="delete" onClick={handleDelete} />
-            {isToday &&
-                <TooltipActionButton variantKey="startInspection" onClick={handleStart} iconClass="fs-6" />
-            }
-        </Col>
     )
 }
