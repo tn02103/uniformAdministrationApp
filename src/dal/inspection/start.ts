@@ -1,4 +1,4 @@
-"user server";
+"use server";
 
 import { genericSAValidatiorV2 } from "@/actions/validations";
 import SaveDataException from "@/errors/SaveDataException";
