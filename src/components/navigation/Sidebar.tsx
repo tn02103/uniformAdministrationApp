@@ -106,7 +106,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                         {inspectionState?.active &&
                             <div data-testid="div_inspection" className=" align-self-center d-none d-lg-inline">
                                 {collapsed ? "" : 'Kontrolle: '}
-                                {inspectionState.inspectedCadets}/{inspectionState.activeCadets}
+                                {inspectionState.inspectedCadets}/{inspectionState.activeCadets - inspectionState.deregistrations}
                             </div>
                         }
 
