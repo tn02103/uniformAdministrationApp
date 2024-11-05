@@ -139,11 +139,11 @@ export default function PlannedInspectionTableRow({
 
     return (
         <form onSubmit={handleSubmit(handleSave)}>
-            <Row className="bg-white p-2 border-buttom border-1" data-testid={`div_inspection_${inspection?.id ?? "new"}`}>
-                <Col xs={2}>
+            <Row className="bg-white p-2 border-bottom border-1 position-relative" data-testid={`div_inspection_${inspection?.id ?? "new"}`}>
+                <Col xs={12} md={2} className="my-1">
                     <InspectionBadge inspection={inspection} />
                 </Col>
-                <Col> {(!editable && inspection)
+                <Col xs={editable ? 12 : 6} md={3} className="my-1"> {(!editable && inspection)
                     ? <span data-testid="div_date">{dayjs(inspection.date).locale('de').format("dd DD.MM.YYYY")}</span>
                     : <div>
                         <Controller
@@ -156,7 +156,7 @@ export default function PlannedInspectionTableRow({
                     </div>
                 }
                 </Col>
-                <Col>
+                <Col xs={editable ? 12 : 6} md={3} xl={editable ? 4 : 3} className="my-1">
                     {(!editable && inspection)
                         ? <span data-testid="div_name">{inspection.name}</span>
                         : <FormControl
@@ -178,15 +178,17 @@ export default function PlannedInspectionTableRow({
                 {(!editable && inspection) &&
                     <DeragistrationCol inspection={inspection} openDeregistrationModal={() => openDeregistrationModal!(inspection.id)} />
                 }
-                <ButtonColumn editable={editable}
-                    handleCancel={handleCancel}
-                    handleDelete={handleDelete}
-                    handleEdit={handleEdit}
-                    handleStart={handleStart}
-                    handleFinish={handleFinish}
-                    inspection={inspection}
-                    nameDuplicationError={!!nameDuplicationError}
-                />
+                <Col xs={editable ? 12 : 6} md={0} className="position-md-absolute end-0 text-md-end my-1">
+                    <ButtonColumn editable={editable}
+                        handleCancel={handleCancel}
+                        handleDelete={handleDelete}
+                        handleEdit={handleEdit}
+                        handleStart={handleStart}
+                        handleFinish={handleFinish}
+                        inspection={inspection}
+                        nameDuplicationError={!!nameDuplicationError}
+                    />
+                </Col>
             </Row>
         </form>
     )

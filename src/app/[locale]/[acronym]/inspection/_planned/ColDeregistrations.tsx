@@ -14,9 +14,9 @@ export function DeragistrationCol({ inspection, openDeregistrationModal }: { ins
                 </span>
             }
         >
-            <Col>
+            <Col xs={6} md={1} className="my-1">
                 <a className="link-opacity-100 text-primary link-opacity-25-hover" role="button" onClick={openDeregistrationModal}>
-                    {inspection.deregistrations.length} VK
+                    {inspection.deregistrations.length} <p className="m-0 d-inline d-md-none">Abmeldungen</p>
                 </a>
             </Col>
         </OverlayTrigger>

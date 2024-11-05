@@ -16,7 +16,7 @@ export default async function InspectionAdministrationPage() {
                 <h2 data-testid="div_cadetListHeader" className="text-center">{t('header.planned')}</h2>
             </div>
             <Row className="p-4 justify-content-center">
-                <Col xs={10}>
+                <Col xs={12}>
                     <PlannedInspectionTable inspections={plannedInspections} cadets={await getPersonnelNameList()} />
                 </Col>
             </Row>

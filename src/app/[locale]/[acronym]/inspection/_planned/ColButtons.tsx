@@ -18,7 +18,7 @@ export function ButtonColumn({ editable, inspection, nameDuplicationError, handl
     const t = useScopedI18n('common.actions');
     if (editable || !inspection) {
         return (
-            <Col>
+            <>
                 <Button
                     type="submit"
                     variant="outline-primary"
@@ -31,7 +31,7 @@ export function ButtonColumn({ editable, inspection, nameDuplicationError, handl
                 <Button type="button" variant="outline-danger" onClick={handleCancel} aria-label="cancel">
                     {t('cancel')}
                 </Button>
-            </Col>
+            </>
         );
     }
 
@@ -39,15 +39,15 @@ export function ButtonColumn({ editable, inspection, nameDuplicationError, handl
     if (inspection.timeStart) {
         if (inspection.timeEnd) {
             return (
-                <Col>
-                    <Button data-testid="btn_restart" onClick={handleStart} aria-label="restart inspection">
+                <>
+                    <Button data-testid="btn_restart" onClick={handleStart} aria-label="restart inspection" size="sm">
                         {t('restart')}
                     </Button>
-                </Col>
+                </>
             );
         } else {
             return (
-                <Col>
+                <>
                     <Button
                         variant={isToday ? "success" : "warning"}
                         size="sm"
@@ -57,17 +57,17 @@ export function ButtonColumn({ editable, inspection, nameDuplicationError, handl
                     >
                         {t('finish')}
                     </Button>
-                </Col>
+                </>
             );
         }
     }
     return (
-        <Col>
+        <>
             <TooltipActionButton variantKey="edit" onClick={handleEdit} />
             <TooltipActionButton variantKey="delete" onClick={handleDelete} />
             {isToday &&
                 <TooltipActionButton variantKey="startInspection" onClick={handleStart} iconClass="fs-6" />
             }
-        </Col>
+        </>
     )
 }
