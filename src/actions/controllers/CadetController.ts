@@ -30,15 +30,15 @@ export const getPersonnelListData = (props: getPersonnelListPropShema): Promise<
             assosiation, 
             orderBy, 
             asc ? "asc" : "desc",
-            inspectionState.active && !include.deregistered,
-            inspectionState.active && !include.inspected
+            inspectionState?.active && !include.deregistered,
+            inspectionState?.active && !include.inspected
         );
     } else {
         return dbHandler.getPersonnelList(
             assosiation, 
             orderBy, 
             asc, 
-            inspectionState.active? {
+            inspectionState?.active? {
                 inspectionId: inspectionState.id,
                 exclDeregistrations: !include.deregistered,
                 exclInspected: !include.inspected

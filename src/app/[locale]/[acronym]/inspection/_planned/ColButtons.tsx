@@ -19,10 +19,16 @@ export function ButtonColumn({ editable, inspection, nameDuplicationError, handl
     if (editable || !inspection) {
         return (
             <Col>
-                <Button type="submit" variant="outline-primary" className="mx-2" disabled={nameDuplicationError}>
+                <Button
+                    type="submit"
+                    variant="outline-primary"
+                    className="mx-2"
+                    disabled={nameDuplicationError}
+                    aria-label="save"
+                >
                     {t('save')}
                 </Button>
-                <Button type="button" variant="outline-danger" onClick={handleCancel}>
+                <Button type="button" variant="outline-danger" onClick={handleCancel} aria-label="cancel">
                     {t('cancel')}
                 </Button>
             </Col>
@@ -34,7 +40,7 @@ export function ButtonColumn({ editable, inspection, nameDuplicationError, handl
         if (inspection.timeEnd) {
             return (
                 <Col>
-                    <Button data-testid="btn_restart" onClick={handleStart}>
+                    <Button data-testid="btn_restart" onClick={handleStart} aria-label="restart inspection">
                         {t('restart')}
                     </Button>
                 </Col>
@@ -42,7 +48,13 @@ export function ButtonColumn({ editable, inspection, nameDuplicationError, handl
         } else {
             return (
                 <Col>
-                    <Button variant={isToday ? "success" : "warning"} size="sm" data-testid="btn_complete" onClick={handleFinish}>
+                    <Button
+                        variant={isToday ? "success" : "warning"}
+                        size="sm"
+                        data-testid="btn_complete"
+                        onClick={handleFinish}
+                        aria-label="finish inspection"
+                    >
                         {t('finish')}
                     </Button>
                 </Col>

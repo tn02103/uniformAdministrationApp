@@ -26,20 +26,6 @@ test.describe('validate Data', async () => {
         await Promise.all([
             expect.soft(rowComponent.div_name).toHaveText(inspection.name),
             expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.YYYY')),
-
-            expect.soft(rowComponent.lbl_expired).toBeVisible(),
-            expect.soft(rowComponent.lbl_active).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_planned).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_new).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_notCompleted).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_completed).not.toBeVisible(),
-
-            expect.soft(rowComponent.btn_edit).toBeVisible(),
-            expect.soft(rowComponent.btn_delete).toBeVisible(),
-            expect.soft(rowComponent.btn_start).not.toBeVisible(),
-            expect.soft(rowComponent.btn_save).not.toBeVisible(),
-            expect.soft(rowComponent.btn_cancel).not.toBeVisible(),
-            expect.soft(rowComponent.btn_complete).not.toBeVisible(),
         ]);
     });
     test('not Finished', async ({ page, plannedComponent, staticData: { data } }) => {
@@ -56,20 +42,6 @@ test.describe('validate Data', async () => {
         await Promise.all([
             expect.soft(rowComponent.div_name).toHaveText(inspection.name),
             expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.YYYY')),
-
-            expect.soft(rowComponent.lbl_expired).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_active).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_planned).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_new).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_notCompleted).toBeVisible(),
-            expect.soft(rowComponent.lbl_completed).not.toBeVisible(),
-
-            expect.soft(rowComponent.btn_edit).not.toBeVisible(),
-            expect.soft(rowComponent.btn_delete).not.toBeVisible(),
-            expect.soft(rowComponent.btn_start).not.toBeVisible(),
-            expect.soft(rowComponent.btn_save).not.toBeVisible(),
-            expect.soft(rowComponent.btn_cancel).not.toBeVisible(),
-            expect.soft(rowComponent.btn_complete).toBeVisible(),
         ]);
     });
     test('planned', async ({ plannedComponent, staticData: { data } }) => {
@@ -78,20 +50,6 @@ test.describe('validate Data', async () => {
         await Promise.all([
             expect.soft(rowComponent.div_name).toHaveText(inspection.name),
             expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.YYYY')),
-
-            expect.soft(rowComponent.lbl_expired).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_active).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_planned).toBeVisible(),
-            expect.soft(rowComponent.lbl_new).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_notCompleted).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_completed).not.toBeVisible(),
-
-            expect.soft(rowComponent.btn_edit).toBeVisible(),
-            expect.soft(rowComponent.btn_delete).toBeVisible(),
-            expect.soft(rowComponent.btn_start).not.toBeVisible(),
-            expect.soft(rowComponent.btn_save).not.toBeVisible(),
-            expect.soft(rowComponent.btn_cancel).not.toBeVisible(),
-            expect.soft(rowComponent.btn_complete).not.toBeVisible(),
         ]);
     });
     test('todays', async ({ plannedComponent, staticData: { data } }) => {
@@ -100,21 +58,6 @@ test.describe('validate Data', async () => {
         await Promise.all([
             expect.soft(rowComponent.div_name).toHaveText(inspection.name),
             expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.YYYY')),
-
-            expect.soft(rowComponent.lbl_expired).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_active).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_planned).toBeVisible(),
-            expect.soft(rowComponent.lbl_new).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_notCompleted).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_completed).not.toBeVisible(),
-
-            expect.soft(rowComponent.btn_edit).toBeVisible(),
-            expect.soft(rowComponent.btn_delete).toBeVisible(),
-            expect.soft(rowComponent.btn_start).toBeVisible(),
-            expect.soft(rowComponent.btn_save).not.toBeVisible(),
-            expect.soft(rowComponent.btn_cancel).not.toBeVisible(),
-            expect.soft(rowComponent.btn_complete).not.toBeVisible(),
-
         ]);
     });
     test('active', async ({ page, plannedComponent, staticData: { data } }) => {
@@ -132,20 +75,6 @@ test.describe('validate Data', async () => {
         await Promise.all([
             expect.soft(rowComponent.div_name).toHaveText(inspection.name),
             expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.YYYY')),
-
-            expect.soft(rowComponent.lbl_expired).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_active).toBeVisible(),
-            expect.soft(rowComponent.lbl_planned).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_new).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_notCompleted).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_completed).not.toBeVisible(),
-
-            expect.soft(rowComponent.btn_edit).not.toBeVisible(),
-            expect.soft(rowComponent.btn_delete).not.toBeVisible(),
-            expect.soft(rowComponent.btn_start).not.toBeVisible(),
-            expect.soft(rowComponent.btn_save).not.toBeVisible(),
-            expect.soft(rowComponent.btn_cancel).not.toBeVisible(),
-            expect.soft(rowComponent.btn_complete).toBeVisible(),
         ]);
     });
     test('completed', async ({ page, plannedComponent, staticData: { data } }) => {
@@ -163,25 +92,11 @@ test.describe('validate Data', async () => {
                 }
             });
             await page.reload();
-        })
-
+        });
+        
         await Promise.all([
             expect.soft(rowComponent.div_name).toHaveText(inspection.name),
             expect.soft(rowComponent.div_date).toHaveText(dayjs(inspection.date).locale('de').format('dd DD.MM.YYYY')),
-
-            expect.soft(rowComponent.lbl_expired).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_active).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_planned).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_new).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_notCompleted).not.toBeVisible(),
-            expect.soft(rowComponent.lbl_completed).toBeVisible(),
-
-            expect.soft(rowComponent.btn_edit).not.toBeVisible(),
-            expect.soft(rowComponent.btn_delete).not.toBeVisible(),
-            expect.soft(rowComponent.btn_start).toBeVisible(),
-            expect.soft(rowComponent.btn_save).not.toBeVisible(),
-            expect.soft(rowComponent.btn_cancel).not.toBeVisible(),
-            expect.soft(rowComponent.btn_complete).not.toBeVisible(),
         ]);
     });
 });

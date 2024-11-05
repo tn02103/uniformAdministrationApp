@@ -72,19 +72,24 @@ test('E2E0102: validate sortOrder', async ({ page, cadetListPage, staticData: { 
 });
 test('E2E0103: validate headerButton', async ({ page, cadetListPage }) => {
     await cadetListPage.btn_hdr_lastname.click();
-    await expect(page).toHaveURL(/orderBy=lastname&asc=false/);
-
+    await expect(page).toHaveURL(/orderBy=lastname/);
+    await expect(page).toHaveURL(/asc=false/);
+    
     await cadetListPage.btn_hdr_lastname.click();
-    await expect(page).toHaveURL(/orderBy=lastname&asc=true/);
-
+    await expect(page).toHaveURL(/orderBy=lastname/);
+    await expect(page).toHaveURL(/asc=true/);
+    
     await cadetListPage.btn_hdr_firstname.click();
-    await expect(page).toHaveURL(/orderBy=firstname&asc=true/);
-
+    await expect(page).toHaveURL(/orderBy=firstname/);
+    await expect(page).toHaveURL(/asc=true/);
+    
     await cadetListPage.btn_hdr_firstname.click();
-    await expect(page).toHaveURL(/orderBy=firstname&asc=false/);
-
+    await expect(page).toHaveURL(/orderBy=firstname/);
+    await expect(page).toHaveURL(/asc=false/);
+    
     await cadetListPage.btn_hdr_lastname.click();
-    await expect(page).toHaveURL(/orderBy=lastname&asc=true/);
+    await expect(page).toHaveURL(/orderBy=lastname/);
+    await expect(page).toHaveURL(/asc=true/);
 });
 test('E2E0104: validate search', async ({ cadetListPage, staticData: { ids } }) => {
     await test.step('normal', async () => {

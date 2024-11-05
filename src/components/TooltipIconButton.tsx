@@ -1,4 +1,5 @@
 "use client"
+
 import { useScopedI18n } from "@/lib/locales/client";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faArrowUpRightFromSquare, faCircleDown, faCirclePlay, faCircleUp, faEdit, faEye, faEyeSlash, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -62,6 +63,7 @@ const Variants: {
         variant: string,
         tooltipKey: "edit" | "create" | "moveUp" | "moveDown" | "open" | "delete" | "reactivate" | "deactivate" | "startInspection",
         testId: string,
+        ariaLabel: string,
     }
 } = {
     create: {
@@ -69,54 +71,63 @@ const Variants: {
         variant: "outline-success",
         tooltipKey: "create",
         testId: "btn_create",
+        ariaLabel: "create",
     },
     edit: {
         icon: faEdit,
         variant: "outline-primary",
         tooltipKey: "edit",
         testId: "btn_edit",
+        ariaLabel: "edit",
     },
     moveUp: {
         icon: faCircleUp,
         variant: "outline-secondary",
         tooltipKey: "moveUp",
-        testId: "btn_moveUp"
+        testId: "btn_moveUp",
+        ariaLabel: "move up",
     },
     moveDown: {
         icon: faCircleDown,
         variant: "outline-secondary ",
         tooltipKey: "moveDown",
-        testId: "btn_moveDown"
+        testId: "btn_moveDown",
+        ariaLabel: "move down",
     },
     open: {
         icon: faArrowUpRightFromSquare,
         variant: "outline-secondary",
         tooltipKey: "open",
         testId: "btn_open",
+        ariaLabel: "open",
     },
     delete: {
         icon: faTrash,
         variant: "outline-danger",
         tooltipKey: "delete",
-        testId: "btn_delete"
+        testId: "btn_delete",
+        ariaLabel: "delete",
     },
     reactivate: {
         icon: faEye,
         variant: "outline-secondary",
         tooltipKey: "reactivate",
         testId: "btn_reactivate",
+        ariaLabel: "reactivate",
     },
     deactivate: {
         icon: faEyeSlash,
         variant: "outline-secondary",
         tooltipKey: "deactivate",
         testId: "btn_deactivate",
+        ariaLabel: "deactivate",
     },
     startInspection: {
         icon: faCirclePlay,
         variant: "outline-success",
         tooltipKey: "startInspection",
-        testId: "btn_start"
+        testId: "btn_start",
+        ariaLabel: "start inspection",
     },
 }
 export const TooltipActionButton = ({ onClick, disabled, variantKey, testId, buttonClass, iconClass, buttonSize }: SimplePropType) => {
@@ -140,6 +151,7 @@ export const TooltipActionButton = ({ onClick, disabled, variantKey, testId, but
                 onClick={onClick}
                 disabled={disabled}
                 size={(!buttonSize) ? "sm" : buttonSize == "lg" ? "lg" : undefined}
+                aria-label={variant.ariaLabel}
             >
                 <FontAwesomeIcon icon={variant.icon} className={iconClass} />
             </Button>
