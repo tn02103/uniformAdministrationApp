@@ -451,7 +451,7 @@ INSERT INTO inspection.inspection
 SELECT id,
     fk_assosiation,
     date,
-    null,
+    '',
     null,
     null
 FROM public."Inspection";
