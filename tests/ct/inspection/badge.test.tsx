@@ -1,5 +1,5 @@
 import german from "@/../public/locales/de";
-import { InspectionBadge } from "@/app/[locale]/[acronym]/inspection/_planned/ColBadge";
+import { InspectionBadge } from "@/app/[locale]/[acronym]/inspection/_planned/InspectionBadge";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
 import '@testing-library/jest-dom';
 import { render, screen } from "@testing-library/react";

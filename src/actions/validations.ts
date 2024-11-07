@@ -78,7 +78,7 @@ export const genericSAValidator = async <T>(
     requiredRole: AuthRole,
     data: any,
     shema: z.ZodType<T>,
-    assosiationValidations: AssosiationValidationDataType
+    assosiationValidations?: AssosiationValidationDataType
 ): Promise<[T, IronSessionUser]> => {
 
     const { user } = await getIronSession();
@@ -93,7 +93,9 @@ export const genericSAValidator = async <T>(
         throw zodResult.error;
     }
 
-    await assosiationValidatior(assosiationValidations, user.assosiation);
+    if (assosiationValidations) {
+        await assosiationValidatior(assosiationValidations, user.assosiation);
+    }
 
     return [zodResult.data, user];
 }

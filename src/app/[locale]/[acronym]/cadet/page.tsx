@@ -1,10 +1,11 @@
-import { getPersonnelListData } from "@/actions/controllers/CadetController";
+
 import { getI18n } from "@/lib/locales/config";
 import GeneralOverviewTable from "./table";
+import { getPersonnelListOverviewData } from "@/dal/cadet/getPersonnelListOverviewData";
 
 const CadetListPage = async ({ searchParams }: any) => {
     const t = await getI18n();
-    const data = await getPersonnelListData({
+    const data = await getPersonnelListOverviewData({
         orderBy: searchParams.orderBy === "firstname" ? "firstname" : "lastname",
         asc: searchParams.asc ? searchParams.asc === "true" ? true : false : true,
         include: {

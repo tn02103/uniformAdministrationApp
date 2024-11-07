@@ -7,8 +7,8 @@ import { CadetLabel } from "@/types/globalCadetTypes";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
 import { useState } from "react";
 import { Col, Row } from "react-bootstrap";
-import DeregistrationModal from "./deregistrationModal";
 import PlannedInspectionTableRow from "./plannedRow";
+import DeregistrationModal from "./DeregistrationModal";
 
 export default function PlannedInspectionTable({
     ...props

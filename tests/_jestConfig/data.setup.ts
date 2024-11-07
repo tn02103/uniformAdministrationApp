@@ -17,15 +17,18 @@ afterAll(async () => {
     } catch (e) { };
 });
 jest.mock('@/lib/ironSession', () => ({
-    getIronSession: () => ({
-        user: {
-            name: 'VK Verwaltung',
-            username: 'mana',
-            assosiation: staticData.data.assosiation.id,
-            acronym: staticData.data.assosiation.acronym,
-            role: AuthRole.materialManager
+    getIronSession: () => {
+        const role = global.__ROLE__ ?? AuthRole.materialManager;
+        return {
+            user: {
+                name: 'VK Verwaltung',
+                username: 'mana',
+                assosiation: staticData.data.assosiation.id,
+                acronym: staticData.data.assosiation.acronym,
+                role: role,
+            }
         }
-    }),
+    },
 }));
 
 jest.mock('next/cache', () => ({

@@ -55,7 +55,7 @@ export default function DatePicker({ onChange, value, error }: { onChange: any, 
                 </div>
             }
             <div style={{ display: "contents" }} >
-                <div className="position-absolute" style={{zIndex:100}} ref={refCalendar as any} >
+                <div className="position-absolute " ref={refCalendar as any} style={{ zIndex: 9999 }} >
                     {showCalendar &&
                         <Calendar
                             minDate={dayjs().toDate()}

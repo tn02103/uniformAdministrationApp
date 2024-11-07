@@ -178,7 +178,7 @@ export default function PlannedInspectionTableRow({
                 {(!editable && inspection) &&
                     <InspectionDeregistrationColumn inspection={inspection} openDeregistrationModal={() => openDeregistrationModal!(inspection.id)} />
                 }
-                <Col xs={editable ? 12 : 6} md={0} className="position-md-absolute end-0 text-md-end my-1">
+                <Col xs={editable ? 12 : 6} md={0} className="position-md-absolute end-0 w-auto text-md-end my-1">
                     <InspectionButtonColumn editable={editable}
                         handleCancel={handleCancel}
                         handleDelete={handleDelete}

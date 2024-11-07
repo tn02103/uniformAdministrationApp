@@ -1,14 +1,15 @@
-
-import { getPersonnelNameList } from "@/actions/controllers/CadetController";
+import { getPersonnelNameList } from "@/dal/cadet/getNameList";
 import { getPlannedInspectionList } from "@/dal/inspection/planned/get";
 import { getScopedI18n } from "@/lib/locales/config";
 import { Col, Row } from "react-bootstrap";
 import PlannedInspectionTable from "./_planned/plannedTable";
 
-
 export default async function InspectionAdministrationPage() {
-    const plannedInspections = await getPlannedInspectionList();
-    const t = await getScopedI18n('inspection');
+    const [nameList, plannedInspections, t] = await Promise.all([
+        getPersonnelNameList(),
+        getPlannedInspectionList(),
+        getScopedI18n('inspection')
+    ]);
 
     return (
         <div className="container-lg content-center bg-light rounded px-md-3 px-xl-5 p-0">
@@ -17,7 +18,7 @@ export default async function InspectionAdministrationPage() {
             </div>
             <Row className="p-4 justify-content-center">
                 <Col xs={12}>
-                    <PlannedInspectionTable inspections={plannedInspections} cadets={await getPersonnelNameList()} />
+                    <PlannedInspectionTable inspections={plannedInspections} cadets={nameList} />
                 </Col>
             </Row>
         </div>
