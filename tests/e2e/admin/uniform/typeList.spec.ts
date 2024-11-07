@@ -2,10 +2,10 @@ import t from "@/../public/locales/de";
 import { prisma } from "@/lib/db";
 import { UniformType } from "@prisma/client";
 import { expect } from "playwright/test";
-import { TypeDetailComponent } from "../../../pages/admin/uniform/typeDetail.component";
-import { TypeListComponent } from "../../../pages/admin/uniform/typeList.component";
-import { DangerConfirmationModal } from "../../../pages/popups/DangerConfirmationPopup.component";
-import { adminTest, inspectorTest, managerTest } from "../../../setup";
+import { TypeDetailComponent } from "../../../_playwrightConfig/pages/admin/uniform/typeDetail.component";
+import { TypeListComponent } from "../../../_playwrightConfig/pages/admin/uniform/typeList.component";
+import { DangerConfirmationModal } from "../../../_playwrightConfig/pages/popups/DangerConfirmationPopup.component";
+import { adminTest, inspectorTest, managerTest } from "../../../_playwrightConfig/setup";
 
 type Fixture = {
     types: UniformType[];

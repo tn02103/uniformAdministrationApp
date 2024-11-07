@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { PersonnelListCadet, cadetArgs } from "@/types/globalCadetTypes";
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
+import { z } from "zod";
 
 export class CadetDBHandler {
     getCadet = (id: string, client?: PrismaClient) =>
@@ -11,8 +12,27 @@ export class CadetDBHandler {
             }
         });
 
-    getRestrictedPersonnelList = (fk_assosiation: string, orderBy: "lastname" | "firstname", asc: "asc" | "desc"): Promise<PersonnelListCadet[]> =>
-        prisma.cadet.findMany({
+    getRestrictedPersonnelList = (fk_assosiation: string, orderBy: "lastname" | "firstname", asc: "asc" | "desc", exclDeregistrations?: boolean, exclInspected?: boolean): Promise<PersonnelListCadet[]> => {
+        const filter: Prisma.CadetWhereInput = {}
+        if (exclDeregistrations) {
+            filter.deregistrations = {
+                none: {
+                    inspection: {
+                        date: new Date(),
+                    },
+                },
+            };
+        }
+        if (exclInspected) {
+            filter.cadetInspection = {
+                none: {
+                    inspection: {
+                        date: new Date(),
+                    }
+                }
+            };
+        }
+        return prisma.cadet.findMany({
             select: {
                 id: true,
                 firstname: true,
@@ -21,26 +41,54 @@ export class CadetDBHandler {
             where: {
                 fk_assosiation,
                 recdelete: null,
+                ...filter,
             },
             orderBy: (orderBy === "lastname")
                 ? [{ lastname: asc }, { firstname: asc }]
                 : [{ firstname: asc }, { lastname: asc }]
-        })
-
+        });
+    };
     // Export to view
-    getPersonnelList = (fk_assosiation: string, orderBy: "lastname" | "firstname", asc: boolean): Promise<PersonnelListCadet[]> =>
-        prisma.$queryRawUnsafe<PersonnelListCadet[]>(`
-             SELECT *
-               FROM base.v_cadet_generaloverview
+    getPersonnelList = async (fk_assosiation: string, orderBy: "lastname" | "firstname", asc: boolean, exclude?: { inspectionId: string, exclDeregistrations?: boolean, exclInspected?: boolean }): Promise<PersonnelListCadet[]> => {
+        let joins = "";
+        let where = "";
+        if (exclude?.exclDeregistrations) {
+            joins += `
+                LEFT JOIN inspection.deregistration d 
+	                   ON d.fk_cadet = v.id
+	                  AND d.fk_inspection = '${exclude.inspectionId}'
+            `;
+            where += `
+                AND d.fk_cadet IS NULL
+            `;
+        }
+        if (exclude?.exclInspected) {
+            joins += `
+                LEFT JOIN inspection.cadet_inspection ci
+	                   ON ci.fk_cadet = v.id
+	                  AND ci.fk_inspection = '${exclude.inspectionId}'
+            `;
+            where += `
+                AND ci.id IS NULL
+            `;
+        }
+        const sql = `
+            SELECT v.*
+              FROM base.v_cadet_generaloverview v
+                   ${joins}
              WHERE fk_assosiation = '${fk_assosiation}'
-              ORDER BY ${(orderBy === "lastname") ? "lastname" : "firstname"} ${asc ? "asc" : "desc"}
-          `
-        ).then((value) => value.map(
-            (line) => ({
-                ...line,
-                activeDeficiencyCount: Number(line.activeDeficiencyCount), // Parse Bigints
-            })
-        ));
+                   ${where}
+          ORDER BY ${(orderBy === "lastname") ? "lastname" : "firstname"} ${asc ? "asc" : "desc"}
+        `;
+
+        return prisma.$queryRawUnsafe<PersonnelListCadet[]>(sql)
+            .then((value) => value.map(
+                (line) => ({
+                    ...line,
+                    activeDeficiencyCount: Number(line.activeDeficiencyCount), // Parse Bigints
+                })
+            ));
+    }
 
 
     concatCadetComment = (id: string, comment: string, client?: PrismaClient) =>

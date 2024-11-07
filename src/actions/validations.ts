@@ -18,6 +18,7 @@ type AssosiationValidationDataType = {
     materialId?: string | (string | undefined)[],
     materialGroupId?: string | string[],
     deficiencytypeId?: string | string[],
+    inspectionId?: string | string[],
 }
 
 
@@ -66,6 +67,9 @@ function assosiationValidatior(assosiationValidations: AssosiationValidationData
     if (assosiationValidations.deficiencytypeId) {
         validate(assosiationValidations.deficiencytypeId, validateDeficiencytypeAssosiation);
     }
+    if (assosiationValidations.inspectionId) {
+        validate(assosiationValidations.inspectionId, validateInspectionAssosiation);
+    }
     return Promise.all(validationPromisses);
 }
 
@@ -74,7 +78,7 @@ export const genericSAValidator = async <T>(
     requiredRole: AuthRole,
     data: any,
     shema: z.ZodType<T>,
-    assosiationValidations: AssosiationValidationDataType
+    assosiationValidations?: AssosiationValidationDataType
 ): Promise<[T, IronSessionUser]> => {
 
     const { user } = await getIronSession();
@@ -86,10 +90,12 @@ export const genericSAValidator = async <T>(
 
     const zodResult = shema.safeParse(data);
     if (!zodResult.success) {
-        throw new Error('Zod validation failed: ' + zodResult.error.message);
+        throw zodResult.error;
     }
 
-    await assosiationValidatior(assosiationValidations, user.assosiation);
+    if (assosiationValidations) {
+        await assosiationValidatior(assosiationValidations, user.assosiation);
+    }
 
     return [zodResult.data, user];
 }
@@ -178,4 +184,8 @@ const validateDeficiencytypeAssosiation = async (id: string, fk_assosiation: str
         where: {
             id, fk_assosiation
         }
+    });
+const validateInspectionAssosiation = async (id: string, fk_assosiation: string) =>
+    prisma.inspection.findUniqueOrThrow({
+        where: { id, fk_assosiation }
     });

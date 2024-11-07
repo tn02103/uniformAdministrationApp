@@ -20,7 +20,6 @@ export default function MaterialConfigTypeList({ config }: { config: Administrat
         return <></>;
     }
     async function handleEdit(material: AdministrationMaterial) {
-        console.log("Edit", group, material);
         if (!group) return;
 
         modal?.editMaterialTypeModal(

@@ -3,12 +3,12 @@ import { prisma } from "@/lib/db";
 import { uuidValidationPattern } from "@/lib/validations";
 import { Prisma } from "@prisma/client";
 import { expect } from "playwright/test";
-import { newDescriptionValidationTests } from "../../../global/testSets";
-import { SizelistDetailComponent } from "../../../pages/admin/uniform/SizelistDetail.component";
-import { SizelistListComponent } from "../../../pages/admin/uniform/SizelistList.component";
-import { MessagePopupComponent } from "../../../pages/popups/MessagePopup.component";
-import { SimpleFormPopupComponent } from "../../../pages/popups/SimpleFormPopup.component";
-import { adminTest } from "../../../setup";
+import { newDescriptionValidationTests } from "../../../_playwrightConfig/global/testSets";
+import { SizelistDetailComponent } from "../../../_playwrightConfig/pages/admin/uniform/SizelistDetail.component";
+import { SizelistListComponent } from "../../../_playwrightConfig/pages/admin/uniform/SizelistList.component";
+import { MessagePopupComponent } from "../../../_playwrightConfig/pages/popups/MessagePopup.component";
+import { SimpleFormPopupComponent } from "../../../_playwrightConfig/pages/popups/SimpleFormPopup.component";
+import { adminTest } from "../../../_playwrightConfig/setup";
 
 type Fixture = {
     sizelists: Prisma.UniformSizelistCreateManyInput[];

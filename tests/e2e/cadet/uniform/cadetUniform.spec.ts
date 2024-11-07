@@ -2,9 +2,9 @@ import { prisma } from "@/lib/db";
 import { UniformType } from "@prisma/client";
 import { expect } from "playwright/test";
 import t from "../../../../public/locales/de";
-import { adminTest, inspectorTest, managerTest, userTest } from "../../../setup";
-import { getTextColor } from "../../../global/helper";
-import { CadetUniformComponent } from "../../../pages/cadet/cadetUniform.component";
+import { adminTest, inspectorTest, managerTest, userTest } from "../../../_playwrightConfig/setup";
+import { getTextColor } from "../../../_playwrightConfig/global/helper";
+import { CadetUniformComponent } from "../../../_playwrightConfig/pages/cadet/cadetUniform.component";
 
 type Fixture = {
     uniformComponent: CadetUniformComponent;

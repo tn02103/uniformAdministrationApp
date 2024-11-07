@@ -1,8 +1,8 @@
 import { User } from "@prisma/client";
 import { expect } from "playwright/test";
 import t from "../../../public/locales/de";
-import { UserAdministrationPage } from "../../pages/admin/user/userAdministration.page";
-import { adminTest, managerTest } from "../../setup";
+import { UserAdministrationPage } from "../../_playwrightConfig/pages/admin/user/userAdministration.page";
+import { adminTest, managerTest } from "../../_playwrightConfig/setup";
 
 
 type Fixture = {

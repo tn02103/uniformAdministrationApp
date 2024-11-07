@@ -1,7 +1,7 @@
 import { expect } from "playwright/test";
 import { prisma } from "../../../../src/lib/db";
-import { CreateUniformPage } from "../../../pages/uniform/create/index.page";
-import { adminTest } from "../../../setup";
+import { CreateUniformPage } from "../../../_playwrightConfig/pages/uniform/create/index.page";
+import { adminTest } from "../../../_playwrightConfig/setup";
 
 
 type Fixture = {

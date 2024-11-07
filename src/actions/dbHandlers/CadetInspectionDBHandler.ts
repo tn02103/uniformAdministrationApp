@@ -1,12 +1,14 @@
 import { prisma } from "@/lib/db";
 import { Deficiency } from "@/types/deficiencyTypes";
-import { PrismaClient, PrismaPromise } from "@prisma/client";
+import { Prisma, PrismaPromise } from "@prisma/client";
 
 export class CadetInspectionDBHandler {
     getActiveInspection = (fk_assosiation: string) => prisma.inspection.findFirst({
         where: {
-            active: true,
             fk_assosiation,
+            date: new Date(),
+            timeEnd: null,
+            timeStart: { not: null },
         }
     });
 
@@ -61,7 +63,7 @@ export class CadetInspectionDBHandler {
         include: { materialGroup: true }
     }).then(d => `${d.materialGroup.description}-${d.typename}`);
 
-    upsertCadetInspection = (cadetId: string, inspectionId: string, uniformComplete: boolean, username: string, client: PrismaClient) => client.cadetInspection.upsert({
+    upsertCadetInspection = (cadetId: string, inspectionId: string, uniformComplete: boolean, username: string, client: Prisma.TransactionClient) => client.cadetInspection.upsert({
         where: {
             fk_inspection_fk_cadet: {
                 fk_inspection: inspectionId,
@@ -80,7 +82,15 @@ export class CadetInspectionDBHandler {
         }
     });
 
-    resolveDeficiencies = (idsToResolve: string[], inspectionId: string, username: string, fk_assosiation: string, client: PrismaClient) => client.deficiency.updateMany({
+    removeDeregistration = (fk_cadet: string, fk_inspection: string, client: Prisma.TransactionClient) =>
+        client.deregistration.deleteMany({
+            where: {
+                fk_cadet,
+                fk_inspection
+            }
+        });
+
+    resolveDeficiencies = (idsToResolve: string[], inspectionId: string, username: string, fk_assosiation: string, client:  Prisma.TransactionClient) => client.deficiency.updateMany({
         where: {
             id: { in: idsToResolve },
             type: { fk_assosiation }
@@ -92,7 +102,7 @@ export class CadetInspectionDBHandler {
         }
     });
 
-    unresolveDeficiencies = (idsToUnsolve: string[], fk_assosiation: string, client: PrismaClient) => client.deficiency.updateMany({
+    unresolveDeficiencies = (idsToUnsolve: string[], fk_assosiation: string, client:  Prisma.TransactionClient) => client.deficiency.updateMany({
         where: {
             id: { in: idsToUnsolve },
             type: { fk_assosiation }
@@ -104,7 +114,7 @@ export class CadetInspectionDBHandler {
         }
     });
 
-    upsertDeficiency = (deficiency: Deficiency, username: string, fk_assosiation: string, client: PrismaClient, inspectionId?: string) => client.deficiency.upsert({
+    upsertDeficiency = (deficiency: Deficiency, username: string, fk_assosiation: string, client:  Prisma.TransactionClient, inspectionId?: string) => client.deficiency.upsert({
         where: {
             id: deficiency.id ?? "",
             AND: { type: { fk_assosiation } }
@@ -125,7 +135,7 @@ export class CadetInspectionDBHandler {
         }
     });
 
-    upsertDeficiencyUniform = (deficiencyId: string, fk_uniform: string, client: PrismaClient) => client.uniformDeficiency.upsert({
+    upsertDeficiencyUniform = (deficiencyId: string, fk_uniform: string, client:  Prisma.TransactionClient) => client.uniformDeficiency.upsert({
         where: { deficiencyId },
         create: {
             deficiencyId,
@@ -143,7 +153,7 @@ export class CadetInspectionDBHandler {
             fk_material?: string,
             fk_uniform?: string,
         },
-        client: PrismaClient
+        client:  Prisma.TransactionClient
     ) => client.cadetDeficiency.upsert({
         where: { deficiencyId },
         create: {
@@ -158,7 +168,7 @@ export class CadetInspectionDBHandler {
         }
     });
 
-    deleteNewDeficiencies = (idList: string[], fk_assosiation: string, client: PrismaClient) => client.deficiency.deleteMany({
+    deleteNewDeficiencies = (idList: string[], fk_assosiation: string, client: Prisma.TransactionClient) => client.deficiency.deleteMany({
         where: {
             id: {
                 in: idList

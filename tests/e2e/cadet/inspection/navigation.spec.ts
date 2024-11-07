@@ -1,9 +1,9 @@
 import { expect } from "playwright/test";
 import t from "../../../../public/locales/de";
-import { adminTest, inspectorTest, userTest } from "../../../setup";
-import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
-import { insertSvenKellerFirstInspection, removeInspection, startInspection } from "../../../testData/dynamicData";
-import { StaticData } from "../../../testData/staticDataLoader";
+import { CadetInspectionComponent } from "../../../_playwrightConfig/pages/cadet/cadetInspection.component";
+import { adminTest, inspectorTest, userTest } from "../../../_playwrightConfig/setup";
+import { finishInspection, insertSvenKellerFirstInspection, startInspection } from "../../../_playwrightConfig/testData/dynamicData";
+import { StaticData } from "../../../_playwrightConfig/testData/staticDataLoader";
 
 type Fixture = {
     inspectionComponent: CadetInspectionComponent;
@@ -11,10 +11,10 @@ type Fixture = {
 };
 const test = adminTest.extend<Fixture>({
     inspectionComponent: async ({ page }, use) => use(new CadetInspectionComponent(page)),
-    staticData: async ({ staticData }: {staticData: StaticData}, use: (r: StaticData) => Promise<void>) => {
+    staticData: async ({ staticData }: { staticData: StaticData }, use: (r: StaticData) => Promise<void>) => {
         await startInspection(staticData.index);
         await use(staticData);
-        await removeInspection(staticData.index);
+        await staticData.cleanup.inspection();
     },
 });
 
@@ -156,7 +156,7 @@ test('E2E0276: validate header', async ({ page, inspectionComponent, staticData:
         await expect(inspectionComponent.icn_inspected).toHaveClass(/fa-clipboard-check/);
     });
     await test.step('no active inspection', async () => {
-        await removeInspection(index);
+        await finishInspection(index);
         await page.reload();
         await inspectionComponent.div_step0_loading.isHidden();
 

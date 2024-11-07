@@ -33,6 +33,8 @@ export default {
             return: "Zurückziehen",
             replace: "Austauschen",
             rename: "Umbenennen",
+            restart: "Wieder starten",
+            finish: "Beenden",
             changeIssued: "Anzahl & Typ verändern",
             delete: "Löschen",
             load: "Laden",
@@ -41,6 +43,7 @@ export default {
             changePosition: "Position wechseln",
             changePassword: "Passwort ändern",
             ok: "Verstanden",
+            startInspection: "Inspektion Starten",
         },
         cadet: {
             cadet: "Person",
@@ -305,7 +308,9 @@ export default {
             inspection: {
                 group: "Inspektion",
                 start: "Starten",
+                unfinished: "Alte Kontrolle Beenden",
                 stop: "Stoppen",
+                inspection: "Verwaltung",
             },
             administration: {
                 group: "Administration",
@@ -465,6 +470,44 @@ export default {
                 'message#zero': "Do you really want to delete the type? This action cannot be undone.",
                 'message#one': "Do you really want to delete the type? This will also delete the one existing defect. This action cannot be undone.",
                 'message#other': "Do you really want to delete the type? This will also delete all {count} existing defects. This action cannot be undone.",
+            },
+        },
+    },
+    inspection: {
+        header: {
+            planned: 'Geplannte Kontrollen',
+        },
+        planned: {
+            badge: {
+                new: "Neu",
+                planned: "Geplant",
+                active: "Aktiv",
+                finished: "Abgeschlossen",
+                unfinished: "nicht Abgeschlossen",
+                expired: "Abgelaufen",
+            },
+            label: {
+                deregistrations: 'Abmeldungen',
+                onDay: "am {day}",
+                finishInspection: 'Uniformkontrolle Beenden',
+                time: {
+                    finished: 'Endzeit:',
+                },
+                state: 'Status',
+                date: 'Datum',
+                name: 'Name',
+                noInspections: 'Keine Inspektionen geplannt',
+            },
+            errors: {
+                deregistration: 'Die Person konnte nicht von der Inspektion abgemeldet werden',
+                register: 'Die Abmeldung der Person konnte nicht zurückgenommen werden',
+                start: 'Die Kontrolle konte nicht gestartet werden',
+                nameDuplication: 'Der Name wird bereits von einer anderen Kontrolle verwendet',
+                endBeforStart: 'Die Endzeit muss nach der Startzeit um {startTime} sein',
+                unfinished: {
+                    header: 'Alte Kontrolle akiv',
+                    message: 'Es ist noch eine alte Uniformkontrolle aktiv. Bitte Beenden Sie zuerst die Alte Kontrolle bevor sie eine neue Starten!',
+                },
             },
         },
     },

@@ -3,13 +3,13 @@ import { prisma } from "@/lib/db";
 import { uuidValidationPattern } from "@/lib/validations";
 import { UniformGeneration } from "@prisma/client";
 import { test as baseTest, expect } from "playwright/test";
-import { adminTest, authenticatedFixture, inspectorTest, managerTest } from "../../../setup";
-import { newDescriptionValidationTests } from "../../../global/testSets";
-import { GenerationListComponent } from "../../../pages/admin/uniform/GenerationList.component";
-import { TypeListComponent } from "../../../pages/admin/uniform/typeList.component";
-import { DangerConfirmationModal } from "../../../pages/popups/DangerConfirmationPopup.component";
-import { EditGenerationPopupComponent } from "../../../pages/popups/EditGenerationPopup.component";
-import { MessagePopupComponent } from "../../../pages/popups/MessagePopup.component";
+import { adminTest, authenticatedFixture, inspectorTest, managerTest } from "../../../_playwrightConfig/setup";
+import { newDescriptionValidationTests } from "../../../_playwrightConfig/global/testSets";
+import { GenerationListComponent } from "../../../_playwrightConfig/pages/admin/uniform/GenerationList.component";
+import { TypeListComponent } from "../../../_playwrightConfig/pages/admin/uniform/typeList.component";
+import { DangerConfirmationModal } from "../../../_playwrightConfig/pages/popups/DangerConfirmationPopup.component";
+import { EditGenerationPopupComponent } from "../../../_playwrightConfig/pages/popups/EditGenerationPopup.component";
+import { MessagePopupComponent } from "../../../_playwrightConfig/pages/popups/MessagePopup.component";
 
 type Fixture = {
     typeId: string;

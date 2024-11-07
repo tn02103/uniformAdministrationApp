@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { format } from "date-fns";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Button, FormControl, InputGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Button, FormCheck, FormControl, InputGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import useSWR from "swr";
 
@@ -38,26 +38,49 @@ const GeneralOverviewTable = ({
     )
 
     function changeSortOrder(sortOrder: string) {
+        const params = new URLSearchParams(searchParam);
         if (searchParam.has("orderBy") && searchParam.has("asc")) {
             if (searchParam.get("orderBy") === sortOrder) {
-                const asc = (searchParam.get('asc') === "false")
-                router.push(`${pathname}?orderBy=${sortOrder}&asc=${asc}`);
+                const asc = (searchParam.get('asc') === "false");
+                params.set('asc', asc ? "true" : "false");
             } else {
-                router.push(`${pathname}?orderBy=${sortOrder}&asc=true`);
+                params.set('asc', 'true');
+                params.set('orderBy', sortOrder);
             }
         } else {
-            router.push(`${pathname}?orderBy=${sortOrder}&asc=false`);
+            params.set('asc', 'false');
+            params.set('orderBy', sortOrder);
         }
+        router.push(`${pathname}?${params.toString()}`);
     }
+
+    const changeFilter = (filter: "deregistered" | "inspected") => {
+        const params = new URLSearchParams(searchParam);
+        if (filter === "deregistered") {
+            if (params.has('deregistered')) {
+                params.delete('deregistered');
+            } else {
+                params.set('deregistered', 'true');
+            }
+        } else {
+            if (params.has('inspected')) {
+                params.delete('inspected');
+            } else {
+                params.set('inspected', 'true');
+            }
+        }
+        router.push(`${pathname}?${params.toString()}`);
+    }
+
     const filterCadet = (cadet: PersonnelListCadet, searchParam: string) => (
         !searchParam
-        || searchParam.length === 0)
+        || searchParam.length === 0
         || cadet.firstname.concat(cadet.lastname).toLowerCase().replaceAll(" ", "").includes(searchParam)
-        || cadet.lastname.concat(cadet.firstname).toLowerCase().replaceAll(" ", "").includes(searchParam)
+        || cadet.lastname.concat(cadet.firstname).toLowerCase().replaceAll(" ", "").includes(searchParam))
 
     return (
         <>
-            <div className="d-flex flex-row align-items-center">
+            <div className="d-flex flex-row ">
                 <InputGroup className="w-auto">
                     <InputGroup.Text className="bg-primary-subtle">
                         <FontAwesomeIcon icon={faSearch} className="" />
@@ -67,10 +90,32 @@ const GeneralOverviewTable = ({
                         size="sm"
                         {...register("search")}
                         onKeyDown={(event) => { if (event.key == "Enter") { event.currentTarget.blur() } }} />
-                    <button data-testid="btn_clearSearch" className="button bg-primary-subtle border border-1 border-seccondary-subtle rounded-end" onClick={() => setValue("search", "")} >
+                    <button
+                        data-testid="btn_clearSearch"
+                        className="button bg-primary-subtle border border-1 border-seccondary-subtle rounded-end"
+                        onClick={() => setValue("search", "")}
+                    >
                         <FontAwesomeIcon icon={faXmark} />
                     </button>
                 </InputGroup>
+                {inspectionState?.active &&
+                    <FormCheck
+                        type="switch"
+                        label="Inkl abgemeldete Personen"
+                        className="mx-5"
+                        onClick={() => changeFilter('deregistered')}
+                        checked={searchParam.has('deregistered')}
+                    />
+                }
+                {inspectionState?.active &&
+                    <FormCheck
+                        type="switch"
+                        label="Inkl. kontrolierte Personen"
+                        className="mx-0"
+                        onClick={() => changeFilter('inspected')}
+                        checked={searchParam.has('inspected')}
+                    />
+                }
             </div>
             <div className="border border-2 rounded px-0">
                 <table className="table table-fixed border border-1" data-testid="div_table_cadetList">

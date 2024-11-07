@@ -2,11 +2,11 @@ import t from "@/../public/locales/de";
 import { prisma } from "@/lib/db";
 import { UniformSize } from "@prisma/client";
 import { expect } from "playwright/test";
-import { newNameValidationTests, numberValidationTests } from "../../../global/testSets";
-import { UniformSizeAdministrationPage } from "../../../pages/admin/uniform/UniformSizeAdministration.page";
-import { MessagePopupComponent } from "../../../pages/popups/MessagePopup.component";
-import { SimpleFormPopupComponent } from "../../../pages/popups/SimpleFormPopup.component";
-import { adminTest } from "../../../setup";
+import { newNameValidationTests, numberValidationTests } from "../../../_playwrightConfig/global/testSets";
+import { UniformSizeAdministrationPage } from "../../../_playwrightConfig/pages/admin/uniform/UniformSizeAdministration.page";
+import { MessagePopupComponent } from "../../../_playwrightConfig/pages/popups/MessagePopup.component";
+import { SimpleFormPopupComponent } from "../../../_playwrightConfig/pages/popups/SimpleFormPopup.component";
+import { adminTest } from "../../../_playwrightConfig/setup";
 
 type Fixture = {
     sizes: UniformSize[],

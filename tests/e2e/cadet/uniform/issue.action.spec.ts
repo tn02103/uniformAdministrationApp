@@ -2,13 +2,13 @@ import { prisma } from "@/lib/db";
 import { uuidValidationPattern } from "@/lib/validations";
 import { Page, expect } from "playwright/test";
 import t from "../../../../public/locales/de";
-import { adminTest } from "../../../setup";
-import { viewports } from "../../../global/helper";
-import { numberValidationTests } from "../../../global/testSets";
-import { CadetDetailPage } from "../../../pages/cadet/cadetDetail.page";
-import { CadetUniformComponent } from "../../../pages/cadet/cadetUniform.component";
-import { MessagePopupComponent } from "../../../pages/popups/MessagePopup.component";
-import { SimpleFormPopupComponent } from "../../../pages/popups/SimpleFormPopup.component";
+import { adminTest } from "../../../_playwrightConfig/setup";
+import { viewports } from "../../../_playwrightConfig/global/helper";
+import { numberValidationTests } from "../../../_playwrightConfig/global/testSets";
+import { CadetDetailPage } from "../../../_playwrightConfig/pages/cadet/cadetDetail.page";
+import { CadetUniformComponent } from "../../../_playwrightConfig/pages/cadet/cadetUniform.component";
+import { MessagePopupComponent } from "../../../_playwrightConfig/pages/popups/MessagePopup.component";
+import { SimpleFormPopupComponent } from "../../../_playwrightConfig/pages/popups/SimpleFormPopup.component";
 
 type Fixture = {
     cadetId: string;

@@ -99,6 +99,21 @@ a {
     visibility: visible;
 }
 
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+
+
 @media (min-width: 992px) {
     .navbar {
         flex: 0 0 auto;
@@ -142,4 +157,94 @@ a {
 .show2 {
     visibility: visible !important;
     transform: none;
+}
+
+
+
+@media (min-width: 576px) {
+    .position-sm-static {
+        position: static !important;
+    }
+
+    .position-sm-relative {
+        position: relative !important;
+    }
+
+    .position-sm-absolute {
+        position: absolute !important;
+    }
+
+    .position-sm-fixed {
+        position: fixed !important;
+    }
+
+    .position-sm-sticky {
+        position: sticky !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .position-md-static {
+        position: static !important;
+    }
+
+    .position-md-relative {
+        position: relative !important;
+    }
+
+    .position-md-absolute {
+        position: absolute !important;
+    }
+
+    .position-md-fixed {
+        position: fixed !important;
+    }
+
+    .position-md-sticky {
+        position: sticky !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .position-lg-static {
+        position: static !important;
+    }
+
+    .position-lg-relative {
+        position: relative !important;
+    }
+
+    .position-lg-absolute {
+        position: absolute !important;
+    }
+
+    .position-lg-fixed {
+        position: fixed !important;
+    }
+
+    .position-lg-sticky {
+        position: sticky !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .position-xl-static {
+        position: static !important;
+    }
+
+    .position-xl-relative {
+        position: relative !important;
+    }
+
+    .position-xl-absolute {
+        position: absolute !important;
+    }
+
+    .position-xl-fixed {
+        position: fixed !important;
+    }
+
+    .position-xl-sticky {
+        position: sticky !important;
+    }
 }

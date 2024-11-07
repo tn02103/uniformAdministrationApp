@@ -2,11 +2,11 @@ import { prisma } from "@/lib/db";
 import { Cadet } from "@prisma/client";
 import { expect, } from "playwright/test";
 import t from "../../../public/locales/de";
-import { adminTest, inspectorTest, managerTest, userTest } from "../../setup";
-import { CadetDataComponent } from "../../pages/cadet/cadetData.component";
-import { CadetDetailPage } from "../../pages/cadet/cadetDetail.page";
-import { CadetListPage } from "../../pages/cadet/f";
-import { MessagePopupComponent } from "../../pages/popups/MessagePopup.component";
+import { adminTest, inspectorTest, managerTest, userTest } from "../../_playwrightConfig/setup";
+import { CadetDataComponent } from "../../_playwrightConfig/pages/cadet/cadetData.component";
+import { CadetDetailPage } from "../../_playwrightConfig/pages/cadet/cadetDetail.page";
+import { CadetListPage } from "../../_playwrightConfig/pages/cadet/f";
+import { MessagePopupComponent } from "../../_playwrightConfig/pages/popups/MessagePopup.component";
 
 
 type Fixture = {

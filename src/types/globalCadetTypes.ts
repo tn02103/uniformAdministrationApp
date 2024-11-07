@@ -12,8 +12,17 @@ export const cadetArgs = Prisma.validator<Prisma.CadetFindManyArgs>()({
     }
 });
 
+export const cadetLableArgs = Prisma.validator<Prisma.CadetFindManyArgs>()({
+    select: {
+        id: true,
+        firstname: true,
+        lastname: true,
+    }
+})
+
 export type CadetUniformMap = { [key in string]: Uniform[] };
 export type CadetMaterialMap = { [key in string]: CadetMaterial[] };
+export type CadetLabel = Prisma.CadetGetPayload<typeof cadetLableArgs>;
 
 export type Cadet = Prisma.CadetGetPayload<typeof cadetArgs>;
 export type PersonnelListCadet = {

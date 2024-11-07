@@ -1,12 +1,14 @@
 import { PrismaClient } from '@prisma/client';
-import StaticDataGenerator, { getStaticDataIds } from '../tests/testData/staticDataGenerator';
-const bcrypt = require('bcrypt');
+import StaticDataGenerator, { getStaticDataIds } from '../tests/_playwrightConfig/testData/staticDataGenerator';
+import bcrypt from "bcrypt";
 
 const prismaClient = new PrismaClient()
 async function main() {
     const ids = getStaticDataIds()
+    ids.fk_assosiation = process.env.ASSOSIATION_ID ?? ids.fk_assosiation;
     const generator = new StaticDataGenerator(ids);
     const { fk_assosiation, sizeIds, sizelistIds } = ids;
+    const password = await bcrypt.hash(process.env.USER_PASSWORD as string, 15);
 
     await prismaClient.$transaction(async (prisma) => {
         await prisma.assosiation.create({
@@ -16,7 +18,6 @@ async function main() {
                 acronym: "vkme",
             }
         });
-        const password = await bcrypt.hash(process.env.USER_PASSWORD, 15);
         await prisma.user.createMany({
             data: [
                 { fk_assosiation, role: 4, username: 'admin', name: `VK Admin`, password, active: true },
@@ -25,7 +26,11 @@ async function main() {
                 { fk_assosiation, role: 1, username: 'user', name: `VK Nutzer`, password, active: true },
                 { fk_assosiation, role: 1, username: 'blck', name: `VK Gesperrt`, password, active: false },
             ]
-        })
+        });
+
+        await prisma.assosiationConfiguration.create({
+            data: generator.assosiationConfiguration(),
+        });
 
         await prisma.cadet.createMany({
             data: generator.cadet()
@@ -90,7 +95,10 @@ async function main() {
         await prisma.uniformDeficiency.createMany({
             data: generator.uniformDeficiency(),
         });
-    });
+        await prisma.deregistration.createMany({
+            data: generator.deregistrations(),
+        });
+    }, { timeout: 15000 });
 }
 
 main().then(() => prismaClient.$disconnect());

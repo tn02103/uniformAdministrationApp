@@ -33,6 +33,8 @@ export default {
             return: "Withdraw",
             replace: "Replace",
             rename: "Rename",
+            restart: "Restart",
+            finish: "Finish",
             changeIssued: "Change quantity & type",
             delete: "Delete",
             load: "Load",
@@ -41,6 +43,7 @@ export default {
             changePosition: "Change position",
             changePassword: "Change password",
             ok: "Understood",
+            startInspection: "start inspection",
         },
         cadet: {
             cadet: "Person",
@@ -306,6 +309,8 @@ export default {
                 group: "inspection",
                 start: "start",
                 stop: "stop",
+                unfinished: "finishe old inspection",
+                inspection: "administration",
             },
             administration: {
                 group: "administration",
@@ -468,6 +473,44 @@ export default {
             },
         },
     },
+    inspection: {
+        header: {
+            planned: 'planned inspections',
+        },
+        planned: {
+            badge: {
+                new: "new",
+                planned: "planned",
+                active: "active",
+                finished: "finished",
+                unfinished: "unfinished",
+                expired: "expired",
+            },
+            label: {
+                deregistrations: 'Deregistrations',
+                onDay: "on the {day}",
+                finishInspection: 'finish inspection',
+                time: {
+                    finished: 'finishing Time:',
+                },
+                state: 'State',
+                date: 'Date',
+                name: 'Name',
+                noInspections: 'No inspections planned',
+            },
+            errors: {
+                deregistration: "The person could not be deregistered from the inspection",
+                register: "The deregistration of the person could not be undone",
+                start: "The inspection could not be started",
+                nameDuplication: "The name is already used by another inspection",
+                endBeforStart: "The end time must be after the start time by {startTime}",
+                unfinished: {
+                    header: "Old inspection active",
+                    message: "There is still an old uniform inspection active. Please finish the old inspection before starting a new one!"
+                },
+            },
+        },
+    },
     modals: {
         messageModal: {
             uniform: {
@@ -546,7 +589,7 @@ export default {
                 de: "German",
                 en: "English",
             },
-            cancel: "cancel", 
+            cancel: "cancel",
             change: "change",
         },
     },
