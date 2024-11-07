@@ -19,7 +19,7 @@ const getFunctions = () => ({
     edit: jest.fn(),
     finish: jest.fn(),
     start: jest.fn(),
-    submit: jest.fn(),
+    submit: jest.fn(e => e.preventDefault()),
 });
 const renderButton = (inspection: PlannedInspectionType, editable?: boolean, nameDuplicationError?: boolean) => {
     const functions = getFunctions();
