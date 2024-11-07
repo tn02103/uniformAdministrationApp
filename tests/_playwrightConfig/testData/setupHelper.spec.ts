@@ -1,10 +1,7 @@
 import test from "playwright/test";
 import { StaticDataIdType, getStaticDataIds } from "./staticDataGenerator";
-import StaticDataIds from "./staticDataIds.json";
 import { StaticData } from "./staticDataLoader";
 const fs = require('fs');
-
-
 
 test.skip('', async () => {
     const staticData = new StaticData(0);
@@ -19,7 +16,11 @@ test.skip('fillDB with static data', async () => {
 });
 
 test.skip('generateTestIdSet', async () => {
-    const ids: StaticDataIdType[] = StaticDataIds;
+    if (!fs.existsSync('./tests/testData/staticDataIds.json')) {
+        fs.writeFileSync('./tests/testData/staticDataIds.json', '[]');
+    }
+    const ids: StaticDataIdType[] = require('../testData/staticDataIds.json');
+
     ids.push(getStaticDataIds());
     console.log("🚀 ~ test.only ~ ids.length:", ids.length)
     await fs.writeFileSync('tests/_playwrightConfig/testData/staticDataIds.json', JSON.stringify(ids, null, 4));

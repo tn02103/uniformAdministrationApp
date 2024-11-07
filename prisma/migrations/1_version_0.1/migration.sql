@@ -1,19 +1,19 @@
 -- CREATE SHEMA
 CREATE SCHEMA IF NOT EXISTS authentication;
-ALTER SCHEMA authentication OWNER TO "uniformServer";
+ALTER SCHEMA authentication OWNER TO CURRENT_USER;
 CREATE SCHEMA IF NOT EXISTS base;
-ALTER SCHEMA base OWNER TO "uniformServer";
+ALTER SCHEMA base OWNER TO CURRENT_USER;
 CREATE SCHEMA IF NOT EXISTS inspection;
-ALTER SCHEMA inspection OWNER TO "uniformServer";
+ALTER SCHEMA inspection OWNER TO CURRENT_USER;
 -- CREATE TYPES
 CREATE TYPE inspection.deficiencytype_dependent AS ENUM ('cadet', 'uniform');
-ALTER TYPE inspection.deficiencytype_dependent OWNER TO "uniformServer";
+ALTER TYPE inspection.deficiencytype_dependent OWNER TO CURRENT_USER;
 CREATE TYPE inspection.deficiencytype_relation AS ENUM ('uniform', 'material');
-ALTER TYPE inspection.deficiencytype_relation OWNER TO "uniformServer";
+ALTER TYPE inspection.deficiencytype_relation OWNER TO CURRENT_USER;
 -- CREATE TABLES
 --
 -- TOC entry 218 (class 1259 OID 21219)
--- Name: assosiation; Type: TABLE; Schema: authentication; Owner: uniformServer
+-- Name: assosiation; Type: TABLE; Schema: authentication; Owner: vk_server
 --
 CREATE TABLE authentication.assosiation (
     id character(36) DEFAULT gen_random_uuid() NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE authentication.assosiation (
     acronym character varying(5) NOT NULL,
     use_beta boolean DEFAULT false NOT NULL
 );
-ALTER TABLE authentication.assosiation OWNER TO "uniformServer";
+ALTER TABLE authentication.assosiation OWNER TO CURRENT_USER;
 INSERT INTO authentication.assosiation
 SELECT id,
     name,
@@ -30,7 +30,7 @@ SELECT id,
 FROM public."Assosiation";
 --
 -- TOC entry 219 (class 1259 OID 21226)
--- Name: refresh_token; Type: TABLE; Schema: authentication; Owner: uniformServer
+-- Name: refresh_token; Type: TABLE; Schema: authentication; Owner: vk_server
 --
 CREATE TABLE authentication.refresh_token (
     fk_user character(36) NOT NULL,
@@ -38,10 +38,10 @@ CREATE TABLE authentication.refresh_token (
     end_of_live timestamp(6) without time zone NOT NULL,
     device_id character(36) NOT NULL
 );
-ALTER TABLE authentication.refresh_token OWNER TO "uniformServer";
+ALTER TABLE authentication.refresh_token OWNER TO CURRENT_USER;
 --
 -- TOC entry 220 (class 1259 OID 21231)
--- Name: user; Type: TABLE; Schema: authentication; Owner: uniformServer
+-- Name: user; Type: TABLE; Schema: authentication; Owner: vk_server
 --
 CREATE TABLE authentication."user" (
     id character(36) DEFAULT gen_random_uuid() NOT NULL,
@@ -53,7 +53,7 @@ CREATE TABLE authentication."user" (
     active boolean NOT NULL,
     failed_login_count integer DEFAULT 0 NOT NULL
 );
-ALTER TABLE authentication."user" OWNER TO "uniformServer";
+ALTER TABLE authentication."user" OWNER TO CURRENT_USER;
 INSERT INTO authentication."user"
 SELECT id,
     fk_assosiation,
@@ -66,20 +66,20 @@ SELECT id,
 FROM public."User";
 --
 -- TOC entry 237 (class 1259 OID 21349)
--- Name: _uniformsizetouniformsizelist; Type: TABLE; Schema: base; Owner: uniformServer
+-- Name: _uniformsizetouniformsizelist; Type: TABLE; Schema: base; Owner: vk_server
 --
 CREATE TABLE base._uniformsizetouniformsizelist (
     "A" character(36) NOT NULL,
     "B" character(36) NOT NULL
 );
-ALTER TABLE base._uniformsizetouniformsizelist OWNER TO "uniformServer";
+ALTER TABLE base._uniformsizetouniformsizelist OWNER TO CURRENT_USER;
 INSERT INTO base._uniformsizetouniformsizelist
 SELECT "A",
     "B"
 FROM public."_uniformsizetouniformsizelist";
 --
 -- TOC entry 221 (class 1259 OID 21238)
--- Name: cadet; Type: TABLE; Schema: base; Owner: uniformServer
+-- Name: cadet; Type: TABLE; Schema: base; Owner: vk_server
 --
 CREATE TABLE base.cadet (
     id character(36) DEFAULT gen_random_uuid() NOT NULL,
@@ -91,7 +91,7 @@ CREATE TABLE base.cadet (
     recdelete timestamp(6) without time zone,
     recdelete_user character varying(10)
 );
-ALTER TABLE base.cadet OWNER TO "uniformServer";
+ALTER TABLE base.cadet OWNER TO CURRENT_USER;
 INSERT INTO base.cadet
 SELECT id,
     fk_assosiation,
@@ -104,7 +104,7 @@ SELECT id,
 FROM public."Cadet";
 --
 -- TOC entry 229 (class 1259 OID 21296)
--- Name: material; Type: TABLE; Schema: base; Owner: uniformServer
+-- Name: material; Type: TABLE; Schema: base; Owner: vk_server
 --
 CREATE TABLE base.material (
     id character(36) DEFAULT gen_random_uuid() NOT NULL,
@@ -116,7 +116,7 @@ CREATE TABLE base.material (
     recdelete timestamp(6) without time zone,
     recdelete_user character varying(10)
 );
-ALTER TABLE base.material OWNER TO "uniformServer";
+ALTER TABLE base.material OWNER TO CURRENT_USER;
 INSERT INTO base.material
 SELECT id,
     typename,
@@ -129,7 +129,7 @@ SELECT id,
 FROM public."Material";
 --
 -- TOC entry 228 (class 1259 OID 21290)
--- Name: material_group; Type: TABLE; Schema: base; Owner: uniformServer
+-- Name: material_group; Type: TABLE; Schema: base; Owner: vk_server
 --
 CREATE TABLE base.material_group (
     id character(36) DEFAULT gen_random_uuid() NOT NULL,
@@ -141,7 +141,7 @@ CREATE TABLE base.material_group (
     recdelete_user character varying(10),
     multitype_allowed boolean NOT NULL
 );
-ALTER TABLE base.material_group OWNER TO "uniformServer";
+ALTER TABLE base.material_group OWNER TO CURRENT_USER;
 INSERT INTO base.material_group
 SELECT id,
     fk_assosiation,
@@ -154,7 +154,7 @@ SELECT id,
 FROM public."MaterialGroup";
 --
 -- TOC entry 230 (class 1259 OID 21302)
--- Name: material_issued; Type: TABLE; Schema: base; Owner: uniformServer
+-- Name: material_issued; Type: TABLE; Schema: base; Owner: vk_server
 --
 CREATE TABLE base.material_issued (
     id character(36) DEFAULT gen_random_uuid() NOT NULL,
@@ -164,7 +164,7 @@ CREATE TABLE base.material_issued (
     date_issued timestamp(6) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     date_returned timestamp(6) without time zone
 );
-ALTER TABLE base.material_issued OWNER TO "uniformServer";
+ALTER TABLE base.material_issued OWNER TO CURRENT_USER;
 INSERT INTO base.material_issued
 SELECT id,
     fk_material,
@@ -175,7 +175,7 @@ SELECT id,
 FROM public."MaterialIssued";
 --
 -- TOC entry 226 (class 1259 OID 21274)
--- Name: uniform; Type: TABLE; Schema: base; Owner: uniformServer
+-- Name: uniform; Type: TABLE; Schema: base; Owner: vk_server
 --
 CREATE TABLE base.uniform (
     id character(36) DEFAULT gen_random_uuid() NOT NULL,
@@ -188,7 +188,7 @@ CREATE TABLE base.uniform (
     recdelete timestamp(6) without time zone,
     recdelete_user character varying(10)
 );
-ALTER TABLE base.uniform OWNER TO "uniformServer";
+ALTER TABLE base.uniform OWNER TO CURRENT_USER;
 INSERT INTO base.uniform
 SELECT id,
     number,
@@ -202,7 +202,7 @@ SELECT id,
 FROM public."Uniform";
 --
 -- TOC entry 223 (class 1259 OID 21255)
--- Name: uniform_generation; Type: TABLE; Schema: base; Owner: uniformServer
+-- Name: uniform_generation; Type: TABLE; Schema: base; Owner: vk_server
 --
 CREATE TABLE base.uniform_generation (
     id character(36) DEFAULT gen_random_uuid() NOT NULL,
@@ -214,7 +214,7 @@ CREATE TABLE base.uniform_generation (
     recdelete timestamp(6) without time zone,
     recdelete_user character varying(10)
 );
-ALTER TABLE base.uniform_generation OWNER TO "uniformServer";
+ALTER TABLE base.uniform_generation OWNER TO CURRENT_USER;
 INSERT INTO base.uniform_generation
 SELECT id,
     "fk_uniformType",
@@ -227,7 +227,7 @@ SELECT id,
 FROM public."UniformGeneration";
 --
 -- TOC entry 227 (class 1259 OID 21283)
--- Name: uniform_issued; Type: TABLE; Schema: base; Owner: uniformServer
+-- Name: uniform_issued; Type: TABLE; Schema: base; Owner: vk_server
 --
 CREATE TABLE base.uniform_issued (
     id character(36) DEFAULT gen_random_uuid() NOT NULL,
@@ -236,7 +236,7 @@ CREATE TABLE base.uniform_issued (
     date_issued date DEFAULT CURRENT_TIMESTAMP NOT NULL,
     date_returned date
 );
-ALTER TABLE base.uniform_issued OWNER TO "uniformServer";
+ALTER TABLE base.uniform_issued OWNER TO CURRENT_USER;
 INSERT INTO base.uniform_issued
 SELECT id,
     fk_cadet,
@@ -246,7 +246,7 @@ SELECT id,
 FROM public."UniformIssued";
 --
 -- TOC entry 224 (class 1259 OID 21262)
--- Name: uniform_size; Type: TABLE; Schema: base; Owner: uniformServer
+-- Name: uniform_size; Type: TABLE; Schema: base; Owner: vk_server
 --
 CREATE TABLE base.uniform_size (
     id character(36) DEFAULT gen_random_uuid() NOT NULL,
@@ -254,7 +254,7 @@ CREATE TABLE base.uniform_size (
     name character varying(10) NOT NULL,
     sort_order integer NOT NULL
 );
-ALTER TABLE base.uniform_size OWNER TO "uniformServer";
+ALTER TABLE base.uniform_size OWNER TO CURRENT_USER;
 INSERT INTO base.uniform_size
 SELECT id,
     fk_assosiation,
@@ -263,14 +263,14 @@ SELECT id,
 FROM public."UniformSize";
 --
 -- TOC entry 225 (class 1259 OID 21268)
--- Name: uniform_sizelist; Type: TABLE; Schema: base; Owner: uniformServer
+-- Name: uniform_sizelist; Type: TABLE; Schema: base; Owner: vk_server
 --
 CREATE TABLE base.uniform_sizelist (
     id character(36) DEFAULT gen_random_uuid() NOT NULL,
     fk_assosiation character(36) NOT NULL,
     name character varying(40) NOT NULL
 );
-ALTER TABLE base.uniform_sizelist OWNER TO "uniformServer";
+ALTER TABLE base.uniform_sizelist OWNER TO CURRENT_USER;
 INSERT INTO base.uniform_sizelist
 SELECT id,
     fk_assosiation,
@@ -278,7 +278,7 @@ SELECT id,
 FROM public."UniformSizelist";
 --
 -- TOC entry 222 (class 1259 OID 21248)
--- Name: uniform_type; Type: TABLE; Schema: base; Owner: uniformServer
+-- Name: uniform_type; Type: TABLE; Schema: base; Owner: vk_server
 --
 CREATE TABLE base.uniform_type (
     id character(36) DEFAULT gen_random_uuid() NOT NULL,
@@ -293,7 +293,7 @@ CREATE TABLE base.uniform_type (
     recdelete_user character varying(10),
     fk_default_sizelist character(36)
 );
-ALTER TABLE base.uniform_type OWNER TO "uniformServer";
+ALTER TABLE base.uniform_type OWNER TO CURRENT_USER;
 INSERT INTO base.uniform_type
 SELECT id,
     fk_assosiation,
@@ -309,7 +309,7 @@ SELECT id,
 FROM public."UniformType";
 --
 -- TOC entry 233 (class 1259 OID 21323)
--- Name: deficiency_type; Type: TABLE; Schema: inspection; Owner: uniformServer
+-- Name: deficiency_type; Type: TABLE; Schema: inspection; Owner: vk_server
 --
 CREATE TABLE inspection.deficiency_type (
     id character(36) DEFAULT gen_random_uuid() NOT NULL,
@@ -320,7 +320,7 @@ CREATE TABLE inspection.deficiency_type (
     disabled_date DATE,
     disabled_user VARCHAR(10)
 );
-ALTER TABLE inspection.deficiency_type OWNER TO "uniformServer";
+ALTER TABLE inspection.deficiency_type OWNER TO CURRENT_USER;
 INSERT INTO inspection.deficiency_type
 SELECT cdt.id,
     cdt.fk_assosiation,
@@ -343,7 +343,7 @@ SELECT cdt.id,
 FROM public."CadetDeficiencyType" cdt;
 --
 -- TOC entry 235 (class 1259 OID 21339)
--- Name: cadet_deficiency; Type: TABLE; Schema: inspection; Owner: uniformServer
+-- Name: cadet_deficiency; Type: TABLE; Schema: inspection; Owner: vk_server
 --
 CREATE TABLE inspection.cadet_deficiency (
     deficiency_id character(36) NOT NULL,
@@ -351,7 +351,7 @@ CREATE TABLE inspection.cadet_deficiency (
     fk_uniform character(36),
     fk_material character(36)
 );
-ALTER TABLE inspection.cadet_deficiency OWNER TO "uniformServer";
+ALTER TABLE inspection.cadet_deficiency OWNER TO CURRENT_USER;
 INSERT INTO inspection.cadet_deficiency
 SELECT d.id,
     ci.fk_cadet,
@@ -373,7 +373,7 @@ FROM public."CadetDeficiency" d
 WHERE dt.dependent = 'cadet';
 --
 -- TOC entry 232 (class 1259 OID 21317)
--- Name: cadet_inspection; Type: TABLE; Schema: inspection; Owner: uniformServer
+-- Name: cadet_inspection; Type: TABLE; Schema: inspection; Owner: vk_server
 --
 CREATE TABLE inspection.cadet_inspection (
     id character(36) DEFAULT gen_random_uuid() NOT NULL,
@@ -382,7 +382,7 @@ CREATE TABLE inspection.cadet_inspection (
     uniform_complete boolean NOT NULL,
     inspector character varying(10) NOT NULL
 );
-ALTER TABLE inspection.cadet_inspection OWNER TO "uniformServer";
+ALTER TABLE inspection.cadet_inspection OWNER TO CURRENT_USER;
 INSERT INTO inspection.cadet_inspection
 SELECT id,
     fk_inspection,
@@ -392,7 +392,7 @@ SELECT id,
 FROM public."CadetInspection";
 --
 -- TOC entry 234 (class 1259 OID 21329)
--- Name: deficiency; Type: TABLE; Schema: inspection; Owner: uniformServer
+-- Name: deficiency; Type: TABLE; Schema: inspection; Owner: vk_server
 --
 CREATE TABLE inspection.deficiency (
     id character(36) DEFAULT gen_random_uuid() NOT NULL,
@@ -408,7 +408,7 @@ CREATE TABLE inspection.deficiency (
     fk_inspection_created character(36),
     fk_inspection_resolved character(36)
 );
-ALTER TABLE inspection.deficiency OWNER TO "uniformServer";
+ALTER TABLE inspection.deficiency OWNER TO CURRENT_USER;
 INSERT INTO inspection.deficiency
 SELECT cd.id,
     cd."fk_deficiencyType",
@@ -436,7 +436,7 @@ FROM public."CadetDeficiency" cd
     JOIN public."CadetInspection" ci ON ci.id = cd."fk_cadetInspection";
 --
 -- TOC entry 231 (class 1259 OID 21309)
--- Name: inspection; Type: TABLE; Schema: inspection; Owner: uniformServer
+-- Name: inspection; Type: TABLE; Schema: inspection; Owner: vk_server
 --
 CREATE TABLE inspection.inspection (
     id character(36) DEFAULT gen_random_uuid() NOT NULL,
@@ -446,7 +446,7 @@ CREATE TABLE inspection.inspection (
     time_start TIME without time zone,
     time_end TIME without time zone
 );
-ALTER TABLE inspection.inspection OWNER TO "uniformServer";
+ALTER TABLE inspection.inspection OWNER TO CURRENT_USER;
 INSERT INTO inspection.inspection
 SELECT id,
     fk_assosiation,
@@ -457,13 +457,13 @@ SELECT id,
 FROM public."Inspection";
 --
 -- TOC entry 236 (class 1259 OID 21344)
--- Name: uniform_deficiency; Type: TABLE; Schema: inspection; Owner: uniformServer
+-- Name: uniform_deficiency; Type: TABLE; Schema: inspection; Owner: vk_server
 --
 CREATE TABLE inspection.uniform_deficiency (
     deficiency_id character(36) NOT NULL,
     fk_uniform character(36) NOT NULL
 );
-ALTER TABLE inspection.uniform_deficiency OWNER TO "uniformServer";
+ALTER TABLE inspection.uniform_deficiency OWNER TO CURRENT_USER;
 INSERT INTO inspection.uniform_deficiency
 SELECT d.id,
     (
@@ -686,7 +686,7 @@ FROM inspection.deficiency d
     JOIN base.uniform u ON u.id = ud.fk_uniform
     LEFT JOIN base.uniform_issued ui ON ui.fk_uniform = u.id
     AND ui.date_returned IS NULL;
-ALTER TABLE inspection.v_deficiency_by_cadet OWNER TO "uniformServer";
+ALTER TABLE inspection.v_deficiency_by_cadet OWNER TO CURRENT_USER;
 -- View: base.v_cadet_generaloverview
 CREATE OR REPLACE VIEW base.v_cadet_generaloverview AS
 SELECT c.id,
@@ -717,7 +717,7 @@ GROUP BY c.id,
     ci.fk_inspection,
     ci.uniform_complete,
     i.date;
-ALTER TABLE base.v_cadet_generaloverview OWNER TO "uniformServer";
+ALTER TABLE base.v_cadet_generaloverview OWNER TO CURRENT_USER;
 DROP TABLE public."CadetDeficiency";
 DROP TABLE public."CadetDeficiencyType";
 DROP TABLE public."CadetInspection";
