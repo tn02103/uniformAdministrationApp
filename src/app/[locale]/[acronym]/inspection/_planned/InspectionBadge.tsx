@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import { Badge } from "react-bootstrap";
 
 export function InspectionBadge({ inspection }: { inspection: PlannedInspectionType | null }): React.ReactNode {
-     const t = useScopedI18n('inspection.planned.badge');
+    const t = useScopedI18n('inspection.planned.badge');
     if (!inspection) {
         return <Badge pill bg="success" data-testid="lbl_badge">{t('new')}</Badge>
     }

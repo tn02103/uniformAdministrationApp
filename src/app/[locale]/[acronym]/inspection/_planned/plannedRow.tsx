@@ -18,9 +18,9 @@ import { useEffect, useState } from "react";
 import { Col, FormControl, Row } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { InspectionBadge } from "./ColBadge";
-import { ButtonColumn } from "./ColButtons";
-import { DeragistrationCol } from "./ColDeregistrations";
+import { InspectionBadge } from "./InspectionBadge";
+import { InspectionButtonColumn } from "./InspectionButtonColumn";
+import { InspectionDeregistrationColumn } from "./InspectionDeregistrationColumn";
 
 export default function PlannedInspectionTableRow({
     inspection,
@@ -176,10 +176,10 @@ export default function PlannedInspectionTableRow({
                     }
                 </Col>
                 {(!editable && inspection) &&
-                    <DeragistrationCol inspection={inspection} openDeregistrationModal={() => openDeregistrationModal!(inspection.id)} />
+                    <InspectionDeregistrationColumn inspection={inspection} openDeregistrationModal={() => openDeregistrationModal!(inspection.id)} />
                 }
                 <Col xs={editable ? 12 : 6} md={0} className="position-md-absolute end-0 text-md-end my-1">
-                    <ButtonColumn editable={editable}
+                    <InspectionButtonColumn editable={editable}
                         handleCancel={handleCancel}
                         handleDelete={handleDelete}
                         handleEdit={handleEdit}

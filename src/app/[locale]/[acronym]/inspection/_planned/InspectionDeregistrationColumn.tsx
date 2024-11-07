@@ -1,9 +1,10 @@
+import { useScopedI18n } from "@/lib/locales/client";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
 import React from "react";
 import { Col, OverlayTrigger } from "react-bootstrap";
 
-export function DeragistrationCol({ inspection, openDeregistrationModal }: { inspection: PlannedInspectionType, openDeregistrationModal: () => void }) {
-
+export function InspectionDeregistrationColumn({ inspection, openDeregistrationModal }: { inspection: PlannedInspectionType, openDeregistrationModal: () => void }) {
+    const t = useScopedI18n('inspection.planned.label')
     return (
         <OverlayTrigger
             placement="bottom-start"
@@ -16,7 +17,7 @@ export function DeragistrationCol({ inspection, openDeregistrationModal }: { ins
         >
             <Col xs={6} md={1} className="my-1">
                 <a className="link-opacity-100 text-primary link-opacity-25-hover" role="button" onClick={openDeregistrationModal}>
-                    {inspection.deregistrations.length} <p className="m-0 d-inline d-md-none">Abmeldungen</p>
+                    {inspection.deregistrations.length} <p className="m-0 d-inline d-md-none">{t('deregistrations')}</p>
                 </a>
             </Col>
         </OverlayTrigger>

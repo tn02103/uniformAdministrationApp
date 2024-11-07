@@ -14,7 +14,7 @@ type ButtonColumnPropType = {
     inspection: PlannedInspectionType | null;
     nameDuplicationError: boolean
 };
-export function ButtonColumn({ editable, inspection, nameDuplicationError, handleCancel, handleEdit, handleDelete, handleStart, handleFinish }: ButtonColumnPropType) {
+export function InspectionButtonColumn({ editable, inspection, nameDuplicationError, handleCancel, handleEdit, handleDelete, handleStart, handleFinish }: ButtonColumnPropType) {
     const t = useScopedI18n('common.actions');
     if (editable || !inspection) {
         return (

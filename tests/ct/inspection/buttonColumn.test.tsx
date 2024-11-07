@@ -1,4 +1,4 @@
-import { ButtonColumn } from "@/app/[locale]/[acronym]/inspection/_planned/ColButtons";
+import { InspectionButtonColumn } from "@/app/[locale]/[acronym]/inspection/_planned/InspectionButtonColumn";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
 import '@testing-library/jest-dom';
 import { render, screen } from "@testing-library/react";
@@ -25,7 +25,7 @@ const renderButton = (inspection: PlannedInspectionType, editable?: boolean, nam
     const functions = getFunctions();
     render(
         <form onSubmit={functions.submit}>
-            <ButtonColumn
+            <InspectionButtonColumn
                 inspection={inspection}
                 editable={!!editable}
                 nameDuplicationError={!!nameDuplicationError}
