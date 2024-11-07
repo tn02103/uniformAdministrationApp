@@ -639,7 +639,7 @@ ADD CONSTRAINT "deregistration_fk_cadet_fkey" FOREIGN KEY ("fk_cadet") REFERENCE
 ALTER TABLE "inspection"."deregistration"
 ADD CONSTRAINT "deregistration_fk_inspection_fkey" FOREIGN KEY ("fk_inspection") REFERENCES "inspection"."inspection"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE "base"."assosiation_configuration"
-ADD CONSTRAINT "assosiation_configuration_assosiationId_fkey" FOREIGN KEY ("assosiationId") REFERENCES "authentication"."assosiation"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ADD CONSTRAINT "assosiation_configuration_assosiationId_fkey" FOREIGN KEY ("assosiationId") REFERENCES "authentication"."assosiation"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 -- View: inspection.v_deficiency_by_cadet
 CREATE OR REPLACE VIEW inspection.v_deficiency_by_cadet AS
 SELECT d.id,

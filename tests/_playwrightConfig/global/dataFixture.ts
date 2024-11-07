@@ -10,13 +10,13 @@ const uuidArray = (i: number) => Array(i).fill("").map(() => uuid());
 export type DataFixtureType = {
     staticData: StaticData;
 }
- const dataFixture = test.extend<{}, { staticData: StaticData }>({
+const dataFixture = test.extend<{}, { staticData: StaticData }>({
     staticData: [async ({ }, use) => {
         const i = Number(process.env.TEST_PARALLEL_INDEX ?? 0);
 
         let staticDataIds = [];
-        if (!fs.existsSync('./tests/testData/staticDataIds.json')) {
-            fs.writeFileSync('./tests/testData/staticDataIds.json', '[]');
+        if (!fs.existsSync('tests/_playwrightConfig/testData/staticDataIds.json')) {
+            fs.writeFileSync('tests/_playwrightConfig/testData/staticDataIds.json', '[]');
         }
         staticDataIds = require('../testData/staticDataIds.json');
         while (i >= staticDataIds.length) {

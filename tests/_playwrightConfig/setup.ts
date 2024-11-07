@@ -5,10 +5,6 @@ import { StaticDataIdType, getStaticDataIds } from './testData/staticDataGenerat
 const fs = require('fs');
 
 setup.use({ storageState: { cookies: [], origins: [] } });
-<<<<<<< HEAD:tests/_playwrightConfig/setup.ts
-=======
-
->>>>>>> develop:tests/setup.ts
 export type authenticatedFixture = { page: Page, staticData: StaticData }
 
 export const dataFixture = setup.extend<{}, { staticData: StaticData }>({
@@ -18,21 +14,17 @@ export const dataFixture = setup.extend<{}, { staticData: StaticData }>({
 
         const index = Number(i);
 
-        
+
         let staticDataIds = [];
-        if (!fs.existsSync('./tests/testData/staticDataIds.json')) {
-            fs.writeFileSync('./tests/testData/staticDataIds.json', '[]');
+        if (!fs.existsSync('tests/_playwrightConfig/testData/staticDataIds.json')) {
+            fs.writeFileSync('tests/_playwrightConfig/testData/staticDataIds.json', '[]');
         }
         staticDataIds = require('./testData/staticDataIds.json');
 
         while (index >= staticDataIds.length) {
             const ids: StaticDataIdType[] = staticDataIds;
             ids.push(getStaticDataIds());
-<<<<<<< HEAD:tests/_playwrightConfig/setup.ts
             await fs.writeFileSync('tests/_playwrightConfig/testData/staticDataIds.json', JSON.stringify(ids, null, 4));
-=======
-            await fs.writeFileSync('./Tests/testData/staticDataIds.json', JSON.stringify(ids, null, 4));
->>>>>>> develop:tests/setup.ts
         }
 
         const staticData = new StaticData(index);

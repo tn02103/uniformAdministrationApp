@@ -33,7 +33,7 @@ model AssosiationConfiguration {
     assosiationId            String      @id @db.Char(36)
     sendEmailAfterInspection Boolean
     inspectionReportEmails   String[]
-    assosiation              Assosiation @relation(fields: [assosiationId], references: [id])
+    assosiation              Assosiation @relation(fields: [assosiationId], references: [id], onDelete: Cascade)
 
     @@map("assosiation_configuration")
     @@schema("base")

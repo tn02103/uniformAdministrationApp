@@ -8,7 +8,8 @@ import { PlannedInspectionType } from "@/types/inspectionTypes";
 import { useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import PlannedInspectionTableRow from "./plannedRow";
-import DeregistrationModal from "./DeregistrationModal";
+import DeregistrationModal from "./deregistrationModal";
+
 
 export default function PlannedInspectionTable({
     ...props

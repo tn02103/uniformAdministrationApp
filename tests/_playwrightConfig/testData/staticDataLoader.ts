@@ -15,7 +15,7 @@ export class StaticData {
 
     constructor(i: number) {
 
-        if (!fs.existsSync('./tests/testData/staticDataIds.json')) {
+        if (!fs.existsSync('tests/_playwrightConfig/testData/staticDataIds.json')) {
             throw Error('No Static Ids found');
         }
         const staticDataIds = require('./staticDataIds.json');
@@ -302,7 +302,6 @@ class StaticDataCleanup {
 
         await this.deleteCadet();
         await this.deleteUsers();
-        await this.deleteAssosiationConfiguration();
         await this.deleteAssosiation();
     }
     private deleteDeficiency = () => prisma.deficiency.deleteMany({

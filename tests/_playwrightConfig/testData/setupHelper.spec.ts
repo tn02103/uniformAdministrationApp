@@ -3,9 +3,8 @@ import { StaticDataIdType, getStaticDataIds } from "./staticDataGenerator";
 import { StaticData } from "./staticDataLoader";
 const fs = require('fs');
 
-test.skip('', async () => {
-    const staticData = new StaticData(0);
-    await staticData.fill.all();
+test.only('', async () => {
+    const staticData = new StaticData(2);
     await staticData.cleanup.removeAssosiation();
 })
 
@@ -16,8 +15,8 @@ test.skip('fillDB with static data', async () => {
 });
 
 test.skip('generateTestIdSet', async () => {
-    if (!fs.existsSync('./tests/testData/staticDataIds.json')) {
-        fs.writeFileSync('./tests/testData/staticDataIds.json', '[]');
+    if (!fs.existsSync('tests/_playwrightConfig/testData/staticDataIds.json')) {
+        fs.writeFileSync('tests/_playwrightConfig/testData/staticDataIds.json', '[]');
     }
     const ids: StaticDataIdType[] = require('../testData/staticDataIds.json');
 
