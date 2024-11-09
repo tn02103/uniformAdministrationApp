@@ -1,7 +1,7 @@
+import { getUsedSizesByType } from "@/dal/size/getUsedByType";
 import { getUniformType } from "@/dal/uniform/type/getter";
-import { prisma } from "@/lib/db";
 import { getI18n, getScopedI18n } from "@/lib/locales/config";
-import { uniformSizeArgs, UniformType } from "@/types/globalUniformTypes";
+import { UniformSize, UniformType } from "@/types/globalUniformTypes";
 import { Col, Row } from "react-bootstrap";
 import { z } from "zod";
 import FilterPanel from "./_filterPanel";
@@ -35,19 +35,10 @@ export default async function UniformListPage({
     if (typeId !== "null") {
         uniformType = await getUniformType(typeId);
     }
-    // TODO all Data Access schould be in the DAL!!! !IMPORTAND
-    const sizeList = await prisma.uniformSize.findMany({
-        ...uniformSizeArgs,
-        where: {
-            uniformList: {
-                some: {
-                    fk_uniformType: typeId,
-                    recdelete: null,
-                }
-            }
-        },
-        orderBy: { sortOrder: "asc" }
-    })
+    let sizeList: UniformSize[] = [];
+    if (uniformType) {
+        sizeList = await getUsedSizesByType(uniformType.id);
+    }
 
     return (
         <div className="container-xl bg-light rounded mt-4">
