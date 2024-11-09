@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Col, Pagination, Row } from "react-bootstrap";
 import GeneratedWorkflow from "./_generateWorkflow";
 import KnownIdsWorkflow from "./_knownIdsWorkflow";
+import { getScopedI18n } from "@/lib/locales/config";
 
 export default function Page() {
     const t = useScopedI18n('createUniform');

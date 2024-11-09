@@ -1,9 +1,15 @@
 import { prisma } from "@/lib/db";
-import { getI18n } from "@/lib/locales/config";
+import { getI18n, getScopedI18n } from "@/lib/locales/config";
 import { setStaticParamsLocale } from "next-international/server";
 import { Col, Row } from "react-bootstrap";
 import LoginForm from "./loginForm";
 
+export async function generateMetadata() {
+    const t = await getScopedI18n('pageTitles')
+    return {
+        title: t('login'),
+    }
+}
 
 export const dynamic = "force-dynamic";
 const LoginPage = async ({ params: { locale } }: { params: { locale: string } }) => {

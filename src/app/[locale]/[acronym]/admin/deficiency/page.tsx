@@ -1,10 +1,16 @@
 
-import { getI18n } from "@/lib/locales/config";
+import { getI18n, getScopedI18n } from "@/lib/locales/config";
 import { Col, Row } from "react-bootstrap";
 import DefTypeAdminTable from "./table";
 import { getDeficiencyAdmintypeList } from "@/actions/controllers/DeficiencyTypeController";
 
 
+export async function generateMetadata() {
+    const t = await getScopedI18n('pageTitles');
+    return {
+        title: t('admin.deficiency'),
+    }
+}
 export default async function DeficiencyAdministrationPage() {
     const t = await getI18n();
 

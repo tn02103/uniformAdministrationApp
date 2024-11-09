@@ -511,6 +511,22 @@ export default {
             },
         },
     },
+    pageTitles: {
+        "login": "Login - Uniformadmin",
+        "home": "Home - Uniformadmin",
+        "personnel": "Personnel - Uniformadmin",
+        "cadet.new": "Create person - Uniformadmin",
+        "cadet.person": "{firstname} {lastname} - personnel - Uniformadmin",
+        "uniform.new": "Create uniform parts - Uniformadmin",
+        "uniform.list": "{type} - uniform parts - Uniformadmin",
+        "uniform.list.notProvided": "Uniform parts - Uniformadmin",
+        "inspection": "Inspections - Uniformadmin",
+        "admin.user": "User administration - Uniformadmin",
+        "admin.uniform": "Uniform configuration - Uniformadmin",
+        "admin.uniform.size": "Uniform size configuration - Uniformadmin",
+        "admin.material": "material configuration - Uniformadmin",
+        "admin.deficiency": "deficiency configuration - Uniformadmin"
+    },
     modals: {
         messageModal: {
             uniform: {
