@@ -1,18 +1,41 @@
+import { getUniformType } from "@/dal/uniform/type/getter";
 import { prisma } from "@/lib/db";
-import { getI18n } from "@/lib/locales/config";
-import { uniformSizeArgs, uniformTypeArgs } from "@/types/globalUniformTypes";
+import { getI18n, getScopedI18n } from "@/lib/locales/config";
+import { uniformSizeArgs, UniformType } from "@/types/globalUniformTypes";
 import { Col, Row } from "react-bootstrap";
+import { z } from "zod";
 import FilterPanel from "./_filterPanel";
 import ListPanel from "./_listPanel";
 
+export async function generateMetadata({ params }: { params: { typeId: string } }) {
+    const t = await getScopedI18n('pageTitles')
+    if (z.string().uuid().safeParse(params.typeId).success) {
+        const type = await getUniformType(params.typeId);
+        if (type) {
+            return {
+                title: t('uniform.list', { type: type.name })
+            }
+        }
+    }
+    return {
+        title: t('uniform.list.notProvided'),
+    }
+}
 
-export default async function UniformListPage({ params: { typeId } }: any) {
+export default async function UniformListPage({
+    params: { typeId }
+}: {
+    params: {
+        typeId: string
+    }
+}) {
     const t = await getI18n();
 
-    const uniformType = await prisma.uniformType.findUnique({
-        where: { id: typeId },
-        ...uniformTypeArgs
-    });
+    let uniformType: UniformType | null = null
+    if (typeId !== "null") {
+        uniformType = await getUniformType(typeId);
+    }
+    // TODO all Data Access schould be in the DAL!!! !IMPORTAND
     const sizeList = await prisma.uniformSize.findMany({
         ...uniformSizeArgs,
         where: {
