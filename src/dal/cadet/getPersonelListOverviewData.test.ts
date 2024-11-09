@@ -1,9 +1,9 @@
 import { getPersonnelListOverviewData } from "@/dal/cadet/getPersonnelListOverviewData";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { StaticData } from "../../_playwrightConfig/testData/staticDataLoader";
-import { compareDates, runServerAction } from "../_helper";
-import { insertSvenKellerFirstInspection } from "../../_playwrightConfig/testData/dynamicData";
+import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { compareDates, runServerAction } from "../_helper/testHelper";
+import { insertSvenKellerFirstInspection } from "../../../tests/_playwrightConfig/testData/dynamicData";
 import { PersonnelListCadet } from "@/types/globalCadetTypes";
 
 const { data, ids, cleanup } = new StaticData(0);

@@ -1,7 +1,7 @@
 import { startInspection } from "@/dal/inspection/start";
 import { prisma } from "@/lib/db";
 import dayjs from "dayjs";
-import { StaticData } from "../../_playwrightConfig/testData/staticDataLoader";
+import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
 
 const staticData = new StaticData(0);
 afterEach(() => staticData.cleanup.inspection());
