@@ -1,28 +1,27 @@
-"use client";
-
+import { deleteUniformItem, getUniformFormValues, getUniformIssueHistory, saveUniformItem } from "@/actions/controllers/UniformController";
 import { useGlobalData } from "@/components/globalDataProvider";
+import TooltipIconButton from "@/components/TooltipIconButton";
 import { AuthRole } from "@/lib/AuthRoles";
 import { getUniformSizelist } from "@/lib/uniformHelper";
 import { UniformFormData, UniformSizelist, UniformType } from "@/types/globalUniformTypes";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button, Col, Form, FormSelect, Modal, Pagination, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import useSWR, { mutate } from "swr";
 import { useModal } from "../modalProvider";
-import TooltipIconButton from "@/components/TooltipIconButton";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { deleteUniformItem, getUniformFormValues, getUniformIssueHistory, saveUniformItem } from "@/actions/controllers/UniformController";
 
 export type UIDModalProps = {
     uniformId: string;
     uniformType: UniformType;
     ownerId: string | null;
     onClose: () => void;
+    onDataChanged?: () => void;
 }
-export default function UniformItemDetailModal({ uniformId, uniformType, ownerId, onClose }: UIDModalProps) {
+export default function UniformItemDetailModal({ uniformId, uniformType, ownerId, ...props }: UIDModalProps) {
     const { register, watch, setValue, getValues, reset, handleSubmit } = useForm<UniformFormData>();
     const modal = useModal();
     const router = useRouter();
@@ -57,6 +56,9 @@ export default function UniformItemDetailModal({ uniformId, uniformType, ownerId
     }
     async function handleSave(data: UniformFormData) {
         setEditable(false);
+        if (!uniformType.usingSizes) delete data.size;
+        if (!uniformType.usingGenerations) delete data.generation;
+
         mutate(
             `uniform.${uniformId}.formValues`,
             saveUniformItem(data),
@@ -67,6 +69,9 @@ export default function UniformItemDetailModal({ uniformId, uniformType, ownerId
             if (ownerId) {
                 mutate(`cadet.${ownerId}.uniform`);
             }
+            if (props.onDataChanged){
+                props.onDataChanged();
+            }
         }).catch((e) => {
             console.error(e);
             reset(uniform);
@@ -75,13 +80,12 @@ export default function UniformItemDetailModal({ uniformId, uniformType, ownerId
     }
 
     useEffect(() => {
-        const generationId = watch("generation");
-        if (generationId) {
-            generationChanged(generationId);
+        if (!editable) {
+            reset(uniform);
         }
-    }, [watch("generation")]);
+    }, [uniform, editable, reset]);
 
-    const generationChanged = async (generationId: string) => {
+    const generationChanged = useCallback(async (generationId?: string) => {
         const newSizelist = getUniformSizelist({
             generationId,
             type: uniformType,
@@ -109,11 +113,16 @@ export default function UniformItemDetailModal({ uniformId, uniformType, ownerId
             setValue("size", "null", { shouldValidate: true });
         }
         return newSizelist;
-    }
+    }, [setValue, setSizelist, getValues, sizelist, sizelists, uniformType]);
+
+    const generationId = watch("generation");
+    useEffect(() => {
+        generationChanged(generationId);
+    }, [generationId, generationChanged]);
 
     if (!uniform) return (<></>)
     return (
-        <Modal data-testid="div_popup" show onHide={onClose}>
+        <Modal data-testid="div_popup" show onHide={props.onClose}>
             <Modal.Header className="align-center text-center py-2 px-4" data-testid="div_header" closeButton>
                 <div className="w-100 fs-3 fw-bold">
                     {uniformType.name}: {uniform.number}
@@ -153,31 +162,39 @@ export default function UniformItemDetailModal({ uniformId, uniformType, ownerId
                                         ? <Form.Check type="switch" {...register('active')} label={watch('active') ? "Aktiv" : "Passiv"} />
                                         : uniform.active ? "Aktiv" : "Passiv"}
                                 </Col>
-                                <Label>Generation:</Label>
-                                <Col xs={6}>
-                                    {editable
-                                        ? <FormSelect
-                                            disabled={!editable}
-                                            {...register('generation')}
-                                        >
-                                            <option>K.A.</option>
-                                            {uniformType.uniformGenerationList.map((gen) => (
-                                                <option key={gen.id} value={gen.id}>{gen.name}</option>
-                                            ))}
-                                        </FormSelect>
-                                        : uniformType.uniformGenerationList.find(g => g.id === uniform.generation)?.name}
-                                </Col>
-                                <Label>Größe:</Label>
-                                <Col xs={6}>
-                                    {editable ?
-                                        <FormSelect {...register('size')}>
-                                            <option>K.A.</option>
-                                            {sizelist?.uniformSizes.map((size) => (
-                                                <option key={size.id} value={size.id}>{size.name}</option>
-                                            ))}
-                                        </FormSelect>
-                                        : sizelist?.uniformSizes.find(s => s.id === uniform.size)?.name}
-                                </Col>
+                                {uniformType.usingGenerations &&
+                                    <>
+                                        <Label>Generation:</Label>
+                                        <Col xs={6}>
+                                            {editable
+                                                ? <FormSelect
+                                                    disabled={!editable}
+                                                    {...register('generation')}
+                                                >
+                                                    <option>K.A.</option>
+                                                    {uniformType.uniformGenerationList.map((gen) => (
+                                                        <option key={gen.id} value={gen.id}>{gen.name}</option>
+                                                    ))}
+                                                </FormSelect>
+                                                : uniformType.uniformGenerationList.find(g => g.id === uniform.generation)?.name}
+                                        </Col>
+                                    </>
+                                }
+                                {uniformType.usingSizes &&
+                                    <>
+                                        <Label>Größe:</Label>
+                                        <Col xs={6}>
+                                            {editable ?
+                                                <FormSelect {...register('size')}>
+                                                    <option>K.A.</option>
+                                                    {sizelist?.uniformSizes.map((size) => (
+                                                        <option key={size.id} value={size.id}>{size.name}</option>
+                                                    ))}
+                                                </FormSelect>
+                                                : sizelist?.uniformSizes.find(s => s.id === uniform.size)?.name}
+                                        </Col>
+                                    </>
+                                }
                                 <Label>Kommentar:</Label>
                                 <Col xs={6}>
                                     <Form.Control disabled={!editable} plaintext={!editable} as={"textarea"} {...register('comment')} />
@@ -206,11 +223,11 @@ export default function UniformItemDetailModal({ uniformId, uniformType, ownerId
             <Modal.Footer className="justify-content-between">
                 <Col xs="auto">
                     {editable ?
-                        <Button type="reset" className="col-auto" variant="outline-secondary" onClick={() => { setEditable(false); reset(uniform); }}>
+                        <Button type="reset" className="col-auto" variant="outline-secondary" onClick={() => setEditable(false)}>
                             Abbrechen
                         </Button>
                         :
-                        <Button type="button" variant="outline-secondary" onClick={onClose}>
+                        <Button type="button" variant="outline-secondary" onClick={props.onClose}>
                             Schließen
                         </Button>
                     }
