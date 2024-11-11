@@ -32,7 +32,7 @@ export default async function UniformListPage({
     const t = await getI18n();
 
     let uniformType: UniformType | null = null
-    if (typeId !== "null") {
+    if (z.string().uuid().safeParse(typeId).success) {
         uniformType = await getUniformType(typeId);
     }
     let sizeList: UniformSize[] = [];
