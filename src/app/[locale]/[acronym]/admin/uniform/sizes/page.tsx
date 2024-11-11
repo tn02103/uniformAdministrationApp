@@ -1,12 +1,19 @@
 import UniformSizeDBHandler from "@/actions/dbHandlers/UniformSizeDBHandler";
 import { Card, CardBody } from "@/components/card";
 import { prisma } from "@/lib/db";
-import { getI18n } from "@/lib/locales/config";
+import { getI18n, getScopedI18n } from "@/lib/locales/config";
 import { Col, Row } from "react-bootstrap";
 import UniformsizeConfigurationHeader from "./header";
 import SizeItem from "./sizeItem";
 
 export const dynamic = 'auto';
+
+export async function generateMetadata() {
+    const t = await getScopedI18n('pageTitles');
+    return {
+        title: t('admin.uniform.size'),
+    }
+}
 
 export default async function UniformsizeConfigurationPage({ params }: { params: { acronym: string } }) {
     const t = await getI18n();

@@ -1,8 +1,14 @@
 
-import { getI18n } from "@/lib/locales/config";
+import { getI18n, getScopedI18n } from "@/lib/locales/config";
 import GeneralOverviewTable from "./table";
 import { getPersonnelListOverviewData } from "@/dal/cadet/getPersonnelListOverviewData";
 
+export async function generateMetadata() {
+    const t = await getScopedI18n('pageTitles')
+    return {
+        title: t('personnel'),
+    }
+}
 const CadetListPage = async ({ searchParams }: any) => {
     const t = await getI18n();
     const data = await getPersonnelListOverviewData({

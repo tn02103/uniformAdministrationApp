@@ -459,7 +459,7 @@ export default {
                 deactivate: "The type could not be deactivated. Reload the page and try again.",
                 delete: "Failed to delete the type. Try again after a reload.",
                 reactivate: "The type could not be reactivated. Reload the page and try again.",
-            },            
+            },
             entity: {
                 cadet: "Person",
                 uniform: "Uniformteil",
@@ -510,6 +510,22 @@ export default {
                 },
             },
         },
+    },
+    pageTitles: {
+        "login": "Login - Uniformadmin",
+        "home": "Home - Uniformadmin",
+        "personnel": "Personal - Uniformadmin",
+        "cadet.new": "Person anlegen - Uniformadmin",
+        "cadet.person": "{firstname} {lastname} - Personal -Uniformadmin",
+        "uniform.new": "Uniformteile anlegen - Uniformadmin",
+        "uniform.list": "{type} - Uniformteile - Uniformadmin",
+        "uniform.list.notProvided": "Uniformteile - Uniformadmin",
+        "inspection": "Uniformkontrollen - Uniformadmin",
+        "admin.user": "Nutzerverwaltung  - Uniformadmin",
+        "admin.uniform": "Uniform Konfiguration - Uniformadmin",
+        "admin.uniform.size": "Unifromgrößen Konfiguration - Uniformadmin",
+        "admin.material": "Material Konfiguration - Uniformadmin",
+        "admin.deficiency": "Mängel Konfiguration - Uniformadmin"
     },
     modals: {
         messageModal: {
@@ -589,7 +605,7 @@ export default {
                 de: "Deutsch",
                 en: "Englisch",
             },
-            cancel: "Abbrechen", 
+            cancel: "Abbrechen",
             change: "Ändern",
         },
     },
