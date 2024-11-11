@@ -33,6 +33,8 @@ export default {
             return: "Zurückziehen",
             replace: "Austauschen",
             rename: "Umbenennen",
+            restart: "Wieder starten",
+            finish: "Beenden",
             changeIssued: "Anzahl & Typ verändern",
             delete: "Löschen",
             load: "Laden",
@@ -41,6 +43,7 @@ export default {
             changePosition: "Position wechseln",
             changePassword: "Passwort ändern",
             ok: "Verstanden",
+            startInspection: "Inspektion Starten",
         },
         cadet: {
             cadet: "Person",
@@ -305,7 +308,9 @@ export default {
             inspection: {
                 group: "Inspektion",
                 start: "Starten",
+                unfinished: "Alte Kontrolle Beenden",
                 stop: "Stoppen",
+                inspection: "Verwaltung",
             },
             administration: {
                 group: "Administration",
@@ -454,7 +459,7 @@ export default {
                 deactivate: "The type could not be deactivated. Reload the page and try again.",
                 delete: "Failed to delete the type. Try again after a reload.",
                 reactivate: "The type could not be reactivated. Reload the page and try again.",
-            },            
+            },
             entity: {
                 cadet: "Person",
                 uniform: "Uniformteil",
@@ -467,6 +472,60 @@ export default {
                 'message#other': "Do you really want to delete the type? This will also delete all {count} existing defects. This action cannot be undone.",
             },
         },
+    },
+    inspection: {
+        header: {
+            planned: 'Geplannte Kontrollen',
+        },
+        planned: {
+            badge: {
+                new: "Neu",
+                planned: "Geplant",
+                active: "Aktiv",
+                finished: "Abgeschlossen",
+                unfinished: "nicht Abgeschlossen",
+                expired: "Abgelaufen",
+            },
+            label: {
+                deregistrations: 'Abmeldungen',
+                onDay: "am {day}",
+                finishInspection: 'Uniformkontrolle Beenden',
+                time: {
+                    finished: 'Endzeit:',
+                },
+                state: 'Status',
+                date: 'Datum',
+                name: 'Name',
+                noInspections: 'Keine Inspektionen geplannt',
+            },
+            errors: {
+                deregistration: 'Die Person konnte nicht von der Inspektion abgemeldet werden',
+                register: 'Die Abmeldung der Person konnte nicht zurückgenommen werden',
+                start: 'Die Kontrolle konte nicht gestartet werden',
+                nameDuplication: 'Der Name wird bereits von einer anderen Kontrolle verwendet',
+                endBeforStart: 'Die Endzeit muss nach der Startzeit um {startTime} sein',
+                unfinished: {
+                    header: 'Alte Kontrolle akiv',
+                    message: 'Es ist noch eine alte Uniformkontrolle aktiv. Bitte Beenden Sie zuerst die Alte Kontrolle bevor sie eine neue Starten!',
+                },
+            },
+        },
+    },
+    pageTitles: {
+        "login": "Login - Uniformadmin",
+        "home": "Home - Uniformadmin",
+        "personnel": "Personal - Uniformadmin",
+        "cadet.new": "Person anlegen - Uniformadmin",
+        "cadet.person": "{firstname} {lastname} - Personal -Uniformadmin",
+        "uniform.new": "Uniformteile anlegen - Uniformadmin",
+        "uniform.list": "{type} - Uniformteile - Uniformadmin",
+        "uniform.list.notProvided": "Uniformteile - Uniformadmin",
+        "inspection": "Uniformkontrollen - Uniformadmin",
+        "admin.user": "Nutzerverwaltung  - Uniformadmin",
+        "admin.uniform": "Uniform Konfiguration - Uniformadmin",
+        "admin.uniform.size": "Unifromgrößen Konfiguration - Uniformadmin",
+        "admin.material": "Material Konfiguration - Uniformadmin",
+        "admin.deficiency": "Mängel Konfiguration - Uniformadmin"
     },
     modals: {
         messageModal: {
@@ -546,7 +605,7 @@ export default {
                 de: "Deutsch",
                 en: "Englisch",
             },
-            cancel: "Abbrechen", 
+            cancel: "Abbrechen",
             change: "Ändern",
         },
     },

@@ -19,7 +19,7 @@ type GlobalDataProviderPropType = {
     userRole: AuthRole;
     useBeta: boolean;
     sizelists: UniformSizelist[];
-    inspectionState: InspectionStatus;
+    inspectionState: InspectionStatus | null;
 }
 
 export let GlobalDataContext: Context<GlobalDataProviderContextType>;
@@ -31,7 +31,6 @@ const GlobalDataProvider = ({ children, ...props }: GlobalDataProviderPropType) 
         return {
             userRole: props.userRole,
             useBeta: props.useBeta,
-
             sizelists: props.sizelists,
         }
     }, [props.userRole]);

@@ -1,9 +1,9 @@
 import { expect } from "playwright/test";
 import { prisma } from "../../../../src/lib/db";
-import { numberValidationTests } from "../../../global/testSets";
-import { CreateUniformPage } from "../../../pages/uniform/create/index.page";
-import { adminTest } from "../../../setup";
-import { StaticData } from "../../../testData/staticDataLoader";
+import { numberValidationTests } from "../../../_playwrightConfig/global/testSets";
+import { CreateUniformPage } from "../../../_playwrightConfig/pages/uniform/create/index.page";
+import { adminTest } from "../../../_playwrightConfig/setup";
+import { StaticData } from "../../../_playwrightConfig/testData/staticDataLoader";
 
 type Fixture = {
     createPage: CreateUniformPage,

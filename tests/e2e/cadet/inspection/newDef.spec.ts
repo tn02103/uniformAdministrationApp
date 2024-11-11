@@ -1,12 +1,12 @@
 import { prisma } from "@/lib/db";
 import { expect } from "playwright/test";
-import { viewports } from "../../../global/helper";
-import { CommentValidationTests, newNameValidationTests } from "../../../global/testSets";
-import { CadetInspectionComponent } from "../../../pages/cadet/cadetInspection.component";
-import { CadetUniformComponent } from "../../../pages/cadet/cadetUniform.component";
-import { SimpleFormPopupComponent } from "../../../pages/popups/SimpleFormPopup.component";
-import { adminTest } from "../../../setup";
-import { removeInspection, startInspection } from "../../../testData/dynamicData";
+import { viewports } from "../../../_playwrightConfig/global/helper";
+import { CommentValidationTests, newNameValidationTests } from "../../../_playwrightConfig/global/testSets";
+import { CadetInspectionComponent } from "../../../_playwrightConfig/pages/cadet/cadetInspection.component";
+import { CadetUniformComponent } from "../../../_playwrightConfig/pages/cadet/cadetUniform.component";
+import { SimpleFormPopupComponent } from "../../../_playwrightConfig/pages/popups/SimpleFormPopup.component";
+import { adminTest } from "../../../_playwrightConfig/setup";
+import { startInspection } from "../../../_playwrightConfig/testData/dynamicData";
 
 type Fixture = {
     inspectionComponent: CadetInspectionComponent;
@@ -23,8 +23,8 @@ const test = adminTest.extend<Fixture>({
 test.beforeAll(async ({ staticData: { index } }) => {
     await startInspection(index);
 });
-test.afterAll(async ({ staticData: { index } }) => {
-    await removeInspection(index);
+test.afterAll(async ({ staticData }) => {
+    staticData.cleanup.inspection();
 });
 
 test('E2E0271: validate add and remove newDef', async ({ page, inspectionComponent }) => {

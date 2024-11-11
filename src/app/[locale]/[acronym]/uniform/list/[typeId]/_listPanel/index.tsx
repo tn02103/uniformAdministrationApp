@@ -4,7 +4,7 @@ import { getUniformListWithOwner } from "@/actions/controllers/UniformController
 import { useI18n } from "@/lib/locales/client";
 import { UniformType, UniformWithOwner } from "@/types/globalUniformTypes";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button, Table } from "react-bootstrap";
 import { useSessionStorage } from "usehooks-ts";
 import { FilterType } from "../_filterPanel";
@@ -23,7 +23,7 @@ export default function ListPanel({
     const searchParams = useSearchParams();
     const pathname = usePathname();
 
-    async function loadData() {
+  const loadData = useCallback(async () => {
         if (!uniformType)
             return;
 
@@ -34,11 +34,11 @@ export default function ListPanel({
                 setUniformList(data);
             }
         }).catch(console.error);
-    }
+    }, [uniformType, filter, searchParams]);
 
     useEffect(() => {
         loadData();
-    }, [filter, searchParams])
+    }, [filter, searchParams, loadData])
 
     function changeSortOrder(orderBy: string) {
         const urlOrderBy = searchParams.get('orderBy') ?? "number";
@@ -109,6 +109,7 @@ export default function ListPanel({
                                 uniform={uniform}
                                 uniformType={uniformType}
                                 searchString={searchParams.get('search')!}
+                                loadData={loadData}
                             />
                         );
                     })

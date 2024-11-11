@@ -49,12 +49,19 @@ export type CadetInspection = {
 
 export type InspectionStatus = {
     active: false,
+    state: 'none' | 'planned' | 'finished'
+} | {
+    active: false,
+    state: 'unfinished',
+    id: string,
 } | {
     active: true,
+    state: 'active',
     id: string,
     date: Date,
     inspectedCadets: number,
     activeCadets: number,
+    deregistrations: number,
 }
 
 export type InspectionInformation = {
@@ -67,29 +74,35 @@ export type InspectionInformation = {
 }
 
 export type InspectionReview = InspectionInformation & {
-    cadetList: InspectionReviewCadet[],
-    activeDeficiencyList: InspectionReviewDeficiency[],
+    name: string;
+    date: Date,
+    timeStart: Date,
+    timeEnd: Date,
+    deregisteredCadets: number;
+    activeCadets: number;
+    cadetList: InspectionReviewCadet[];
+    activeDeficiencyList: InspectionReviewDeficiency[];
 }
 
 export type InspectionReviewCadet = {
     cadet: {
-        id: string,
-        firstname: string,
-        lastname: string,
-    },
-    lastInspection: {
-        id: string,
-        date: Date,
-        uniformComplete: boolean,
-    }
-    activeDeficiencyCount: number,
-    newlyClosedDeficiencyCount: number,
-    overalClosedDeficiencyCount: number,
+        id: string;
+        firstname: string;
+        lastname: string;
+    };
+    lastInspection?: {
+        id: string;
+        date: Date;
+        uniformComplete: boolean;
+    };
+    activeDeficiencyCount: number;
+    newlyClosedDeficiencyCount: number;
+    overalClosedDeficiencyCount: number;
 }
 
 export type InspectionReviewDeficiency = {
     id: string,
-    cadet: {
+    cadet?: {
         id: string,
         firstname: string,
         lastname: string,
@@ -98,6 +111,8 @@ export type InspectionReviewDeficiency = {
     deficiencyType: {
         id: string,
         name?: string,
+        dependent: string,
+        relation: string;
     },
     comment: string,
     dateCreated?: Date,

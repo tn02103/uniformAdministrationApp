@@ -11,7 +11,7 @@
 
 ## .env
 ```
-DATABASE_URL=postgres://{{username}}:{{password}}@{{url}}/{{database}}"
+DATABASE_URL="postgres://{{username}}:{{password}}@{{url}}/{{database}}"
 DATABASE_URL_SHADOW=Database for prisma migrations
 STAGE={{DEV | BETA | PRO}}
 IRON_SESSION_COOKIE_NAME=name of the ironSession cookie
@@ -29,8 +29,12 @@ TEST_WORKERS=amount of playwrigt workers
 - run `npx prisma db push` to create tables
 - run `npx prisma db seed` to fill tables with DEV-Data
 
+
 ### Migrations
--> comming soon
+- run `npx prisma migrate deploy` for migrations in production server
+- run `npx prisma migrate dev` to generate new migration on dev Server
+- run `npx prisma migrate reset` to reset the database. Runs the seed scritp after migrations.
+
 
 ## Playwright
 To initialize:

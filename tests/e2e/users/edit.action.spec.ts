@@ -3,10 +3,10 @@ import { User } from "@prisma/client";
 import bcrypt from 'bcrypt';
 import { ViewportSize, expect } from "playwright/test";
 import german from "../../../public/locales/de";
-import { viewports } from "../../global/helper";
-import { newNameValidationTests, passwordTests, usernameTests } from "../../global/testSets";
-import { UserAdministrationPage } from "../../pages/admin/user/userAdministration.page";
-import { adminTest } from "../../setup";
+import { viewports } from "../../_playwrightConfig/global/helper";
+import { newNameValidationTests, passwordTests, usernameTests } from "../../_playwrightConfig/global/testSets";
+import { UserAdministrationPage } from "../../_playwrightConfig/pages/admin/user/userAdministration.page";
+import { adminTest } from "../../_playwrightConfig/setup";
 
 type Fixture = {
     userPage: UserAdministrationPage;

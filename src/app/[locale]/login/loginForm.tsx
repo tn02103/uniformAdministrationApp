@@ -25,12 +25,14 @@ const LoginForm = ({ assosiations }: PropType) => {
     const t = useI18n();
     const router = useRouter();
     const searchParam = useSearchParams();
-    const { register, handleSubmit, formState: { errors, isSubmitting }, setValue } = useForm<RegistrationFormType>({ defaultValues: { assosiation: undefined } });
+    const { register, handleSubmit, formState: { errors }, setValue } = useForm<RegistrationFormType>({ defaultValues: { assosiation: undefined } });
 
 
-    const [failedLogin, setFailedLogin] = useState<boolean>(false);
+    const [failedLogin, setFailedLogin] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     async function onSubmit(data: RegistrationFormType) {
+        setIsSubmitting(true);
         data.username = data.username.trim();
         let deviceId: string;
         const storageString = localStorage.getItem(process.env.NEXT_PUBLIC_LOCAL_AUTH_KEY as string)
@@ -61,13 +63,14 @@ const LoginForm = ({ assosiations }: PropType) => {
                 }
             } else if (response.status === 401) {
                 setFailedLogin(true);
+                setIsSubmitting(false);
             }
-
         }).catch(error => {
             setFailedLogin(false);
             console.error(error);
             toast.error(t('login.error.unknown'));
-        });
+            setIsSubmitting(false);
+        })
     }
 
     // onMount

@@ -1,10 +1,15 @@
 import { getUserList } from "@/actions/controllers/UserController";
-import { getI18n } from "@/lib/locales/config";
+import { getI18n, getScopedI18n } from "@/lib/locales/config";
 import { Col, Row } from "react-bootstrap";
 import UserAdminTable from "./table";
 
 export const dynamic = 'auto';
-
+export async function generateMetadata() {
+    const t = await getScopedI18n('pageTitles');
+    return {
+        title: t('admin.user'),
+    }
+}
 
 export default async function UserAdminPage() {
     const t = await getI18n();

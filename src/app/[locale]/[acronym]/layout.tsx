@@ -1,4 +1,5 @@
-import { getInspectionState } from "@/actions/controllers/InspectionController";
+import "server-only";
+
 import { getUniformTypeList } from "@/actions/controllers/UniformConfigController";
 import { getUniformSizelists } from "@/actions/controllers/UniformSizeController";
 import GlobalDataProvider from "@/components/globalDataProvider";
@@ -7,7 +8,8 @@ import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
 import { redirect } from "next/navigation";
 import { ReactNode } from "react";
-import "server-only";
+import { AuthRole } from "@/lib/AuthRoles";
+import { getInspectionState } from "@/dal/inspection/state";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +42,7 @@ const Layout = async ({
         getUniformTypeList(),
         prisma.assosiation.findUnique({ where: { id: user.assosiation } }),
         getUniformSizelists(),
-        getInspectionState(),
+        (user.role > AuthRole.user) ? getInspectionState() : null,
     ])
 
     if (!assosiation) {
@@ -58,7 +60,7 @@ const Layout = async ({
             <div>
                 {modal}
                 <div className="container-fluid p-0 m-0 p-md-auto">
-                    <Sidebar assosiation={assosiation} username={user.name} >
+                    <Sidebar assosiation={assosiation} username={user.name}>
                         {children}
                     </Sidebar>
                 </div>

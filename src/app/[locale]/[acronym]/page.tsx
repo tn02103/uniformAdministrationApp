@@ -1,8 +1,15 @@
+import { getScopedI18n } from "@/lib/locales/config";
 import { faAddressCard, faCircle, faGear, faMitten, faPlus, faShirt, faUser, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { Col, Row } from "react-bootstrap";
 
+export async function generateMetadata() {
+    const t = await getScopedI18n('pageTitles')
+    return {
+        title: t('home'),
+    }
+}
 export default function Homepage() {
     return (
         <div className="container-lg bg-light rounded p-0 py-4 position-relative">

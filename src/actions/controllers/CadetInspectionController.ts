@@ -5,7 +5,6 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { descriptionValidationPattern, uuidValidationPattern } from "@/lib/validations";
 import { CadetInspection, Deficiency } from "@/types/deficiencyTypes";
-import { PrismaClient } from "@prisma/client";
 import { CadetInspectionDBHandler } from "../dbHandlers/CadetInspectionDBHandler";
 import { genericSAValidatiorV2 } from "../validations";
 
@@ -79,8 +78,11 @@ export const saveCadetInspection = async (data: FormType, cadetId: string, unifo
     ]);
 
     await prisma.$transaction(async (client) => {
+        // DEREGISTRATIONS
+        await dbHandler.removeDeregistration(cadetId, inspection.id, client);
+
         // INSERT | UPDATE cadet_inspection
-        await dbHandler.upsertCadetInspection(cadetId, inspection.id, uniformComplete, username, client as PrismaClient);
+        await dbHandler.upsertCadetInspection(cadetId, inspection.id, uniformComplete, username, client);
 
         // RESOLVING OLD DEFICIENCIES
         if (oldDeficiencyList) {
@@ -106,10 +108,10 @@ export const saveCadetInspection = async (data: FormType, cadetId: string, unifo
                 });
             // -- resolving & unresolving deficiencies
             if (deficiencyIdsToResolve.length > 0) {
-                await dbHandler.resolveDeficiencies(deficiencyIdsToResolve, inspection.id, username, assosiation, client as PrismaClient);
+                await dbHandler.resolveDeficiencies(deficiencyIdsToResolve, inspection.id, username, assosiation, client);
             }
             if (deficiencyIdsToUnresolve.length > 0) {
-                await dbHandler.unresolveDeficiencies(deficiencyIdsToUnresolve, assosiation, client as PrismaClient);
+                await dbHandler.unresolveDeficiencies(deficiencyIdsToUnresolve, assosiation, client);
             }
         }
 
@@ -138,9 +140,9 @@ export const saveCadetInspection = async (data: FormType, cadetId: string, unifo
             if (!def.description) throw new Error("Could not save Deficiency description is missing");
 
             // -- save data
-            const dbDef = await dbHandler.upsertDeficiency(def, username, assosiation, client as PrismaClient, inspection.id);
+            const dbDef = await dbHandler.upsertDeficiency(def, username, assosiation, client, inspection.id);
             if (type.dependent === "uniform") {
-                await dbHandler.upsertDeficiencyUniform(dbDef.id, def.fk_uniform!, client as PrismaClient);
+                await dbHandler.upsertDeficiencyUniform(dbDef.id, def.fk_uniform!, client);
             } else {
                 const data = {
                     fk_cadet: cadetId,
@@ -148,7 +150,7 @@ export const saveCadetInspection = async (data: FormType, cadetId: string, unifo
                     fk_material: (type.relation === "material") ? def.fk_material : undefined,
                 }
 
-                await dbHandler.upsertDeficiencyCadet(dbDef.id, data, client as PrismaClient);
+                await dbHandler.upsertDeficiencyCadet(dbDef.id, data, client);
             }
 
             // -- remove from list
@@ -159,7 +161,7 @@ export const saveCadetInspection = async (data: FormType, cadetId: string, unifo
 
         // DELETE deficiencies not removed from list
         if (activeInspectionDeficiencies && activeInspectionDeficiencies.length > 0) {
-            await dbHandler.deleteNewDeficiencies(activeInspectionDeficiencies.map(d => d.id!), assosiation, client as PrismaClient);
+            await dbHandler.deleteNewDeficiencies(activeInspectionDeficiencies.map(d => d.id!), assosiation, client);
         }
     });
 });

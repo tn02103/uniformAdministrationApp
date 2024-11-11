@@ -1,5 +1,7 @@
 
-import { getInspectionState } from "@/actions/controllers/InspectionController";
+import { getPlannedInspectionList } from "@/dal/inspection/planned/get";
+import { getInspectionState } from "@/dal/inspection/state";
+import { PlannedInspectionType } from "@/types/inspectionTypes";
 import useSWR from "swr";
 
 export function useInspectionState() {
@@ -12,5 +14,19 @@ export function useInspectionState() {
     );
     return {
         inspectionState: data,
+    }
+}
+
+export function usePlannedInspectionList(initialData?: PlannedInspectionType[]) {
+    const {data, mutate} = useSWR(
+        "inspection.planned.list",
+        getPlannedInspectionList,
+        {
+            fallbackData: initialData,
+        }
+    )
+    return {
+        inspectionList: data,
+        mutate,
     }
 }
