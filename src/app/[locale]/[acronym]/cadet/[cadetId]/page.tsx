@@ -17,9 +17,11 @@ export async function generateMetadata({ params }: { params: ParamType }) {
             title: t('cadet.new')
         }
     }
-    const cadet = await getCadetData(params.cadetId);
-    return {
-        title: t('cadet.person', { firstname: cadet.firstname, lastname: cadet.lastname }),
+    const cadet = await getCadetData(params.cadetId).catch(() => null);
+    if (cadet) {
+        return {
+            title: t('cadet.person', { firstname: cadet.firstname, lastname: cadet.lastname }),
+        }
     }
 }
 
