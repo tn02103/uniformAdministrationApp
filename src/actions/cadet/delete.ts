@@ -23,6 +23,7 @@ export const deleteCadet = async (cadetId: string) => genericSAValidatiorV2(
     prisma.uniformIssued.updateMany({
         where: {
             fk_cadet: cadetId,
+            dateIssued: {not: new Date()},
             dateReturned: null,
         },
         data: {
@@ -60,5 +61,5 @@ export const deleteCadet = async (cadetId: string) => genericSAValidatiorV2(
         }
     }),
 ])).then(() => {
-    revalidatePath(`/[locale]/app/cadet`);
+    revalidatePath(`/[locale]/app/cadet`, 'page');
 });
