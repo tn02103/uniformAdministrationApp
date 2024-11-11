@@ -4,6 +4,12 @@ import { getScopedI18n } from "@/lib/locales/config";
 import { Col, Row } from "react-bootstrap";
 import PlannedInspectionTable from "./_planned/plannedTable";
 
+export async function generateMetadata() {
+    const t = await getScopedI18n('pageTitles');
+    return {
+        title: t('inspection'),
+    }
+}
 export default async function InspectionAdministrationPage() {
     const [nameList, plannedInspections, t] = await Promise.all([
         getPersonnelNameList(),

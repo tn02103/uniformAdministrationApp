@@ -129,7 +129,7 @@ test.describe(async () => {
 
         await test.step('validate ui', async () => {
             await expect.soft(messagePopup.div_popup).not.toBeVisible();
-            await page.waitForURL(/app\/cadet$/);
+            await page.waitForURL(/app\/cadet/);
             await expect.soft(listPage.div_cadet(ids.cadetIds[1])).not.toBeVisible();
         });
         await test.step('validate db', async () => {

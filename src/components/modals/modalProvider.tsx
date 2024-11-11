@@ -22,7 +22,7 @@ type ModalContextType = {
     dangerConfirmationModal: (props: DangerConfirmationModalPropType) => void,
     simpleFormModal: (props: SimpleFormModalProps) => void,
     issueMaterialModal: (cadetId: string, materialGroup: MaterialGroup, issuedMaterialList: CadetMaterial[], oldMaterial?: CadetMaterial) => void,
-    uniformItemDetailModal: (uniformId: string, uniformType: UniformType, ownerId: string | null) => void,
+    uniformItemDetailModal: (uniformId: string, uniformType: UniformType, ownerId: string | null, onDataChanged?: () => void) => void,
     editGenerationModal: (generation: UniformGeneration | null, uniformType: UniformType, save: (data: UniformGeneration) => void) => void,
     changeUserPasswordModal: (save: (p: string) => Promise<any>, nameOfUser?: string) => void,
     editMaterialTypeModal: (groupName: string, typeList: Material[], groupId: string, type?: AdministrationMaterial) => void,
@@ -159,12 +159,13 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         showModal("IssueMaterialModal", props);
     }, []);
 
-    const uniformItemDetailModal = useCallback((uniformId: string, uniformType: UniformType, ownerId: string | null) => {
+    const uniformItemDetailModal = useCallback((uniformId: string, uniformType: UniformType, ownerId: string | null, onDataChanged?: () => void) => {
         const props: UIDModalProps = {
             uniformId,
             uniformType,
             ownerId,
             onClose,
+            onDataChanged,
         };
         showModal("UniformItemDetailModal", props);
     }, []);

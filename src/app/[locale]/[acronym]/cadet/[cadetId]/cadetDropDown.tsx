@@ -45,11 +45,6 @@ export default function CadetDropDown({
                 <Dropdown.Item onClick={handleDeleteCadet} data-testid={"btn_cadet_menu_delete"}>
                     {t('common.actions.delete')}
                 </Dropdown.Item>
-                {useBeta &&
-                    <DropdownItem onClick={() => window.open(`/api/cadet/${cadetId}/pdf`, '_blank')}>
-                        {t('generalOverview.issueCertificate')}
-                    </DropdownItem>
-                }
             </Dropdown.Menu>
         </Dropdown>
     )

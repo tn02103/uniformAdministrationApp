@@ -19,6 +19,7 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
     title: 'Uniformverwaltung',
     description: 'App zum Verwalen von Uniformteilen',
+    applicationName: 'Uniformadmin',
 }
 
 

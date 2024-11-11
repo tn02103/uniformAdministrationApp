@@ -8,6 +8,20 @@ import CadetInspectionCard from "./_inspctionTable/card";
 import MaterialTableContainer from "./_materialTable/container";
 import CadetUniformTableContainer from "./_uniformTable/container";
 import CadetDropDown from "./cadetDropDown";
+import { getScopedI18n } from "@/lib/locales/config";
+
+export async function generateMetadata({ params }: { params: ParamType }) {
+    const t = await getScopedI18n('pageTitles');
+    if (params.cadetId === "new") {
+        return {
+            title: t('cadet.new')
+        }
+    }
+    const cadet = await getCadetData(params.cadetId);
+    return {
+        title: t('cadet.person', { firstname: cadet.firstname, lastname: cadet.lastname }),
+    }
+}
 
 type PropType = {
     params: {
@@ -15,12 +29,10 @@ type PropType = {
         locale: string;
     };
 }
-
 export type ParamType = {
     cadetId: string;
     locale: string;
 }
-
 
 const CadetDetailPage = async (props: PropType) => {
     const newCadet = props.params.cadetId === "new";

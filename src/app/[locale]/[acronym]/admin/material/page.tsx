@@ -1,10 +1,16 @@
 import { getMaterialAdministrationConfiguration } from "@/actions/controllers/MaterialController";
-import { getI18n } from "@/lib/locales/config";
+import { getI18n, getScopedI18n } from "@/lib/locales/config";
 import { Col, Row } from "react-bootstrap";
 import MaterialConfigGroupDetail from "./groupDetail";
 import MaterialConfigGroupList from "./groupList";
 import MaterialConfigTypeList from "./typeList";
 
+export async function generateMetadata() {
+    const t = await getScopedI18n('pageTitles');
+    return {
+        title: t('admin.material'),
+    }
+}
 export default async function AdminMaterialPage() {
     const t = await getI18n();
     const config = await getMaterialAdministrationConfiguration();

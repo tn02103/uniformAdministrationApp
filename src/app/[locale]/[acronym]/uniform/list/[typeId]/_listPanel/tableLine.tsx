@@ -1,5 +1,3 @@
-"use client";
-
 import HighlightedText from "@/components/HighlightedText";
 import { useGlobalData } from "@/components/globalDataProvider";
 import { useModal } from "@/components/modals/modalProvider";
@@ -15,14 +13,20 @@ export default function TableLine({
     uniform,
     uniformType,
     searchString,
+    loadData,
 }: {
     uniform: UniformWithOwner;
     uniformType: UniformType;
     searchString: string;
+    loadData: () => void;
 }) {
     const t = useI18n();
     const { userRole } = useGlobalData();
     const modal = useModal();
+
+    const handleOpenDetialModal = () => {
+        modal?.uniformItemDetailModal(uniform.id, uniformType, uniform.issuedEntries?.[0]?.cadet.id, loadData)
+    }
 
     return (
         <tr data-testid={`div_uitem_${uniform.id}`}>
@@ -65,7 +69,7 @@ export default function TableLine({
                     variant="outline-seccondary"
                     className={(userRole < AuthRole.inspector) ? "d-md-none" : ""}
                     data-testid="btn_open"
-                    onClick={() => { modal?.uniformItemDetailModal(uniform.id, uniformType, uniform.issuedEntries?.[0]?.cadet.id) }}
+                    onClick={handleOpenDetialModal}
                 >
                     <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
                 </Button>

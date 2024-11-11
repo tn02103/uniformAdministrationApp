@@ -222,7 +222,7 @@ export const createUniformItems = (numberMap: UniformNumbersSizeMap, data: { uni
     {
         uniformTypeId: data.uniformTypeId,
         uniformGenerationId: data.generationId,
-        uniformSizeId: numberMap.filter(n => n.sizeId === "amount").map(n => n.sizeId)
+        uniformSizeId: numberMap.filter(n => n.sizeId !== "amount").map(n => n.sizeId)
     }
 ).then(() => prisma.$transaction(async (client) => {
     const allNumbers = numberMap.reduce((arr: number[], value) => ([...arr, ...value.numbers]), []);
