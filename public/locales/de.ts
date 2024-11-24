@@ -134,6 +134,7 @@ export default {
                 required: "Bitte eine Zahl angeben",
                 pattern: "Bitte eine valide Zahl eingeben",
                 patternPositive: "Bitte eine gültige positive Zahl eingeben",
+                positiv: "Die Zahl muss positiv sein",
                 max: "Die Zahl darf nicht höher als {value} sein",
                 maxLength: "Es sind höchstens {value} Stellige Zahlen erlaubt",
                 min: "Die Zahl muss größer {value} sein",
@@ -148,6 +149,7 @@ export default {
                 maxLength: "Es sind höchtens {value} Zeichen erlaubt",
                 noSpecialChars: "Es dürfen keine Sonderzeichen genutzt werden",
                 commentValidation: "Nicht alle Zeichen die Sie genutzt haben sind erlaubt",
+                descriptionPattern: "Nur die Sonderzeichen -_ sind erlaubt",
             },
             actions: {
                 changeSortorder: "Beim ändern der Reihnfolge ist ein unbekannter Fehler aufgetreten.",
@@ -172,6 +174,11 @@ export default {
                     duplicate: "Der Nutzername wird bereits von einem anderen Nutzer benutzt",
                 },
             },
+            custom: {
+                material: {
+                    "typename.duplication": "Der Name wird bereits von einem anderen Material der Gruppe verwendet"
+                }
+            }
         },
     },
     login: {

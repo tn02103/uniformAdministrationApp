@@ -1,4 +1,3 @@
-"use server";
 
 import { UnauthorizedException } from "@/errors/CustomException";
 import { AuthRole } from "@/lib/AuthRoles";
@@ -21,6 +20,14 @@ type AssosiationValidationDataType = {
     inspectionId?: string | string[],
 }
 
+export const getSAReturnType = <t>() => {
+    type returntype ={
+        error: {
+            message: string,
+            formField?: string,
+        }
+    }
+}
 
 function assosiationValidatior(assosiationValidations: AssosiationValidationDataType, fk_assosiation: string) {
     const validationPromisses: Promise<any>[] = [];

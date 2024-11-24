@@ -215,7 +215,14 @@ export const changeMaterialSortOrder = (materialId: string, up: boolean) => gene
  * @param targetQuantity 
  * @returns 
  */
-export const updateMaterial = (materialId: string, typename: string, actualQuantity: number, targetQuantity: number) => genericSAValidatiorV2(
+
+type updateMaterialReturnType = {
+    error: {
+        message: string,
+        formElement?: string,
+    }
+} | void;
+export const updateMaterial = (materialId: string, typename: string, actualQuantity: number, targetQuantity: number): Promise<updateMaterialReturnType> => genericSAValidatiorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(materialId)
         && descriptionValidationPattern.test(typename)
@@ -227,7 +234,12 @@ export const updateMaterial = (materialId: string, typename: string, actualQuant
     const group = await dbGroupHandler.getGroup(material.fk_materialGroup, client);
 
     if (group.typeList.some(t => (t.id !== materialId) && (t.typename === typename))) {
-        throw new SaveDataException('Could not update Material. Name duplicated');
+        return {
+            error: {
+                message: "custom.material.typename.duplication",
+                formElement: "typename"
+            }
+        }
     }
 
     await dbMaterialHandler.update(materialId, typename, actualQuantity, targetQuantity, client);

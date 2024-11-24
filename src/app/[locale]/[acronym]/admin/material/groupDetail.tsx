@@ -3,10 +3,12 @@
 import { deleteMaterialGroup, updateMaterialGroup } from "@/actions/controllers/MaterialController";
 import { TooltipActionButton } from "@/components/TooltipIconButton";
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/card";
+import ErrorMessage from "@/components/errorMessage";
 import { useModal } from "@/components/modals/modalProvider";
 import { useI18n } from "@/lib/locales/client";
-import { descriptionValidationPattern } from "@/lib/validations";
 import { AdministrationMaterialGroup } from "@/types/globalMaterialTypes";
+import { materialGroupFormSchema, MaterialGroupFormType } from "@/zod/material";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { Button, Col, FormCheck, FormControl, FormGroup, FormLabel, Row } from "react-bootstrap";
@@ -34,17 +36,21 @@ export default function MaterialConfigGroupDetail({
     const editable = searchParams.get('editable') === "true";
     const materialGroup = config.find(g => g.id === searchParams.get('selectedGroupId'));
 
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<FormType>({ mode: "onChange", values: materialGroup });
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<MaterialGroupFormType>({
+        mode: "onChange",
+        values: materialGroup,
+        resolver: zodResolver(materialGroupFormSchema)
+    });
 
     useEffect(() => {
         if (!editable && materialGroup) {
             reset({
                 description: materialGroup.description,
-                issuedDefault: materialGroup.issuedDefault ?? "",
+                issuedDefault: materialGroup.issuedDefault ?? null,
                 multitypeAllowed: materialGroup.multitypeAllowed,
             });
         }
-    }, [materialGroup])
+    }, [materialGroup, reset, editable])
 
     async function handleDelete() {
         if (!materialGroup) return;
@@ -117,23 +123,9 @@ export default function MaterialConfigGroupDetail({
                                     disabled={!editable}
                                     plaintext={!editable}
                                     {...register("description", {
-                                        required: {
-                                            value: true,
-                                            message: t('common.error.string.required'),
-                                        },
-                                        pattern: {
-                                            value: descriptionValidationPattern,
-                                            message: t('common.error.string.noSpecialChars'),
-                                        },
-                                        maxLength: {
-                                            value: 20,
-                                            message: t('common.error.string.maxLength', { value: 20 }),
-                                        },
                                         validate: (value) => (!config.find(g => (g.id !== materialGroup.id && g.description === value))) || t('admin.material.error.groupNameDuplicate')
                                     })} />
-                                <span data-testid="err_name" className="fs-7 text-danger">
-                                    {errors.description?.message}
-                                </span>
+                                <ErrorMessage testId="err_name" error={errors.description?.message} />
                             </Col>
                         </FormGroup>
                         <FormGroup as={Row}>
@@ -145,25 +137,9 @@ export default function MaterialConfigGroupDetail({
                                     plaintext={!editable}
                                     disabled={!editable}
                                     isInvalid={!!errors.issuedDefault}
-                                    {...register("issuedDefault", {
-                                        validate: (value) => {
-                                            if (!value || value === "")
-                                                return undefined;
-                                            if (!Number.isInteger(+value))
-                                                return t('common.error.number.pattern');
-                                            if (+value < 0)
-                                                return t('common.error.number.patternPositive');
-                                            return undefined;
-                                        },
-                                        max: {
-                                            value: 200,
-                                            message: t('admin.material.error.maxIssuedDefault', { value: 200 }),
-                                        }
-                                    })}
+                                    {...register("issuedDefault", { setValueAs: (value) => String(value).length == 0 ? null : +value })}
                                 />
-                                <span data-testid="err_issuedDefault" className="fs-7 text-danger">
-                                    {errors.issuedDefault?.message}
-                                </span>
+                                <ErrorMessage testId="err_issuedDefault" error={errors.issuedDefault?.message}/>
                             </Col>
                         </FormGroup>
                         <FormGroup as={Row}>
