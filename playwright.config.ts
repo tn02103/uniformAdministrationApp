@@ -46,6 +46,7 @@ export default defineConfig({
                 viewport: viewports.xxl
             },
         },
+        
         {
             name: 'firefox',
             use: {
