@@ -133,7 +133,7 @@ export default {
             number: {
                 required: "Bitte eine Zahl angeben",
                 pattern: "Bitte eine valide Zahl eingeben",
-                patternPositive: "Bitte eine gültige positive Zahl eingeben",
+                patternPositiv: "Bitte eine gültige positive Zahl eingeben",
                 positiv: "Die Zahl muss positiv sein",
                 max: "Die Zahl darf nicht höher als {value} sein",
                 maxLength: "Es sind höchstens {value} Stellige Zahlen erlaubt",
@@ -147,6 +147,7 @@ export default {
             string: {
                 required: "Bitte ausfüllen",
                 maxLength: "Es sind höchtens {value} Zeichen erlaubt",
+                lengthRequired: "Es wird eine Länge von {value} benötigt",
                 noSpecialChars: "Es dürfen keine Sonderzeichen genutzt werden",
                 commentValidation: "Nicht alle Zeichen die Sie genutzt haben sind erlaubt",
                 descriptionPattern: "Nur die Sonderzeichen -_ sind erlaubt",
@@ -181,6 +182,12 @@ export default {
                     },
                     groupname: {
                         duplication: "Der Name wird bereits von einer anderen Gruppe verwendet",
+                    },
+                },
+                uniform: {
+                    type: {
+                        nameDuplication: "Es existiert bereits ein Uniformtyp mit diesem Namen",
+                        acronymDuplication: "Das Acronym wird bereits vom Uniformtyp {name} benutzt",
                     },
                 },
             },

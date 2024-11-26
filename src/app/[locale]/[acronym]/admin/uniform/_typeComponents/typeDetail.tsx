@@ -3,11 +3,13 @@
 import { updateUniformType } from "@/actions/controllers/UniformConfigController";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/card";
+import ErrorMessage from "@/components/errorMessage";
 import { useUniformSizelists, useUniformType } from "@/dataFetcher/uniformAdmin";
+import { SAFormHandler } from "@/lib/SAFormHandler";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
-import { acronymValidationPattern, nameValidationPattern } from "@/lib/validations";
-import { UniformType } from "@/types/globalUniformTypes";
+import { uniformTypeFormSchema, UniformTypeFormType } from "@/zod/uniformConfig";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { Button, Col, FormCheck, FormControl, FormGroup, FormLabel, FormSelect, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
@@ -19,20 +21,24 @@ export default function UniformConfigTypeDetails({
 }: {
     editableState: [boolean, (b: boolean) => void];
     selectedTypeId: string;
-
 }) {
     const t = useI18n();
     const tType = useScopedI18n('common.uniform.type');
-    const { handleSubmit, register, reset, watch, formState: { errors } } = useForm<UniformType>();
-
+    const { handleSubmit, register, reset, watch, formState: { errors }, setError } = useForm<UniformTypeFormType>({
+        resolver: zodResolver(uniformTypeFormSchema),
+        mode: "onChange",
+    });
 
     const { type, mutate } = useUniformType(selectedTypeId);
     const { sizelistList } = useUniformSizelists();
 
-    async function save(data: UniformType) {
+    async function save(data: UniformTypeFormType) {
         if (!data.usingSizes) data.fk_defaultSizelist = null;
-        mutate(updateUniformType(data)).then(() => {
-            setEditable(false);
+        SAFormHandler(() => updateUniformType(data), setError).then((result) => {
+            if (result.success) {
+                setEditable(false);
+                mutate(result.data);
+            }
         }).catch((e) => {
             console.error(e);
             toast.error(t('common.error.actions.save'));
@@ -73,75 +79,36 @@ export default function UniformConfigTypeDetails({
                                 <FormControl
                                     className="w-auto"
                                     isInvalid={!!(errors?.name)}
-                                    {...register("name", {
-                                        required: {
-                                            value: true,
-                                            message: t('common.error.string.required'),
-                                        },
-                                        pattern: {
-                                            value: nameValidationPattern,
-                                            message: t('common.error.string.noSpecialChars'),
-                                        },
-                                        maxLength: {
-                                            value: 10,
-                                            message: t('common.error.string.maxLength', { value: 10 }),
-                                        }
-                                    })}
+                                    {...register("name")}
                                 />
-                                <div data-testid="err_name" className="text-danger fs-7">
-                                    {errors?.name?.message}
-                                </div>
+                                <ErrorMessage error={errors.name?.message} testId="err_name" />
                             </FormGroup>
                             <FormGroup className="mt-2">
                                 <FormLabel className="mb-0">
                                     {tType('acronym')}:
                                 </FormLabel>
                                 <FormControl
-                                    className="w-25"
+                                    className="w-50"
                                     isInvalid={!!(errors?.acronym)}
                                     {...register("acronym", {
-                                        required: {
-                                            value: true,
-                                            message: t('common.error.string.required'),
-                                        },
-                                        pattern: {
-                                            value: acronymValidationPattern,
-                                            message: t('common.error.uniform.acronym.pattern'),
-                                        },
-                                        maxLength: {
-                                            value: 2,
-                                            message: t('common.error.uniform.acronym.length'),
-                                        }
+                                        setValueAs: (value: string) => value.toUpperCase(),
                                     })}
                                 />
-                                <div data-testid="err_acronym" className="text-danger fs-7">
-                                    {errors?.acronym?.message}
-                                </div>
+                                <ErrorMessage error={errors.acronym?.message} testId="err_acronym" />
                             </FormGroup>
                             <FormGroup className="mt-2">
                                 <FormLabel className="mb-0">
                                     {tType('issuedDefault')}:
                                 </FormLabel>
                                 <FormControl
-                                    className="w-25"
+                                    className="w-50"
                                     isInvalid={!!(errors.issuedDefault)}
                                     inputMode="numeric"
                                     {...register("issuedDefault", {
-                                        valueAsNumber: true,
-                                        required: {
-                                            value: true,
-                                            message: t('common.error.amount.required')
-                                        },
-                                        validate: (value) => (Number.isInteger(value) && value >= 0) || t('common.error.number.patternPositive'),
-                                        max: {
-                                            value: 10,
-                                            message: t('common.error.amount.max', { value: 10 }),
-                                        },
+                                        setValueAs: (value) => String(value).length == 0 ? null : +value
                                     })}
                                 />
-                                <div data-testid="err_issuedDefault" className="text-danger fs-7">
-                                    {errors.issuedDefault?.message}
-                                </div>
+                                <ErrorMessage error={errors.issuedDefault?.message} testId="err_issuedDefault" />
                             </FormGroup>
                             <FormGroup className="mt-2">
                                 <FormLabel className="mb-0">
@@ -170,20 +137,13 @@ export default function UniformConfigTypeDetails({
                                     <FormSelect
                                         className="w-auto"
                                         isInvalid={!!(errors?.fk_defaultSizelist)}
-                                        {...register("fk_defaultSizelist", {
-                                            required: {
-                                                value: true,
-                                                message: t('common.error.pleaseSelect'),
-                                            }
-                                        })}
+                                        {...register("fk_defaultSizelist")}
                                     >
                                         {sizelistList?.map(sizelist =>
                                             <option key={sizelist.id} value={sizelist.id}>{sizelist.name}</option>
                                         )}
                                     </FormSelect>
-                                    <div data-testid="err_defaultSL" className="text-danger fs-7">
-                                        {errors.fk_defaultSizelist?.message}
-                                    </div>
+                                    <ErrorMessage error={errors.fk_defaultSizelist?.message} testId="err_defaultSL" />
                                 </FormGroup>
                             }
                         </Row>

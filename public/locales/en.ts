@@ -133,7 +133,8 @@ export default {
             number: {
                 required: "Please enter a number",
                 pattern: "Please enter a valid number",
-                patternPositive: "Please enter a valid positive number",
+                patternPositiv: "Please enter a valid positive number",
+                positiv: "The number needs to be positiv",
                 max: "The number must not be higher than {value}",
                 maxLength: "Only {value} digit numbers are allowed",
                 min: "The number must be greater than {value}",
@@ -146,8 +147,10 @@ export default {
             string: {
                 required: "Please fill in",
                 maxLength: "A maximum of {value} characters are allowed",
+                lengthRequired: "A length of {value} is required",
                 noSpecialChars: "No special characters may be used",
                 commentValidation: "Not all characters you have used are allowed",
+                descriptionPattern: "Only the special Chars -_ are allowed",
             },
             actions: {
                 changeSortorder: "An unknown error occurred while changing the order.",
@@ -175,13 +178,19 @@ export default {
             custom: {
                 material: {
                     typename: {
-                        duplication: "The Name is already used by another Material in this Group",   
+                        duplication: "The Name is already used by another Material in this Group",
                     },
                     groupname: {
                         duplication: "Another Group with this name already exists",
                     },
                 },
-            }
+                uniform: {
+                    type: {
+                        nameDuplication: "A type with this name already exists",
+                        acronymDuplication: "The acronym is already used by the type {name}",
+                    },
+                },
+            },
         },
     },
     login: {

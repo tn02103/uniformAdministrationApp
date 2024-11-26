@@ -10,6 +10,7 @@ import { UniformDBHandler } from "../dbHandlers/UniformDBHandler";
 import UniformGenerationDBHandler from "../dbHandlers/UniformGenerationDBHandler";
 import { UniformTypeDBHandler } from "../dbHandlers/UniformTypeDBHandler";
 import { genericSAValidatiorV2 } from "../validations";
+import { UniformTypeFormType } from "@/zod/uniformConfig";
 
 const dbHandler = new UniformTypeDBHandler();
 const uniformHandler = new UniformDBHandler();
@@ -66,19 +67,45 @@ export const changeUniformTypeSortOrder = (uniformTypeId: string, up: boolean) =
     return dbHandler.getTypeList(assosiation, client as PrismaClient);
 }));
 
-export const updateUniformType = (data: UniformType): Promise<UniformType[]> => genericSAValidatiorV2(
+
+type updateUniformTypeReturnType = Promise<{
+    error: {
+        message: string,
+        formElement: string,
+    }
+}| UniformType[]>
+export const updateUniformType = (data: UniformTypeFormType): updateUniformTypeReturnType => genericSAValidatiorV2(
     AuthRole.materialManager,
-    uniformTypeValidator.test(data),
+    true, // uniformTypeValidator.test(data),
     { uniformTypeId: data.id, uniformSizelistId: data.fk_defaultSizelist }
 ).then(({ assosiation }) => prisma.$transaction(async (client) => {
     const list = await dbHandler.getTypeList(assosiation, client as PrismaClient);
 
     if (list.find(t => t.id !== data.id && t.name === data.name)) {
-        throw new SaveDataException("Name allready used by different sizelist");
+        return {
+            error: {
+                message: "custom.uniform.type.nameDuplication",
+                formElement: "name",
+            }
+        };
     }
 
-    if (list.find(t => t.id !== data.id && t.acronym === data.acronym)) {
-        throw new SaveDataException("Acronym allready used by different sizelist");
+    const acronymDupl = list.find(t => t.id !== data.id && t.acronym === data.acronym);
+    if (acronymDupl) {
+        return {
+            error: {
+                message: "custom.uniform.type.acronymDuplication;name:" + acronymDupl.name,
+                formElement: "acronym",
+            }
+        };
+    }
+    if (data.usingSizes && !data.fk_defaultSizelist) {
+        return {
+            error: {
+                message: "pleaseSelect",
+                formElement: "fk_defaultSizelist"
+            }
+        };
     }
 
     await dbHandler.updateData(data.id, {
