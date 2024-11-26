@@ -1,10 +1,11 @@
 "use client";
 
-import { deleteMaterialGroup, updateMaterialGroup } from "@/actions/controllers/MaterialController";
 import { TooltipActionButton } from "@/components/TooltipIconButton";
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/card";
 import ErrorMessage from "@/components/errorMessage";
 import { useModal } from "@/components/modals/modalProvider";
+import { deleteMaterialGroup } from "@/dal/material/group/delete";
+import { updateMaterialGroup } from "@/dal/material/group/update";
 import { SAFormHandler } from "@/lib/SAFormHandler";
 import { useI18n } from "@/lib/locales/client";
 import { AdministrationMaterialGroup } from "@/types/globalMaterialTypes";
@@ -15,12 +16,6 @@ import { useEffect } from "react";
 import { Button, Col, FormCheck, FormControl, FormGroup, FormLabel, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-
-type FormType = {
-    description: string,
-    issuedDefault?: number | null | string,
-    multitypeAllowed: boolean
-}
 
 export default function MaterialConfigGroupDetail({
     config
@@ -69,7 +64,7 @@ export default function MaterialConfigGroupDetail({
             }
         });
     }
-    async function handleSave(data: FormType) {
+    async function handleSave(data: MaterialGroupFormType) {
         if (!materialGroup) return;
 
         let issuedDefault = null;
@@ -78,10 +73,9 @@ export default function MaterialConfigGroupDetail({
         }
 
         await SAFormHandler<typeof updateMaterialGroup>(
-            () => updateMaterialGroup(materialGroup.id, {
-                issuedDefault,
-                description: data.description,
-                multitypeAllowed: data.multitypeAllowed
+            () => updateMaterialGroup({
+                id: materialGroup.id,
+                data,
             }),
             setError
         ).then((result) => {
