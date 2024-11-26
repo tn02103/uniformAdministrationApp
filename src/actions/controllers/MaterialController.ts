@@ -1,14 +1,14 @@
 "use server";
 
+import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
+import { prisma } from "@/lib/db";
+import { descriptionValidationPattern, uuidValidationPattern } from "@/lib/validations";
+import { AdministrationMaterialGroup } from "@/types/globalMaterialTypes";
+import { revalidatePath } from "next/cache";
+import { MaterialDBHandler } from "../dbHandlers/MaterialDBHandler";
 import { MaterialGroupDBHandler } from "../dbHandlers/MaterialGroupDBHandler";
 import { genericSAValidatiorV2 } from "../validations";
-import { prisma } from "@/lib/db";
-import { AdministrationMaterialGroup } from "@/types/globalMaterialTypes";
-import { descriptionValidationPattern, uuidValidationPattern } from "@/lib/validations";
-import { revalidatePath } from "next/cache";
-import SaveDataException from "@/errors/SaveDataException";
-import { MaterialDBHandler } from "../dbHandlers/MaterialDBHandler";
 
 const dbGroupHandler = new MaterialGroupDBHandler();
 const dbMaterialHandler = new MaterialDBHandler();
@@ -161,7 +161,13 @@ export const deleteMaterialGroup = (materialGroupId: string) => genericSAValidat
  * @param targetQuantity 
  * @returns 
  */
-export const createMaterial = (materialGroupId: string, name: string, actualQuantity: number, targetQuantity: number) => genericSAValidatiorV2(
+type createMaterialReturnType = Promise<{
+    error: {
+        message: string,
+        formElement: string,
+    }
+} | void>;
+export const createMaterial = (materialGroupId: string, name: string, actualQuantity: number, targetQuantity: number): createMaterialReturnType => genericSAValidatiorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(materialGroupId)
         && descriptionValidationPattern.test(name)
@@ -172,7 +178,12 @@ export const createMaterial = (materialGroupId: string, name: string, actualQuan
     const group = await dbGroupHandler.getGroup(materialGroupId, client);
 
     if (group.typeList.some(t => t.typename === name)) {
-        throw new SaveDataException('MaterialName allready in use');
+        return {
+            error: {
+                message: "custom.material.typename.duplication",
+                formElement: "typename"
+            }
+        }
     }
 
     await dbMaterialHandler.create(materialGroupId, name, actualQuantity, targetQuantity, group.typeList.length, client);

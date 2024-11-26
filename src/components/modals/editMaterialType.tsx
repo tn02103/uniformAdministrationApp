@@ -1,12 +1,12 @@
 import { createMaterial, updateMaterial } from "@/actions/controllers/MaterialController";
 import { useI18n } from "@/lib/locales/client";
-import { Button, Col, Form, FormControl, FormGroup, FormLabel, Modal, ModalBody, ModalFooter, ModalHeader, Row } from "react-bootstrap";
-import { useForm, UseFormSetError } from "react-hook-form";
-import { toast } from "react-toastify";
-import { descriptionValidationPattern } from "../../lib/validations";
-import { AdministrationMaterial, Material } from "../../types/globalMaterialTypes";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { SAFormHandler } from "@/lib/SAFormHandler";
 import { materialTypeFormSchema, MaterialTypeFormType } from "@/zod/material";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button, Col, Form, FormControl, FormGroup, FormLabel, Modal, ModalBody, ModalFooter, ModalHeader, Row } from "react-bootstrap";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import { AdministrationMaterial, Material } from "../../types/globalMaterialTypes";
 import ErrorMessage from "../errorMessage";
 
 export type EditMaterialTypeModalPropType = {
@@ -17,20 +17,6 @@ export type EditMaterialTypeModalPropType = {
     onClose: () => void;
 }
 
-const SAFormHandler = (serverAction: () => any, setError: UseFormSetError<any>,) => serverAction().then((result: any) => {
-    console.log(result);
-    if (!result.error) {
-        return {
-            success: true,
-            data: result
-        }
-    }
-
-    if (result.error.formElement) {
-        setError(result.error.formElement, {message:result.error.message});
-        return { success: false }
-    }
-});
 
 const EditMaterialTypeModal = ({ type, groupName, groupId, typeList, ...props }: EditMaterialTypeModalPropType) => {
     const t = useI18n();
@@ -40,12 +26,12 @@ const EditMaterialTypeModal = ({ type, groupName, groupId, typeList, ...props }:
         values: type,
         resolver: zodResolver(materialTypeFormSchema)
     });
-    
+
     async function handleSave(data: MaterialTypeFormType) {
         if (!type)
             return await handleCreate(data);
 
-        await SAFormHandler(() => updateMaterial(type.id, data.typename, data.actualQuantity, data.targetQuantity), setError)
+        await SAFormHandler<typeof updateMaterial>(() => updateMaterial(type.id, data.typename, data.actualQuantity, data.targetQuantity), setError)
             .then((result: any) => {
                 if (result.success) {
                     props.onClose();
@@ -56,8 +42,13 @@ const EditMaterialTypeModal = ({ type, groupName, groupId, typeList, ...props }:
             });
     }
     async function handleCreate(data: MaterialTypeFormType) {
-        await createMaterial(groupId, data.typename, data.actualQuantity, data.targetQuantity).then(() => {
-            props.onClose();
+        await SAFormHandler<typeof createMaterial>(
+            () => createMaterial(groupId, data.typename, data.actualQuantity, data.targetQuantity),
+            setError
+        ).then((result) => {
+            if (result.success) {
+                props.onClose();
+            }
         }).catch((e) => {
             console.error(e);
             toast.error(t('common.error.actions.create'));
@@ -65,7 +56,6 @@ const EditMaterialTypeModal = ({ type, groupName, groupId, typeList, ...props }:
     }
 
     const filteredList = typeList.filter(tl => tl.id !== type?.id);
-    console.log(errors);
     return (
         <Modal data-testid="div_popup" show onHide={props.onClose}>
             <ModalHeader data-testid="div_header" closeButton>

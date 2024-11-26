@@ -28,7 +28,6 @@ export const getSAReturnType = <t>() => {
         }
     }
 }
-
 function assosiationValidatior(assosiationValidations: AssosiationValidationDataType, fk_assosiation: string) {
     const validationPromisses: Promise<any>[] = [];
     const validate = (ids: string | (string | undefined)[], validator: (id: string, assosiationId: string) => Promise<any>) => {

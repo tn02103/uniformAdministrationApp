@@ -176,9 +176,11 @@ export default {
             },
             custom: {
                 material: {
-                    "typename.duplication": "Der Name wird bereits von einem anderen Material der Gruppe verwendet"
-                }
-            }
+                    typename: {
+                        duplication: "Der Name wird bereits von einem anderen Material der Gruppe verwendet",   
+                    },
+                },
+            },
         },
     },
     login: {
