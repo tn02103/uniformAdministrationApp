@@ -1,5 +1,5 @@
 import { getPlannedInspectionList } from "@/dal/inspection/planned/get"
-import { StaticData } from "../../../_playwrightConfig/testData/staticDataLoader";
+import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import dayjs from "dayjs";
 import { prisma } from "@/lib/db";
 

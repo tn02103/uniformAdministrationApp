@@ -1,5 +1,5 @@
 import dayjs from "@/lib/dayjs";
-import { StaticData } from "../../../_playwrightConfig/testData/staticDataLoader";
+import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { createInspection } from "@/dal/inspection/planned/create";
 import { prisma } from "@/lib/db";
 

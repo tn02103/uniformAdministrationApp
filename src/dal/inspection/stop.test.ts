@@ -4,7 +4,7 @@ import { ExceptionType } from "@/errors/CustomException";
 import { prisma } from "@/lib/db";
 import { sendInspectionReviewMail } from "@/lib/email/inspectionReview";
 import dayjs from "dayjs";
-import { StaticData } from "../../_playwrightConfig/testData/staticDataLoader";
+import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
 
 const staticData = new StaticData(0);
 const dbQuery = new DBQuery();

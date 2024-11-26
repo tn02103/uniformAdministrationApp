@@ -1,6 +1,6 @@
 import { getPersonnelNameList } from "@/dal/cadet/getNameList"
-import { runServerAction } from "../_helper"
-import { StaticData } from "../../_playwrightConfig/testData/staticDataLoader";
+import { runServerAction } from "../_helper/testHelper"
+import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
 
 const { ids, data } = new StaticData(0);
 it('validate data', async () => {

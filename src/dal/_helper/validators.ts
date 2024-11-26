@@ -1,6 +1,6 @@
 import { genericSAValidatiorV2, genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
-import { StaticData } from "../../_playwrightConfig/testData/staticDataLoader";
+import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { z } from "zod";
 
 const staticData = new StaticData(0);
