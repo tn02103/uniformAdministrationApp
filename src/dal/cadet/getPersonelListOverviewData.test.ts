@@ -2,7 +2,7 @@ import { getPersonnelListOverviewData } from "@/dal/cadet/getPersonnelListOvervi
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
-import { compareDates, runServerAction } from "../_helper/testHelper";
+import { compareDates, runServerActionTest } from "../_helper/testHelper";
 import { insertSvenKellerFirstInspection } from "../../../tests/_playwrightConfig/testData/dynamicData";
 import { PersonnelListCadet } from "@/types/globalCadetTypes";
 
@@ -17,7 +17,7 @@ const defaultProps = {
 
 const runSortOrderTests = () => {
     it('validate asc false order by lastname', async () => {
-        const { success, result } = await runServerAction(() => getPersonnelListOverviewData({ ...defaultProps, asc: false }));
+        const { success, result } = await runServerActionTest(() => getPersonnelListOverviewData({ ...defaultProps, asc: false }));
         expect(success).toBeTruthy();
 
         expect(result.length).toBe(9);
@@ -26,7 +26,7 @@ const runSortOrderTests = () => {
         expect(result[0].id).toBe(cadetIds[6]); // Weismuller
     });
     it('validate orderby firstname', async () => {
-        const { success, result } = await runServerAction(() => getPersonnelListOverviewData({ ...defaultProps, orderBy: "firstname" }));
+        const { success, result } = await runServerActionTest(() => getPersonnelListOverviewData({ ...defaultProps, orderBy: "firstname" }));
         expect(success).toBeTruthy();
 
         expect(result.length).toBe(9);
@@ -35,7 +35,7 @@ const runSortOrderTests = () => {
         expect(result[7].id).toBe(cadetIds[6]); // Weismuller
     });
     it('validate asc false order by firstname', async () => {
-        const { success, result } = await runServerAction(() => getPersonnelListOverviewData({ ...defaultProps, orderBy: "firstname", asc: false }));
+        const { success, result } = await runServerActionTest(() => getPersonnelListOverviewData({ ...defaultProps, orderBy: "firstname", asc: false }));
         expect(success).toBeTruthy();
 
         expect(result.length).toBe(9);
@@ -58,7 +58,7 @@ describe('manager tests', () => {
         }),
     }));
     it('manager data', async () => {
-        const { success, result } = await runServerAction(() => getPersonnelListOverviewData(defaultProps));
+        const { success, result } = await runServerActionTest(() => getPersonnelListOverviewData(defaultProps));
         expect(success).toBeTruthy();
 
         expect(result.length).toBe(9);
@@ -105,7 +105,7 @@ describe('manager tests', () => {
         });
         afterAll(() => cleanup.inspection());
         it('validate default filter on active inspection', async () => {
-            const { success, result } = await runServerAction<PersonnelListCadet[]>(() => getPersonnelListOverviewData(defaultProps));
+            const { success, result } = await runServerActionTest<PersonnelListCadet[]>(() => getPersonnelListOverviewData(defaultProps));
             expect(success).toBeTruthy();
             expect(result).toHaveLength(5);
 
@@ -118,7 +118,7 @@ describe('manager tests', () => {
             expect(ids).not.toContain(cadetIds[9]);
         });
         it('validate filter deregistration on active inspection ', async () => {
-            const { success, result } = await runServerAction<PersonnelListCadet[]>(() =>
+            const { success, result } = await runServerActionTest<PersonnelListCadet[]>(() =>
                 getPersonnelListOverviewData({ ...defaultProps, include: { deregistered: true, inspected: false } })
             );
             expect(success).toBeTruthy();
@@ -134,7 +134,7 @@ describe('manager tests', () => {
         });
         it('validate filter inspected on active inspection', async () => {
 
-            const { success, result } = await runServerAction<PersonnelListCadet[]>(() =>
+            const { success, result } = await runServerActionTest<PersonnelListCadet[]>(() =>
                 getPersonnelListOverviewData({ ...defaultProps, include: { deregistered: false, inspected: true } })
             );
             expect(success).toBeTruthy();
@@ -158,7 +158,7 @@ describe('user tests', () => {
         delete global.__ROLE__
     });
     it('manager data', async () => {
-        const { success, result } = await runServerAction(() => getPersonnelListOverviewData(defaultProps));
+        const { success, result } = await runServerActionTest(() => getPersonnelListOverviewData(defaultProps));
         expect(success).toBeTruthy();
 
         expect(result.length).toBe(9);
@@ -196,12 +196,12 @@ describe('user tests', () => {
         });
         afterAll(() => cleanup.inspection());
         it('validate default filter on active inspection', async () => {
-            const { success, result } = await runServerAction<PersonnelListCadet[]>(() => getPersonnelListOverviewData(defaultProps));
+            const { success, result } = await runServerActionTest<PersonnelListCadet[]>(() => getPersonnelListOverviewData(defaultProps));
             expect(success).toBeTruthy();
             expect(result).toHaveLength(9);
         });
         it('validate filter include all ', async () => {
-            const { success, result } = await runServerAction<PersonnelListCadet[]>(() =>
+            const { success, result } = await runServerActionTest<PersonnelListCadet[]>(() =>
                 getPersonnelListOverviewData({ ...defaultProps, include: { deregistered: true, inspected: true } })
             );
             expect(success).toBeTruthy();

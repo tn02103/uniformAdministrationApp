@@ -3,6 +3,7 @@ import { UnauthorizedException } from "@/errors/CustomException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { IronSessionUser, getIronSession } from "@/lib/ironSession";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -28,7 +29,7 @@ export const getSAReturnType = <t>() => {
         }
     }
 }
-function assosiationValidatior(assosiationValidations: AssosiationValidationDataType, fk_assosiation: string) {
+function assosiationValidator(assosiationValidations: AssosiationValidationDataType, fk_assosiation: string) {
     const validationPromisses: Promise<any>[] = [];
     const validate = (ids: string | (string | undefined)[], validator: (id: string, assosiationId: string) => Promise<any>) => {
         if (Array.isArray(ids)) {
@@ -100,13 +101,24 @@ export const genericSAValidator = async <T>(
     }
 
     if (assosiationValidations) {
-        await assosiationValidatior(assosiationValidations, user.assosiation);
+        await assosiationValidator(assosiationValidations, user.assosiation);
     }
 
     return [zodResult.data, user];
 }
 
-export const genericSAValidatiorV2 = async (
+export const genericSANoDataValidator = async (requiredRole: AuthRole) => {
+    const { user } = await getIronSession();
+    if (!user) {
+        return redirect('/login');
+    } else if (user.role < requiredRole) {
+        throw new UnauthorizedException(`user does not have required role ${requiredRole}`);
+    }
+
+    return [user];
+}
+
+export const genericSAValidatorV2 = async (
     requiredRole: AuthRole,
     typeValidation: boolean,
     assosiationValidations: AssosiationValidationDataType,
@@ -124,7 +136,7 @@ export const genericSAValidatiorV2 = async (
         throw new Error("Typevalidation failed");
     }
 
-    await assosiationValidatior(assosiationValidations, user.assosiation);
+    await assosiationValidator(assosiationValidations, user.assosiation);
 
     return user;
 }

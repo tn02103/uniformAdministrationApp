@@ -1,4 +1,4 @@
-import { genericSAValidatiorV2, genericSAValidator } from "@/actions/validations";
+import { genericSAValidatorV2, genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { z } from "zod";
@@ -6,7 +6,7 @@ import { z } from "zod";
 const staticData = new StaticData(0);
 describe('genericSAValidatorV2', () => {
     it('validate correct role', async () => {
-        const result = await genericSAValidatiorV2(AuthRole.materialManager, true, {});
+        const result = await genericSAValidatorV2(AuthRole.materialManager, true, {});
         expect(result).toEqual({
             name: 'VK Verwaltung',
             username: 'mana',
@@ -16,14 +16,14 @@ describe('genericSAValidatorV2', () => {
         });
     });
     it('validate unauthorized exeption genericSAValidatorV2', async () => {
-        const error = await genericSAValidatiorV2(AuthRole.admin, true, {})
+        const error = await genericSAValidatorV2(AuthRole.admin, true, {})
             .catch((error) => error);
 
         expect(error.message).toBe('user does not have required role 4');
         expect(error.exceptionType).toBe(4);
     });
     it('validate typevalidation genericSAValidatorV2', async () => {
-        const error = await genericSAValidatiorV2(AuthRole.inspector, false, {})
+        const error = await genericSAValidatorV2(AuthRole.inspector, false, {})
             .catch((error) => error);
 
         expect(error.message).toBe('Typevalidation failed');

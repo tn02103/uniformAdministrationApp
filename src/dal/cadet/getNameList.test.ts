@@ -1,10 +1,10 @@
 import { getPersonnelNameList } from "@/dal/cadet/getNameList"
-import { runServerAction } from "../_helper/testHelper"
+import { runServerActionTest } from "../_helper/testHelper"
 import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
 
 const { ids, data } = new StaticData(0);
 it('validate data', async () => {
-    const { success, result } = await runServerAction(getPersonnelNameList);
+    const { success, result } = await runServerActionTest(getPersonnelNameList);
     expect(success).toBeTruthy();
     expect(result).toHaveLength(9);
 

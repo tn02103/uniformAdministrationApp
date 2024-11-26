@@ -43,7 +43,7 @@ export function getStaticDataIds() {
         uniformGenerationIds: uuidArray(7),
         uniformIds: [87, 16, 66, 13].map((value) => uuidArray(value)),
         materialGroupIds: uuidArray(4),
-        materialIds: uuidArray(10),
+        materialIds: uuidArray(11),
         deficiencyTypeIds: uuidArray(7),
         deficiencyIds: uuidArray(14),
         inspectionIds: uuidArray(6),
@@ -414,6 +414,7 @@ export default class StaticDataGenerator {
             { id: this.ids.materialIds[7], typename: 'Typ3-1', fk_materialGroup: this.ids.materialGroupIds[2], actualQuantity: 0, targetQuantity: 0, sortOrder: 0, recdelete: null, recdeleteUser: null },
             { id: this.ids.materialIds[8], typename: 'Typ3-2', fk_materialGroup: this.ids.materialGroupIds[2], actualQuantity: 0, targetQuantity: 0, sortOrder: 1, recdelete: null, recdeleteUser: null },
             { id: this.ids.materialIds[9], typename: 'Typ3-3', fk_materialGroup: this.ids.materialGroupIds[2], actualQuantity: 0, targetQuantity: 0, sortOrder: 2, recdelete: null, recdeleteUser: null },
+            { id: this.ids.materialIds[10], typename: 'Typ2-4', fk_materialGroup: this.ids.materialGroupIds[1], actualQuantity: 1, targetQuantity: 20, sortOrder: 3, recdelete: dayjs().subtract(20, "days").toDate(), recdeleteUser: "admin" },
         ]
     }
 
