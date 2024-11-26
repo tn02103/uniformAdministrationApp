@@ -179,6 +179,9 @@ export default {
                     typename: {
                         duplication: "Der Name wird bereits von einem anderen Material der Gruppe verwendet",   
                     },
+                    groupname: {
+                        duplication: "Der Name wird bereits von einer anderen Gruppe verwendet",
+                    },
                 },
             },
         },

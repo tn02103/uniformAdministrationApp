@@ -6,19 +6,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Col, Form, FormControl, FormGroup, FormLabel, Modal, ModalBody, ModalFooter, ModalHeader, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { AdministrationMaterial, Material } from "../../types/globalMaterialTypes";
+import { AdministrationMaterial } from "../../types/globalMaterialTypes";
 import ErrorMessage from "../errorMessage";
 
 export type EditMaterialTypeModalPropType = {
     type?: AdministrationMaterial;
     groupName: string;
     groupId: string;
-    typeList: Material[];
     onClose: () => void;
 }
 
-
-const EditMaterialTypeModal = ({ type, groupName, groupId, typeList, ...props }: EditMaterialTypeModalPropType) => {
+const EditMaterialTypeModal = ({ type, groupName, groupId, ...props }: EditMaterialTypeModalPropType) => {
     const t = useI18n();
 
     const { register, handleSubmit, formState: { errors }, setError } = useForm<MaterialTypeFormType>({
@@ -55,7 +53,6 @@ const EditMaterialTypeModal = ({ type, groupName, groupId, typeList, ...props }:
         });
     }
 
-    const filteredList = typeList.filter(tl => tl.id !== type?.id);
     return (
         <Modal data-testid="div_popup" show onHide={props.onClose}>
             <ModalHeader data-testid="div_header" closeButton>
@@ -72,12 +69,7 @@ const EditMaterialTypeModal = ({ type, groupName, groupId, typeList, ...props }:
                         <FormControl
                             className="w-50"
                             isInvalid={!!errors.typename}
-                            {...register("typename", {
-                                validate: async (value) => {
-                                    console.log("validating", value);
-                                    return filteredList.every(t => t.typename !== value) || 'custom.material.typename.duplication'
-                                }
-                            })}
+                            {...register("typename")}
                         />
                         <ErrorMessage testId="err_typename" error={errors.typename?.message} />
                     </FormGroup>
@@ -107,7 +99,7 @@ const EditMaterialTypeModal = ({ type, groupName, groupId, typeList, ...props }:
                     <Row className="justify-content-between">
                         <Col xs={"auto"}>
                             <Button
-                                variant="outline-seccondary"
+                                variant="outline-secondary"
                                 onClick={props.onClose}
                                 data-testid="btn_cancel"
                             >

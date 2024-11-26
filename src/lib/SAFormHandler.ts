@@ -12,7 +12,7 @@ export function SAFormHandler<ActionType extends (...args: any) => Promise<any>>
 }> {
     type dataType = Awaited<ReturnType<ActionType>>;
     return serverAction().then((result: dataType) => {
-        if (!result.error) {
+        if (!result || !result.error) {
             return {
                 success: true,
                 data: result

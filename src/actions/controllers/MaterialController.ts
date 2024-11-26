@@ -113,7 +113,13 @@ export const changeMaterialGroupSortOrder = (materialGroupId: string, up: boolea
  * @param data data to update
  * @returns 
  */
-export const updateMaterialGroup = (materialGroupId: string, data: { description: string, issuedDefault: number | null, multitypeAllowed: boolean }) => genericSAValidatiorV2(
+type updateMaterialGroupReturnType = Promise<{
+    error: {
+        message: string
+        formElement: string,
+    }
+} | void>
+export const updateMaterialGroup = (materialGroupId: string, data: { description: string, issuedDefault: number | null, multitypeAllowed: boolean }): updateMaterialGroupReturnType => genericSAValidatiorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(materialGroupId)
         && descriptionValidationPattern.test(data.description)
@@ -124,7 +130,12 @@ export const updateMaterialGroup = (materialGroupId: string, data: { description
     const list = await dbGroupHandler.getAdminList(assosiation);
 
     if (list.some(g => (g.id !== materialGroupId) && g.description === data.description)) {
-        throw new SaveDataException('Could not save data because of duplicated materialGroupname');
+        return {
+            error: {
+                message: "custom.material.groupname.duplication",
+                formElement: "description",
+            }
+        }
     }
 
     await dbGroupHandler.update(materialGroupId, data.description, data.multitypeAllowed, data.issuedDefault, client);

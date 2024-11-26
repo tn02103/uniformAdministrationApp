@@ -24,7 +24,6 @@ export default function MaterialConfigTypeList({ config }: { config: Administrat
 
         modal?.editMaterialTypeModal(
             group.description,
-            group.typeList,
             group.id,
             material,
         );
@@ -49,7 +48,6 @@ export default function MaterialConfigTypeList({ config }: { config: Administrat
 
         modal?.editMaterialTypeModal(
             group.description,
-            group.typeList,
             group.id,
         );
     }

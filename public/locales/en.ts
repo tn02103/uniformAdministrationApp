@@ -172,6 +172,16 @@ export default {
                     duplicate: "The username is allready used by different user",
                 },
             },
+            custom: {
+                material: {
+                    typename: {
+                        duplication: "The Name is already used by another Material in this Group",   
+                    },
+                    groupname: {
+                        duplication: "Another Group with this name already exists",
+                    },
+                },
+            }
         },
     },
     login: {

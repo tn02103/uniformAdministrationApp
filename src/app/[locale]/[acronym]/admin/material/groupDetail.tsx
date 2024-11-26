@@ -5,6 +5,7 @@ import { TooltipActionButton } from "@/components/TooltipIconButton";
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/card";
 import ErrorMessage from "@/components/errorMessage";
 import { useModal } from "@/components/modals/modalProvider";
+import { SAFormHandler } from "@/lib/SAFormHandler";
 import { useI18n } from "@/lib/locales/client";
 import { AdministrationMaterialGroup } from "@/types/globalMaterialTypes";
 import { materialGroupFormSchema, MaterialGroupFormType } from "@/zod/material";
@@ -36,7 +37,7 @@ export default function MaterialConfigGroupDetail({
     const editable = searchParams.get('editable') === "true";
     const materialGroup = config.find(g => g.id === searchParams.get('selectedGroupId'));
 
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<MaterialGroupFormType>({
+    const { register, handleSubmit, formState: { errors }, reset, setError } = useForm<MaterialGroupFormType>({
         mode: "onChange",
         values: materialGroup,
         resolver: zodResolver(materialGroupFormSchema)
@@ -76,11 +77,16 @@ export default function MaterialConfigGroupDetail({
             issuedDefault = Number(data.issuedDefault);
         }
 
-        setEditable(false);
-        await updateMaterialGroup(materialGroup.id, {
-            issuedDefault,
-            description: data.description,
-            multitypeAllowed: data.multitypeAllowed
+        await SAFormHandler<typeof updateMaterialGroup>(
+            () => updateMaterialGroup(materialGroup.id, {
+                issuedDefault,
+                description: data.description,
+                multitypeAllowed: data.multitypeAllowed
+            }),
+            setError
+        ).then((result) => {
+            if (result.success) 
+                setEditable(false);
         }).catch((e) => {
             console.error(e);
             toast.error(t('common.error.actions.save'));
@@ -122,9 +128,7 @@ export default function MaterialConfigGroupDetail({
                                     className={editable ? "" : " text-truncate"}
                                     disabled={!editable}
                                     plaintext={!editable}
-                                    {...register("description", {
-                                        validate: (value) => (!config.find(g => (g.id !== materialGroup.id && g.description === value))) || t('admin.material.error.groupNameDuplicate')
-                                    })} />
+                                    {...register("description")} />
                                 <ErrorMessage testId="err_name" error={errors.description?.message} />
                             </Col>
                         </FormGroup>
@@ -139,7 +143,7 @@ export default function MaterialConfigGroupDetail({
                                     isInvalid={!!errors.issuedDefault}
                                     {...register("issuedDefault", { setValueAs: (value) => String(value).length == 0 ? null : +value })}
                                 />
-                                <ErrorMessage testId="err_issuedDefault" error={errors.issuedDefault?.message}/>
+                                <ErrorMessage testId="err_issuedDefault" error={errors.issuedDefault?.message} />
                             </Col>
                         </FormGroup>
                         <FormGroup as={Row}>
