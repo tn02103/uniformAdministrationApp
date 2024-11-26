@@ -1,7 +1,7 @@
 "use server";
 
 import { AuthRole } from "@/lib/AuthRoles";
-import { genericSAValidatiorV2, genericSAValidator } from "../validations";
+import { genericSAValidatorV2, genericSAValidator } from "../validations";
 import { prisma } from "@/lib/db";
 import { AdminDeficiencyType } from "@/types/deficiencyTypes";
 import { z } from "zod";
@@ -17,7 +17,7 @@ const dbHandler = new DeficiencyTypeDBHandler();
  * @requires AuthRole.materialManager
  * @returns 
  */
-export const getDeficiencyAdmintypeList = (): Promise<AdminDeficiencyType[]> => genericSAValidatiorV2(
+export const getDeficiencyAdmintypeList = (): Promise<AdminDeficiencyType[]> => genericSAValidatorV2(
     AuthRole.materialManager, true, {}
 ).then(({ assosiation }) => dbHandler.getDeficiencyAdmintypeList(assosiation));
 

@@ -10,7 +10,7 @@ import { Prisma } from "@prisma/client";
 import { notFound } from "next/navigation";
 import { UniformDBHandler } from "../dbHandlers/UniformDBHandler";
 import { UniformTypeDBHandler } from "../dbHandlers/UniformTypeDBHandler";
-import { genericSAValidatiorV2 } from "../validations";
+import { genericSAValidatorV2 } from "../validations";
 
 const dbHandler = new UniformDBHandler();
 const typeHandler = new UniformTypeDBHandler();
@@ -21,7 +21,7 @@ const typeHandler = new UniformTypeDBHandler();
  * @param uniformTypeId 
  * @returns number 
  */
-export const getUniformCountByType = (uniformTypeId: string) => genericSAValidatiorV2(
+export const getUniformCountByType = (uniformTypeId: string) => genericSAValidatorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(uniformTypeId)),
     { uniformTypeId }
@@ -52,7 +52,7 @@ const filterTypeValidator = (filter: FilterType) => (
  * @param filter filterObject of uniformFilter Pannel
  * @returns UniformWithOwner[]
  */
-export const getUniformListWithOwner = async (uniformTypeId: string, orderBy: string, asc: boolean, filter: FilterType | null): Promise<UniformWithOwner[]> => genericSAValidatiorV2(
+export const getUniformListWithOwner = async (uniformTypeId: string, orderBy: string, asc: boolean, filter: FilterType | null): Promise<UniformWithOwner[]> => genericSAValidatorV2(
     AuthRole.user,
     (uuidValidationPattern.test(uniformTypeId)
         && (!filter || filterTypeValidator(filter))),
@@ -129,7 +129,7 @@ export const getUniformListWithOwner = async (uniformTypeId: string, orderBy: st
  * @param uniformId 
  * @returns UniformFormData
  */
-export const getUniformFormValues = (uniformId: string): Promise<UniformFormData> => genericSAValidatiorV2(
+export const getUniformFormValues = (uniformId: string): Promise<UniformFormData> => genericSAValidatorV2(
     AuthRole.user,
     (uuidValidationPattern.test(uniformId)),
     { uniformId }
@@ -148,7 +148,7 @@ export const getUniformFormValues = (uniformId: string): Promise<UniformFormData
  * @param uniformId 
  * @returns an array containing date off issue and return, description of cadet with boolean if deleted.
  */
-export const getUniformIssueHistory = (uniformId: string): Promise<IssuedEntryType[]> => genericSAValidatiorV2(
+export const getUniformIssueHistory = (uniformId: string): Promise<IssuedEntryType[]> => genericSAValidatorV2(
     AuthRole.inspector,
     uuidValidationPattern.test(uniformId),
     { uniformId }
@@ -175,7 +175,7 @@ export const getUniformIssueHistory = (uniformId: string): Promise<IssuedEntryTy
  * @param data 
  * @returns FormData of the uniform
  */
-export const saveUniformItem = (data: UniformFormData): Promise<UniformFormData> => genericSAValidatiorV2(
+export const saveUniformItem = (data: UniformFormData): Promise<UniformFormData> => genericSAValidatorV2(
     AuthRole.inspector,
     (uuidValidationPattern.test(data.id)
         && (!data.generation || uuidValidationPattern.test(data.generation))
@@ -210,7 +210,7 @@ export const saveUniformItem = (data: UniformFormData): Promise<UniformFormData>
  * @param data Data of the uniformItems that are to be created. The size of the Uniform is included in the param numbers
  * @returns number of created Items
  */
-export const createUniformItems = (numberMap: UniformNumbersSizeMap, data: { uniformTypeId: string, generationId?: string, comment: string, active: boolean }): Promise<number> => genericSAValidatiorV2(
+export const createUniformItems = (numberMap: UniformNumbersSizeMap, data: { uniformTypeId: string, generationId?: string, comment: string, active: boolean }): Promise<number> => genericSAValidatorV2(
     AuthRole.inspector,
     (uuidValidationPattern.test(data.uniformTypeId)
         && (!data.generationId || uuidValidationPattern.test(data.generationId))
@@ -283,7 +283,7 @@ export const createUniformItems = (numberMap: UniformNumbersSizeMap, data: { uni
  * @param uniformId 
  * @returns 
  */
-export const deleteUniformItem = (uniformId: string): Promise<void> => genericSAValidatiorV2(
+export const deleteUniformItem = (uniformId: string): Promise<void> => genericSAValidatorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(uniformId)),
     { uniformId }

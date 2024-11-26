@@ -9,16 +9,16 @@ import { PrismaClient } from "@prisma/client";
 import { UniformDBHandler } from "../dbHandlers/UniformDBHandler";
 import UniformGenerationDBHandler from "../dbHandlers/UniformGenerationDBHandler";
 import { UniformTypeDBHandler } from "../dbHandlers/UniformTypeDBHandler";
-import { genericSAValidatiorV2 } from "../validations";
+import { genericSAValidatorV2 } from "../validations";
 import { UniformGenerationFormType, UniformTypeFormType } from "@/zod/uniformConfig";
 
 const dbHandler = new UniformTypeDBHandler();
 const uniformHandler = new UniformDBHandler();
 const generationHandler = new UniformGenerationDBHandler();
 
-export const getUniformTypeList = (): Promise<UniformType[]> => genericSAValidatiorV2(AuthRole.user, true, {}).then(({ assosiation }) => dbHandler.getTypeList(assosiation));
+export const getUniformTypeList = (): Promise<UniformType[]> => genericSAValidatorV2(AuthRole.user, true, {}).then(({ assosiation }) => dbHandler.getTypeList(assosiation));
 
-export const createUniformType = () => genericSAValidatiorV2(
+export const createUniformType = () => genericSAValidatorV2(
     AuthRole.materialManager, true, {}
 ).then(async ({ assosiation }) => prisma.$transaction(async (client) => {
     const typeList = await dbHandler.getTypeList(assosiation, client as PrismaClient);
@@ -48,7 +48,7 @@ export const createUniformType = () => genericSAValidatiorV2(
     return dbHandler.insertType(getName(), getAcronym(), typeList.length, assosiation, client as PrismaClient);
 }))
 
-export const changeUniformTypeSortOrder = (uniformTypeId: string, up: boolean) => genericSAValidatiorV2(
+export const changeUniformTypeSortOrder = (uniformTypeId: string, up: boolean) => genericSAValidatorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(uniformTypeId)
         && (typeof up === "boolean")),
@@ -74,7 +74,7 @@ type updateUniformTypeReturnType = Promise<{
         formElement: string,
     }
 } | UniformType[]>
-export const updateUniformType = (data: UniformTypeFormType): updateUniformTypeReturnType => genericSAValidatiorV2(
+export const updateUniformType = (data: UniformTypeFormType): updateUniformTypeReturnType => genericSAValidatorV2(
     AuthRole.materialManager,
     true, // uniformTypeValidator.test(data),
     { uniformTypeId: data.id, uniformSizelistId: data.fk_defaultSizelist }
@@ -119,7 +119,7 @@ export const updateUniformType = (data: UniformTypeFormType): updateUniformTypeR
     return dbHandler.getTypeList(assosiation, client as PrismaClient);
 }));
 
-export const deleteUniformType = (uniformTypeId: string) => genericSAValidatiorV2(
+export const deleteUniformType = (uniformTypeId: string) => genericSAValidatorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(uniformTypeId)),
     { uniformTypeId }
@@ -142,7 +142,7 @@ type createUniformGenerationReturnType = Promise<{
         formElement: string,
     }
 }|UniformType[]>
-export const createUniformGeneration = (name: string, outdated: boolean, fk_sizelist: string | null, uniformTypeId: string,): createUniformGenerationReturnType => genericSAValidatiorV2(
+export const createUniformGeneration = (name: string, outdated: boolean, fk_sizelist: string | null, uniformTypeId: string,): createUniformGenerationReturnType => genericSAValidatorV2(
     AuthRole.materialManager,
     (descriptionValidationPattern.test(name)
         && (typeof outdated === "boolean")
@@ -173,7 +173,7 @@ type saveUniformGenerationReturnType = Promise<{
         formElement: string,
     }
 } | UniformType[]>
-export const saveUniformGeneration = (generation: UniformGenerationFormType, id: string,  uniformTypeId: string,): saveUniformGenerationReturnType => genericSAValidatiorV2(
+export const saveUniformGeneration = (generation: UniformGenerationFormType, id: string,  uniformTypeId: string,): saveUniformGenerationReturnType => genericSAValidatorV2(
     AuthRole.materialManager,
    true, // (uniformGenerationValidator.test(generation) && uuidValidationPattern.test(uniformTypeId)),
     { uniformGenerationId: id, uniformTypeId }
@@ -205,7 +205,7 @@ export const saveUniformGeneration = (generation: UniformGenerationFormType, id:
     return dbHandler.getTypeList(assosiation, client as PrismaClient);
 }));
 
-export const changeUniformGenerationSortOrder = (uniformGenerationId: string, up: boolean): Promise<UniformType[]> => genericSAValidatiorV2(
+export const changeUniformGenerationSortOrder = (uniformGenerationId: string, up: boolean): Promise<UniformType[]> => genericSAValidatorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(uniformGenerationId)
         && (typeof up === "boolean")),
@@ -225,7 +225,7 @@ export const changeUniformGenerationSortOrder = (uniformGenerationId: string, up
     return dbHandler.getTypeList(assosiation, client as PrismaClient);
 }));
 
-export const deleteUniformGeneration = (uniformGenerationId: string) => genericSAValidatiorV2(
+export const deleteUniformGeneration = (uniformGenerationId: string) => genericSAValidatorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(uniformGenerationId)),
     { uniformGenerationId }

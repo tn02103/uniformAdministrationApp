@@ -1,6 +1,6 @@
 "use server";
 
-import { genericSAValidatiorV2 } from "@/actions/validations";
+import { genericSAValidatorV2 } from "@/actions/validations";
 import CustomException, { ExceptionType } from "@/errors/CustomException";
 import { NullValueException } from "@/errors/LoadDataException";
 import SaveDataException, { UniformInactiveException, UniformIssuedException } from "@/errors/SaveDataException";
@@ -15,13 +15,13 @@ import { UniformDBHandler } from "../dbHandlers/UniformDBHandler";
 const dbHandler = new UniformDBHandler();
 const cadetDBHandler = new CadetDBHandler();
 
-export const getCadetUniformMap = async (cadetId: string): Promise<CadetUniformMap> => genericSAValidatiorV2(
+export const getCadetUniformMap = async (cadetId: string): Promise<CadetUniformMap> => genericSAValidatorV2(
     AuthRole.user,
     uuidValidationPattern.test(cadetId),
     { cadetId }
 ).then(() => dbHandler.getMap(cadetId));
 
-export const returnUniformItem = async (uniformId: string, cadetId: string): Promise<CadetUniformMap> => genericSAValidatiorV2(
+export const returnUniformItem = async (uniformId: string, cadetId: string): Promise<CadetUniformMap> => genericSAValidatorV2(
     AuthRole.inspector,
     (uuidValidationPattern.test(uniformId)
         && uuidValidationPattern.test(cadetId)),
@@ -54,7 +54,7 @@ export type SAErrorResponseType = {
 }
 export const issueUniformItem = async ({
     number, uniformTypeId, idToReplace, cadetId, options: { ignoreInactive, force, create }
-}: IssueUniformItemDataType): Promise<CadetUniformMap | SAErrorResponseType> => genericSAValidatiorV2(
+}: IssueUniformItemDataType): Promise<CadetUniformMap | SAErrorResponseType> => genericSAValidatorV2(
     AuthRole.inspector,
     (uuidValidationPattern.test(uniformTypeId)
         && uuidValidationPattern.test(cadetId)

@@ -8,7 +8,7 @@ import { AdministrationMaterialGroup } from "@/types/globalMaterialTypes";
 import { revalidatePath } from "next/cache";
 import { MaterialDBHandler } from "../dbHandlers/MaterialDBHandler";
 import { MaterialGroupDBHandler } from "../dbHandlers/MaterialGroupDBHandler";
-import { genericSAValidatiorV2 } from "../validations";
+import { genericSAValidatorV2 } from "../validations";
 
 const dbGroupHandler = new MaterialGroupDBHandler();
 const dbMaterialHandler = new MaterialDBHandler();
@@ -17,7 +17,7 @@ const dbMaterialHandler = new MaterialDBHandler();
  * Gennerell configuration for Materials. Can be used in for all Authroles 
  * @returns Array of all MaterialGroups with Materials. MaterialGroups without any Materials are not included.
  */
-export const getMaterialConfiguration = async () => genericSAValidatiorV2(AuthRole.user, true, {})
+export const getMaterialConfiguration = async () => genericSAValidatorV2(AuthRole.user, true, {})
     .then(async ({ assosiation }) => dbGroupHandler.getNormalList(assosiation));
 
 /**
@@ -25,7 +25,7 @@ export const getMaterialConfiguration = async () => genericSAValidatiorV2(AuthRo
  * @param materialId 
  * @returns Id of MaterialGroup
  */
-export const getMaterialGroupIdByTypeId = async (materialId: string): Promise<string> => genericSAValidatiorV2(
+export const getMaterialGroupIdByTypeId = async (materialId: string): Promise<string> => genericSAValidatorV2(
     AuthRole.user,
     uuidValidationPattern.test(materialId),
     { materialId }
@@ -38,7 +38,7 @@ export const getMaterialGroupIdByTypeId = async (materialId: string): Promise<st
  * Configuration of MaterialGroups & Types for Administration of theses. 
  * @returns list of MaterialGroups
  */
-export const getMaterialAdministrationConfiguration = (): Promise<AdministrationMaterialGroup[]> => genericSAValidatiorV2(
+export const getMaterialAdministrationConfiguration = (): Promise<AdministrationMaterialGroup[]> => genericSAValidatorV2(
     AuthRole.materialManager,
     true, {}
 ).then(async ({ assosiation }) => {
@@ -178,7 +178,7 @@ type createMaterialReturnType = Promise<{
         formElement: string,
     }
 } | void>;
-export const createMaterial = (materialGroupId: string, name: string, actualQuantity: number, targetQuantity: number): createMaterialReturnType => genericSAValidatiorV2(
+export const createMaterial = (materialGroupId: string, name: string, actualQuantity: number, targetQuantity: number): createMaterialReturnType => genericSAValidatorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(materialGroupId)
         && descriptionValidationPattern.test(name)
@@ -207,7 +207,7 @@ export const createMaterial = (materialGroupId: string, name: string, actualQuan
  * @param up 
  * @returns 
  */
-export const changeMaterialSortOrder = (materialId: string, up: boolean) => genericSAValidatiorV2(
+export const changeMaterialSortOrder = (materialId: string, up: boolean) => genericSAValidatorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(materialId)
         && (typeof up === "boolean")),
@@ -244,7 +244,7 @@ type updateMaterialReturnType = {
         formElement?: string,
     }
 } | void;
-export const updateMaterial = (materialId: string, typename: string, actualQuantity: number, targetQuantity: number): Promise<updateMaterialReturnType> => genericSAValidatiorV2(
+export const updateMaterial = (materialId: string, typename: string, actualQuantity: number, targetQuantity: number): Promise<updateMaterialReturnType> => genericSAValidatorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(materialId)
         && descriptionValidationPattern.test(typename)
@@ -273,7 +273,7 @@ export const updateMaterial = (materialId: string, typename: string, actualQuant
  * @param materialId 
  * @returns 
  */
-export const deleteMaterial = (materialId: string) => genericSAValidatiorV2(
+export const deleteMaterial = (materialId: string) => genericSAValidatorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(materialId)),
     { materialId }
