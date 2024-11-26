@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
-import { UniformGeneration, uniformGenerationArgs } from "@/types/globalUniformTypes";
+import { uniformGenerationArgs } from "@/types/globalUniformTypes";
+import { UniformGenerationFormType } from "@/zod/uniformConfig";
 import { PrismaClient } from "@prisma/client";
 
 export default class UniformGenerationDBHandler {
@@ -41,9 +42,9 @@ export default class UniformGenerationDBHandler {
             }
         });
 
-    updateGeneration = async (generation: UniformGeneration, client: PrismaClient) =>
+    updateGeneration = async (id: string, generation: UniformGenerationFormType, client: PrismaClient) =>
         client.uniformGeneration.update({
-            where: { id: generation.id },
+            where: { id },
             data: {
                 name: generation.name,
                 outdated: generation.outdated,

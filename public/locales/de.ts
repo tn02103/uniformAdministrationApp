@@ -128,7 +128,7 @@ export default {
             },
         },
         error: {
-            pleaseSelect: "Bitte Auswählen",
+                pleaseSelect: "Bitte Auswählen",
             unknown: "Es ist ein unerwarteter Fehler aufgetreten",
             number: {
                 required: "Bitte eine Zahl angeben",
@@ -189,6 +189,9 @@ export default {
                         nameDuplication: "Es existiert bereits ein Uniformtyp mit diesem Namen",
                         acronymDuplication: "Das Acronym wird bereits vom Uniformtyp {name} benutzt",
                     },
+                    generation: {
+                        nameDuplication: "Für diesen Uniformtyp existiert bereits eine Generation mit diesem Namen",
+                    }
                 },
             },
         },

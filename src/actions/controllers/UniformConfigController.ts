@@ -10,7 +10,7 @@ import { UniformDBHandler } from "../dbHandlers/UniformDBHandler";
 import UniformGenerationDBHandler from "../dbHandlers/UniformGenerationDBHandler";
 import { UniformTypeDBHandler } from "../dbHandlers/UniformTypeDBHandler";
 import { genericSAValidatiorV2 } from "../validations";
-import { UniformTypeFormType } from "@/zod/uniformConfig";
+import { UniformGenerationFormType, UniformTypeFormType } from "@/zod/uniformConfig";
 
 const dbHandler = new UniformTypeDBHandler();
 const uniformHandler = new UniformDBHandler();
@@ -73,7 +73,7 @@ type updateUniformTypeReturnType = Promise<{
         message: string,
         formElement: string,
     }
-}| UniformType[]>
+} | UniformType[]>
 export const updateUniformType = (data: UniformTypeFormType): updateUniformTypeReturnType => genericSAValidatiorV2(
     AuthRole.materialManager,
     true, // uniformTypeValidator.test(data),
@@ -136,7 +136,13 @@ export const deleteUniformType = (uniformTypeId: string) => genericSAValidatiorV
     return dbHandler.getTypeList(assosiation, client as PrismaClient);
 }));
 
-export const createUniformGeneration = (name: string, outdated: boolean, fk_sizelist: string | null, uniformTypeId: string,): Promise<UniformType[]> => genericSAValidatiorV2(
+type createUniformGenerationReturnType = Promise<{
+    error: {
+        message: string,
+        formElement: string,
+    }
+}|UniformType[]>
+export const createUniformGeneration = (name: string, outdated: boolean, fk_sizelist: string | null, uniformTypeId: string,): createUniformGenerationReturnType => genericSAValidatiorV2(
     AuthRole.materialManager,
     (descriptionValidationPattern.test(name)
         && (typeof outdated === "boolean")
@@ -146,7 +152,12 @@ export const createUniformGeneration = (name: string, outdated: boolean, fk_size
 ).then(({ assosiation }) => prisma.$transaction(async (client) => {
     const list = await generationHandler.getGenerationListByType(uniformTypeId, client as PrismaClient);
     if (list.find(g => g.name === name)) {
-        throw new SaveDataException('Could not create Generation. Duplicated name');
+        return {
+            error: {
+                message: "custom.uniform.generation.nameDuplication",
+                formElement: "name",
+            }
+        }
     }
     await generationHandler.createGeneration(
         { name, outdated, fk_sizelist, sortOrder: list.length },
@@ -156,17 +167,40 @@ export const createUniformGeneration = (name: string, outdated: boolean, fk_size
     return dbHandler.getTypeList(assosiation, client as PrismaClient);
 }));
 
-export const saveUniformGeneration = (generation: UniformGeneration, uniformTypeId: string,): Promise<UniformType[]> => genericSAValidatiorV2(
+type saveUniformGenerationReturnType = Promise<{
+    error: {
+        message: string,
+        formElement: string,
+    }
+} | UniformType[]>
+export const saveUniformGeneration = (generation: UniformGenerationFormType, id: string,  uniformTypeId: string,): saveUniformGenerationReturnType => genericSAValidatiorV2(
     AuthRole.materialManager,
-    (uniformGenerationValidator.test(generation) && uuidValidationPattern.test(uniformTypeId)),
-    { uniformGenerationId: generation.id, uniformTypeId }
+   true, // (uniformGenerationValidator.test(generation) && uuidValidationPattern.test(uniformTypeId)),
+    { uniformGenerationId: id, uniformTypeId }
 ).then(({ assosiation }) => prisma.$transaction(async (client) => {
     const list = await generationHandler.getGenerationListByType(uniformTypeId, client as PrismaClient);
-    if (list.find(g => g.id !== generation.id && g.name === generation.name)) {
-        throw new SaveDataException('Could not save Generation. Duplicated name');
+    if (list.find(g => g.id !== id && g.name === generation.name)) {
+        return {
+            error: {
+                message: "custom.uniform.generation.nameDuplication",
+                formElement: "name",
+            }
+        }
     }
 
-    await generationHandler.updateGeneration(generation, client as PrismaClient);
+    const type = await dbHandler.getType(uniformTypeId);
+    if (!type.usingSizes) {
+        generation.fk_sizelist = null;
+    } else if (!generation.fk_sizelist) {
+        return {
+            error:  {
+                message: "pleaseSelect",
+                formElement: "fk_sizelist"
+            }
+        }
+    }
+
+    await generationHandler.updateGeneration(id, generation, client as PrismaClient);
 
     return dbHandler.getTypeList(assosiation, client as PrismaClient);
 }));

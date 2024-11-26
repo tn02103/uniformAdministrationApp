@@ -189,6 +189,9 @@ export default {
                         nameDuplication: "A type with this name already exists",
                         acronymDuplication: "The acronym is already used by the type {name}",
                     },
+                    generation: {
+                        nameDuplication: "For this type of Uniform a generation with the name already exists",
+                    }
                 },
             },
         },
