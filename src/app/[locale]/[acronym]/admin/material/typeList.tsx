@@ -1,9 +1,10 @@
 "use client";
 
-import { changeMaterialSortOrder, deleteMaterial } from "@/actions/controllers/MaterialController";
 import { TooltipActionButton } from "@/components/TooltipIconButton";
 import { Card, CardBody } from "@/components/card";
 import { useModal } from "@/components/modals/modalProvider";
+import { deleteMaterial } from "@/dal/material/type/delete";
+import { changeMaterialSortOrder } from "@/dal/material/type/sortOrder";
 import { useI18n } from "@/lib/locales/client";
 import { AdministrationMaterial, AdministrationMaterialGroup } from "@/types/globalMaterialTypes";
 import { useSearchParams } from "next/navigation";
@@ -51,8 +52,8 @@ export default function MaterialConfigTypeList({ config }: { config: Administrat
             group.id,
         );
     }
-    async function handleChangeSortOrder(materialId: string, up: boolean) {
-        await changeMaterialSortOrder(materialId, up).catch((e) => {
+    async function handleChangeSortOrder(id: string, up: boolean) {
+        await changeMaterialSortOrder({ id, up }).catch((e) => {
             console.error(e);
             toast.error(t('common.error.actions.changeSortorder'));
         });

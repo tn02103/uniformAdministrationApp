@@ -1,4 +1,3 @@
-import { createMaterial, updateMaterial } from "@/actions/controllers/MaterialController";
 import { useI18n } from "@/lib/locales/client";
 import { SAFormHandler } from "@/lib/SAFormHandler";
 import { materialTypeFormSchema, MaterialTypeFormType } from "@/zod/material";
@@ -8,6 +7,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { AdministrationMaterial } from "../../types/globalMaterialTypes";
 import ErrorMessage from "../errorMessage";
+import { updateMaterial } from "@/dal/material/type/update";
+import { createMaterial } from "@/dal/material/type/create";
 
 export type EditMaterialTypeModalPropType = {
     type?: AdministrationMaterial;
@@ -29,7 +30,7 @@ const EditMaterialTypeModal = ({ type, groupName, groupId, ...props }: EditMater
         if (!type)
             return await handleCreate(data);
 
-        await SAFormHandler<typeof updateMaterial>(() => updateMaterial(type.id, data.typename, data.actualQuantity, data.targetQuantity), setError)
+        await SAFormHandler<typeof updateMaterial>(() => updateMaterial({ id: type.id, data }), setError)
             .then((result: any) => {
                 if (result.success) {
                     props.onClose();
@@ -41,7 +42,7 @@ const EditMaterialTypeModal = ({ type, groupName, groupId, ...props }: EditMater
     }
     async function handleCreate(data: MaterialTypeFormType) {
         await SAFormHandler<typeof createMaterial>(
-            () => createMaterial(groupId, data.typename, data.actualQuantity, data.targetQuantity),
+            () => createMaterial({ groupId, data }),
             setError
         ).then((result) => {
             if (result.success) {
