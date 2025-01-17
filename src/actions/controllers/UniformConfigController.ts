@@ -18,36 +18,6 @@ const generationHandler = new UniformGenerationDBHandler();
 
 export const getUniformTypeList = (): Promise<UniformType[]> => genericSAValidatorV2(AuthRole.user, true, {}).then(({ assosiation }) => dbHandler.getTypeList(assosiation));
 
-export const createUniformType = () => genericSAValidatorV2(
-    AuthRole.materialManager, true, {}
-).then(async ({ assosiation }) => prisma.$transaction(async (client) => {
-    const typeList = await dbHandler.getTypeList(assosiation, client as PrismaClient);
-
-    function getAcronym(): string {
-        let acronym: string;
-        for (let i = 0; i < 26; i++) {
-            for (let j = 0; j < 26; j++) {
-                acronym = String.fromCharCode(i + 65) + String.fromCharCode(j + 65)
-                if (!typeList.find(t => t.acronym === acronym)) {
-                    return acronym;
-                }
-            }
-        }
-        throw Error("Could not find free Acronym");
-    }
-    function getName() {
-        let i = 1;
-        let name: string;
-        do {
-            name = `Typ${i}`;
-            i++;
-        } while (typeList.find(t => t.name == name));
-        return name;
-    }
-
-    return dbHandler.insertType(getName(), getAcronym(), typeList.length, assosiation, client as PrismaClient);
-}))
-
 export const changeUniformTypeSortOrder = (uniformTypeId: string, up: boolean) => genericSAValidatorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(uniformTypeId)
