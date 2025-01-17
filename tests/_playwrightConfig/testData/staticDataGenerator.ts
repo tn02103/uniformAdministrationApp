@@ -42,8 +42,8 @@ export function getStaticDataIds() {
         uniformTypeIds: uuidArray(5),
         uniformGenerationIds: uuidArray(7),
         uniformIds: [87, 16, 66, 13].map((value) => uuidArray(value)),
-        materialGroupIds: uuidArray(4),
-        materialIds: uuidArray(11),
+        materialGroupIds: uuidArray(5),
+        materialIds: uuidArray(12),
         deficiencyTypeIds: uuidArray(7),
         deficiencyIds: uuidArray(14),
         inspectionIds: uuidArray(6),
@@ -399,6 +399,7 @@ export default class StaticDataGenerator {
             { id: this.ids.materialGroupIds[1], fk_assosiation: this.ids.fk_assosiation, description: 'Gruppe2', issuedDefault: 4, sortOrder: 1, recdelete: null, recdeleteUser: null, multitypeAllowed: false },
             { id: this.ids.materialGroupIds[2], fk_assosiation: this.ids.fk_assosiation, description: 'Gruppe3', issuedDefault: null, sortOrder: 2, recdelete: null, recdeleteUser: null, multitypeAllowed: true },
             { id: this.ids.materialGroupIds[3], fk_assosiation: this.ids.fk_assosiation, description: 'Gruppe4', issuedDefault: null, sortOrder: 1, recdelete: new Date('2023-08-16 09:45:25'), recdeleteUser: 'test4', multitypeAllowed: true },
+            { id: this.ids.materialGroupIds[4], fk_assosiation: this.ids.fk_assosiation, description: 'Gruppe5', issuedDefault: null, sortOrder: 3, recdelete: null, recdeleteUser: null, multitypeAllowed: false },
         ]
     }
 
@@ -415,6 +416,7 @@ export default class StaticDataGenerator {
             { id: this.ids.materialIds[8], typename: 'Typ3-2', fk_materialGroup: this.ids.materialGroupIds[2], actualQuantity: 0, targetQuantity: 0, sortOrder: 1, recdelete: null, recdeleteUser: null },
             { id: this.ids.materialIds[9], typename: 'Typ3-3', fk_materialGroup: this.ids.materialGroupIds[2], actualQuantity: 0, targetQuantity: 0, sortOrder: 2, recdelete: null, recdeleteUser: null },
             { id: this.ids.materialIds[10], typename: 'Typ2-4', fk_materialGroup: this.ids.materialGroupIds[1], actualQuantity: 1, targetQuantity: 20, sortOrder: 2, recdelete: dayjs().subtract(20, "days").toDate(), recdeleteUser: "admin" },
+            { id: this.ids.materialIds[11], typename: 'Type4-1', fk_materialGroup: this.ids.materialGroupIds[4], actualQuantity: 0, targetQuantity: 0, sortOrder: 0, recdelete: dayjs().subtract(20, "days").toDate(), recdeleteUser: "admin" }
         ]
     }
 

@@ -47,7 +47,7 @@ it('validate deletion', async () => {
     });
 
     // deleted group
-    expect(groupList).toHaveLength(4);
+    expect(groupList).toHaveLength(5);
     expect(groupList[1].id).toBe(groupId)
     expect(groupList[1]?.recdelete).not.toBeNull();
     expect(isToday(groupList[1]?.recdelete!)).toBeTruthy();
@@ -61,4 +61,6 @@ it('validate deletion', async () => {
     expect(groupList[2].sortOrder).toBe(1);
     expect(groupList[3].id).toBe(staticData.ids.materialGroupIds[3]);
     expect(groupList[3].sortOrder).toBe(1);
+    expect(groupList[4].id).toBe(staticData.ids.materialGroupIds[4]);
+    expect(groupList[4].sortOrder).toBe(2);
 });

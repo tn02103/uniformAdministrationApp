@@ -16,7 +16,7 @@ it('create working', async () => {
     expect(result).toStrictEqual(expect.objectContaining({
         id: expect.stringMatching(uuidValidationPattern),
         description: 'Gruppe-2',
-        sortOrder: 3,
+        sortOrder: 4,
         multitypeAllowed: false,
         fk_assosiation: staticData.fk_assosiation,
         issuedDefault: null,

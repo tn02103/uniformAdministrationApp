@@ -1,4 +1,4 @@
-"use servre";
+"use server";
 
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";

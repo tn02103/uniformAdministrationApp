@@ -21,9 +21,11 @@ it('should work upwoards', async () => {
     await expect(groupList[0].id).toEqual(groupIds[0]);
     await expect(groupList[1].id).toEqual(groupIds[2]);
     await expect(groupList[2].id).toEqual(groupIds[1]);
+    await expect(groupList[3].id).toEqual(groupIds[4]);
     await expect(groupList[0].sortOrder).toEqual(0);
     await expect(groupList[1].sortOrder).toEqual(1);
     await expect(groupList[2].sortOrder).toEqual(2);
+    await expect(groupList[3].sortOrder).toEqual(3);
 });
 it('should work downwoards', async () => {
     const { success } = await runServerActionTest(() => changeMaterialGroupSortOrder({ groupId: groupIds[0], up: false }));
@@ -33,9 +35,11 @@ it('should work downwoards', async () => {
     await expect(groupList[0].id).toEqual(groupIds[1]);
     await expect(groupList[1].id).toEqual(groupIds[0]);
     await expect(groupList[2].id).toEqual(groupIds[2]);
+    await expect(groupList[3].id).toEqual(groupIds[4]);
     await expect(groupList[0].sortOrder).toEqual(0);
     await expect(groupList[1].sortOrder).toEqual(1);
     await expect(groupList[2].sortOrder).toEqual(2);
+    await expect(groupList[3].sortOrder).toEqual(3);
 });
 it('should prevent first element up', async () => {
     const { success, result } = await runServerActionTest(() => changeMaterialGroupSortOrder({ groupId: groupIds[0], up: true }));
@@ -56,22 +60,24 @@ it('should succed second element up', async () => {
     await expect(groupList[2].sortOrder).toEqual(2);
 });
 it('should prevent last element down', async () => {
-    const { success, result } = await runServerActionTest(() => changeMaterialGroupSortOrder({ groupId: groupIds[2], up: false }));
+    const { success, result } = await runServerActionTest(() => changeMaterialGroupSortOrder({ groupId: groupIds[4], up: false }));
     expect(success).toBeFalsy();
     expect(result.exceptionType).toEqual(ExceptionType.SaveDataException);
     expect(result.message).toMatch(/Element already last in list/);
 });
 it('should succed second to last element down', async () => {
-    const { success } = await runServerActionTest(() => changeMaterialGroupSortOrder({ groupId: groupIds[1], up: false }));
+    const { success } = await runServerActionTest(() => changeMaterialGroupSortOrder({ groupId: groupIds[2], up: false }));
     expect(success).toBeTruthy();
 
     const groupList = await getGroupList();
     await expect(groupList[0].id).toEqual(groupIds[0]);
-    await expect(groupList[1].id).toEqual(groupIds[2]);
-    await expect(groupList[2].id).toEqual(groupIds[1]);
+    await expect(groupList[1].id).toEqual(groupIds[1]);
+    await expect(groupList[2].id).toEqual(groupIds[4]);
+    await expect(groupList[3].id).toEqual(groupIds[2]);
     await expect(groupList[0].sortOrder).toEqual(0);
     await expect(groupList[1].sortOrder).toEqual(1);
     await expect(groupList[2].sortOrder).toEqual(2);
+    await expect(groupList[3].sortOrder).toEqual(3);
 });
 it('should fail if no element with newSortOrder exists', async () => {
     // create state that should cause error
