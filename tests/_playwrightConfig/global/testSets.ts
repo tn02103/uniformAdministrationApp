@@ -118,7 +118,7 @@ type acronymValidationTestType = (props: { emptyAllowed: boolean }) => Validatio
 export const acronymValidationTest: acronymValidationTestType = (props) => {
     const tests = [
         { testValue: 'XX', valid: true },
-        { testValue: 'X', valid: true },
+        { testValue: 'X', valid: false },
         { testValue: 'AAX', valid: false },
         { testValue: 'A1', valid: false },
         { testValue: 'A!', valid: false },

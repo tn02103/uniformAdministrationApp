@@ -236,19 +236,15 @@ test('validate delete', async ({ page, materialListComponent, staticData: { data
         });
     })
 });
-test('validate formValidation', async ({ editMaterialPopup, materialListComponent, staticData: { ids } }) => {
-    await materialListComponent.btn_material_edit(ids.materialIds[0]).click();
-
-    await test.step('name', async () => {
-        const tests: ValidationTestType[] = [
-            ...newDescriptionValidationTests({
-                minLength: 1,
-                maxLength: 20
-            }),
-            { testValue: "Typ1-2", valid: false },
-            { testValue: "Typ1-1", valid: true },
-            { testValue: "Typ2-2", valid: true },
-        ];
+test.describe('validate formValidation', () => {
+    test.beforeEach(async ({ materialListComponent, staticData: { ids } }) => {
+        await materialListComponent.btn_material_edit(ids.materialIds[0]).click();
+    });
+    test('name', async ({ editMaterialPopup }) => {
+        const tests: ValidationTestType[] = newDescriptionValidationTests({
+            minLength: 1,
+            maxLength: 20
+        });
         for (const testSet of tests) {
             await test.step(testSet.testValue, async () => {
                 await editMaterialPopup.txt_name.fill(String(testSet.testValue));
@@ -260,8 +256,19 @@ test('validate formValidation', async ({ editMaterialPopup, materialListComponen
                 }
             });
         }
+        await test.step('Name duplication', async () => {
+            await editMaterialPopup.txt_name.fill('Typ1-2');
+            await expect(editMaterialPopup.err_name).not.toBeVisible();
+            await editMaterialPopup.btn_save.click();
+            await expect(editMaterialPopup.div_popup).toBeVisible();
+            await expect(editMaterialPopup.err_name).toBeVisible();
+
+            await editMaterialPopup.txt_name.fill('Typ1-1');
+            await editMaterialPopup.btn_save.click();
+            await expect(editMaterialPopup.div_popup).not.toBeVisible();
+        });
     });
-    await test.step('actualQuantity', async () => {
+    test('actualQuantity', async ({ editMaterialPopup }) => {
         const tests = numberValidationTests({
             min: 0,
         });
@@ -277,7 +284,7 @@ test('validate formValidation', async ({ editMaterialPopup, materialListComponen
             });
         }
     });
-    await test.step('targetQuantity', async () => {
+    test('targetQuantity', async ({ editMaterialPopup }) => {
         const tests = numberValidationTests({
             min: 0,
         });

@@ -6,6 +6,7 @@ import { MaterialGroupDetailComponent } from "../../../_playwrightConfig/pages/a
 import { MaterialGroupListComponent } from "../../../_playwrightConfig/pages/admin/material/MaterialGroupList.component";
 import { DangerConfirmationModal } from "../../../_playwrightConfig/pages/popups/DangerConfirmationPopup.component";
 import { adminTest } from "../../../_playwrightConfig/setup";
+import { isToday } from "date-fns";
 
 type Fixture = {
     groupListComponent: MaterialGroupListComponent;
@@ -151,7 +152,8 @@ test('validate delete', async ({ page, groupDetailComponent, groupListComponent,
                 }
             }),
             prisma.material.findMany({
-                where: { fk_materialGroup: group.id }
+                where: { fk_materialGroup: group.id },
+                orderBy: { recdelete: "asc" }
             }),
             prisma.materialGroup.findUniqueOrThrow({
                 where: { id: group.id }
@@ -167,13 +169,19 @@ test('validate delete', async ({ page, groupDetailComponent, groupListComponent,
         });
 
         await test.step('validate material deleted', async () => {
-            expect(dbTypes).toHaveLength(3);
+            expect(dbTypes).toHaveLength(4);
             expect(dbTypes[0].recdelete).not.toBeNull();
-            expect(dbTypes[0].recdeleteUser).toEqual('test4');
+            expect(dbTypes[0].recdeleteUser).toEqual('admin');
+            expect(isToday(dbTypes[0].recdelete!)).toBeFalsy();
             expect(dbTypes[1].recdelete).not.toBeNull();
             expect(dbTypes[1].recdeleteUser).toEqual('test4');
+            expect(isToday(dbTypes[1].recdelete!)).toBeTruthy();
             expect(dbTypes[2].recdelete).not.toBeNull();
             expect(dbTypes[2].recdeleteUser).toEqual('test4');
+            expect(isToday(dbTypes[2].recdelete!)).toBeTruthy();
+            expect(dbTypes[3].recdelete).not.toBeNull();
+            expect(dbTypes[3].recdeleteUser).toEqual('test4');
+            expect(isToday(dbTypes[2].recdelete!)).toBeTruthy();
         });
 
         await test.step('validate materialGroup deleted', async () => {

@@ -35,24 +35,12 @@ export default function UniformConfigTypeGenerationList({
     function handleCreate() {
         if (!type) return;
 
-        const saveMutation = (data: UniformGeneration, typeId: string) => mutate(
-            createUniformGeneration(data.name, data.outdated, data.fk_sizelist, typeId)
-        ).catch((e) => {
-            console.error(e);
-            toast.error(t('common.error.actions.save'));
-        });
-        modal?.editGenerationModal(null, type, (data: UniformGeneration) => { saveMutation(data, selectedTypeId) });
+        modal?.editGenerationModal(null, type);
     }
     function handleEdit(generation: UniformGeneration) {
         if (!type) return;
 
-        const saveMutation = (data: UniformGeneration, typeId: string) => mutate(
-            saveUniformGeneration(data, typeId)
-        ).catch((e) => {
-            console.error(e);
-            toast.error(t('common.error.actions.save'));
-        });
-        modal?.editGenerationModal(generation, type, (data: UniformGeneration) => { saveMutation(data, selectedTypeId) });
+        modal?.editGenerationModal(generation, type);
     }
     function handleDelete(generation: UniformGeneration) {
         const deleteMutation = () => mutate(
