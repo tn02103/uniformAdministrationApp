@@ -1,3 +1,4 @@
+"use server"
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
@@ -15,3 +16,5 @@ export const getUniformType = (props: string) => genericSAValidator(
     },
     ...uniformTypeArgs
 }));
+
+

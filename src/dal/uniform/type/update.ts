@@ -1,0 +1,68 @@
+"use server";
+
+import { genericSAValidator } from "@/actions/validations";
+import { AuthRole } from "@/lib/AuthRoles";
+import { prisma } from "@/lib/db";
+import { UniformType, uniformTypeArgs } from "@/types/globalUniformTypes";
+import { uniformTypeFormSchema, UniformTypeFormType } from "@/zod/uniformConfig";
+
+
+type updateUniformTypeReturnType = Promise<{
+    error: {
+        message: string,
+        formElement: string,
+    }
+} | UniformType[]>
+export const updateUniformType = (props: UniformTypeFormType): updateUniformTypeReturnType => genericSAValidator(
+    AuthRole.materialManager,
+    props,
+    uniformTypeFormSchema, // uniformTypeValidator.test(data),
+    { uniformTypeId: props.id, uniformSizelistId: props.fk_defaultSizelist }
+).then(([data, { assosiation }]) => prisma.$transaction(async (client) => {
+    const list = await client.uniformType.findMany({
+        where: {
+            fk_assosiation: assosiation,
+            recdelete: null,
+        }
+    });
+
+    if (list.find(t => t.id !== data.id && t.name === data.name)) {
+        return {
+            error: {
+                message: "custom.uniform.type.nameDuplication",
+                formElement: "name",
+            }
+        };
+    }
+
+    const acronymDupl = list.find(t => t.id !== data.id && t.acronym === data.acronym);
+    if (acronymDupl) {
+        return {
+            error: {
+                message: "custom.uniform.type.acronymDuplication;name:" + acronymDupl.name,
+                formElement: "acronym",
+            }
+        };
+    }
+    if (data.usingSizes && !data.fk_defaultSizelist) {
+        return {
+            error: {
+                message: "pleaseSelect",
+                formElement: "fk_defaultSizelist"
+            }
+        };
+    }
+
+    await client.uniformType.update({
+        where: {
+            id: data.id,
+        },
+        data: data
+    });
+
+    return client.uniformType.findMany({
+        where: { fk_assosiation: assosiation, recdelete: null },
+        orderBy: { sortOrder: "asc" },
+        ...uniformTypeArgs,
+    });
+}));

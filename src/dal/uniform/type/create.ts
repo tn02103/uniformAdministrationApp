@@ -1,8 +1,9 @@
+"use server";
+
 import { genericSANoDataValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { uniformTypeArgs } from "@/types/globalUniformTypes";
-import { PrismaClient } from "@prisma/client";
 
 export const createUniformType = () =>
     genericSANoDataValidator(AuthRole.materialManager).then(
