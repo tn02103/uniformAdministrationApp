@@ -107,6 +107,8 @@ describe('manager tests', () => {
         it('validate default filter on active inspection', async () => {
             const { success, result } = await runServerActionTest<PersonnelListCadet[]>(() => getPersonnelListOverviewData(defaultProps));
             expect(success).toBeTruthy();
+            if (!success) return;
+
             expect(result).toHaveLength(5);
 
             const ids = result.map((c) => c.id);
@@ -122,6 +124,7 @@ describe('manager tests', () => {
                 getPersonnelListOverviewData({ ...defaultProps, include: { deregistered: true, inspected: false } })
             );
             expect(success).toBeTruthy();
+            if (!success) return;
             expect(result).toHaveLength(8);
 
             const ids = result.map((c) => c.id);
@@ -140,6 +143,7 @@ describe('manager tests', () => {
             expect(success).toBeTruthy();
             expect(result).toHaveLength(6);
 
+            if (!success) return;
             const ids = result.map((c) => c.id);
             // inspected
             expect(ids).toContain(cadetIds[2]);

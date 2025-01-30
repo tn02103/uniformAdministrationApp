@@ -40,7 +40,7 @@ export function getStaticDataIds() {
         sizeIds: uuidArray(21),
         sizelistIds: uuidArray(4),
         uniformTypeIds: uuidArray(5),
-        uniformGenerationIds: uuidArray(7),
+        uniformGenerationIds: uuidArray(8),
         uniformIds: [87, 16, 66, 13].map((value) => uuidArray(value)),
         materialGroupIds: uuidArray(5),
         materialIds: uuidArray(12),
@@ -135,6 +135,7 @@ export default class StaticDataGenerator {
             { id: this.ids.uniformGenerationIds[4], fk_uniformType: this.ids.uniformTypeIds[1], name: 'Generation2-1', fk_sizelist: null, outdated: true, sortOrder: 0, recdelete: null, recdeleteUser: null },
             { id: this.ids.uniformGenerationIds[5], fk_uniformType: this.ids.uniformTypeIds[1], name: 'Generation2-2', fk_sizelist: null, outdated: false, sortOrder: 1, recdelete: null, recdeleteUser: null },
             { id: this.ids.uniformGenerationIds[6], fk_uniformType: this.ids.uniformTypeIds[1], name: 'Generation2-3', fk_sizelist: null, outdated: true, sortOrder: 2, recdelete: new Date('2023-08-15 16:07:58'), recdeleteUser: 'test4' },
+            { id: this.ids.uniformGenerationIds[7], fk_uniformType: this.ids.uniformTypeIds[0], name: 'Generation1-5', fk_sizelist: null, outdated: true, sortOrder: 2, recdelete: new Date('2023-08-15 16:07:58'), recdeleteUser: 'test4' },
         ]
     }
 
