@@ -5,7 +5,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { UniformType } from "@/types/globalUniformTypes";
 import { uniformTypeFormSchema, UniformTypeFormType } from "@/zod/uniformConfig";
-import { __unsafeGetUniformTypeList } from "./get";
+import { __unsecuredGetUniformTypeList } from "./get";
 
 
 type updateUniformTypeReturnType = Promise<{
@@ -61,5 +61,5 @@ export const updateUniformType = (props: UniformTypeFormType): updateUniformType
         data: data
     });
 
-    return __unsafeGetUniformTypeList(assosiation, client);
+    return __unsecuredGetUniformTypeList(assosiation, client);
 }));

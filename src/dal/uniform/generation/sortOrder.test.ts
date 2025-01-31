@@ -2,7 +2,7 @@ import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { ExceptionType } from "@/errors/CustomException";
 import { prisma } from "@/lib/db";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
-import { changeUniformTypeSortOrder } from "./sortOrder";
+import { changeUniformGenerationSortOrder } from "./sortOrder";
 
 const { cleanup, ids } = new StaticData(0);
 afterEach(async () => {
@@ -10,60 +10,66 @@ afterEach(async () => {
 })
 it('should not allow first element up', async () => {
     const { success, result } = await runServerActionTest(
-        () => changeUniformTypeSortOrder({ typeId: ids.uniformTypeIds[0], up: true })
+        () => changeUniformGenerationSortOrder({ id: ids.uniformGenerationIds[0], up: true })
     );
     expect(success).toBeFalsy();
     expect(result.exceptionType).toEqual(ExceptionType.SaveDataException);
-    expect(result.message).toMatch(/Could not update sortOrder of seccond type/);
+    expect(result.message).toMatch(/Could not update sortOrder of seccond generation/);
 });
 it('should allow seccond element up', async () => {
     const { success, result } = await runServerActionTest(
-        () => changeUniformTypeSortOrder({ typeId: ids.uniformTypeIds[1], up: true })
+        () => changeUniformGenerationSortOrder({ id: ids.uniformGenerationIds[1], up: true })
     );
     expect(success).toBeTruthy();
-    expect(result[0].id).toBe(ids.uniformTypeIds[1]);
-    expect(result[1].id).toBe(ids.uniformTypeIds[0]);
-    expect(result[2].id).toBe(ids.uniformTypeIds[2]);
-    expect(result[3].id).toBe(ids.uniformTypeIds[3]);
+    if (!success) return;
+
+    const list = result[0].uniformGenerationList;
+    expect(list[0].id).toBe(ids.uniformGenerationIds[1]);
+    expect(list[1].id).toBe(ids.uniformGenerationIds[0]);
+    expect(list[2].id).toBe(ids.uniformGenerationIds[2]);
+    expect(list[3].id).toBe(ids.uniformGenerationIds[3]);
 });
 it('should not allow last element down', async () => {
     const { success, result } = await runServerActionTest(
-        () => changeUniformTypeSortOrder({ typeId: ids.uniformTypeIds[3], up: false })
+        () => changeUniformGenerationSortOrder({ id: ids.uniformGenerationIds[3], up: false })
     );
     expect(success).toBeFalsy();
     expect(result.exceptionType).toBe(ExceptionType.SaveDataException);
-    expect(result.message).toMatch(/Could not update sortOrder of seccond type/)
+    expect(result.message).toMatch(/Could not update sortOrder of seccond generation/)
 });
 it('should allow second to last element down', async () => {
     const { success, result } = await runServerActionTest(
-        () => changeUniformTypeSortOrder({ typeId: ids.uniformTypeIds[2], up: false })
+        () => changeUniformGenerationSortOrder({ id: ids.uniformGenerationIds[2], up: false })
     );
     expect(success).toBeTruthy();
-    expect(result[0].id).toBe(ids.uniformTypeIds[0]);
-    expect(result[1].id).toBe(ids.uniformTypeIds[1]);
-    expect(result[2].id).toBe(ids.uniformTypeIds[3]);
-    expect(result[3].id).toBe(ids.uniformTypeIds[2]);
+    if (!success) return;
+
+    const list = result[0].uniformGenerationList;
+    expect(list[0].id).toBe(ids.uniformGenerationIds[0]);
+    expect(list[1].id).toBe(ids.uniformGenerationIds[1]);
+    expect(list[2].id).toBe(ids.uniformGenerationIds[3]);
+    expect(list[3].id).toBe(ids.uniformGenerationIds[2]);
 });
 it('should fail if no element with newSortOrder exists', async () => {
-    await prisma.uniformType.update({
+    await prisma.uniformGeneration.update({
         where: {
-            id: ids.uniformTypeIds[2],
+            id: ids.uniformGenerationIds[2],
         },
         data: {
             sortOrder: 5
         }
     });
     const { success, result } = await runServerActionTest(
-        () => changeUniformTypeSortOrder({ typeId: ids.uniformTypeIds[1], up: false })
+        () => changeUniformGenerationSortOrder({ id: ids.uniformGenerationIds[1], up: false })
     );
     expect(success).toBeFalsy();
     expect(result.exceptionType).toBe(ExceptionType.SaveDataException);
-    expect(result.message).toMatch(/Could not update sortOrder of seccond type/);
+    expect(result.message).toMatch(/Could not update sortOrder of seccond generation/);
 });
 it('should fail if more than one element with newSortOrder exists', async () => {
-    await prisma.uniformType.update({
+    await prisma.uniformGeneration.update({
         where: {
-            id: ids.uniformTypeIds[3]
+            id: ids.uniformGenerationIds[3]
         },
         data: {
             sortOrder: 1
@@ -71,9 +77,9 @@ it('should fail if more than one element with newSortOrder exists', async () => 
     });
 
     const {success, result} = await runServerActionTest(
-        () => changeUniformTypeSortOrder({typeId: ids.uniformTypeIds[0], up: false})
+        () => changeUniformGenerationSortOrder({id: ids.uniformGenerationIds[0], up: false})
     );
     expect(success).toBeFalsy();
     expect(result.exceptionType).toBe(ExceptionType.SaveDataException);
-    expect(result.message).toMatch(/Could not update sortOrder of seccond type/);
+    expect(result.message).toMatch(/Could not update sortOrder of seccond generation/);
 });

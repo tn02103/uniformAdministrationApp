@@ -6,7 +6,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
-import { __unsafeGetUniformTypeList } from "./get";
+import { __unsecuredGetUniformTypeList } from "./get";
 
 const propShema = z.object({
     typeId: z.string().uuid(),
@@ -34,7 +34,7 @@ export const changeUniformTypeSortOrder = (props: PropType) => genericSAValidato
 
     // UPDATE sortorder of type
     await updateInitialType(typeId, up, client);
-    return __unsafeGetUniformTypeList(assosiation, client)
+    return __unsecuredGetUniformTypeList(assosiation, client)
 }));
 
 const updateSecondType = (sortOrder: number, up: boolean, fk_assosiation: string, client: Prisma.TransactionClient) =>

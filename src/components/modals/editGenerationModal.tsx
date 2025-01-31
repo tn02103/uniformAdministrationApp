@@ -1,6 +1,5 @@
 "use client";
 
-import { createUniformGeneration, saveUniformGeneration } from "@/actions/controllers/UniformConfigController";
 import { useUniformSizelists, useUniformType } from "@/dataFetcher/uniformAdmin";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
 import { SAFormHandler } from "@/lib/SAFormHandler";
@@ -12,6 +11,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import ErrorMessage from "../errorMessage";
 import { useModal } from "./modalProvider";
+import { createUniformGeneration } from "@/dal/uniform/generation/create";
+import { updateUniformGeneration } from "@/dal/uniform/generation/update";
 
 export type EditGenerationModalPropType = {
     generation: UniformGeneration | null,
@@ -45,13 +46,13 @@ export default function EditGenerationModal({ generation, type, onClose }: EditG
 
         let saPromise;
         if (generation) {
-            saPromise = SAFormHandler<typeof saveUniformGeneration>(
-                () => saveUniformGeneration(data, generation.id, type.id),
+            saPromise = SAFormHandler<typeof updateUniformGeneration>(
+                () => updateUniformGeneration({ data, id: generation.id }),
                 setError
             )
         } else {
             saPromise = SAFormHandler<typeof createUniformGeneration>(
-                () => createUniformGeneration(data.name, data.outdated, data.fk_sizelist, type.id),
+                () => createUniformGeneration({ ...data, uniformTypeId: type.id }),
                 setError
             );
         }

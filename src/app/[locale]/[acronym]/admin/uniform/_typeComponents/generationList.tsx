@@ -1,9 +1,10 @@
 "use client"
 
-import { changeUniformGenerationSortOrder, createUniformGeneration, deleteUniformGeneration, saveUniformGeneration } from "@/actions/controllers/UniformConfigController";
+import { deleteUniformGeneration } from "@/actions/controllers/UniformConfigController";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { Card, CardBody, CardHeader } from "@/components/card";
 import { useModal } from "@/components/modals/modalProvider";
+import { changeUniformGenerationSortOrder } from "@/dal/uniform/generation/sortOrder";
 import { useUniformSizelists, useUniformType } from "@/dataFetcher/uniformAdmin";
 import { useI18n } from "@/lib/locales/client";
 
@@ -26,7 +27,7 @@ export default function UniformConfigTypeGenerationList({
     const generationList = type?.uniformGenerationList;
 
     function changeSortOrder(generationId: string, up: boolean) {
-        mutate(changeUniformGenerationSortOrder(generationId, up)).catch((e) => {
+        mutate(changeUniformGenerationSortOrder({ id: generationId, up })).catch((e) => {
             console.error(e);
             toast.error(t('common.error.actions.changeSortorder'));
         });
