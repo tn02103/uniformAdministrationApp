@@ -3,8 +3,9 @@
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { UniformType, uniformTypeArgs } from "@/types/globalUniformTypes";
+import { UniformType } from "@/types/globalUniformTypes";
 import { uniformTypeFormSchema, UniformTypeFormType } from "@/zod/uniformConfig";
+import { __unsafeGetUniformTypeList } from "./get";
 
 
 type updateUniformTypeReturnType = Promise<{
@@ -60,9 +61,5 @@ export const updateUniformType = (props: UniformTypeFormType): updateUniformType
         data: data
     });
 
-    return client.uniformType.findMany({
-        where: { fk_assosiation: assosiation, recdelete: null },
-        orderBy: { sortOrder: "asc" },
-        ...uniformTypeArgs,
-    });
+    return __unsafeGetUniformTypeList(assosiation, client);
 }));

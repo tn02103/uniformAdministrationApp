@@ -3,37 +3,17 @@
 import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { descriptionValidationPattern, uniformGenerationValidator, uniformTypeValidator, uuidValidationPattern } from "@/lib/validations";
-import { UniformGeneration, UniformType } from "@/types/globalUniformTypes";
+import { descriptionValidationPattern, uuidValidationPattern } from "@/lib/validations";
+import { UniformType } from "@/types/globalUniformTypes";
+import { UniformGenerationFormType } from "@/zod/uniformConfig";
 import { PrismaClient } from "@prisma/client";
-import { UniformDBHandler } from "../dbHandlers/UniformDBHandler";
 import UniformGenerationDBHandler from "../dbHandlers/UniformGenerationDBHandler";
 import { UniformTypeDBHandler } from "../dbHandlers/UniformTypeDBHandler";
 import { genericSAValidatorV2 } from "../validations";
-import { UniformGenerationFormType, UniformTypeFormType } from "@/zod/uniformConfig";
 
 const dbHandler = new UniformTypeDBHandler();
-const uniformHandler = new UniformDBHandler();
 const generationHandler = new UniformGenerationDBHandler();
 
-export const getUniformTypeList = (): Promise<UniformType[]> => genericSAValidatorV2(AuthRole.user, true, {}).then(({ assosiation }) => dbHandler.getTypeList(assosiation));
-
-export const deleteUniformType = (uniformTypeId: string) => genericSAValidatorV2(
-    AuthRole.materialManager,
-    (uuidValidationPattern.test(uniformTypeId)),
-    { uniformTypeId }
-).then(({ assosiation, username }): Promise<UniformType[]> => prisma.$transaction(async (client) => {
-    await Promise.all([
-        uniformHandler.returnManyByType(uniformTypeId, client as PrismaClient),
-        uniformHandler.deleteManyByType(uniformTypeId, username, client as PrismaClient),
-        generationHandler.deleteManyByType(uniformTypeId, username, client as PrismaClient),
-    ]);
-
-    const type = await dbHandler.delete(uniformTypeId, username, client as PrismaClient);
-    dbHandler.moveUpBelowHole(type.sortOrder, assosiation, client as PrismaClient);
-
-    return dbHandler.getTypeList(assosiation, client as PrismaClient);
-}));
 
 type createUniformGenerationReturnType = Promise<{
     error: {

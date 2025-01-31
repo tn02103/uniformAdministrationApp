@@ -1,9 +1,12 @@
+"use server";
+
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { UniformType, uniformTypeArgs } from "@/types/globalUniformTypes";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { z } from "zod";
+import { __unsafeGetUniformTypeList } from "./get";
 
 export const deleteUniformType = (props: string): Promise<UniformType[]> => genericSAValidator(
     AuthRole.materialManager,
@@ -20,11 +23,7 @@ export const deleteUniformType = (props: string): Promise<UniformType[]> => gene
     const type = await deleteType(typeId, username, client as PrismaClient);
     await moveSortOrderUp(assosiation, type.sortOrder, client as PrismaClient);
 
-    return client.uniformType.findMany({
-        where: { fk_assosiation: assosiation, recdelete: null },
-        orderBy: { sortOrder: "asc" },
-        ...uniformTypeArgs,
-    });
+    return __unsafeGetUniformTypeList(assosiation, client);
 }));
 
 const returnAllUniformItems = (fk_uniformType: string, client: Prisma.TransactionClient) =>

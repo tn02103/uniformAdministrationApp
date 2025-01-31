@@ -1,0 +1,137 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getUniformType should match snapshot 1`] = `
+{
+  "acronym": "AA",
+  "fk_defaultSizelist": "8b4287de-2cd4-49c7-b913-d868616d7cb6",
+  "id": "c2ba75d8-7b71-4155-b83e-07b5e703229b",
+  "issuedDefault": 3,
+  "name": "Typ1",
+  "sortOrder": 0,
+  "uniformGenerationList": [
+    {
+      "fk_sizelist": "8b4287de-2cd4-49c7-b913-d868616d7cb6",
+      "id": "3a83a39d-cd49-43a8-a3d7-83346e3176a7",
+      "name": "Generation1-1",
+      "outdated": true,
+      "sortOrder": 0,
+    },
+    {
+      "fk_sizelist": "8b4287de-2cd4-49c7-b913-d868616d7cb6",
+      "id": "78f27f30-a4d9-4655-a1df-81c79922d70d",
+      "name": "Generation1-2",
+      "outdated": false,
+      "sortOrder": 1,
+    },
+    {
+      "fk_sizelist": "2a32e2fa-e1d6-4d0c-8a3e-2e24b2788e48",
+      "id": "b7cd58da-dba5-49a2-8e6e-b42be432125c",
+      "name": "Generation1-3",
+      "outdated": false,
+      "sortOrder": 2,
+    },
+    {
+      "fk_sizelist": "4aa03464-d448-4f5f-a363-37e13a87f6aa",
+      "id": "32e522fe-9cd3-4a86-bd50-6c4b2f2d55c6",
+      "name": "Generation1-4",
+      "outdated": false,
+      "sortOrder": 3,
+    },
+  ],
+  "usingGenerations": true,
+  "usingSizes": true,
+}
+`;
+
+exports[`getUniformTypeList should match snapshot 1`] = `
+[
+  {
+    "acronym": "AA",
+    "fk_defaultSizelist": "8b4287de-2cd4-49c7-b913-d868616d7cb6",
+    "id": "c2ba75d8-7b71-4155-b83e-07b5e703229b",
+    "issuedDefault": 3,
+    "name": "Typ1",
+    "sortOrder": 0,
+    "uniformGenerationList": [
+      {
+        "fk_sizelist": "8b4287de-2cd4-49c7-b913-d868616d7cb6",
+        "id": "3a83a39d-cd49-43a8-a3d7-83346e3176a7",
+        "name": "Generation1-1",
+        "outdated": true,
+        "sortOrder": 0,
+      },
+      {
+        "fk_sizelist": "8b4287de-2cd4-49c7-b913-d868616d7cb6",
+        "id": "78f27f30-a4d9-4655-a1df-81c79922d70d",
+        "name": "Generation1-2",
+        "outdated": false,
+        "sortOrder": 1,
+      },
+      {
+        "fk_sizelist": "2a32e2fa-e1d6-4d0c-8a3e-2e24b2788e48",
+        "id": "b7cd58da-dba5-49a2-8e6e-b42be432125c",
+        "name": "Generation1-3",
+        "outdated": false,
+        "sortOrder": 2,
+      },
+      {
+        "fk_sizelist": "4aa03464-d448-4f5f-a363-37e13a87f6aa",
+        "id": "32e522fe-9cd3-4a86-bd50-6c4b2f2d55c6",
+        "name": "Generation1-4",
+        "outdated": false,
+        "sortOrder": 3,
+      },
+    ],
+    "usingGenerations": true,
+    "usingSizes": true,
+  },
+  {
+    "acronym": "AB",
+    "fk_defaultSizelist": null,
+    "id": "c66fc695-0210-424a-83c4-84c7e1f7145b",
+    "issuedDefault": 1,
+    "name": "Typ2",
+    "sortOrder": 1,
+    "uniformGenerationList": [
+      {
+        "fk_sizelist": null,
+        "id": "c723d936-0bf9-4ebd-a8e8-dec105545876",
+        "name": "Generation2-1",
+        "outdated": true,
+        "sortOrder": 0,
+      },
+      {
+        "fk_sizelist": null,
+        "id": "205321e6-3c05-4720-942a-7020d817f637",
+        "name": "Generation2-2",
+        "outdated": false,
+        "sortOrder": 1,
+      },
+    ],
+    "usingGenerations": true,
+    "usingSizes": false,
+  },
+  {
+    "acronym": "AC",
+    "fk_defaultSizelist": "2a32e2fa-e1d6-4d0c-8a3e-2e24b2788e48",
+    "id": "21456d05-9dd2-48cd-aac1-bcbe6661f3a4",
+    "issuedDefault": 1,
+    "name": "Typ3",
+    "sortOrder": 2,
+    "uniformGenerationList": [],
+    "usingGenerations": false,
+    "usingSizes": true,
+  },
+  {
+    "acronym": "AD",
+    "fk_defaultSizelist": null,
+    "id": "d9486155-dce6-4227-a866-66c1ba3f6422",
+    "issuedDefault": 1,
+    "name": "Typ4",
+    "sortOrder": 3,
+    "uniformGenerationList": [],
+    "usingGenerations": false,
+    "usingSizes": false,
+  },
+]
+`;

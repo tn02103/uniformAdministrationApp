@@ -1,11 +1,11 @@
 "use client"
 
-import { deleteUniformType } from "@/actions/controllers/UniformConfigController";
 import { getUniformCountByType } from "@/actions/controllers/UniformController";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { Card, CardBody, CardHeader } from "@/components/card";
 import { useModal } from "@/components/modals/modalProvider";
 import { createUniformType } from "@/dal/uniform/type/create";
+import { deleteUniformType } from "@/dal/uniform/type/delete";
 import { changeUniformTypeSortOrder } from "@/dal/uniform/type/sortOrder";
 import { useUniformTypeList } from "@/dataFetcher/uniformAdmin";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
