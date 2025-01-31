@@ -32,7 +32,7 @@ export const updateMaterialGroup = (props: PropType): updateMaterialGroupReturnT
     props,
     propSchema,
     { materialGroupId: props.id }
-).then(async ([{ id, data }, { assosiation }]) => prisma.$transaction(async (client) => {
+).then(async ([{ assosiation }, { id, data }]) => prisma.$transaction(async (client) => {
     const list = await client.materialGroup.findMany({
         where: {
             fk_assosiation: assosiation,

@@ -33,14 +33,14 @@ describe('genericSAValidatorV2', () => {
 describe('genericSAValidator', () => {
     it('validate correct role', async () => {
         const result = await genericSAValidator(AuthRole.materialManager, "somestring", z.string(), {});
-        expect(result[0]).toEqual("somestring");
-        expect(result[1]).toEqual({
+        expect(result[0]).toEqual({
             name: 'VK Verwaltung',
             username: 'mana',
             assosiation: staticData.data.assosiation.id,
             acronym: staticData.data.assosiation.acronym,
             role: AuthRole.materialManager
         });
+        expect(result[1]).toEqual("somestring");
     });
     it('validate unauthorized exeption', async () => {
         const error = await genericSAValidator(AuthRole.admin, "somestring", z.string(), {})

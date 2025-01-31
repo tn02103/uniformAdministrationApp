@@ -25,7 +25,7 @@ export const changeMaterialSortOrder = (props: PropType) => genericSAValidator(
     props,
     propSchema,
     { materialId: props.id }
-).then(async ([{ id, up }, { assosiation }]) => prisma.$transaction(async (client) => {
+).then(async ([{ assosiation }, { id, up },]) => prisma.$transaction(async (client) => {
     const material = await client.material.findUniqueOrThrow({ where: { id } });
     if (up) {
         if (material.sortOrder === 0) {

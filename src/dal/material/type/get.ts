@@ -1,4 +1,4 @@
-import { genericSANoDataValidator, genericSAValidator } from "@/actions/validations";
+import { genericSANoDataValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { AdministrationMaterialGroup, materialGroupArgs } from "@/types/globalMaterialTypes";

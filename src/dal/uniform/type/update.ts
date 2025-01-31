@@ -18,7 +18,7 @@ export const updateUniformType = (props: UniformTypeFormType): updateUniformType
     props,
     uniformTypeFormSchema, // uniformTypeValidator.test(data),
     { uniformTypeId: props.id, uniformSizelistId: props.fk_defaultSizelist }
-).then(([data, { assosiation }]) => prisma.$transaction(async (client) => {
+).then(([{ assosiation }, data]) => prisma.$transaction(async (client) => {
     const list = await client.uniformType.findMany({
         where: {
             fk_assosiation: assosiation,

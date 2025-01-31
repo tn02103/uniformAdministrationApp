@@ -18,7 +18,7 @@ export const changeUniformTypeSortOrder = (props: PropType) => genericSAValidato
     props,
     propShema,
     { uniformTypeId: props.typeId }
-).then(([{ typeId, up }, { assosiation }]) => prisma.$transaction(async (client) => {
+).then(([{ assosiation }, { typeId, up }]) => prisma.$transaction(async (client) => {
     const type = await prisma.uniformType.findUniqueOrThrow({
         where: {
             id: typeId

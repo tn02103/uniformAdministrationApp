@@ -32,7 +32,7 @@ export const updateMaterial = (props: PropType): Promise<updateMaterialReturnTyp
     props,
     propSchema,
     { materialId: props.id }
-).then(([{ id, data }, { assosiation }]) => prisma.$transaction(async (client) => {
+).then(([{ assosiation }, { id, data }]) => prisma.$transaction(async (client) => {
     const material = await client.material.findUniqueOrThrow({ where: { id } });
     const group = await client.materialGroup.findUniqueOrThrow({
         where: { id: material.fk_materialGroup },

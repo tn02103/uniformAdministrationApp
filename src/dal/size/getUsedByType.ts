@@ -9,7 +9,7 @@ export const getUsedSizesByType = (props: string) => genericSAValidator<string>(
     props,
     z.string().uuid(),
     { uniformTypeId: props }
-).then(([typeId,]) => prisma.uniformSize.findMany({
+).then(([, typeId]) => prisma.uniformSize.findMany({
     ...uniformSizeArgs,
     where: {
         uniformList: {

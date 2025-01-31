@@ -10,7 +10,7 @@ export const deleteUniformType = (props: string): Promise<UniformType[]> => gene
     props,
     z.string().uuid(),
     { uniformTypeId: props }
-).then(([typeId, { assosiation, username }]): Promise<UniformType[]> => prisma.$transaction(async (client) => {
+).then(([{ assosiation, username }, typeId]): Promise<UniformType[]> => prisma.$transaction(async (client) => {
     await Promise.all([
         returnAllUniformItems(typeId, client),
         deleteAllUniformItems(typeId, username, client),

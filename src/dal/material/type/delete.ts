@@ -16,7 +16,7 @@ export const deleteMaterial = (props: string) => genericSAValidator(
     props,
     z.string().uuid(),
     { materialId: props }
-).then(([id, { username, assosiation }]) => prisma.$transaction(async (client) => {
+).then(([{ username, assosiation }, id]) => prisma.$transaction(async (client) => {
     const material = await prisma.material.findUniqueOrThrow({ where: { id } });
 
     await client.materialIssued.updateMany({

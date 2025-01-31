@@ -22,7 +22,7 @@ type AssosiationValidationDataType = {
 }
 
 export const getSAReturnType = <t>() => {
-    type returntype ={
+    type returntype = {
         error: {
             message: string,
             formField?: string,
@@ -86,7 +86,7 @@ export const genericSAValidator = async <T>(
     data: any,
     shema: z.ZodType<T>,
     assosiationValidations?: AssosiationValidationDataType
-): Promise<[T, IronSessionUser]> => {
+): Promise<[IronSessionUser, T]> => {
 
     const { user } = await getIronSession();
     if (!user) {
@@ -104,7 +104,7 @@ export const genericSAValidator = async <T>(
         await assosiationValidator(assosiationValidations, user.assosiation);
     }
 
-    return [zodResult.data, user];
+    return [user, zodResult.data];
 }
 
 export const genericSANoDataValidator = async (requiredRole: AuthRole) => {

@@ -33,7 +33,7 @@ export const createMaterial = (props: PropType): createMaterialReturnType => gen
     props,
     propSchema,
     { materialGroupId: props.groupId }
-).then(([{ data, groupId }, { assosiation }]) => prisma.$transaction(async (client) => {
+).then(([{ assosiation }, { data, groupId }]) => prisma.$transaction(async (client) => {
     const group = await client.materialGroup.findUniqueOrThrow({
         where: { id: groupId },
         include: {

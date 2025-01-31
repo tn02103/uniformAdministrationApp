@@ -1,9 +1,8 @@
 "use server";
 
-import { genericSAValidatorV2, genericSAValidator } from "@/actions/validations";
+import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { uuidValidationPattern } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -18,9 +17,9 @@ export const deleteMaterialGroup = (props: string) => genericSAValidator(
     props,
     z.string().uuid(),
     { materialGroupId: props }
-).then(async ([id, { assosiation, username }]) => prisma.$transaction(async (client) => {
+).then(async ([{ assosiation, username }, id]) => prisma.$transaction(async (client) => {
     const group = await client.materialGroup.findUniqueOrThrow({
-        where: {id},
+        where: { id },
         include: {
             typeList: true
         }
@@ -31,7 +30,7 @@ export const deleteMaterialGroup = (props: string) => genericSAValidator(
     //dirty return Materials
     await client.materialIssued.updateMany({
         where: {
-            fk_material: {in: typeIdList},
+            fk_material: { in: typeIdList },
             dateReturned: null
         },
         data: {
@@ -52,7 +51,7 @@ export const deleteMaterialGroup = (props: string) => genericSAValidator(
 
     // mark groups as deleted
     await client.materialGroup.update({
-        where:{id},
+        where: { id },
         data: {
             recdelete: date,
             recdeleteUser: username,
@@ -61,11 +60,11 @@ export const deleteMaterialGroup = (props: string) => genericSAValidator(
     await client.materialGroup.updateMany({
         where: {
             fk_assosiation: assosiation,
-            sortOrder: {gt: group.sortOrder},
+            sortOrder: { gt: group.sortOrder },
             recdelete: null,
         },
         data: {
-            sortOrder: {decrement: 1},
+            sortOrder: { decrement: 1 },
         },
     });
 

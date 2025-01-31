@@ -24,7 +24,7 @@ export const changeMaterialGroupSortOrder = (props: PropType) => genericSAValida
     props,
     propSchema,
     { materialGroupId: props.groupId }
-).then(async ([{ groupId, up }, { assosiation }]) => prisma.$transaction(async (client) => {
+).then(async ([{ assosiation }, { groupId, up }]) => prisma.$transaction(async (client) => {
     const group = await client.materialGroup.findUniqueOrThrow({
         where: { id: groupId }
     });

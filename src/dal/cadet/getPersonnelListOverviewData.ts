@@ -19,7 +19,7 @@ export const getPersonnelListOverviewData = (props: getPersonnelListPropShema): 
     AuthRole.user,
     props,
     getPersonnelListPropShema,
-).then(async ([{ orderBy, asc, include }, { assosiation, role }]) => {
+).then(async ([{ assosiation, role }, { orderBy, asc, include }]) => {
     const inspectionState = await getInspectionState();
     if (role < AuthRole.inspector) {
         return getRestrictedPersonnelList(

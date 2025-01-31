@@ -9,7 +9,7 @@ export const getUniformType = (props: string) => genericSAValidator(
     AuthRole.user,
     props,
     z.string().uuid(),
-).then(([typeId, { assosiation }]) => prisma.uniformType.findUnique({
+).then(([{ assosiation }, typeId]) => prisma.uniformType.findUnique({
     where: {
         id: typeId,
         fk_assosiation: assosiation,
