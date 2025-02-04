@@ -1,9 +1,9 @@
 "use client"
 
-import { deleteUniformGeneration } from "@/actions/controllers/UniformConfigController";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { Card, CardBody, CardHeader } from "@/components/card";
 import { useModal } from "@/components/modals/modalProvider";
+import { deleteUniformGeneration } from "@/dal/uniform/generation/delete";
 import { changeUniformGenerationSortOrder } from "@/dal/uniform/generation/sortOrder";
 import { useUniformSizelists, useUniformType } from "@/dataFetcher/uniformAdmin";
 import { useI18n } from "@/lib/locales/client";
@@ -62,7 +62,6 @@ export default function UniformConfigTypeGenerationList({
             }
         });
     }
-
 
     if (!type || !type?.usingGenerations) return (<></>)
     return (
