@@ -123,7 +123,6 @@ export const genericSAValidatorV2 = async (
     typeValidation: boolean,
     assosiationValidations: AssosiationValidationDataType,
 ): Promise<IronSessionUser> => {
-    "use server"
 
     const { user } = await getIronSession();
     if (!user) {

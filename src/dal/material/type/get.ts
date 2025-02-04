@@ -1,3 +1,4 @@
+"use server";
 import { genericSANoDataValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
