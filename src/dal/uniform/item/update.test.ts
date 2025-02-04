@@ -67,6 +67,15 @@ it('catches size not in defaultSizelist without generation', async () => {
     );
     expect(success).toBeFalsy();
 });
+it('works without a size provided', async() => {
+    const { success, result } = await runServerActionTest(
+        () => updateUniformItem({
+            ...defaultProps,
+            size: null,
+        })
+    );
+    expect(success).toBeFalsy();
+});
 it('does not change size when !usingSizes', async () => {
     // disabling sizes but with preconfigured sizelists
     await prisma.uniformType.update({

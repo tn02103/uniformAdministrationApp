@@ -27,7 +27,7 @@ const test = adminTest.extend<authenticatedFixture & Fixture>({
         await use(staticData.ids.uniformTypeIds[0]);
     },
     generationList: async ({ staticData, typeId }, use) => {
-        await use(staticData.data.uniformGenerations.filter(g => g.fk_uniformType === typeId) as UniformGeneration[]);
+        await use(staticData.data.uniformGenerations.filter(g => g.fk_uniformType === typeId && !g.recdelete) as UniformGeneration[]);
     },
     components: async ({ page, typeId }, use) => {
         const comp = {

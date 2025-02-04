@@ -27,7 +27,7 @@ export const updateUniformItem = (props: UniformFormType): Promise<UniformFormDa
             }
         }
     });
-    if (type?.usingSizes) {
+    if (type?.usingSizes && data.size) {
         let sizelistId = type.fk_defaultSizelist;
         if (type.usingGenerations && data.generation) {
             const generation = await prisma.uniformGeneration.findUniqueOrThrow({

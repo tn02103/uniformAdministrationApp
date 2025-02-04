@@ -70,7 +70,6 @@ describe('successfull in all allowed combinations', () => {
                 }
             })
         );
-        console.log(result);
         expect(success).toBeTruthy();
         expect(result).toBe(2);
         const dbData = await prisma.uniform.findMany({

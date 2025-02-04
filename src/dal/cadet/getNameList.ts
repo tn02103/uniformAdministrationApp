@@ -1,3 +1,5 @@
+"use server"
+
 import { genericSAValidatorV2 } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";

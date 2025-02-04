@@ -1,10 +1,11 @@
+"use server"
+
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
+import { prisma } from "@/lib/db";
 import { PersonnelListCadet } from "@/types/globalCadetTypes";
 import { z } from "zod";
 import { getInspectionState } from "../inspection/state";
-import { Prisma } from "@prisma/client";
-import { prisma } from "@/lib/db";
 
 const getPersonnelListPropShema = z.object({
     orderBy: z.enum(['lastname', 'firstname']),
