@@ -1,7 +1,7 @@
 import { runServerActionTest } from "@/dal/_helper/testHelper";
-import { createUniformItems } from "./create";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { prisma } from "@/lib/db";
+import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { createUniformItems } from "./create";
 
 const { ids, cleanup } = new StaticData(0);
 const defaultWithSizes = {
@@ -139,7 +139,7 @@ describe('test type validations', () => {
         );
         expect(success).toBeFalsy();
     });
-    it('catches invalid type', async() => {
+    it('catches invalid type', async () => {
         const { success } = await runServerActionTest(
             () => createUniformItems({
                 ...defaultWithoutSizes,
