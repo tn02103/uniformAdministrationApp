@@ -1,4 +1,4 @@
-import { createUniformItems } from "@/actions/controllers/UniformController";
+
 import { generateUniformNumbers } from "@/actions/controllers/UniformIdController";
 import { useI18n } from "@/lib/locales/client";
 import { UniformNumbersSizeMap, UniformSizelist } from "@/types/globalUniformTypes";
@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import NewUniformConfigurator, { ConfiguratorFormType } from "../configurator";
 import Step1, { Step1FormType } from "./Step1";
 import Step2 from "./Step2";
+import { createUniformItems } from "@/dal/uniform/item/create";
 
 type FormDataType = {
     configurator?: {
@@ -74,11 +75,14 @@ const GeneratedWorkflow = ({
     function handleCreate(uniformNumberMap: UniformNumbersSizeMap) {
         if (!formData.configurator) return;
 
-        createUniformItems(uniformNumberMap, {
-            uniformTypeId: formData.configurator.typeId,
-            generationId: formData.configurator.generationId,
-            comment: formData.configurator.comment,
-            active: formData.configurator.active,
+        createUniformItems({
+            numberMap: uniformNumberMap,
+            data: {
+                uniformTypeId: formData.configurator.typeId,
+                generationId: formData.configurator.generationId,
+                comment: formData.configurator.comment,
+                active: formData.configurator.active,
+            }
         }).then((result) => {
             toast.success(t('createUniform.create.success', { count: result }));
             setFormData({ uniformNumberMap: [], step1Data: { continuous: false, values: {} } });

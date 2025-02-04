@@ -1,10 +1,11 @@
-import { createUniformItems } from "@/actions/controllers/UniformController"
+
 import { useI18n } from "@/lib/locales/client"
 import { useEffect, useState } from "react"
 import { Row } from "react-bootstrap"
 import { toast } from "react-toastify"
 import NewUniformConfigurator from "./../configurator"
 import NumberInput from "./NumberInput"
+import { createUniformItems } from "@/dal/uniform/item/create"
 
 type ConfiguratorData = {
     typeId: string,
@@ -38,15 +39,15 @@ const KnownIdsWorkflow = ({
         if (!uniformConfiguration) return;
 
         const sizeId: string = (uniformConfiguration.sizeId && uniformConfiguration?.sizeId === "null") ? "amount" : uniformConfiguration.sizeId as string;
-        await createUniformItems(
-            [{ sizeId, numbers }],
-            {
+        await createUniformItems({
+            numberMap: [{ sizeId, numbers }],
+            data: {
                 uniformTypeId: uniformConfiguration.typeId,
                 generationId: uniformConfiguration.generationId,
                 comment: uniformConfiguration.comment,
                 active: uniformConfiguration.active,
             }
-        ).then((result) => {
+        }).then((result) => {
             toast.success(t('createUniform.create.success', { count: result }));
             setStep(0);
         }).catch((error) => {
