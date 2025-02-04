@@ -1,4 +1,4 @@
-import { deleteUniformItem, getUniformFormValues, getUniformIssueHistory, saveUniformItem } from "@/actions/controllers/UniformController";
+import { deleteUniformItem, getUniformFormValues, getUniformIssueHistory } from "@/actions/controllers/UniformController";
 import { useGlobalData } from "@/components/globalDataProvider";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { AuthRole } from "@/lib/AuthRoles";
@@ -13,6 +13,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import useSWR, { mutate } from "swr";
 import { useModal } from "../modalProvider";
+import { updateUniformItem } from "@/dal/uniform/item/update";
 
 export type UIDModalProps = {
     uniformId: string;
@@ -61,7 +62,7 @@ export default function UniformItemDetailModal({ uniformId, uniformType, ownerId
 
         mutate(
             `uniform.${uniformId}.formValues`,
-            saveUniformItem(data),
+            updateUniformItem(data),
             {
                 optimisticData: data
             }

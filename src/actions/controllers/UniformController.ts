@@ -170,39 +170,6 @@ export const getUniformIssueHistory = (uniformId: string): Promise<IssuedEntryTy
 })));
 
 /**
- * used to change the data of a uniformItem.
- * @requires AuthRole.inspector
- * @param data 
- * @returns FormData of the uniform
- */
-export const saveUniformItem = (data: UniformFormData): Promise<UniformFormData> => genericSAValidatorV2(
-    AuthRole.inspector,
-    (uuidValidationPattern.test(data.id)
-        && (!data.generation || uuidValidationPattern.test(data.generation))
-        && (!data.size || uuidValidationPattern.test(data.size))
-        && typeof data.active === "boolean"),
-    { uniformId: data.id }
-).then(async () => prisma.uniform.update({
-    ...uniformArgs,
-    where: {
-        id: data.id,
-    },
-    data: {
-        active: data.active,
-        comment: data.comment,
-        fk_generation: data.generation ?? null,
-        fk_size: data.size ?? null
-    },
-})).then(data => !data ? notFound() : ({
-    id: data.id,
-    number: data.number,
-    generation: data.generation?.id,
-    size: data.size?.id,
-    comment: data.comment ?? "",
-    active: data.active,
-}));
-
-/**
  * Creates multiple UniformItems of a single type
  * @requires AuthRole.inspector
  * @param numbers Numbers of the UniformItem for each size. 
