@@ -483,7 +483,7 @@ export default class StaticDataGenerator {
             {
                 id: this.ids.deficiencyIds[0], fk_deficiencyType: this.ids.deficiencyTypeIds[0], description: 'Typ1-1184', comment: 'Uniform Deficiency Sven Keller Resolved',
                 fk_inspection_created: this.ids.inspectionIds[0], fk_inspection_resolved: this.ids.inspectionIds[1],
-                dateCreated: new Date('2023-06-18T00:00:00.000Z'), dateUpdated: new Date('2023-06-18T00:00:00.000Z'), dateResolved: new Date('2023-08-13T14:14:28.000Z'),
+                dateCreated: new Date('2023-06-18T00:00:00.000Z'), dateUpdated: new Date('2023-06-18T00:00:00.000Z'), dateResolved: new Date('2023-08-13T00:00:00.000Z'),
                 userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4'
             },
             {
@@ -495,7 +495,7 @@ export default class StaticDataGenerator {
             {
                 id: this.ids.deficiencyIds[2], fk_deficiencyType: this.ids.deficiencyTypeIds[0], description: 'Typ1-1146', comment: 'Uniform Deficiency Sven Keller Resolved',
                 fk_inspection_created: this.ids.inspectionIds[0], fk_inspection_resolved: this.ids.inspectionIds[1],
-                dateCreated: new Date('2023-06-18T00:00:00.000Z'), dateUpdated: new Date('2023-06-18T00:00:00.000Z'), dateResolved: new Date('2023-08-13T14:14:28.000Z'),
+                dateCreated: new Date('2023-06-18T00:00:00.000Z'), dateUpdated: new Date('2023-06-18T00:00:00.000Z'), dateResolved: new Date('2023-08-13T00:00:00.000Z'),
                 userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4'
             },
             {
@@ -507,7 +507,7 @@ export default class StaticDataGenerator {
             {
                 id: this.ids.deficiencyIds[4], fk_deficiencyType: this.ids.deficiencyTypeIds[1], description: 'Ungewaschen', comment: 'Cadet Deficiency Marie Becker Resolved',
                 fk_inspection_created: this.ids.inspectionIds[0], fk_inspection_resolved: this.ids.inspectionIds[1],
-                dateCreated: new Date('2023-06-18T00:00:00.000Z'), dateUpdated: new Date('2023-06-18T00:00:00.000Z'), dateResolved: new Date('2023-08-13T14:14:28.000Z'),
+                dateCreated: new Date('2023-06-18T00:00:00.000Z'), dateUpdated: new Date('2023-06-18T00:00:00.000Z'), dateResolved: new Date('2023-08-13T00:00:00.000Z'),
                 userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4'
             },
             {
@@ -519,7 +519,7 @@ export default class StaticDataGenerator {
             {
                 id: this.ids.deficiencyIds[6], fk_deficiencyType: this.ids.deficiencyTypeIds[1], description: 'Resoved Test', comment: 'Cadet Deficiency Sven Keller Resolved',
                 fk_inspection_created: this.ids.inspectionIds[0], fk_inspection_resolved: this.ids.inspectionIds[1],
-                dateCreated: new Date('2023-06-18T00:00:00.000Z'), dateUpdated: new Date('2023-06-18T00:00:00.000Z'), dateResolved: new Date('2023-08-13T14:14:28.000Z'),
+                dateCreated: new Date('2023-06-18T00:00:00.000Z'), dateUpdated: new Date('2023-06-18T00:00:00.000Z'), dateResolved: new Date('2023-08-13T00:00:00.000Z'),
                 userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4'
             },
             {

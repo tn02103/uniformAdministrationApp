@@ -168,37 +168,3 @@ export const getUniformIssueHistory = (uniformId: string): Promise<IssuedEntryTy
     lastname: issueEntry.cadet.lastname,
     cadetId: issueEntry.cadet.id,
 })));
-
-/**
- * Marks uniformitem as deleted. May only work if item is not issued.
- * @requires AuthRole.materialManager
- * @param uniformId 
- * @returns 
- */
-export const deleteUniformItem = (uniformId: string): Promise<void> => genericSAValidatorV2(
-    AuthRole.materialManager,
-    (uuidValidationPattern.test(uniformId)),
-    { uniformId }
-).then(async ({ username }) => {
-    const issued = await prisma.uniformIssued.aggregate({
-        where: {
-            fk_uniform: uniformId,
-            dateReturned: null
-        },
-        _count: true
-    }).then((data) => data._count > 0);
-
-    if (issued) {
-        throw new Error("Uniformteil ausgegeben");
-    }
-
-    prisma.$transaction([
-        prisma.uniform.update({
-            where: { id: uniformId },
-            data: {
-                recdelete: new Date(),
-                recdeleteUser: username,
-            }
-        }),
-    ]);
-});
