@@ -39,13 +39,13 @@ export const returnItem = async (props: PropType): Promise<CadetUniformMap> => g
     return __unsecuredGetCadetUniformMap(cadetId, client);
 }));
 
-export const __unsecuredReturnUniformitem = (issuedEntryId: string, dateIssued: Date, client?: Prisma.TransactionClient) => {
+export const __unsecuredReturnUniformitem = (issuedEntryId: string, dateIssued: Date, client: Prisma.TransactionClient) => {
     if (isToday(dateIssued)) {
-        return (client ?? prisma).uniformIssued.delete({
+        return client.uniformIssued.delete({
             where: { id: issuedEntryId }
         });
     } else {
-        return (client ?? prisma).uniformIssued.update({
+        return client.uniformIssued.update({
             where: { id: issuedEntryId },
             data: {
                 dateReturned: new Date(),

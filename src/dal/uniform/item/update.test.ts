@@ -71,10 +71,11 @@ it('works without a size provided', async() => {
     const { success, result } = await runServerActionTest(
         () => update({
             ...defaultProps,
+            
             size: null,
         })
     );
-    expect(success).toBeFalsy();
+    expect(success).toBeTruthy();
 });
 it('does not change size when !usingSizes', async () => {
     // disabling sizes but with preconfigured sizelists

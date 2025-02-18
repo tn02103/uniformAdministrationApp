@@ -201,8 +201,7 @@ it('returns item of idToReplace', async () => {
             },
         }),
     ]);
-    console.log("🚀 ~ it ~ dbIssued, dbReturnd:", dbIssued, dbReturnd)
-
+   
     expect(dbIssued).not.toBeNull();
     expect(dbIssued!.dateIssued).toEqual(today);
     expect(dbIssued!.dateReturned).toBeNull();
