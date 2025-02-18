@@ -1,4 +1,3 @@
-"use server";
 import { genericSANoDataValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
@@ -9,7 +8,7 @@ import { Prisma } from "@prisma/client";
  * Genneral configuration for Materials. Can be used in for all Authroles 
  * @returns Array of all MaterialGroups with Materials. MaterialGroups without any Materials are not included.
  */
-export const getMaterialConfiguration = async () =>
+export const getConfiguration = async () =>
     genericSANoDataValidator(AuthRole.user).then(async ([{ assosiation }]) =>
         prisma.materialGroup.findMany({
             ...materialGroupArgs,
@@ -31,7 +30,7 @@ export const getMaterialConfiguration = async () =>
  * Configuration of MaterialGroups & Types for Administration of theses. 
  * @returns list of MaterialGroups
  */
-export const getMaterialAdministrationConfiguration = (): Promise<AdministrationMaterialGroup[]> =>
+export const getAdministrationConfiguration = (): Promise<AdministrationMaterialGroup[]> =>
     genericSANoDataValidator(AuthRole.materialManager).then(async ([{ assosiation }]) => {
         const [groups, issuedQuantities] = await prisma.$transaction([
             getAdminList(assosiation),

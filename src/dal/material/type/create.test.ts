@@ -1,6 +1,6 @@
 import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
-import { createMaterial } from "./create";
+import { create } from "./create";
 import { prisma } from "@/lib/db";
 import { uuidValidationPattern } from "@/lib/validations";
 
@@ -17,7 +17,7 @@ const defaultProps = {
 afterEach(() => staticData.cleanup.materialConfig());
 it('should work', async () => {
 
-    const { success } = await runServerActionTest(() => createMaterial(defaultProps));
+    const { success } = await runServerActionTest(() => create(defaultProps));
     expect(success).toBeTruthy();
 
     const dbData = await prisma.material.findFirst({
@@ -39,7 +39,7 @@ it('should work', async () => {
 });
 it('should prevent name duplication', async () => {
     const props = {...defaultProps, data: {...defaultProps.data, typename: "Typ2-2"}};
-    const {success, result} = await runServerActionTest(() => createMaterial(props));
+    const {success, result} = await runServerActionTest(() => create(props));
     expect(success).toBeFalsy();
     expect(result.error).toBeDefined();
     expect(result.error.formElement).toEqual('typename');
@@ -47,7 +47,7 @@ it('should prevent name duplication', async () => {
 });
 it('should succed with name duplication from deleted type', async () => {
     const props = {...defaultProps, data: {...defaultProps.data, typename: "Typ2-4"}};
-    const {success} = await runServerActionTest(() => createMaterial(props));
+    const {success} = await runServerActionTest(() => create(props));
     expect(success).toBeTruthy();
     const dbData = await prisma.material.findFirst({
         where: {

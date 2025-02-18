@@ -2,11 +2,11 @@ import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { prisma } from "@/lib/db";
 import { AdministrationMaterialGroup, MaterialGroup } from "@/types/globalMaterialTypes";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
-import { getMaterialAdministrationConfiguration, getMaterialConfiguration } from "./get";
+import { getAdministrationConfiguration, getConfiguration } from "./get";
 
 const { ids, cleanup, data } = new StaticData(0);
-describe('getMaterialConfiguration', () => {
-    const getFunctionResult = () => runServerActionTest<MaterialGroup[]>(getMaterialConfiguration);
+describe('getConfiguration', () => {
+    const getFunctionResult = () => runServerActionTest<MaterialGroup[]>(getConfiguration);
     it('should countain the right fields', async () => {
         const { success, result } = await getFunctionResult();
         expect(success).toBeTruthy();
@@ -112,8 +112,8 @@ describe('getMaterialConfiguration', () => {
     });
 });
 
-describe('getMaterialAdministrationConfiguration', () => {
-    const getFunctionResult = () => runServerActionTest<AdministrationMaterialGroup[]>(getMaterialAdministrationConfiguration);
+describe('getAdministrationConfiguration', () => {
+    const getFunctionResult = () => runServerActionTest<AdministrationMaterialGroup[]>(getAdministrationConfiguration);
     it('should countain the right fields', async () => {
         const { success, result } = await getFunctionResult();
         expect(success).toBeTruthy();

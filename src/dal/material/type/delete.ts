@@ -1,5 +1,3 @@
-"use server";
-
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
@@ -11,7 +9,7 @@ import { z } from "zod";
  * @param materialId 
  * @returns 
  */
-export const deleteMaterial = (props: string) => genericSAValidator(
+export const markDeleted = (props: string) => genericSAValidator(
     AuthRole.materialManager,
     props,
     z.string().uuid(),

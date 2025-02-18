@@ -7,8 +7,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { AdministrationMaterial } from "../../types/globalMaterialTypes";
 import ErrorMessage from "../errorMessage";
-import { updateMaterial } from "@/dal/material/type/update";
-import { createMaterial } from "@/dal/material/type/create";
+import { updateMaterial, createMaterial } from "@/dal/material/type/_index";
+
 
 export type EditMaterialTypeModalPropType = {
     type?: AdministrationMaterial;

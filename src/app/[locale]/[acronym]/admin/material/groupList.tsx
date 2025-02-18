@@ -2,8 +2,7 @@
 
 import { TooltipActionButton } from "@/components/TooltipIconButton";
 import { Card, CardBody, CardHeader } from "@/components/card";
-import { createMaterialGroup } from "@/dal/material/group/create";
-import { changeMaterialGroupSortOrder } from "@/dal/material/group/sortOrder";
+import { createMaterialGroup, changeMaterialGroupSortOrder } from "@/dal/material/group/_index";
 import { useI18n } from "@/lib/locales/client";
 import { AdministrationMaterialGroup } from "@/types/globalMaterialTypes";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";

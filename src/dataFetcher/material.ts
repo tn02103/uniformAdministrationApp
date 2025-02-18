@@ -1,5 +1,5 @@
 
-import { getMaterialConfiguration } from "@/dal/material/type/get";
+import { getMaterialConfiguration } from "@/dal/material/type/_index";
 import useSWR from "swr";
 
 

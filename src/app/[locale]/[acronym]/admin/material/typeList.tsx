@@ -3,8 +3,7 @@
 import { TooltipActionButton } from "@/components/TooltipIconButton";
 import { Card, CardBody } from "@/components/card";
 import { useModal } from "@/components/modals/modalProvider";
-import { deleteMaterial } from "@/dal/material/type/delete";
-import { changeMaterialSortOrder } from "@/dal/material/type/sortOrder";
+import { changeMaterialSortOrder, deleteMaterial } from "@/dal/material/type/_index";
 import { useI18n } from "@/lib/locales/client";
 import { AdministrationMaterial, AdministrationMaterialGroup } from "@/types/globalMaterialTypes";
 import { useSearchParams } from "next/navigation";

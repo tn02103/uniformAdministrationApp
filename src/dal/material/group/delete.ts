@@ -12,7 +12,7 @@ import { z } from "zod";
  * @param materialGroupId 
  * @returns 
  */
-export const deleteMaterialGroup = (props: string) => genericSAValidator(
+export const markDeleted = (props: string) => genericSAValidator(
     AuthRole.materialManager,
     props,
     z.string().uuid(),

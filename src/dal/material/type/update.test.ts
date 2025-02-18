@@ -1,7 +1,7 @@
 import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { prisma } from "@/lib/db";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
-import { updateMaterial } from "./update";
+import { update } from "./update";
 
 const staticData = new StaticData(0);
 const materialId = staticData.ids.materialIds[5];
@@ -16,7 +16,7 @@ const defaultProps = {
 
 afterEach(() => staticData.cleanup.materialConfig());
 it('should save data', async () => {
-    const { success } = await runServerActionTest(() => updateMaterial(defaultProps));
+    const { success } = await runServerActionTest(() => update(defaultProps));
     expect(success).toBeTruthy();
 
     const dbData = await prisma.material.findUnique({
@@ -35,7 +35,7 @@ it('should save data', async () => {
 
 it('should prevent duplicated names', async () => {
     const props = { ...defaultProps, data: { ...defaultProps.data, typename: "Typ2-1" } };
-    const { success, result } = await runServerActionTest(() => updateMaterial(props));
+    const { success, result } = await runServerActionTest(() => update(props));
     expect(success).toBeFalsy();
     expect(result.error).toBeDefined();
     expect(result.error.formElement).toBe('typename');
@@ -44,7 +44,7 @@ it('should prevent duplicated names', async () => {
 
 it('should allowed duplicated names with deleted type', async () => {
     const props = { ...defaultProps, data: { ...defaultProps.data, typename: "Typ2-4" } };
-    const { success } = await runServerActionTest(() => updateMaterial(props));
+    const { success } = await runServerActionTest(() => update(props));
     expect(success).toBeTruthy();
 
     const dbData = await prisma.material.findUnique({

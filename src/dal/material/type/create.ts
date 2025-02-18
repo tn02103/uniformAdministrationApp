@@ -1,5 +1,3 @@
-"use server";
-
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
@@ -28,7 +26,7 @@ type createMaterialReturnType = Promise<{
  * @param targetQuantity 
  * @returns 
  */
-export const createMaterial = (props: PropType): createMaterialReturnType => genericSAValidator(
+export const create = (props: PropType): createMaterialReturnType => genericSAValidator(
     AuthRole.materialManager,
     props,
     propSchema,

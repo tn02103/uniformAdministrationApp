@@ -4,7 +4,7 @@ import { Col, Row } from "react-bootstrap";
 import MaterialConfigGroupDetail from "./groupDetail";
 import MaterialConfigGroupList from "./groupList";
 import MaterialConfigTypeList from "./typeList";
-import { getMaterialAdministrationConfiguration } from "@/dal/material/type/get";
+import { getMaterialAdministrationConfiguration } from "@/dal/material/type/_index";
 
 export async function generateMetadata() {
     const t = await getScopedI18n('pageTitles');

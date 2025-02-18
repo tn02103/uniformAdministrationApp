@@ -1,5 +1,5 @@
 import { runServerActionTest } from "@/dal/_helper/testHelper";
-import { createMaterialGroup } from "./create";
+import { create } from "./create";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { uuidValidationPattern } from "@/lib/validations";
 import { prisma } from "@/lib/db";
@@ -11,7 +11,7 @@ beforeEach(() => prisma.materialGroup.update({
 }));
 afterEach(() => staticData.cleanup.materialConfig());
 it('create working', async () => {
-    const { success, result } = await runServerActionTest(createMaterialGroup);
+    const { success, result } = await runServerActionTest(create);
     expect(success).toBeTruthy();
     expect(result).toStrictEqual(expect.objectContaining({
         id: expect.stringMatching(uuidValidationPattern),

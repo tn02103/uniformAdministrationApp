@@ -4,8 +4,7 @@ import { TooltipActionButton } from "@/components/TooltipIconButton";
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/card";
 import ErrorMessage from "@/components/errorMessage";
 import { useModal } from "@/components/modals/modalProvider";
-import { deleteMaterialGroup } from "@/dal/material/group/delete";
-import { updateMaterialGroup } from "@/dal/material/group/update";
+import { deleteMaterialGroup, updateMaterialGroup } from "@/dal/material/group/_index";
 import { SAFormHandler } from "@/lib/SAFormHandler";
 import { useI18n } from "@/lib/locales/client";
 import { AdministrationMaterialGroup } from "@/types/globalMaterialTypes";
@@ -79,7 +78,7 @@ export default function MaterialConfigGroupDetail({
             }),
             setError
         ).then((result) => {
-            if (result.success) 
+            if (result.success)
                 setEditable(false);
         }).catch((e) => {
             console.error(e);

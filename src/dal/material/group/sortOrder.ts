@@ -1,5 +1,3 @@
-"use server";
-
 import { genericSAValidator } from "@/actions/validations";
 import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
@@ -19,7 +17,7 @@ const propSchema = z.object({
     up: z.boolean(),
 });
 type PropType = z.infer<typeof propSchema>;
-export const changeMaterialGroupSortOrder = (props: PropType) => genericSAValidator(
+export const changeSortOrder = (props: PropType) => genericSAValidator(
     AuthRole.materialManager,
     props,
     propSchema,

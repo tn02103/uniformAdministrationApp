@@ -2,7 +2,7 @@ import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { ExceptionType } from "@/errors/CustomException";
 import { prisma } from "@/lib/db";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
-import { changeMaterialGroupSortOrder } from "./sortOrder";
+import { changeSortOrder } from "./sortOrder";
 
 const staticData = new StaticData(0);
 const groupIds = staticData.ids.materialGroupIds;
@@ -14,7 +14,7 @@ function getGroupList() {
     });
 }
 it('should work upwoards', async () => {
-    const { success } = await runServerActionTest(() => changeMaterialGroupSortOrder({ groupId: groupIds[2], up: true }));
+    const { success } = await runServerActionTest(() => changeSortOrder({ groupId: groupIds[2], up: true }));
     expect(success).toBeTruthy();
 
     const groupList = await getGroupList();
@@ -28,7 +28,7 @@ it('should work upwoards', async () => {
     await expect(groupList[3].sortOrder).toEqual(3);
 });
 it('should work downwoards', async () => {
-    const { success } = await runServerActionTest(() => changeMaterialGroupSortOrder({ groupId: groupIds[0], up: false }));
+    const { success } = await runServerActionTest(() => changeSortOrder({ groupId: groupIds[0], up: false }));
     expect(success).toBeTruthy();
 
     const groupList = await getGroupList();
@@ -42,13 +42,13 @@ it('should work downwoards', async () => {
     await expect(groupList[3].sortOrder).toEqual(3);
 });
 it('should prevent first element up', async () => {
-    const { success, result } = await runServerActionTest(() => changeMaterialGroupSortOrder({ groupId: groupIds[0], up: true }));
+    const { success, result } = await runServerActionTest(() => changeSortOrder({ groupId: groupIds[0], up: true }));
     expect(success).toBeFalsy();
     expect(result.exceptionType).toEqual(ExceptionType.SaveDataException);
     expect(result.message).toMatch(/Element already first in list/);
 });
 it('should succed second element up', async () => {
-    const { success } = await runServerActionTest(() => changeMaterialGroupSortOrder({ groupId: groupIds[1], up: true }));
+    const { success } = await runServerActionTest(() => changeSortOrder({ groupId: groupIds[1], up: true }));
     expect(success).toBeTruthy();
 
     const groupList = await getGroupList();
@@ -60,13 +60,13 @@ it('should succed second element up', async () => {
     await expect(groupList[2].sortOrder).toEqual(2);
 });
 it('should prevent last element down', async () => {
-    const { success, result } = await runServerActionTest(() => changeMaterialGroupSortOrder({ groupId: groupIds[4], up: false }));
+    const { success, result } = await runServerActionTest(() => changeSortOrder({ groupId: groupIds[4], up: false }));
     expect(success).toBeFalsy();
     expect(result.exceptionType).toEqual(ExceptionType.SaveDataException);
     expect(result.message).toMatch(/Element already last in list/);
 });
 it('should succed second to last element down', async () => {
-    const { success } = await runServerActionTest(() => changeMaterialGroupSortOrder({ groupId: groupIds[2], up: false }));
+    const { success } = await runServerActionTest(() => changeSortOrder({ groupId: groupIds[2], up: false }));
     expect(success).toBeTruthy();
 
     const groupList = await getGroupList();
@@ -86,7 +86,7 @@ it('should fail if no element with newSortOrder exists', async () => {
         data: { sortOrder: 4 }
     });
 
-    const { success, result } = await runServerActionTest(() => changeMaterialGroupSortOrder({ groupId: groupIds[1], up: true }));
+    const { success, result } = await runServerActionTest(() => changeSortOrder({ groupId: groupIds[1], up: true }));
     expect(success).toBeFalsy();
     expect(result.exceptionType).toEqual(ExceptionType.SaveDataException);
     expect(result.message).toMatch(/Could not update sortOrder of seccond materialGroup/);
@@ -98,7 +98,7 @@ it('should fail if more than one element with newSortOrder exists', async () => 
         data: { sortOrder: 0, recdelete: null, recdeleteUser: null }
     });
 
-    const { success, result } = await runServerActionTest(() => changeMaterialGroupSortOrder({ groupId: groupIds[1], up: true }));
+    const { success, result } = await runServerActionTest(() => changeSortOrder({ groupId: groupIds[1], up: true }));
     expect(success).toBeFalsy();
     expect(result.exceptionType).toEqual(ExceptionType.SaveDataException);
     expect(result.message).toMatch(/Could not update sortOrder of seccond materialGroup/);
