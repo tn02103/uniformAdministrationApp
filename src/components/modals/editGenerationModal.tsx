@@ -47,12 +47,12 @@ export default function EditGenerationModal({ generation, type, onClose }: EditG
         let saPromise;
         if (generation) {
             saPromise = SAFormHandler<typeof updateUniformGeneration>(
-                () => updateUniformGeneration({ data, id: generation.id }),
+                updateUniformGeneration({ data, id: generation.id }),
                 setError
             )
         } else {
             saPromise = SAFormHandler<typeof createUniformGeneration>(
-                () => createUniformGeneration({ ...data, uniformTypeId: type.id }),
+                createUniformGeneration({ ...data, uniformTypeId: type.id }),
                 setError
             );
         }

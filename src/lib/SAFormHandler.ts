@@ -1,7 +1,7 @@
 import { UseFormSetError } from "react-hook-form";
 
 export function SAFormHandler<ActionType extends (...args: any) => Promise<any>>(
-    serverAction: () => ReturnType<ActionType>,
+    serverActionPromise: ReturnType<ActionType>,
     setError: UseFormSetError<any>
 ): Promise<{
     success: true,
@@ -11,7 +11,7 @@ export function SAFormHandler<ActionType extends (...args: any) => Promise<any>>
     data?: Awaited<ReturnType<ActionType>>,
 }> {
     type dataType = Awaited<ReturnType<ActionType>>;
-    return serverAction().then((result: dataType) => {
+    return serverActionPromise.then((result: dataType) => {
         if (!result || !result.error) {
             return {
                 success: true,

@@ -72,7 +72,7 @@ export default function MaterialConfigGroupDetail({
         }
 
         await SAFormHandler<typeof updateMaterialGroup>(
-            () => updateMaterialGroup({
+            updateMaterialGroup({
                 id: materialGroup.id,
                 data,
             }),

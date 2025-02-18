@@ -34,7 +34,7 @@ export default function UniformConfigTypeDetails({
 
     async function save(data: UniformTypeFormType) {
         if (!data.usingSizes) data.fk_defaultSizelist = null;
-        SAFormHandler(() => updateUniformType(data), setError).then((result) => {
+        SAFormHandler(updateUniformType(data), setError).then((result) => {
             if (result.success) {
                 setEditable(false);
                 mutate(result.data);

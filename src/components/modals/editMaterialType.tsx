@@ -30,7 +30,7 @@ const EditMaterialTypeModal = ({ type, groupName, groupId, ...props }: EditMater
         if (!type)
             return await handleCreate(data);
 
-        await SAFormHandler<typeof updateMaterial>(() => updateMaterial({ id: type.id, data }), setError)
+        await SAFormHandler<typeof updateMaterial>(updateMaterial({ id: type.id, data }), setError)
             .then((result: any) => {
                 if (result.success) {
                     props.onClose();
@@ -42,7 +42,7 @@ const EditMaterialTypeModal = ({ type, groupName, groupId, ...props }: EditMater
     }
     async function handleCreate(data: MaterialTypeFormType) {
         await SAFormHandler<typeof createMaterial>(
-            () => createMaterial({ groupId, data }),
+            createMaterial({ groupId, data }),
             setError
         ).then((result) => {
             if (result.success) {
