@@ -20,7 +20,7 @@ let functionResult: UniformType[] | undefined;
 
 beforeAll(async () => {
     const { result, success } = await runServerActionTest(
-        () => deleteUniformType(ids.uniformTypeIds[0])
+        deleteUniformType(ids.uniformTypeIds[0])
     );
     expect(success).toBeTruthy();
     functionResult = result;

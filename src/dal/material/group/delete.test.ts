@@ -8,7 +8,7 @@ const groupId = staticData.ids.materialGroupIds[1];
 afterEach(() => staticData.cleanup.materialConfig());
 it('validate deletion', async () => {
     // TODO better seperation of test parts
-    const { success } = await runServerActionTest(() => markDeleted(groupId));
+    const { success } = await runServerActionTest(markDeleted(groupId));
     expect(success).toBeTruthy();
 
     //get Data

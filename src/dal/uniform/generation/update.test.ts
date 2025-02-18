@@ -15,7 +15,7 @@ afterEach(async () => cleanup.uniformTypeConfiguration());
 // function does not need to set fk_sizelist null if not using sizes
 it('should update the generation', async () => {
     const { success, result } = await runServerActionTest(
-        () => updateUniformGeneration({ id: ids.uniformGenerationIds[0], data: defaultData })
+        updateUniformGeneration({ id: ids.uniformGenerationIds[0], data: defaultData })
     );
     expect(success).toBeTruthy();
     expect(result[0].uniformGenerationList[0]).toEqual(expect.objectContaining(defaultData));
@@ -30,7 +30,7 @@ it('should update the generation', async () => {
 });
 it('should return soft nameDuplication error', async () => {
     const { success, result } = await runServerActionTest(
-        () => updateUniformGeneration({
+        updateUniformGeneration({
             id: ids.uniformGenerationIds[0],
             data: {
                 ...defaultData,
@@ -51,7 +51,7 @@ it('should return soft nameDuplication error', async () => {
 });
 it('should succeed with name of deleted generation', async () => {
     const { success } = await runServerActionTest(
-        () => updateUniformGeneration({
+        updateUniformGeneration({
             id: ids.uniformGenerationIds[0],
             data: {
                 ...defaultData,
@@ -63,7 +63,7 @@ it('should succeed with name of deleted generation', async () => {
 });
 it('should succeed with its own name', async () => {
     const { success } = await runServerActionTest(
-        () => updateUniformGeneration({
+        updateUniformGeneration({
             id: ids.uniformGenerationIds[0],
             data: {
                 ...defaultData,
@@ -75,7 +75,7 @@ it('should succeed with its own name', async () => {
 });
 it('should throw error for fk_sizelist null when using sizes', async () => {
     const { success } = await runServerActionTest(
-        () => updateUniformGeneration({
+        updateUniformGeneration({
             id: ids.uniformGenerationIds[0],
             data: {
                 ...defaultData,
@@ -87,7 +87,7 @@ it('should throw error for fk_sizelist null when using sizes', async () => {
 });
 it('should succeed with fk_sizelist null when not using sizes', async () => {
     const { success } = await runServerActionTest(
-        () => updateUniformGeneration({
+        updateUniformGeneration({
             id: ids.uniformGenerationIds[4],
             data: {
                 ...defaultData,
@@ -101,7 +101,7 @@ it('should succeed with fk_sizelist null when not using sizes', async () => {
 it('should throw error when fk_sizelist is from different assosiation', async () => {
     const wrongAssosiation = new StaticData(1);
     const { success } = await runServerActionTest(
-        () => updateUniformGeneration({
+        updateUniformGeneration({
             id: ids.uniformGenerationIds[0],
             data: {
                 ...defaultData,
@@ -113,7 +113,7 @@ it('should throw error when fk_sizelist is from different assosiation', async ()
 });
 it('should throw error when fk_sizelist is invalid', async () => {
     const { success, result } = await runServerActionTest(
-        () => updateUniformGeneration({
+        updateUniformGeneration({
             id: ids.uniformGenerationIds[0],
             data: {
                 ...defaultData,

@@ -20,7 +20,7 @@ afterEach(async () => cleanup.uniform());
 
 it('issues item if all is well', async () => {
     const { success, result } = await runServerActionTest(
-        () => issue(defaultProps)
+        issue(defaultProps)
     );
     expect(success);
     expect(result[ids.uniformTypeIds[0]]).toHaveLength(5);
@@ -38,7 +38,7 @@ it('issues item if all is well', async () => {
 });
 it('returns soft NullValueException when item doesnt exist', async () => {
     const { success, result } = await runServerActionTest(
-        () => issue({
+        issue({
             ...defaultProps,
             number: 99999
         })
@@ -54,7 +54,7 @@ it('returns soft NullValueException when item doesnt exist', async () => {
 });
 it('creates new item if none exists and option.create is true', async () => {
     const { success, result } = await runServerActionTest(
-        () => issue({
+        issue({
             ...defaultProps,
             number: 99999,
             options: { create: true }
@@ -78,7 +78,7 @@ it('creates new item if none exists and option.create is true', async () => {
 });
 it('returns soft UniformInactiveException if item is a reserve', async () => {
     const { success, result } = await runServerActionTest(
-        () => issue({
+        issue({
             ...defaultProps,
             number: 1109
         })
@@ -88,7 +88,7 @@ it('returns soft UniformInactiveException if item is a reserve', async () => {
 });
 it('ignores item as reserve if option.ignoreInactive is true', async () => {
     const { success, result } = await runServerActionTest(
-        () => issue({
+        issue({
             ...defaultProps,
             number: 1109,
             options: { ignoreInactive: true }
@@ -99,7 +99,7 @@ it('ignores item as reserve if option.ignoreInactive is true', async () => {
 });
 it('returns soft UniformIssuedException if item is issued', async () => {
     const { success, result } = await runServerActionTest(
-        () => issue({
+        issue({
             ...defaultProps,
             number: 1100
         })
@@ -122,7 +122,7 @@ it('returns soft UniformIssuedException if item is issued', async () => {
 });
 it('returns item to previous owner if option.force is true', async () => {
     const { success, result } = await runServerActionTest(
-        () => issue({
+        issue({
             ...defaultProps,
             number: 1100,
             options: { force: true }
@@ -165,7 +165,7 @@ it('returns item to previous owner if option.force is true', async () => {
 });
 it('returns item of idToReplace', async () => {
     const { success, result } = await runServerActionTest(
-        () => issue({
+        issue({
             ...defaultProps,
             idToReplace: ids.uniformIds[0][42]
         })
@@ -201,7 +201,7 @@ it('returns item of idToReplace', async () => {
             },
         }),
     ]);
-   
+
     expect(dbIssued).not.toBeNull();
     expect(dbIssued!.dateIssued).toEqual(today);
     expect(dbIssued!.dateReturned).toBeNull();
@@ -211,7 +211,7 @@ it('returns item of idToReplace', async () => {
 });
 it('fails if idToReplace of different Type', async () => {
     const { success, result } = await runServerActionTest(
-        () => issue({
+        issue({
             ...defaultProps,
             idToReplace: ids.uniformIds[3][10]
         })
@@ -221,7 +221,7 @@ it('fails if idToReplace of different Type', async () => {
 });
 it('fails if idToReplace issued to different Person', async () => {
     const { success, result } = await runServerActionTest(
-        () => issue({
+        issue({
             ...defaultProps,
             idToReplace: ids.uniformIds[0][86]
         })
@@ -231,7 +231,7 @@ it('fails if idToReplace issued to different Person', async () => {
 });
 it('fails if idToReplace is not issued', async () => {
     const { success, result } = await runServerActionTest(
-        () => issue({
+        issue({
             ...defaultProps,
             idToReplace: ids.uniformIds[0][11]
         })

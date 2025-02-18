@@ -32,7 +32,7 @@ describe('successfull in all allowed combinations', () => {
 
     it('creates with size and generation', async () => {
         const { success, result } = await runServerActionTest(
-            () => create(defaultWithSizes)
+            create(defaultWithSizes)
         );
         expect(success).toBeTruthy();
         expect(result).toBe(4);
@@ -58,7 +58,7 @@ describe('successfull in all allowed combinations', () => {
     });
     it('creates without size, with generation ', async () => {
         const { result, success } = await runServerActionTest(
-            () => create({
+            create({
                 numberMap: [
                     { sizeId: "amount", numbers: [3000, 3001] },
                 ],
@@ -90,7 +90,7 @@ describe('successfull in all allowed combinations', () => {
     });
     it('creates with size, without generation', async () => {
         const { success, result } = await runServerActionTest(
-            () => create({
+            create({
                 numberMap: [
                     { sizeId: ids.sizeIds[0], numbers: [3000, 3003] },
                     { sizeId: ids.sizeIds[1], numbers: [3001, 3002] },
@@ -108,7 +108,7 @@ describe('successfull in all allowed combinations', () => {
     });
     it('creates without size, without generation', async () => {
         const { success, result } = await runServerActionTest(
-            () => create({
+            create({
                 numberMap: [
                     { sizeId: 'amount', numbers: [3000, 3001] },
                 ],
@@ -127,7 +127,7 @@ describe('successfull in all allowed combinations', () => {
 describe('test type validations', () => {
     it('catches deleted types', async () => {
         const { success } = await runServerActionTest(
-            () => create({
+            create({
                 ...defaultWithoutSizes,
                 data: {
                     ...defaultWithSizes.data,
@@ -140,7 +140,7 @@ describe('test type validations', () => {
     });
     it('catches invalid type', async () => {
         const { success } = await runServerActionTest(
-            () => create({
+            create({
                 ...defaultWithoutSizes,
                 data: {
                     ...defaultWithSizes.data,
@@ -155,7 +155,7 @@ describe('test type validations', () => {
 describe('testing generations', () => {
     it('catches generations from different type', async () => {
         const { success } = await runServerActionTest(
-            () => create({
+            create({
                 ...defaultWithoutSizes,
                 data: {
                     ...defaultWithoutSizes.data,
@@ -167,7 +167,7 @@ describe('testing generations', () => {
     });
     it('catches deleted generations', async () => {
         const { success } = await runServerActionTest(
-            () => create({
+            create({
                 ...defaultWithoutSizes,
                 data: {
                     ...defaultWithoutSizes.data,
@@ -179,7 +179,7 @@ describe('testing generations', () => {
     });
     it('catches missing generation', async () => {
         const { success } = await runServerActionTest(
-            () => create({
+            create({
                 ...defaultWithoutSizes,
                 data: {
                     ...defaultWithoutSizes.data,
@@ -195,7 +195,7 @@ describe('testing generations', () => {
             data: { usingGenerations: false }
         });
         const { success } = await runServerActionTest(
-            () => create(defaultWithoutSizes)
+            create(defaultWithoutSizes)
         );
         expect(success).toBeFalsy();
     });
@@ -208,7 +208,7 @@ describe('testing sizes', () => {
     // no size when required
     it('catches not allowed size with generation', async () => {
         const { success } = await runServerActionTest(
-            () => create({
+            create({
                 ...defaultWithSizes,
                 numberMap: [
                     { sizeId: ids.sizeIds[16], numbers: [3000, 3001] }
@@ -219,7 +219,7 @@ describe('testing sizes', () => {
     });
     it('catches not allowed size without generation', async () => {
         const { success } = await runServerActionTest(
-            () => create({
+            create({
                 numberMap: [
                     { sizeId: ids.sizeIds[16], numbers: [3000, 3001] }
                 ],
@@ -234,7 +234,7 @@ describe('testing sizes', () => {
     });
     it('catches missing size when required', async () => {
         const { success } = await runServerActionTest(
-            () => create({
+            create({
                 numberMap: defaultWithoutSizes.numberMap,
                 data: {
                     ...defaultWithSizes.data,
@@ -247,7 +247,7 @@ describe('testing sizes', () => {
     });
     it('catches with size when not allowed', async () => {
         const { success } = await runServerActionTest(
-            () => create({
+            create({
                 numberMap: defaultWithSizes.numberMap,
                 data: {
                     ...defaultWithSizes.data,
@@ -263,7 +263,7 @@ describe('testing sizes', () => {
 describe('number validations', () => {
     it('catches duplicated number with existing item', async () => {
         const { success } = await runServerActionTest(
-            () => create({
+            create({
                 ...defaultWithSizes,
                 numberMap: [
                     { sizeId: ids.sizeIds[0], numbers: [1100] }
@@ -274,7 +274,7 @@ describe('number validations', () => {
     });
     it('catches duplicated number within map', async () => {
         const { success } = await runServerActionTest(
-            () => create({
+            create({
                 ...defaultWithSizes,
                 numberMap: [
                     { sizeId: ids.sizeIds[0], numbers: [3000, 3001] },
@@ -286,7 +286,7 @@ describe('number validations', () => {
     });
     it('allows duplicated number with deleted item', async () => {
         const { success } = await runServerActionTest(
-            () => create({
+            create({
                 ...defaultWithSizes,
                 numberMap: [
                     { sizeId: ids.sizeIds[0], numbers: [1130] }
@@ -297,7 +297,7 @@ describe('number validations', () => {
     });
     it('allows duplicated number with different type', async () => {
         const { success } = await runServerActionTest(
-            () => create({
+            create({
                 ...defaultWithSizes,
                 numberMap: [
                     { sizeId: ids.sizeIds[0], numbers: [1200] }

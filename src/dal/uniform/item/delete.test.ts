@@ -7,7 +7,7 @@ const { ids, cleanup, data } = new StaticData(0);
 
 it('catches if item is issued', async() => {
     const {success, result} = await runServerActionTest(
-        () => markDeleted(ids.uniformIds[0][46])
+        markDeleted(ids.uniformIds[0][46])
     );
     expect(success).toBeFalsy();
     expect(result.message).toEqual("Item can not be deleted while issued");
@@ -24,7 +24,7 @@ describe('successfull deletion', () => {
             }
         });
         const fedback = await runServerActionTest(
-            () => markDeleted(ids.uniformIds[0][46])
+            markDeleted(ids.uniformIds[0][46])
         );
         expect(fedback.success).toBeTruthy();
     })

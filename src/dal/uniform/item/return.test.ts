@@ -12,7 +12,7 @@ today.setUTCHours(0, 0, 0, 0);
 
 afterEach(async () => await cleanup.uniformIssued());
 it('should set dateReturned if dateIssued !== today', async () => {
-    const { success, result } = await runServerActionTest(() => returnItem({ uniformId, cadetId }));
+    const { success, result } = await runServerActionTest(returnItem({ uniformId, cadetId }));
     expect(success).toBeTruthy();
     expect(result[ids.uniformTypeIds[0]]).toHaveLength(3);
 
@@ -38,7 +38,7 @@ it('should remove issuedEntry if dateIssued === today', async () => {
         },
         data: { dateIssued: today }
     });
-    const { success, result } = await runServerActionTest(() => returnItem({ uniformId, cadetId }));
+    const { success, result } = await runServerActionTest(returnItem({ uniformId, cadetId }));
     expect(success).toBeTruthy();
     expect(result[ids.uniformTypeIds[0]]).toHaveLength(3);
 
@@ -47,22 +47,22 @@ it('should remove issuedEntry if dateIssued === today', async () => {
 });
 
 it('should fail if already returned', async () => {
-    await runServerActionTest(() => returnItem({ uniformId, cadetId }));
-    const { success, result } = await runServerActionTest(() => returnItem({ uniformId, cadetId }));
+    await runServerActionTest(returnItem({ uniformId, cadetId }));
+    const { success, result } = await runServerActionTest(returnItem({ uniformId, cadetId }));
     expect(success).toBeFalsy();
     expect(result.message).toContain('Could not return Uniform. Issued Entry not found');
 });
 
 it('should fail if uniform not issued', async () => {
     const invalidUniformId = ids.uniformIds[1][10];
-    const { success, result } = await runServerActionTest(() => returnItem({ uniformId: invalidUniformId, cadetId }));
+    const { success, result } = await runServerActionTest(returnItem({ uniformId: invalidUniformId, cadetId }));
     expect(success).toBeFalsy();
     expect(result.message).toContain('Could not return Uniform. Issued Entry not found');
 });
 
 it('should fail if item issued to different cadet', async () => {
     const differentCadetId = ids.cadetIds[1];
-    const { success, result } = await runServerActionTest(() => returnItem({ uniformId, cadetId: differentCadetId }));
+    const { success, result } = await runServerActionTest(returnItem({ uniformId, cadetId: differentCadetId }));
     expect(success).toBeFalsy();
     expect(result.message).toContain('Could not return Uniform. Issued Entry not found');
 });
@@ -74,12 +74,12 @@ describe('', () => {
     });
     it('should fail if uniformItem is deleted', async () => {
         await prisma.uniform.update({ where: { id: uniformId }, data: { recdelete: new Date() } });
-        const { success, result } = await runServerActionTest(() => returnItem({ uniformId, cadetId }));
+        const { success, result } = await runServerActionTest(returnItem({ uniformId, cadetId }));
         expect(success).toBeFalsy();
     });
     it('should fail if cadet is deleted', async () => {
         await prisma.cadet.update({ where: { id: cadetId }, data: { recdelete: new Date() } });
-        const { success, result } = await runServerActionTest(() => returnItem({ uniformId, cadetId }));
+        const { success, result } = await runServerActionTest(returnItem({ uniformId, cadetId }));
         expect(success).toBeFalsy();
     })
 })

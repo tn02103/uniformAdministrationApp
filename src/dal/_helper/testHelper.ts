@@ -1,7 +1,7 @@
 import dayjs from "@/lib/dayjs";
 
 
-export const runServerActionTest = async <T>(func: () => Promise<T>): Promise<{ success: true, result: T } | { success: false, result: any }> => func()
+export const runServerActionTest = async <T>(functionPromise: Promise<T>): Promise<{ success: true, result: T } | { success: false, result: any }> => functionPromise
     .then((result) => {
         if ((result as any)?.error) {
             return {

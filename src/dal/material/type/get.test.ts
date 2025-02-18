@@ -6,7 +6,7 @@ import { getAdministrationConfiguration, getConfiguration } from "./get";
 
 const { ids, cleanup, data } = new StaticData(0);
 describe('getConfiguration', () => {
-    const getFunctionResult = () => runServerActionTest<MaterialGroup[]>(getConfiguration);
+    const getFunctionResult = () => runServerActionTest<MaterialGroup[]>(getConfiguration());
     it('should countain the right fields', async () => {
         const { success, result } = await getFunctionResult();
         expect(success).toBeTruthy();
@@ -113,7 +113,7 @@ describe('getConfiguration', () => {
 });
 
 describe('getAdministrationConfiguration', () => {
-    const getFunctionResult = () => runServerActionTest<AdministrationMaterialGroup[]>(getAdministrationConfiguration);
+    const getFunctionResult = () => runServerActionTest<AdministrationMaterialGroup[]>(getAdministrationConfiguration());
     it('should countain the right fields', async () => {
         const { success, result } = await getFunctionResult();
         expect(success).toBeTruthy();

@@ -4,8 +4,9 @@ import { StaticData } from "../../../tests/_playwrightConfig/testData/staticData
 
 const { ids, data } = new StaticData(0);
 it('validate data', async () => {
-    const { success, result } = await runServerActionTest(getPersonnelNameList);
+    const { success, result } = await runServerActionTest(getPersonnelNameList());
     expect(success).toBeTruthy();
+    if (!success) return;
     expect(result).toHaveLength(9);
 
     expect(result.map(c => c.id)).not.toContain(ids.cadetIds[8]); // not include deleted

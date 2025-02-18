@@ -5,8 +5,8 @@ import { deleteUniformGeneration } from "./delete";
 
 const { ids } = new StaticData(0);
 it('should mark the group as deleted', async () => {
-    const { success, result } = await runServerActionTest(
-        () => deleteUniformGeneration(ids.uniformGenerationIds[1])
+    const { success } = await runServerActionTest(
+        deleteUniformGeneration(ids.uniformGenerationIds[1])
     );
     expect(success).toBeTruthy();
 

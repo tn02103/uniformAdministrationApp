@@ -11,7 +11,7 @@ beforeEach(() => prisma.materialGroup.update({
 }));
 afterEach(() => staticData.cleanup.materialConfig());
 it('create working', async () => {
-    const { success, result } = await runServerActionTest(create);
+    const { success, result } = await runServerActionTest(create());
     expect(success).toBeTruthy();
     expect(result).toStrictEqual(expect.objectContaining({
         id: expect.stringMatching(uuidValidationPattern),

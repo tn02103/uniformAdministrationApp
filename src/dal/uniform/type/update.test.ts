@@ -19,7 +19,7 @@ afterEach(async () => {
 })
 it('should update data in db', async () => {
     const { success, result } = await runServerActionTest(
-        () => updateUniformType(defaultProps)
+        updateUniformType(defaultProps)
     );
     expect(success).toBeTruthy();
     if (!result) return;
@@ -40,7 +40,7 @@ it('should update data in db', async () => {
 });
 it('should return error for duplicated Name', async () => {
     const { success, result } = await runServerActionTest(
-        () => updateUniformType({ ...defaultProps, name: 'Typ2' })
+        updateUniformType({ ...defaultProps, name: 'Typ2' })
     );
 
     expect(success).toBeFalsy();
@@ -49,7 +49,7 @@ it('should return error for duplicated Name', async () => {
 });
 it('shold not return error if name stays the same', async () => {
     const { success, result } = await runServerActionTest(
-        () => updateUniformType({ ...defaultProps, name: 'Typ1' })
+        updateUniformType({ ...defaultProps, name: 'Typ1' })
     );
 
     expect(success).toBeTruthy();
@@ -57,7 +57,7 @@ it('shold not return error if name stays the same', async () => {
 })
 it('should return error for duplicated Acronym', async () => {
     const { success, result } = await runServerActionTest(
-        () => updateUniformType({ ...defaultProps, acronym: 'AB' })
+        updateUniformType({ ...defaultProps, acronym: 'AB' })
     );
 
     expect(success).toBeFalsy();
@@ -66,7 +66,7 @@ it('should return error for duplicated Acronym', async () => {
 });
 it('shold not return error if acronym stays the same', async () => {
     const { success, result } = await runServerActionTest(
-        () => updateUniformType({ ...defaultProps, acronym: 'AA' })
+        updateUniformType({ ...defaultProps, acronym: 'AA' })
     );
 
     expect(success).toBeTruthy();
@@ -74,7 +74,7 @@ it('shold not return error if acronym stays the same', async () => {
 });
 it('should return error if fk_defaultSizelist is null and usinsSizes true', async () => {
     const { success, result } = await runServerActionTest(
-        () => updateUniformType({ ...defaultProps, usingSizes: true, fk_defaultSizelist: null })
+        updateUniformType({ ...defaultProps, usingSizes: true, fk_defaultSizelist: null })
     );
 
     expect(success).toBeFalsy();
@@ -83,7 +83,7 @@ it('should return error if fk_defaultSizelist is null and usinsSizes true', asyn
 });
 it('should not return error if fk_defaultSizelist is not null and usinsSizes true', async () => {
     const { success, result } = await runServerActionTest(
-        () => updateUniformType({
+        updateUniformType({
             ...defaultProps,
             fk_defaultSizelist: ids.sizelistIds[0],
             usingSizes: true,

@@ -7,7 +7,7 @@ const staticData = new StaticData(0);
 const materialId = staticData.ids.materialIds[5];
 afterEach(() => staticData.cleanup.materialConfig());
 it('validate delete', async () => {
-    const {success} = await runServerActionTest(() => markDeleted(materialId));
+    const {success} = await runServerActionTest(markDeleted(materialId));
     expect(success).toBeTruthy();
 
     const [issued, materialList] = await prisma.$transaction([

@@ -15,7 +15,7 @@ const defaultProps = {
 
 afterEach(() => staticData.cleanup.materialConfig());
 it('valid update call', async () => {
-    const { success, result } = await runServerActionTest(() => update(defaultProps));
+    const { success, result } = await runServerActionTest(update(defaultProps));
     expect(success).toBeTruthy();
 
     const dbData = await prisma.materialGroup.findUnique({
@@ -28,7 +28,7 @@ it('valid update call', async () => {
 });
 it('should prevent duplication error', async () => {
     const props = { ...defaultProps, data: { ...defaultProps.data, description: "Gruppe3" } };
-    const { success, result } = await runServerActionTest(() => update(props));
+    const { success, result } = await runServerActionTest(update(props));
     expect(success).toBeFalsy();
     expect(result.error).toBeDefined();
     expect(result.error.formElement).toBe('description');
@@ -36,6 +36,6 @@ it('should prevent duplication error', async () => {
 });
 it('should succeed duplication with deleted group', async () => {
     const props = { ...defaultProps, data: { ...defaultProps.data, description: "Gruppe4" } };
-    const { success, result } = await runServerActionTest(() => update(props));
+    const { success, result } = await runServerActionTest(update(props));
     expect(success).toBeTruthy();
 });
