@@ -3,11 +3,9 @@
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { Card, CardBody, CardHeader } from "@/components/card";
 import { useModal } from "@/components/modals/modalProvider";
-import { deleteUniformGeneration } from "@/dal/uniform/generation/delete";
-import { changeUniformGenerationSortOrder } from "@/dal/uniform/generation/sortOrder";
+import { changeUniformGenerationSortOrder, deleteUniformGeneration } from "@/dal/uniform/generation/_index";
 import { useUniformSizelists, useUniformType } from "@/dataFetcher/uniformAdmin";
 import { useI18n } from "@/lib/locales/client";
-
 import { UniformGeneration } from "@/types/globalUniformTypes";
 import { faCircleDown, faCircleUp, faPencil, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Col, Row } from "react-bootstrap";

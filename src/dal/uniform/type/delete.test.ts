@@ -1,5 +1,5 @@
 import { runServerActionTest } from "@/dal/_helper/testHelper";
-import { deleteUniformType } from "./delete";
+import { markDeleted } from "./delete";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { UniformType } from "@prisma/client";
 import { prisma } from "@/lib/db";
@@ -20,7 +20,7 @@ let functionResult: UniformType[] | undefined;
 
 beforeAll(async () => {
     const { result, success } = await runServerActionTest(
-        deleteUniformType(ids.uniformTypeIds[0])
+        markDeleted(ids.uniformTypeIds[0])
     );
     expect(success).toBeTruthy();
     functionResult = result;

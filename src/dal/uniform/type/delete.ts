@@ -8,7 +8,7 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import { z } from "zod";
 import { __unsecuredGetUniformTypeList } from "./get";
 
-export const deleteUniformType = (props: string): Promise<UniformType[]> => genericSAValidator(
+export const markDeleted = (props: string): Promise<UniformType[]> => genericSAValidator(
     AuthRole.materialManager,
     props,
     z.string().uuid(),

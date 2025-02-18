@@ -7,7 +7,7 @@ import { UniformType, uniformTypeArgs } from "@/types/globalUniformTypes";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
-export const getUniformType = (props: string) => genericSAValidator(
+export const getType = (props: string) => genericSAValidator(
     AuthRole.user,
     props,
     z.string().uuid(),
@@ -20,7 +20,7 @@ export const getUniformType = (props: string) => genericSAValidator(
     ...uniformTypeArgs
 }));
 
-export const getUniformTypeList = (): Promise<UniformType[]> =>
+export const getList = (): Promise<UniformType[]> =>
     genericSANoDataValidator(AuthRole.user).then(([{ assosiation }]) =>
         __unsecuredGetUniformTypeList(assosiation),
     );

@@ -1,12 +1,10 @@
-"use server";
-
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
 import { __unsecuredGetUniformTypeList } from "../type/get";
 
-export const deleteUniformGeneration = (props: string) => genericSAValidator(
+export const markDeleted = (props: string) => genericSAValidator(
     AuthRole.materialManager,
     props,
     z.string().uuid(),

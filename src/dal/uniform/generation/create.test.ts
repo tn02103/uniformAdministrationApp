@@ -1,5 +1,5 @@
 import { runServerActionTest } from "@/dal/_helper/testHelper";
-import { createUniformGeneration } from "./create";
+import { create } from "./create";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { ExceptionType } from "@/errors/CustomException";
 import { prisma } from "@/lib/db";
@@ -18,7 +18,7 @@ afterEach(async () => cleanup.uniformTypeConfiguration());
 // creates correctly -> sortOrder is set
 it('should create the generation', async () => {
     const { success, result } = await runServerActionTest(
-        createUniformGeneration(defaultProps)
+        create(defaultProps)
     );
     expect(success).toBeTruthy();
     expect(result[0].uniformGenerationList).toHaveLength(5);
@@ -47,7 +47,7 @@ it('should create the generation', async () => {
 });
 it('should throw error for fk_sizeList null while using sizes', async () => {
     const { success, result } = await runServerActionTest(
-        createUniformGeneration({
+        create({
             ...defaultProps,
             fk_sizelist: null
         }),
@@ -65,7 +65,7 @@ it('should throw error for fk_sizeList null while using sizes', async () => {
 });
 it('should throw error for invalid fk_sizelist', async () => {
     const { success, result } = await runServerActionTest(
-        createUniformGeneration({
+        create({
             ...defaultProps,
             fk_sizelist: ids.cadetIds[0],
         }),
@@ -80,7 +80,7 @@ it('should throw error for invalid fk_sizelist', async () => {
 });
 it('should throw error for wrong assosiation of fk_sizelist', async () => {
     const { success } = await runServerActionTest(
-        createUniformGeneration({
+        create({
             ...defaultProps,
             fk_sizelist: wrongStaticData.ids.sizelistIds[0],
         }),
@@ -96,7 +96,7 @@ it('should throw error for wrong assosiation of fk_sizelist', async () => {
 });
 it('should succeed with fk_sizelist null when not using sizes', async () => {
     const { success } = await runServerActionTest(
-        createUniformGeneration({
+        create({
             ...defaultProps,
             fk_sizelist: null,
             uniformTypeId: ids.uniformTypeIds[1],
@@ -113,7 +113,7 @@ it('should succeed with fk_sizelist null when not using sizes', async () => {
 });
 it('should set fk_sizelist null when not using sizes', async () => {
     const { success, result } = await runServerActionTest(
-        createUniformGeneration({
+        create({
             ...defaultProps,
             uniformTypeId: ids.uniformTypeIds[1],
         }),
@@ -131,7 +131,7 @@ it('should set fk_sizelist null when not using sizes', async () => {
 });
 it('should throw error if uniformType is from different Assosiation', async () => {
     const { success } = await runServerActionTest(
-        createUniformGeneration({
+        create({
             ...defaultProps,
             uniformTypeId: wrongStaticData.ids.uniformTypeIds[0],
         }),
@@ -148,7 +148,7 @@ it('should throw error if uniformType is from different Assosiation', async () =
 
 it('should throw error if uniformType is not using generations', async () => {
     const { success, result } = await runServerActionTest(
-        createUniformGeneration({
+        create({
             ...defaultProps,
             uniformTypeId: ids.uniformTypeIds[2],
         }),
@@ -166,7 +166,7 @@ it('should throw error if uniformType is not using generations', async () => {
 });
 it('should return soft error for nameDuplication', async () => {
     const { success, result } = await runServerActionTest(
-        createUniformGeneration({
+        create({
             ...defaultProps,
             name: 'Generation1-1',
         }),
@@ -185,7 +185,7 @@ it('should return soft error for nameDuplication', async () => {
 });
 it('should succed with name of deleted generation', async () => {
     const { success } = await runServerActionTest(
-        createUniformGeneration({
+        create({
             ...defaultProps,
             name: 'Generation1-5'
         }),

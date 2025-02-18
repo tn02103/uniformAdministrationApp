@@ -3,7 +3,7 @@
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/card";
 import ErrorMessage from "@/components/errorMessage";
-import { updateUniformType } from "@/dal/uniform/type/update";
+import { updateUniformType } from "@/dal/uniform/type/_index";
 import { useUniformSizelists, useUniformType } from "@/dataFetcher/uniformAdmin";
 import { SAFormHandler } from "@/lib/SAFormHandler";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";

@@ -1,13 +1,11 @@
-"use server";
-
 import { genericSAValidator } from "@/actions/validations";
+import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { UniformType } from "@/types/globalUniformTypes";
 import { uniformGenerationFormSchema } from "@/zod/uniformConfig";
 import { z } from "zod";
 import { __unsecuredGetUniformTypeList } from "../type/get";
-import SaveDataException from "@/errors/SaveDataException";
 
 
 type returnType = Promise<{
@@ -22,7 +20,7 @@ const propSchema = uniformGenerationFormSchema.extend({
 });
 type PropType = z.infer<typeof propSchema>;
 
-export const createUniformGeneration = (props: PropType): returnType => genericSAValidator(
+export const create = (props: PropType): returnType => genericSAValidator(
     AuthRole.materialManager,
     props,
     propSchema,
@@ -57,8 +55,8 @@ export const createUniformGeneration = (props: PropType): returnType => genericS
             }
         }
     }
-   
-    const dbData = await client.uniformGeneration.create({
+
+    await client.uniformGeneration.create({
         data: {
             name: data.name,
             outdated: data.outdated,

@@ -2,7 +2,7 @@ import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { ExceptionType } from "@/errors/CustomException";
 import { prisma } from "@/lib/db";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
-import { changeUniformGenerationSortOrder } from "./sortOrder";
+import { changeSortOrder } from "./sortOrder";
 
 const { cleanup, ids } = new StaticData(0);
 afterEach(async () => {
@@ -10,7 +10,7 @@ afterEach(async () => {
 })
 it('should not allow first element up', async () => {
     const { success, result } = await runServerActionTest(
-        changeUniformGenerationSortOrder({ id: ids.uniformGenerationIds[0], up: true })
+        changeSortOrder({ id: ids.uniformGenerationIds[0], up: true })
     );
     expect(success).toBeFalsy();
     expect(result.exceptionType).toEqual(ExceptionType.SaveDataException);
@@ -18,7 +18,7 @@ it('should not allow first element up', async () => {
 });
 it('should allow seccond element up', async () => {
     const { success, result } = await runServerActionTest(
-        changeUniformGenerationSortOrder({ id: ids.uniformGenerationIds[1], up: true })
+        changeSortOrder({ id: ids.uniformGenerationIds[1], up: true })
     );
     expect(success).toBeTruthy();
     if (!success) return;
@@ -31,7 +31,7 @@ it('should allow seccond element up', async () => {
 });
 it('should not allow last element down', async () => {
     const { success, result } = await runServerActionTest(
-        changeUniformGenerationSortOrder({ id: ids.uniformGenerationIds[3], up: false })
+        changeSortOrder({ id: ids.uniformGenerationIds[3], up: false })
     );
     expect(success).toBeFalsy();
     expect(result.exceptionType).toBe(ExceptionType.SaveDataException);
@@ -39,7 +39,7 @@ it('should not allow last element down', async () => {
 });
 it('should allow second to last element down', async () => {
     const { success, result } = await runServerActionTest(
-        changeUniformGenerationSortOrder({ id: ids.uniformGenerationIds[2], up: false })
+        changeSortOrder({ id: ids.uniformGenerationIds[2], up: false })
     );
     expect(success).toBeTruthy();
     if (!success) return;
@@ -60,7 +60,7 @@ it('should fail if no element with newSortOrder exists', async () => {
         }
     });
     const { success, result } = await runServerActionTest(
-        changeUniformGenerationSortOrder({ id: ids.uniformGenerationIds[1], up: false })
+        changeSortOrder({ id: ids.uniformGenerationIds[1], up: false })
     );
     expect(success).toBeFalsy();
     expect(result.exceptionType).toBe(ExceptionType.SaveDataException);
@@ -77,7 +77,7 @@ it('should fail if more than one element with newSortOrder exists', async () => 
     });
 
     const {success, result} = await runServerActionTest(
-        changeUniformGenerationSortOrder({id: ids.uniformGenerationIds[0], up: false})
+        changeSortOrder({id: ids.uniformGenerationIds[0], up: false})
     );
     expect(success).toBeFalsy();
     expect(result.exceptionType).toBe(ExceptionType.SaveDataException);

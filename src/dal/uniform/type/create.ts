@@ -5,7 +5,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { uniformTypeArgs } from "@/types/globalUniformTypes";
 
-export const createUniformType = () =>
+export const create = () =>
     genericSANoDataValidator(AuthRole.materialManager).then(
         async ([{ assosiation }]) => prisma.$transaction(async (client) => {
             const typeList = await client.uniformType.findMany({

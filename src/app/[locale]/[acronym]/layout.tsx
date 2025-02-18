@@ -9,7 +9,7 @@ import { redirect } from "next/navigation";
 import { ReactNode } from "react";
 import { AuthRole } from "@/lib/AuthRoles";
 import { getInspectionState } from "@/dal/inspection/state";
-import { getUniformTypeList } from "@/dal/uniform/type/get";
+import { getUniformTypeList } from "@/dal/uniform/type/_index";
 
 export const dynamic = "force-dynamic";
 

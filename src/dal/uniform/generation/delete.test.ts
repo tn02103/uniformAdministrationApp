@@ -1,12 +1,12 @@
 import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { prisma } from "@/lib/db";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
-import { deleteUniformGeneration } from "./delete";
+import { markDeleted } from "./delete";
 
 const { ids } = new StaticData(0);
 it('should mark the group as deleted', async () => {
     const { success } = await runServerActionTest(
-        deleteUniformGeneration(ids.uniformGenerationIds[1])
+        markDeleted(ids.uniformGenerationIds[1])
     );
     expect(success).toBeTruthy();
 

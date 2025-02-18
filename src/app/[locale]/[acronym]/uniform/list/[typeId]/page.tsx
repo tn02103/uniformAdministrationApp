@@ -1,5 +1,5 @@
 import { getUsedSizesByType } from "@/dal/size/getUsedByType";
-import { getUniformType } from "@/dal/uniform/type/get";
+import { getUniformType } from "@/dal/uniform/type/_index";
 import { getI18n, getScopedI18n } from "@/lib/locales/config";
 import { UniformSize, UniformType } from "@/types/globalUniformTypes";
 import { Col, Row } from "react-bootstrap";

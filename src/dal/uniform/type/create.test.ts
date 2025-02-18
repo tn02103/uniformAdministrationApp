@@ -6,7 +6,7 @@
 // 
 
 import { runServerActionTest } from "@/dal/_helper/testHelper"
-import { createUniformType } from "./create"
+import { create } from "./create"
 import { prisma } from "@/lib/db";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { v4 as uuid } from "uuid";
@@ -16,7 +16,7 @@ afterEach(async () => {
     await cleanup.uniformTypeConfiguration();
 })
 it('should create two types correctly', async () => {
-    const result1 = await runServerActionTest(createUniformType());
+    const result1 = await runServerActionTest(create());
 
     // create fist type
     expect(result1.success).toBeTruthy();
@@ -34,7 +34,7 @@ it('should create two types correctly', async () => {
 
     // creat seccond type
     // create fist type
-    const result2 = await runServerActionTest(createUniformType());
+    const result2 = await runServerActionTest(create());
     expect(result2.success).toBeTruthy();
     expect(result2.result).toEqual(
         expect.objectContaining({
@@ -89,7 +89,7 @@ describe('test', () => {
     });
     it('should work with no previous types', async () => {
 
-        const { success, result } = await runServerActionTest(createUniformType());
+        const { success, result } = await runServerActionTest(create());
         expect(success).toBeTruthy();
         expect(result).toEqual(
             expect.objectContaining({

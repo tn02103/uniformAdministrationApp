@@ -14,7 +14,7 @@ type updateUniformTypeReturnType = Promise<{
         formElement: string,
     }
 } | UniformType[]>
-export const updateUniformType = (props: UniformTypeFormType): updateUniformTypeReturnType => genericSAValidator(
+export const update = (props: UniformTypeFormType): updateUniformTypeReturnType => genericSAValidator(
     AuthRole.materialManager,
     props,
     uniformTypeFormSchema, // uniformTypeValidator.test(data),

@@ -1,5 +1,3 @@
-"use server";
-
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
@@ -21,7 +19,7 @@ const propSchema = z.object({
 });
 type PropType = z.infer<typeof propSchema>;
 
-export const updateUniformGeneration = (props: PropType): ReturnType => genericSAValidator(
+export const update = (props: PropType): ReturnType => genericSAValidator(
     AuthRole.materialManager,
     props,
     propSchema,

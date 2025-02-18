@@ -1,13 +1,13 @@
 import { runServerActionTest } from "@/dal/_helper/testHelper";
 
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
-import { getUniformType, getUniformTypeList } from "./get";
+import { getType, getList } from "./get";
 import { UniformType } from "@/types/globalUniformTypes";
 
 const { ids, data } = new StaticData(0);
-describe('getUniformType', () => {
+describe('get', () => {
     it('should be successfull', async () => {
-        const { result, success } = await runServerActionTest(getUniformType(ids.uniformTypeIds[0]))
+        const { result, success } = await runServerActionTest(getType(ids.uniformTypeIds[0]))
         expect(success).toBeTruthy();
         const type = data.uniformTypes[0];
         expect(result).toEqual(
@@ -26,7 +26,7 @@ describe('getUniformType', () => {
     it('should not return type of different assosiation', async () => {
         const wrongStaticData = new StaticData(1);
         const { result, success } = await runServerActionTest(
-            getUniformType(wrongStaticData.ids.uniformTypeIds[0])
+            getType(wrongStaticData.ids.uniformTypeIds[0])
         );
 
         expect(success).toBeTruthy();
@@ -34,16 +34,16 @@ describe('getUniformType', () => {
     });
     it('should not return deleted type', async () => {
         const { result, success } = await runServerActionTest(
-            getUniformType(ids.uniformTypeIds[4])
+            getType(ids.uniformTypeIds[4])
         );
         expect(success).toBeTruthy();
         expect(result).toBeNull();
     });
 });
-describe('getUniformTypeList', () => {
+describe('getList', () => {
     let result: UniformType[] | undefined;
     beforeAll(async () => {
-        const fedback = await runServerActionTest(getUniformTypeList());
+        const fedback = await runServerActionTest(getList());
         expect(fedback.success).toBeTruthy();
         result = fedback.result;
     })

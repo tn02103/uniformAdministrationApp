@@ -1,5 +1,6 @@
 "use client";
 
+import { createUniformGeneration, updateUniformGeneration } from "@/dal/uniform/generation/_index";
 import { useUniformSizelists, useUniformType } from "@/dataFetcher/uniformAdmin";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
 import { SAFormHandler } from "@/lib/SAFormHandler";
@@ -11,8 +12,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import ErrorMessage from "../errorMessage";
 import { useModal } from "./modalProvider";
-import { createUniformGeneration } from "@/dal/uniform/generation/create";
-import { updateUniformGeneration } from "@/dal/uniform/generation/update";
+
 
 export type EditGenerationModalPropType = {
     generation: UniformGeneration | null,

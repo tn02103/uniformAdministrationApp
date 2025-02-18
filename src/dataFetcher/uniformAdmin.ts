@@ -1,5 +1,5 @@
 import { getAllUniformSizesList, getUniformSizelists } from "@/actions/controllers/UniformSizeController";
-import { getUniformTypeList } from "@/dal/uniform/type/get";
+import { getUniformTypeList } from "@/dal/uniform/type/_index";
 import { UniformSize, UniformType } from "@/types/globalUniformTypes";
 
 import useSWR from "swr";

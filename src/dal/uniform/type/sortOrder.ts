@@ -13,7 +13,7 @@ const propShema = z.object({
     up: z.boolean(),
 });
 type PropType = z.infer<typeof propShema>;
-export const changeUniformTypeSortOrder = (props: PropType) => genericSAValidator(
+export const changeSortOrder = (props: PropType) => genericSAValidator(
     AuthRole.materialManager,
     props,
     propShema,
