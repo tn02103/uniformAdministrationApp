@@ -1,13 +1,13 @@
 import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { prisma } from "@/lib/db";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
-import { deleteUniformItem } from "./delete";
+import { markDeleted } from "./delete";
 
 const { ids, cleanup, data } = new StaticData(0);
 
 it('catches if item is issued', async() => {
     const {success, result} = await runServerActionTest(
-        () => deleteUniformItem(ids.uniformIds[0][46])
+        () => markDeleted(ids.uniformIds[0][46])
     );
     expect(success).toBeFalsy();
     expect(result.message).toEqual("Item can not be deleted while issued");
@@ -24,7 +24,7 @@ describe('successfull deletion', () => {
             }
         });
         const fedback = await runServerActionTest(
-            () => deleteUniformItem(ids.uniformIds[0][46])
+            () => markDeleted(ids.uniformIds[0][46])
         );
         expect(fedback.success).toBeTruthy();
     })

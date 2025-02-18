@@ -5,7 +5,7 @@ import { Row } from "react-bootstrap"
 import { toast } from "react-toastify"
 import NewUniformConfigurator from "./../configurator"
 import NumberInput from "./NumberInput"
-import { createUniformItems } from "@/dal/uniform/item/create"
+import { createUniformItems } from "@/dal/uniform/item/_index"
 
 type ConfiguratorData = {
     typeId: string,

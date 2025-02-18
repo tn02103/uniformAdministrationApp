@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import NewUniformConfigurator, { ConfiguratorFormType } from "../configurator";
 import Step1, { Step1FormType } from "./Step1";
 import Step2 from "./Step2";
-import { createUniformItems } from "@/dal/uniform/item/create";
+import { createUniformItems } from "@/dal/uniform/item/_index";
 
 type FormDataType = {
     configurator?: {

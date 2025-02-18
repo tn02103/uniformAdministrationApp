@@ -1,5 +1,3 @@
-"use server";
-
 import { genericSAValidator } from "@/actions/validations";
 import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
@@ -30,7 +28,7 @@ type PropType = z.infer<typeof propSchema>
  * @param data Data of the uniformItems that are to be created. The size of the Uniform is included in the param numbers
  * @returns number of created Items
  */
-export const createUniformItems = (props: PropType): Promise<number> => genericSAValidator(
+export const create = (props: PropType): Promise<number> => genericSAValidator(
     AuthRole.inspector,
     props,
     propSchema,

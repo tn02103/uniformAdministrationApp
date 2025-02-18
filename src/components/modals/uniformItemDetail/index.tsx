@@ -1,6 +1,7 @@
 import { getUniformFormValues, getUniformIssueHistory } from "@/actions/controllers/UniformController";
 import { useGlobalData } from "@/components/globalDataProvider";
 import TooltipIconButton from "@/components/TooltipIconButton";
+import { deleteUniformItem, updateUniformItem } from "@/dal/uniform/item/_index";
 import { AuthRole } from "@/lib/AuthRoles";
 import { getUniformSizelist } from "@/lib/uniformHelper";
 import { UniformFormData, UniformSizelist, UniformType } from "@/types/globalUniformTypes";
@@ -13,8 +14,6 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import useSWR, { mutate } from "swr";
 import { useModal } from "../modalProvider";
-import { updateUniformItem } from "@/dal/uniform/item/update";
-import { deleteUniformItem } from "@/dal/uniform/item/delete";
 
 export type UIDModalProps = {
     uniformId: string;
@@ -71,7 +70,7 @@ export default function UniformItemDetailModal({ uniformId, uniformType, ownerId
             if (ownerId) {
                 mutate(`cadet.${ownerId}.uniform`);
             }
-            if (props.onDataChanged){
+            if (props.onDataChanged) {
                 props.onDataChanged();
             }
         }).catch((e) => {

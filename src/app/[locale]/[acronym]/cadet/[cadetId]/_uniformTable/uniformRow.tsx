@@ -1,10 +1,9 @@
 "use client"
 
-import { returnUniformItem } from "@/actions/controllers/CadetUniformController";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { useGlobalData } from "@/components/globalDataProvider";
 import { useModal } from "@/components/modals/modalProvider";
-import { updateUniformItem } from "@/dal/uniform/item/update";
+import { returnUniformItem, updateUniformItem } from "@/dal/uniform/item/_index";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
 import { getUniformSizelist } from "@/lib/uniformHelper";
@@ -77,7 +76,7 @@ const UniformRow = (props: PropType) => {
     function withdraw(uniform: Uniform) {
         const returnItem = () => mutate(
             `cadet.${cadetId}.uniform`,
-            returnUniformItem(uniform.id, cadetId),
+            returnUniformItem({ uniformId: uniform.id, cadetId }),
         ).catch((e) => {
             console.error(e);
             toast.error(t('cadetDetailPage.returnUniform.error'))
@@ -350,7 +349,6 @@ const SizeRow = ({
             }
         }
     }, [usedSizelist])
-
 
     if (!uniformType.usingSizes) return (
         <Row data-testid={"div_size"} className={"text-secondary"}>

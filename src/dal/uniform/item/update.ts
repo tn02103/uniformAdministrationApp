@@ -1,5 +1,3 @@
-"use server";
-
 import { genericSAValidator } from "@/actions/validations";
 import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
@@ -14,7 +12,7 @@ import { notFound } from "next/navigation";
  * @param data 
  * @returns FormData of the uniform
  */
-export const updateUniformItem = (props: UniformFormType): Promise<UniformFormData> => genericSAValidator(
+export const update = (props: UniformFormType): Promise<UniformFormData> => genericSAValidator(
     AuthRole.inspector,
     props,
     uniformFormSchema,

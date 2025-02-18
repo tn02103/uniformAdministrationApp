@@ -1,7 +1,7 @@
 
 
 import { runServerActionTest } from "@/dal/_helper/testHelper";
-import { updateUniformItem } from "./update";
+import { update } from "./update";
 import { UniformFormType } from "@/zod/uniform";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { prisma } from "@/lib/db";
@@ -18,7 +18,7 @@ const defaultProps: UniformFormType = {
 afterEach(async () => cleanup.uniformTypeConfiguration());
 it('succesfully changed item', async () => {
     const { success, result } = await runServerActionTest(
-        () => updateUniformItem(defaultProps)
+        () => update(defaultProps)
     );
     expect(success).toBeTruthy();
     expect(result).toStrictEqual(defaultProps);
@@ -36,7 +36,7 @@ it('succesfully changed item', async () => {
 });
 it('doesnt change the number', async () => {
     const { success, result } = await runServerActionTest(
-        () => updateUniformItem({
+        () => update({
             ...defaultProps,
             number: 9999
         })
@@ -51,7 +51,7 @@ it('doesnt change the number', async () => {
 });
 it('catches size not in sizelist of generation', async () => {
     const { success, result } = await runServerActionTest(
-        () => updateUniformItem({
+        () => update({
             ...defaultProps,
             size: ids.sizeIds[1]
         })
@@ -60,7 +60,7 @@ it('catches size not in sizelist of generation', async () => {
 });
 it('catches size not in defaultSizelist without generation', async () => {
     const { success, result } = await runServerActionTest(
-        () => updateUniformItem({
+        () => update({
             ...defaultProps,
             generation: null,
         })
@@ -69,7 +69,7 @@ it('catches size not in defaultSizelist without generation', async () => {
 });
 it('works without a size provided', async() => {
     const { success, result } = await runServerActionTest(
-        () => updateUniformItem({
+        () => update({
             ...defaultProps,
             size: null,
         })
@@ -87,7 +87,7 @@ it('does not change size when !usingSizes', async () => {
         }
     });
     const { success, result } = await runServerActionTest(
-        () => updateUniformItem(defaultProps)
+        () => update(defaultProps)
     );
     expect(success).toBeTruthy();
     if (!success) return;
@@ -95,7 +95,7 @@ it('does not change size when !usingSizes', async () => {
 });
 it('does not change generation when !usingGeneration', async() => {
     const {success, result} = await runServerActionTest(
-        () => updateUniformItem({
+        () => update({
             ...defaultProps,
             id: ids.uniformIds[2][0],
             size: ids.sizeIds[6],
@@ -107,7 +107,7 @@ it('does not change generation when !usingGeneration', async() => {
 });
 it('fails if generation is from different type', async() => {
     const {success} = await runServerActionTest(
-        () => updateUniformItem({
+        () => update({
             ...defaultProps,
             generation: ids.uniformGenerationIds[5]
         })
