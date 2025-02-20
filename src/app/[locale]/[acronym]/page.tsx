@@ -12,7 +12,7 @@ export async function generateMetadata() {
 }
 export default function Homepage() {
     return (
-        <div className="container-lg bg-light rounded p-0 py-4 position-relative">
+        <div className="container-lg rounded p-0 py-4 position-relative">
             <h1 className="text-center">Links</h1>
             <Row className="g-2 justify-content-evenly">
                 <Col xs={"auto"}>

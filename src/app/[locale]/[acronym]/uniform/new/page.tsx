@@ -14,7 +14,7 @@ export default function Page() {
     const [step] = stepState
 
     return (
-        <div className="container-sm content-center bg-light rounded pb-xl-3 p-md-4 position-relative">
+        <div className="container-sm content-center rounded pb-xl-3 p-md-4 position-relative">
             <h1 className="text-center">{t('header.page')}</h1>
             <Row className="justify-content-center mt-5">
                 <Col xs="12" md={10} lg={7} xl={7} xxl={6}>

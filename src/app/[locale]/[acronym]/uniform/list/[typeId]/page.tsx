@@ -41,7 +41,7 @@ export default async function UniformListPage({
     }
 
     return (
-        <div className="container-xl bg-light rounded mt-4">
+        <div className="container-xl rounded mt-4">
             <Row className="row pt-2 pb-2">
                 <h1 data-testid={"div_pageHeader"} className="text-center">{t('uniformList.header')}: {uniformType?.name}</h1>
             </Row>
