@@ -1,4 +1,5 @@
-import { getMaterialConfiguration } from "@/actions/controllers/MaterialController";
+
+import { getMaterialConfiguration } from "@/dal/material/type/_index";
 import useSWR from "swr";
 
 

@@ -4,9 +4,9 @@ import { prisma } from "@/lib/db";
 import { cadetValidation, uuidValidationPattern } from "@/lib/validations";
 import { Cadet, cadetArgs } from "@/types/globalCadetTypes";
 import { cache } from "react";
-import { genericSAValidatiorV2 } from "../validations";
+import { genericSAValidatorV2 } from "../validations";
 
-export const getCadetData = cache(async (cadetId: string): Promise<Cadet> => genericSAValidatiorV2(
+export const getCadetData = cache(async (cadetId: string): Promise<Cadet> => genericSAValidatorV2(
     AuthRole.user,
     (uuidValidationPattern.test(cadetId)),
     { cadetId }
@@ -20,7 +20,7 @@ export const getCadetData = cache(async (cadetId: string): Promise<Cadet> => gen
     });
 }));
 
-export const getCadetLastInspectionDate = async (cadetId: string): Promise<{date: Date}|null> => genericSAValidatiorV2(
+export const getCadetLastInspectionDate = async (cadetId: string): Promise<{date: Date}|null> => genericSAValidatorV2(
     AuthRole.inspector,
     uuidValidationPattern.test(cadetId),
     { cadetId }
@@ -37,7 +37,7 @@ export const getCadetLastInspectionDate = async (cadetId: string): Promise<{date
     }).then((data) => data._max.date? ({date: data._max.date}): null);
 });
 
-export const saveCadetData = async (cadet: Cadet) => genericSAValidatiorV2(
+export const saveCadetData = async (cadet: Cadet) => genericSAValidatorV2(
     AuthRole.inspector,
     cadetValidation.test(cadet),
     { cadetId: cadet.id }
@@ -56,7 +56,7 @@ export const saveCadetData = async (cadet: Cadet) => genericSAValidatiorV2(
     });
 });
 
-export const createCadet = async (cadet: Cadet) => genericSAValidatiorV2(
+export const createCadet = async (cadet: Cadet) => genericSAValidatorV2(
     AuthRole.inspector,
     cadetValidation.testWithoutId(cadet),
     {}

@@ -11,15 +11,15 @@ import { UniformSizelist } from "@/types/globalUniformTypes";
 import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import UniformSizeDBHandler from "../dbHandlers/UniformSizeDBHandler";
-import { genericSAValidatiorV2 } from "../validations";
+import { genericSAValidatorV2 } from "../validations";
 
 const dbHandler = new UniformSizeDBHandler();
-export const getUniformSizelists = async () => genericSAValidatiorV2(
+export const getUniformSizelists = async () => genericSAValidatorV2(
     AuthRole.user, true, {}
 ).then(({ assosiation }) => dbHandler.getSizelistList(assosiation));
 
 
-export const createUniformSizelist = async (name: string): Promise<UniformSizelist> => genericSAValidatiorV2(
+export const createUniformSizelist = async (name: string): Promise<UniformSizelist> => genericSAValidatorV2(
     AuthRole.materialManager,
     descriptionValidationPattern.test(name),
     {}
@@ -33,13 +33,13 @@ export const createUniformSizelist = async (name: string): Promise<UniformSizeli
     return dbHandler.createSizelist(name, assosiation, client as PrismaClient);
 }));
 
-export const getAllUniformSizesList = async () => genericSAValidatiorV2(
+export const getAllUniformSizesList = async () => genericSAValidatorV2(
     AuthRole.materialManager,
     true,
     {}
 ).then(({ assosiation }) => dbHandler.getAllUniformSizesByAssosiation(assosiation));
 
-export const renameSizelist = async (sizelistId: string, name: string) => genericSAValidatiorV2(
+export const renameSizelist = async (sizelistId: string, name: string) => genericSAValidatorV2(
     AuthRole.materialManager,
     descriptionValidationPattern.test(name) && uuidValidationPattern.test(sizelistId),
     { uniformSizelistId: sizelistId }
@@ -54,7 +54,7 @@ export const renameSizelist = async (sizelistId: string, name: string) => generi
     return dbHandler.getSizelistList(assosiation, client as PrismaClient);
 }));
 
-export const saveSizelistSizes = async (sizelistId: string, sizeIds: string[]) => genericSAValidatiorV2(
+export const saveSizelistSizes = async (sizelistId: string, sizeIds: string[]) => genericSAValidatorV2(
     AuthRole.materialManager,
     uuidValidationPattern.test(sizelistId) && sizeIds.every(id => uuidValidationPattern.test(id)),
     {
@@ -77,7 +77,7 @@ export const saveSizelistSizes = async (sizelistId: string, sizeIds: string[]) =
     return dbHandler.getSizelistList(assosiation, client as PrismaClient);
 }));
 
-export const deleteSizelist = async (sizelistId: string): Promise<UniformSizelist[] | SAErrorResponse> => genericSAValidatiorV2(
+export const deleteSizelist = async (sizelistId: string): Promise<UniformSizelist[] | SAErrorResponse> => genericSAValidatorV2(
     AuthRole.materialManager,
     uuidValidationPattern.test(sizelistId),
     { uniformSizelistId: sizelistId }
@@ -111,7 +111,7 @@ export const deleteSizelist = async (sizelistId: string): Promise<UniformSizelis
     return dbHandler.getSizelistList(assosiation);
 }));
 
-export const createSize = async (name: string) => genericSAValidatiorV2(
+export const createSize = async (name: string) => genericSAValidatorV2(
     AuthRole.materialManager,
     (nameValidationPattern.test(name)),
     {}
@@ -126,7 +126,7 @@ export const createSize = async (name: string) => genericSAValidatiorV2(
     return true;
 }));
 
-export const moveSize = async (sizeId: string, up: boolean) => genericSAValidatiorV2(
+export const moveSize = async (sizeId: string, up: boolean) => genericSAValidatorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(sizeId) && (typeof up === "boolean")),
     { uniformSizeId: sizeId }
@@ -144,7 +144,7 @@ export const moveSize = async (sizeId: string, up: boolean) => genericSAValidati
     return true;
 }));
 
-export const setSizeSortorder = async (sizeId: string, sortOrder: number) => genericSAValidatiorV2(
+export const setSizeSortorder = async (sizeId: string, sortOrder: number) => genericSAValidatorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(sizeId) && Number.isInteger(sortOrder)),
     { uniformSizeId: sizeId }
@@ -176,7 +176,7 @@ export const setSizeSortorder = async (sizeId: string, sortOrder: number) => gen
     return true;
 }));
 
-export const deleteSize = async (sizeId: string) => genericSAValidatiorV2(
+export const deleteSize = async (sizeId: string) => genericSAValidatorV2(
     AuthRole.materialManager,
     uuidValidationPattern.test(sizeId),
     { uniformSizeId: sizeId }

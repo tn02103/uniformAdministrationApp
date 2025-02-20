@@ -4,24 +4,19 @@ import { getStaticParams } from '@/lib/locales/config';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import 'react-calendar/dist/Calendar.css';
+import 'react-date-picker/dist/DatePicker.css';
 import { ToastContainer, Zoom } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-tooltip/dist/react-tooltip.css';
-import 'react-date-picker/dist/DatePicker.css';
-import 'react-calendar/dist/Calendar.css';
 import './../../styles/global.scss';
 import './../../styles/globals.css';
-
-
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
     title: 'Uniformverwaltung',
     description: 'App zum Verwalen von Uniformteilen',
     applicationName: 'Uniformadmin',
 }
-
 
 export function generateStaticParams() {
     return getStaticParams();

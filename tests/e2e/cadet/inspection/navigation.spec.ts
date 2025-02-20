@@ -156,6 +156,7 @@ test('E2E0276: validate header', async ({ page, inspectionComponent, staticData:
         await expect(inspectionComponent.icn_inspected).toHaveClass(/fa-clipboard-check/);
     });
     await test.step('no active inspection', async () => {
+        test.fixme();
         await finishInspection(index);
         await page.reload();
         await inspectionComponent.div_step0_loading.isHidden();

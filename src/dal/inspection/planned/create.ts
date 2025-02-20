@@ -23,7 +23,7 @@ export const createInspection = (props: PlannedInspectionFormShema) => genericSA
     props,
     plannedInspectionFormShema,
     {}
-).then(async ([data, user]) => prisma.$transaction(async (client) => {
+).then(async ([user,data]) => prisma.$transaction(async (client) => {
     const inspList = await client.inspection.findMany({
         where: {
             fk_assosiation: user.assosiation,

@@ -4,9 +4,9 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { uuidValidationPattern } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
-import { genericSAValidatiorV2 } from "../validations";
+import { genericSAValidatorV2 } from "../validations";
 
-export const deleteCadet = async (cadetId: string) => genericSAValidatiorV2(
+export const deleteCadet = async (cadetId: string) => genericSAValidatorV2(
     AuthRole.materialManager,
     uuidValidationPattern.test(cadetId),
     { cadetId }

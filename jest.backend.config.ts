@@ -15,7 +15,7 @@ const customJestConfig: Config = { // CONFIGURATION FOR DATA-ACCESS-LAYER
         '^.+\\.(js|jsx|ts|tsx)$': '@swc/jest',
     },
     testMatch: [
-        "**/tests/dal/**/*.test.[jt]s?(x)",
+        "**/src/dal/**/*.test.[jt]s?(x)",
     ],
 }
 

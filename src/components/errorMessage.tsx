@@ -45,7 +45,6 @@ export default function ErrorMessage({ error, testId }: { error?: string , testI
             const [key, value] = pair.split(':');
             text = text.replace(`{${key}}`, value);
         }
-
         return text;
     }
 
@@ -54,15 +53,15 @@ export default function ErrorMessage({ error, testId }: { error?: string , testI
             setMessage('');
             return;
         }
-
+        console.log("Error", error);
         const translation = getTranslation();
         const text = getTranslationText(error, translation)
         setMessage(text);
-    }, [error, locale])
+    }, [error, locale]);
 
     return (
         <div className="text-danger fs-7" data-testid={testId}>
             {message}
         </div>
-    )
+    );
 }

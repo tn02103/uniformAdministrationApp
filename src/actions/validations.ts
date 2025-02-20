@@ -1,9 +1,9 @@
-"use server";
 
 import { UnauthorizedException } from "@/errors/CustomException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { IronSessionUser, getIronSession } from "@/lib/ironSession";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -21,8 +21,15 @@ type AssosiationValidationDataType = {
     inspectionId?: string | string[],
 }
 
-
-function assosiationValidatior(assosiationValidations: AssosiationValidationDataType, fk_assosiation: string) {
+export const getSAReturnType = <t>() => {
+    type returntype = {
+        error: {
+            message: string,
+            formField?: string,
+        }
+    }
+}
+function assosiationValidator(assosiationValidations: AssosiationValidationDataType, fk_assosiation: string) {
     const validationPromisses: Promise<any>[] = [];
     const validate = (ids: string | (string | undefined)[], validator: (id: string, assosiationId: string) => Promise<any>) => {
         if (Array.isArray(ids)) {
@@ -79,7 +86,7 @@ export const genericSAValidator = async <T>(
     data: any,
     shema: z.ZodType<T>,
     assosiationValidations?: AssosiationValidationDataType
-): Promise<[T, IronSessionUser]> => {
+): Promise<[IronSessionUser, T]> => {
 
     const { user } = await getIronSession();
     if (!user) {
@@ -94,18 +101,28 @@ export const genericSAValidator = async <T>(
     }
 
     if (assosiationValidations) {
-        await assosiationValidatior(assosiationValidations, user.assosiation);
+        await assosiationValidator(assosiationValidations, user.assosiation);
     }
 
-    return [zodResult.data, user];
+    return [user, zodResult.data];
 }
 
-export const genericSAValidatiorV2 = async (
+export const genericSANoDataValidator = async (requiredRole: AuthRole) => {
+    const { user } = await getIronSession();
+    if (!user) {
+        return redirect('/login');
+    } else if (user.role < requiredRole) {
+        throw new UnauthorizedException(`user does not have required role ${requiredRole}`);
+    }
+
+    return [user];
+}
+
+export const genericSAValidatorV2 = async (
     requiredRole: AuthRole,
     typeValidation: boolean,
     assosiationValidations: AssosiationValidationDataType,
 ): Promise<IronSessionUser> => {
-    "use server"
 
     const { user } = await getIronSession();
     if (!user) {
@@ -118,7 +135,7 @@ export const genericSAValidatiorV2 = async (
         throw new Error("Typevalidation failed");
     }
 
-    await assosiationValidatior(assosiationValidations, user.assosiation);
+    await assosiationValidator(assosiationValidations, user.assosiation);
 
     return user;
 }

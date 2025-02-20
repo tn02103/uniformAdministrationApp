@@ -1,10 +1,10 @@
 "use client"
 
-import { changeUniformTypeSortOrder, createUniformType, deleteUniformType } from "@/actions/controllers/UniformConfigController";
 import { getUniformCountByType } from "@/actions/controllers/UniformController";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { Card, CardBody, CardHeader } from "@/components/card";
 import { useModal } from "@/components/modals/modalProvider";
+import { changeUniformTypeSortOrder, createUniformType, deleteUniformType } from "@/dal/uniform/type/_index";
 import { useUniformTypeList } from "@/dataFetcher/uniformAdmin";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
 import { UniformType } from "@/types/globalUniformTypes";
@@ -38,7 +38,7 @@ export default function UniformConfigTypeList({
     }
 
     async function changeSortOrder(up: boolean, typeId: string) {
-        await mutate(changeUniformTypeSortOrder(typeId, up)).catch((e) => {
+        await mutate(changeUniformTypeSortOrder({ typeId, up })).catch((e) => {
             console.error(e);
             toast.error(t('common.error.actions.changeSortorder'));
         });
@@ -54,7 +54,7 @@ export default function UniformConfigTypeList({
             console.error(e);
             toast.error(t('common.error.actions.delete'));
         });
-        
+
         await getUniformCountByType(type.id).then(count =>
             modal?.dangerConfirmationModal({
                 header: t('admin.uniform.type.deleteModal.header', { type: type.name }),

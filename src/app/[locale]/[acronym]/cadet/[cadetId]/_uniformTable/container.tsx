@@ -1,4 +1,5 @@
-import { getCadetUniformMap } from "@/actions/controllers/CadetUniformController";
+
+import { getCadetUniformMap } from "@/dal/cadet/uniformMap";
 import { getIronSession } from "@/lib/ironSession";
 import { getScopedI18n } from "@/lib/locales/config";
 import CadetUniformTable from "./table";

@@ -21,14 +21,16 @@ test.afterEach(async ({ staticData: { cleanup } }) => {
 
 test('validate data', async ({ page, groupListComponent, staticData: { data } }) => {
     const divList = await page.locator('div[data-testid^="div_mGroup_row_"]');
-    await expect(divList).toHaveCount(3);
+    await expect(divList).toHaveCount(4);
     await expect(divList.nth(0)).toHaveAttribute('data-testid', `div_mGroup_row_${data.materialGroups[0].id}`)
     await expect(divList.nth(1)).toHaveAttribute('data-testid', `div_mGroup_row_${data.materialGroups[1].id}`)
     await expect(divList.nth(2)).toHaveAttribute('data-testid', `div_mGroup_row_${data.materialGroups[2].id}`)
+    await expect(divList.nth(3)).toHaveAttribute('data-testid', `div_mGroup_row_${data.materialGroups[4].id}`)
 
     await expect(groupListComponent.div_mGroup_name(data.materialGroups[0].id)).toHaveText(data.materialGroups[0].description);
     await expect(groupListComponent.div_mGroup_name(data.materialGroups[1].id)).toHaveText(data.materialGroups[1].description);
     await expect(groupListComponent.div_mGroup_name(data.materialGroups[2].id)).toHaveText(data.materialGroups[2].description);
+    await expect(groupListComponent.div_mGroup_name(data.materialGroups[4].id)).toHaveText(data.materialGroups[4].description);
 });
 
 test('validate moveUp', async ({ page, groupListComponent, staticData: { ids } }) => {
@@ -78,8 +80,8 @@ test('validate create', async ({ page, groupListComponent, groupDetailComponent,
         await groupListComponent.btn_create.click();
 
         const divList = page.locator('div[data-testid^="div_mGroup_row_"]');
-        await expect(divList.nth(3)).toBeVisible();
-        await expect(divList.nth(3)).toContainText('Gruppe-1');
+        await expect(divList.nth(4)).toBeVisible();
+        await expect(divList.nth(4)).toContainText('Gruppe-1');
 
         await expect(groupDetailComponent.div_header).toHaveText('Gruppe-1');
         await Promise.all([
@@ -98,7 +100,7 @@ test('validate create', async ({ page, groupListComponent, groupDetailComponent,
         dbGroup?.recdeleteUser
         expect(dbGroup).toEqual(expect.objectContaining({
             description: "Gruppe-1",
-            sortOrder: 3,
+            sortOrder: 4,
             recdelete: null,
             recdeleteUser: null
         }));

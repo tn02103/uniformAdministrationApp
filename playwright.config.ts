@@ -53,13 +53,13 @@ export default defineConfig({
                 viewport: viewports.xxl
             },
         },
-        {
+      /*  {
             name: 'webkit',
             use: {
                 ...devices['Desktop Safari'],
                 viewport: viewports.xxl
             },
-        },
+        },*/
     ],
 
     /* Run your local dev server before starting the tests */

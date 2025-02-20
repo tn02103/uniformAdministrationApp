@@ -1,10 +1,9 @@
 import { getCadetMaterialList, getCadetMaterialMap } from "@/actions/controllers/CadetMaterialController";
-import { getCadetUniformMap } from "@/actions/controllers/CadetUniformController";
+import { getCadetUniformMap } from "@/dal/cadet/uniformMap";
 import { CadetMaterialMap, CadetUniformMap } from "@/types/globalCadetTypes";
 import { UniformLabel } from "@/types/globalUniformTypes";
 import useSWR, { KeyedMutator, MutatorOptions, mutate } from "swr";
 import { useUniformTypeList } from "./uniformAdmin";
-import { useCallback } from "react";
 
 
 
