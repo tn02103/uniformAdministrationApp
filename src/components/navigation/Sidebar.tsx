@@ -68,7 +68,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                         time: input,
                         id: inspectionState.id,
                     }).then(() => {
-                        toast.success('');
+                        toast.success('Uniformkontrolle erfolgreich beendet');
                     }).catch((e) => {
                         console.error(e);
                     });
