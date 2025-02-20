@@ -13,7 +13,7 @@ type NavGroupProps = {
     collapsed: boolean;
     requiredRole: AuthRole;
     setCollapsed: (value: boolean) => void;
-    children: ReactElement;
+    children: ReactElement | ReactElement[];
     testId: string;
 }
 const NavGroup = ({ title, icon, childSelected, collapsed, setCollapsed, children, requiredRole, testId }: NavGroupProps) => {
@@ -50,25 +50,27 @@ const NavGroup = ({ title, icon, childSelected, collapsed, setCollapsed, childre
                 <Tooltip>{title}</Tooltip>
             }
         >
-            <li className="list-group-item rounded my-1 w-100">
+            <li className="list-group-item rounded mb-1 w-100">
                 <button data-testid={testId}
-                    className={`btn text-white d-flex  w-100 m-0 px-2 py-1 fs-6 
+                    className={`btn text-white d-flex w-100 px-2 py-1
                         ${collapsed ? "justify-content-center" : "justify-content-between"}
-                        ${childSelected ? (showChildren ? "fw-bold" : "fw-bold bg-primary") : ""}`}
+                        ${childSelected ? (showChildren ? "" : "bg-primary") : ""}`}
                     onClick={onHeaderClicked}>
                     <div>
-                        <FontAwesomeIcon icon={icon} width={20} size="xl" className={` ${collapsed ? "" : "pe-2"}`} />
+                        <FontAwesomeIcon icon={icon} width={20} size="lg" className={` ${collapsed ? "" : "pe-2"}`} />
                         {!collapsed && title}
                     </div>
                     <div>
                         {!collapsed &&
-                            < FontAwesomeIcon icon={showChildren ? faAngleUp : faAngleDown} size="sm" className="align-end me-1 ms-3" />
+                            < FontAwesomeIcon icon={showChildren ? faAngleUp : faAngleDown} size="sm" className="align-end me-1 ms-2" />
                         }
                     </div>
                 </button>
-                {showChildren &&
-                    children
-                }
+                <ul className="p-0 mx-3">
+                    {showChildren &&
+                        children
+                    }
+                </ul>
             </li>
         </OverlayTrigger>
     );

@@ -85,7 +85,6 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
         }
     }
 
-
     return (
         <div className="row p-0 m-0">
             <div className="p-0 w-auto navbar">
@@ -94,25 +93,22 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                     <Header showSidebar={setShowSidebar} />
                 </div>
                 <div className={`navbar-small ${showSidebar ? "show2" : ""}`}>
-                    <div data-testid="div_sidebar" className="d-flex flex-column align-items-start pt-2 text-white min-vh-100 bg-navy text-decoration-none sticky-top z-3">
-                        <div className="p-0 m-0 align-self-center d-none d-md-block">
+                    <div data-testid="div_sidebar" className="d-flex flex-column align-items-start text-white min-vh-100 bg-navy text-decoration-none sticky-top z-3">
+                        <div className="p-0 m-0 d-none d-md-flex align-self-center justify-content-center flex-column w-100">
                             <Link href={"/"}>
-                                <p data-testid="lnk_header" className={`fw-bold ${collapsed ? "fs-5" : "fs-4"}`}>
+                                <p data-testid="lnk_header" className={`fs-5 mx-3 my-2`}>
                                     {collapsed ? assosiation.acronym : assosiation.name}
                                 </p>
                             </Link>
-                            <hr className="text-white fw-bold" />
+                            <hr className="text-white fw-bold m-0 w-100"/>
                         </div>
                         {inspectionState?.active &&
-                            <div data-testid="div_inspection" className=" align-self-center d-none d-lg-inline">
+                            <div data-testid="div_inspection" className="align-self-center d-inline mt-3">
                                 {collapsed ? "" : 'Kontrolle: '}
                                 {inspectionState.inspectedCadets}/{inspectionState.activeCadets - inspectionState.deregistrations}
                             </div>
                         }
-
-                        <div className="d-md-none" style={{ height: "20px" }}>
-                        </div>
-                        <ul className="flex-column mb-auto w-100 mt-5 px-2  overflow-y-auto">
+                        <ul className="flex-column mb-auto w-100 overflow-y-auto px-2 py-3">
                             <NavLink
                                 text={t('sidebar.links.cadetOverview')}
                                 icon={faUser}
@@ -137,7 +133,6 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                 requiredRole={AuthRole.inspector}
                                 setCollapsed={setCollapsed}
                                 testId="btn_createGroup">
-                                <ul>
                                     <NavLink
                                         text={t('sidebar.links.create.cadet')}
                                         href="/app/cadet/new"
@@ -154,7 +149,6 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                         collapsed={collapsed}
                                         requiredRole={AuthRole.inspector}
                                         testId="lnk_createUniform" />
-                                </ul>
                             </NavGroup>
                             <NavGroup
                                 title={t('sidebar.links.inspection.group')}
@@ -164,29 +158,29 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                 requiredRole={AuthRole.materialManager}
                                 setCollapsed={setCollapsed}
                                 testId="btn_inspectionGroup">
-                                <ul>
-                                    <NavLink
-                                        text={t('sidebar.links.inspection.inspection')}
-                                        href="/app/inspection"
-                                        isRoute={pathname.endsWith("/app/inspection")}
-                                        level={2}
-                                        collapsed={collapsed}
-                                        requiredRole={AuthRole.inspector}
-                                        testId="lnk_inspection" />
-                                    {(inspectionState?.active || inspectionState?.state === "unfinished" || inspectionState?.state === "planned") &&
-                                        <NavButton
-                                            text={inspectionState?.active
-                                                ? t('sidebar.links.inspection.stop')
-                                                : (inspectionState?.state === "planned")
-                                                    ? t('sidebar.links.inspection.start')
-                                                    : t('sidebar.links.inspection.unfinished')}
-                                            onClick={startStopInspection}
-                                            isRoute={false}
+                                    <>
+                                        <NavLink
+                                            text={t('sidebar.links.inspection.inspection')}
+                                            href="/app/inspection"
+                                            isRoute={pathname.endsWith("/app/inspection")}
                                             level={2}
                                             collapsed={collapsed}
-                                            testId="btn_inspection" />
-                                    }
-                                </ul>
+                                            requiredRole={AuthRole.inspector}
+                                            testId="lnk_inspection" />
+                                        {(inspectionState?.active || inspectionState?.state === "unfinished" || inspectionState?.state === "planned") &&
+                                            <NavButton
+                                                text={inspectionState?.active
+                                                    ? t('sidebar.links.inspection.stop')
+                                                    : (inspectionState?.state === "planned")
+                                                        ? t('sidebar.links.inspection.start')
+                                                        : t('sidebar.links.inspection.unfinished')}
+                                                onClick={startStopInspection}
+                                                isRoute={false}
+                                                level={2}
+                                                collapsed={collapsed}
+                                                testId="btn_inspection" />
+                                        }
+                                    </>
                             </NavGroup>
                             <NavGroup
                                 title={t('sidebar.links.administration.group')}
@@ -196,7 +190,6 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                 requiredRole={AuthRole.materialManager}
                                 setCollapsed={setCollapsed}
                                 testId="btn_adminGroup">
-                                <ul>
                                     <NavLink
                                         text={t('sidebar.links.administration.uniform')}
                                         href="/app/admin/uniform"
@@ -233,7 +226,6 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                         collapsed={collapsed}
                                         testId="lnk_adminDeficiency"
                                     />
-                                </ul>
                             </NavGroup>
                             <NavLink
                                 text={t('sidebar.links.userOverview')}
@@ -244,14 +236,12 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                 isRoute={pathname.startsWith("/users")}
                                 testId="lnk_users" />
                         </ul>
-                        <div className="w-100">
-                            <hr className={`my-0 ${collapsed ? "mx-1" : "mx-3"}`} />
-                        </div>
-                        <div className={`d-flex flex-row  w-100 mb-2 ${collapsed ? "justify-content-center" : "justify-content-between"}`}>
+                        <hr className="text-white m-0 w-100"/>
+                        <div className={`d-flex w-100 align-items-center ${collapsed ? "justify-content-center" : "justify-content-between"}`}>
                             {!collapsed &&
-                                <div className={"p-2 ms-3 fw-bold"}>
+                                <div className={"mx-3 my-2"}>
                                     <Dropdown drop="up">
-                                        <Dropdown.Toggle variant="primary" className="border-0 text-white bg-navy fw-bold" data-testid={"btn_user_dropdown"}>
+                                        <Dropdown.Toggle variant="primary" className="border-0 text-white bg-navy p-0 fs-5" data-testid={"btn_user_dropdown"}>
                                             {username}
                                         </Dropdown.Toggle>
                                         <Dropdown.Menu className="bg-navy-secondary border-white text-white">
@@ -265,9 +255,9 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                     </Dropdown>
                                 </div>
                             }
-                            <button data-testid="btn_collapse" className="btn text-white btn-lg" onClick={() => setCollapsed(!collapsed)}>
+                            <div data-testid="btn_collapse" className="btn text-white btn-lg m-2 p-0 px-2" onClick={() => setCollapsed(!collapsed)}>
                                 <FontAwesomeIcon icon={collapsed ? faAngleRight : faAngleLeft} />
-                            </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -278,7 +268,6 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                         {children}
                     </div>
                 </div>
-                <div className='row m-0' style={{ height: "400px" }}></div>
             </Col>
         </div>
     );
