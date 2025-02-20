@@ -2,6 +2,7 @@
 import { getI18n, getScopedI18n } from "@/lib/locales/config";
 import GeneralOverviewTable from "./table";
 import { getPersonnelListOverviewData } from "@/dal/cadet/getPersonnelListOverviewData";
+import Title from "@/components/Title";
 
 export async function generateMetadata() {
     const t = await getScopedI18n('pageTitles')
@@ -22,10 +23,10 @@ const CadetListPage = async ({ searchParams }: any) => {
 
     return (
         <div className="container-lg content-center rounded px-md-3 px-xl-5 p-0">
-            <div className="row pt-2 pb-2 m-0">
-                <h1 data-testid="div_cadetListHeader" className="text-center">{t('generalOverview.header')}</h1>
+            <Title text={t('generalOverview.header')} />
+            <div className="pt-3">
+                <GeneralOverviewTable data={data} />
             </div>
-            <GeneralOverviewTable data={data} />
         </div>
     )
 }

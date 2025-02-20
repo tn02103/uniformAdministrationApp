@@ -262,9 +262,9 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                     </div>
                 </div>
             </div>
-            <Col lg={collapsed ? 11 : 9} xl={collapsed ? 11 : 10} className=' min-vh-100' onClick={() => ((window.innerWidth < 992) && showSidebar && setShowSidebar(false))}>
+            <Col lg={collapsed ? 11 : 9} xl={collapsed ? 11 : 10} className='min-vh-100 px-0' onClick={() => ((window.innerWidth < 992) && showSidebar && setShowSidebar(false))}>
                 <div className='row m-0'>
-                    <div className={`container-fluid pt-6 pt-lg-4 pb-3 px-0`}>
+                    <div className={`container-fluid p-0`}>
                         {children}
                     </div>
                 </div>

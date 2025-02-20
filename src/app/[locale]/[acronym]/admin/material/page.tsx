@@ -4,6 +4,7 @@ import { Col, Row } from "react-bootstrap";
 import MaterialConfigGroupDetail from "./groupDetail";
 import MaterialConfigGroupList from "./groupList";
 import MaterialConfigTypeList from "./typeList";
+import Title from "@/components/Title";
 
 export async function generateMetadata() {
     const t = await getScopedI18n('pageTitles');
@@ -17,9 +18,7 @@ export default async function AdminMaterialPage() {
 
     return (
         <div className="container-xxl content-center rounded">
-            <h1 className="text-center">
-                {t('admin.material.header.page')}
-            </h1>
+            <Title text={t('admin.material.header.page')} />
             {config?.filter(g => g.typeList.length === 0).map(group => (
                 <div className="text-danger text-center" key={group.id}>
                     {t('admin.material.error.missingTypes', { group: group.description })}

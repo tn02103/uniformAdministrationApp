@@ -9,6 +9,7 @@ import MaterialTableContainer from "./_materialTable/container";
 import CadetUniformTableContainer from "./_uniformTable/container";
 import CadetDropDown from "./cadetDropDown";
 import { getScopedI18n } from "@/lib/locales/config";
+import Title from "@/components/Title";
 
 export async function generateMetadata({ params }: { params: ParamType }) {
     const t = await getScopedI18n('pageTitles');
@@ -48,7 +49,7 @@ const CadetDetailPage = async (props: PropType) => {
     }
 
     return (
-        <div className="container-xl content-center bg-light rounded pb-xl-3 p-md-4">
+        <div className="container-xl content-center rounded pb-xl-3 px-md-4 py-2">
             <Row className="position-relative">
                 {(cadet && user!.role >= AuthRole.materialManager) &&
                     <div className="position-absolute w-auto top-0 end-0">
@@ -56,7 +57,7 @@ const CadetDetailPage = async (props: PropType) => {
                     </div>
                 }
                 <h1 data-testid="div_pageHeader" className="text-center mb-3">
-                    {cadet?.firstname} {cadet?.lastname}
+                    <Title text={`${cadet?.firstname} ${cadet?.lastname}`} />
                 </h1>
             </Row>
             <Row className="justify-content-center">

@@ -8,6 +8,7 @@ import UniformConfigSizelistsList from "./_sizelistComponents/sizelistList";
 import UniformConfigTypeGenerationList from "./_typeComponents/generationList";
 import UniformConfigTypeDetails from "./_typeComponents/typeDetail";
 import UniformConfigTypeList from "./_typeComponents/typeList";
+import Title from "@/components/Title";
 
 
 export default function UniformAdminPage() {
@@ -20,9 +21,7 @@ export default function UniformAdminPage() {
 
     return (
         <div className="container-xl content-center rounded">
-            <h1 className="text-center">
-                {t('admin.uniform.header')}
-            </h1>
+            <Title text={t('admin.uniform.header')} />
             <Row className="justify-content-center">
                 <Col xs={12} md={4} lg={3} className="p-0 my-2 px-md-2">
                     <UniformConfigTypeList

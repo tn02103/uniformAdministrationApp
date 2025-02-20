@@ -5,6 +5,7 @@ import { getI18n, getScopedI18n } from "@/lib/locales/config";
 import { Col, Row } from "react-bootstrap";
 import UniformsizeConfigurationHeader from "./header";
 import SizeItem from "./sizeItem";
+import Title from "@/components/Title";
 
 export const dynamic = 'auto';
 
@@ -35,10 +36,8 @@ export default async function UniformsizeConfigurationPage({ params }: { params:
 
     return (
         <div className="container-lg content-center rounded">
-            <h1 className="text-center">
-                {t('admin.uniform.size.header')}
-            </h1>
-            <Row className="justify-content-center">
+            <Title text={t('admin.uniform.size.header')}/>
+            <Row className="justify-content-center mt-3">
                 <Col xs={11} sm={12} md={10} lg={8} xl={12} >
                     <Card>
                         <UniformsizeConfigurationHeader

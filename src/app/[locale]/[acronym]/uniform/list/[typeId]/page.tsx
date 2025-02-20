@@ -6,6 +6,7 @@ import { Col, Row } from "react-bootstrap";
 import { z } from "zod";
 import FilterPanel from "./_filterPanel";
 import ListPanel from "./_listPanel";
+import Title from "@/components/Title";
 
 export async function generateMetadata({ params }: { params: { typeId: string } }) {
     const t = await getScopedI18n('pageTitles')
@@ -41,9 +42,9 @@ export default async function UniformListPage({
     }
 
     return (
-        <div className="container-xl rounded mt-4">
-            <Row className="row pt-2 pb-2">
-                <h1 data-testid={"div_pageHeader"} className="text-center">{t('uniformList.header')}: {uniformType?.name}</h1>
+        <div className="container-xl rounded">
+            <Row className="row pb-2">
+                <Title text={`${t('uniformList.header')} ${uniformType?.name || ""}`} />
             </Row>
             <Row className="row ps-md-4 pe-md-4">
                 <Col xs={12} className="col-xl-2 bg-white rounded border border-2 ms-0 ms-xl-4 h-auto">
