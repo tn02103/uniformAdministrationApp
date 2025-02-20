@@ -19,7 +19,7 @@ export default function UniformAdminPage() {
     const [sizelistEditable, setSizelistEditable] = useState(false);
 
     return (
-        <div className="container-xl content-center bg-light rounded">
+        <div className="container-xl content-center rounded">
             <h1 className="text-center">
                 {t('admin.uniform.header')}
             </h1>

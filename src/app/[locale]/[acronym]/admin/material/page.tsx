@@ -16,7 +16,7 @@ export default async function AdminMaterialPage() {
     const config = await getMaterialAdministrationConfiguration();
 
     return (
-        <div className="container-xxl content-center bg-light rounded">
+        <div className="container-xxl content-center rounded">
             <h1 className="text-center">
                 {t('admin.material.header.page')}
             </h1>

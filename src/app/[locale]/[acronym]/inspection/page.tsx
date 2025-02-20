@@ -18,7 +18,7 @@ export default async function InspectionAdministrationPage() {
     ]);
 
     return (
-        <div className="container-lg content-center bg-light rounded px-md-3 px-xl-5 p-0">
+        <div className="container-lg content-center rounded px-md-3 px-xl-5 p-0">
             <div className="row pt-2 pb-2 m-0">
                 <h2 data-testid="div_cadetListHeader" className="text-center">{t('header.planned')}</h2>
             </div>

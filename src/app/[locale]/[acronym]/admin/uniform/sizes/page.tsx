@@ -34,7 +34,7 @@ export default async function UniformsizeConfigurationPage({ params }: { params:
     ];
 
     return (
-        <div className="container-lg content-center bg-light rounded">
+        <div className="container-lg content-center rounded">
             <h1 className="text-center">
                 {t('admin.uniform.size.header')}
             </h1>
