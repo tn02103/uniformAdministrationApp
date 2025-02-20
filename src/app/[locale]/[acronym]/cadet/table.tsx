@@ -101,7 +101,7 @@ const GeneralOverviewTable = ({
                 {inspectionState?.active &&
                     <FormCheck
                         type="switch"
-                        label="Inkl abgemeldete Personen"
+                        label="Inkl. abgemeldetes Personal"
                         className="mx-5"
                         onClick={() => changeFilter('deregistered')}
                         checked={searchParam.has('deregistered')}
@@ -110,7 +110,7 @@ const GeneralOverviewTable = ({
                 {inspectionState?.active &&
                     <FormCheck
                         type="switch"
-                        label="Inkl. kontrolierte Personen"
+                        label="Inkl. kontrolliertes Personal"
                         className="mx-0"
                         onClick={() => changeFilter('inspected')}
                         checked={searchParam.has('inspected')}
