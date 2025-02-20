@@ -8,7 +8,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import dayjs from "@/lib/dayjs";
 import { useI18n } from "@/lib/locales/client";
 import { AuthItem } from "@/lib/storageTypes";
-import { faAddressCard, faAngleLeft, faAngleRight, faClipboardCheck, faGear, faPlus, faShirt, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faAddressCard, faAngleDoubleLeft, faAngleDoubleRight, faAngleLeft, faAngleRight, faClipboardCheck, faGear, faPlus, faShirt, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Assosiation } from "@prisma/client";
 import Link from "next/link";
@@ -256,7 +256,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                 </div>
                             }
                             <div data-testid="btn_collapse" className="btn text-white btn-lg m-2 p-0 px-2" onClick={() => setCollapsed(!collapsed)}>
-                                <FontAwesomeIcon icon={collapsed ? faAngleRight : faAngleLeft} />
+                                <FontAwesomeIcon icon={collapsed ? faAngleDoubleRight : faAngleDoubleLeft} />
                             </div>
                         </div>
                     </div>
