@@ -57,7 +57,7 @@ const CadetDetailPage = async (props: PropType) => {
                     </div>
                 }
                 <h1 data-testid="div_pageHeader" className="text-center mb-3">
-                    <Title text={`${cadet?.firstname} ${cadet?.lastname}`} />
+                    <Title text={`${cadet?.firstname || ""} ${cadet?.lastname || ""}`} />
                 </h1>
             </Row>
             <Row className="justify-content-center">
