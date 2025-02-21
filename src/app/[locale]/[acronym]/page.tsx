@@ -1,3 +1,4 @@
+import Title from "@/components/Title";
 import { getScopedI18n } from "@/lib/locales/config";
 import { faAddressCard, faCircle, faGear, faMitten, faPlus, faShirt, faUser, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,8 +13,8 @@ export async function generateMetadata() {
 }
 export default function Homepage() {
     return (
-        <div className="container-lg rounded p-0 py-4 position-relative">
-            <h1 className="text-center">Links</h1>
+        <div className="container-lg rounded p-0 position-relative">
+            <Title text="Uniform Admin" />
             <Row className="g-2 justify-content-evenly">
                 <Col xs={"auto"}>
                     <Link href={"/app/cadet"} prefetch={false}>
@@ -21,7 +22,7 @@ export default function Homepage() {
                             <div className="card-title d-flex justify-content-center">
                                 <FontAwesomeIcon icon={faUsers} className="fa-4x text-navy m-2" />
                             </div>
-                            <div className="card-text fs-5 text-center ">
+                            <div className="card-text fs-5 text-center">
                                 Personalliste<br />&nbsp;
                             </div>
                         </div>
