@@ -184,7 +184,7 @@ test.describe(() => {
                 expect(uniform).toEqual(expect.objectContaining({
                     fk_generation: ids.uniformGenerationIds[0],
                     fk_size: ids.sizeIds[2],
-                    active: true,
+                    isReserve: false,
                     comment: 'some new Comment'
                 }));
             });
@@ -209,7 +209,7 @@ test.describe(() => {
                 expect(uniform).toEqual(expect.objectContaining({
                     fk_generation: null,
                     fk_size: null,
-                    active: true,
+                    isReserve: false,
                     comment: ''
                 }));
             });

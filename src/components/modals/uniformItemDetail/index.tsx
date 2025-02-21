@@ -160,8 +160,8 @@ export default function UniformItemDetailModal({ uniformId, uniformType, ownerId
                                 <Label>Status</Label>
                                 <Col xs={6}>
                                     {editable
-                                        ? <Form.Check type="switch" {...register('active')} label={watch('active') ? "Aktiv" : "Passiv"} />
-                                        : uniform.active ? "Aktiv" : "Passiv"}
+                                        ? <Form.Check type="switch" {...register('isReserve')} label={watch('isReserve') ? "Passiv" : "Aktiv"} />
+                                        : uniform.isReserve ? "Passiv" : "Aktiv"}
                                 </Col>
                                 {uniformType.usingGenerations &&
                                     <>

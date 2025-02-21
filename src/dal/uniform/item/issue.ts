@@ -1,5 +1,7 @@
 import { genericSAValidator } from "@/actions/validations"
-import CustomException, { ExceptionType } from "@/errors/CustomException"
+import { SAErrorResponseType } from "@/dal/_index"
+import { __unsecuredGetCadetUniformMap } from "@/dal/cadet/uniformMap"
+import CustomException from "@/errors/CustomException"
 import { NullValueException } from "@/errors/LoadDataException"
 import SaveDataException, { UniformInactiveException, UniformIssuedException } from "@/errors/SaveDataException"
 import { AuthRole } from "@/lib/AuthRoles"
@@ -9,8 +11,6 @@ import { uniformNumberSchema } from "@/zod/uniform"
 import { PrismaClient } from "@prisma/client"
 import { z } from "zod"
 import { __unsecuredReturnUniformitem } from "./return"
-import { __unsecuredGetCadetUniformMap } from "@/dal/cadet/uniformMap"
-import { SAErrorResponseType } from "@/dal/_index"
 
 
 const propSchema = z.object({
@@ -75,7 +75,7 @@ export const issue = async (props: IssuePropType): Promise<CadetUniformMap | SAE
             data: {
                 number,
                 fk_uniformType: uniformTypeId,
-                active: true,
+                isReserve: false,
                 issuedEntries: {
                     create: {
                         fk_cadet: cadetId,
@@ -87,7 +87,7 @@ export const issue = async (props: IssuePropType): Promise<CadetUniformMap | SAE
     }
 
     // CHECK uniform active
-    if ((!options.ignoreInactive) && !uniform.active) {
+    if ((!options.ignoreInactive) && uniform.isReserve) {
         throw new UniformInactiveException();
     }
 

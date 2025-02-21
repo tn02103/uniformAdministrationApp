@@ -22,7 +22,7 @@ export default function Filter({
     const { handleSubmit, register, watch, reset, formState: { isLoading } } = form;
     const [filter, setFilter] = useSessionStorage<FilterType | null>(`filter_${uniformType.id}`, null);
 
-    const activPassivError = (!watch("active") && !watch("passive"));
+    const activPassivError = (!watch("active") && !watch("isReserve"));
     const ownerError = (!watch("withOwner") && !watch("withoutOwner"));
 
     function filterSubmit(data: FilterType) {
@@ -38,7 +38,7 @@ export default function Filter({
         } else {
             const options: FilterType = {
                 active: true,
-                passive: false,
+                isReserve: false,
                 withOwner: true,
                 withoutOwner: true,
                 all: {
@@ -56,7 +56,7 @@ export default function Filter({
             sizeList.forEach((s) => options.sizes[s.id] = true);
             reset(options);
         }
-    }, [uniformType, sizeList]);
+    }, [uniformType, sizeList, reset, filter]);
 
 
     return (
@@ -100,7 +100,7 @@ export default function Filter({
                                         <Form.Check
                                             label={t('common.uniform.active.false')}
                                             isInvalid={activPassivError}
-                                            {...register(`passive`)} />
+                                            {...register(`isReserve`)} />
                                         <Form.Check
                                             label={t('uniformList.withOwner')}
                                             isInvalid={ownerError}

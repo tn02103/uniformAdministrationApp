@@ -14,7 +14,7 @@ export type FilterType = {
     generations: { [key in string]: boolean },
     sizes: { [key in string]: boolean },
     active: boolean,
-    passive: boolean,
+    isReserve: boolean,
     withOwner: boolean,
     withoutOwner: boolean,
     all?: {
@@ -38,13 +38,14 @@ export default function FilterPanel({
     const { typeList } = useUniformTypeList();
     const searchParams = useSearchParams();
 
+    const currentSearch = searchParams.get('search');
     useEffect(() => {
-        if (searchParams.has('search')) {
+        if (currentSearch) {
             searchForm.reset({
-                search: searchParams.get('search')
+                search: currentSearch
             });
         }
-    }, [searchParams.get('search')]);
+    }, [currentSearch, searchForm]);
 
     function changeUniformType(typeId: string) {
         router.replace(`/app/uniform/list/${typeId}`);

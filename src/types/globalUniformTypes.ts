@@ -31,7 +31,7 @@ export const uniformWithOwnerArgs = Prisma.validator<Prisma.UniformFindManyArgs>
     select: {
         id: true,
         number: true,
-        active: true,
+        isReserve: true,
         comment: true,
         type: typeDescriptionArgs,
         generation: generationDescriptionArgs,
@@ -50,7 +50,7 @@ export const uniformArgs = Prisma.validator<Prisma.UniformFindManyArgs>()({
     select: {
         id: true,
         number: true,
-        active: true,
+        isReserve: true,
         comment: true,
         type: typeDescriptionArgs,
         generation: generationDescriptionArgs,
@@ -128,7 +128,7 @@ export type UniformFormData = {
     generation?: string;
     size?: string;
     comment: string;
-    active: boolean;
+    isReserve: boolean;
 }
 
 export type UniformNumbersSizeMap = {

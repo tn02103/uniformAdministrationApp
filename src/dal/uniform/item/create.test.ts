@@ -10,7 +10,7 @@ const defaultWithSizes = {
         { sizeId: ids.sizeIds[1], numbers: [3001, 3002] },
     ],
     data: {
-        active: true,
+        isReserve: false,
         generationId: ids.uniformGenerationIds[0],
         uniformTypeId: ids.uniformTypeIds[0],
         comment: 'just new'
@@ -21,7 +21,7 @@ const defaultWithoutSizes = {
         { sizeId: 'amount', numbers: [3000, 3001] }
     ],
     data: {
-        active: true,
+        isReserve: false,
         generationId: ids.uniformGenerationIds[4],
         uniformTypeId: ids.uniformTypeIds[1],
         comment: 'just new'
@@ -46,7 +46,7 @@ describe('successfull in all allowed combinations', () => {
                 expect.objectContaining({
                     fk_uniformType: ids.uniformTypeIds[0],
                     fk_generation: ids.uniformGenerationIds[0],
-                    active: true,
+                    isReserve: false,
                     comment: defaultWithSizes.data.comment,
                 })
             );
@@ -65,7 +65,7 @@ describe('successfull in all allowed combinations', () => {
                 data: {
                     uniformTypeId: ids.uniformTypeIds[1],
                     generationId: ids.uniformGenerationIds[4],
-                    active: true,
+                    isReserve: false,
                     comment: 'just new'
                 }
             })
@@ -81,7 +81,7 @@ describe('successfull in all allowed combinations', () => {
                 expect.objectContaining({
                     fk_uniformType: ids.uniformTypeIds[1],
                     fk_generation: ids.uniformGenerationIds[4],
-                    active: true,
+                    isReserve: false,
                     comment: defaultWithSizes.data.comment,
                     fk_size: null,
                 })
@@ -98,7 +98,7 @@ describe('successfull in all allowed combinations', () => {
                 data: {
                     uniformTypeId: ids.uniformTypeIds[2],
                     generationId: undefined,
-                    active: true,
+                    isReserve: false,
                     comment: 'just new'
                 }
             }),
@@ -115,7 +115,7 @@ describe('successfull in all allowed combinations', () => {
                 data: {
                     uniformTypeId: ids.uniformTypeIds[3],
                     generationId: undefined,
-                    active: true,
+                    isReserve: false,
                     comment: 'just new',
                 },
             })

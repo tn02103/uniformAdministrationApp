@@ -15,7 +15,7 @@ const propSchema = z.object({
         uniformTypeId: z.string().uuid(),
         generationId: z.string().uuid().optional(),
         comment: z.string(),
-        active: z.boolean(),
+        isReserve: z.boolean(),
     }),
 });
 type PropType = z.infer<typeof propSchema>
@@ -116,7 +116,7 @@ export const create = (props: PropType): Promise<number> => genericSAValidator(
                 fk_generation: data.generationId,
                 fk_size: (map.sizeId !== "amount") ? map.sizeId : null,
                 comment: data.comment,
-                active: data.active,
+                isReserve: data.isReserve,
             }))
         ], [])
     }).then(d => d.count);

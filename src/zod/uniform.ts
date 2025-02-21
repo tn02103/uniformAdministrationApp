@@ -7,6 +7,6 @@ export const uniformFormSchema = z.object({
     generation: z.string().uuid().nullable().optional(),
     size: z.string().uuid().nullable().optional(),
     comment: z.string(),
-    active: z.boolean(),
+    isReserve: z.boolean(),
 });
 export type UniformFormType = z.infer<typeof uniformFormSchema>;

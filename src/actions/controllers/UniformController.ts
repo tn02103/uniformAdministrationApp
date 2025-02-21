@@ -29,10 +29,10 @@ export const getUniformCountByType = (uniformTypeId: string) => genericSAValidat
 
 const filterTypeValidator = (filter: FilterType) => (
     (typeof filter.active === "boolean")
-    && (typeof filter.passive === "boolean")
+    && (typeof filter.isReserve === "boolean")
     && (typeof filter.withOwner === "boolean")
     && (typeof filter.withoutOwner === "boolean")
-    && !(!filter.active && !filter.passive)
+    && !(!filter.active && !filter.isReserve)
     && !(!filter.withOwner && !filter.withoutOwner)
     && Object.entries(filter.generations).every(([key, value]) => (
         (key === "null" || uuidValidationPattern.test(key)) && (typeof value === "boolean")
@@ -63,12 +63,12 @@ export const getUniformListWithOwner = async (uniformTypeId: string, orderBy: st
     const hiddenSizes = filter ? Object.entries(filter.sizes).filter(([, value]) => !value).map(([key,]) => key) : [];
 
     if (!filter) {
-        sqlFilter["active"] = true;
+        sqlFilter["isReserve"] = false;
     } else {
-        if (!filter.passive) {
-            sqlFilter["active"] = true;
+        if (!filter.isReserve) {
+            sqlFilter["isReserve"] = false;
         } else if (!filter.active) {
-            sqlFilter["active"] = false;
+            sqlFilter["isReserve"] = true;
         }
 
         if (!filter.withOwner) {
@@ -139,7 +139,7 @@ export const getUniformFormValues = (uniformId: string): Promise<UniformFormData
     generation: data.generation?.id,
     size: data.size?.id,
     comment: data.comment ?? "",
-    active: data.active,
+    isReserve: data.isReserve,
 }));
 
 /**

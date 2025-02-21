@@ -230,7 +230,7 @@ test.describe(() => {
                 fk_generation: null,
                 fk_size: null,
                 comment: null,
-                active: true,
+                isReserve: false,
                 recdelete: null,
                 recdeleteUser: null,
                 issuedEntries: [
@@ -286,7 +286,7 @@ test.describe(() => {
                 fk_generation: null,
                 fk_size: null,
                 comment: null,
-                active: true,
+                isReserve: false,
                 recdelete: null,
                 recdeleteUser: null,
                 issuedEntries: [

@@ -13,7 +13,7 @@ import { faArrowUpRightFromSquare, faBars, faCheck, faPencil, faRightLeft, faRig
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Col, Dropdown, Form, FormControl, Row } from "react-bootstrap";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -47,7 +47,7 @@ const UniformRow = (props: PropType) => {
             size: uniform.size?.id,
             generation: uniform.generation?.id,
             comment: uniform.comment ?? undefined,
-            active: uniform.active,
+            isReserve: uniform.isReserve,
         });
         setEditable(true);
     }
@@ -139,7 +139,7 @@ const UniformRow = (props: PropType) => {
                                         <Row className="fs-8 fw-bold fst-italic">
                                             {t('common.uniform.number')}
                                         </Row>
-                                        <Row data-testid={"div_number"} className={`fw-bold ${uniform.active ? "" : "text-danger "} ${editable ? "pt-1" : ""}`}>
+                                        <Row data-testid={"div_number"} className={`fw-bold ${uniform.isReserve ? "text-danger " : ""} ${editable ? "pt-1" : ""}`}>
                                             {uniform.number}
                                         </Row>
                                     </Col>
@@ -309,9 +309,9 @@ const SizeRow = ({
     const { watch, setValue, getValues, register } = useFormContext<UniformFormData>();
 
     const [usedSizelist, setUsedSizelist] = useState<UniformSizelist>();
+    const selectedGeneration = watch('generation');
 
-
-    const generationChanged = async (generationId?: string) => {
+    const generationChanged = useCallback(async (generationId?: string) => {
         const newSizelist = getUniformSizelist({
             generationId,
             type: uniformType,
@@ -330,13 +330,13 @@ const SizeRow = ({
 
         // different sizelist
         await setUsedSizelist(newSizelist);
-    }
+    }, [setValue, usedSizelist, uniformType, sizelists]);
 
     useEffect(() => {
-        const generationId = watch("generation");
+        const generationId = selectedGeneration;
         generationChanged(generationId);
 
-    }, [watch("generation")]);
+    }, [selectedGeneration, generationChanged, watch]);
 
     useEffect(() => {
         if (usedSizelist) {
@@ -348,7 +348,7 @@ const SizeRow = ({
                 setValue("size", "", { shouldValidate: true });
             }
         }
-    }, [usedSizelist])
+    }, [usedSizelist, setValue, getValues])
 
     if (!uniformType.usingSizes) return (
         <Row data-testid={"div_size"} className={"text-secondary"}>

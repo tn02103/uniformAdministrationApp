@@ -32,7 +32,7 @@ export default function TableLine({
         <tr data-testid={`div_uitem_${uniform.id}`}>
             <td data-testid="div_number" className="col-3 col-sm-1 ">
                 <HighlightedText text={String(uniform.number)} highlight={String(searchString)} />
-                {!uniform.active &&
+                {uniform.isReserve &&
                     <>
                         <br />
                         <span className="badge rounded-pill text-bg-secondary">

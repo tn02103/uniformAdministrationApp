@@ -53,7 +53,7 @@ test.describe(() => {
                 expect.soft(uniformListPage.chk_sizeFilter_selAll).toBeChecked(),
                 expect.soft(uniformListPage.chk_withOwnerFilter).toBeChecked(),
                 expect.soft(uniformListPage.chk_withoutOwnerFilter).toBeChecked(),
-                expect.soft(uniformListPage.chk_passiveFilter).not.toBeChecked(),
+                expect.soft(uniformListPage.chk_isReserveFilter).not.toBeChecked(),
                 expect.soft(uniformListPage.chk_activeFilter).toBeChecked(),
             ]);
         });
@@ -64,7 +64,7 @@ test.describe(() => {
             await uniformListPage.chk_genFilter_nullValue.setChecked(false);
             await uniformListPage.btn_othersAccordion_header.click();
             await uniformListPage.chk_withOwnerFilter.setChecked(false);
-            await uniformListPage.chk_passiveFilter.setChecked(true);
+            await uniformListPage.chk_isReserveFilter.setChecked(true);
             await uniformListPage.btn_load.click();
         });
 
@@ -76,7 +76,7 @@ test.describe(() => {
                 expect.soft(uniformListPage.chk_genFilter(ids.uniformGenerationIds[4])).toBeChecked(),
                 expect.soft(uniformListPage.chk_withOwnerFilter).toBeChecked(),
                 expect.soft(uniformListPage.chk_withoutOwnerFilter).toBeChecked(),
-                expect.soft(uniformListPage.chk_passiveFilter).not.toBeChecked(),
+                expect.soft(uniformListPage.chk_isReserveFilter).not.toBeChecked(),
                 expect.soft(uniformListPage.chk_activeFilter).toBeChecked(),
             ]);
         });
@@ -155,7 +155,7 @@ test.describe(() => {
                 expect.soft(uniformListPage.chk_genFilter(ids.uniformGenerationIds[4])).toBeChecked(),
                 expect.soft(uniformListPage.chk_withOwnerFilter).toBeChecked(),
                 expect.soft(uniformListPage.chk_withoutOwnerFilter).toBeChecked(),
-                expect.soft(uniformListPage.chk_passiveFilter).not.toBeChecked(),
+                expect.soft(uniformListPage.chk_isReserveFilter).not.toBeChecked(),
                 expect.soft(uniformListPage.chk_activeFilter).toBeChecked(),
             ]);
     });
@@ -179,10 +179,10 @@ test.describe(() => {
         await test.step('other filters', async () => {
             await uniformListPage.btn_othersAccordion_header.click();
             await uniformListPage.chk_activeFilter.setChecked(false);
-            await uniformListPage.chk_passiveFilter.setChecked(false);
+            await uniformListPage.chk_isReserveFilter.setChecked(false);
             await expect(uniformListPage.err_filter).toBeVisible();
 
-            await uniformListPage.chk_passiveFilter.setChecked(true);
+            await uniformListPage.chk_isReserveFilter.setChecked(true);
             await expect(uniformListPage.err_filter).not.toBeVisible();
 
             await uniformListPage.chk_withOwnerFilter.setChecked(false);

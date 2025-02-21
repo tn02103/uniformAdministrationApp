@@ -55,7 +55,7 @@ export const update = (props: UniformFormType): Promise<UniformFormData> => gene
             id: data.id,
         },
         data: {
-            active: data.active,
+            isReserve: data.isReserve,
             comment: data.comment,
             fk_generation: type?.usingGenerations ? data.generation ?? null : undefined,
             fk_size: type?.usingSizes ? data.size ?? null : undefined,
@@ -67,5 +67,5 @@ export const update = (props: UniformFormType): Promise<UniformFormData> => gene
     generation: data.generation?.id,
     size: data.size?.id,
     comment: data.comment ?? "",
-    active: data.active,
+    isReserve: data.isReserve,
 }));

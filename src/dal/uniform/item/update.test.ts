@@ -12,7 +12,7 @@ const defaultProps: UniformFormType = {
     number: data.uniformList[0].number,
     size: ids.sizeIds[16],
     generation: ids.uniformGenerationIds[3],
-    active: false,
+    isReserve: true,
     comment: 'jsut a new comment ;)',
 }
 afterEach(async () => cleanup.uniformTypeConfiguration());
@@ -32,6 +32,7 @@ it('succesfully changed item', async () => {
         fk_generation: defaultProps.generation,
         fk_size: defaultProps.size,
         comment: defaultProps.comment,
+        isReserve: true,
     }));
 });
 it('doesnt change the number', async () => {
@@ -50,7 +51,7 @@ it('doesnt change the number', async () => {
     expect(dbItem?.number).toEqual(defaultProps.number);
 });
 it('catches size not in sizelist of generation', async () => {
-    const { success, result } = await runServerActionTest(
+    const { success } = await runServerActionTest(
         update({
             ...defaultProps,
             size: ids.sizeIds[1]
@@ -59,7 +60,7 @@ it('catches size not in sizelist of generation', async () => {
     expect(success).toBeFalsy();
 });
 it('catches size not in defaultSizelist without generation', async () => {
-    const { success, result } = await runServerActionTest(
+    const { success } = await runServerActionTest(
         update({
             ...defaultProps,
             generation: null,
@@ -68,7 +69,7 @@ it('catches size not in defaultSizelist without generation', async () => {
     expect(success).toBeFalsy();
 });
 it('works without a size provided', async() => {
-    const { success, result } = await runServerActionTest(
+    const { success } = await runServerActionTest(
         update({
             ...defaultProps,
             

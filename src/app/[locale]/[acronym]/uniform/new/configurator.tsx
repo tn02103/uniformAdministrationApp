@@ -4,7 +4,7 @@ import { useI18n } from "@/lib/locales/client";
 import { getUniformSizelist } from "@/lib/uniformHelper";
 import { uuidValidationPattern } from "@/lib/validations";
 import { UniformSizelist, UniformType } from "@/types/globalUniformTypes";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 
@@ -12,7 +12,7 @@ export type ConfiguratorFormType = {
     typeId: string,
     generationId?: string,
     sizeId?: string,
-    active: boolean,
+    isReserve: boolean,
     comment: string,
 }
 
@@ -25,39 +25,17 @@ const NewUniformConfigurator = ({
 }) => {
     const t = useI18n();
     const { register, watch, handleSubmit, setValue, formState: { errors }, getValues } =
-        useForm<ConfiguratorFormType>({ defaultValues: { active: true }, mode: "onChange" });
+        useForm<ConfiguratorFormType>({ defaultValues: { isReserve: true }, mode: "onChange" });
 
     const { typeList } = useUniformTypeList();
     const { sizelistList } = useUniformSizelists();
     const [selectedType, setSelectedType] = useState<UniformType | null>(null);
     const [sizelist, setSizelist] = useState<UniformSizelist>();
 
+    const selectedTypeId = watch("typeId");
+    const selectedGenerationId = watch("generationId");
 
-    // update selected Values
-    useEffect(() => {
-        const typeId = watch("typeId");
-        if (typeId !== selectedType?.id) {
-            setValue("generationId", "null");
-            setValue("sizeId", "null");
-            if (typeId) {
-                const type = typeList?.find(t => t.id === typeId);
-                if (type && type != selectedType) {
-                    setSelectedType(type);
-                }
-            } else {
-                setSelectedType(null);
-            }
-        }
-    }, [watch("typeId"), typeList]);
-
-    useEffect(() => {
-        const generationId = watch("generationId");
-        if (generationId) {
-            generationChanged(generationId);
-        }
-    }, [watch("generationId"), selectedType]);
-
-    const generationChanged = async (genId: string) => {
+    const generationChanged = useCallback(async (genId: string) => {
         if (!selectedType || !sizelistList) return;
 
         const newSizelist = getUniformSizelist({ generationId: genId, sizelists: sizelistList, type: selectedType });
@@ -83,7 +61,31 @@ const NewUniformConfigurator = ({
             setValue("sizeId", "null", { shouldValidate: true });
         }
         return newSizelist;
-    }
+    }, [getValues, setValue, sizelist, sizelistList, selectedType]);
+
+    // update selected Values
+    useEffect(() => {
+        ;
+        if (selectedTypeId !== selectedType?.id) {
+            setValue("generationId", "null");
+            setValue("sizeId", "null");
+            if (selectedTypeId) {
+                const type = typeList?.find(t => t.id === selectedTypeId);
+                if (type && type != selectedType) {
+                    setSelectedType(type);
+                }
+            } else {
+                setSelectedType(null);
+            }
+        }
+    }, [selectedType, selectedTypeId, setValue, typeList]);
+
+    useEffect(() => {
+        const generationId = selectedGenerationId;
+        if (generationId) {
+            generationChanged(generationId);
+        }
+    }, [generationChanged, selectedGenerationId, selectedType]);
 
     return (
         <Card id="uniformConfigurator" data-testid="div_configurator">
@@ -177,7 +179,7 @@ const NewUniformConfigurator = ({
                                 <Col xs="8" sm="5">
                                     <Form.Check
                                         disabled={(step > 0)}
-                                        {...register("active")} />
+                                        {...register("isReserve")} />
                                 </Col>
                             </Row>
                             <Row className="mt-2">

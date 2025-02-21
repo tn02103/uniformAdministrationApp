@@ -135,7 +135,7 @@ test.describe(() => {
 
     test('E2E0311: validate uItem data', async ({ page, uniformListPage, staticData: { ids } }) => {
         await uniformListPage.btn_othersAccordion_header.click();
-        await uniformListPage.chk_passiveFilter.setChecked(true);
+        await uniformListPage.chk_isReserveFilter.setChecked(true);
         await uniformListPage.btn_load.click();
 
         await Promise.all([
@@ -144,13 +144,13 @@ test.describe(() => {
             expect.soft(uniformListPage.div_uitem_size(ids.uniformIds[0][27])).toContainText('3'),
             expect.soft(uniformListPage.lnk_uitem_owner(ids.uniformIds[0][27])).not.toBeVisible(),
             expect.soft(uniformListPage.div_uitem_comment(ids.uniformIds[0][27])).toContainText('Comment 2'),
-            expect.soft(uniformListPage.div_uitem_passivLabel(ids.uniformIds[0][27])).not.toBeVisible(),
+            expect.soft(uniformListPage.div_uitem_reserveLabel(ids.uniformIds[0][27])).not.toBeVisible(),
             expect.soft(uniformListPage.div_uitem_number(ids.uniformIds[0][23])).toContainText('1123'),
             expect.soft(uniformListPage.div_uitem_generation(ids.uniformIds[0][23])).toContainText('Generation1-2'),
             expect.soft(uniformListPage.div_uitem_size(ids.uniformIds[0][23])).toContainText('1'),
             expect.soft(uniformListPage.lnk_uitem_owner(ids.uniformIds[0][23])).toContainText('Luft Uwe'),
             expect.soft(uniformListPage.div_uitem_comment(ids.uniformIds[0][23])).toContainText(''),
-            expect.soft(uniformListPage.div_uitem_passivLabel(ids.uniformIds[0][23])).toBeVisible(),
+            expect.soft(uniformListPage.div_uitem_reserveLabel(ids.uniformIds[0][23])).toBeVisible(),
         ]);
 
         await uniformListPage.lnk_uitem_owner(ids.uniformIds[0][23]).click();
