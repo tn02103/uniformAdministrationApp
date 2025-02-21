@@ -30,16 +30,19 @@ const NavLink = ({ text, icon, isRoute, href, level, collapsed, requiredRole, te
                 <Tooltip>{text}</Tooltip>
             }
         >
-            <li className={`list-group-item rounded px-2 py-1 w-100 d-flex align-items-center
+            <li className={`list-group-item`}>
+                <button className={`btn text-white rounded d-flex align-items-center px-2 py-1 w-100 
                     ${isRoute ? "bg-primary" : ""} 
                     ${collapsed ? "justify-content-center" : ""}
-                    ${level ? (level == 2) ? "fs-6 mt-1" : "fs-6 mb-1" : "mb-1"}`}>
-                <Link data-testid={testId} href={href} className="stretched-link">
-                    {icon &&
-                        <FontAwesomeIcon size="lg" icon={icon} width={20} className={collapsed ? "" : "pe-2"} />
-                    }
-                    {!collapsed && text}
-                </Link>
+                    ${level ? (level == 2) ? "fs-6 mt-1" : "fs-6 mb-1" : "mb-1"}`}
+                >
+                    <Link data-testid={testId} href={href} className="stretched-link">
+                        {icon &&
+                            <FontAwesomeIcon size="lg" icon={icon} width={20} className={collapsed ? "" : "pe-2"} />
+                        }
+                        {!collapsed && text}
+                    </Link>
+                </button>
             </li>
         </OverlayTrigger>
     )
