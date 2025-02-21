@@ -12,8 +12,6 @@ import {
   faAddressCard,
   faAngleDoubleLeft,
   faAngleDoubleRight,
-  faAngleLeft,
-  faAngleRight,
   faClipboardCheck,
   faGear,
   faPlus,
