@@ -63,7 +63,7 @@ nav {
     z-index: 7;
 }
 
-.dropdown-toggle::before {
+.dropdown-toggle::after {
     display: none !important;
 }
 
