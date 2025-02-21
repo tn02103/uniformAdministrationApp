@@ -9,7 +9,7 @@ const Header = ({ showSidebar }: any) => {
         <div data-testid="div_layout_header" className=" bg-navy fixed-top p-0 m-0" data-bs-theme="dark">
             <div className="d-flex flex-row justify-content-between">
                 <div className="p-0 m-0">
-                    <Button data-testid="btn_openSidebar" variant="outline-light" className="border-0" size="lg" onClick={showSidebar}>
+                    <Button data-testid="btn_openSidebar" variant="outline-light" className="border-0 rounded-0" size="lg" onClick={showSidebar}>
                         <FontAwesomeIcon icon={faBars} />
                     </Button>
                 </div>
