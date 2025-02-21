@@ -1,7 +1,9 @@
 "use server";
 
-import { getUnitsWithUniformItems } from "./get";
 
-export type {StorageUnitWithUniformItems} from './get';
+export type { StorageUnitWithUniformItems } from './get';
 
-export const getStorageUnitsWithUniformItems = getUnitsWithUniformItems; 
+export const getStorageUnitsWithUniformItems = require('./get').getUnitsWithUniformItems;
+export const createStorageUnit = require('./create').create;
+export const deleteStorageUnit = require('./delete').deleteUnit;
+

@@ -176,6 +176,9 @@ export default {
                 },
             },
             custom: {
+                nameDuplication: {
+                    storageUnit: "Der Name wird bereits von einer anderen Lagereinheit benutzt",
+                },
                 material: {
                     typename: {
                         duplication: "Der Name wird bereits von einem anderen Material der Gruppe verwendet",   

@@ -176,6 +176,9 @@ export default {
                 },
             },
             custom: {
+                nameDuplication: {
+                    storageUnit: "The Name is already used by another Storage Unit",
+                },
                 material: {
                     typename: {
                         duplication: "The Name is already used by another Material in this Group",

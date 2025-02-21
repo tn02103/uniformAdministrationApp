@@ -224,6 +224,16 @@ class StaticDataCleanup {
         await this.loader.uniformIssued();
     }
 
+    async storageUnits(cleanup?: () => Promise<void>) {
+        await this.uniform(async () => {
+            await this.deleteStorage();
+            if (cleanup) {
+                await cleanup();
+            }
+            await this.loader.storageUnits();
+        });
+    }
+
     async uniform(cleanup?: () => Promise<void>) {
         await prisma.$transaction([
             this.deleteUniformIssued(),

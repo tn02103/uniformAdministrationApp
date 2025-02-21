@@ -19,6 +19,7 @@ type AssosiationValidationDataType = {
     materialGroupId?: string | string[],
     deficiencytypeId?: string | string[],
     inspectionId?: string | string[],
+    storageUnitId?: string | string[],
 }
 
 export const getSAReturnType = <t>() => {
@@ -63,6 +64,10 @@ function assosiationValidator(assosiationValidations: AssosiationValidationDataT
         validate(assosiationValidations.materialId, validateMaterailAssosiation);
     }
 
+    if (assosiationValidations.materialGroupId) {
+        validate(assosiationValidations.materialGroupId, validateMaterialGroupAssosiation);
+    }
+
     if (assosiationValidations.uniformSizelistId && assosiationValidations.uniformSizelistId !== null) {
         validate(assosiationValidations.uniformSizelistId, validateUniformSizelistAssosiation);
     }
@@ -76,6 +81,9 @@ function assosiationValidator(assosiationValidations: AssosiationValidationDataT
     }
     if (assosiationValidations.inspectionId) {
         validate(assosiationValidations.inspectionId, validateInspectionAssosiation);
+    }
+    if (assosiationValidations.storageUnitId) {
+        validate(assosiationValidations.storageUnitId, validateStorageUnitAssosiation);
     }
     return Promise.all(validationPromisses);
 }
@@ -205,4 +213,9 @@ const validateDeficiencytypeAssosiation = async (id: string, fk_assosiation: str
 const validateInspectionAssosiation = async (id: string, fk_assosiation: string) =>
     prisma.inspection.findUniqueOrThrow({
         where: { id, fk_assosiation }
+    });
+
+const validateStorageUnitAssosiation = async (id: string, assosiationId: string) =>
+    prisma.storageUnit.findUniqueOrThrow({
+        where: { id, assosiationId }
     });
