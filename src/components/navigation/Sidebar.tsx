@@ -104,7 +104,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                         </div>
                         {inspectionState?.active &&
                             <div data-testid="div_inspection" className="align-self-center d-inline mt-3">
-                                {collapsed ? "" : 'Kontrolle: '}
+                                {collapsed ? "" : 'Inspektion: '}
                                 {inspectionState.inspectedCadets}/{inspectionState.activeCadets - inspectionState.deregistrations}
                             </div>
                         }
@@ -233,7 +233,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                 href={"/app/admin/user"}
                                 collapsed={collapsed}
                                 requiredRole={AuthRole.admin}
-                                isRoute={pathname.startsWith("/users")}
+                                isRoute={pathname.endsWith("/app/admin/user")}
                                 testId="lnk_users" />
                         </ul>
                         <hr className="text-white m-0 w-100"/>
