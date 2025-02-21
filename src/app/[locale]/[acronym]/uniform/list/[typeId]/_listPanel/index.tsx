@@ -23,7 +23,7 @@ export default function ListPanel({
     const searchParams = useSearchParams();
     const pathname = usePathname();
 
-  const loadData = useCallback(async () => {
+    const loadData = useCallback(async () => {
         if (!uniformType)
             return;
 
