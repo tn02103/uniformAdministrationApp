@@ -80,8 +80,8 @@ const GeneralOverviewTable = ({
 
     return (
         <>
-            <div className="d-flex flex-row ">
-                <InputGroup className="w-auto">
+            <div className="d-block d-sm-flex">
+                <InputGroup className="w-auto me-2">
                     <InputGroup.Text className="bg-primary-subtle">
                         <FontAwesomeIcon icon={faSearch} className="" />
                     </InputGroup.Text>
@@ -102,7 +102,7 @@ const GeneralOverviewTable = ({
                     <FormCheck
                         type="switch"
                         label="Inkl. abgemeldetes Personal"
-                        className="mx-5"
+                        className="me-2"
                         onClick={() => changeFilter('deregistered')}
                         checked={searchParam.has('deregistered')}
                     />
@@ -111,7 +111,7 @@ const GeneralOverviewTable = ({
                     <FormCheck
                         type="switch"
                         label="Inkl. kontrolliertes Personal"
-                        className="mx-0"
+                        className="me-2"
                         onClick={() => changeFilter('inspected')}
                         checked={searchParam.has('inspected')}
                     />
