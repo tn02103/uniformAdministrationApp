@@ -1,9 +1,10 @@
 export default class CustomException extends Error {
     exceptionType: ExceptionType;
     data?: any;
-    constructor(msg: string, excpetionType: ExceptionType) {
+    constructor(msg: string, excpetionType: ExceptionType, data?: any) {
         super(msg);
         this.exceptionType = excpetionType;
+        this.data = data;
     }
 }
 
@@ -16,6 +17,7 @@ export enum ExceptionType {
     UnauthenticatedException,
     InactiveException,
     InUseException,
+    OverCapacityException,
 }
 
 export class UnauthorizedException extends CustomException {

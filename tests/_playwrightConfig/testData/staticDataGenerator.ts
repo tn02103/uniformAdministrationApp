@@ -33,7 +33,7 @@ export type StaticDataIdType = {
         }
     }
 };
-export function getStaticDataIds():StaticDataIdType {
+export function getStaticDataIds(): StaticDataIdType {
     return {
         fk_assosiation: uuid(),
         userIds: uuidArray(5),
@@ -146,7 +146,7 @@ export default class StaticDataGenerator {
             { id: this.ids.storageUnitIds[1], assosiationId: this.ids.fk_assosiation, name: 'Kiste 02', description: 'Für Typ1 Uniformteile in Reserve', capacity: 5, isReserve: true },
             { id: this.ids.storageUnitIds[2], assosiationId: this.ids.fk_assosiation, name: 'Kiste 03', description: 'Für Typ3 Uniformteile in Reserve', capacity: 10, isReserve: true },
             { id: this.ids.storageUnitIds[3], assosiationId: this.ids.fk_assosiation, name: 'Kiste 04', description: 'Für Typ3 aktive Uniformteile', capacity: 10, isReserve: false },
-            { id: this.ids.storageUnitIds[4], assosiationId: this.ids.fk_assosiation, name: 'Kiste 05', description: 'Für Typ2 aktive Uniformteile', capacity: 20, isReserve: false },
+            { id: this.ids.storageUnitIds[4], assosiationId: this.ids.fk_assosiation, name: 'Kiste 05', description: 'Für Typ2 aktive Uniformteile', capacity: null, isReserve: false },
         ] satisfies StorageUnit[]
     }
 
@@ -172,7 +172,7 @@ export default class StaticDataGenerator {
             { id: this.ids.uniformIds[0][17], number: 1117, fk_uniformType: this.ids.uniformTypeIds[0], fk_generation: this.ids.uniformGenerationIds[0], fk_size: this.ids.sizeIds[5], isReserve: true, comment: '', recdelete: null, recdeleteUser: null, storageUnitId: this.ids.storageUnitIds[1] },
             { id: this.ids.uniformIds[0][18], number: 1118, fk_uniformType: this.ids.uniformTypeIds[0], fk_generation: this.ids.uniformGenerationIds[0], fk_size: this.ids.sizeIds[5], isReserve: true, comment: '', recdelete: null, recdeleteUser: null, storageUnitId: this.ids.storageUnitIds[1] },
             { id: this.ids.uniformIds[0][19], number: 1119, fk_uniformType: this.ids.uniformTypeIds[0], fk_generation: this.ids.uniformGenerationIds[0], fk_size: this.ids.sizeIds[0], isReserve: true, comment: '', recdelete: null, recdeleteUser: null, storageUnitId: this.ids.storageUnitIds[1] },
-            { id: this.ids.uniformIds[0][20], number: 1120, fk_uniformType: this.ids.uniformTypeIds[0], fk_generation: this.ids.uniformGenerationIds[0], fk_size: this.ids.sizeIds[0], isReserve: true, comment: '', recdelete: null, recdeleteUser: null, storageUnitId: this.ids.storageUnitIds[1] },
+            { id: this.ids.uniformIds[0][20], number: 1120, fk_uniformType: this.ids.uniformTypeIds[0], fk_generation: this.ids.uniformGenerationIds[0], fk_size: this.ids.sizeIds[0], isReserve: true, comment: '', recdelete: null, recdeleteUser: null, storageUnitId: null },
             { id: this.ids.uniformIds[0][21], number: 1121, fk_uniformType: this.ids.uniformTypeIds[0], fk_generation: this.ids.uniformGenerationIds[1], fk_size: this.ids.sizeIds[1], isReserve: true, comment: '', recdelete: null, recdeleteUser: null, storageUnitId: null },
             { id: this.ids.uniformIds[0][22], number: 1122, fk_uniformType: this.ids.uniformTypeIds[0], fk_generation: this.ids.uniformGenerationIds[1], fk_size: this.ids.sizeIds[1], isReserve: true, comment: '', recdelete: null, recdeleteUser: null, storageUnitId: null },
             { id: this.ids.uniformIds[0][23], number: 1123, fk_uniformType: this.ids.uniformTypeIds[0], fk_generation: this.ids.uniformGenerationIds[1], fk_size: this.ids.sizeIds[1], isReserve: true, comment: '', recdelete: null, recdeleteUser: null, storageUnitId: null },

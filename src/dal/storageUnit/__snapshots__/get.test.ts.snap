@@ -121,21 +121,6 @@ exports[`returns correct data 1`] = `
           "name": "Typ1",
         },
       },
-      {
-        "comment": "",
-        "generation": {
-          "name": "Generation1-1",
-          "outdated": true,
-        },
-        "isReserve": true,
-        "number": 1120,
-        "size": {
-          "name": "0",
-        },
-        "type": {
-          "name": "Typ1",
-        },
-      },
     ],
   },
   {
@@ -287,7 +272,7 @@ exports[`returns correct data 1`] = `
     ],
   },
   {
-    "capacity": 20,
+    "capacity": null,
     "description": "Für Typ2 aktive Uniformteile",
     "isReserve": false,
     "name": "Kiste 05",
