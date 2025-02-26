@@ -1,4 +1,5 @@
 import { genericSAValidator } from "@/actions/validations";
+import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { materialTypeFormSchema } from "@/zod/material";
@@ -42,6 +43,10 @@ export const create = (props: PropType): createMaterialReturnType => genericSAVa
             },
         }
     });
+
+    if(group.recdelete) {
+        throw new SaveDataException('Could not create Material-Type since group is deleted');
+    }
 
     if (group.typeList.some(t => t.typename === data.typename)) {
         return {

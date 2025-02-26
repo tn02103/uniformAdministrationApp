@@ -1,5 +1,3 @@
-"use server";
-
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
@@ -27,7 +25,6 @@ export const markDeleted = (props: string) => genericSAValidator(
     const date = new Date();
 
     const typeIdList = group.typeList.map(t => t.id);
-    //dirty return Materials
     await client.materialIssued.updateMany({
         where: {
             fk_material: { in: typeIdList },
@@ -37,7 +34,6 @@ export const markDeleted = (props: string) => genericSAValidator(
             dateReturned: date,
         }
     });
-    // mark types as deleted
     await client.material.updateMany({
         where: {
             fk_materialGroup: id,
@@ -49,7 +45,6 @@ export const markDeleted = (props: string) => genericSAValidator(
         }
     });
 
-    // mark groups as deleted
     await client.materialGroup.update({
         where: { id },
         data: {
