@@ -23,14 +23,15 @@ test.afterEach(async ({ staticData: { cleanup } }) => {
     await cleanup.materialConfig();
 });
 
-test('formValidation', async ({ groupDetailComponent }) => {
-    await groupDetailComponent.btn_edit.click();
-    await test.step('description', async () => {
+test.describe('formValidation', () => {
+    test('description', async ({ page, groupDetailComponent }) => {
+        await groupDetailComponent.btn_edit.click();
         const testSets = newDescriptionValidationTests({ minLength: 0, maxLength: 20 });
 
         for (const set of testSets) {
             await test.step(set.testValue, async () => {
                 await groupDetailComponent.txt_name.fill(String(set.testValue));
+                await page.keyboard.press('Tab');
                 if (set.valid) {
                     await expect(groupDetailComponent.err_name).not.toBeVisible();
                 } else {
@@ -39,12 +40,14 @@ test('formValidation', async ({ groupDetailComponent }) => {
             });
         }
     });
-    await test.step('issuedDefault', async () => {
+    test('issuedDefault', async ({ page, groupDetailComponent }) => {
+        await groupDetailComponent.btn_edit.click();
         const testSets = numberValidationTests({ min: 0, max: 200, testEmpty: true, strict: false, emptyValid: true });
 
         for (const set of testSets) {
             await test.step(set.testValue, async () => {
                 await groupDetailComponent.txt_issuedDefault.fill(String(set.testValue));
+                await page.keyboard.press('Tab');
                 if (set.valid) {
                     await expect(groupDetailComponent.err_issuedDefault).not.toBeVisible();
                 } else {
