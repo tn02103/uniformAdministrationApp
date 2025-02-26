@@ -1,4 +1,5 @@
 import { genericSAValidator } from "@/actions/validations";
+import { SAReturnType } from "@/dal/_helper/testHelper";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { materialGroupFormSchema } from "@/zod/material";
@@ -12,20 +13,13 @@ const propSchema = z.object({
 });
 type PropType = z.infer<typeof propSchema>;
 
-type updateMaterialGroupReturnType = Promise<{
-    error: {
-        message: string
-        formElement: string,
-    }
-} | void>;
-
 /**
  * Update data of MaterialGroup 
  * @param materialGroupId id of MaterialGroup
  * @param data data to update
  * @returns 
  */
-export const update = (props: PropType): updateMaterialGroupReturnType => genericSAValidator(
+export const update = (props: PropType): SAReturnType<void> => genericSAValidator(
     AuthRole.materialManager,
     props,
     propSchema,

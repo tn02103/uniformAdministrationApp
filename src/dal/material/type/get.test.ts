@@ -5,7 +5,7 @@ import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticD
 import { getAdministrationConfiguration, getConfiguration } from "./get";
 
 const { ids, cleanup, data } = new StaticData(0);
-describe('getConfiguration', () => {
+describe('getMaterialConfiguration', () => {
     const getFunctionResult = () => runServerActionTest<MaterialGroup[]>(getConfiguration());
     it('should countain the right fields', async () => {
         const { success, result } = await getFunctionResult();
@@ -112,7 +112,7 @@ describe('getConfiguration', () => {
     });
 });
 
-describe('getAdministrationConfiguration', () => {
+describe('getMaterialAdministrationConfiguration', () => {
     const getFunctionResult = () => runServerActionTest<AdministrationMaterialGroup[]>(getAdministrationConfiguration());
     it('should countain the right fields', async () => {
         const { success, result } = await getFunctionResult();

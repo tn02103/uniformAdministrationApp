@@ -1,4 +1,5 @@
 import { genericSAValidator } from "@/actions/validations";
+import { SAReturnType } from "@/dal/_helper/testHelper";
 import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
@@ -7,20 +8,12 @@ import { uniformGenerationFormSchema } from "@/zod/uniformConfig";
 import { z } from "zod";
 import { __unsecuredGetUniformTypeList } from "../type/get";
 
-
-type returnType = Promise<{
-    error: {
-        message: string,
-        formElement: string,
-    }
-} | UniformType[]>
-
 const propSchema = uniformGenerationFormSchema.extend({
     uniformTypeId: z.string().uuid(),
 });
 type PropType = z.infer<typeof propSchema>;
 
-export const create = (props: PropType): returnType => genericSAValidator(
+export const create = (props: PropType): SAReturnType<UniformType[]> => genericSAValidator(
     AuthRole.materialManager,
     props,
     propSchema,
