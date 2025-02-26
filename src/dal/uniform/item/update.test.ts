@@ -50,7 +50,7 @@ it('doesnt change the number', async () => {
     expect(dbItem?.number).toEqual(defaultProps.number);
 });
 it('catches size not in sizelist of generation', async () => {
-    const { success, result } = await runServerActionTest(
+    const { success } = await runServerActionTest(
         update({
             ...defaultProps,
             size: ids.sizeIds[1]
@@ -59,7 +59,7 @@ it('catches size not in sizelist of generation', async () => {
     expect(success).toBeFalsy();
 });
 it('catches size not in defaultSizelist without generation', async () => {
-    const { success, result } = await runServerActionTest(
+    const { success } = await runServerActionTest(
         update({
             ...defaultProps,
             generation: null,
@@ -67,11 +67,10 @@ it('catches size not in defaultSizelist without generation', async () => {
     );
     expect(success).toBeFalsy();
 });
-it('works without a size provided', async() => {
-    const { success, result } = await runServerActionTest(
+it('works without a size provided', async () => {
+    const { success } = await runServerActionTest(
         update({
             ...defaultProps,
-            
             size: null,
         })
     );
@@ -94,8 +93,8 @@ it('does not change size when !usingSizes', async () => {
     if (!success) return;
     expect(result.size).toBe(data.uniformList[0].fk_size);
 });
-it('does not change generation when !usingGeneration', async() => {
-    const {success, result} = await runServerActionTest(
+it('does not change generation when !usingGeneration', async () => {
+    const { success, result } = await runServerActionTest(
         update({
             ...defaultProps,
             id: ids.uniformIds[2][0],
@@ -103,11 +102,11 @@ it('does not change generation when !usingGeneration', async() => {
         })
     );
     expect(success).toBeTruthy();
-    if(!success) return;
+    if (!success) return;
     expect(result.generation).toBeUndefined();
 });
-it('fails if generation is from different type', async() => {
-    const {success} = await runServerActionTest(
+it('fails if generation is from different type', async () => {
+    const { success } = await runServerActionTest(
         update({
             ...defaultProps,
             generation: ids.uniformGenerationIds[5]
