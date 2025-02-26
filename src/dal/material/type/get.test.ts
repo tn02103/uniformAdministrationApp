@@ -15,4 +15,3 @@ it('getMaterialAdministrationConfiguration, validate snapshot', async () => {
     cleanData(result, ['id', 'typeList.id']);
     expect(result).toMatchSnapshot();
 });
-

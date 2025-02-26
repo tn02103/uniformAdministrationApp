@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`getMaterialAdministrationConfiguration validate snapshot 1`] = `
+exports[`getMaterialAdministrationConfiguration, validate snapshot 1`] = `
 [
   {
     "description": "Gruppe1",
@@ -106,7 +106,7 @@ exports[`getMaterialAdministrationConfiguration validate snapshot 1`] = `
 ]
 `;
 
-exports[`getMaterialConfiguration validate snapshot 1`] = `
+exports[`getMaterialConfiguration, validate snapshot 1`] = `
 [
   {
     "description": "Gruppe1",
