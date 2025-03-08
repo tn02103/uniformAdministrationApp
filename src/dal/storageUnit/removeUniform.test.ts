@@ -5,45 +5,57 @@ import { __unsecuredGetUnitsWithUniformItems } from "./get";
 import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
 
 
-const mockUniformId = "123e4567-e89b-12d3-a456-426614174000";
-const mockAssociation = { id: "association-id", acronym: 'AA' };
 
-jest.mock("@/lib/db", () => ({
-    prisma: {
-        uniform: {
-            update: jest.fn(),
-        },
-    },
-}));
-
+const { fk_assosiation, ids, cleanup } = new StaticData(0);
+const uniformIds = [ids.uniformIds[2][10], ids.uniformIds[2][11], ids.uniformIds[2][12]];
+const storageUnitId = ids.storageUnitIds[2];
 jest.mock("./get", () => ({
-    __unsecuredGetUnitsWithUniformItems: jest.fn(() => [{ id: 'storageUnitId1', name: 'just some storage unit' }]),
+    __unsecuredGetUnitsWithUniformItems: jest.fn(),
 }));
 
-jest.mock("@/actions/validations", () => ({
-    genericSAValidator: async (role: AuthRole, props: any, schema: Zod.Schema, ob: any) => {
-        const assosiation = global.__ASSOSIATION__ ?? mockAssociation.id;
-        return [
-            {
-                name: 'VK Verwaltung',
-                username: 'mana',
-                assosiation: assosiation,
-                acronym: mockAssociation.acronym,
-                role: AuthRole.materialManager,
-            },
-            props,
-        ]
-    }
-}));
-
+afterEach(() => cleanup.storageUnits());
 it("should remove the uniform from the storage unit and return updated units", async () => {
     (__unsecuredGetUnitsWithUniformItems as jest.Mock).mockResolvedValue(['TestReturnValue'])
-    const result = await removeUniform(mockUniformId);
+    const result = await removeUniform({ uniformIds, storageUnitId });
 
-    expect(prisma.uniform.update).toHaveBeenCalledWith({
-        where: { id: mockUniformId },
-        data: { storageUnitId: null },
-    });
-    expect(__unsecuredGetUnitsWithUniformItems).toHaveBeenCalledWith(mockAssociation.id);
+    const [dbUniforms, dbUniformsInStorage] = await prisma.$transaction([
+        prisma.uniform.findMany({
+            where: {
+                id: { in: uniformIds }
+            }
+        }), prisma.storageUnit.findUnique({
+            where: {
+                id: ids.storageUnitIds[2],
+            },
+            include: {
+                uniformList: true
+            }
+        }),
+    ]);
+    expect(dbUniforms).toHaveLength(3);
+    expect(dbUniforms[0].storageUnitId).toBeNull();
+    expect(dbUniforms[1].storageUnitId).toBeNull();
+    expect(dbUniforms[2].storageUnitId).toBeNull();
+    expect(dbUniformsInStorage).not.toBeNull();
+    expect(dbUniformsInStorage!.uniformList).toHaveLength(4);
+
+    expect(__unsecuredGetUnitsWithUniformItems).toHaveBeenCalledWith(fk_assosiation);
     expect(result).toEqual(['TestReturnValue']);
+});
+it('should catch uniform not in storage unit', async () => {
+    (__unsecuredGetUnitsWithUniformItems as jest.Mock).mockResolvedValue(['TestReturnValue'])
+    const result = removeUniform({
+        uniformIds: [...uniformIds, ids.uniformIds[2][9]],
+        storageUnitId
+    });
+    expect(result).rejects.toThrow();
+    expect(__unsecuredGetUnitsWithUniformItems).not.toHaveBeenCalled();
+
+
+    const result2 = removeUniform({
+        uniformIds: [...uniformIds, ids.uniformIds[0][15]],
+        storageUnitId
+    });
+    expect(result2).rejects.toThrow();
+    expect(__unsecuredGetUnitsWithUniformItems).not.toHaveBeenCalled();
 });
