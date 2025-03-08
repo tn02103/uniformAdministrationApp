@@ -1,9 +1,17 @@
 "use client";
+import ErrorMessage from '@/components/errorMessage';
 import { TooltipActionButton } from '@/components/TooltipIconButton';
+import { addUniformItemToStorageUnit, createStorageUnit, deleteStorageUnit, removeUniformFromStorageUnit, updateStorageUnit } from '@/dal/storageUnit/_index';
 import { StorageUnitWithUniformItems } from '@/dal/storageUnit/get';
 import { useStorageUnitsWithUniformItemList } from '@/dataFetcher/storage';
+import { useI18n } from '@/lib/locales/client';
+import { SAFormHandler } from '@/lib/SAFormHandler';
+import { storageUnitFormSchema, StorageUnitFormType } from '@/zod/storage';
+import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useState } from 'react';
-import { Offcanvas, Row, Table } from 'react-bootstrap';
+import { Form, FormControl, FormGroup, Offcanvas, Row, Table } from 'react-bootstrap';
+import { useForm } from 'react-hook-form';
+import { toast, useToast } from 'react-toastify';
 
 const StoragePage: React.FC = () => {
     const { storageUnits } = useStorageUnitsWithUniformItemList();
@@ -42,39 +50,111 @@ const StoragePage: React.FC = () => {
                     </tbody>
                 </Table>
             </Row>
-            <UnitSlider selectedUnit={storageUnits?.find(unit => unit.id === selectedUnitId)} onHide={() => setSelectedUnitId(null)} />
+            {selectedUnitId &&
+                <UnitSlider selectedUnit={storageUnits?.find(unit => unit.id === selectedUnitId)} onHide={() => setSelectedUnitId(null)} />
+            }
         </div>
     );
 };
 
-const UnitSlider = ({ selectedUnit, onHide }: { selectedUnit: StorageUnitWithUniformItems | undefined, onHide: () => void }) => {
+const UnitSlider = ({ selectedUnit, onHide }: { selectedUnit?: StorageUnitWithUniformItems, onHide: () => void }) => {
+    const { register, formState: { errors }, setError } = useForm<StorageUnitFormType>({
+        mode: "onTouched",
+        resolver: zodResolver(storageUnitFormSchema)
+    });
+    const { mutate } = useStorageUnitsWithUniformItemList();
+    const t = useI18n();
 
-    if (!selectedUnit) return <></>;
 
+    const handleUpdate = (data: StorageUnitFormType) => {
+        if (!selectedUnit) return handleCreate(data);
+
+        SAFormHandler(updateStorageUnit({ id: selectedUnit.id, data }), setError).then(({ success, data }) => {
+            if (success) {
+                mutate(data);
+                // DO something here
+            }
+        }).catch(() => {
+            toast.error(t('common.error.actions.save'));
+        });
+    }
+    const handleDelete = () => {
+        if (!selectedUnit) return;
+        deleteStorageUnit(selectedUnit.id).then((data) => {
+            mutate(data);
+            onHide();
+        }).catch(() => {
+            toast.error(t('common.error.actions.delete'));
+        });
+    }
+    const handleCreate = (data: StorageUnitFormType) => {
+        SAFormHandler(createStorageUnit(data), setError).then(({ success, data }) => {
+            if (success) {
+                mutate(data);
+                // set selectedStorageUnit
+            }
+        }).catch(() => {
+            toast.error(t('common.error.actions.create'));
+        });
+    }
+    const handleRemoveUniform = (uniformIds: string[]) => {
+        if (!selectedUnit) return;
+
+        removeUniformFromStorageUnit({storageUnitId: selectedUnit.id, uniformIds}).then((data) => {
+            mutate(data);
+            // do stuff
+        }).catch(() => {
+            toast.error('Unexpected error');
+        });
+    }
+
+    if (!selectedUnit) {
+        return null;
+    }
     return (
         <Offcanvas show={selectedUnit} onHide={onHide} placement='end'>
             <Offcanvas.Header closeButton>
                 <Offcanvas.Title>Offcanvas</Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
-                    <div>
-                        <h5>Details</h5>
-                        <p><strong>Name:</strong> {selectedUnit.name}</p>
-                        <p><strong>Beschreibung:</strong> {selectedUnit.description}</p>
-                        <p><strong>Kapazität:</strong> {selectedUnit.capacity}</p>
-                        <p><strong>Für Reserve:</strong> {selectedUnit.isReserve ? 'Ja' : 'Nein'}</p>
-                    </div>
-                    <hr />
-                    <div>
-                        <h5>Uniformteile</h5>
-                        <ul>
-                            {selectedUnit.uniformList.map((item) => (
-                                <li key={item.id}>{item.number}</li>
-                            ))}
-                        </ul>
-                    </div>
+                <div>
+                    <h5>Details</h5>
+                    <p>
+                        <strong>Name:</strong>
+                        <FormGroup>
+                            <FormControl {...register('name')} />
+                            <ErrorMessage testId='err_name' error={errors.name?.message} />
+                        </FormGroup>
+                    </p>
+                    <p>
+                        <strong>Beschreibung:</strong>
+                        <FormGroup>
+                            <FormControl {...register('description')} />
+                            <ErrorMessage testId='err_description' error={errors.description?.message} />
+                        </FormGroup>
+                    </p>
+                    <p>
+                        <strong>Kapazität:</strong>
+                        <FormGroup>
+                            <FormControl {...register('capacity')} />
+                            <ErrorMessage testId='err_capacity' error={errors.capacity?.message} />
+                        </FormGroup>
+                    </p>
+                    <p>
+                        <Form.Check {...register('isReserve')} label={"UT als Reserve markieren:"} />
+                    </p>
+                </div>
+                <hr />
+                <div>
+                    <h5>Uniformteile</h5>
+                    <ul>
+                        {selectedUnit.uniformList.map((item) => (
+                            <li key={item.id}>{item.number}</li>
+                        ))}
+                    </ul>
+                </div>
             </Offcanvas.Body>
-        </Offcanvas>
+        </Offcanvas >
     )
 }
 
