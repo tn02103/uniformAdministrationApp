@@ -21,7 +21,7 @@ const EditMaterialTypeModal = ({ type, groupName, groupId, ...props }: EditMater
     const t = useI18n();
 
     const { register, handleSubmit, formState: { errors }, setError } = useForm<MaterialTypeFormType>({
-        mode: "onChange",
+        mode: "onTouched",
         values: type,
         resolver: zodResolver(materialTypeFormSchema)
     });

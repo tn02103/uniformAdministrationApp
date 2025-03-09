@@ -1,3 +1,4 @@
+import german from "@/../public/locales/de";
 import { expect } from "playwright/test";
 import { prisma } from "../../../../src/lib/db";
 import { ValidationTestType, newDescriptionValidationTests, numberValidationTests } from "../../../_playwrightConfig/global/testSets";
@@ -6,7 +7,6 @@ import { MaterialListComponent } from "../../../_playwrightConfig/pages/admin/ma
 import { DangerConfirmationModal } from "../../../_playwrightConfig/pages/popups/DangerConfirmationPopup.component";
 import { EditMaterialPopupComponent } from "../../../_playwrightConfig/pages/popups/EditMaterialPopup.component";
 import { adminTest } from "../../../_playwrightConfig/setup";
-import german from "@/../public/locales/de";
 
 
 type Fixture = {
@@ -240,7 +240,8 @@ test.describe('validate formValidation', () => {
     test.beforeEach(async ({ materialListComponent, staticData: { ids } }) => {
         await materialListComponent.btn_material_edit(ids.materialIds[0]).click();
     });
-    test('name', async ({ editMaterialPopup }) => {
+    test('name', async ({ page, editMaterialPopup }) => {
+        await page.pause();
         const tests: ValidationTestType[] = newDescriptionValidationTests({
             minLength: 1,
             maxLength: 20
@@ -248,7 +249,7 @@ test.describe('validate formValidation', () => {
         for (const testSet of tests) {
             await test.step(testSet.testValue, async () => {
                 await editMaterialPopup.txt_name.fill(String(testSet.testValue));
-
+                await page.keyboard.press('Tab');
                 if (testSet.valid) {
                     await expect.soft(editMaterialPopup.err_name).not.toBeVisible();
                 } else {
@@ -268,13 +269,14 @@ test.describe('validate formValidation', () => {
             await expect(editMaterialPopup.div_popup).not.toBeVisible();
         });
     });
-    test('actualQuantity', async ({ editMaterialPopup }) => {
+    test('actualQuantity', async ({ page, editMaterialPopup }) => {
         const tests = numberValidationTests({
             min: 0,
         });
         for (const testSet of tests) {
             await test.step(testSet.testValue, async () => {
                 await editMaterialPopup.txt_actualQuantity.fill(String(testSet.testValue));
+                await page.keyboard.press('Tab');
 
                 if (testSet.valid) {
                     await expect.soft(editMaterialPopup.err_actualQuantity).not.toBeVisible();
@@ -284,13 +286,14 @@ test.describe('validate formValidation', () => {
             });
         }
     });
-    test('targetQuantity', async ({ editMaterialPopup }) => {
+    test('targetQuantity', async ({ page, editMaterialPopup }) => {
         const tests = numberValidationTests({
             min: 0,
         });
         for (const testSet of tests) {
             await test.step(testSet.testValue, async () => {
                 await editMaterialPopup.txt_targetQuantity.fill(String(testSet.testValue));
+                await page.keyboard.press('Tab');
 
                 if (testSet.valid) {
                     await expect.soft(editMaterialPopup.err_targetQuantity).not.toBeVisible();

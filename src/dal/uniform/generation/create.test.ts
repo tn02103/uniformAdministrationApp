@@ -15,7 +15,6 @@ const defaultProps = {
 
 afterEach(async () => cleanup.uniformTypeConfiguration());
 
-// creates correctly -> sortOrder is set
 it('should create the generation', async () => {
     const { success, result } = await runServerActionTest(
         create(defaultProps)

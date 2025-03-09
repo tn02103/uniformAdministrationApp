@@ -1,4 +1,5 @@
 import { genericSAValidator } from "@/actions/validations";
+import { SAReturnType } from "@/dal/_helper/testHelper";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { UniformType } from "@/types/globalUniformTypes";
@@ -6,20 +7,13 @@ import { uniformGenerationFormSchema } from "@/zod/uniformConfig";
 import { z } from "zod";
 import { __unsecuredGetUniformTypeList } from "../type/get";
 
-
-type ReturnType = Promise<{
-    error: {
-        message: string,
-        formElement: string,
-    }
-} | UniformType[]>
 const propSchema = z.object({
     data: uniformGenerationFormSchema,
     id: z.string().uuid(),
 });
 type PropType = z.infer<typeof propSchema>;
 
-export const update = (props: PropType): ReturnType => genericSAValidator(
+export const update = (props: PropType): SAReturnType<UniformType[]> => genericSAValidator(
     AuthRole.materialManager,
     props,
     propSchema,
@@ -48,7 +42,7 @@ export const update = (props: PropType): ReturnType => genericSAValidator(
             }
         }
     }
-    
+
     if (!type.usingSizes) {
         data.fk_sizelist = null;
     } else if (!data.fk_sizelist) {
@@ -61,7 +55,7 @@ export const update = (props: PropType): ReturnType => genericSAValidator(
     }
 
     await client.uniformGeneration.update({
-        where: {id},
+        where: { id },
         data
     });
 

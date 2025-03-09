@@ -3,9 +3,9 @@ import { markDeleted } from "./delete"
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { prisma } from "@/lib/db";
 
-const staticData = new StaticData(0);
-const materialId = staticData.ids.materialIds[5];
-afterEach(() => staticData.cleanup.materialConfig());
+const {ids, cleanup} = new StaticData(0);
+const materialId = ids.materialIds[5];
+afterEach(() => cleanup.materialConfig());
 it('validate delete', async () => {
     const {success} = await runServerActionTest(markDeleted(materialId));
     expect(success).toBeTruthy();
@@ -19,7 +19,7 @@ it('validate delete', async () => {
         }),
         prisma.material.findMany({
             where: {
-                fk_materialGroup: staticData.ids.materialGroupIds[1],
+                fk_materialGroup: ids.materialGroupIds[1],
             },
             orderBy: {typename: "asc"}
         }),
@@ -37,4 +37,8 @@ it('validate delete', async () => {
     expect(materialList[1].sortOrder).toBe(1);
     expect(materialList[2].sortOrder).toBe(1);
     expect(materialList[3].sortOrder).toBe(2);
+});
+it('schould prevent if type is allready marked as deleted', async () => {
+    const {success} = await runServerActionTest(markDeleted(ids.materialIds[10]));
+    expect(success).toBeFalsy();
 });

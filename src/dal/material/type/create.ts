@@ -1,4 +1,6 @@
 import { genericSAValidator } from "@/actions/validations";
+import { SAReturnType } from "@/dal/_helper/testHelper";
+import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { materialTypeFormSchema } from "@/zod/material";
@@ -11,13 +13,6 @@ const propSchema = z.object({
 });
 type PropType = z.infer<typeof propSchema>;
 
-type createMaterialReturnType = Promise<{
-    error: {
-        message: string,
-        formElement: string,
-    }
-} | void>;
-
 /**
  * creates new Material of materialGroup.
  * @param materialGroupId 
@@ -26,7 +21,7 @@ type createMaterialReturnType = Promise<{
  * @param targetQuantity 
  * @returns 
  */
-export const create = (props: PropType): createMaterialReturnType => genericSAValidator(
+export const create = (props: PropType): SAReturnType<void> => genericSAValidator(
     AuthRole.materialManager,
     props,
     propSchema,
@@ -42,6 +37,10 @@ export const create = (props: PropType): createMaterialReturnType => genericSAVa
             },
         }
     });
+
+    if(group.recdelete) {
+        throw new SaveDataException('Could not create Material-Type since group is deleted');
+    }
 
     if (group.typeList.some(t => t.typename === data.typename)) {
         return {

@@ -18,17 +18,17 @@ export const update = (props: UniformFormType): Promise<UniformFormData> => gene
     uniformFormSchema,
     { uniformId: props.id }
 ).then(async ([, data]) => prisma.$transaction(async (client) => {
-    const type = await client.uniformType.findFirst({
+    const type = await client.uniformType.findFirstOrThrow({
         where: {
             uniformList: {
                 some: { id: data.id }
             }
         }
     });
-    if (type?.usingSizes && data.size) {
+    if (type.usingSizes && data.size) {
         let sizelistId = type.fk_defaultSizelist;
         if (type.usingGenerations && data.generation) {
-            const generation = await prisma.uniformGeneration.findUniqueOrThrow({
+            const generation = await client.uniformGeneration.findUniqueOrThrow({
                 where: { id: data.generation }
             });
             if (generation.fk_sizelist) {
@@ -38,7 +38,7 @@ export const update = (props: UniformFormType): Promise<UniformFormData> => gene
         if (!sizelistId) {
             throw new Error('sizelistId is not suposed to be null');
         }
-        const sizelist = await prisma.uniformSizelist.findUniqueOrThrow({
+        const sizelist = await client.uniformSizelist.findUniqueOrThrow({
             where: { id: sizelistId },
             include: {
                 uniformSizes: true,

@@ -3,8 +3,8 @@ import { prisma } from "@/lib/db";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { update } from "./update";
 
-const staticData = new StaticData(0);
-const materialId = staticData.ids.materialIds[5];
+const { ids, cleanup } = new StaticData(0);
+const materialId = ids.materialIds[5];
 const defaultProps = {
     id: materialId,
     data: {
@@ -14,7 +14,7 @@ const defaultProps = {
     }
 }
 
-afterEach(() => staticData.cleanup.materialConfig());
+afterEach(() => cleanup.materialConfig());
 it('should save data', async () => {
     const { success } = await runServerActionTest(update(defaultProps));
     expect(success).toBeTruthy();
@@ -26,7 +26,7 @@ it('should save data', async () => {
     expect(dbData).toEqual(expect.objectContaining({
         ...defaultProps.data,
         id: materialId,
-        fk_materialGroup: staticData.ids.materialGroupIds[1],
+        fk_materialGroup: ids.materialGroupIds[1],
         sortOrder: 1,
         recdelete: null,
         recdeleteUser: null,
@@ -52,4 +52,11 @@ it('should allowed duplicated names with deleted type', async () => {
     });
     expect(dbData).not.toBeNull();
     expect(dbData?.typename).toEqual('Typ2-4');
+});
+
+it('should prevent update when material is marked as deleted', async () => {
+    const { success } = await runServerActionTest(
+        update({ ...defaultProps, id: ids.materialIds[10] })
+    );
+    expect(success).toBeFalsy();
 });

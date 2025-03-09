@@ -1,23 +1,15 @@
-"use server";
-
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { UniformType } from "@/types/globalUniformTypes";
 import { uniformTypeFormSchema, UniformTypeFormType } from "@/zod/uniformConfig";
 import { __unsecuredGetUniformTypeList } from "./get";
+import { SAReturnType } from "@/dal/_helper/testHelper";
 
-
-type updateUniformTypeReturnType = Promise<{
-    error: {
-        message: string,
-        formElement: string,
-    }
-} | UniformType[]>
-export const update = (props: UniformTypeFormType): updateUniformTypeReturnType => genericSAValidator(
+export const update = (props: UniformTypeFormType): SAReturnType<UniformType[]> => genericSAValidator(
     AuthRole.materialManager,
     props,
-    uniformTypeFormSchema, // uniformTypeValidator.test(data),
+    uniformTypeFormSchema,
     { uniformTypeId: props.id, uniformSizelistId: props.fk_defaultSizelist }
 ).then(([{ assosiation }, data]) => prisma.$transaction(async (client) => {
     const list = await client.uniformType.findMany({

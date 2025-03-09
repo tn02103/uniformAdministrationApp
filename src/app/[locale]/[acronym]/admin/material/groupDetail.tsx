@@ -32,7 +32,7 @@ export default function MaterialConfigGroupDetail({
     const materialGroup = config.find(g => g.id === searchParams.get('selectedGroupId'));
 
     const { register, handleSubmit, formState: { errors }, reset, setError } = useForm<MaterialGroupFormType>({
-        mode: "onChange",
+        mode: "onTouched",
         values: materialGroup,
         resolver: zodResolver(materialGroupFormSchema)
     });

@@ -1,5 +1,3 @@
-"use server";
-
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
@@ -18,6 +16,7 @@ export const markDeleted = (props: string): Promise<UniformType[]> => genericSAV
         returnAllUniformItems(typeId, client),
         deleteAllUniformItems(typeId, username, client),
         deleteAllGenerations(typeId, username, client),
+        resolvesAllUniformDeficiencies(typeId, username, client),
     ]);
 
     const type = await deleteType(typeId, username, client as PrismaClient);
@@ -37,6 +36,7 @@ const returnAllUniformItems = (fk_uniformType: string, client: Prisma.Transactio
         },
     });
 
+    // TODO Ticket #54 Needs to change this part.
 const deleteAllUniformItems = (fk_uniformType: string, username: string, client: Prisma.TransactionClient) =>
     client.uniform.updateMany({
         where: {
@@ -80,3 +80,18 @@ const moveSortOrderUp = (fk_assosiation: string, minSortOrder: number, client: P
             sortOrder: { decrement: 1 }
         }
     });
+const resolvesAllUniformDeficiencies = (fk_uniformType: string, username: string, client: Prisma.TransactionClient) =>
+    client.deficiency.updateMany({
+        where: {
+            dateResolved: null,
+            uniformDeficiency: {
+                uniform: {
+                    fk_uniformType
+                },
+            },
+        },
+        data: {
+            dateResolved: new Date(),
+            userResolved: username,
+        }
+    })

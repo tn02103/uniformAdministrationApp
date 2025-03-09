@@ -1,10 +1,3 @@
-
-
-// should create a new UniformType
-// acronym will be incremented
-// name will be incremented
-// 
-
 import { runServerActionTest } from "@/dal/_helper/testHelper"
 import { create } from "./create"
 import { prisma } from "@/lib/db";

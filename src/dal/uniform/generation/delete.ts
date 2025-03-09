@@ -14,7 +14,7 @@ export const markDeleted = (props: string) => genericSAValidator(
         where: { id }
     });
 
-    // TODO is this realy the correct way to handle this. 
+    // TODO is this realy the correct way to handle this. See ticket https://github.com/tn02103/uniformAdministrationApp/issues/57
     // I think the user should maby even decide if all the uniformItems from the Generations schould be deleted 
     // or the generation just set to null. The generation of a uniformItem normaly doesnt change 
     // and its more likely that the itmes should be deleted to.

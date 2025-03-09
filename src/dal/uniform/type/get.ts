@@ -1,5 +1,3 @@
-"use server"
-
 import { genericSANoDataValidator, genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";

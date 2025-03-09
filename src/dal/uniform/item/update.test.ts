@@ -1,5 +1,3 @@
-
-
 import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { update } from "./update";
 import { UniformFormType } from "@/zod/uniform";
@@ -72,7 +70,6 @@ it('works without a size provided', async() => {
     const { success } = await runServerActionTest(
         update({
             ...defaultProps,
-            
             size: null,
         })
     );
@@ -95,8 +92,8 @@ it('does not change size when !usingSizes', async () => {
     if (!success) return;
     expect(result.size).toBe(data.uniformList[0].fk_size);
 });
-it('does not change generation when !usingGeneration', async() => {
-    const {success, result} = await runServerActionTest(
+it('does not change generation when !usingGeneration', async () => {
+    const { success, result } = await runServerActionTest(
         update({
             ...defaultProps,
             id: ids.uniformIds[2][0],
@@ -104,11 +101,11 @@ it('does not change generation when !usingGeneration', async() => {
         })
     );
     expect(success).toBeTruthy();
-    if(!success) return;
+    if (!success) return;
     expect(result.generation).toBeUndefined();
 });
-it('fails if generation is from different type', async() => {
-    const {success} = await runServerActionTest(
+it('fails if generation is from different type', async () => {
+    const { success } = await runServerActionTest(
         update({
             ...defaultProps,
             generation: ids.uniformGenerationIds[5]
