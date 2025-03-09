@@ -6,6 +6,9 @@ export type AutocompleteFieldProps = {
     options: AutocompleteOptionType[];
     value: string | null;
     onChange: (value: string | null) => void;
+    // call onChange as soon as userimput equals a option
+    noImplicitChange?: boolean;
+    placeholder?: string;
 };
 export type AutocompleteOptionType = { value: string, label: string };
 
@@ -27,13 +30,15 @@ export default function AutocompleteField(props: AutocompleteFieldProps) {
         setInputValue(value);
         setHighlightedIndex(0);
 
-        const option = options.find((option) => option.label === value);
-        if (option) {
-            onChange(option.value);
-        } else {
-            onChange(null);
+        if (!props.noImplicitChange) {
+            const option = options.find((option) => option.label === value);
+            if (option) {
+                onChange(option.value);
+            } else {
+                onChange(null);
+            }
         }
-    }, [options, onChange]);
+    }, [options, onChange, props.noImplicitChange]);
 
     const handleOptionSelect = useCallback((option: AutocompleteOptionType) => {
         setInputValue(option.label);
@@ -105,6 +110,7 @@ export default function AutocompleteField(props: AutocompleteFieldProps) {
                     onBlur={() => setOptionsVisible(false)}
                     onChange={(e) => handleInputChange(e.target.value)}
                     onKeyDown={handleKeyDown}
+                    placeholder={props.placeholder}
                 />
             </Form.Group>
             {optionsVisible &&

@@ -1,3 +1,4 @@
+import CustomException from "@/errors/CustomException";
 import dayjs from "@/lib/dayjs";
 
 
@@ -23,7 +24,7 @@ export type SAReturnType<T> = Promise<{
     error: {
         message: string,
         formElement: string,
-    }
+    } | CustomException
 } | T>
 
 export const compareDates = (stringDate: string, date: Date) => {

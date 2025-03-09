@@ -57,7 +57,7 @@ export default function Unitslider({ storageUnit, onHide, setSelectedStorageUnit
             'danger'
         );
     }
-    
+
     return (
         <Offcanvas show={true} onHide={handleOnHide} placement='end'>
             <Offcanvas.Header closeButton>
