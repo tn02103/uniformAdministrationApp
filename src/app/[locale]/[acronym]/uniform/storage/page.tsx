@@ -1,17 +1,9 @@
 "use client";
-import ErrorMessage from '@/components/errorMessage';
 import { TooltipActionButton } from '@/components/TooltipIconButton';
-import { addUniformItemToStorageUnit, createStorageUnit, deleteStorageUnit, removeUniformFromStorageUnit, updateStorageUnit } from '@/dal/storageUnit/_index';
-import { StorageUnitWithUniformItems } from '@/dal/storageUnit/get';
 import { useStorageUnitsWithUniformItemList } from '@/dataFetcher/storage';
-import { useI18n } from '@/lib/locales/client';
-import { SAFormHandler } from '@/lib/SAFormHandler';
-import { storageUnitFormSchema, StorageUnitFormType } from '@/zod/storage';
-import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useState } from 'react';
-import { Form, FormControl, FormGroup, Offcanvas, Row, Table } from 'react-bootstrap';
-import { useForm } from 'react-hook-form';
-import { toast, useToast } from 'react-toastify';
+import { Row, Table } from 'react-bootstrap';
+import Unitslider from './Unitslider';
 
 const StoragePage: React.FC = () => {
     const { storageUnits } = useStorageUnitsWithUniformItemList();
@@ -31,7 +23,12 @@ const StoragePage: React.FC = () => {
                             <th>Kapazität</th>
                             <th>Für Reserve</th>
                             <th>Anzahl Uniformteile</th>
-                            <th><TooltipActionButton variantKey='create' onClick={() => { console.log('add') }} /></th>
+                            <th>
+                                <TooltipActionButton
+                                    variantKey='create'
+                                    disabled={!!selectedUnitId}
+                                    onClick={() => setSelectedUnitId('new')} />
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -51,19 +48,20 @@ const StoragePage: React.FC = () => {
                 </Table>
             </Row>
             {selectedUnitId &&
-                <UnitSlider selectedUnit={storageUnits?.find(unit => unit.id === selectedUnitId)} onHide={() => setSelectedUnitId(null)} />
+                <Unitslider storageUnit={storageUnits?.find(unit => unit.id === selectedUnitId)} onHide={() => setSelectedUnitId(null)} setSelectedStorageUnitId={setSelectedUnitId} />
             }
         </div>
     );
 };
 
+/*
 const UnitSlider = ({ selectedUnit, onHide }: { selectedUnit?: StorageUnitWithUniformItems, onHide: () => void }) => {
     const { register, formState: { errors }, setError } = useForm<StorageUnitFormType>({
         mode: "onTouched",
         resolver: zodResolver(storageUnitFormSchema)
     });
-    const { mutate } = useStorageUnitsWithUniformItemList();
-    const t = useI18n();
+   const { mutate } = useStorageUnitsWithUniformItemList();
+     const t = useI18n();
 
 
     const handleUpdate = (data: StorageUnitFormType) => {
@@ -100,7 +98,7 @@ const UnitSlider = ({ selectedUnit, onHide }: { selectedUnit?: StorageUnitWithUn
     const handleRemoveUniform = (uniformIds: string[]) => {
         if (!selectedUnit) return;
 
-        removeUniformFromStorageUnit({storageUnitId: selectedUnit.id, uniformIds}).then((data) => {
+        removeUniformFromStorageUnit({ storageUnitId: selectedUnit.id, uniformIds }).then((data) => {
             mutate(data);
             // do stuff
         }).catch(() => {
@@ -145,6 +143,8 @@ const UnitSlider = ({ selectedUnit, onHide }: { selectedUnit?: StorageUnitWithUn
                     </p>
                 </div>
                 <hr />
+               
+                <hr></hr>
                 <div>
                     <h5>Uniformteile</h5>
                     <ul>
@@ -157,5 +157,5 @@ const UnitSlider = ({ selectedUnit, onHide }: { selectedUnit?: StorageUnitWithUn
         </Offcanvas >
     )
 }
-
+*/
 export default StoragePage;

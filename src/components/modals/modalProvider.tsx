@@ -73,7 +73,7 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             onClose: () => { setMessageQueue(prevState => prevState.slice(1)) },
         }
         setMessageQueue(prevState => [...prevState, newModal]);
-    }, []);
+    }, [setMessageQueue]);
 
     const simpleYesNoModal = useCallback(({ header, message, primaryOption, cancelOption, primaryFunction, cancelFunction, type }: SimpleYesNoPropType) => {
         showMessageModal(
@@ -93,7 +93,7 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             }],
             type ?? "message",
         )
-    }, []);
+    }, [showMessageModal, t]);
     const simpleWarningModal = useCallback(({ header, message, primaryOption, cancelOption, primaryFunction, cancelFunction }: SimpleYesNoPropType) => {
         showMessageModal(
             header,
@@ -112,7 +112,7 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             }],
             "warning",
         )
-    }, []);
+    }, [showMessageModal, t]);
     const simpleErrorModal = useCallback(({ header, message, option, optionFunction }: SimpleErrorPropType) => {
         showMessageModal(
             header,
@@ -125,7 +125,7 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             }],
             "error",
         );
-    }, []);
+    }, [showMessageModal, t]);
 
     // COMPLEX MODALS
     const showModal = useCallback((type: ModalTypes, modalProps: any) => {
@@ -134,7 +134,7 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             props: modalProps,
         }
         setQueue(prevState => [...prevState, modal]);
-    }, []);
+    }, [setQueue]);
 
     const simpleFormModal = useCallback((props: SimpleFormModalProps) => {
         showModal("SimpleFormModal", {
@@ -142,11 +142,11 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             save: async (data: { input: string | number }) => { onClose(); await props.save(data); },
             abort: () => { onClose(); props.abort(); },
         });
-    }, []);
+    }, [showModal]);
 
     const dangerConfirmationModal = useCallback((props: DangerConfirmationModalPropType) => {
         showModal("DangerConfirmationModal", props);
-    }, []);
+    }, [showModal]);
 
     const issueMaterialModal = useCallback((cadetId: string, materialGroup: MaterialGroup, issuedMaterialList: CadetMaterial[], oldMaterial?: CadetMaterial) => {
         const props: IssueMaterialModalProps = {
@@ -157,7 +157,7 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             onClose,
         };
         showModal("IssueMaterialModal", props);
-    }, []);
+    }, [showModal]);
 
     const uniformItemDetailModal = useCallback((uniformId: string, uniformType: UniformType, ownerId: string | null, onDataChanged?: () => void) => {
         const props: UIDModalProps = {
@@ -168,7 +168,7 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             onDataChanged,
         };
         showModal("UniformItemDetailModal", props);
-    }, []);
+    }, [showModal]);
 
     const editGenerationModal = useCallback((generation: UniformGeneration | null, uniformType: UniformType) => {
         const props: EditGenerationModalPropType = {
@@ -177,7 +177,7 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             onClose: onClose,
         }
         showModal("EditGenerationModal", props);
-    }, []);
+    }, [showModal]);
 
     const editMaterialTypeModal = useCallback((groupName: string, groupId: string, type?: AdministrationMaterial) => {
         const props: EditMaterialTypeModalPropType = {
@@ -187,7 +187,7 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             onClose: onClose,
         }
         showModal("EditMaterialTypeModal", props);
-    }, []);
+    }, [showModal]);
 
     const changeUserPasswordModal = useCallback((save: (password: string) => Promise<any>, nameOfUser?: string) => {
         const props: ChangeUserPasswordModalPropType = {
@@ -196,10 +196,10 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             save,
         }
         showModal("ChangeUserPasswordModal", props);
-    }, []);
+    }, [showModal]);
     const changeLanguage = useCallback(() => {
         showModal("ChangeLanguageModal", {});
-    }, [])
+    }, [showModal])
 
     const onClose = () => {
         setQueue(prevState => prevState.slice(1))
