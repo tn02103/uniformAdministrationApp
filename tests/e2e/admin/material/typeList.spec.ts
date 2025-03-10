@@ -1,3 +1,4 @@
+import german from "@/../public/locales/de";
 import { expect } from "playwright/test";
 import { prisma } from "../../../../src/lib/db";
 import { ValidationTestType, newDescriptionValidationTests, numberValidationTests } from "../../../_playwrightConfig/global/testSets";
@@ -6,7 +7,6 @@ import { MaterialListComponent } from "../../../_playwrightConfig/pages/admin/ma
 import { DangerConfirmationModal } from "../../../_playwrightConfig/pages/popups/DangerConfirmationPopup.component";
 import { EditMaterialPopupComponent } from "../../../_playwrightConfig/pages/popups/EditMaterialPopup.component";
 import { adminTest } from "../../../_playwrightConfig/setup";
-import german from "@/../public/locales/de";
 
 
 type Fixture = {
@@ -236,23 +236,20 @@ test('validate delete', async ({ page, materialListComponent, staticData: { data
         });
     })
 });
-test('validate formValidation', async ({ editMaterialPopup, materialListComponent, staticData: { ids } }) => {
-    await materialListComponent.btn_material_edit(ids.materialIds[0]).click();
-
-    await test.step('name', async () => {
-        const tests: ValidationTestType[] = [
-            ...newDescriptionValidationTests({
-                minLength: 1,
-                maxLength: 20
-            }),
-            { testValue: "Typ1-2", valid: false },
-            { testValue: "Typ1-1", valid: true },
-            { testValue: "Typ2-2", valid: true },
-        ];
+test.describe('validate formValidation', () => {
+    test.beforeEach(async ({ materialListComponent, staticData: { ids } }) => {
+        await materialListComponent.btn_material_edit(ids.materialIds[0]).click();
+    });
+    test('name', async ({ page, editMaterialPopup }) => {
+        await page.pause();
+        const tests: ValidationTestType[] = newDescriptionValidationTests({
+            minLength: 1,
+            maxLength: 20
+        });
         for (const testSet of tests) {
             await test.step(testSet.testValue, async () => {
                 await editMaterialPopup.txt_name.fill(String(testSet.testValue));
-
+                await page.keyboard.press('Tab');
                 if (testSet.valid) {
                     await expect.soft(editMaterialPopup.err_name).not.toBeVisible();
                 } else {
@@ -260,14 +257,26 @@ test('validate formValidation', async ({ editMaterialPopup, materialListComponen
                 }
             });
         }
+        await test.step('Name duplication', async () => {
+            await editMaterialPopup.txt_name.fill('Typ1-2');
+            await expect(editMaterialPopup.err_name).not.toBeVisible();
+            await editMaterialPopup.btn_save.click();
+            await expect(editMaterialPopup.div_popup).toBeVisible();
+            await expect(editMaterialPopup.err_name).toBeVisible();
+
+            await editMaterialPopup.txt_name.fill('Typ1-1');
+            await editMaterialPopup.btn_save.click();
+            await expect(editMaterialPopup.div_popup).not.toBeVisible();
+        });
     });
-    await test.step('actualQuantity', async () => {
+    test('actualQuantity', async ({ page, editMaterialPopup }) => {
         const tests = numberValidationTests({
             min: 0,
         });
         for (const testSet of tests) {
             await test.step(testSet.testValue, async () => {
                 await editMaterialPopup.txt_actualQuantity.fill(String(testSet.testValue));
+                await page.keyboard.press('Tab');
 
                 if (testSet.valid) {
                     await expect.soft(editMaterialPopup.err_actualQuantity).not.toBeVisible();
@@ -277,13 +286,14 @@ test('validate formValidation', async ({ editMaterialPopup, materialListComponen
             });
         }
     });
-    await test.step('targetQuantity', async () => {
+    test('targetQuantity', async ({ page, editMaterialPopup }) => {
         const tests = numberValidationTests({
             min: 0,
         });
         for (const testSet of tests) {
             await test.step(testSet.testValue, async () => {
                 await editMaterialPopup.txt_targetQuantity.fill(String(testSet.testValue));
+                await page.keyboard.press('Tab');
 
                 if (testSet.valid) {
                     await expect.soft(editMaterialPopup.err_targetQuantity).not.toBeVisible();

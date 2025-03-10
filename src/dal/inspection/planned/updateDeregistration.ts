@@ -17,7 +17,7 @@ export const updateCadetRegistrationForInspection = (props: updateCadetRegistrat
     props,
     updateCadetRegistrationPropShema,
     { cadetId: props.cadetId, inspectionId: props.inspectionId }
-).then(([data,]) => prisma.$transaction(async (client) => {
+).then(([, data]) => prisma.$transaction(async (client) => {
     const deregistration = await client.deregistration.findUnique({
         where: {
             fk_cadet_fk_inspection: {

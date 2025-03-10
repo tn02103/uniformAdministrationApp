@@ -5,7 +5,7 @@ import engl from "@/../public/locales/en";
 import { useCurrentLocale } from "@/lib/locales/client";
 import { useCallback, useEffect, useState } from "react";
 
-export default function ErrorMessage({ error, testId }: { error?: string , testId: string}) {
+export default function ErrorMessage({ error, testId }: { error?: string, testId: string }) {
     const locale = useCurrentLocale();
 
     const [message, setMessage] = useState('');
@@ -20,7 +20,7 @@ export default function ErrorMessage({ error, testId }: { error?: string , testI
     }, [locale]);
 
     // Funktion, um den verschachtelten Wert aus dem Objekt zu holen
-    function getNestedValue(obj: Record<string, any>, key: string): any {
+    const getNestedValue = useCallback((obj: Record<string, any>, key: string): any => {
         const keys = key.split('.');
         let value = obj;
         for (const k of keys) {
@@ -28,8 +28,9 @@ export default function ErrorMessage({ error, testId }: { error?: string , testI
             if (value === undefined) break;
         }
         return value;
-    }
-    function getTranslationText(error: string, translationObj: Record<string, any>): string {
+    }, []);
+
+    const getTranslationText = useCallback((error: string, translationObj: Record<string, any>): string => {
         // Den error-String in Teile aufteilen
         const parts = error.split(';');
 
@@ -45,24 +46,22 @@ export default function ErrorMessage({ error, testId }: { error?: string , testI
             const [key, value] = pair.split(':');
             text = text.replace(`{${key}}`, value);
         }
-
         return text;
-    }
+    }, [getNestedValue])
 
     useEffect(() => {
         if (!error) {
             setMessage('');
             return;
         }
-
         const translation = getTranslation();
         const text = getTranslationText(error, translation)
         setMessage(text);
-    }, [error, locale])
+    }, [error, locale, setMessage, getTranslationText, getTranslation]);
 
     return (
         <div className="text-danger fs-7" data-testid={testId}>
             {message}
         </div>
-    )
+    );
 }

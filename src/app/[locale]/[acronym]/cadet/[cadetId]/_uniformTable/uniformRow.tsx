@@ -1,14 +1,14 @@
 "use client"
 
-import { returnUniformItem } from "@/actions/controllers/CadetUniformController";
-import { saveUniformItem } from "@/actions/controllers/UniformController";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { useGlobalData } from "@/components/globalDataProvider";
 import { useModal } from "@/components/modals/modalProvider";
+import { returnUniformItem, updateUniformItem } from "@/dal/uniform/item/_index";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
 import { getUniformSizelist } from "@/lib/uniformHelper";
 import { Uniform, UniformFormData, UniformSizelist, UniformType } from "@/types/globalUniformTypes";
+import { UniformFormType } from "@/zod/uniform";
 import { faArrowUpRightFromSquare, faBars, faCheck, faPencil, faRightLeft, faRightToBracket, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
@@ -25,7 +25,7 @@ type PropType = {
     replaceItem: () => void;
 }
 const UniformRow = (props: PropType) => {
-    const form = useForm<UniformFormData>();
+    const form = useForm<UniformFormType>();
     const { reset } = form
     const t = useI18n();
     const modalT = useScopedI18n('modals.messageModal.uniform')
@@ -61,10 +61,10 @@ const UniformRow = (props: PropType) => {
         }
     }
 
-    async function saveUniform(data: UniformFormData) {
+    async function saveUniform(data: UniformFormType) {
         if (data.size === "") delete data.size;
         if (data.generation === "") delete data.generation;
-        await saveUniformItem(data).then(async () => {
+        await updateUniformItem(data).then(async () => {
             setEditable(false);
             await mutate(`cadet.${cadetId}.uniform`)
         }).catch((e) => {
@@ -76,7 +76,7 @@ const UniformRow = (props: PropType) => {
     function withdraw(uniform: Uniform) {
         const returnItem = () => mutate(
             `cadet.${cadetId}.uniform`,
-            returnUniformItem(uniform.id, cadetId),
+            returnUniformItem({ uniformId: uniform.id, cadetId }),
         ).catch((e) => {
             console.error(e);
             toast.error(t('cadetDetailPage.returnUniform.error'))
@@ -349,7 +349,6 @@ const SizeRow = ({
             }
         }
     }, [usedSizelist])
-
 
     if (!uniformType.usingSizes) return (
         <Row data-testid={"div_size"} className={"text-secondary"}>

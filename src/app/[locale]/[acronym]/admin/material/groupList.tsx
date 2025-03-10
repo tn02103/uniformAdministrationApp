@@ -1,8 +1,8 @@
 "use client";
 
-import { changeMaterialGroupSortOrder, createMaterialGroup } from "@/actions/controllers/MaterialController";
 import { TooltipActionButton } from "@/components/TooltipIconButton";
 import { Card, CardBody, CardHeader } from "@/components/card";
+import { createMaterialGroup, changeMaterialGroupSortOrder } from "@/dal/material/group/_index";
 import { useI18n } from "@/lib/locales/client";
 import { AdministrationMaterialGroup } from "@/types/globalMaterialTypes";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -31,10 +31,11 @@ export default function MaterialConfigGroupList({
         console.error(error);
         toast.error(t('admin.material.error.createGroup'));
     });
-    const handleChangeSortOrder = async (groupId: string, up: boolean) => changeMaterialGroupSortOrder(groupId, up).catch((error) => {
-        console.error(error);
-        toast.error(t('common.error.actions.changeSortorder'));
-    });
+    const handleChangeSortOrder = async (groupId: string, up: boolean) =>
+        changeMaterialGroupSortOrder({ groupId, up }).catch((error: any) => {
+            console.error(error);
+            toast.error(t('common.error.actions.changeSortorder'));
+        });
 
     const handleOpenGroup = async (groupId: string) => {
         const params = new URLSearchParams();

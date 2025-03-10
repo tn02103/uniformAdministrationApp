@@ -1,0 +1,107 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`get should be successfull 1`] = `
+{
+  "acronym": "AA",
+  "issuedDefault": 3,
+  "name": "Typ1",
+  "sortOrder": 0,
+  "uniformGenerationList": [
+    {
+      "name": "Generation1-1",
+      "outdated": true,
+      "sortOrder": 0,
+    },
+    {
+      "name": "Generation1-2",
+      "outdated": false,
+      "sortOrder": 1,
+    },
+    {
+      "name": "Generation1-3",
+      "outdated": false,
+      "sortOrder": 2,
+    },
+    {
+      "name": "Generation1-4",
+      "outdated": false,
+      "sortOrder": 3,
+    },
+  ],
+  "usingGenerations": true,
+  "usingSizes": true,
+}
+`;
+
+exports[`getList 1`] = `
+[
+  {
+    "acronym": "AA",
+    "issuedDefault": 3,
+    "name": "Typ1",
+    "sortOrder": 0,
+    "uniformGenerationList": [
+      {
+        "name": "Generation1-1",
+        "outdated": true,
+        "sortOrder": 0,
+      },
+      {
+        "name": "Generation1-2",
+        "outdated": false,
+        "sortOrder": 1,
+      },
+      {
+        "name": "Generation1-3",
+        "outdated": false,
+        "sortOrder": 2,
+      },
+      {
+        "name": "Generation1-4",
+        "outdated": false,
+        "sortOrder": 3,
+      },
+    ],
+    "usingGenerations": true,
+    "usingSizes": true,
+  },
+  {
+    "acronym": "AB",
+    "issuedDefault": 1,
+    "name": "Typ2",
+    "sortOrder": 1,
+    "uniformGenerationList": [
+      {
+        "name": "Generation2-1",
+        "outdated": true,
+        "sortOrder": 0,
+      },
+      {
+        "name": "Generation2-2",
+        "outdated": false,
+        "sortOrder": 1,
+      },
+    ],
+    "usingGenerations": true,
+    "usingSizes": false,
+  },
+  {
+    "acronym": "AC",
+    "issuedDefault": 1,
+    "name": "Typ3",
+    "sortOrder": 2,
+    "uniformGenerationList": [],
+    "usingGenerations": false,
+    "usingSizes": true,
+  },
+  {
+    "acronym": "AD",
+    "issuedDefault": 1,
+    "name": "Typ4",
+    "sortOrder": 3,
+    "uniformGenerationList": [],
+    "usingGenerations": false,
+    "usingSizes": false,
+  },
+]
+`;

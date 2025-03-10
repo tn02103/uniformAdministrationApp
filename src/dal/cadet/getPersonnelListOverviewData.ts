@@ -1,10 +1,11 @@
+"use server"
+
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
+import { prisma } from "@/lib/db";
 import { PersonnelListCadet } from "@/types/globalCadetTypes";
 import { z } from "zod";
 import { getInspectionState } from "../inspection/state";
-import { Prisma } from "@prisma/client";
-import { prisma } from "@/lib/db";
 
 const getPersonnelListPropShema = z.object({
     orderBy: z.enum(['lastname', 'firstname']),
@@ -19,7 +20,7 @@ export const getPersonnelListOverviewData = (props: getPersonnelListPropShema): 
     AuthRole.user,
     props,
     getPersonnelListPropShema,
-).then(async ([{ orderBy, asc, include }, { assosiation, role }]) => {
+).then(async ([{ assosiation, role }, { orderBy, asc, include }]) => {
     const inspectionState = await getInspectionState();
     if (role < AuthRole.inspector) {
         return getRestrictedPersonnelList(

@@ -22,9 +22,8 @@ test.afterEach(async ({ staticData }) => {
     await staticData.cleanup.inspection()
 });
 
-test('E2E060401: validate typelist', async ({ typeComponent, staticData: { data } }) => {
+test('E2E060401: validate typelist', async ({typeComponent, staticData: { data } }) => {
     await expect(typeComponent.div_typeList).toHaveCount(data.deficiencyTypes.length);
-
     await test.step('sortorder', async () => {
         await Promise.all([
             expect.soft(typeComponent.div_typeList.nth(0)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[1].id}`),

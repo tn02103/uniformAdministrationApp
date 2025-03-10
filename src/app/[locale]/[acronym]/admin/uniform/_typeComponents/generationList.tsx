@@ -1,12 +1,11 @@
 "use client"
 
-import { changeUniformGenerationSortOrder, createUniformGeneration, deleteUniformGeneration, saveUniformGeneration } from "@/actions/controllers/UniformConfigController";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { Card, CardBody, CardHeader } from "@/components/card";
 import { useModal } from "@/components/modals/modalProvider";
+import { changeUniformGenerationSortOrder, deleteUniformGeneration } from "@/dal/uniform/generation/_index";
 import { useUniformSizelists, useUniformType } from "@/dataFetcher/uniformAdmin";
 import { useI18n } from "@/lib/locales/client";
-
 import { UniformGeneration } from "@/types/globalUniformTypes";
 import { faCircleDown, faCircleUp, faPencil, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Col, Row } from "react-bootstrap";
@@ -26,7 +25,7 @@ export default function UniformConfigTypeGenerationList({
     const generationList = type?.uniformGenerationList;
 
     function changeSortOrder(generationId: string, up: boolean) {
-        mutate(changeUniformGenerationSortOrder(generationId, up)).catch((e) => {
+        mutate(changeUniformGenerationSortOrder({ id: generationId, up })).catch((e) => {
             console.error(e);
             toast.error(t('common.error.actions.changeSortorder'));
         });
@@ -35,24 +34,12 @@ export default function UniformConfigTypeGenerationList({
     function handleCreate() {
         if (!type) return;
 
-        const saveMutation = (data: UniformGeneration, typeId: string) => mutate(
-            createUniformGeneration(data.name, data.outdated, data.fk_sizelist, typeId)
-        ).catch((e) => {
-            console.error(e);
-            toast.error(t('common.error.actions.save'));
-        });
-        modal?.editGenerationModal(null, type, (data: UniformGeneration) => { saveMutation(data, selectedTypeId) });
+        modal?.editGenerationModal(null, type);
     }
     function handleEdit(generation: UniformGeneration) {
         if (!type) return;
 
-        const saveMutation = (data: UniformGeneration, typeId: string) => mutate(
-            saveUniformGeneration(data, typeId)
-        ).catch((e) => {
-            console.error(e);
-            toast.error(t('common.error.actions.save'));
-        });
-        modal?.editGenerationModal(generation, type, (data: UniformGeneration) => { saveMutation(data, selectedTypeId) });
+        modal?.editGenerationModal(generation, type);
     }
     function handleDelete(generation: UniformGeneration) {
         const deleteMutation = () => mutate(
@@ -73,7 +60,6 @@ export default function UniformConfigTypeGenerationList({
             }
         });
     }
-
 
     if (!type || !type?.usingGenerations) return (<></>)
     return (

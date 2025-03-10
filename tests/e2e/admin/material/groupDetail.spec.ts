@@ -6,6 +6,7 @@ import { MaterialGroupDetailComponent } from "../../../_playwrightConfig/pages/a
 import { MaterialGroupListComponent } from "../../../_playwrightConfig/pages/admin/material/MaterialGroupList.component";
 import { DangerConfirmationModal } from "../../../_playwrightConfig/pages/popups/DangerConfirmationPopup.component";
 import { adminTest } from "../../../_playwrightConfig/setup";
+import { isToday } from "date-fns";
 
 type Fixture = {
     groupListComponent: MaterialGroupListComponent;
@@ -22,14 +23,15 @@ test.afterEach(async ({ staticData: { cleanup } }) => {
     await cleanup.materialConfig();
 });
 
-test('formValidation', async ({ groupDetailComponent }) => {
-    await groupDetailComponent.btn_edit.click();
-    await test.step('description', async () => {
+test.describe('formValidation', () => {
+    test('description', async ({ page, groupDetailComponent }) => {
+        await groupDetailComponent.btn_edit.click();
         const testSets = newDescriptionValidationTests({ minLength: 0, maxLength: 20 });
 
         for (const set of testSets) {
             await test.step(set.testValue, async () => {
                 await groupDetailComponent.txt_name.fill(String(set.testValue));
+                await page.keyboard.press('Tab');
                 if (set.valid) {
                     await expect(groupDetailComponent.err_name).not.toBeVisible();
                 } else {
@@ -38,12 +40,14 @@ test('formValidation', async ({ groupDetailComponent }) => {
             });
         }
     });
-    await test.step('issuedDefault', async () => {
+    test('issuedDefault', async ({ page, groupDetailComponent }) => {
+        await groupDetailComponent.btn_edit.click();
         const testSets = numberValidationTests({ min: 0, max: 200, testEmpty: true, strict: false, emptyValid: true });
 
         for (const set of testSets) {
             await test.step(set.testValue, async () => {
                 await groupDetailComponent.txt_issuedDefault.fill(String(set.testValue));
+                await page.keyboard.press('Tab');
                 if (set.valid) {
                     await expect(groupDetailComponent.err_issuedDefault).not.toBeVisible();
                 } else {
@@ -151,7 +155,8 @@ test('validate delete', async ({ page, groupDetailComponent, groupListComponent,
                 }
             }),
             prisma.material.findMany({
-                where: { fk_materialGroup: group.id }
+                where: { fk_materialGroup: group.id },
+                orderBy: { recdelete: "asc" }
             }),
             prisma.materialGroup.findUniqueOrThrow({
                 where: { id: group.id }
@@ -167,13 +172,19 @@ test('validate delete', async ({ page, groupDetailComponent, groupListComponent,
         });
 
         await test.step('validate material deleted', async () => {
-            expect(dbTypes).toHaveLength(3);
+            expect(dbTypes).toHaveLength(4);
             expect(dbTypes[0].recdelete).not.toBeNull();
-            expect(dbTypes[0].recdeleteUser).toEqual('test4');
+            expect(dbTypes[0].recdeleteUser).toEqual('admin');
+            expect(isToday(dbTypes[0].recdelete!)).toBeFalsy();
             expect(dbTypes[1].recdelete).not.toBeNull();
             expect(dbTypes[1].recdeleteUser).toEqual('test4');
+            expect(isToday(dbTypes[1].recdelete!)).toBeTruthy();
             expect(dbTypes[2].recdelete).not.toBeNull();
             expect(dbTypes[2].recdeleteUser).toEqual('test4');
+            expect(isToday(dbTypes[2].recdelete!)).toBeTruthy();
+            expect(dbTypes[3].recdelete).not.toBeNull();
+            expect(dbTypes[3].recdeleteUser).toEqual('test4');
+            expect(isToday(dbTypes[2].recdelete!)).toBeTruthy();
         });
 
         await test.step('validate materialGroup deleted', async () => {

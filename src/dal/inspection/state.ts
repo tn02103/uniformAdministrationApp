@@ -1,11 +1,11 @@
 "use server";
-import { genericSAValidatiorV2 } from "@/actions/validations";
+import { genericSAValidatorV2 } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { InspectionStatus } from "@/types/deficiencyTypes";
 import { unstable_cache } from "next/cache";
 
-export const getInspectionState = (): Promise<InspectionStatus | null> => genericSAValidatiorV2(
+export const getInspectionState = (): Promise<InspectionStatus | null> => genericSAValidatorV2(
     AuthRole.user, true, {}
 ).then(async ({ assosiation, role }) => unstable_cache(async (): Promise<InspectionStatus | null> => {
     if (role === AuthRole.user) return null;

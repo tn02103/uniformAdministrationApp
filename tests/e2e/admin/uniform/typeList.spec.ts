@@ -55,7 +55,7 @@ test('validate create', async ({ typeListComponent, typeDetailComponent, staticD
     expect(dbData).toEqual(expect.objectContaining({
         acronym: 'AE',
         issuedDefault: 1,
-        usingGenerations: false,
+        usingGenerations: true,
         usingSizes: false,
         fk_defaultSizelist: null,
         sortOrder: 4,

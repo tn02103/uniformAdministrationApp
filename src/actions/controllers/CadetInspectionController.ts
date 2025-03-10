@@ -6,16 +6,16 @@ import { prisma } from "@/lib/db";
 import { descriptionValidationPattern, uuidValidationPattern } from "@/lib/validations";
 import { CadetInspection, Deficiency } from "@/types/deficiencyTypes";
 import { CadetInspectionDBHandler } from "../dbHandlers/CadetInspectionDBHandler";
-import { genericSAValidatiorV2 } from "../validations";
+import { genericSAValidatorV2 } from "../validations";
 
 const dbHandler = new CadetInspectionDBHandler();
-export const getUnresolvedDeficienciesByCadet = async (cadetId: string): Promise<Deficiency[]> => genericSAValidatiorV2(
+export const getUnresolvedDeficienciesByCadet = async (cadetId: string): Promise<Deficiency[]> => genericSAValidatorV2(
     AuthRole.inspector,
     uuidValidationPattern.test(cadetId),
     { cadetId }
 ).then(async () => dbHandler.getUnresolvedDeficienciesByCadet(cadetId));
 
-export const getCadetInspection = async (cadetId: string): Promise<CadetInspection | null> => genericSAValidatiorV2(
+export const getCadetInspection = async (cadetId: string): Promise<CadetInspection | null> => genericSAValidatorV2(
     AuthRole.inspector,
     uuidValidationPattern.test(cadetId),
     { cadetId }
@@ -59,7 +59,7 @@ const saveValidator = (data: FormType) => (
         && (!def.fk_material || uuidValidationPattern.test(def.fk_material))
     ))
 );
-export const saveCadetInspection = async (data: FormType, cadetId: string, uniformComplete: boolean) => genericSAValidatiorV2(
+export const saveCadetInspection = async (data: FormType, cadetId: string, uniformComplete: boolean) => genericSAValidatorV2(
     AuthRole.inspector,
     saveValidator(data) && (typeof uniformComplete === "boolean"),
     { cadetId }

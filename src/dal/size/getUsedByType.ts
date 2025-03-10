@@ -1,3 +1,5 @@
+"use server";
+
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
@@ -9,7 +11,7 @@ export const getUsedSizesByType = (props: string) => genericSAValidator<string>(
     props,
     z.string().uuid(),
     { uniformTypeId: props }
-).then(([typeId,]) => prisma.uniformSize.findMany({
+).then(([, typeId]) => prisma.uniformSize.findMany({
     ...uniformSizeArgs,
     where: {
         uniformList: {

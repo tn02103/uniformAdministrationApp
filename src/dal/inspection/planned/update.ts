@@ -30,7 +30,7 @@ export const updatePlannedInspection = (props: propSchema) => genericSAValidator
     props,
     propSchema,
     { inspectionId: props.id }
-).then(async ([{ id, data }, { assosiation }]) => prisma.$transaction(async (client) => {
+).then(async ([{ assosiation }, { id, data }]) => prisma.$transaction(async (client) => {
     const inspList = await client.inspection.findMany({
         where: {
             fk_assosiation: assosiation,
