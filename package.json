@@ -1,6 +1,6 @@
 {
     "name": "uniform-administration",
-    "version": "2.0.4",
+    "version": "2.0.5",
     "private": true,
     "scripts": {
         "dev": "next dev -p 3021",
@@ -29,7 +29,7 @@
         "exceljs": "^4.4.0",
         "iron-session": "^8.0.1",
         "jsonwebtoken": "^9.0.2",
-        "next": "^14.2.3",
+        "next": "^14.2.25",
         "next-international": "^1.2.3",
         "nodemailer": "^6.9.14",
         "playwright": "^1.41.1",
