@@ -1,10 +1,13 @@
 import { z } from "zod";
 import { descriptionSchema, nameSchema } from "./global";
+import { customErrorMap } from "./customZod/customErrorMap";
+
+z.setErrorMap(customErrorMap);
 
 export const uniformTypeFormSchema = z.object({
     id: z.string().uuid(),
-    name: nameSchema.min(1, "string.required").max(10, "string.maxLength;value:10"),
-    acronym: z.string().regex(/^[A-Z]*$/, "string.noSpecialChars").min(2, 'string.lengthRequired;value:2').max(2, 'string.lengthRequired;value:2'),
+    name: z.string().min(1).max(10),
+    acronym: z.string().length(2).regex(/^[A-Z]*$/, "string.noSpecialChars"),
     issuedDefault: z.number({ message: 'number.pattern' }).min(0, 'number.positiv').max(10, "number.max;value:10"),
     usingGenerations: z.boolean(),
     usingSizes: z.boolean(),

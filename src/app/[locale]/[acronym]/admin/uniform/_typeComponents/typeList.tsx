@@ -38,10 +38,10 @@ export default function UniformConfigTypeList({
     }
 
     async function changeSortOrder(up: boolean, typeId: string) {
-        await mutate(changeUniformTypeSortOrder({ typeId, up })).catch((e) => {
+      /*  await mutate(changeUniformTypeSortOrder({ typeId, up })).catch((e) => {
             console.error(e);
             toast.error(t('common.error.actions.changeSortorder'));
-        });
+        }); */
     }
 
     async function deleteType(type: UniformType) {
