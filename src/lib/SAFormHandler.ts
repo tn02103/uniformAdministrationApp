@@ -1,6 +1,7 @@
 import { UseFormSetError } from "react-hook-form";
+import { toast } from "react-toastify";
 
-export function SAFormHandler<ActionType extends (...args: any) => Promise<any>>(
+export function asyncSAFormHandler<ActionType extends (...args: any) => Promise<any>>(
     serverActionPromise: ReturnType<ActionType>,
     setError: UseFormSetError<any>
 ): Promise<{
@@ -29,3 +30,29 @@ export function SAFormHandler<ActionType extends (...args: any) => Promise<any>>
         }
     })
 };
+
+export async function SAFormHandler(
+    serverActionPromise: Promise<any>,
+    setError: UseFormSetError<any>,
+    successCallback: (data: any) => void,
+    unhandledErrorCallback?: ((error: any) => void) | string
+) {
+    const result = await serverActionPromise;
+
+    if (!result || !result.error) {
+        successCallback(result);
+        return;
+    }
+    if (result.error.formElement) {
+        setError(result.error.formElement, { message: result.error.message });
+    } else {
+        console.error(result.error);
+        if (unhandledErrorCallback) {
+            if (typeof unhandledErrorCallback === "string") {
+                toast.error(unhandledErrorCallback);
+            } else {
+                unhandledErrorCallback(result);
+            }
+        }
+    }
+}

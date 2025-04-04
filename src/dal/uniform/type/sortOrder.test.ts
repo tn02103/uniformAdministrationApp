@@ -15,9 +15,9 @@ jest.mock('@/lib/db', () => ({
     prisma: {
         uniformType: {
             update: jest.fn(),
-            findUniqueOrThrow: jest.fn(),
-            count: jest.fn(),
-            updateMany: jest.fn(),
+            findUniqueOrThrow: jest.fn(async () => ({ sortOrder: 2, fk_uniformType: 'typeId' })),
+            count: jest.fn(async () => { 6 }),
+            updateMany: jest.fn(async () => ({ count: 2 })),
             findMany: jest.fn(() => 'ReturnedList'),
         },
         $transaction: jest.fn((func) => func(prisma)),
@@ -35,30 +35,25 @@ describe('<UniformType> sortOrder', () => {
     const prismaCount = prisma.uniformType.count as jest.Mock;
 
     it('should not allow negativ position', async () => {
-        prismafindUnique.mockResolvedValue({ sortOrder: 1 });
-        prismaCount.mockResolvedValue(4);
-
         const result = changeSortOrder({ typeId: 'SomeTypeId', newPosition: -1 })
         await expect(result).rejects.toThrow('Invalid newPosition');
         expect(prismaUpdate).not.toHaveBeenCalled();
         expect(prismaUpdateMany).not.toHaveBeenCalled();
     });
     it('should work moving up', async () => {
-        prismafindUnique.mockResolvedValue({ sortOrder: 4 });
-        prismaCount.mockResolvedValue(6);
-        prismaUpdateMany.mockResolvedValue({ count: 2 });
-        const result = await changeSortOrder({ typeId: 'SomeTypeId', newPosition: 2 });
+        prismaUpdateMany.mockReturnValueOnce(new Promise((resolve) => resolve({ count: 1 })));
+        const result = await changeSortOrder({ typeId: 'SomeTypeId', newPosition: 1 });
 
         expect(result).toEqual('ReturnedList');
         expect(prismaUpdate).toHaveBeenCalledTimes(1);
         expect(prismaUpdateMany).toHaveBeenCalledTimes(1);
         expect(prismaUpdate).toHaveBeenCalledWith({
             where: { id: 'SomeTypeId' },
-            data: { sortOrder: 2 }
+            data: { sortOrder: 1 }
         });
         expect(prismaUpdateMany).toHaveBeenCalledWith({
             where: {
-                sortOrder: { gte: 2, lte: 3 },
+                sortOrder: { gte: 1, lte: 1 },
                 fk_assosiation: '1',
                 recdelete: null
             },
@@ -68,9 +63,6 @@ describe('<UniformType> sortOrder', () => {
         });
     });
     it('should work moving down', async () => {
-        prismafindUnique.mockResolvedValue({ sortOrder: 2 });
-        prismaCount.mockResolvedValue(6);
-        prismaUpdateMany.mockResolvedValue({ count: 2 });
         const result = await changeSortOrder({ typeId: 'SomeTypeId', newPosition: 4 });
 
         expect(result).toEqual('ReturnedList');
@@ -92,44 +84,31 @@ describe('<UniformType> sortOrder', () => {
         });
     });
     it('should allow zero position', async () => {
-        prismafindUnique.mockResolvedValue({ sortOrder: 2 });
-        prismaCount.mockResolvedValue(4);
-        prismaUpdateMany.mockResolvedValue({ count: 2 });
         const result = await changeSortOrder({ typeId: 'SomeTypeId', newPosition: 0 });
         expect(result).toEqual('ReturnedList');
     });
     it('should not allow position greater/ equal than amount of types', async () => {
-        prismafindUnique.mockResolvedValue({ sortOrder: 1 });
-        prismaCount.mockResolvedValue(4);
-        prismaUpdateMany.mockResolvedValue({ count: 2 });
-        const result = changeSortOrder({ typeId: 'SomeTypeId', newPosition: 5 });
+        prismaCount.mockResolvedValueOnce(4);
+        const result = changeSortOrder({ typeId: 'SomeTypeId', newPosition: 4 });
         expect(result).rejects.toThrow('Invalid newPosition');
 
         expect(prismaUpdate).not.toHaveBeenCalled();
         expect(prismaUpdateMany).not.toHaveBeenCalled();
     });
     it('should allow last position in list', async () => {
-        prismafindUnique.mockResolvedValue({ sortOrder: 1 });
-        prismaCount.mockResolvedValue(4);
-        prismaUpdateMany.mockResolvedValue({ count: 2 });
-        const result = await  changeSortOrder({ typeId: 'SomeTypeId', newPosition: 3 })
+        prismaCount.mockResolvedValueOnce(5);
+        const result = await  changeSortOrder({ typeId: 'SomeTypeId', newPosition: 4 })
         expect(result).toEqual('ReturnedList');
         expect(prismaUpdate).toHaveBeenCalledTimes(1);
         expect(prismaUpdateMany).toHaveBeenCalledTimes(1);
     });
     it('should fail if updateMany returns smaller count', async () => {
-        prismafindUnique.mockResolvedValue({ sortOrder: 0 });
-        prismaCount.mockResolvedValue(4);
-        prismaUpdateMany.mockResolvedValue({ count: 1 });
-        const result = changeSortOrder({ typeId: 'SomeTypeId', newPosition: 2 });
+        const result = changeSortOrder({ typeId: 'SomeTypeId', newPosition: 5 });
         await expect(result).rejects.toThrow('Could not update sortOrder of other types');
         expect(prismaUpdate).not.toHaveBeenCalled();
     });
     it('should fail if updateMany returns bigger count', async () => {
-        prismafindUnique.mockResolvedValue({ sortOrder: 0 });
-        prismaCount.mockResolvedValue(4);
-        prismaUpdateMany.mockResolvedValue({ count: 3 });
-        const result = changeSortOrder({ typeId: 'SomeTypeId', newPosition: 2 });
+        const result = changeSortOrder({ typeId: 'SomeTypeId', newPosition: 3 });
         await expect(result).rejects.toThrow('Could not update sortOrder of other types');
         expect(prismaUpdate).not.toHaveBeenCalled();
     });

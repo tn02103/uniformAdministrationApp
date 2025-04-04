@@ -1,8 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`get should be successfull 1`] = `
+exports[`<UniformType> get get should be successfull 1`] = `
 {
   "acronym": "AA",
+  "defaultSizelist": {
+    "name": "Liste1",
+  },
   "issuedDefault": 3,
   "name": "Typ1",
   "sortOrder": 0,
@@ -10,21 +13,33 @@ exports[`get should be successfull 1`] = `
     {
       "name": "Generation1-1",
       "outdated": true,
+      "sizelist": {
+        "name": "Liste1",
+      },
       "sortOrder": 0,
     },
     {
       "name": "Generation1-2",
       "outdated": false,
+      "sizelist": {
+        "name": "Liste1",
+      },
       "sortOrder": 1,
     },
     {
       "name": "Generation1-3",
       "outdated": false,
+      "sizelist": {
+        "name": "Liste2",
+      },
       "sortOrder": 2,
     },
     {
       "name": "Generation1-4",
       "outdated": false,
+      "sizelist": {
+        "name": "Liste3",
+      },
       "sortOrder": 3,
     },
   ],
@@ -33,10 +48,13 @@ exports[`get should be successfull 1`] = `
 }
 `;
 
-exports[`getList 1`] = `
+exports[`<UniformType> get getList 1`] = `
 [
   {
     "acronym": "AA",
+    "defaultSizelist": {
+      "name": "Liste1",
+    },
     "issuedDefault": 3,
     "name": "Typ1",
     "sortOrder": 0,
@@ -44,21 +62,33 @@ exports[`getList 1`] = `
       {
         "name": "Generation1-1",
         "outdated": true,
+        "sizelist": {
+          "name": "Liste1",
+        },
         "sortOrder": 0,
       },
       {
         "name": "Generation1-2",
         "outdated": false,
+        "sizelist": {
+          "name": "Liste1",
+        },
         "sortOrder": 1,
       },
       {
         "name": "Generation1-3",
         "outdated": false,
+        "sizelist": {
+          "name": "Liste2",
+        },
         "sortOrder": 2,
       },
       {
         "name": "Generation1-4",
         "outdated": false,
+        "sizelist": {
+          "name": "Liste3",
+        },
         "sortOrder": 3,
       },
     ],
@@ -67,6 +97,7 @@ exports[`getList 1`] = `
   },
   {
     "acronym": "AB",
+    "defaultSizelist": null,
     "issuedDefault": 1,
     "name": "Typ2",
     "sortOrder": 1,
@@ -74,11 +105,13 @@ exports[`getList 1`] = `
       {
         "name": "Generation2-1",
         "outdated": true,
+        "sizelist": null,
         "sortOrder": 0,
       },
       {
         "name": "Generation2-2",
         "outdated": false,
+        "sizelist": null,
         "sortOrder": 1,
       },
     ],
@@ -87,6 +120,9 @@ exports[`getList 1`] = `
   },
   {
     "acronym": "AC",
+    "defaultSizelist": {
+      "name": "Liste2",
+    },
     "issuedDefault": 1,
     "name": "Typ3",
     "sortOrder": 2,
@@ -96,6 +132,7 @@ exports[`getList 1`] = `
   },
   {
     "acronym": "AD",
+    "defaultSizelist": null,
     "issuedDefault": 1,
     "name": "Typ4",
     "sortOrder": 3,

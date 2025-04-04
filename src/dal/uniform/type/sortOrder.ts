@@ -32,8 +32,7 @@ export const changeSortOrder = (props: PropType) => genericSAValidator(
             recdelete: null
         }
     });
-    console.log('changeSortOrder', typeId, newPosition, type, listsize);
-
+  
     if (newPosition < 0 || newPosition >= listsize) {
         throw new SaveDataException("Invalid newPosition");
     }
