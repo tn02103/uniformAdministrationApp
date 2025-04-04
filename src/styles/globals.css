@@ -18,13 +18,22 @@ nav {
     width: auto;
 }
 
-.topoffset-nav {
-    top: 45px;
-}
-
 @media (min-width: 992px) {
     .topoffset-nav {
         top: 0
+    }
+}
+
+@media (max-width: 991px) {
+    .topoffset-nav {
+        top: 45px;
+    }
+    .offcanvas {
+        margin-top: 45px;
+        margin-bottom: 60px;
+    }
+    .footer {
+        height: 60px;
     }
 }
 

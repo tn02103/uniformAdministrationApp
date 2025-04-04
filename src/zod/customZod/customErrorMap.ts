@@ -5,7 +5,7 @@ export const customErrorMap: ZodErrorMap = (issue, _ctx) => {
     let message: string;
     switch (issue.code) {
         case ZodIssueCode.invalid_type:
-            if (issue.received === ZodParsedType.undefined) {
+            if (issue.received === ZodParsedType.undefined || issue.received === ZodParsedType.null) {
                 message = "string.required";
             } else {
                 message = `Expected ${issue.expected}, received ${issue.received}`;

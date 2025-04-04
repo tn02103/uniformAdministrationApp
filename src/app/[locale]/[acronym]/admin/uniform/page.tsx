@@ -1,6 +1,6 @@
 "use client"
 
-import { TooltipActionButton } from "@/components/TooltipIconButton";
+import { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
 import { ReorderableTableBody } from "@/components/reorderDnD/ReorderableTableBody";
 import { changeUniformTypeSortOrder } from "@/dal/uniform/type/_index";
 import { useUniformTypeList } from "@/dataFetcher/uniformAdmin";
@@ -22,14 +22,13 @@ export default function UniformAdminPage() {
 
     const { typeList, mutate } = useUniformTypeList();
     const [selectedTypeId, setSelectedTypeId] = useState<string | null>(null);
-    const [disableDnD, setDisableDnD] = useState(false);
-    const selectedTypeEditableState = useState(false);
+    const [editable, setEditable] = useState(false);
 
     const handleChangeSortorder = (newArray: UniformType[], itemId: string) => {
         const newPosition = newArray.findIndex(i => i.id === itemId);
         console.log(newArray, itemId, newPosition);
         mutate(
-            changeUniformTypeSortOrder({typeId: itemId, newPosition}),
+            changeUniformTypeSortOrder({ typeId: itemId, newPosition }),
             {
                 optimisticData: newArray
             }
@@ -47,12 +46,17 @@ export default function UniformAdminPage() {
                         <th></th>
                         <th>Uniformtyp</th>
                         <th>Kürzel</th>
-                        <th>Anz. Ausgegeben</th>
-                        <th>Nutzt Größen</th>
-                        <th>Nutzt Generationen</th>
-                        <th>Standard Größenliste</th>
-                        <th>Anzahl Generationen</th>
-                        <th></th>
+                        <th className="d-none d-md-table-cell">Anz. Ausgegeben</th>
+                        <th className="d-none d-sm-table-cell">Nutzt Größen</th>
+                        <th className="d-none d-sm-table-cell">Nutzt Generationen</th>
+                        <th className="d-none d-lg-table-cell">Standard Größenliste</th>
+                        <th className="d-none d-lg-table-cell">Generationen</th>
+                        <th>
+                            <TooltipActionButton
+                                variantKey="create"
+                                disabled={editable}
+                                onClick={() => { setSelectedTypeId('new'); setEditable(true); }} />
+                        </th>
                     </tr>
                 </thead>
                 <ReorderableTableBody<UniformType>
@@ -74,14 +78,15 @@ export default function UniformAdminPage() {
                                 {item.name}
                             </td>
                             <td>{item.acronym}</td>
-                            <td>{item.issuedDefault}</td>
-                            <td>{item.usingSizes ? "Ja" : "Nein"}</td>
-                            <td>{item.usingGenerations ? "Ja" : "Nein"}</td>
-                            <td>{item.defaultSizelist?.name}</td>
-                            <td>{item.uniformGenerationList.length}</td>
+                            <td className="d-none d-md-table-cell">{item.issuedDefault}</td>
+                            <td className="d-none d-sm-table-cell">{item.usingSizes ? "Ja" : "Nein"}</td>
+                            <td className="d-none d-sm-table-cell">{item.usingGenerations ? "Ja" : "Nein"}</td>
+                            <td className="d-none d-lg-table-cell">{item.defaultSizelist?.name}</td>
+                            <td className="d-none d-lg-table-cell">{item.uniformGenerationList.length}</td>
                             <td>
                                 <TooltipActionButton
                                     variantKey="open"
+                                    disabled={editable}
                                     onClick={() => setSelectedTypeId(item.id)} />
                             </td>
                         </tr>
@@ -91,6 +96,8 @@ export default function UniformAdminPage() {
             {
                 selectedTypeId && (
                     <UniformTypeOffcanvas
+                        editable={editable}
+                        setEditable={setEditable}
                         uniformType={typeList?.find(t => t.id === selectedTypeId) ?? null}
                         setSelectedTypeId={setSelectedTypeId}
                     />
@@ -99,60 +106,3 @@ export default function UniformAdminPage() {
         </div >
     )
 }
-
-/* <ReorderableList<UniformType> items={typeList ?? []} getKey={item => item.id} disabled={disableDnD} onReorderFinished={handleReorderFinished}>
-                        {({ item, props: { onDragStart, draggable, ...props }, dragging }) => {
-                            const style = dragging ? { ...listElementStyles, opacity: 0.6 } : listElementStyles;
-                            const handleDragStart = (event: React.DragEvent<HTMLSpanElement>) => {
-                                // Set the drag image to the entire row
-                                const rowElement = event.currentTarget.closest('tr');
-                                if (rowElement) {
-                                    const clone = rowElement.cloneNode(true) as HTMLElement;
-
-                                    // Copy computed styles from the original row to the clone
-                                    const computedStyle = window.getComputedStyle(rowElement);
-                                    for (const key of Array.from(computedStyle)) {
-                                        clone.style.setProperty(key, computedStyle.getPropertyValue(key));
-                                    }
-
-                                    clone.style.position = 'absolute';
-                                    clone.style.top = '-9999px';
-                                    clone.style.left = '-9999px';
-                                    document.body.appendChild(clone);
-                                    event.dataTransfer.setDragImage(clone, 0, 0);
-
-                                    // Clean up the cloned element after a short delay
-                                    setTimeout(() => {
-                                        document.body.removeChild(clone);
-                                    }, 0);
-                                }
-
-                                // Call the original onDragStart handler
-                                if (onDragStart) {
-                                    onDragStart(event);
-                                }
-                            };
-                            return (
-                                <tr key={item.id} {...props} style={style}>
-                                    <td {...props} draggable={undefined} onDragStart={undefined}>
-                                        <span draggable onDragStart={handleDragStart}>
-                                            {item.name}
-                                        </span>
-                                    </td>
-                                    <td>{item.acronym}</td>
-                                    <td>{item.issuedDefault}</td>
-                                    <td>{item.usingSizes ? "Ja" : "Nein"}</td>
-                                    <td>{item.usingGenerations ? "Ja" : "Nein"}</td>
-                                    <td>{item.defaultSizelist?.name}</td>
-                                    <td>{item.uniformGenerationList.length}</td>
-                                    <td>
-                                        <TooltipActionButton
-                                            variantKey="open"
-                                            onClick={() => setSelectedTypeId(item.id)} />
-                                    </td>
-                                </tr>
-                            );
-                        }}
-                    </ReorderableList>
-
- */

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form } from "react-bootstrap"
 
 export type NumberFieldProps = {
@@ -8,10 +8,19 @@ export type NumberFieldProps = {
     allowNegative?: boolean;
     allowDecimal?: boolean;
     plaintext?: boolean;
+    isInvalid?: boolean;
 }
 
-export const NumberField = ({ allowDecimal, allowNegative, ...inputProps }: NumberFieldProps) => {
-    const [innerValue, setInnerValue] = useState<string>('');
+export const NumberField = ({ allowDecimal, allowNegative, value, isInvalid, ...inputProps }: NumberFieldProps) => {
+    const [innerValue, setInnerValue] = useState<string>(value?.toString() ?? "");
+
+    useEffect(() => {
+        if (value !== null && value !== undefined) {
+            setInnerValue(value.toString());
+        } else {
+            setInnerValue("");
+        }
+    }, [value])
 
     const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -36,6 +45,7 @@ export const NumberField = ({ allowDecimal, allowNegative, ...inputProps }: Numb
         <Form.Control
             {...inputProps}
             value={innerValue ?? ""}
+            isInvalid={isInvalid}
             onKeyDown={onKeyPress}
             onChange={handleOnChange} />
     )

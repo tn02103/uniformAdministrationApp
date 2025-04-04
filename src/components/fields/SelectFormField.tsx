@@ -1,6 +1,7 @@
 import { Form } from "react-bootstrap";
 import { FieldValues, Path, useController } from "react-hook-form";
 import ErrorMessage from "../errorMessage";
+import { useI18n } from "@/lib/locales/client";
 
 export type SelectOptionType = { value: string | number, label: string };
 
@@ -12,17 +13,23 @@ export type SelectFormFieldProps<FormType extends FieldValues> = {
     className?: string,
     options: SelectOptionType[],
     plaintext?: boolean,
+    labelClassName?: string,
+    selectClassName?: string,
 }
 
-export const SelectFormField = <FormType extends FieldValues>({ label, name, required, plaintext, options, ...inputProps }: SelectFormFieldProps<FormType>) => {
-
+export const SelectFormField = <FormType extends FieldValues>({ label, name, required, plaintext, options, labelClassName, ...inputProps }: SelectFormFieldProps<FormType>) => {
+    const t = useI18n();
     const { field, fieldState } = useController({
         name,
     });
- 
+    console.log("🚀 ~ fieldState:", fieldState)
+
+
     return (
         <Form.Group className="mb-3">
-            <Form.Label className="fw-bold m-0">{label}{required ? " *" : ""}</Form.Label>
+            <Form.Label className={"fw-bold m-0 " + labelClassName}>
+                {label}{required ? " *" : ""}
+            </Form.Label>
             {plaintext ?
                 <p className="py-2 m-0">
                     {options.find(option => option.value === field.value)?.label || field.value}
@@ -31,7 +38,9 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
                 <Form.Select
                     {...inputProps}
                     {...field}
+                    isInvalid={!!fieldState.error}
                 >
+                    <option value={undefined} selected={!field.value} disabled>{t('common.error.pleaseSelect')}</option>
                     {options.map((option, index) => (
                         <option key={index} value={option.value}>{option.label}</option>
                     ))}

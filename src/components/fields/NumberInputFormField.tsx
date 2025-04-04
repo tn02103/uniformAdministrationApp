@@ -18,13 +18,13 @@ export const NumberInputFormField = <FormType extends FieldValues>({ label, name
     const {field, fieldState} = useController({
         name,
     });
-    
     return (
         <Form.Group className="mb-3">
             <Form.Label className="fw-bold m-0">{label}{required ? " *" : ""}</Form.Label>
             <NumberField
                 {...inputProps}
                 {...field}
+                isInvalid={!!fieldState.error}
             />
             <ErrorMessage error={fieldState.error?.message} testId={`err_${name}`} />
         </Form.Group>

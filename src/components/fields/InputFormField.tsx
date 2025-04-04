@@ -22,6 +22,8 @@ export const InputFormField = <FormType extends FieldValues>({ label, name, requ
             <Form.Control
                 {...inputProps}
                 {...field}
+                isInvalid={!!fieldState.error}
+                width={"auto"}
                 value={field.value ?? ""}
             />
             <ErrorMessage error={fieldState.error?.message} testId={`err_${name}`} />

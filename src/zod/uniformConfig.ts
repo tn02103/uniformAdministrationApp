@@ -5,13 +5,12 @@ import { customErrorMap } from "./customZod/customErrorMap";
 z.setErrorMap(customErrorMap);
 
 export const uniformTypeFormSchema = z.object({
-    id: z.string().uuid(),
     name: z.string().min(1).max(10),
     acronym: z.string().length(2).regex(/^[A-Z]*$/, "string.noSpecialChars"),
     issuedDefault: z.number({ message: 'number.pattern' }).min(0, 'number.positiv').max(10, "number.max;value:10"),
     usingGenerations: z.boolean(),
     usingSizes: z.boolean(),
-    fk_defaultSizelist: z.string().uuid().nullable(),
+    fk_defaultSizelist: z.string().uuid().nullable().optional(),
 });
 export type UniformTypeFormType = z.infer<typeof uniformTypeFormSchema>;
 
