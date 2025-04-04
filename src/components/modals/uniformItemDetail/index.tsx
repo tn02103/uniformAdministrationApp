@@ -1,6 +1,6 @@
 import { getUniformFormValues, getUniformIssueHistory } from "@/actions/controllers/UniformController";
 import { useGlobalData } from "@/components/globalDataProvider";
-import TooltipIconButton from "@/components/TooltipIconButton";
+import TooltipIconButton from "@/components/Buttons/TooltipIconButton";
 import { deleteUniformItem, updateUniformItem } from "@/dal/uniform/item/_index";
 import { AuthRole } from "@/lib/AuthRoles";
 import { getUniformSizelist } from "@/lib/uniformHelper";

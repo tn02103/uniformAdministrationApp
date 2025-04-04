@@ -1,6 +1,6 @@
 "use client"
 
-import TooltipIconButton from "@/components/TooltipIconButton"
+import TooltipIconButton from "@/components/Buttons/TooltipIconButton"
 import { useI18n, useScopedI18n } from "@/lib/locales/client"
 import { User } from "@/types/userTypes"
 import { faPlus } from "@fortawesome/free-solid-svg-icons"

@@ -3,7 +3,7 @@
 import { createUniformGeneration, updateUniformGeneration } from "@/dal/uniform/generation/_index";
 import { useUniformSizelists, useUniformType } from "@/dataFetcher/uniformAdmin";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
-import { SAFormHandler } from "@/lib/SAFormHandler";
+import { asyncSAFormHandler } from "@/lib/SAFormHandler";
 import { UniformGeneration, UniformType } from "@/types/globalUniformTypes";
 import { uniformGenerationFormSchema, UniformGenerationFormType } from "@/zod/uniformConfig";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -46,12 +46,12 @@ export default function EditGenerationModal({ generation, type, onClose }: EditG
 
         let saPromise;
         if (generation) {
-            saPromise = SAFormHandler<typeof updateUniformGeneration>(
+            saPromise = asyncSAFormHandler<typeof updateUniformGeneration>(
                 updateUniformGeneration({ data, id: generation.id }),
                 setError
             )
         } else {
-            saPromise = SAFormHandler<typeof createUniformGeneration>(
+            saPromise = asyncSAFormHandler<typeof createUniformGeneration>(
                 createUniformGeneration({ ...data, uniformTypeId: type.id }),
                 setError
             );

@@ -1,6 +1,6 @@
 "use client";
 
-import { TooltipActionButton } from "@/components/TooltipIconButton";
+import { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
 import { Card, CardBody, CardHeader } from "@/components/card";
 import { createMaterialGroup, changeMaterialGroupSortOrder } from "@/dal/material/group/_index";
 import { useI18n } from "@/lib/locales/client";

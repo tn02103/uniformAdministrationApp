@@ -1,6 +1,6 @@
 "use client";
 
-import { TooltipActionButton } from "@/components/TooltipIconButton";
+import { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
 import { Card, CardBody } from "@/components/card";
 import { useModal } from "@/components/modals/modalProvider";
 import { changeMaterialSortOrder, deleteMaterial } from "@/dal/material/type/_index";

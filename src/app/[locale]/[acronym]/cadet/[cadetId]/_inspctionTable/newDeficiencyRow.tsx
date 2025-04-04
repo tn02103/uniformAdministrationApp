@@ -1,6 +1,6 @@
 "use client";
 
-import TooltipIconButton from "@/components/TooltipIconButton";
+import TooltipIconButton from "@/components/Buttons/TooltipIconButton";
 import { useCadetMaterialDescriptionList, useCadetUniformDescriptList } from "@/dataFetcher/cadet";
 import { useDeficiencyTypes } from "@/dataFetcher/deficiency";
 import { useMaterialConfiguration, useMaterialTypeList } from "@/dataFetcher/material";
