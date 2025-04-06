@@ -18,15 +18,25 @@ export const InputFormField = <FormType extends FieldValues>({ label, name, requ
     })
     return (
         <Form.Group className="mb-3">
-            <Form.Label className="fw-bold m-0">{label}{required ? " *" : ""}</Form.Label>
+            <Form.Label htmlFor={`input-${name}`} className="fw-bold m-0">{label}{required ? " *" : ""}</Form.Label>
             <Form.Control
                 {...inputProps}
                 {...field}
+                id={`input-${name}`}
+                type="text"
                 isInvalid={!!fieldState.error}
                 width={"auto"}
                 value={field.value ?? ""}
+                aria-errormessage={`err_${name}`}
+                aria-invalid={!!fieldState.error}
+                aria-required={required}
             />
-            <ErrorMessage error={fieldState.error?.message} testId={`err_${name}`} />
+            <ErrorMessage
+                error={fieldState.error?.message}
+                testId={`err_${name}`}
+                id={`err_${name}`}
+                ariaLabel={`error message ${name}`}
+            />
         </Form.Group>
     )
 }

@@ -134,9 +134,9 @@ export const TooltipActionButton = ({ onClick, disabled, variantKey, testId, but
     const t = useScopedI18n("common.actions");
     const variant = Variants[variantKey];
     const translation = t(variant.tooltipKey);
-    const isMobile = window.innerWidth < 992;
+    const isMobile = window?.innerWidth < 992;
 
-    
+
 
     return (
         <OverlayTrigger

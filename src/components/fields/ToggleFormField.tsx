@@ -30,6 +30,8 @@ export const ToggleFormField = <FormType extends FieldValues>({ label, name, dis
                     checked={field.value}
                     tabIndex={disabled ? -1 : 0}
                     style={disabled ? { pointerEvents: "none", opacity: 0.5 } : { cursor: "pointer" }}
+                    aria-disabled={disabled}
+                    aria-checked={field.value}
                     onChange={() => disabled ? undefined : field.onChange(!field.value)}
                 />
             </div>

@@ -8,14 +8,15 @@ import { useState } from "react";
 import { Row, Table, Dropdown } from "react-bootstrap";
 import { UniformgenerationOffcanvas } from "./UniformGenerationOffcanvas";
 import { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
+import { useI18n } from "@/lib/locales/client";
 
 type UniformGenerationTableProps = {
     uniformType: UniformType;
 }
 
 export const UniformGenerationTable = ({ uniformType }: UniformGenerationTableProps) => {
-    console.log("🚀 ~ UniformGenerationTable ~ uniformType:", uniformType)
     const { mutate } = useUniformTypeList();
+    const t = useI18n();
     const [selectedGenerationId, setSelectedGenerationId] = useState<string | null>(null);
 
     const handleChangeSortorder = (newArray: UniformGeneration[], itemId: string) => {
@@ -25,18 +26,18 @@ export const UniformGenerationTable = ({ uniformType }: UniformGenerationTablePr
     };
 
     return (
-        <div>
-            <h3 className="text-center">Generationen</h3>
+        <div data-testid="uniform-generation-table">
+            <h3 className="text-center">{t('common.uniform.generation.label', { count: 2 })}</h3>
             <hr className="my-0" />
             <Row>
                 <Table>
                     <thead>
                         <tr>
                             <th></th>
-                            <th>Generation</th>
-                            <th className={uniformType.usingSizes ? "d-none d-sm-table-cell" : ""}>Veraltet</th>
+                            <th>{t('common.uniform.generation.label', { count: 1 })}</th>
+                            <th className={uniformType.usingSizes ? "d-none d-sm-table-cell" : ""}>{t('common.uniform.generation.outdated')}</th>
                             {uniformType.usingSizes && (
-                                <th>Größenliste</th>
+                                <th>{t('common.uniform.sizelist.label')}</th>
                             )}
                             <th><TooltipActionButton variantKey="create" onClick={() => setSelectedGenerationId('new')} /></th>
                         </tr>
@@ -60,7 +61,7 @@ export const UniformGenerationTable = ({ uniformType }: UniformGenerationTablePr
                                     </td>
                                     <td className={invalid ? "text-danger" : ""}>{item.name}</td>
                                     <td className={invalid ? "text-danger" : "" + uniformType.usingSizes ? "d-none d-sm-table-cell" : ""}>
-                                        {item.outdated ? "Ja" : "Nein"}
+                                        {item.outdated ? t('common.yes') : t('common.no')}
                                     </td>
                                     {uniformType.usingSizes && (
                                         <td>{item.sizelist?.name}</td>

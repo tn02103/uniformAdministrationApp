@@ -15,7 +15,7 @@ export const uniformTypeFormSchema = z.object({
 export type UniformTypeFormType = z.infer<typeof uniformTypeFormSchema>;
 
 export const uniformGenerationFormSchema = z.object({
-    name: descriptionSchema.min(1, 'string.required').max(20, "string.maxLength;value:20"),
+    name: descriptionSchema(z.string().min(1, 'string.required').max(20, "string.maxLength;value:20")),
     outdated: z.boolean(),
     fk_sizelist: z.string().uuid().nullable(),
 });

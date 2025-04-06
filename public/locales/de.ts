@@ -362,6 +362,7 @@ export default {
                 }
             },
             generationList: {
+                "header.create": "Neue Generation anlegen",
                 deleteModal: {
                     header: "Generation \"{generation}\" Löschen",
                     message: {
@@ -372,8 +373,6 @@ export default {
                     confirmationText: "Generation-{generation}",
                 },
                 updateModal: {
-                    editHeader: "Generation \"{generation}\" bearbeiten",
-                    createHeader: "Neue Generation anlegen",
                     changeSizeHeader: "Ändern der Größenliste",
                     changeSizeMessage: "Beim Ändern der ausgewählten Größenliste, kann bei Uniformteilen dieser Generation die Information der Größe verlohren gehen",
                     nameDuplicationError: "Es existiert bereits eine Generation mit diesem Namen",

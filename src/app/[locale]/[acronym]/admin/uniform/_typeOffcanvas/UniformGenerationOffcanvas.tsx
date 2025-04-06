@@ -28,8 +28,6 @@ export const UniformgenerationOffcanvas = ({ generation, uniformTypeId, usingSiz
             ? z.string().min(1, 'string.required').uuid()
             : uniformGenerationFormSchema.shape.fk_sizelist,
     });
-    console.log("🚀 ~ formSchema ~ formSchema:", formSchema, usingSizes)
-    console.log("🚀 ~ validated:", formSchema.safeParse({ fk_sizelist: null, name: 'some String', outdated: false }))
 
     const t = useI18n();
     const modal = useModal();
@@ -71,7 +69,6 @@ export const UniformgenerationOffcanvas = ({ generation, uniformTypeId, usingSiz
     }
 
     const handleSave = (data: UniformGenerationFormType) => {
-        console.log("🚀 ~ handleSave ~ (data:", (data));
         if (!generation) {
             handleCreate(data);
             return;
@@ -107,7 +104,7 @@ export const UniformgenerationOffcanvas = ({ generation, uniformTypeId, usingSiz
         <Offcanvas show={true} onHide={onHide} placement="end" backdrop={false} style={{ width: "500px" }}>
             <Offcanvas.Header closeButton>
                 <Offcanvas.Title>
-                    <h2>{generation ? generation.name : "Generation Anlegen"}</h2>
+                    <h2>{generation ? generation.name : t('admin.uniform.generationList.header.create')}</h2>
                 </Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
@@ -128,16 +125,25 @@ export const UniformgenerationOffcanvas = ({ generation, uniformTypeId, usingSiz
                     <form onSubmit={form.handleSubmit(handleSave)}>
                         <Row>
                             <Col xs={6}>
-                                <InputFormField<UniformGenerationFormType> name="name" label="Name" plaintext={!editable} disabled={!editable} />
+                                <InputFormField<UniformGenerationFormType>
+                                    name="name"
+                                    label={t('common.name')}
+                                    plaintext={!editable}
+                                    disabled={!editable}
+                                />
                             </Col>
                             <Col xs={6} className="align-bottom">
-                                <ToggleFormField<UniformGenerationFormType> name="outdated" label="Veraltet" disabled={!editable} />
+                                <ToggleFormField<UniformGenerationFormType>
+                                    name="outdated"
+                                    label={t('common.uniform.generation.outdated')}
+                                    disabled={!editable}
+                                />
                             </Col>
                             {usingSizes && (
                                 <Col xs={6}>
                                     <SelectFormField<UniformGenerationFormType>
                                         name="fk_sizelist"
-                                        label="Größenliste"
+                                        label={t('common.uniform.sizelist.label')}
                                         options={sizelistOptions}
                                         plaintext={!editable}
                                         disabled={!editable}
@@ -147,8 +153,8 @@ export const UniformgenerationOffcanvas = ({ generation, uniformTypeId, usingSiz
                             )}
                             {editable && (
                                 <Row className="justify-content-evenly mt-2 mb-4">
-                                    <Button className="col-auto" type="submit" >Speichern</Button>
-                                    <Button className="col-auto" variant="outline-secondary" onClick={handleCancel}>Abbrechen</Button>
+                                    <Button className="col-auto" type="submit" >{t(generation ? 'common.actions.save' : 'common.actions.create')}</Button>
+                                    <Button className="col-auto" variant="outline-secondary" onClick={handleCancel}>{t('common.actions.cancel')}</Button>
                                 </Row>
                             )}
                         </Row>

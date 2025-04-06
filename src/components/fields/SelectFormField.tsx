@@ -22,23 +22,24 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
     const { field, fieldState } = useController({
         name,
     });
-    console.log("🚀 ~ fieldState:", fieldState)
-
 
     return (
         <Form.Group className="mb-3">
-            <Form.Label className={"fw-bold m-0 " + labelClassName}>
+            <Form.Label htmlFor={`select-${name}`} className={"fw-bold m-0 " + labelClassName}>
                 {label}{required ? " *" : ""}
             </Form.Label>
             {plaintext ?
-                <p className="py-2 m-0">
+                <p aria-label={label} aria-readonly className="py-2 m-0">
                     {options.find(option => option.value === field.value)?.label || field.value}
                 </p>
                 :
                 <Form.Select
                     {...inputProps}
                     {...field}
+                    id={`select-${name}`}
                     isInvalid={!!fieldState.error}
+                    aria-errormessage={`err_${name}`}	
+                    aria-invalid={!!fieldState.error}
                 >
                     <option value={undefined} selected={!field.value} disabled>{t('common.error.pleaseSelect')}</option>
                     {options.map((option, index) => (
@@ -46,7 +47,12 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
                     ))}
                 </Form.Select>
             }
-            <ErrorMessage error={fieldState.error?.message} testId={`err_${name}`} />
+            <ErrorMessage
+                error={fieldState.error?.message}
+                testId={`err_${name}`}
+                id={`err_${name}`}
+                ariaLabel={`error message ${name}`}
+            />
         </Form.Group>
     );
 
