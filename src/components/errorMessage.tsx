@@ -59,6 +59,9 @@ export default function ErrorMessage({ error, testId, ariaLabel, id }: { error?:
         setMessage(text);
     }, [error, locale, setMessage, getTranslationText, getTranslation]);
 
+    if (!message)
+        return null;
+
     return (
         <div className="text-danger fs-7" role="alert" data-testid={testId} id={id} aria-label={ariaLabel}>
             {message}

@@ -2,6 +2,7 @@ import { Form } from "react-bootstrap";
 import { FieldValues, Path, useController } from "react-hook-form";
 import ErrorMessage from "../errorMessage";
 import { useI18n } from "@/lib/locales/client";
+import { useMemo } from "react";
 
 export type SelectOptionType = { value: string | number, label: string };
 
@@ -23,6 +24,13 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
         name,
     });
 
+    const error = useMemo(() => {
+        if (fieldState.error?.message === "string.required") {
+            return "pleaseSelect";
+        }
+        return fieldState.error?.message;
+    }, [fieldState.error?.message]);
+
     return (
         <Form.Group className="mb-3">
             <Form.Label htmlFor={`select-${name}`} className={"fw-bold m-0 " + labelClassName}>
@@ -38,7 +46,7 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
                     {...field}
                     id={`select-${name}`}
                     isInvalid={!!fieldState.error}
-                    aria-errormessage={`err_${name}`}	
+                    aria-errormessage={fieldState.error ? `err_${name}` : undefined}
                     aria-invalid={!!fieldState.error}
                 >
                     <option value={undefined} selected={!field.value} disabled>{t('common.error.pleaseSelect')}</option>
@@ -48,7 +56,7 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
                 </Form.Select>
             }
             <ErrorMessage
-                error={fieldState.error?.message}
+                error={error}
                 testId={`err_${name}`}
                 id={`err_${name}`}
                 ariaLabel={`error message ${name}`}

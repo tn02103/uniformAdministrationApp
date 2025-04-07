@@ -31,6 +31,7 @@ export const UniformTypeOffcanvas = ({ uniformType, setSelectedTypeId, editable,
         defaultValues: uniformType ?? undefined,
         resolver: zodResolver(uniformTypeFormSchema),
     });
+    const { reset } = form;
 
     const t = useI18n();
     const modal = useModal();
@@ -40,12 +41,12 @@ export const UniformTypeOffcanvas = ({ uniformType, setSelectedTypeId, editable,
 
     useEffect(() => {
         if (!editable) {
-            form.reset(uniformType ?? undefined);
+            reset(uniformType ?? undefined);
             if (!uniformType) {
                 setEditable(true);
             }
         }
-    }, [uniformType]);
+    }, [uniformType, reset, editable, setEditable]);
 
     const handleSave = async (data: UniformTypeFormType) => {
         if (!uniformType) {
@@ -118,14 +119,14 @@ export const UniformTypeOffcanvas = ({ uniformType, setSelectedTypeId, editable,
     }
 
     return (
-        <Offcanvas show={true} onHide={() => setSelectedTypeId(null)} placement="end" backdrop={false} style={{ width: "500px" }}>
+        <Offcanvas show={true} onHide={() => {setSelectedTypeId(null);setEditable(false);}} placement="end" backdrop={false} style={{ width: "500px" }}>
             <Offcanvas.Header closeButton>
                 <Offcanvas.Title>
-                    <h2>{uniformType?.name ?? "Neu erstellen"}</h2>
+                    <h2>{uniformType?.name ?? t('common.actions.create')}</h2>
                 </Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
-                <h3 className="text-center">Details</h3>
+                <h3 className="text-center">{t('common.details')}</h3>
                 <hr className="my-0" />
                 {uniformType && (
                     <Row className="mb-4 justify-content-evenly">
@@ -145,30 +146,30 @@ export const UniformTypeOffcanvas = ({ uniformType, setSelectedTypeId, editable,
                     <FormProvider {...form}>
                         <Row>
                             <Col xs={6}>
-                                <InputFormField<UniformTypeFormType> name="name" label="Name" required plaintext={!editable} disabled={!editable} />
+                                <InputFormField<UniformTypeFormType> name="name" label={t('common.name')} required plaintext={!editable} disabled={!editable} />
                             </Col>
                             <Col xs={6}>
-                                <InputFormField<UniformTypeFormType> name="acronym" label="Kürzel" placeholder="XX" required plaintext={!editable} disabled={!editable} />
+                                <InputFormField<UniformTypeFormType> name="acronym" label={t('common.uniform.type.acronym')} placeholder="XX" required plaintext={!editable} disabled={!editable} />
                             </Col>
                             <Col xs={6}>
-                                <NumberInputFormField<UniformTypeFormType> name="issuedDefault" label="Anz. ausgegeben" plaintext={!editable} disabled={!editable} />
+                                <NumberInputFormField<UniformTypeFormType> name="issuedDefault" label={t('common.uniform.type.issuedDefault')} plaintext={!editable} disabled={!editable} />
                             </Col>
                             <Col xs={6}>
                                 {form.watch("usingSizes") === true && (
-                                    <SelectFormField<UniformTypeFormType> name="fk_defaultSizelist" label="Standard Größenliste" options={sizelistOptions} plaintext={!editable} />
+                                    <SelectFormField<UniformTypeFormType> name="fk_defaultSizelist" label={t('common.uniform.type.defaultSizelist')} options={sizelistOptions} plaintext={!editable} />
                                 )}
                             </Col>
                             <Col xs={6}>
-                                <ToggleFormField<UniformTypeFormType> name="usingSizes" label="Nutzt Größen" disabled={!editable} />
+                                <ToggleFormField<UniformTypeFormType> name="usingSizes" label={t('common.uniform.type.usingSizes')} disabled={!editable} />
                             </Col>
                             <Col xs={6}>
-                                <ToggleFormField<UniformTypeFormType> name="usingGenerations" label="Nutzt Generationen" disabled={!editable} />
+                                <ToggleFormField<UniformTypeFormType> name="usingGenerations" label={t('common.uniform.type.usingGenerations')} disabled={!editable} />
                             </Col>
                         </Row>
                         {editable && (
                             <Row className="justify-content-evenly mt-2 mb-4">
-                                <Button className="col-auto" type="submit" variant="outline-primary">Speichern</Button>
-                                <Button className="col-auto" variant="outline-secondary" onClick={handleCancel}>Abbrechen</Button>
+                                <Button className="col-auto" type="submit" variant="outline-primary">{uniformType ? t('common.actions.save') : t('common.actions.create')}</Button>
+                                <Button className="col-auto" variant="outline-secondary" onClick={handleCancel}>{t('common.actions.cancel')}</Button>
                             </Row>
                         )}
                     </FormProvider>

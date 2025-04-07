@@ -9,9 +9,11 @@ export type NumberFieldProps = {
     allowDecimal?: boolean;
     plaintext?: boolean;
     isInvalid?: boolean;
+    id?: string;
+    errorId?: string;
 }
 
-export const NumberField = ({ allowDecimal, allowNegative, value, isInvalid, ...inputProps }: NumberFieldProps) => {
+export const NumberField = ({ allowDecimal, allowNegative, value, isInvalid, errorId, ...inputProps }: NumberFieldProps) => {
     const [innerValue, setInnerValue] = useState<string>(value?.toString() ?? "");
 
     useEffect(() => {
@@ -20,7 +22,7 @@ export const NumberField = ({ allowDecimal, allowNegative, value, isInvalid, ...
         } else {
             setInnerValue("");
         }
-    }, [value])
+    }, [value]);
 
     const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -44,9 +46,13 @@ export const NumberField = ({ allowDecimal, allowNegative, value, isInvalid, ...
     return (
         <Form.Control
             {...inputProps}
+            type="number"
             value={innerValue ?? ""}
             isInvalid={isInvalid}
             onKeyDown={onKeyPress}
-            onChange={handleOnChange} />
+            onChange={handleOnChange}
+            aria-errormessage={isInvalid ? errorId : undefined}
+            aria-invalid={!isInvalid}
+            aria-required={inputProps.required} />
     )
 }

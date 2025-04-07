@@ -27,7 +27,7 @@ export const InputFormField = <FormType extends FieldValues>({ label, name, requ
                 isInvalid={!!fieldState.error}
                 width={"auto"}
                 value={field.value ?? ""}
-                aria-errormessage={`err_${name}`}
+                aria-errormessage={fieldState.error ? `err_${name}` : undefined}
                 aria-invalid={!!fieldState.error}
                 aria-required={required}
             />

@@ -3,6 +3,7 @@ export default {
         of: "von",
         comment: "Kommentar",
         description: "Beschreibung",
+        details: "Details",
         name: "Name",
         type: "Typ",
         loading: "Lädt",

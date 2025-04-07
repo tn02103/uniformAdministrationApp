@@ -15,16 +15,20 @@ export type NumberInputFormFieldProps<FormType extends FieldValues> = NumberFiel
 
 export const NumberInputFormField = <FormType extends FieldValues>({ label, name, required, ...inputProps }: NumberInputFormFieldProps<FormType>) => {
 
-    const {field, fieldState} = useController({
+    const { field, fieldState } = useController({
         name,
     });
     return (
         <Form.Group className="mb-3">
-            <Form.Label className="fw-bold m-0">{label}{required ? " *" : ""}</Form.Label>
+            <Form.Label htmlFor={`numberInput-${name}`} className="fw-bold m-0">
+                {label}{required ? " *" : ""}
+            </Form.Label>
             <NumberField
                 {...inputProps}
                 {...field}
                 isInvalid={!!fieldState.error}
+                id={`numberInput-${name}`}
+                errorId={`err_${name}`}
             />
             <ErrorMessage error={fieldState.error?.message} testId={`err_${name}`} />
         </Form.Group>

@@ -11,6 +11,9 @@ export const uniformTypeFormSchema = z.object({
     usingGenerations: z.boolean(),
     usingSizes: z.boolean(),
     fk_defaultSizelist: z.string().uuid().nullable().optional(),
+}).refine((data) => !data.usingSizes || data.fk_defaultSizelist, {
+    message: "string.required",
+    path: ["fk_defaultSizelist"],
 });
 export type UniformTypeFormType = z.infer<typeof uniformTypeFormSchema>;
 
