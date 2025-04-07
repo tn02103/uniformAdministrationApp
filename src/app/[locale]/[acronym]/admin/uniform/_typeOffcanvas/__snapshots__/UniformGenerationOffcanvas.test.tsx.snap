@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`UniformgenerationOffcanvas wih generation should render the component 1`] = `
+exports[`<UniformgenerationOffcanvas> with generation should render the component 1`] = `
 <div
   aria-modal="true"
   class="offcanvas offcanvas-end offcanvas-toggling show"
@@ -95,7 +95,6 @@ exports[`UniformgenerationOffcanvas wih generation should render the component 1
               common.name
             </label>
             <input
-              aria-errormessage="err_name"
               aria-invalid="false"
               class="form-control-plaintext"
               disabled=""
@@ -183,7 +182,7 @@ exports[`UniformgenerationOffcanvas wih generation should render the component 1
 </div>
 `;
 
-exports[`UniformgenerationOffcanvas without generation should render in editable state if no generation is passed 1`] = `
+exports[`<UniformgenerationOffcanvas> without generation should render in editable state if no generation is passed 1`] = `
 <div
   aria-modal="true"
   class="offcanvas offcanvas-end offcanvas-toggling show"
@@ -280,7 +279,6 @@ exports[`UniformgenerationOffcanvas without generation should render in editable
               common.name
             </label>
             <input
-              aria-errormessage="err_name"
               aria-invalid="false"
               class="form-control"
               id="input-name"
@@ -346,7 +344,6 @@ exports[`UniformgenerationOffcanvas without generation should render in editable
               common.uniform.sizelist.label
             </label>
             <select
-              aria-errormessage="err_fk_sizelist"
               aria-invalid="false"
               class="form-select"
               id="select-fk_sizelist"

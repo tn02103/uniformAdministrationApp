@@ -36,6 +36,7 @@ export const UniformgenerationOffcanvas = ({ generation, uniformTypeId, usingSiz
         mode: "onTouched",
         resolver: zodResolver(formSchema),
     });
+    const { reset, handleSubmit } = form;
 
     const [editable, setEditable] = useState(!generation);
     const { sizelistList } = useUniformSizelists();
@@ -43,8 +44,8 @@ export const UniformgenerationOffcanvas = ({ generation, uniformTypeId, usingSiz
     const sizelistOptions = sizelistList?.map(sl => ({ value: sl.id, label: sl.name })) ?? [];
 
     useEffect(() => {
-        form.reset(generation ?? undefined);
-    }, [generation]);
+        reset(generation ?? undefined);
+    }, [generation, reset]);
 
     const handleDelete = () => {
         if (!generation) return;
@@ -122,7 +123,7 @@ export const UniformgenerationOffcanvas = ({ generation, uniformTypeId, usingSiz
                     />
                 </Row>
                 <FormProvider {...form}>
-                    <form onSubmit={form.handleSubmit(handleSave)}>
+                    <form onSubmit={handleSubmit(handleSave)}>
                         <Row>
                             <Col xs={6}>
                                 <InputFormField<UniformGenerationFormType>

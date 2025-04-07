@@ -518,7 +518,7 @@ describe('<UniformgenerationOffcanvas>', () => {
 
             const sizelistError = screen.getByRole('alert', {name: 'error message fk_sizelist'});
             expect(sizelistError).toBeVisible();
-            expect(sizelistError).toHaveTextContent('string.required');
+            expect(sizelistError).toHaveTextContent('pleaseSelect');
         });
         it('should allow sizelist empty if not usingSizes', async () => {
             render(
