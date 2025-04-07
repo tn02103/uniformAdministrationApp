@@ -20,8 +20,9 @@ export const UniformGenerationTable = ({ uniformType }: UniformGenerationTablePr
     const [selectedGenerationId, setSelectedGenerationId] = useState<string | null>(null);
 
     const handleChangeSortorder = (newArray: UniformGeneration[], itemId: string) => {
+        if (newArray.length !== uniformType.uniformGenerationList?.length) return;
         const newPosition = newArray.findIndex(i => i.id === itemId);
-        console.log(newArray, itemId, newPosition);
+        if (newPosition === -1) return;
         mutate(changeUniformGenerationSortOrder({ id: itemId, newPosition }));
     };
 
@@ -60,7 +61,7 @@ export const UniformGenerationTable = ({ uniformType }: UniformGenerationTablePr
                                         </span>
                                     </td>
                                     <td className={invalid ? "text-danger" : ""}>{item.name}</td>
-                                    <td className={invalid ? "text-danger" : "" + uniformType.usingSizes ? "d-none d-sm-table-cell" : ""}>
+                                    <td className={`${invalid ? "text-danger" : ""} ${uniformType.usingSizes ? "d-none d-sm-table-cell" : ""}`}>
                                         {item.outdated ? t('common.yes') : t('common.no')}
                                     </td>
                                     {uniformType.usingSizes && (
