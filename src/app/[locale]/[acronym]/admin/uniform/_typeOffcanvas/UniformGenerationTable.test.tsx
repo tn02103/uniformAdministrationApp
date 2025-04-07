@@ -1,7 +1,7 @@
 import { UniformType, UniformGeneration } from "@/types/globalUniformTypes";
 import { render, screen } from "@testing-library/react";
 import { UniformGenerationTable } from "./UniformGenerationTable";
-import user from "@testing-library/user-event";
+import userEvent from "@testing-library/user-event";
 
 const sizeListIds = [
     'e667d674-7df8-436b-a2b8-77b06e063d36',
@@ -67,41 +67,9 @@ jest.mock("@/dataFetcher/uniformAdmin", () => {
         })),
     };
 });
-jest.mock("@/lib/locales/client", () => {
-    return {
-        useI18n: jest.fn(() => (key: string) => key),
-    };
-})
-jest.mock("@/components/modals/modalProvider", () => {
-    const dangerModal = jest.fn();
-    return {
-        useModal: jest.fn(() => ({
-            dangerConfirmationModal: dangerModal,
-        })),
-    };
-});
 jest.mock("@/dal/uniform/generation/_index", () => {
     return {
         changeUniformGenerationSortOrder: jest.fn(() => "uniform generation sortOrder changed"),
-    };
-});
-jest.mock('@/lib/locales/client', () => {
-    return ({
-        useScopedI18n: jest.fn().mockImplementation((scope: string) => {
-            return function (key: string, values?: any) {
-                return `${scope}.${key}`;
-            }
-        }),
-        useI18n: jest.fn().mockImplementation(() => jest.fn((key) => key)),
-        useCurrentLocale: jest.fn(() => ({
-            locale: "de",
-            setLocale: jest.fn(),
-        })),
-    });
-});
-jest.mock("@/components/errorMessage", () => {
-    return function ErrorMessage({ error, ariaLabel, ...divProps }: { error: string, testId: string, ariaLabel: string }) {
-        return <div className="text-danger fs-7" role="alert" aria-label={ariaLabel} {...divProps}>{error}</div>;
     };
 });
 jest.mock("./UniformGenerationOffcanvas", () => {
@@ -122,20 +90,6 @@ jest.mock("@/components/reorderDnD/ReorderableTableBody", () => {
             )
         }),
     };
-})
-
-Object.defineProperty(window, 'matchMedia', {
-    writable: true,
-    value: jest.fn().mockImplementation(query => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: jest.fn(), // deprecated
-        removeListener: jest.fn(), // deprecated
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-    })),
 });
 
 describe('<UniformGenerationTable />', () => {
@@ -189,6 +143,7 @@ describe('<UniformGenerationTable />', () => {
     });
 
     it('should open the generation offcanvas when clicking the open button', async () => {
+        const user = userEvent.setup();
         render(<UniformGenerationTable uniformType={testType} />);
 
         const openButton = screen.getByText("Test Generation 1").closest("tr")?.getElementsByTagName("button")[0];
@@ -213,6 +168,7 @@ describe('<UniformGenerationTable />', () => {
     });
 
     it('should open the generation offcanvas when clicking the create button', async () => {
+        const user = userEvent.setup();
         render(<UniformGenerationTable uniformType={testType} />);
 
         const createButton = screen.getByTestId("btn_create");

@@ -107,9 +107,9 @@ exports[`<UniformgenerationOffcanvas> with generation should render the componen
             <div
               aria-label="error message name"
               class="text-danger fs-7"
+              data-testid="err_name"
               id="err_name"
               role="alert"
-              testid="err_name"
             />
           </div>
         </div>
@@ -143,8 +143,8 @@ exports[`<UniformgenerationOffcanvas> with generation should render the componen
             </div>
             <div
               class="text-danger fs-7"
+              data-testid="err_outdated"
               role="alert"
-              testid="err_outdated"
             />
           </div>
         </div>
@@ -170,9 +170,9 @@ exports[`<UniformgenerationOffcanvas> with generation should render the componen
             <div
               aria-label="error message fk_sizelist"
               class="text-danger fs-7"
+              data-testid="err_fk_sizelist"
               id="err_fk_sizelist"
               role="alert"
-              testid="err_fk_sizelist"
             />
           </div>
         </div>
@@ -290,9 +290,9 @@ exports[`<UniformgenerationOffcanvas> without generation should render in editab
             <div
               aria-label="error message name"
               class="text-danger fs-7"
+              data-testid="err_name"
               id="err_name"
               role="alert"
-              testid="err_name"
             />
           </div>
         </div>
@@ -326,8 +326,8 @@ exports[`<UniformgenerationOffcanvas> without generation should render in editab
             </div>
             <div
               class="text-danger fs-7"
+              data-testid="err_outdated"
               role="alert"
-              testid="err_outdated"
             />
           </div>
         </div>
@@ -373,9 +373,9 @@ exports[`<UniformgenerationOffcanvas> without generation should render in editab
             <div
               aria-label="error message fk_sizelist"
               class="text-danger fs-7"
+              data-testid="err_fk_sizelist"
               id="err_fk_sizelist"
               role="alert"
-              testid="err_fk_sizelist"
             />
           </div>
         </div>

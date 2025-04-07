@@ -17,6 +17,7 @@ const customJestConfig: Config = { // CONFIGURATION FOR DATA-ACCESS-LAYER
     testMatch: [
         "**/src/dal/**/*.test.[jt]s?(x)",
     ],
+    maxWorkers: 1,
 }
 
 export default customJestConfig;

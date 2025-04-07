@@ -1,7 +1,7 @@
 import { UniformType } from "@/types/globalUniformTypes";
 import { render, screen } from "@testing-library/react";
 import { UniformTypeOffcanvas } from "./UniformTypeOffcanvas";
-import user from "@testing-library/user-event";
+import userEvent from "@testing-library/user-event";
 
 const sizeListIds = [
     'e667d674-7df8-436b-a2b8-77b06e063d36',
@@ -47,19 +47,7 @@ jest.mock("@/dataFetcher/uniformAdmin", () => {
         })),
     };
 });
-jest.mock("@/lib/locales/client", () => {
-    return {
-        useI18n: jest.fn(() => (key: string) => key),
-    };
-});
-jest.mock("@/components/modals/modalProvider", () => {
-    const dangerModal = jest.fn();
-    return {
-        useModal: jest.fn(() => ({
-            dangerConfirmationModal: dangerModal,
-        })),
-    };
-});
+
 jest.mock("@/dal/uniform/type/_index", () => {
     return {
         createUniformType: jest.fn(async () => ({ id: 'new-type-id' })),
@@ -73,44 +61,12 @@ jest.mock("@/dal/uniform/item/_index", () => {
         getUniformItemCountByType: mock,
     };
 });
-jest.mock('@/lib/locales/client', () => {
-    return ({
-        useScopedI18n: jest.fn().mockImplementation((scope: string) => {
-            return function (key: string, values?: any) {
-                return `${scope}.${key}`;
-            }
-        }),
-        useI18n: jest.fn().mockImplementation(() => jest.fn((key) => key)),
-        useCurrentLocale: jest.fn(() => ({
-            locale: "de",
-            setLocale: jest.fn(),
-        })),
-    });
-});
-jest.mock("@/components/errorMessage", () => {
-    return function ErrorMessage({ error, ariaLabel, ...divProps }: { error: string, testId: string, ariaLabel: string }) {
-        return <div className="text-danger fs-7" role="alert" aria-label={ariaLabel} {...divProps}>{error}</div>;
-    };
-});
+
 jest.mock("./UniformGenerationTable", () => {
     const mock = jest.fn(() => <div data-testid="generationTableMock">Generation Table</div>);
     return {
         UniformGenerationTable: mock,
     };
-});
-
-Object.defineProperty(window, 'matchMedia', {
-    writable: true,
-    value: jest.fn().mockImplementation(query => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: jest.fn(), // deprecated
-        removeListener: jest.fn(), // deprecated
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-    })),
 });
 
 describe('<UniformTypeOffcanvas />', () => {
@@ -123,6 +79,7 @@ describe('<UniformTypeOffcanvas />', () => {
     afterEach(() => jest.clearAllMocks());
 
     it('should render the component and handle setEditable', async () => {
+        const user = userEvent.setup();
         const setEditable = jest.fn();
         render(
             <UniformTypeOffcanvas
@@ -157,6 +114,7 @@ describe('<UniformTypeOffcanvas />', () => {
     });
 
     it('should reset the form values and call setEditable with false on cancel', async () => {
+        const user = userEvent.setup();
         const setEditable = jest.fn();
         const setSelectedTypeId = jest.fn();
         render(
@@ -205,6 +163,7 @@ describe('<UniformTypeOffcanvas />', () => {
     });
 
     it('should hide default sizelist if usingSizes is false', async () => {
+        const user = userEvent.setup();
         const setEditable = jest.fn();
         const { unmount } = render(
             <UniformTypeOffcanvas
@@ -237,7 +196,7 @@ describe('<UniformTypeOffcanvas />', () => {
         expect(screen.queryByRole('combobox', { name: 'common.uniform.type.defaultSizelist' })).not.toBeInTheDocument();
         expect(screen.getByRole('switch', { name: 'common.uniform.type.usingSizes' })).toHaveAttribute('aria-checked', 'false');
 
-        await screen.getByRole('switch', { name: 'common.uniform.type.usingSizes' }).click();
+        await user.click(screen.getByRole('switch', { name: 'common.uniform.type.usingSizes' }));
         expect(screen.getByRole('combobox', { name: 'common.uniform.type.defaultSizelist' })).toBeInTheDocument();
         expect(screen.getByRole('switch', { name: 'common.uniform.type.usingSizes' })).toHaveAttribute('aria-checked', 'true');
     });
@@ -278,6 +237,7 @@ describe('<UniformTypeOffcanvas />', () => {
     describe('dal-Methods', () => {
 
         it('should call deleteUniformType DAL method', async () => {
+            const user = userEvent.setup();
             deleteUniformType.mockReturnValue('uniform type deleted');
             const setSelectedTypeId = jest.fn();
 
@@ -325,6 +285,7 @@ describe('<UniformTypeOffcanvas />', () => {
         });
 
         it('should call createUniformType DAL method', async () => {
+            const user = userEvent.setup();
             const setEditable = jest.fn();
             const setSelectedTypeId = jest.fn();
             render(
@@ -362,6 +323,7 @@ describe('<UniformTypeOffcanvas />', () => {
 
 
         it('should call updateUniformType DAL method', async () => {
+            const user = userEvent.setup();
             const setEditable = jest.fn();
             render(
                 <UniformTypeOffcanvas
@@ -402,6 +364,7 @@ describe('<UniformTypeOffcanvas />', () => {
         });
 
         it('should catch name and acronym errors for save', async () => {
+            const user = userEvent.setup();
             const setEditable = jest.fn();
             render(
                 <UniformTypeOffcanvas
@@ -451,6 +414,7 @@ describe('<UniformTypeOffcanvas />', () => {
         });
 
         it('should catch name and acronym errors for create', async () => {
+            const user = userEvent.setup();
             const setEditable = jest.fn();
             render(
                 <UniformTypeOffcanvas
@@ -505,6 +469,7 @@ describe('<UniformTypeOffcanvas />', () => {
         });
 
         it('should only allow defaultSizelist null if usingSizes is false', async () => {
+            const user = userEvent.setup();
             render(
                 <UniformTypeOffcanvas
                     uniformType={null}

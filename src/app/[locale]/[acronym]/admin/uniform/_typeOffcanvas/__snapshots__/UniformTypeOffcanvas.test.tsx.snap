@@ -118,9 +118,9 @@ exports[`<UniformTypeOffcanvas /> should handle editable states correctly 1`] = 
             <div
               aria-label="error message name"
               class="text-danger fs-7"
+              data-testid="err_name"
               id="err_name"
               role="alert"
-              testid="err_name"
             />
           </div>
         </div>
@@ -151,9 +151,9 @@ exports[`<UniformTypeOffcanvas /> should handle editable states correctly 1`] = 
             <div
               aria-label="error message acronym"
               class="text-danger fs-7"
+              data-testid="err_acronym"
               id="err_acronym"
               role="alert"
-              testid="err_acronym"
             />
           </div>
         </div>
@@ -179,8 +179,8 @@ exports[`<UniformTypeOffcanvas /> should handle editable states correctly 1`] = 
             />
             <div
               class="text-danger fs-7"
+              data-testid="err_issuedDefault"
               role="alert"
-              testid="err_issuedDefault"
             />
           </div>
         </div>
@@ -226,9 +226,9 @@ exports[`<UniformTypeOffcanvas /> should handle editable states correctly 1`] = 
             <div
               aria-label="error message fk_defaultSizelist"
               class="text-danger fs-7"
+              data-testid="err_fk_defaultSizelist"
               id="err_fk_defaultSizelist"
               role="alert"
-              testid="err_fk_defaultSizelist"
             />
           </div>
         </div>
@@ -263,8 +263,8 @@ exports[`<UniformTypeOffcanvas /> should handle editable states correctly 1`] = 
             </div>
             <div
               class="text-danger fs-7"
+              data-testid="err_usingSizes"
               role="alert"
-              testid="err_usingSizes"
             />
           </div>
         </div>
@@ -299,8 +299,8 @@ exports[`<UniformTypeOffcanvas /> should handle editable states correctly 1`] = 
             </div>
             <div
               class="text-danger fs-7"
+              data-testid="err_usingGenerations"
               role="alert"
-              testid="err_usingGenerations"
             />
           </div>
         </div>
@@ -399,9 +399,9 @@ exports[`<UniformTypeOffcanvas /> should render correct layout when no uniformTy
             <div
               aria-label="error message name"
               class="text-danger fs-7"
+              data-testid="err_name"
               id="err_name"
               role="alert"
-              testid="err_name"
             />
           </div>
         </div>
@@ -432,9 +432,9 @@ exports[`<UniformTypeOffcanvas /> should render correct layout when no uniformTy
             <div
               aria-label="error message acronym"
               class="text-danger fs-7"
+              data-testid="err_acronym"
               id="err_acronym"
               role="alert"
-              testid="err_acronym"
             />
           </div>
         </div>
@@ -460,8 +460,8 @@ exports[`<UniformTypeOffcanvas /> should render correct layout when no uniformTy
             />
             <div
               class="text-danger fs-7"
+              data-testid="err_issuedDefault"
               role="alert"
-              testid="err_issuedDefault"
             />
           </div>
         </div>
@@ -498,8 +498,8 @@ exports[`<UniformTypeOffcanvas /> should render correct layout when no uniformTy
             </div>
             <div
               class="text-danger fs-7"
+              data-testid="err_usingSizes"
               role="alert"
-              testid="err_usingSizes"
             />
           </div>
         </div>
@@ -533,8 +533,8 @@ exports[`<UniformTypeOffcanvas /> should render correct layout when no uniformTy
             </div>
             <div
               class="text-danger fs-7"
+              data-testid="err_usingGenerations"
               role="alert"
-              testid="err_usingGenerations"
             />
           </div>
         </div>
@@ -677,9 +677,9 @@ exports[`<UniformTypeOffcanvas /> should render the component and handle setEdit
             <div
               aria-label="error message name"
               class="text-danger fs-7"
+              data-testid="err_name"
               id="err_name"
               role="alert"
-              testid="err_name"
             />
           </div>
         </div>
@@ -711,9 +711,9 @@ exports[`<UniformTypeOffcanvas /> should render the component and handle setEdit
             <div
               aria-label="error message acronym"
               class="text-danger fs-7"
+              data-testid="err_acronym"
               id="err_acronym"
               role="alert"
-              testid="err_acronym"
             />
           </div>
         </div>
@@ -740,8 +740,8 @@ exports[`<UniformTypeOffcanvas /> should render the component and handle setEdit
             />
             <div
               class="text-danger fs-7"
+              data-testid="err_issuedDefault"
               role="alert"
-              testid="err_issuedDefault"
             />
           </div>
         </div>
@@ -767,9 +767,9 @@ exports[`<UniformTypeOffcanvas /> should render the component and handle setEdit
             <div
               aria-label="error message fk_defaultSizelist"
               class="text-danger fs-7"
+              data-testid="err_fk_defaultSizelist"
               id="err_fk_defaultSizelist"
               role="alert"
-              testid="err_fk_defaultSizelist"
             />
           </div>
         </div>
@@ -804,8 +804,8 @@ exports[`<UniformTypeOffcanvas /> should render the component and handle setEdit
             </div>
             <div
               class="text-danger fs-7"
+              data-testid="err_usingSizes"
               role="alert"
-              testid="err_usingSizes"
             />
           </div>
         </div>
@@ -840,8 +840,8 @@ exports[`<UniformTypeOffcanvas /> should render the component and handle setEdit
             </div>
             <div
               class="text-danger fs-7"
+              data-testid="err_usingGenerations"
               role="alert"
-              testid="err_usingGenerations"
             />
           </div>
         </div>

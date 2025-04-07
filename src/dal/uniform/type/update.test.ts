@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { update } from "./update";
 import { UniformTypeFormType } from "@/zod/uniformConfig";
+import { ZodError } from "zod";
 
 const { ids, cleanup } = new StaticData(0);
 const defaultProps = {
@@ -90,8 +91,9 @@ describe('<UniformType> update', () => {
         );
 
         expect(success).toBeFalsy();
-        expect(result.error.formElement).toEqual('fk_defaultSizelist');
-        expect(result.error.message).toEqual('pleaseSelect');
+        expect(result instanceof ZodError).toBeTruthy();
+        expect(result.errors[0].path[1]).toEqual('fk_defaultSizelist');
+        expect(result.errors[0].message).toEqual('string.required');
     });
     it('should not return error if fk_defaultSizelist is not null and usinsSizes true', async () => {
         const { success, result } = await runServerActionTest(

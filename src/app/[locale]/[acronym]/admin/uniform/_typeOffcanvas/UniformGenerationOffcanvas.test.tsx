@@ -1,6 +1,6 @@
 import { UniformgenerationOffcanvas } from "@/app/[locale]/[acronym]/admin/uniform/_typeOffcanvas/UniformGenerationOffcanvas";
 import { render, screen } from "@testing-library/react";
-import user from "@testing-library/user-event";
+import userEvent from "@testing-library/user-event";
 
 
 const sizeListIds = [
@@ -33,19 +33,6 @@ jest.mock("@/dataFetcher/uniformAdmin", () => {
         })),
     };
 });
-jest.mock("@/lib/locales/client", () => {
-    return {
-        useI18n: jest.fn(() => (key: string) => key),
-    };
-});
-jest.mock("@/components/modals/modalProvider", () => {
-    const dangerModal = jest.fn();
-    return {
-        useModal: jest.fn(() => ({
-            dangerConfirmationModal: dangerModal,
-        })),
-    };
-});
 jest.mock("@/dal/uniform/generation/_index", () => {
     return {
         createUniformGeneration: jest.fn(async () => "uniform generation created"),
@@ -53,39 +40,7 @@ jest.mock("@/dal/uniform/generation/_index", () => {
         updateUniformGeneration: jest.fn(async () => "uniform generation updated"),
     };
 });
-jest.mock('@/lib/locales/client', () => {
-    return ({
-        useScopedI18n: jest.fn().mockImplementation((scope: string) => {
-            return function (key: string, values?: any) {
-                return `${scope}.${key}`;
-            }
-        }),
-        useI18n: jest.fn().mockImplementation(() => jest.fn((key) => key)),
-        useCurrentLocale: jest.fn(() => ({
-            locale: "de",
-            setLocale: jest.fn(),
-        })),
-    });
-});
-jest.mock("@/components/errorMessage", () => {
-    return function ErrorMessage({ error, ariaLabel, ...divProps}: { error: string, testId: string, ariaLabel: string }) {
-        return <div className="text-danger fs-7" role="alert" aria-label={ariaLabel} {...divProps}>{error}</div>;
-    };
-});
 
-Object.defineProperty(window, 'matchMedia', {
-    writable: true,
-    value: jest.fn().mockImplementation(query => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: jest.fn(), // deprecated
-        removeListener: jest.fn(), // deprecated
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-    })),
-});
 
 describe('<UniformgenerationOffcanvas>', () => {
     const { updateUniformGeneration, createUniformGeneration, deleteUniformGeneration } = require('@/dal/uniform/generation/_index');
@@ -147,6 +102,7 @@ describe('<UniformgenerationOffcanvas>', () => {
             expect(sizeSelect).toHaveClass('text-danger');
         });
         it('should set editable state', async () => {
+            const user = userEvent.setup();
             render(
                 <UniformgenerationOffcanvas
                     generation={testGeneration}
@@ -204,6 +160,8 @@ describe('<UniformgenerationOffcanvas>', () => {
         });
 
         it('resets on cancel', async () => {
+            
+            const user = userEvent.setup();
             render(
                 <UniformgenerationOffcanvas
                     generation={testGeneration}
@@ -253,6 +211,7 @@ describe('<UniformgenerationOffcanvas>', () => {
         });
 
         it('should hide on Cancel', async () => {
+            const user = userEvent.setup();
             const onHide = jest.fn();
             render(
                 <UniformgenerationOffcanvas
@@ -271,6 +230,7 @@ describe('<UniformgenerationOffcanvas>', () => {
     });
     describe('dal methods', () => {
         it('should delete generation', async () => {
+            const user = userEvent.setup();
             deleteUniformGeneration.mockReturnValue('uniform generation deleted');
             const onHide = jest.fn();
 
@@ -311,6 +271,7 @@ describe('<UniformgenerationOffcanvas>', () => {
             expect(onHide).toHaveBeenCalledTimes(1);
         });
         it('should call save function', async () => {
+            const user = userEvent.setup();
             const onHide = jest.fn();
             const { mutate } = useUniformTypeList();
 
@@ -356,6 +317,7 @@ describe('<UniformgenerationOffcanvas>', () => {
             expect(onHide).toHaveBeenCalledTimes(0);
         });
         it('should catch update form-errors', async () => {
+            const user = userEvent.setup();
             updateUniformGeneration.mockImplementationOnce(async () => {
                 return {
                     error: {
@@ -398,6 +360,7 @@ describe('<UniformgenerationOffcanvas>', () => {
             expect(errorMessage).toBeInTheDocument();
         });
         it('should call create function', async () => {
+            const user = userEvent.setup();
             const onHide = jest.fn();
             const { mutate } = useUniformTypeList();
 
@@ -436,6 +399,7 @@ describe('<UniformgenerationOffcanvas>', () => {
             onHide();
         });
         it('should catch create form-errors', async () => {
+            const user = userEvent.setup();
             createUniformGeneration.mockImplementationOnce(async () => {
                 return {
                     error: {
@@ -476,6 +440,7 @@ describe('<UniformgenerationOffcanvas>', () => {
     });
     describe('form validation', () => {
         it('should show error if name is empty', async () => {
+            const user = userEvent.setup();
             render(
                 <UniformgenerationOffcanvas
                     generation={testGeneration}
@@ -502,6 +467,7 @@ describe('<UniformgenerationOffcanvas>', () => {
         });
 
         it('should show error if sizelist is empty and usingSizes', async () => {
+            const user = userEvent.setup();
             render(
                 <UniformgenerationOffcanvas
                     generation={null}
@@ -521,6 +487,7 @@ describe('<UniformgenerationOffcanvas>', () => {
             expect(sizelistError).toHaveTextContent('pleaseSelect');
         });
         it('should allow sizelist empty if not usingSizes', async () => {
+            const user = userEvent.setup();
             render(
                 <UniformgenerationOffcanvas
                     generation={null}

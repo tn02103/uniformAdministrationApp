@@ -7,7 +7,9 @@
         "build": "prisma generate && next build",
         "start": "next start -p 3021",
         "test:e2e": "playwright test",
-        "test:jest": "jest",
+        "test:jest": "npm run test:jest:components && npm run test:jest:dal",
+        "test:jest:components": "jest --config jest.frontend.config.ts",
+        "test:jest:dal": "jest --config jest.backend.config.ts",
         "lint": "next lint"
     },
     "prisma": {

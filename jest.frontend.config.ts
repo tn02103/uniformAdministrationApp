@@ -13,8 +13,7 @@ const createJestConfig = nextJest({
 const customJestConfig: Config = {
     displayName: "ComponentTests",
     setupFilesAfterEnv: [
-        '<rootDir>/jest.setup.ts',
-        '<rootDir>/tests/_jestConfig/mockI18n.ts',
+        '<rootDir>/jest/jest.setup.tsx',
     ],
     testEnvironment: 'jest-environment-jsdom',
     moduleNameMapper: {
@@ -27,7 +26,6 @@ const customJestConfig: Config = {
         "**/src/components/**/*.test.[jt]s?(x)",
         "**/src/app/**/*.test.[jt]s?(x)",
     ],
-    maxWorkers: 10,
 };
 
 export default createJestConfig(customJestConfig);
