@@ -2,62 +2,10 @@ import { UniformType, UniformGeneration } from "@/types/globalUniformTypes";
 import { render, screen } from "@testing-library/react";
 import { UniformGenerationTable } from "./UniformGenerationTable";
 import userEvent from "@testing-library/user-event";
+import { testTypes } from "./testTypes";
 
-const sizeListIds = [
-    'e667d674-7df8-436b-a2b8-77b06e063d36',
-    'a961545b-28a7-409e-9200-1d85ccd53522',
-    '07de1d59-4fc6-447b-98a6-da916e5792ef',
-];
-const testType: UniformType = {
-    id: "fbe495ec-799e-46c9-8aa5-ca34e1447bf4",
-    name: "Test Type",
-    acronym: "TT",
-    sortOrder: 1,
-    usingSizes: true,
-    usingGenerations: true,
-    issuedDefault: 2,
-    fk_defaultSizelist: sizeListIds[0],
-    defaultSizelist: {
-        id: sizeListIds[0],
-        name: "Test Size List",
-    },
-    uniformGenerationList: [
-        {
-            id: "ab5d155c-49cf-4019-831e-ca7b3e0bd51c",
-            name: "Test Generation 1",
-            outdated: false,
-            sortOrder: 1,
-            fk_sizelist: sizeListIds[0],
-            sizelist: {
-                id: sizeListIds[0],
-                name: "Test Size List 1",
-            },
-        },
-        {
-            id: "7feb435c-ee23-486d-af9f-b7c874383e22",
-            name: "Test Generation 2",
-            outdated: false,
-            sortOrder: 2,
-            fk_sizelist: sizeListIds[1],
-            sizelist: {
-                id: sizeListIds[1],
-                name: "Test Size List 2",
-            },
-        },
-        {
-            id: "c46adb18-1a04-4dda-884d-972a7aa0e0da",
-            name: "Test Generation 3",
-            outdated: true,
-            sortOrder: 3,
-            fk_sizelist: sizeListIds[1],
-            sizelist: {
-                id: sizeListIds[1],
-                name: "Test Size List 2",
-            },
-        },
-    ],
-}
 
+const testType = testTypes[0];
 
 jest.mock("@/dataFetcher/uniformAdmin", () => {
     const typeListMutate = jest.fn();

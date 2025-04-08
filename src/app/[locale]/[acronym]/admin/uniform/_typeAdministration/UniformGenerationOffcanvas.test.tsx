@@ -1,4 +1,4 @@
-import { UniformgenerationOffcanvas } from "@/app/[locale]/[acronym]/admin/uniform/_typeOffcanvas/UniformGenerationOffcanvas";
+import { UniformgenerationOffcanvas } from "@/app/[locale]/[acronym]/admin/uniform/_typeAdministration/UniformGenerationOffcanvas";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
