@@ -1,11 +1,9 @@
-import { expect } from "playwright/test";
-import { UniformType } from "@prisma/client";
-import german from "../../../../public/locales/de";
-import { adminTest } from "../../../_playwrightConfig/setup";
-import { setTimeout } from "timers/promises";
 import { prisma } from "@/lib/db";
-import { off } from "process";
+import { UniformType } from "@prisma/client";
+import { expect } from "playwright/test";
+import german from "../../../../public/locales/de";
 import { DangerConfirmationModal } from "../../../_playwrightConfig/pages/popups/DangerConfirmationPopup.component";
+import { adminTest } from "../../../_playwrightConfig/setup";
 
 
 const actionText = german.common.actions;
@@ -231,6 +229,8 @@ test.describe('UniformType Configuration', () => {
             await expect(thirdRow).toBeVisible()
             await expect(thirdRowMove).toBeVisible();
             await firstRowMove.locator('span[draggable]').dragTo(thirdRowMove);
+
+            await expect(page.getByText(german.common.success.changeSortorder)).toBeVisible();
         });
 
         await test.step('check if the order is changed', async () => {
@@ -272,6 +272,8 @@ test.describe('UniformType Configuration', () => {
             await expect(thirdRow).toBeVisible()
             await expect(thirdRowMove).toBeVisible();
             await thirdRowMove.locator('span[draggable]').dragTo(secondRowMove);
+
+            await expect(page.getByText(german.common.success.changeSortorder)).toBeVisible();
         });
 
         await test.step('check if the order is changed', async () => {

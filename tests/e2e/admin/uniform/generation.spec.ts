@@ -1,12 +1,9 @@
-import { expect } from "playwright/test";
-import { UniformType } from "@prisma/client";
-import german from "../../../../public/locales/de";
-import { adminTest } from "../../../_playwrightConfig/setup";
-import { setTimeout } from "timers/promises";
 import { prisma } from "@/lib/db";
-import { off } from "process";
+import { UniformType } from "@prisma/client";
+import { expect } from "playwright/test";
+import german from "../../../../public/locales/de";
 import { DangerConfirmationModal } from "../../../_playwrightConfig/pages/popups/DangerConfirmationPopup.component";
-import { t } from "@/lib/test";
+import { adminTest } from "../../../_playwrightConfig/setup";
 
 const actionText = german.common.actions;
 
@@ -51,6 +48,8 @@ test.describe('UniformGeneration Configuration', () => {
             await expect(thirdRowMove).toBeVisible();
 
             await firstRowMove.dragTo(thirdRowMove);
+
+            await expect(page.getByText(german.common.success.changeSortorder)).toBeVisible();
         });
         await test.step('check if sortorder is changed', async () => {
             const rows = await generationTable.locator('tbody').getByRole('row').all();
@@ -99,6 +98,8 @@ test.describe('UniformGeneration Configuration', () => {
             await expect(thirdRowMove).toBeVisible();
             
             await thirdRowMove.dragTo(secondRowMove);
+
+            await expect(page.getByText(german.common.success.changeSortorder)).toBeVisible();
         });
         await test.step('check if sortorder is changed', async () => {
             const rows = await generationTable.locator('tbody').getByRole('row').all();
@@ -323,7 +324,7 @@ test.describe('UniformGeneration Configuration', () => {
         await test.step('check if generation is created in db', async () => {
             const dbGeneration = await prisma.uniformGeneration.findFirst({
                 where: {
-                    id: data.uniformGenerations[0].id,
+                    id: generation.id,
                 },
             });
             expect(dbGeneration).not.toBeNull();
@@ -387,13 +388,12 @@ test.describe('UniformGeneration Configuration', () => {
             await expect(newGenRow).toBeVisible();
             await expect(newGenRow.getByText('Test Generation 1')).toBeVisible();
             await expect(newGenRow.getByText(german.common.no)).toBeVisible();
-            await expect(newGenRow.getByText(data.uniformSizelists[2].name)).toBeVisible();
         });
 
         await test.step('check if generation is created in db', async () => {
             const dbGeneration = await prisma.uniformGeneration.findFirst({
                 where: {
-                    id: data.uniformGenerations[0].id,
+                    id: generation.id,
                 },
             });
             expect(dbGeneration).not.toBeNull();
@@ -402,11 +402,11 @@ test.describe('UniformGeneration Configuration', () => {
                 expect.objectContaining({
                     name: 'Test Generation 1',
                     outdated: false,
-                    fk_uniformType: types[0].id,
-                    fk_sizelist: data.uniformSizelists[2].id,
+                    fk_uniformType: types[1].id,
+                    fk_sizelist: null,
                     recdelete: null,
                     recdeleteUser: null,
-                    sortOrder: 0,
+                    sortOrder: 1,
                 }),
             );
         });

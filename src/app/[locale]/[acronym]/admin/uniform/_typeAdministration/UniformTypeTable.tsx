@@ -35,7 +35,9 @@ export const UniformTypeTable = (props: { initialTypeList: UniformType[] }) => {
             {
                 optimisticData: newArray
             }
-        ).catch((e) => {
+        ).then(() => {
+            toast.success(t('common.success.changeSortorder'));
+        }).catch((e) => {
             console.error(e);
             toast.error(t('common.error.actions.changeSortorder'));
         });

@@ -58,7 +58,7 @@ describe("<UniformTypeTable />", () => {
         expect(screen.getByRole("table").closest('div')).toMatchSnapshot();
     });
 
-    it("should call onDragEnd and change sort order correctly", () => {
+    it("should call onDragEnd and change sort order correctly", async () => {
         changeUniformTypeSortOrder.mockReturnValue("uniform type sortOrder changed");
         render(<UniformTypeTable initialTypeList={testTypes} />);
 
@@ -69,10 +69,13 @@ describe("<UniformTypeTable />", () => {
             testTypes[0],
             testTypes[3],
         ]
-        onDragEndFunction?.(newArray, testTypes[0].id);
+        await onDragEndFunction?.(newArray, testTypes[0].id);
 
         expect(changeUniformTypeSortOrder).toHaveBeenCalledWith({ typeId: testTypes[0].id, newPosition: 2 });
         expect(mockMutate).toHaveBeenCalledWith("uniform type sortOrder changed", { optimisticData: newArray });
+
+        expect(toast.success).toHaveBeenCalledTimes(1);
+        expect(toast.success).toHaveBeenCalledWith("common.success.changeSortorder");
     });
 
     it('should catch error when change sort order fails', async () => {
