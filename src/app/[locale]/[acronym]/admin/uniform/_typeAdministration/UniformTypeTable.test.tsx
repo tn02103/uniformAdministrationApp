@@ -5,11 +5,11 @@ import { testTypes } from "./testTypes";
 import { UniformTypeTable } from "./UniformTypeTable";
 
 jest.mock("@/dal/uniform/type/_index", () => ({
-    changeUniformTypeSortOrder: jest.fn(),
+    changeUniformTypeSortOrder: jest.fn(async () => "uniform type sortOrder changed"),
 }));
 
 jest.mock("@/dataFetcher/uniformAdmin", () => {
-    const mutateMock = jest.fn();
+    const mutateMock = jest.fn(async (a,) => await a);
     return {
         useUniformTypeList: jest.fn(() => ({
             mutate: mutateMock,
@@ -17,7 +17,7 @@ jest.mock("@/dataFetcher/uniformAdmin", () => {
         })),
     }
 });
-let onDragEndFunction: undefined | ((newArray: UniformType[], itemId: string) => void) = undefined;
+let onDragEndFunction: undefined | ((newArray: UniformType[], itemId: string) => Promise<any>) = undefined;
 jest.mock("@/components/reorderDnD/ReorderableTableBody", () => {
     return {
         ReorderableTableBody: jest.fn(({ items, itemType, onDragEnd, children }) => {
@@ -44,6 +44,7 @@ describe("<UniformTypeTable />", () => {
     const { changeUniformTypeSortOrder } = require("@/dal/uniform/type/_index");
     const { useUniformTypeList } = require("@/dataFetcher/uniformAdmin");
     const { UniformTypeOffcanvas } = require("./UniformTypeOffcanvas");
+    const { toast } = require("react-toastify");
     const mockMutate = useUniformTypeList().mutate;
 
     afterEach(() => {
@@ -72,6 +73,27 @@ describe("<UniformTypeTable />", () => {
 
         expect(changeUniformTypeSortOrder).toHaveBeenCalledWith({ typeId: testTypes[0].id, newPosition: 2 });
         expect(mockMutate).toHaveBeenCalledWith("uniform type sortOrder changed", { optimisticData: newArray });
+    });
+
+    it('should catch error when change sort order fails', async () => {
+        changeUniformTypeSortOrder.mockImplementation(async () => { throw new Error("error") });
+        render(<UniformTypeTable initialTypeList={testTypes} />);
+
+        expect(onDragEndFunction).toBeDefined();
+        const newArray = [
+            testTypes[1],
+            testTypes[2],
+            testTypes[0],
+            testTypes[3],
+        ]
+        await onDragEndFunction?.(newArray, testTypes[0].id);
+
+
+        expect(changeUniformTypeSortOrder).toHaveBeenCalledWith({ typeId: testTypes[0].id, newPosition: 2 });
+        expect(mockMutate).not.toHaveBeenCalledWith("uniform type sortOrder changed", { optimisticData: newArray });
+
+        expect(toast.error).toHaveBeenCalledTimes(1);
+        expect(toast.error).toHaveBeenCalledWith("common.error.actions.changeSortorder");
     });
 
     it("should not call sortOrder function when itemId is not in the list", () => {

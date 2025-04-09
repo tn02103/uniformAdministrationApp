@@ -1,4 +1,5 @@
 import { UniformgenerationOffcanvas } from "@/app/[locale]/[acronym]/admin/uniform/_typeAdministration/UniformGenerationOffcanvas";
+import { update } from "@/dal/uniform/type/update";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -23,7 +24,7 @@ const testGeneration = {
 
 
 jest.mock("@/dataFetcher/uniformAdmin", () => {
-    const typeListMutate = jest.fn();
+    const typeListMutate = jest.fn(async (a) => a);
     return {
         useUniformSizelists: jest.fn(() => ({
             sizelistList: [{ id: sizeListIds[0], name: "Test Size List" }, { id: sizeListIds[1], name: "Test Size List 2" }, { id: sizeListIds[2], name: "Test Size List 3" }],
@@ -44,8 +45,9 @@ jest.mock("@/dal/uniform/generation/_index", () => {
 
 describe('<UniformgenerationOffcanvas>', () => {
     const { updateUniformGeneration, createUniformGeneration, deleteUniformGeneration } = require('@/dal/uniform/generation/_index');
-    const { useUniformTypeList, useUniformSizelists } = require('@/dataFetcher/uniformAdmin');
+    const mutate = require('@/dataFetcher/uniformAdmin').useUniformTypeList().mutate;
     const { useModal } = require('@/components/modals/modalProvider');
+    const { toast } = require('react-toastify');
 
     afterEach(() => jest.clearAllMocks());
 
@@ -160,7 +162,7 @@ describe('<UniformgenerationOffcanvas>', () => {
         });
 
         it('resets on cancel', async () => {
-            
+
             const user = userEvent.setup();
             render(
                 <UniformgenerationOffcanvas
@@ -229,213 +231,305 @@ describe('<UniformgenerationOffcanvas>', () => {
         });
     });
     describe('dal methods', () => {
-        it('should delete generation', async () => {
-            const user = userEvent.setup();
-            deleteUniformGeneration.mockReturnValue('uniform generation deleted');
-            const onHide = jest.fn();
+        describe('delete', () => {
+            it('deletes generation', async () => {
+                const user = userEvent.setup();
+                deleteUniformGeneration.mockReturnValue('uniform generation deleted');
+                const onHide = jest.fn();
 
-            let dangerOption;
-            const { dangerConfirmationModal } = useModal();
-            dangerConfirmationModal.mockImplementation((option: any) => dangerOption = option.dangerOption);
-            const { mutate } = useUniformTypeList();
+                let dangerOption;
+                const { dangerConfirmationModal } = useModal();
+                dangerConfirmationModal.mockImplementation((option: any) => dangerOption = option.dangerOption);
 
-            render(
-                <UniformgenerationOffcanvas
-                    generation={testGeneration}
-                    uniformTypeId={uniformTypeId}
-                    usingSizes={true}
-                    onHide={onHide}
-                />
-            );
+                render(
+                    <UniformgenerationOffcanvas
+                        generation={testGeneration}
+                        uniformTypeId={uniformTypeId}
+                        usingSizes={true}
+                        onHide={onHide}
+                    />
+                );
 
-            const deleteButton = screen.getByText('common.actions.delete');
-            await user.click(deleteButton);
+                const deleteButton = screen.getByText('common.actions.delete');
+                await user.click(deleteButton);
 
-            expect(dangerConfirmationModal).toHaveBeenCalled();
-            expect(dangerConfirmationModal).toHaveBeenCalledWith({
-                header: 'admin.uniform.generationList.deleteModal.header',
-                message: expect.anything(),
-                confirmationText: 'admin.uniform.generationList.deleteModal.confirmationText',
-                dangerOption: {
-                    option: 'common.actions.delete',
-                    function: expect.any(Function),
-                },
+                expect(dangerConfirmationModal).toHaveBeenCalled();
+                expect(dangerConfirmationModal).toHaveBeenCalledWith({
+                    header: 'admin.uniform.generationList.deleteModal.header',
+                    message: expect.anything(),
+                    confirmationText: 'admin.uniform.generationList.deleteModal.confirmationText',
+                    dangerOption: {
+                        option: 'common.actions.delete',
+                        function: expect.any(Function),
+                    },
+                });
+                expect(dangerOption).toBeDefined();
+
+                await dangerOption!.function();
+                expect(deleteUniformGeneration).toHaveBeenCalledTimes(1);
+                expect(deleteUniformGeneration).toHaveBeenCalledWith(testGeneration.id);
+                expect(mutate).toHaveBeenCalledTimes(1);
+                expect(mutate).toHaveBeenCalledWith("uniform generation deleted");
+                expect(onHide).toHaveBeenCalledTimes(1);
             });
-            expect(dangerOption).toBeDefined();
+            it('catches DAL-Exceptions', async () => {
+                const user = userEvent.setup();
+                deleteUniformGeneration.mockImplementationOnce(async () => { throw new Error("custom.error") });
+                const onHide = jest.fn();
 
-            await dangerOption!.function();
-            expect(deleteUniformGeneration).toHaveBeenCalledTimes(1);
-            expect(deleteUniformGeneration).toHaveBeenCalledWith(testGeneration.id);
-            expect(mutate).toHaveBeenCalledTimes(1);
-            expect(mutate).toHaveBeenCalledWith("uniform generation deleted");
-            expect(onHide).toHaveBeenCalledTimes(1);
+                let dangerOption;
+                const { dangerConfirmationModal } = useModal();
+                dangerConfirmationModal.mockImplementation((option: any) => dangerOption = option.dangerOption);
+
+                render(
+                    <UniformgenerationOffcanvas
+                        generation={testGeneration}
+                        uniformTypeId={uniformTypeId}
+                        usingSizes={true}
+                        onHide={onHide}
+                    />
+                );
+
+                const deleteButton = screen.getByText('common.actions.delete');
+                await user.click(deleteButton);
+                expect(dangerConfirmationModal).toHaveBeenCalled();
+
+                expect(dangerOption).toBeDefined();
+                await dangerOption!.function();
+
+                expect(deleteUniformGeneration).toHaveBeenCalledTimes(1);
+                expect(mutate).toHaveBeenCalledTimes(1);
+                expect(onHide).not.toHaveBeenCalled();
+
+                expect(toast.error).toHaveBeenCalledTimes(1);
+                expect(toast.error).toHaveBeenCalledWith("common.error.actions.delete");
+            });
         });
-        it('should call save function', async () => {
-            const user = userEvent.setup();
-            const onHide = jest.fn();
-            const { mutate } = useUniformTypeList();
+        describe('create', () => {
+            it('creates succefully', async () => {
+                const user = userEvent.setup();
+                const onHide = jest.fn();
 
-            render(
-                <UniformgenerationOffcanvas
-                    generation={testGeneration}
-                    uniformTypeId={uniformTypeId}
-                    usingSizes={true}
-                    onHide={onHide}
-                />
-            );
+                render(
+                    <UniformgenerationOffcanvas
+                        generation={null}
+                        uniformTypeId={uniformTypeId}
+                        usingSizes={true}
+                        onHide={onHide}
+                    />
+                );
 
-            const editButton = screen.getByText('common.actions.edit');
-            await user.click(editButton);
+                const nameInput = screen.getByRole('textbox', { name: 'common.name' });
+                const outdatedSwitch = screen.getByRole('switch', { name: 'common.uniform.generation.outdated' });
+                const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.sizelist.label' });
+                const createButton = screen.getByText('common.actions.create');
 
-            const nameInput = screen.getByRole('textbox', { name: 'common.name' });
-            const outdatedSwitch = screen.getByRole('switch', { name: 'common.uniform.generation.outdated' });
-            const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.sizelist.label' });
-            const saveButton = screen.getByText('common.actions.save');
+                await user.type(nameInput, 'New Name');
+                await user.click(outdatedSwitch);
+                await user.selectOptions(sizeSelect, sizeListIds[1]);
+                expect(nameInput).toHaveValue('New Name');
+                expect(outdatedSwitch).toHaveAttribute('aria-checked', 'true');
+                expect(sizeSelect).toHaveValue(sizeListIds[1]);
+                await user.click(createButton);
 
-            await user.clear(nameInput);
-            await user.type(nameInput, 'New Name');
-            await user.click(outdatedSwitch);
-            await user.selectOptions(sizeSelect, sizeListIds[1]);
-
-            expect(nameInput).toHaveValue('New Name');
-            expect(outdatedSwitch).toHaveAttribute('aria-checked', 'true');
-            expect(sizeSelect).toHaveValue(sizeListIds[1]);
-
-            await user.click(saveButton);
-            expect(updateUniformGeneration).toHaveBeenCalledTimes(1);
-            expect(updateUniformGeneration).toHaveBeenCalledWith({
-                data: {
+                expect(createUniformGeneration).toHaveBeenCalledTimes(1);
+                expect(createUniformGeneration).toHaveBeenCalledWith({
                     name: 'New Name',
                     outdated: true,
                     fk_sizelist: sizeListIds[1],
-                },
-                id: testGeneration.id,
+                    uniformTypeId: uniformTypeId,
+                });
+
+                expect(mutate).toHaveBeenCalledTimes(1);
+                expect(mutate).toHaveBeenCalledWith("uniform generation created");
+                expect(onHide).toHaveBeenCalledTimes(1);
             });
+            it('catches form-errors', async () => {
+                const user = userEvent.setup();
+                createUniformGeneration.mockImplementationOnce(async () => {
+                    return {
+                        error: {
+                            message: "custom.uniform.generation.nameDuplication",
+                            formElement: "name",
+                        }
+                    };
+                });
 
-            expect(mutate).toHaveBeenCalledTimes(1);
-            expect(mutate).toHaveBeenCalledWith("uniform generation updated");
-            expect(onHide).toHaveBeenCalledTimes(0);
-        });
-        it('should catch update form-errors', async () => {
-            const user = userEvent.setup();
-            updateUniformGeneration.mockImplementationOnce(async () => {
-                return {
-                    error: {
-                        message: "custom.uniform.generation.nameDuplication",
-                        formElement: "name",
-                    }
-                };
-            });
+                render(
+                    <UniformgenerationOffcanvas
+                        generation={null}
+                        uniformTypeId={uniformTypeId}
+                        usingSizes={true}
+                        onHide={() => { }}
+                    />
+                );
 
-            render(
-                <UniformgenerationOffcanvas
-                    generation={testGeneration}
-                    uniformTypeId={uniformTypeId}
-                    usingSizes={true}
-                    onHide={() => { }}
-                />
-            );
+                const nameInput = screen.getByRole('textbox', { name: 'common.name' });
+                const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.sizelist.label' });
+                const createButton = screen.getByText('common.actions.create');
 
-            const editButton = screen.getByText('common.actions.edit');
-            await user.click(editButton);
+                await user.type(nameInput, 'New Name');
+                await user.selectOptions(sizeSelect, sizeListIds[0]);
+                await user.click(createButton);
 
-            const nameInput = screen.getByRole('textbox', { name: 'common.name' });
-            const saveButton = screen.getByText('common.actions.save');
-
-            await user.clear(nameInput);
-            await user.type(nameInput, 'New Name');
-            await user.click(saveButton);
-
-            expect(updateUniformGeneration).toHaveBeenCalledTimes(1);
-            expect(updateUniformGeneration).toHaveBeenCalledWith({
-                data: {
+                expect(createUniformGeneration).toHaveBeenCalledTimes(1);
+                expect(createUniformGeneration).toHaveBeenCalledWith({
                     name: 'New Name',
                     outdated: false,
                     fk_sizelist: sizeListIds[0],
-                },
-                id: testGeneration.id,
-            });
+                    uniformTypeId: uniformTypeId,
+                });
 
-            const errorMessage = await screen.findByText('custom.uniform.generation.nameDuplication');
-            expect(errorMessage).toBeInTheDocument();
+                const errorMessage = await screen.findByText('custom.uniform.generation.nameDuplication');
+                expect(errorMessage).toBeInTheDocument();
+            });
+            it('catches DAL-Exception', async () => {
+                createUniformGeneration.mockImplementationOnce(async () => { throw new Error("custom.error") });
+                const user = userEvent.setup();
+                const onHide = jest.fn();
+
+                render(
+                    <UniformgenerationOffcanvas
+                        generation={null}
+                        uniformTypeId={uniformTypeId}
+                        usingSizes={true}
+                        onHide={onHide}
+                    />
+                );
+
+                const nameInput = screen.getByRole('textbox', { name: 'common.name' });
+                const outdatedSwitch = screen.getByRole('switch', { name: 'common.uniform.generation.outdated' });
+                const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.sizelist.label' });
+                const createButton = screen.getByText('common.actions.create');
+
+                await user.type(nameInput, 'New Name');
+                await user.click(outdatedSwitch);
+                await user.selectOptions(sizeSelect, sizeListIds[1]);
+                await user.click(createButton);
+
+                expect(createUniformGeneration).toHaveBeenCalledTimes(1);
+
+                expect(mutate).not.toHaveBeenCalledTimes(1);
+                expect(onHide).not.toHaveBeenCalled();
+
+                expect(toast.error).toHaveBeenCalledTimes(1);
+                expect(toast.error).toHaveBeenCalledWith("common.error.actions.create");
+            });
         });
-        it('should call create function', async () => {
-            const user = userEvent.setup();
-            const onHide = jest.fn();
-            const { mutate } = useUniformTypeList();
+        describe('update', () => {
+            it('updates succefully', async () => {
+                const user = userEvent.setup();
+                const onHide = jest.fn();
 
-            render(
-                <UniformgenerationOffcanvas
-                    generation={null}
-                    uniformTypeId={uniformTypeId}
-                    usingSizes={true}
-                    onHide={onHide}
-                />
-            );
+                render(
+                    <UniformgenerationOffcanvas
+                        generation={testGeneration}
+                        uniformTypeId={uniformTypeId}
+                        usingSizes={true}
+                        onHide={onHide}
+                    />
+                );
 
-            const nameInput = screen.getByRole('textbox', { name: 'common.name' });
-            const outdatedSwitch = screen.getByRole('switch', { name: 'common.uniform.generation.outdated' });
-            const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.sizelist.label' });
-            const createButton = screen.getByText('common.actions.create');
+                const editButton = screen.getByText('common.actions.edit');
+                await user.click(editButton);
 
-            await user.type(nameInput, 'New Name');
-            await user.click(outdatedSwitch);
-            await user.selectOptions(sizeSelect, sizeListIds[1]);
-            expect(nameInput).toHaveValue('New Name');
-            expect(outdatedSwitch).toHaveAttribute('aria-checked', 'true');
-            expect(sizeSelect).toHaveValue(sizeListIds[1]);
-            await user.click(createButton);
+                const nameInput = screen.getByRole('textbox', { name: 'common.name' });
+                const outdatedSwitch = screen.getByRole('switch', { name: 'common.uniform.generation.outdated' });
+                const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.sizelist.label' });
+                const saveButton = screen.getByText('common.actions.save');
 
-            expect(createUniformGeneration).toHaveBeenCalledTimes(1);
-            expect(createUniformGeneration).toHaveBeenCalledWith({
-                name: 'New Name',
-                outdated: true,
-                fk_sizelist: sizeListIds[1],
-                uniformTypeId: uniformTypeId,
+                await user.clear(nameInput);
+                await user.type(nameInput, 'New Name');
+                await user.click(outdatedSwitch);
+                await user.selectOptions(sizeSelect, sizeListIds[1]);
+
+                expect(nameInput).toHaveValue('New Name');
+                expect(outdatedSwitch).toHaveAttribute('aria-checked', 'true');
+                expect(sizeSelect).toHaveValue(sizeListIds[1]);
+
+                await user.click(saveButton);
+                expect(updateUniformGeneration).toHaveBeenCalledTimes(1);
+                expect(updateUniformGeneration).toHaveBeenCalledWith({
+                    data: {
+                        name: 'New Name',
+                        outdated: true,
+                        fk_sizelist: sizeListIds[1],
+                    },
+                    id: testGeneration.id,
+                });
+
+                expect(mutate).toHaveBeenCalledTimes(1);
+                expect(mutate).toHaveBeenCalledWith("uniform generation updated");
+                expect(onHide).toHaveBeenCalledTimes(0);
             });
+            it('catches form-errors', async () => {
+                const user = userEvent.setup();
+                updateUniformGeneration.mockImplementationOnce(async () => {
+                    return {
+                        error: {
+                            message: "custom.uniform.generation.nameDuplication",
+                            formElement: "name",
+                        }
+                    };
+                });
 
-            expect(mutate).toHaveBeenCalledTimes(1);
-            expect(mutate).toHaveBeenCalledWith("uniform generation created");
-            onHide();
-        });
-        it('should catch create form-errors', async () => {
-            const user = userEvent.setup();
-            createUniformGeneration.mockImplementationOnce(async () => {
-                return {
-                    error: {
-                        message: "custom.uniform.generation.nameDuplication",
-                        formElement: "name",
-                    }
-                };
+                render(
+                    <UniformgenerationOffcanvas
+                        generation={testGeneration}
+                        uniformTypeId={uniformTypeId}
+                        usingSizes={true}
+                        onHide={() => { }}
+                    />
+                );
+
+                const editButton = screen.getByText('common.actions.edit');
+                await user.click(editButton);
+
+                const nameInput = screen.getByRole('textbox', { name: 'common.name' });
+                const saveButton = screen.getByText('common.actions.save');
+
+                await user.clear(nameInput);
+                await user.type(nameInput, 'New Name');
+                await user.click(saveButton);
+
+                expect(updateUniformGeneration).toHaveBeenCalledTimes(1);
+                expect(updateUniformGeneration).toHaveBeenCalledWith({
+                    data: {
+                        name: 'New Name',
+                        outdated: false,
+                        fk_sizelist: sizeListIds[0],
+                    },
+                    id: testGeneration.id,
+                });
+
+                const errorMessage = await screen.findByText('custom.uniform.generation.nameDuplication');
+                expect(errorMessage).toBeInTheDocument();
             });
+            it('catches DAL-Exceptions', async () => {
+                updateUniformGeneration.mockImplementationOnce(async () => { throw new Error("custom.error") });
+                const user = userEvent.setup();
+                const onHide = jest.fn();
 
-            render(
-                <UniformgenerationOffcanvas
-                    generation={null}
-                    uniformTypeId={uniformTypeId}
-                    usingSizes={true}
-                    onHide={() => { }}
-                />
-            );
+                render(
+                    <UniformgenerationOffcanvas
+                        generation={testGeneration}
+                        uniformTypeId={uniformTypeId}
+                        usingSizes={true}
+                        onHide={onHide}
+                    />
+                );
 
-            const nameInput = screen.getByRole('textbox', { name: 'common.name' });
-            const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.sizelist.label' });
-            const createButton = screen.getByText('common.actions.create');
+                await user.click(screen.getByText('common.actions.edit'));
+                await user.click(screen.getByText('common.actions.save'));
 
-            await user.type(nameInput, 'New Name');
-            await user.selectOptions(sizeSelect, sizeListIds[0]);
-            await user.click(createButton);
+                expect(updateUniformGeneration).toHaveBeenCalledTimes(1);
+                
+                expect(mutate).not.toHaveBeenCalled();
+                expect(onHide).not.toHaveBeenCalled();
 
-            expect(createUniformGeneration).toHaveBeenCalledTimes(1);
-            expect(createUniformGeneration).toHaveBeenCalledWith({
-                name: 'New Name',
-                outdated: false,
-                fk_sizelist: sizeListIds[0],
-                uniformTypeId: uniformTypeId,
+                expect(toast.error).toHaveBeenCalledTimes(1);
+                expect(toast.error).toHaveBeenCalledWith("common.error.actions.save");
             });
-
-            const errorMessage = await screen.findByText('custom.uniform.generation.nameDuplication');
-            expect(errorMessage).toBeInTheDocument();
         });
     });
     describe('form validation', () => {
@@ -482,7 +576,7 @@ describe('<UniformgenerationOffcanvas>', () => {
             await user.type(nameInput, 'New Name');
             await user.click(createButton);
 
-            const sizelistError = screen.getByRole('alert', {name: 'error message fk_sizelist'});
+            const sizelistError = screen.getByRole('alert', { name: 'error message fk_sizelist' });
             expect(sizelistError).toBeVisible();
             expect(sizelistError).toHaveTextContent('pleaseSelect');
         });

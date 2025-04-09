@@ -9,6 +9,7 @@ import { Row, Table, Dropdown } from "react-bootstrap";
 import { UniformgenerationOffcanvas } from "./UniformGenerationOffcanvas";
 import { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
 import { useI18n } from "@/lib/locales/client";
+import { toast } from "react-toastify";
 
 type UniformGenerationTableProps = {
     uniformType: UniformType;
@@ -19,11 +20,17 @@ export const UniformGenerationTable = ({ uniformType }: UniformGenerationTablePr
     const t = useI18n();
     const [selectedGenerationId, setSelectedGenerationId] = useState<string | null>(null);
 
-    const handleChangeSortorder = (newArray: UniformGeneration[], itemId: string) => {
+    const handleChangeSortorder = async (newArray: UniformGeneration[], itemId: string) => {
         if (newArray.length !== uniformType.uniformGenerationList?.length) return;
         const newPosition = newArray.findIndex(i => i.id === itemId);
         if (newPosition === -1) return;
-        mutate(changeUniformGenerationSortOrder({ id: itemId, newPosition }));
+        await mutate(
+            changeUniformGenerationSortOrder({ id: itemId, newPosition })
+        ).then(() => {
+            toast.success(t('common.success.changeSortorder'));
+        }).catch(() => {
+            toast.error(t('common.error.actions.changeSortorder'));
+        });
     };
 
     return (

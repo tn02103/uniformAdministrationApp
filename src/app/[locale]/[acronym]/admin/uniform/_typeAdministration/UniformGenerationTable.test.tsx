@@ -8,7 +8,7 @@ import { testTypes } from "./testTypes";
 const testType = testTypes[0];
 
 jest.mock("@/dataFetcher/uniformAdmin", () => {
-    const typeListMutate = jest.fn();
+    const typeListMutate = jest.fn(async (a) => {return a; });
     return {
         useUniformTypeList: jest.fn(() => ({
             mutate: typeListMutate,
@@ -26,7 +26,7 @@ jest.mock("./UniformGenerationOffcanvas", () => {
         UniformgenerationOffcanvas: mock,
     };
 });
-let onDragEndFunction: undefined | ((newArray: UniformGeneration[], itemId: string) => void) = undefined;
+let onDragEndFunction: undefined | ((newArray: UniformGeneration[], itemId: string) => Promise<any>) = undefined;
 jest.mock("@/components/reorderDnD/ReorderableTableBody", () => {
     return {
         ReorderableTableBody: jest.fn(({ items, itemType, onDragEnd, children }) => {
@@ -140,11 +140,12 @@ describe('<UniformGenerationTable />', () => {
         expect(screen.queryByTestId("generationOffcanvasMock")).not.toBeInTheDocument();
     });
 
-    it('should call sortOrder function when onDragEnd is triggered', () => {
+    it('should call sortOrder function when onDragEnd is triggered', async () => {
+        const { toast } = require("react-toastify");
         render(<UniformGenerationTable uniformType={testType} />);
 
         expect(onDragEndFunction).toBeDefined();
-        onDragEndFunction!([
+        await onDragEndFunction!([
             testType.uniformGenerationList[1],
             testType.uniformGenerationList[0],
             testType.uniformGenerationList[2],
@@ -157,6 +158,35 @@ describe('<UniformGenerationTable />', () => {
         });
         expect(useUniformTypeList().mutate).toHaveBeenCalledTimes(1);
         expect(useUniformTypeList().mutate).toHaveBeenCalledWith("uniform generation sortOrder changed");
+
+        expect(toast.success).toHaveBeenCalledTimes(1);
+        expect(toast.success).toHaveBeenCalledWith("common.success.changeSortorder");
+    });
+
+    it('should catch error when sortOrder function fails', async () => {
+        const { toast } = require("react-toastify");
+        changeUniformGenerationSortOrder.mockImplementationOnce(async () => { throw new Error("Error") });
+
+        render(<UniformGenerationTable uniformType={testType} />);
+
+        expect(onDragEndFunction).toBeDefined();
+        await onDragEndFunction!([
+            testType.uniformGenerationList[1],
+            testType.uniformGenerationList[0],
+            testType.uniformGenerationList[2],
+        ], testType.uniformGenerationList[0].id);
+
+        expect(changeUniformGenerationSortOrder).toHaveBeenCalledTimes(1);
+        expect(changeUniformGenerationSortOrder).toHaveBeenCalledWith({
+            id: testType.uniformGenerationList[0].id,
+            newPosition: 1
+        });
+        expect(useUniformTypeList().mutate).toHaveBeenCalledTimes(1);
+        expect(useUniformTypeList().mutate).not.toHaveBeenCalledWith("uniform generation sortOrder changed");
+
+        expect(toast.success).toHaveBeenCalledTimes(0);
+        expect(toast.error).toHaveBeenCalledTimes(1);
+        expect(toast.error).toHaveBeenCalledWith("common.error.actions.changeSortorder");
     });
 
     it('should not call sortOrder function when itemId is not in the list', () => {

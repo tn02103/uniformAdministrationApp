@@ -36,7 +36,7 @@ export const UniformTypeOffcanvas = ({ uniformType, setSelectedTypeId, editable,
     const t = useI18n();
     const modal = useModal();
     const { sizelistList } = useUniformSizelists();
-    const { mutate, typeList } = useUniformTypeList();
+    const { mutate } = useUniformTypeList();
     const sizelistOptions = sizelistList?.map(sl => ({ value: sl.id, label: sl.name })) ?? [];
 
     useEffect(() => {
@@ -47,10 +47,9 @@ export const UniformTypeOffcanvas = ({ uniformType, setSelectedTypeId, editable,
 
     const handleSave = async (data: UniformTypeFormType) => {
         if (!uniformType) {
-            handleCreate(data);
-            return;
+            return handleCreate(data);
         }
-        SAFormHandler(
+        await SAFormHandler(
             updateUniformType({ data, id: uniformType.id }),
             form.setError,
             (data) => {
@@ -61,7 +60,7 @@ export const UniformTypeOffcanvas = ({ uniformType, setSelectedTypeId, editable,
         );
     }
     const handleCreate = async (data: UniformTypeFormType) => {
-        SAFormHandler(
+        await SAFormHandler(
             createUniformType(data),
             form.setError,
             (data) => {
@@ -84,9 +83,9 @@ export const UniformTypeOffcanvas = ({ uniformType, setSelectedTypeId, editable,
     const handleDelete = async () => {
         if (!uniformType) return;
 
-        const deleteMutation = () => {
+        const deleteMutation = async () => {
             setSelectedTypeId(null);
-            mutate(
+            await mutate(
                 deleteUniformType(uniformType.id),
             ).catch((e) => {
                 console.error(e);

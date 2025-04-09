@@ -1,8 +1,8 @@
 import { UniformType } from "@/types/globalUniformTypes";
 import { render, screen } from "@testing-library/react";
-import { UniformTypeOffcanvas } from "./UniformTypeOffcanvas";
 import userEvent from "@testing-library/user-event";
 import { testTypes } from "./testTypes";
+import { UniformTypeOffcanvas } from "./UniformTypeOffcanvas";
 
 const sizeListIds = [
     'e667d674-7df8-436b-a2b8-77b06e063d36',
@@ -13,7 +13,7 @@ const sizeListIds = [
 const testType: UniformType = testTypes[0]
 
 jest.mock("@/dataFetcher/uniformAdmin", () => {
-    const typeListMutate = jest.fn(async () => { });
+    const typeListMutate = jest.fn(async (a) => a);
     return {
         useUniformSizelists: jest.fn(() => ({
             sizelistList: [{ id: sizeListIds[0], name: "Test Size List" }, { id: sizeListIds[1], name: "Test Size List 2" }, { id: sizeListIds[2], name: "Test Size List 3" }],
@@ -28,7 +28,7 @@ jest.mock("@/dataFetcher/uniformAdmin", () => {
 jest.mock("@/dal/uniform/type/_index", () => {
     return {
         createUniformType: jest.fn(async () => ({ id: 'new-type-id' })),
-        deleteUniformType: jest.fn(async () => "uniform type deleted"),
+        deleteUniformType: jest.fn(() => "uniform type deleted"),
         updateUniformType: jest.fn(async () => "uniform type updated"),
     };
 });
@@ -48,10 +48,11 @@ jest.mock("./UniformGenerationTable", () => {
 
 describe('<UniformTypeOffcanvas />', () => {
     const { createUniformType, deleteUniformType, updateUniformType } = require('@/dal/uniform/type/_index');
-    const { useUniformTypeList } = require('@/dataFetcher/uniformAdmin');
-    const { useModal } = require('@/components/modals/modalProvider');
+    const mutate = require('@/dataFetcher/uniformAdmin').useUniformTypeList().mutate;;
     const { getUniformItemCountByType } = require('@/dal/uniform/item/_index');
     const { UniformGenerationTable } = require('./UniformGenerationTable');
+    const { useModal } = require('@/components/modals/modalProvider');
+    const { toast } = require('react-toastify');
 
     afterEach(() => jest.clearAllMocks());
 
@@ -212,234 +213,322 @@ describe('<UniformTypeOffcanvas />', () => {
     });
 
     describe('dal-Methods', () => {
+        describe('deleteUniformType', () => {
+            it('delete successfuly', async () => {
+                const user = userEvent.setup();
+                const setSelectedTypeId = jest.fn();
 
-        it('should call deleteUniformType DAL method', async () => {
-            const user = userEvent.setup();
-            deleteUniformType.mockReturnValue('uniform type deleted');
-            const setSelectedTypeId = jest.fn();
+                let dangerOption;
+                const { dangerConfirmationModal } = useModal();
+                dangerConfirmationModal.mockImplementation((option: any) => { dangerOption = option.dangerOption });
 
-            let dangerOption;
-            const { dangerConfirmationModal } = useModal();
-            dangerConfirmationModal.mockImplementation((option: any) => dangerOption = option.dangerOption);
-            const { mutate } = useUniformTypeList();
+                render(
+                    <UniformTypeOffcanvas
+                        uniformType={testType}
+                        editable={false}
+                        setEditable={jest.fn()}
+                        setSelectedTypeId={setSelectedTypeId}
+                    />
+                );
 
-            render(
-                <UniformTypeOffcanvas
-                    uniformType={testType}
-                    editable={false}
-                    setEditable={jest.fn()}
-                    setSelectedTypeId={setSelectedTypeId}
-                />
-            );
+                const deleteButton = screen.getByRole('button', { name: 'common.actions.delete' });
+                await user.click(deleteButton);
 
-            const deleteButton = screen.getByRole('button', { name: 'common.actions.delete' });
-            await user.click(deleteButton);
+                expect(getUniformItemCountByType).toHaveBeenCalledTimes(1);
+                expect(getUniformItemCountByType).toHaveBeenCalledWith(testType.id);
+                expect(dangerConfirmationModal).toHaveBeenCalledWith({
+                    header: 'admin.uniform.type.deleteModal.header',
+                    message: expect.anything(),
+                    confirmationText: 'admin.uniform.type.deleteModal.confirmationText',
+                    dangerOption: {
+                        option: 'common.actions.delete',
+                        function: expect.any(Function),
+                    },
+                });
+                expect(dangerOption).toBeDefined();
+                await dangerOption!.function();
 
-            expect(getUniformItemCountByType).toHaveBeenCalledTimes(1);
-            expect(getUniformItemCountByType).toHaveBeenCalledWith(testType.id);
-            expect(dangerConfirmationModal).toHaveBeenCalledWith({
-                header: 'admin.uniform.type.deleteModal.header',
-                message: expect.anything(),
-                confirmationText: 'admin.uniform.type.deleteModal.confirmationText',
-                dangerOption: {
-                    option: 'common.actions.delete',
-                    function: expect.any(Function),
-                },
+                expect(deleteUniformType).toHaveBeenCalledTimes(1);
+                expect(deleteUniformType).toHaveBeenCalledWith(testType.id);
+                expect(mutate).toHaveBeenCalledTimes(1);
+                expect(mutate).toHaveBeenCalledWith("uniform type deleted");
+                expect(setSelectedTypeId).toHaveBeenCalledWith(null);
             });
-            expect(dangerOption).toBeDefined();
-            await dangerOption!.function();
 
-            expect(deleteUniformType).toHaveBeenCalledTimes(1);
-            expect(deleteUniformType).toHaveBeenCalledWith(testType.id);
-            expect(mutate).toHaveBeenCalledTimes(1);
-            expect(mutate).toHaveBeenCalledWith("uniform type deleted");
-            expect(setSelectedTypeId).toHaveBeenCalledWith(null);
-        });
+            it('catch DAL-Error', async () => {
+                const user = userEvent.setup();
+                const setSelectedTypeId = jest.fn();
+                deleteUniformType.mockImplementationOnce(async () => { throw new Error("custom.error") });
 
-        it('should call createUniformType DAL method', async () => {
-            const user = userEvent.setup();
-            const setEditable = jest.fn();
-            const setSelectedTypeId = jest.fn();
-            render(
-                <UniformTypeOffcanvas
-                    uniformType={null}
-                    editable={true}
-                    setEditable={setEditable}
-                    setSelectedTypeId={setSelectedTypeId}
-                />
-            );
+                let dangerOption;
+                const { dangerConfirmationModal } = useModal();
+                dangerConfirmationModal.mockImplementation((option: any) => dangerOption = option.dangerOption);
 
-            await user.type(screen.getByRole('textbox', { name: 'common.name *' }), 'New Type');
-            await user.type(screen.getByRole('textbox', { name: 'common.uniform.type.acronym *' }), 'NT');
-            await user.click(screen.getByRole('switch', { name: 'common.uniform.type.usingSizes' }));
-            await user.click(screen.getByRole('switch', { name: 'common.uniform.type.usingGenerations' }));
-            await user.type(screen.getByRole('spinbutton', { name: 'common.uniform.type.issuedDefault' }), '3');
-            await user.selectOptions(screen.getByRole('combobox', { name: 'common.uniform.type.defaultSizelist' }), sizeListIds[0]);
-            await user.click(screen.getByRole('button', { name: 'common.actions.create' }));
+                render(
+                    <UniformTypeOffcanvas
+                        uniformType={testType}
+                        editable={false}
+                        setEditable={jest.fn()}
+                        setSelectedTypeId={setSelectedTypeId}
+                    />
+                );
 
-            expect(createUniformType).toHaveBeenCalledTimes(1);
-            expect(createUniformType).toHaveBeenCalledWith({
-                name: 'New Type',
-                acronym: 'NT',
-                usingSizes: true,
-                usingGenerations: true,
-                issuedDefault: 3,
-                fk_defaultSizelist: sizeListIds[0],
+                const deleteButton = screen.getByRole('button', { name: 'common.actions.delete' });
+                await user.click(deleteButton);
+
+                expect(getUniformItemCountByType).toHaveBeenCalledTimes(1);
+                expect(dangerConfirmationModal).toHaveBeenCalled();
+
+                expect(dangerOption).toBeDefined();
+                await dangerOption!.function();
+
+                expect(deleteUniformType).toHaveBeenCalledTimes(1);
+                expect(mutate).toHaveBeenCalledTimes(1);
+                expect(mutate).not.toHaveBeenCalledWith("uniform type deleted");
+
+                expect(toast.error).toHaveBeenCalledTimes(1);
+                expect(toast.error).toHaveBeenCalledWith("common.error.actions.delete");
             });
-            expect(updateUniformType).not.toHaveBeenCalled();
-            expect(useUniformTypeList().mutate).toHaveBeenCalledTimes(1);
-            expect(useUniformTypeList().mutate).toHaveBeenCalledWith();
-            expect(setEditable).toHaveBeenCalledWith(false);
-            expect(setSelectedTypeId).toHaveBeenCalledWith('new-type-id');
         });
 
+        describe('createUniformType', () => {
+            it('creates successfuly', async () => {
+                const user = userEvent.setup();
+                const setEditable = jest.fn();
+                const setSelectedTypeId = jest.fn();
+                render(
+                    <UniformTypeOffcanvas
+                        uniformType={null}
+                        editable={true}
+                        setEditable={setEditable}
+                        setSelectedTypeId={setSelectedTypeId}
+                    />
+                );
 
-        it('should call updateUniformType DAL method', async () => {
-            const user = userEvent.setup();
-            const setEditable = jest.fn();
-            render(
-                <UniformTypeOffcanvas
-                    uniformType={testType}
-                    editable={true}
-                    setEditable={setEditable}
-                    setSelectedTypeId={jest.fn()}
-                />
-            );
+                await user.type(screen.getByRole('textbox', { name: 'common.name *' }), 'New Type');
+                await user.type(screen.getByRole('textbox', { name: 'common.uniform.type.acronym *' }), 'NT');
+                await user.click(screen.getByRole('switch', { name: 'common.uniform.type.usingSizes' }));
+                await user.click(screen.getByRole('switch', { name: 'common.uniform.type.usingGenerations' }));
+                await user.type(screen.getByRole('spinbutton', { name: 'common.uniform.type.issuedDefault' }), '3');
+                await user.selectOptions(screen.getByRole('combobox', { name: 'common.uniform.type.defaultSizelist' }), sizeListIds[0]);
+                await user.click(screen.getByRole('button', { name: 'common.actions.create' }));
 
-            await user.clear(screen.getByRole('textbox', { name: 'common.name *' }));
-            await user.type(screen.getByRole('textbox', { name: 'common.name *' }), 'Updated');
-            await user.clear(screen.getByRole('textbox', { name: 'common.uniform.type.acronym *' }));
-            await user.type(screen.getByRole('textbox', { name: 'common.uniform.type.acronym *' }), 'UT');
-            await user.click(screen.getByRole('switch', { name: 'common.uniform.type.usingSizes' }));
-            await user.click(screen.getByRole('switch', { name: 'common.uniform.type.usingGenerations' }));
-            await user.clear(screen.getByRole('spinbutton', { name: 'common.uniform.type.issuedDefault' }));
-            await user.type(screen.getByRole('spinbutton', { name: 'common.uniform.type.issuedDefault' }), '5');
-
-            await user.click(screen.getByRole('button', { name: 'common.actions.save' }));
-
-            expect(updateUniformType).toHaveBeenCalledTimes(1);
-            expect(updateUniformType).toHaveBeenCalledWith({
-                id: testType.id,
-                data: {
-                    name: 'Updated',
-                    acronym: 'UT',
-                    usingSizes: false,
-                    usingGenerations: false,
-                    issuedDefault: 5,
-                    fk_defaultSizelist: testType.fk_defaultSizelist,
-                },
+                expect(createUniformType).toHaveBeenCalledTimes(1);
+                expect(createUniformType).toHaveBeenCalledWith({
+                    name: 'New Type',
+                    acronym: 'NT',
+                    usingSizes: true,
+                    usingGenerations: true,
+                    issuedDefault: 3,
+                    fk_defaultSizelist: sizeListIds[0],
+                });
+                expect(updateUniformType).not.toHaveBeenCalled();
+                expect(mutate).toHaveBeenCalledTimes(1);
+                expect(mutate).toHaveBeenCalledWith();
+                expect(setEditable).toHaveBeenCalledWith(false);
+                expect(setSelectedTypeId).toHaveBeenCalledWith('new-type-id');
             });
-            expect(createUniformType).not.toHaveBeenCalled();
-            expect(useUniformTypeList().mutate).toHaveBeenCalledTimes(1);
-            expect(useUniformTypeList().mutate).toHaveBeenCalledWith("uniform type updated");
-            expect(setEditable).toHaveBeenCalledWith(false);
+            it('should catch name and acronym errors', async () => {
+                const user = userEvent.setup();
+                const setEditable = jest.fn();
+                render(
+                    <UniformTypeOffcanvas
+                        uniformType={null}
+                        editable={true}
+                        setEditable={setEditable}
+                        setSelectedTypeId={jest.fn()}
+                    />
+                );
+
+                createUniformType.mockImplementationOnce(async() => ({
+                    error: {
+                        message: "custom.uniform.type.nameDuplication",
+                        formElement: "name",
+                    }
+                }));
+
+                await user.type(screen.getByRole('textbox', { name: 'common.name *' }), 'New Type');
+                await user.type(screen.getByRole('textbox', { name: 'common.uniform.type.acronym *' }), 'NT');
+                await user.type(screen.getByRole('spinbutton', { name: 'common.uniform.type.issuedDefault' }), '3');
+                await user.click(screen.getByRole('button', { name: 'common.actions.create' }));
+
+
+                expect(createUniformType).toHaveBeenCalled();
+                expect(mutate).not.toHaveBeenCalled();
+                expect(setEditable).not.toHaveBeenCalled();
+
+                expect(screen.getByRole('alert', { name: 'error message name' })).toBeInTheDocument();
+                expect(screen.getByRole('alert', { name: 'error message name' })).toHaveTextContent('custom.uniform.type.nameDuplication');
+                expect(screen.getByRole('textbox', { name: 'common.name *' })).toHaveAttribute('aria-invalid', 'true');
+                expect(screen.getByRole('textbox', { name: 'common.name *' })).toHaveClass('is-invalid');
+
+
+                createUniformType.mockImplementationOnce(async() => ({
+                    error: {
+                        message: "custom.uniform.type.acronymDuplication;name:Test Type",
+                        formElement: "acronym",
+                    }
+                }));
+                await user.clear(screen.getByRole('textbox', { name: 'common.name *' }));
+                await user.type(screen.getByRole('textbox', { name: 'common.name *' }), 'New Type');
+                await user.click(screen.getByRole('button', { name: 'common.actions.create' }));
+
+                expect(createUniformType).toHaveBeenCalledTimes(2);
+                expect(mutate).not.toHaveBeenCalled();
+                expect(setEditable).not.toHaveBeenCalled();
+
+                expect(screen.getByRole('alert', { name: 'error message acronym' })).toBeInTheDocument();
+                expect(screen.getByRole('alert', { name: 'error message acronym' })).toHaveTextContent('custom.uniform.type.acronymDuplication;name:Test Type');
+                expect(screen.getByRole('textbox', { name: 'common.uniform.type.acronym *' })).toHaveAttribute('aria-invalid', 'true');
+                expect(screen.getByRole('textbox', { name: 'common.uniform.type.acronym *' })).toHaveClass('is-invalid');
+            });
+
+            it('should catch DAL-Error', async () => {
+                createUniformType.mockImplementationOnce(async () => { throw new Error("custom.error") });
+                const user = userEvent.setup();
+                const setEditable = jest.fn();
+                const setSelectedTypeId = jest.fn();
+                render(
+                    <UniformTypeOffcanvas
+                        uniformType={null}
+                        editable={true}
+                        setEditable={setEditable}
+                        setSelectedTypeId={setSelectedTypeId}
+                    />
+                );
+
+                await user.type(screen.getByRole('textbox', { name: 'common.name *' }), 'New Type');
+                await user.type(screen.getByRole('textbox', { name: 'common.uniform.type.acronym *' }), 'NT');
+                await user.click(screen.getByRole('switch', { name: 'common.uniform.type.usingSizes' }));
+                await user.click(screen.getByRole('switch', { name: 'common.uniform.type.usingGenerations' }));
+                await user.type(screen.getByRole('spinbutton', { name: 'common.uniform.type.issuedDefault' }), '3');
+                await user.selectOptions(screen.getByRole('combobox', { name: 'common.uniform.type.defaultSizelist' }), sizeListIds[0]);
+                await user.click(screen.getByRole('button', { name: 'common.actions.create' }));
+
+                expect(createUniformType).toHaveBeenCalledTimes(1);
+                expect(mutate).not.toHaveBeenCalled();
+                expect(setEditable).not.toHaveBeenCalled();
+                expect(setSelectedTypeId).not.toHaveBeenCalled();
+
+                expect(toast.error).toHaveBeenCalledTimes(1);
+                expect(toast.error).toHaveBeenCalledWith("common.error.actions.create");
+            });
         });
 
-        it('should catch name and acronym errors for save', async () => {
-            const user = userEvent.setup();
-            const setEditable = jest.fn();
-            render(
-                <UniformTypeOffcanvas
-                    uniformType={testType}
-                    editable={true}
-                    setEditable={setEditable}
-                    setSelectedTypeId={jest.fn()}
-                />
-            );
+        describe('updateUniformType', () => {
+            it('updates successfully', async () => {
+                const user = userEvent.setup();
+                const setEditable = jest.fn();
+                render(
+                    <UniformTypeOffcanvas
+                        uniformType={testType}
+                        editable={true}
+                        setEditable={setEditable}
+                        setSelectedTypeId={jest.fn()}
+                    />
+                );
 
-            updateUniformType.mockImplementationOnce(() => ({
-                error: {
-                    message: "custom.uniform.type.nameDuplication",
-                    formElement: "name",
-                }
-            }));
-            await user.click(screen.getByRole('button', { name: 'common.actions.save' }));
+                await user.clear(screen.getByRole('textbox', { name: 'common.name *' }));
+                await user.type(screen.getByRole('textbox', { name: 'common.name *' }), 'Updated');
+                await user.clear(screen.getByRole('textbox', { name: 'common.uniform.type.acronym *' }));
+                await user.type(screen.getByRole('textbox', { name: 'common.uniform.type.acronym *' }), 'UT');
+                await user.click(screen.getByRole('switch', { name: 'common.uniform.type.usingSizes' }));
+                await user.click(screen.getByRole('switch', { name: 'common.uniform.type.usingGenerations' }));
+                await user.clear(screen.getByRole('spinbutton', { name: 'common.uniform.type.issuedDefault' }));
+                await user.type(screen.getByRole('spinbutton', { name: 'common.uniform.type.issuedDefault' }), '5');
 
-            expect(updateUniformType).toHaveBeenCalled();
-            expect(useUniformTypeList().mutate).not.toHaveBeenCalled();
-            expect(setEditable).not.toHaveBeenCalled();
+                await user.click(screen.getByRole('button', { name: 'common.actions.save' }));
 
-            expect(screen.getByRole('alert', { name: 'error message name' })).toBeInTheDocument();
-            expect(screen.getByRole('alert', { name: 'error message name' })).toHaveTextContent('custom.uniform.type.nameDuplication');
-            expect(screen.getByRole('textbox', { name: 'common.name *' })).toHaveAttribute('aria-invalid', 'true');
-            expect(screen.getByRole('textbox', { name: 'common.name *' })).toHaveClass('is-invalid');
+                expect(updateUniformType).toHaveBeenCalledTimes(1);
+                expect(updateUniformType).toHaveBeenCalledWith({
+                    id: testType.id,
+                    data: {
+                        name: 'Updated',
+                        acronym: 'UT',
+                        usingSizes: false,
+                        usingGenerations: false,
+                        issuedDefault: 5,
+                        fk_defaultSizelist: testType.fk_defaultSizelist,
+                    },
+                });
+                expect(createUniformType).not.toHaveBeenCalled();
+                expect(mutate).toHaveBeenCalledTimes(1);
+                expect(mutate).toHaveBeenCalledWith("uniform type updated");
+                expect(setEditable).toHaveBeenCalledWith(false);
+            });
+
+            it('catches name and acronym errors', async () => {
+                const user = userEvent.setup();
+                const setEditable = jest.fn();
+                render(
+                    <UniformTypeOffcanvas
+                        uniformType={testType}
+                        editable={true}
+                        setEditable={setEditable}
+                        setSelectedTypeId={jest.fn()}
+                    />
+                );
+
+                updateUniformType.mockImplementationOnce(async () => ({
+                    error: {
+                        message: "custom.uniform.type.nameDuplication",
+                        formElement: "name",
+                    }
+                }));
+                await user.click(screen.getByRole('button', { name: 'common.actions.save' }));
+
+                expect(updateUniformType).toHaveBeenCalled();
+                expect(mutate).not.toHaveBeenCalled();
+                expect(setEditable).not.toHaveBeenCalled();
+
+                expect(screen.getByRole('alert', { name: 'error message name' })).toBeInTheDocument();
+                expect(screen.getByRole('alert', { name: 'error message name' })).toHaveTextContent('custom.uniform.type.nameDuplication');
+                expect(screen.getByRole('textbox', { name: 'common.name *' })).toHaveAttribute('aria-invalid', 'true');
+                expect(screen.getByRole('textbox', { name: 'common.name *' })).toHaveClass('is-invalid');
 
 
-            updateUniformType.mockImplementationOnce(() => ({
-                error: {
-                    message: "custom.uniform.type.acronymDuplication;name:Test Type",
-                    formElement: "acronym",
-                }
-            }));
-            await user.clear(screen.getByRole('textbox', { name: 'common.name *' }));
-            await user.type(screen.getByRole('textbox', { name: 'common.name *' }), 'New Type');
-            await user.click(screen.getByRole('button', { name: 'common.actions.save' }));
+                updateUniformType.mockImplementationOnce(async () => ({
+                    error: {
+                        message: "custom.uniform.type.acronymDuplication;name:Test Type",
+                        formElement: "acronym",
+                    }
+                }));
+                await user.clear(screen.getByRole('textbox', { name: 'common.name *' }));
+                await user.type(screen.getByRole('textbox', { name: 'common.name *' }), 'New Type');
+                await user.click(screen.getByRole('button', { name: 'common.actions.save' }));
 
-            expect(updateUniformType).toHaveBeenCalledTimes(2);
-            expect(useUniformTypeList().mutate).not.toHaveBeenCalled();
-            expect(setEditable).not.toHaveBeenCalled();
+                expect(updateUniformType).toHaveBeenCalledTimes(2);
+                expect(mutate).not.toHaveBeenCalled();
+                expect(setEditable).not.toHaveBeenCalled();
 
-            expect(screen.getByRole('alert', { name: 'error message acronym' })).toBeInTheDocument();
-            expect(screen.getByRole('alert', { name: 'error message acronym' })).toHaveTextContent('custom.uniform.type.acronymDuplication;name:Test Type');
-            expect(screen.getByRole('textbox', { name: 'common.uniform.type.acronym *' })).toHaveAttribute('aria-invalid', 'true');
-            expect(screen.getByRole('textbox', { name: 'common.uniform.type.acronym *' })).toHaveClass('is-invalid');
+                expect(screen.getByRole('alert', { name: 'error message acronym' })).toBeInTheDocument();
+                expect(screen.getByRole('alert', { name: 'error message acronym' })).toHaveTextContent('custom.uniform.type.acronymDuplication;name:Test Type');
+                expect(screen.getByRole('textbox', { name: 'common.uniform.type.acronym *' })).toHaveAttribute('aria-invalid', 'true');
+                expect(screen.getByRole('textbox', { name: 'common.uniform.type.acronym *' })).toHaveClass('is-invalid');
+            });
+            it('catches DAL-Errors', async () => {
+                updateUniformType.mockImplementationOnce(async () => { throw new Error("custom.error") });
+                const user = userEvent.setup();
+                const setEditable = jest.fn();
+                render(
+                    <UniformTypeOffcanvas
+                        uniformType={testType}
+                        editable={true}
+                        setEditable={setEditable}
+                        setSelectedTypeId={jest.fn()}
+                    />
+                );
+
+                await user.click(screen.getByRole('button', { name: 'common.actions.save' }));
+
+                expect(updateUniformType).toHaveBeenCalledTimes(1);
+                expect(mutate).not.toHaveBeenCalled();
+                expect(setEditable).not.toHaveBeenCalled();
+
+                expect(toast.error).toHaveBeenCalledTimes(1);
+                expect(toast.error).toHaveBeenCalledWith("common.error.actions.save");
+            });
         });
-
-        it('should catch name and acronym errors for create', async () => {
-            const user = userEvent.setup();
-            const setEditable = jest.fn();
-            render(
-                <UniformTypeOffcanvas
-                    uniformType={null}
-                    editable={true}
-                    setEditable={setEditable}
-                    setSelectedTypeId={jest.fn()}
-                />
-            );
-
-            createUniformType.mockImplementationOnce(() => ({
-                error: {
-                    message: "custom.uniform.type.nameDuplication",
-                    formElement: "name",
-                }
-            }));
-
-            await user.type(screen.getByRole('textbox', { name: 'common.name *' }), 'New Type');
-            await user.type(screen.getByRole('textbox', { name: 'common.uniform.type.acronym *' }), 'NT');
-            await user.type(screen.getByRole('spinbutton', { name: 'common.uniform.type.issuedDefault' }), '3');
-            await user.click(screen.getByRole('button', { name: 'common.actions.create' }));
-
-
-            expect(createUniformType).toHaveBeenCalled();
-            expect(useUniformTypeList().mutate).not.toHaveBeenCalled();
-            expect(setEditable).not.toHaveBeenCalled();
-
-            expect(screen.getByRole('alert', { name: 'error message name' })).toBeInTheDocument();
-            expect(screen.getByRole('alert', { name: 'error message name' })).toHaveTextContent('custom.uniform.type.nameDuplication');
-            expect(screen.getByRole('textbox', { name: 'common.name *' })).toHaveAttribute('aria-invalid', 'true');
-            expect(screen.getByRole('textbox', { name: 'common.name *' })).toHaveClass('is-invalid');
-
-
-            createUniformType.mockImplementationOnce(() => ({
-                error: {
-                    message: "custom.uniform.type.acronymDuplication;name:Test Type",
-                    formElement: "acronym",
-                }
-            }));
-            await user.clear(screen.getByRole('textbox', { name: 'common.name *' }));
-            await user.type(screen.getByRole('textbox', { name: 'common.name *' }), 'New Type');
-            await user.click(screen.getByRole('button', { name: 'common.actions.create' }));
-
-            expect(createUniformType).toHaveBeenCalledTimes(2);
-            expect(useUniformTypeList().mutate).not.toHaveBeenCalled();
-            expect(setEditable).not.toHaveBeenCalled();
-
-            expect(screen.getByRole('alert', { name: 'error message acronym' })).toBeInTheDocument();
-            expect(screen.getByRole('alert', { name: 'error message acronym' })).toHaveTextContent('custom.uniform.type.acronymDuplication;name:Test Type');
-            expect(screen.getByRole('textbox', { name: 'common.uniform.type.acronym *' })).toHaveAttribute('aria-invalid', 'true');
-            expect(screen.getByRole('textbox', { name: 'common.uniform.type.acronym *' })).toHaveClass('is-invalid');
-        });
-
         it('should only allow defaultSizelist null if usingSizes is false', async () => {
             const user = userEvent.setup();
             render(

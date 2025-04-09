@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { Table } from "react-bootstrap";
 import { UniformTypeOffcanvas } from "./UniformTypeOffcanvas";
+import { toast } from "react-toastify";
 
 const listElementStyles = {
     padding: "10px",
@@ -23,18 +24,21 @@ export const UniformTypeTable = (props: { initialTypeList: UniformType[] }) => {
     const [selectedTypeId, setSelectedTypeId] = useState<string | null>(null);
     const [editable, setEditable] = useState(false);
 
-    const handleChangeSortorder = (newArray: UniformType[], itemId: string) => {
+    const handleChangeSortorder = async (newArray: UniformType[], itemId: string) => {
         if (newArray.length !== typeList?.length) return;
 
         const newPosition = newArray.findIndex(i => i.id === itemId);
         if (newPosition === -1) return;
 
-        mutate(
+        await mutate(
             changeUniformTypeSortOrder({ typeId: itemId, newPosition }),
             {
                 optimisticData: newArray
             }
-        );
+        ).catch((e) => {
+            console.error(e);
+            toast.error(t('common.error.actions.changeSortorder'));
+        });
     }
 
     return (

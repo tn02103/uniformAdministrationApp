@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { Button, Col, Offcanvas, Row } from "react-bootstrap";
 import { FormProvider, useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 import { z } from "zod";
 
 
@@ -49,9 +50,14 @@ export const UniformgenerationOffcanvas = ({ generation, uniformTypeId, usingSiz
 
     const handleDelete = () => {
         if (!generation) return;
-        const deleteMutation = () => {
-            mutate(deleteUniformGeneration(generation.id));
-            onHide();
+        const deleteMutation = async () => {
+            await mutate(
+                deleteUniformGeneration(generation.id)
+            ).then(() => {
+                onHide();
+            }).catch((e) => {
+                toast.error(t('common.error.actions.delete'));
+            });
         }
 
         modal?.dangerConfirmationModal({
