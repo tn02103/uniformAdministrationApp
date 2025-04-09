@@ -129,7 +129,7 @@ export default {
             },
         },
         error: {
-                pleaseSelect: "Bitte Auswählen",
+            pleaseSelect: "Bitte Auswählen",
             unknown: "Es ist ein unerwarteter Fehler aufgetreten",
             number: {
                 required: "Bitte eine Zahl angeben",
@@ -179,7 +179,7 @@ export default {
             custom: {
                 material: {
                     typename: {
-                        duplication: "Der Name wird bereits von einem anderen Material der Gruppe verwendet",   
+                        duplication: "Der Name wird bereits von einem anderen Material der Gruppe verwendet",
                     },
                     groupname: {
                         duplication: "Der Name wird bereits von einer anderen Gruppe verwendet",
@@ -195,6 +195,14 @@ export default {
                     }
                 },
             },
+        },
+        success: {
+            create: "EelErfolgreich angelegt",
+            delete: "Erfolgreich gelöscht",
+            save: "Erfolgreich gespeichert",
+            update: "Erfolgreich aktualisiert",
+            changeSortorder: "Reihenfolge erfolgreich geändert",
+            changePosition: "Position erfolgreich geändert",
         },
     },
     login: {

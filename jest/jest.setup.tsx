@@ -42,3 +42,15 @@ Object.defineProperty(window, 'matchMedia', {
         dispatchEvent: jest.fn(),
     })),
 });
+
+jest.mock("react-toastify", () => {
+    const toast = {
+        success: jest.fn(),
+        error: jest.fn(),
+        info: jest.fn(),
+        warn: jest.fn(),
+    };
+    return {
+        toast
+    };
+});

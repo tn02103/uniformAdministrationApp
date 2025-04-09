@@ -37,22 +37,29 @@ export async function SAFormHandler(
     successCallback: (data: any) => void,
     unhandledErrorCallback?: ((error: any) => void) | string
 ) {
-    const result = await serverActionPromise;
-
-    if (!result || !result.error) {
-        successCallback(result);
-        return;
-    }
-    if (result.error.formElement) {
-        setError(result.error.formElement, { message: result.error.message });
-    } else {
-        console.error(result.error);
+    return serverActionPromise.then((result) => {
+        if (!result || !result.error) {
+            successCallback(result);
+            return;
+        }
+        if (result.error.formElement) {
+            setError(result.error.formElement, { message: result.error.message });
+        } else {
+            if (unhandledErrorCallback) {
+                if (typeof unhandledErrorCallback === "string") {
+                    toast.error(unhandledErrorCallback);
+                } else {
+                    unhandledErrorCallback(result);
+                }
+            }
+        }
+    }).catch((error) => {
         if (unhandledErrorCallback) {
             if (typeof unhandledErrorCallback === "string") {
                 toast.error(unhandledErrorCallback);
             } else {
-                unhandledErrorCallback(result);
+                unhandledErrorCallback(error);
             }
         }
-    }
+    });
 }
