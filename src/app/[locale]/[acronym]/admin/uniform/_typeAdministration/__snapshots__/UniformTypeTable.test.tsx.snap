@@ -70,10 +70,12 @@ exports[`<UniformTypeTable /> should render the component correctly 1`] = `
       data-testid="reorderable-table-body"
     >
       <tr
+        aria-label="Test Type"
         style="padding: 10px; margin: 0px;"
       >
         <td>
           <span
+            aria-label="move Item"
             class="p-2"
           >
             <svg
@@ -150,10 +152,12 @@ exports[`<UniformTypeTable /> should render the component correctly 1`] = `
         </td>
       </tr>
       <tr
+        aria-label="Test Type 2"
         style="padding: 10px; margin: 0px;"
       >
         <td>
           <span
+            aria-label="move Item"
             class="p-2"
           >
             <svg
@@ -230,10 +234,12 @@ exports[`<UniformTypeTable /> should render the component correctly 1`] = `
         </td>
       </tr>
       <tr
+        aria-label="Test Type 3"
         style="padding: 10px; margin: 0px;"
       >
         <td>
           <span
+            aria-label="move Item"
             class="p-2"
           >
             <svg
@@ -310,10 +316,12 @@ exports[`<UniformTypeTable /> should render the component correctly 1`] = `
         </td>
       </tr>
       <tr
+        aria-label="Test Type 4"
         style="padding: 10px; margin: 0px;"
       >
         <td>
           <span
+            aria-label="move Item"
             class="p-2"
           >
             <svg

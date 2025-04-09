@@ -51,9 +51,10 @@ export const UniformGenerationTable = ({ uniformType }: UniformGenerationTablePr
                                     key={item.id}
                                     ref={previewRef}
                                     style={isDragging ? { opacity: 0 } : undefined}
+                                    aria-label={item.name}
                                 >
                                     <td className={invalid ? "text-danger" : ""}>
-                                        <span ref={draggableRef} className="p-2">
+                                        <span ref={draggableRef} aria-label="drag item" className="p-2">
                                             <FontAwesomeIcon
                                                 icon={faBars}
                                                 className="text-seccondary"

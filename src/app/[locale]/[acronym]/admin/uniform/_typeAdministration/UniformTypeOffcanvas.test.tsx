@@ -2,34 +2,15 @@ import { UniformType } from "@/types/globalUniformTypes";
 import { render, screen } from "@testing-library/react";
 import { UniformTypeOffcanvas } from "./UniformTypeOffcanvas";
 import userEvent from "@testing-library/user-event";
+import { testTypes } from "./testTypes";
 
 const sizeListIds = [
     'e667d674-7df8-436b-a2b8-77b06e063d36',
     'a961545b-28a7-409e-9200-1d85ccd53522',
     '07de1d59-4fc6-447b-98a6-da916e5792ef',
 ];
-const typeListIds = [
-    '6c758780-baeb-4fd3-9a92-a318c0306431',
-    '38abce89-e34d-4487-b611-2d3d5d9826f5',
-    '3dad8936-9537-402e-b878-a1c955ecea63'
-]
 
-const testType: UniformType = {
-    id: typeListIds[0],
-    name: "Test Type",
-    acronym: "TT",
-    sortOrder: 1,
-    usingSizes: true,
-    usingGenerations: true,
-    issuedDefault: 2,
-    fk_defaultSizelist: sizeListIds[0],
-    defaultSizelist: {
-        id: sizeListIds[0],
-        name: "Test Size List",
-    },
-    uniformGenerationList: [],
-}
-
+const testType: UniformType = testTypes[0]
 
 jest.mock("@/dataFetcher/uniformAdmin", () => {
     const typeListMutate = jest.fn(async () => { });
@@ -39,11 +20,7 @@ jest.mock("@/dataFetcher/uniformAdmin", () => {
         })),
         useUniformTypeList: jest.fn(() => ({
             mutate: typeListMutate,
-            typeList: [
-                { id: typeListIds[0], name: "Test Type 1" },
-                { id: typeListIds[1], name: "Test Type 2" },
-                { id: typeListIds[2], name: "Test Type 3" },
-            ],
+            typeList: testTypes,
         })),
     };
 });
@@ -275,12 +252,7 @@ describe('<UniformTypeOffcanvas />', () => {
             expect(deleteUniformType).toHaveBeenCalledTimes(1);
             expect(deleteUniformType).toHaveBeenCalledWith(testType.id);
             expect(mutate).toHaveBeenCalledTimes(1);
-            expect(mutate).toHaveBeenCalledWith("uniform type deleted", {
-                optimisticData: [
-                    { id: typeListIds[1], name: "Test Type 2" },
-                    { id: typeListIds[2], name: "Test Type 3" },
-                ],
-            });
+            expect(mutate).toHaveBeenCalledWith("uniform type deleted");
             expect(setSelectedTypeId).toHaveBeenCalledWith(null);
         });
 

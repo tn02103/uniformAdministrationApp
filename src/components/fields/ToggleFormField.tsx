@@ -5,11 +5,12 @@ import ErrorMessage from "../errorMessage";
 export type ToggleFormFieldProps<FormType extends FieldValues> = {
     label: string;
     name: Path<FormType>;
+    formName?: string;
     disabled?: boolean;
     className?: string;
 }
 
-export const ToggleFormField = <FormType extends FieldValues>({ label, name, disabled, ...inputProps }: ToggleFormFieldProps<FormType>) => {
+export const ToggleFormField = <FormType extends FieldValues>({ label, name, disabled,formName, ...inputProps }: ToggleFormFieldProps<FormType>) => {
 
     const { field, fieldState } = useController({
         name,
@@ -18,12 +19,12 @@ export const ToggleFormField = <FormType extends FieldValues>({ label, name, dis
 
     return (
         <Form.Group className="mb-3">
-            <Form.Label className="fw-bold m-0" htmlFor={`toggle-${name}`}>{label}</Form.Label>
+            <Form.Label className="fw-bold m-0" htmlFor={`${formName}_toggle-${name}`}>{label}</Form.Label>
             <div className="form-check form-switch">
                 <input
                     {...inputProps}
                     {...field}
-                    id={`toggle-${name}`}
+                    id={`${formName}_toggle-${name}`}
                     type="checkbox"
                     role="switch"
                     className="form-check-input fw-bold"

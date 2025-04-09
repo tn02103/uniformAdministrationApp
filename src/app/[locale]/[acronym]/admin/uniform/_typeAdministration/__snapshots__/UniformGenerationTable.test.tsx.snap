@@ -61,11 +61,14 @@ exports[`<UniformGenerationTable /> should render the UniformGenerationTable com
       <tbody
         data-testid="reorderable-table-body"
       >
-        <tr>
+        <tr
+          aria-label="Test Generation 1"
+        >
           <td
             class=""
           >
             <span
+              aria-label="drag item"
               class="p-2"
             >
               <svg
@@ -123,11 +126,14 @@ exports[`<UniformGenerationTable /> should render the UniformGenerationTable com
             </button>
           </td>
         </tr>
-        <tr>
+        <tr
+          aria-label="Test Generation 2"
+        >
           <td
             class=""
           >
             <span
+              aria-label="drag item"
               class="p-2"
             >
               <svg
@@ -185,11 +191,14 @@ exports[`<UniformGenerationTable /> should render the UniformGenerationTable com
             </button>
           </td>
         </tr>
-        <tr>
+        <tr
+          aria-label="Test Generation 3"
+        >
           <td
             class=""
           >
             <span
+              aria-label="drag item"
               class="p-2"
             >
               <svg

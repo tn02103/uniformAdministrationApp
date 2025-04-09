@@ -9,6 +9,7 @@ export type SelectOptionType = { value: string | number, label: string };
 export type SelectFormFieldProps<FormType extends FieldValues> = {
     label: string,
     name: Path<FormType>,
+    formName?: string,
     required?: boolean,
     disabled?: boolean,
     className?: string,
@@ -18,7 +19,7 @@ export type SelectFormFieldProps<FormType extends FieldValues> = {
     selectClassName?: string,
 }
 
-export const SelectFormField = <FormType extends FieldValues>({ label, name, required, plaintext, options, labelClassName, ...inputProps }: SelectFormFieldProps<FormType>) => {
+export const SelectFormField = <FormType extends FieldValues>({ label, name, required, plaintext, options, labelClassName,formName, ...inputProps }: SelectFormFieldProps<FormType>) => {
     const t = useI18n();
     const { field, fieldState } = useController({
         name,
@@ -33,7 +34,7 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
 
     return (
         <Form.Group className="mb-3">
-            <Form.Label htmlFor={`select-${name}`} className={"fw-bold m-0 " + labelClassName}>
+            <Form.Label htmlFor={`${formName}_select-${name}`} className={"fw-bold m-0 " + labelClassName}>
                 {label}{required ? " *" : ""}
             </Form.Label>
             {plaintext ?
@@ -44,9 +45,9 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
                 <Form.Select
                     {...inputProps}
                     {...field}
-                    id={`select-${name}`}
+                    id={`${formName}_select-${name}`}
                     isInvalid={!!fieldState.error}
-                    aria-errormessage={fieldState.error ? `err_${name}` : undefined}
+                    aria-errormessage={fieldState.error ? `${formName}_err_${name}` : undefined}
                     aria-invalid={!!fieldState.error}
                 >
                     <option value={undefined} selected={!field.value} disabled>{t('common.error.pleaseSelect')}</option>
@@ -58,7 +59,7 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
             <ErrorMessage
                 error={error}
                 testId={`err_${name}`}
-                id={`err_${name}`}
+                id={`${formName}_err_${name}`}
                 ariaLabel={`error message ${name}`}
             />
         </Form.Group>

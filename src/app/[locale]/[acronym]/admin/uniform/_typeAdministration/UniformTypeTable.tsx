@@ -64,9 +64,9 @@ export const UniformTypeTable = (props: { initialTypeList: UniformType[] }) => {
                     onDragEnd={handleChangeSortorder}
                 >
                     {({ draggableRef, previewRef, isDragging, item }) => (
-                        <tr key={item.id} ref={previewRef} style={isDragging ? { ...listElementStyles, opacity: 0 } : listElementStyles}>
+                        <tr key={item.id} ref={previewRef} aria-label={item.name} style={isDragging ? { ...listElementStyles, opacity: 0 } : listElementStyles}>
                             <td>
-                                <span ref={draggableRef} className="p-2">
+                                <span ref={draggableRef} aria-label="move Item" className="p-2">
                                     <FontAwesomeIcon
                                         icon={faBars}
                                         className="text-seccondary"

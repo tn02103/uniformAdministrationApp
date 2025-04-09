@@ -102,10 +102,19 @@ export const UniformgenerationOffcanvas = ({ generation, uniformTypeId, usingSiz
     }
 
     return (
-        <Offcanvas show={true} onHide={onHide} placement="end" backdrop={false} style={{ width: "500px" }}>
+        <Offcanvas
+            show={true}
+            onHide={onHide}
+            placement="end"
+            backdrop={false}
+            style={{ width: "500px" }}
+            aria-labelledby="generation-offcanvas-header"
+        >
             <Offcanvas.Header closeButton>
                 <Offcanvas.Title>
-                    <h2>{generation ? generation.name : t('admin.uniform.generationList.header.create')}</h2>
+                    <h2 id="generation-offcanvas-header">
+                        {generation ? generation.name : t('admin.uniform.generationList.header.create')}
+                    </h2>
                 </Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
@@ -131,6 +140,7 @@ export const UniformgenerationOffcanvas = ({ generation, uniformTypeId, usingSiz
                                     label={t('common.name')}
                                     plaintext={!editable}
                                     disabled={!editable}
+                                    formName="uniformGenerationForm"
                                 />
                             </Col>
                             <Col xs={6} className="align-bottom">
@@ -138,6 +148,7 @@ export const UniformgenerationOffcanvas = ({ generation, uniformTypeId, usingSiz
                                     name="outdated"
                                     label={t('common.uniform.generation.outdated')}
                                     disabled={!editable}
+                                    formName="uniformGenerationForm"
                                 />
                             </Col>
                             {usingSizes && (
@@ -148,6 +159,7 @@ export const UniformgenerationOffcanvas = ({ generation, uniformTypeId, usingSiz
                                         options={sizelistOptions}
                                         plaintext={!editable}
                                         disabled={!editable}
+                                        formName="uniformGenerationForm"
                                         labelClassName={(generation && usingSizes && (!generation?.fk_sizelist)) ? "text-danger" : ""}
                                     />
                                 </Col>

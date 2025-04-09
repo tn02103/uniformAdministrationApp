@@ -42,9 +42,6 @@ export const UniformTypeOffcanvas = ({ uniformType, setSelectedTypeId, editable,
     useEffect(() => {
         if (!editable) {
             reset(uniformType ?? undefined);
-            if (!uniformType) {
-                setEditable(true);
-            }
         }
     }, [uniformType, reset, editable, setEditable]);
 
@@ -68,8 +65,8 @@ export const UniformTypeOffcanvas = ({ uniformType, setSelectedTypeId, editable,
             createUniformType(data),
             form.setError,
             (data) => {
-                setEditable(false);
                 setSelectedTypeId(data.id);
+                setEditable(false);
                 mutate();
             },
             t('common.error.actions.create'),
@@ -91,9 +88,6 @@ export const UniformTypeOffcanvas = ({ uniformType, setSelectedTypeId, editable,
             setSelectedTypeId(null);
             mutate(
                 deleteUniformType(uniformType.id),
-                {
-                    optimisticData: typeList?.filter(t => t.id !== uniformType.id)
-                }
             ).catch((e) => {
                 console.error(e);
                 toast.error(t('common.error.actions.delete'));
@@ -119,10 +113,17 @@ export const UniformTypeOffcanvas = ({ uniformType, setSelectedTypeId, editable,
     }
 
     return (
-        <Offcanvas show={true} onHide={() => {setSelectedTypeId(null);setEditable(false);}} placement="end" backdrop={false} style={{ width: "500px" }}>
+        <Offcanvas
+            show={true}
+            onHide={() => { setSelectedTypeId(null); setEditable(false); }}
+            placement="end"
+            backdrop={false}
+            style={{ width: "500px" }}
+            aria-labelledby="typeCanvasHeader"
+        >
             <Offcanvas.Header closeButton>
                 <Offcanvas.Title>
-                    <h2>{uniformType?.name ?? t('common.actions.create')}</h2>
+                    <h2 id="typeCanvasHeader">{uniformType?.name ?? t('common.actions.create')}</h2>
                 </Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
@@ -146,24 +147,61 @@ export const UniformTypeOffcanvas = ({ uniformType, setSelectedTypeId, editable,
                     <FormProvider {...form}>
                         <Row>
                             <Col xs={6}>
-                                <InputFormField<UniformTypeFormType> name="name" label={t('common.name')} required plaintext={!editable} disabled={!editable} />
+                                <InputFormField<UniformTypeFormType>
+                                    name="name"
+                                    label={t('common.name')}
+                                    required
+                                    plaintext={!editable}
+                                    disabled={!editable}
+                                    formName="uniformTypeForm"
+                                />
                             </Col>
                             <Col xs={6}>
-                                <InputFormField<UniformTypeFormType> name="acronym" label={t('common.uniform.type.acronym')} placeholder="XX" required plaintext={!editable} disabled={!editable} />
+                                <InputFormField<UniformTypeFormType>
+                                    name="acronym"
+                                    label={t('common.uniform.type.acronym')}
+                                    placeholder="XX"
+                                    required
+                                    plaintext={!editable}
+                                    disabled={!editable}
+                                    formName="uniformTypeForm"
+                                />
                             </Col>
                             <Col xs={6}>
-                                <NumberInputFormField<UniformTypeFormType> name="issuedDefault" label={t('common.uniform.type.issuedDefault')} plaintext={!editable} disabled={!editable} />
+                                <NumberInputFormField<UniformTypeFormType>
+                                    name="issuedDefault"
+                                    label={t('common.uniform.type.issuedDefault')}
+                                    plaintext={!editable}
+                                    disabled={!editable}
+                                    formName="uniformTypeForm"
+                                />
                             </Col>
                             <Col xs={6}>
                                 {form.watch("usingSizes") === true && (
-                                    <SelectFormField<UniformTypeFormType> name="fk_defaultSizelist" label={t('common.uniform.type.defaultSizelist')} options={sizelistOptions} plaintext={!editable} />
+                                    <SelectFormField<UniformTypeFormType>
+                                        name="fk_defaultSizelist"
+                                        label={t('common.uniform.type.defaultSizelist')}
+                                        options={sizelistOptions}
+                                        plaintext={!editable}
+                                        formName="uniformTypeForm"
+                                    />
                                 )}
                             </Col>
                             <Col xs={6}>
-                                <ToggleFormField<UniformTypeFormType> name="usingSizes" label={t('common.uniform.type.usingSizes')} disabled={!editable} />
+                                <ToggleFormField<UniformTypeFormType>
+                                    name="usingSizes"
+                                    label={t('common.uniform.type.usingSizes')}
+                                    disabled={!editable}
+                                    formName="uniformTypeForm"
+                                />
                             </Col>
                             <Col xs={6}>
-                                <ToggleFormField<UniformTypeFormType> name="usingGenerations" label={t('common.uniform.type.usingGenerations')} disabled={!editable} />
+                                <ToggleFormField<UniformTypeFormType>
+                                    name="usingGenerations"
+                                    label={t('common.uniform.type.usingGenerations')}
+                                    disabled={!editable}
+                                    formName="uniformTypeForm"
+                                />
                             </Col>
                         </Row>
                         {editable && (
