@@ -22,7 +22,22 @@ jobs:
     - run: npm run test:jest
   build:
     runs-on: ubuntu-latest
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    env:
+      DATABASE_URL: "postgres://uniformServer:vk_server_dev@localhost:5432"
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: uniformServer
+          POSTGRES_PASSWORD: vk_server_dev
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js 
