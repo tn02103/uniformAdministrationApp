@@ -36,6 +36,10 @@ jobs:
         cache: 'npm'
     - name: install dependencies
       run: npm i
+    - name: setup database
+      run: npx prisma migrate deploy && npx prisma db seed
+      env: 
+        DATABASE_URL: "postgres://uniformServer:vk_server_dev@localhost:5432"
     - name: build the application
       run: npm run build 
       env: 
