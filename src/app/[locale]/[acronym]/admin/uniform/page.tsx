@@ -7,8 +7,8 @@ import { UniformTypeTable } from "./_typeAdministration/UniformTypeTable";
 
 export default async function UniformAdminPage() {
     const t = await getI18n();
-
     const typeList = await getUniformTypeList();
+
 
     return (
         <div className="container-xl content-center bg-light rounded">
