@@ -10,8 +10,6 @@ export default async function UniformAdminPage() {
 
     const typeList = await getUniformTypeList();
 
-
-    
     return (
         <div className="container-xl content-center bg-light rounded">
             <h1 className="text-center">
