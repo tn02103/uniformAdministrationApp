@@ -160,7 +160,7 @@ class StaticDataGetter {
 
     async users() {
         const fk_assosiation = this.assosiation.id;
-        const password = await bcrypt.hash(process.env.TEST_USER_PASSWORD as string, 12);
+        const password = await bcrypt.hash(process.env.TEST_USER_PASSWORD??"Test!234" as string, 12);
         return [
             { id: this.userIds[0], fk_assosiation, role: 4, username: 'test4', name: `Test ${this.index} Admin`, password, active: true },
             { id: this.userIds[1], fk_assosiation, role: 3, username: 'test3', name: `Test ${this.index} Verwaltung`, password, active: true },

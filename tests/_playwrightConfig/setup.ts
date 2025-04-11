@@ -42,7 +42,7 @@ export const adminTest = dataFixture.extend<authenticatedFixture>({
         const body = {
             username: 'test4',
             assosiation: staticData.fk_assosiation,
-            password: process.env.TEST_USER_PASSWORD as string,
+            password: process.env.TEST_USER_PASSWORD??"Test!234" as string,
             deviceId: uuid(),
         };
 
@@ -58,7 +58,7 @@ export const managerTest = dataFixture.extend<authenticatedFixture>({
         const body = {
             username: 'test3',
             assosiation: staticData.fk_assosiation,
-            password: process.env.TEST_USER_PASSWORD as string,
+            password: process.env.TEST_USER_PASSWORD??"Test!234" as string,
             deviceId: uuid(),
         };
 
@@ -75,7 +75,7 @@ export const inspectorTest = dataFixture.extend<authenticatedFixture>({
         const body = {
             username: 'test2',
             assosiation: staticData.fk_assosiation,
-            password: process.env.TEST_USER_PASSWORD as string,
+            password: process.env.TEST_USER_PASSWORD??"Test!234" as string,
             deviceId: uuid(),
         };
 
@@ -92,7 +92,7 @@ export const userTest = dataFixture.extend<authenticatedFixture>({
         const body = {
             username: 'test1',
             assosiation: staticData.fk_assosiation,
-            password: process.env.TEST_USER_PASSWORD as string,
+            password: process.env.TEST_USER_PASSWORD??"Test!234" as string,
             deviceId: uuid(),
         };
 
