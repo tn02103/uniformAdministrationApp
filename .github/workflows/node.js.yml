@@ -39,11 +39,16 @@ jobs:
           # Maps tcp port 5432 on service container to the host
           - 5432:5432
     steps:
-    - uses: actions/checkout@v4
+    - name: Check out repository code
+      uses: actions/checkout@v4
     - name: Use Node.js 
       uses: actions/setup-node@v4
       with:
         node-version: 22.14.0
         cache: 'npm'
-    - run: npm ci
-    - run: npm run build 
+    - name: install dependencies
+      run: npm i
+    - name: build the application
+      run: npm run build 
+      env: 
+        DATABASE_URL: "postgres://uniformServer:vk_server_dev@localhost:5432"
