@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: "postgres://uniformServer:vk_server_dev@localhost:5432"
+      CI: true
     services:
       postgres:
         image: postgres:15
@@ -38,9 +39,11 @@ jobs:
       run: npm i
     - name: setup database
       run: npx prisma migrate deploy && npx prisma db seed
-      env: 
-        DATABASE_URL: "postgres://uniformServer:vk_server_dev@localhost:5432"
+    - name: run jest tests
+      run: npm run test:jest
     - name: build the application
       run: npm run build 
-      env: 
-        DATABASE_URL: "postgres://uniformServer:vk_server_dev@localhost:5432"
+    - name: start the application
+      run: npm run start
+    - name: run e2e tests
+      run: npm run test:e2e
