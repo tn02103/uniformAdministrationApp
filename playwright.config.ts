@@ -13,7 +13,7 @@ export default defineConfig({
     /* Retry on CI only */
     retries: process.env.CI ? 2 : 0,
     /* Opt out of parallel tests on CI. */
-    workers: process.env.CI ? 2 : (process.env.TEST_WORKERS)?? undefined,
+    workers: process.env.CI ? 2 : (process.env.TEST_WORKERS) ? +process.env.TEST_WORKERS : undefined,
     /* amount of allowed failures */
     maxFailures: 20,
     /* Reporter to use. See https://playwright.dev/docs/test-reporters */
@@ -47,13 +47,13 @@ export default defineConfig({
                 viewport: viewports.xxl
             },
         },
-      /*  {
-            name: 'webkit',
-            use: {
-                ...devices['Desktop Safari'],
-                viewport: viewports.xxl
-            },
-        },*/
+        /*  {
+              name: 'webkit',
+              use: {
+                  ...devices['Desktop Safari'],
+                  viewport: viewports.xxl
+              },
+          },*/
     ],
 
     /* Run your local dev server before starting the tests */

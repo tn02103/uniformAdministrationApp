@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import { Assosiation, AssosiationConfiguration, Cadet, DeficiencyType, Inspection, Material, MaterialGroup, Prisma, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@prisma/client";
 import bcrypt from 'bcrypt';
 import StaticDataGenerator, { StaticDataIdType } from "./staticDataGenerator";
+import { getStaticDataIds } from "./staticDataIds";
 const fs = require('fs');
 
 export class StaticData {
@@ -14,23 +15,16 @@ export class StaticData {
     readonly cleanup: StaticDataCleanup;
 
     constructor(i: number) {
-
-        if (!fs.existsSync('tests/_playwrightConfig/testData/staticDataIds.json')) {
-            throw Error('No Static Ids found');
+        if (i < 0 || i > 99) {
+            throw new Error("Index must be between 0 and 99");
         }
-        const staticDataIds = require('./staticDataIds.json');
-        if (i > staticDataIds.length) throw Error("ID-Array not long enough");
-        if (!(staticDataIds satisfies StaticDataIdType[])) {
-            throw Error('Ids do not satify the type');
-        }
-
 
         this.index = i;
-        this.ids = staticDataIds[i];
-        this.fk_assosiation = staticDataIds[i].fk_assosiation;
+        this.ids = getStaticDataIds(i);
+        this.fk_assosiation = this.ids.fk_assosiation;
         this.data = new StaticDataGetter(i, this.ids);
         this.fill = new StaticDataLoader(this.data);
-        this.cleanup = new StaticDataCleanup(this.data, this.fill)
+        this.cleanup = new StaticDataCleanup(this.data, this.fill);
     }
 
     async resetData() {
@@ -338,8 +332,8 @@ class StaticDataCleanup {
         where: { type: { fk_assosiation: this.fk_assosiation } }
     });
     private deleteUniformType = () => prisma.uniformType.deleteMany({
-        where: { fk_assosiation: this.fk_assosiation }
-    });
+        where: { fk_assosiation: this.fk_assosiation } }
+    );
     private deleteUniformSize = () => prisma.uniformSize.deleteMany({
         where: { fk_assosiation: this.fk_assosiation }
     });
