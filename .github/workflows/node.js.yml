@@ -11,14 +11,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      DATABASE_URL: "postgres://uniformServer:vk_server_dev@localhost:5432"
+      DATABASE_URL: ${{ vars.DATABASE_URL }}
+      IRON_SESSION_KEY: ${{ vars.IRON_SESSION_KEY }}
+      IRON_SESSION_COOKIE_NAME: ${{ vars.IRON_SESSION_COOKIE_NAME }}
+      REFRESH_TOKEN_KEY: ${{ vars.REFRESH_TOKEN_KEY }}
       CI: true
     services:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: uniformServer
-          POSTGRES_PASSWORD: vk_server_dev
+          POSTGRES_USER: ${{ vars.DATABASE_USERNAME }}
+          POSTGRES_PASSWORD: ${{ vars.DATABASE_PASSWORD }}
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
