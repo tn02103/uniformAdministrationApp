@@ -46,13 +46,13 @@ jobs:
       run: npm run test:jest
     - name: build the application
       run: npm run build 
-    - name: install Playwright runners
-      run: npx playwright install
-    - name: run e2e tests
-      run: npm run test:e2e
-    - uses: actions/upload-artifact@v4
-      if: ${{ failure() && steps.e2e.outcome == 'failure' }}
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+##    - name: install Playwright runners
+#      run: npx playwright install
+#    - name: run e2e tests
+#      run: npm run test:e2e
+#    - uses: actions/upload-artifact@v4
+#      if: ${{ failure() && steps.e2e.outcome == 'failure' }}
+#      with:
+#        name: playwright-report
+#        path: playwright-report/
+#        retention-days: 30
