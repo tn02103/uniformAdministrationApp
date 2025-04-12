@@ -136,8 +136,6 @@ export const TooltipActionButton = ({ onClick, disabled, variantKey, testId, but
     const translation = t(variant.tooltipKey);
     const isMobile = window?.innerWidth < 992;
 
-
-
     return (
         <OverlayTrigger
             delay={{ show: 1000, hide: 150 }}
