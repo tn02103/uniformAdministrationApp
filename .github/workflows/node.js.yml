@@ -46,5 +46,7 @@ jobs:
       run: npm run test:jest
     - name: build the application
       run: npm run build 
+    - name: install Playwright runners
+      run: npx playwright install
     - name: run e2e tests
       run: npm run test:e2e
