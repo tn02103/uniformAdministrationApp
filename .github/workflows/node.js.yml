@@ -1,8 +1,7 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
-name: Node.js CI
-
+name: Validate MR
 on:
   pull_request:
     branches: [ "develop" ]
@@ -10,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: CI
     env:
       DATABASE_URL: ${{ vars.DATABASE_URL }}
       IRON_SESSION_KEY: ${{ vars.IRON_SESSION_KEY }}
