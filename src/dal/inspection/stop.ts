@@ -15,7 +15,7 @@ const stopInspectionPropShema = z.object({
     id: z.string().uuid(),
 });
 type stopInspectionPropShema = z.infer<typeof stopInspectionPropShema>;
-export const stopInspection = (props: stopInspectionPropShema) => genericSAValidator(
+export const stopInspection = async (props: stopInspectionPropShema) => genericSAValidator(
     AuthRole.materialManager,
     props,
     stopInspectionPropShema,

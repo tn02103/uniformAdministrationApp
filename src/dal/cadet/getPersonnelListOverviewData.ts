@@ -16,7 +16,7 @@ const getPersonnelListPropShema = z.object({
     }).partial(),
 });
 type getPersonnelListPropShema = z.infer<typeof getPersonnelListPropShema>;
-export const getPersonnelListOverviewData = (props: getPersonnelListPropShema): Promise<PersonnelListCadet[]> => genericSAValidator(
+export const getPersonnelListOverviewData = async (props: getPersonnelListPropShema): Promise<PersonnelListCadet[]> => genericSAValidator(
     AuthRole.user,
     props,
     getPersonnelListPropShema,

@@ -16,7 +16,7 @@ const dbQuery = new PlannedInspectionDBQuery();
  * @param props props is the id of inspection
  * @returns 
  */
-export const deleteInspection = (props: string): Promise<PlannedInspectionType[]> => genericSAValidator(
+export const deleteInspection = async (props: string): Promise<PlannedInspectionType[]> => genericSAValidator(
     AuthRole.materialManager,
     props,
     z.string().uuid(),

@@ -1,4 +1,5 @@
-import { defineConfig, devices } from '@playwright/experimental-ct-react';
+
+import { defineConfig, devices } from 'playwright/test';
 import { viewports } from './tests/_playwrightConfig/global/helper';
 
 /**

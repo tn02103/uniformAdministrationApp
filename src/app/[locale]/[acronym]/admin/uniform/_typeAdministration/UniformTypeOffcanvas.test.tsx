@@ -217,7 +217,7 @@ describe('<UniformTypeOffcanvas />', () => {
         );
 
         expect(screen.getByTestId('generationTableMock')).toBeInTheDocument();
-        expect(UniformGenerationTable).toHaveBeenCalledWith({ uniformType: testType }, {});
+        expect(UniformGenerationTable).toHaveBeenCalledWith({ uniformType: testType }, undefined);
     });
 
     describe('dal-Methods', () => {

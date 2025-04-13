@@ -12,7 +12,9 @@ export async function generateMetadata() {
 }
 
 export const dynamic = "force-dynamic";
-const LoginPage = async ({ params: { locale } }: { params: { locale: string } }) => {
+const LoginPage = async ({ params }: { params: Promise<{ locale: string }> }) => {
+    const { locale } = await params;
+    
     setStaticParamsLocale(locale);
     const t = await getI18n();
     const assosiations = await prisma.assosiation.findMany();

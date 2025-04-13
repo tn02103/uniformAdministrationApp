@@ -107,7 +107,7 @@ describe('<UniformGenerationTable />', () => {
             usingSizes: testType.usingSizes,
             onHide: expect.any(Function),
             generation: testType.uniformGenerationList[0],
-        }, {});
+        }, undefined);
 
         // close generation offcanvas
         expect(screen.getByTestId("generationOffcanvasMock")).toHaveTextContent("Generation Offcanvas");
@@ -133,7 +133,7 @@ describe('<UniformGenerationTable />', () => {
             usingSizes: testType.usingSizes,
             onHide: expect.any(Function),
             generation: null,
-        }, {});
+        }, undefined);
 
         // close generation offcanvas
         expect(screen.getByTestId("generationOffcanvasMock")).toHaveTextContent("Generation Offcanvas");

@@ -12,12 +12,12 @@ import { genericSAValidatorV2 } from "../validations";
 
 const dbHandler = new UserDBHandler();
 
-export const getUserList = () => genericSAValidatorV2(
+export const getUserList = async () => genericSAValidatorV2(
     AuthRole.admin,
     true, {}
 ).then(({ assosiation }) => dbHandler.getUsersList(assosiation));
 
-export const createUser = (data: { username: string, name: string, role: AuthRole, active: boolean }, password: string) => genericSAValidatorV2(
+export const createUser = async (data: { username: string, name: string, role: AuthRole, active: boolean }, password: string) => genericSAValidatorV2(
     AuthRole.admin,
     (userNameValidationPattern.test(data.username)
         && nameValidationPattern.test(data.name)
@@ -42,7 +42,7 @@ export const createUser = (data: { username: string, name: string, role: AuthRol
     revalidatePath(`/[locale]/${assosiation}/admin/users`, 'page');
 });
 
-export const updateUser = (data: User) => genericSAValidatorV2(
+export const updateUser = async (data: User) => genericSAValidatorV2(
     AuthRole.admin,
     (uuidValidationPattern.test(data.id)
         && userNameValidationPattern.test(data.username)
@@ -55,7 +55,7 @@ export const updateUser = (data: User) => genericSAValidatorV2(
     revalidatePath(`/[locale]/${assosiation}/admin/users`, 'page');
 });
 
-export const changeUserPassword = (userId: string, password: string) => genericSAValidatorV2(
+export const changeUserPassword = async (userId: string, password: string) => genericSAValidatorV2(
     AuthRole.admin,
     uuidValidationPattern.test(userId) && passwordValidationPattern.test(password),
     { userId }
@@ -64,7 +64,7 @@ export const changeUserPassword = (userId: string, password: string) => genericS
     dbHandler.removeRefreshToken(userId, prisma),
 ]));
 
-export const deleteUser = (userId: string) => genericSAValidatorV2(
+export const deleteUser = async (userId: string) => genericSAValidatorV2(
     AuthRole.admin,
     uuidValidationPattern.test(userId),
     { userId }

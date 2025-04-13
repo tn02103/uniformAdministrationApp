@@ -6,7 +6,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { revalidateTag } from "next/cache";
 
-export const startInspection = () => genericSAValidatorV2(
+export const startInspection = async () => genericSAValidatorV2(
     AuthRole.materialManager,
     true,
     {}

@@ -6,7 +6,7 @@ import { prisma } from "@/lib/db";
 import { uniformSizeArgs } from "@/types/globalUniformTypes";
 import { z } from "zod";
 
-export const getUsedSizesByType = (props: string) => genericSAValidator<string>(
+export const getUsedSizesByType = async (props: string) => genericSAValidator<string>(
     AuthRole.user,
     props,
     z.string().uuid(),

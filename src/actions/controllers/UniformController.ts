@@ -21,7 +21,7 @@ const typeHandler = new UniformTypeDBHandler();
  * @param uniformTypeId 
  * @returns number 
  */
-export const getUniformCountByType = (uniformTypeId: string) => genericSAValidatorV2(
+export const getUniformCountByType = async (uniformTypeId: string) => genericSAValidatorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(uniformTypeId)),
     { uniformTypeId }
@@ -129,7 +129,7 @@ export const getUniformListWithOwner = async (uniformTypeId: string, orderBy: st
  * @param uniformId 
  * @returns UniformFormData
  */
-export const getUniformFormValues = (uniformId: string): Promise<UniformFormData> => genericSAValidatorV2(
+export const getUniformFormValues = async (uniformId: string): Promise<UniformFormData> => genericSAValidatorV2(
     AuthRole.user,
     (uuidValidationPattern.test(uniformId)),
     { uniformId }
@@ -148,7 +148,7 @@ export const getUniformFormValues = (uniformId: string): Promise<UniformFormData
  * @param uniformId 
  * @returns an array containing date off issue and return, description of cadet with boolean if deleted.
  */
-export const getUniformIssueHistory = (uniformId: string): Promise<IssuedEntryType[]> => genericSAValidatorV2(
+export const getUniformIssueHistory = async (uniformId: string): Promise<IssuedEntryType[]> => genericSAValidatorV2(
     AuthRole.inspector,
     uuidValidationPattern.test(uniformId),
     { uniformId }

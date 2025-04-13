@@ -12,7 +12,7 @@ const updateCadetRegistrationPropShema = z.object({
 });
 type updateCadetRegistrationPropShema = z.infer<typeof updateCadetRegistrationPropShema>;
 
-export const updateCadetRegistrationForInspection = (props: updateCadetRegistrationPropShema) => genericSAValidator(
+export const updateCadetRegistrationForInspection = async (props: updateCadetRegistrationPropShema) => genericSAValidator(
     AuthRole.materialManager,
     props,
     updateCadetRegistrationPropShema,

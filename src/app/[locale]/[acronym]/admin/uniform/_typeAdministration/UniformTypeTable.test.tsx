@@ -148,7 +148,7 @@ describe("<UniformTypeTable />", () => {
                     setSelectedTypeId: expect.any(Function),
                     uniformType: testTypes[1]
                 },
-                {}
+                undefined
             );
 
             // close the offcanvas by calling the setSelectedTypeId function with null
@@ -168,7 +168,7 @@ describe("<UniformTypeTable />", () => {
                     setSelectedTypeId: expect.any(Function),
                     uniformType: testTypes[3]
                 },
-                {}
+                undefined
             );
         });
 
@@ -188,7 +188,7 @@ describe("<UniformTypeTable />", () => {
                     setSelectedTypeId: expect.any(Function),
                     uniformType: null
                 },
-                {}
+                undefined
             );
 
             act(() => {
@@ -219,7 +219,7 @@ describe("<UniformTypeTable />", () => {
                     setSelectedTypeId: expect.any(Function),
                     uniformType: testTypes[1]
                 },
-                {}
+                undefined
             );
 
             act(() => {
@@ -246,7 +246,7 @@ describe("<UniformTypeTable />", () => {
                     setSelectedTypeId: expect.any(Function),
                     uniformType: testTypes[1]
                 },
-                {}
+                undefined
             );
 
             // call the setEditable function to change the editable state
@@ -262,7 +262,7 @@ describe("<UniformTypeTable />", () => {
                     setSelectedTypeId: expect.any(Function),
                     uniformType: testTypes[1]
                 },
-                {}
+                undefined
             );
 
             // validate open and create buttons are disabled
@@ -286,7 +286,7 @@ describe("<UniformTypeTable />", () => {
                     setSelectedTypeId: expect.any(Function),
                     uniformType: testTypes[1]
                 },
-                {}
+                undefined
             );
 
             // validate open and create buttons are enabled again

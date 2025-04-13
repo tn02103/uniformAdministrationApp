@@ -16,7 +16,7 @@ const dbHandler = new DeficiencyTypeDBHandler();
  * @requires AuthRole.materialManager
  * @returns 
  */
-export const getDeficiencyAdmintypeList = (): Promise<AdminDeficiencyType[]> => genericSAValidatorV2(
+export const getDeficiencyAdmintypeList = async (): Promise<AdminDeficiencyType[]> => genericSAValidatorV2(
     AuthRole.materialManager, true, {}
 ).then(({ assosiation }) => dbHandler.getDeficiencyAdmintypeList(assosiation));
 
@@ -26,7 +26,7 @@ const SaveDeficiencyTypePropSchema = z.object({
 })
 type SaveDeficiencyTypePropSchema = z.infer<typeof SaveDeficiencyTypePropSchema>;
 
-export const saveDeficiencyType = (props: SaveDeficiencyTypePropSchema) =>
+export const saveDeficiencyType = async (props: SaveDeficiencyTypePropSchema) =>
     genericSAValidator(
         AuthRole.materialManager,
         props,
@@ -56,7 +56,7 @@ export const saveDeficiencyType = (props: SaveDeficiencyTypePropSchema) =>
         revalidatePath(`/[locale]/${assosiation}/app/admin/deficiency`, 'page');
     });
 
-export const createDeficiencyType = (props: AdminDeficiencytypeFormSchema) =>
+export const createDeficiencyType = async (props: AdminDeficiencytypeFormSchema) =>
     genericSAValidator(
         AuthRole.materialManager,
         props,
@@ -84,7 +84,7 @@ export const createDeficiencyType = (props: AdminDeficiencytypeFormSchema) =>
  * @param props id of the deficiencyType
  * @returns void
  */
-export const deactivateDeficiencyType = (props: string) => genericSAValidator(
+export const deactivateDeficiencyType = async (props: string) => genericSAValidator(
     AuthRole.inspector,
     props,
     z.string().uuid(),
@@ -113,7 +113,7 @@ export const deactivateDeficiencyType = (props: string) => genericSAValidator(
  * @param props id of type
  * @returns void
  */
-export const reactivateDeficiencyType = (props: string) => genericSAValidator(
+export const reactivateDeficiencyType = async (props: string) => genericSAValidator(
     AuthRole.inspector,
     props,
     z.string().uuid(),
@@ -137,7 +137,7 @@ export const reactivateDeficiencyType = (props: string) => genericSAValidator(
  * @param props id of type
  * @returns void
  */
-export const deleteDeficiencyType = (props: string) => genericSAValidator(
+export const deleteDeficiencyType = async (props: string) => genericSAValidator(
     AuthRole.materialManager,
     props,
     z.string().uuid(),

@@ -18,7 +18,7 @@ const dbQuery = new PlannedInspectionDBQuery();
  * @param props PlannedInspectionFormSchema includes Name and Date
  * @returns 
  */
-export const createInspection = (props: PlannedInspectionFormShema) => genericSAValidator(
+export const createInspection = async (props: PlannedInspectionFormShema) => genericSAValidator(
     AuthRole.materialManager,
     props,
     plannedInspectionFormShema,
