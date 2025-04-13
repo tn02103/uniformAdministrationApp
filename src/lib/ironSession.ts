@@ -26,4 +26,4 @@ export type IronSessionUser = {
 }
 
 
-export const getIronSession = () => getSession<IronSessionData>(cookies(), sessionOptions);
+export const getIronSession = async () => getSession<IronSessionData>(await cookies(), sessionOptions);

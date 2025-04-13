@@ -25,7 +25,7 @@ type propSchema = z.infer<typeof propSchema>;
  * @param props id & data of plannedInspectionFormSchema,
  * @returns 
  */
-export const updatePlannedInspection = (props: propSchema) => genericSAValidator(
+export const updatePlannedInspection = async (props: propSchema) => genericSAValidator(
     AuthRole.materialManager,
     props,
     propSchema,

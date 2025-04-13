@@ -42,9 +42,9 @@ function createCadetTable(workSheet: Worksheet, cadetList: InspectionReviewCadet
                 revCad.cadet.firstname,
                 revCad.lastInspection?.date ? revCad.lastInspection.date : 'nicht kontrolliert',
                 revCad.lastInspection ? (revCad.lastInspection.uniformComplete !== null) ? revCad.lastInspection.uniformComplete ? 'Vollständig' : 'Unvollständig' : '?' : '?',
-                +revCad.activeDeficiencyCount ?? 0,
-                +revCad.newlyClosedDeficiencyCount ?? 0,
-                +revCad.overalClosedDeficiencyCount ?? 0,
+                +(revCad.activeDeficiencyCount ?? 0),
+                +(revCad.newlyClosedDeficiencyCount ?? 0),
+                +(revCad.overalClosedDeficiencyCount ?? 0),
             ]
         }),
     });

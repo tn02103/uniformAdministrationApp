@@ -17,7 +17,7 @@ const propSchema = z.object({
     up: z.boolean(),
 });
 type PropType = z.infer<typeof propSchema>;
-export const changeSortOrder = (props: PropType) => genericSAValidator(
+export const changeSortOrder = async (props: PropType) => genericSAValidator(
     AuthRole.materialManager,
     props,
     propSchema,

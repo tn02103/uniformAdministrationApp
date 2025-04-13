@@ -8,7 +8,7 @@ import { revalidatePath } from "next/cache";
  * @returns 
  */
 
-export const create = () => genericSANoDataValidator(
+export const create = async () => genericSANoDataValidator(
     AuthRole.materialManager
 ).then(async ([{ assosiation }]) => {
     const data = prisma.$transaction(
