@@ -13,6 +13,12 @@ body {
         Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
+.drag-handler {
+    cursor: pointer;
+}
+.drag-handler:active {
+    cursor: move;
+}
 
 nav {
     width: auto;

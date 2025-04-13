@@ -69,11 +69,11 @@ exports[`<UniformGenerationTable /> renders the component 1`] = `
           >
             <span
               aria-label="drag item"
-              class="p-2"
+              class="p-2 drag-handler"
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-bars text-seccondary"
+                class="svg-inline--fa fa-bars "
                 data-icon="bars"
                 data-prefix="fas"
                 focusable="false"
@@ -134,11 +134,11 @@ exports[`<UniformGenerationTable /> renders the component 1`] = `
           >
             <span
               aria-label="drag item"
-              class="p-2"
+              class="p-2 drag-handler"
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-bars text-seccondary"
+                class="svg-inline--fa fa-bars "
                 data-icon="bars"
                 data-prefix="fas"
                 focusable="false"
@@ -199,11 +199,11 @@ exports[`<UniformGenerationTable /> renders the component 1`] = `
           >
             <span
               aria-label="drag item"
-              class="p-2"
+              class="p-2 drag-handler"
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-bars text-seccondary"
+                class="svg-inline--fa fa-bars "
                 data-icon="bars"
                 data-prefix="fas"
                 focusable="false"
