@@ -84,10 +84,11 @@ export const UniformTypeOffcanvas = ({ uniformType, setSelectedTypeId, editable,
         if (!uniformType) return;
 
         const deleteMutation = async () => {
-            setSelectedTypeId(null);
             await mutate(
                 deleteUniformType(uniformType.id),
-            ).catch((e) => {
+            ).then(() => {
+                setSelectedTypeId(null);
+            }).catch((e) => {
                 console.error(e);
                 toast.error(t('common.error.actions.delete'));
             });
@@ -138,7 +139,7 @@ export const UniformTypeOffcanvas = ({ uniformType, setSelectedTypeId, editable,
                         <LabelIconButton
                             variantKey="delete"
                             disabled={editable}
-                            onClick={() => handleDelete()}
+                            onClick={handleDelete}
                         />
                     </Row>
                 )}
@@ -218,6 +219,5 @@ export const UniformTypeOffcanvas = ({ uniformType, setSelectedTypeId, editable,
                 )}
             </Offcanvas.Body>
         </Offcanvas>
-    )
+    );
 }
-

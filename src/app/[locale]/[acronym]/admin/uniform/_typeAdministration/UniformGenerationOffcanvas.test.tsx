@@ -1,8 +1,6 @@
 import { UniformgenerationOffcanvas } from "@/app/[locale]/[acronym]/admin/uniform/_typeAdministration/UniformGenerationOffcanvas";
-import { update } from "@/dal/uniform/type/update";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-
 
 const sizeListIds = [
     'e667d674-7df8-436b-a2b8-77b06e063d36',
@@ -22,7 +20,7 @@ const testGeneration = {
     },
 }
 
-
+// ################## MOCKS ##################
 jest.mock("@/dataFetcher/uniformAdmin", () => {
     const typeListMutate = jest.fn(async (a) => a);
     return {
@@ -42,7 +40,7 @@ jest.mock("@/dal/uniform/generation/_index", () => {
     };
 });
 
-
+// ################## TESTS ##################
 describe('<UniformgenerationOffcanvas>', () => {
     const { updateUniformGeneration, createUniformGeneration, deleteUniformGeneration } = require('@/dal/uniform/generation/_index');
     const mutate = require('@/dataFetcher/uniformAdmin').useUniformTypeList().mutate;
@@ -52,7 +50,7 @@ describe('<UniformgenerationOffcanvas>', () => {
     afterEach(() => jest.clearAllMocks());
 
     describe('with generation', () => {
-        it('should render the component', async () => {
+        it('renders the component', async () => {
             render(
                 <UniformgenerationOffcanvas
                     generation={testGeneration}
@@ -62,21 +60,9 @@ describe('<UniformgenerationOffcanvas>', () => {
                 />
             );
 
-            const sizeSelect = screen.queryByText('common.uniform.sizelist.label');
-            expect(sizeSelect).toBeInTheDocument();
-
-
-            const nameInput = screen.getByRole('textbox', { name: 'common.name' });
-            const sizeSelectDiv = screen.getByRole('paragraph', { name: 'common.uniform.sizelist.label' });
-            const outdatedSwitch = screen.getByRole('switch', { name: 'common.uniform.generation.outdated' });
-
-            expect(nameInput).toHaveValue(testGeneration.name);
-            expect(sizeSelectDiv).toHaveTextContent(testGeneration.sizelist.name);
-            expect(outdatedSwitch).toHaveAttribute('aria-checked', String(testGeneration.outdated));
-
             expect(screen.getByRole('dialog')).toMatchSnapshot();
         });
-        it('hide sizelist if usingSizes is false', async () => {
+        it('hides sizelist if usingSizes is false', async () => {
             render(
                 <UniformgenerationOffcanvas
                     generation={testGeneration}
@@ -89,7 +75,7 @@ describe('<UniformgenerationOffcanvas>', () => {
             const sizeSelect = screen.queryByText('common.uniform.sizelist.label');
             expect(sizeSelect).not.toBeInTheDocument();
         });
-        it('should mark sizelist-label if usingSizes but sizelist is null', async () => {
+        it('marks sizelist-label if usingSizes and sizelist is null', async () => {
             render(
                 <UniformgenerationOffcanvas
                     generation={{ ...testGeneration, fk_sizelist: null }}
@@ -103,7 +89,7 @@ describe('<UniformgenerationOffcanvas>', () => {
             expect(sizeSelect).toBeInTheDocument();
             expect(sizeSelect).toHaveClass('text-danger');
         });
-        it('should set editable state', async () => {
+        it('sets editable state', async () => {
             const user = userEvent.setup();
             render(
                 <UniformgenerationOffcanvas
@@ -114,16 +100,18 @@ describe('<UniformgenerationOffcanvas>', () => {
                 />
             );
 
+            // get elements
             const editButton = screen.getByText('common.actions.edit');
             const deleteButton = screen.getByText('common.actions.delete');
             const nameInput = screen.getByRole('textbox', { name: 'common.name' });
             const sizeSelectDiv = screen.getByRole('paragraph', { name: 'common.uniform.sizelist.label' });
             const outdatedSwitch = screen.getByRole('switch', { name: 'common.uniform.generation.outdated' });
-
+            // get variable elements
             let saveButton = screen.queryByText('common.actions.save');
             let cancelButton = screen.queryByText('common.actions.cancel');
             let sizeSelect = screen.queryByRole('combobox', { name: 'common.uniform.sizelist.label' });
 
+            // check form components
             expect(nameInput).toBeVisible();
             expect(nameInput).toHaveClass('form-control-plaintext');
             expect(nameInput).toHaveAttribute('disabled');
@@ -132,20 +120,21 @@ describe('<UniformgenerationOffcanvas>', () => {
             expect(sizeSelect).toBeNull();
             expect(sizeSelectDiv).toBeVisible();
 
-
+            // check buttons
             expect(editButton).toBeVisible();
             expect(deleteButton).toBeVisible();
             expect(saveButton).toBeNull();
             expect(cancelButton).toBeNull();
-
             expect(editButton).not.toHaveAttribute('disabled');
             expect(deleteButton).not.toHaveAttribute('disabled');
 
+            // click edit button
             await user.click(editButton);
             saveButton = screen.queryByText('common.actions.save');
             cancelButton = screen.queryByText('common.actions.cancel');
             sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.sizelist.label' });
 
+            // check form components
             expect(nameInput).toHaveClass('form-control');
             expect(nameInput).not.toHaveAttribute('disabled');
             expect(outdatedSwitch).toHaveAttribute('aria-disabled', 'false');
@@ -153,6 +142,7 @@ describe('<UniformgenerationOffcanvas>', () => {
             expect(sizeSelect).not.toHaveAttribute('disabled');
             expect(sizeSelectDiv).not.toBeVisible();
 
+            // check buttons
             expect(editButton).toBeVisible();
             expect(deleteButton).toBeVisible();
             expect(saveButton).toBeVisible();
@@ -162,7 +152,6 @@ describe('<UniformgenerationOffcanvas>', () => {
         });
 
         it('resets on cancel', async () => {
-
             const user = userEvent.setup();
             render(
                 <UniformgenerationOffcanvas
@@ -173,24 +162,29 @@ describe('<UniformgenerationOffcanvas>', () => {
                 />
             );
 
+            // set editable
             const editButton = screen.getByText('common.actions.edit');
             await user.click(editButton);
 
-
+            // get elements
             const nameInput = screen.getByRole('textbox', { name: 'common.name' });
             const outdatedSwitch = screen.getByRole('switch', { name: 'common.uniform.generation.outdated' });
             const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.sizelist.label' });
             const cancelButton = screen.getByText('common.actions.cancel');
 
+            // change values
             await user.clear(nameInput);
             await user.type(nameInput, 'New Name');
             await user.click(outdatedSwitch);
             await user.selectOptions(sizeSelect, sizeListIds[1]);
+
+            // check values
             expect(nameInput).toHaveValue('New Name');
             expect(outdatedSwitch).toHaveAttribute('aria-checked', 'true');
             expect(sizeSelect).toHaveValue(sizeListIds[1]);
-            await user.click(cancelButton);
 
+            // cancel and check for resetet values again
+            await user.click(cancelButton);
             expect(nameInput).toHaveValue(testGeneration.name);
             expect(outdatedSwitch).toHaveAttribute('aria-checked', String(testGeneration.outdated));
             expect(sizeSelect).not.toBeInTheDocument();
@@ -233,14 +227,15 @@ describe('<UniformgenerationOffcanvas>', () => {
     describe('dal methods', () => {
         describe('delete', () => {
             it('deletes generation', async () => {
-                const user = userEvent.setup();
-                deleteUniformGeneration.mockReturnValue('uniform generation deleted');
-                const onHide = jest.fn();
-
                 let dangerOption;
                 const { dangerConfirmationModal } = useModal();
+                // change mocks
+                deleteUniformGeneration.mockReturnValue('uniform generation deleted');
                 dangerConfirmationModal.mockImplementation((option: any) => dangerOption = option.dangerOption);
+                const onHide = jest.fn();
 
+                // render component
+                const user = userEvent.setup();
                 render(
                     <UniformgenerationOffcanvas
                         generation={testGeneration}
@@ -250,9 +245,11 @@ describe('<UniformgenerationOffcanvas>', () => {
                     />
                 );
 
+                // open danger confirmation modal
                 const deleteButton = screen.getByText('common.actions.delete');
                 await user.click(deleteButton);
 
+                // validate parameters of dangerConfirmationModal
                 expect(dangerConfirmationModal).toHaveBeenCalled();
                 expect(dangerConfirmationModal).toHaveBeenCalledWith({
                     header: 'admin.uniform.generationList.deleteModal.header',
@@ -265,6 +262,7 @@ describe('<UniformgenerationOffcanvas>', () => {
                 });
                 expect(dangerOption).toBeDefined();
 
+                // call delete function and validate actions
                 await dangerOption!.function();
                 expect(deleteUniformGeneration).toHaveBeenCalledTimes(1);
                 expect(deleteUniformGeneration).toHaveBeenCalledWith(testGeneration.id);
@@ -273,14 +271,16 @@ describe('<UniformgenerationOffcanvas>', () => {
                 expect(onHide).toHaveBeenCalledTimes(1);
             });
             it('catches DAL-Exceptions', async () => {
-                const user = userEvent.setup();
-                deleteUniformGeneration.mockImplementationOnce(async () => { throw new Error("custom.error") });
-                const onHide = jest.fn();
-
                 let dangerOption;
                 const { dangerConfirmationModal } = useModal();
-                dangerConfirmationModal.mockImplementation((option: any) => dangerOption = option.dangerOption);
 
+                // set mocks
+                deleteUniformGeneration.mockImplementationOnce(async () => { throw new Error("custom.error") });
+                dangerConfirmationModal.mockImplementation((option: any) => dangerOption = option.dangerOption);
+                const onHide = jest.fn();
+
+                // render component
+                const user = userEvent.setup();
                 render(
                     <UniformgenerationOffcanvas
                         generation={testGeneration}
@@ -290,17 +290,21 @@ describe('<UniformgenerationOffcanvas>', () => {
                     />
                 );
 
+                // open danger confirmation modal
                 const deleteButton = screen.getByText('common.actions.delete');
                 await user.click(deleteButton);
+
+                // validate parameters of dangerConfirmationModal
                 expect(dangerConfirmationModal).toHaveBeenCalled();
-
                 expect(dangerOption).toBeDefined();
-                await dangerOption!.function();
 
+                // call delete function and validate actions                
+                await dangerOption!.function();
                 expect(deleteUniformGeneration).toHaveBeenCalledTimes(1);
                 expect(mutate).toHaveBeenCalledTimes(1);
                 expect(onHide).not.toHaveBeenCalled();
 
+                // validate error toast
                 expect(toast.error).toHaveBeenCalledTimes(1);
                 expect(toast.error).toHaveBeenCalledWith("common.error.actions.delete");
             });
@@ -319,19 +323,24 @@ describe('<UniformgenerationOffcanvas>', () => {
                     />
                 );
 
+                // get elements
                 const nameInput = screen.getByRole('textbox', { name: 'common.name' });
                 const outdatedSwitch = screen.getByRole('switch', { name: 'common.uniform.generation.outdated' });
                 const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.sizelist.label' });
                 const createButton = screen.getByText('common.actions.create');
 
+                // set values
                 await user.type(nameInput, 'New Name');
                 await user.click(outdatedSwitch);
                 await user.selectOptions(sizeSelect, sizeListIds[1]);
+
+                // check values
                 expect(nameInput).toHaveValue('New Name');
                 expect(outdatedSwitch).toHaveAttribute('aria-checked', 'true');
                 expect(sizeSelect).toHaveValue(sizeListIds[1]);
-                await user.click(createButton);
 
+                // create and validate actions
+                await user.click(createButton);
                 expect(createUniformGeneration).toHaveBeenCalledTimes(1);
                 expect(createUniformGeneration).toHaveBeenCalledWith({
                     name: 'New Name',
@@ -364,14 +373,17 @@ describe('<UniformgenerationOffcanvas>', () => {
                     />
                 );
 
+                // get elements
                 const nameInput = screen.getByRole('textbox', { name: 'common.name' });
                 const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.sizelist.label' });
                 const createButton = screen.getByText('common.actions.create');
 
+                // set values
                 await user.type(nameInput, 'New Name');
                 await user.selectOptions(sizeSelect, sizeListIds[0]);
-                await user.click(createButton);
 
+                // creaet and validate error handling
+                await user.click(createButton);
                 expect(createUniformGeneration).toHaveBeenCalledTimes(1);
                 expect(createUniformGeneration).toHaveBeenCalledWith({
                     name: 'New Name',
@@ -397,21 +409,22 @@ describe('<UniformgenerationOffcanvas>', () => {
                     />
                 );
 
+                // get elements
                 const nameInput = screen.getByRole('textbox', { name: 'common.name' });
                 const outdatedSwitch = screen.getByRole('switch', { name: 'common.uniform.generation.outdated' });
                 const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.sizelist.label' });
                 const createButton = screen.getByText('common.actions.create');
 
+                // set values and create
                 await user.type(nameInput, 'New Name');
                 await user.click(outdatedSwitch);
                 await user.selectOptions(sizeSelect, sizeListIds[1]);
                 await user.click(createButton);
 
+                // validation exception handling
                 expect(createUniformGeneration).toHaveBeenCalledTimes(1);
-
                 expect(mutate).not.toHaveBeenCalledTimes(1);
                 expect(onHide).not.toHaveBeenCalled();
-
                 expect(toast.error).toHaveBeenCalledTimes(1);
                 expect(toast.error).toHaveBeenCalledWith("common.error.actions.create");
             });
@@ -430,23 +443,28 @@ describe('<UniformgenerationOffcanvas>', () => {
                     />
                 );
 
+                // set editable
                 const editButton = screen.getByText('common.actions.edit');
                 await user.click(editButton);
 
+                // get elements
                 const nameInput = screen.getByRole('textbox', { name: 'common.name' });
                 const outdatedSwitch = screen.getByRole('switch', { name: 'common.uniform.generation.outdated' });
                 const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.sizelist.label' });
                 const saveButton = screen.getByText('common.actions.save');
 
+                // change values
                 await user.clear(nameInput);
                 await user.type(nameInput, 'New Name');
                 await user.click(outdatedSwitch);
                 await user.selectOptions(sizeSelect, sizeListIds[1]);
 
+                // check values
                 expect(nameInput).toHaveValue('New Name');
                 expect(outdatedSwitch).toHaveAttribute('aria-checked', 'true');
                 expect(sizeSelect).toHaveValue(sizeListIds[1]);
 
+                // save and validate actions
                 await user.click(saveButton);
                 expect(updateUniformGeneration).toHaveBeenCalledTimes(1);
                 expect(updateUniformGeneration).toHaveBeenCalledWith({
@@ -482,16 +500,20 @@ describe('<UniformgenerationOffcanvas>', () => {
                     />
                 );
 
+                // set editable
                 const editButton = screen.getByText('common.actions.edit');
                 await user.click(editButton);
 
+                // get elements
                 const nameInput = screen.getByRole('textbox', { name: 'common.name' });
                 const saveButton = screen.getByText('common.actions.save');
 
+                // setValues and save
                 await user.clear(nameInput);
                 await user.type(nameInput, 'New Name');
                 await user.click(saveButton);
 
+                // validate error handling
                 expect(updateUniformGeneration).toHaveBeenCalledTimes(1);
                 expect(updateUniformGeneration).toHaveBeenCalledWith({
                     data: {
@@ -519,11 +541,12 @@ describe('<UniformgenerationOffcanvas>', () => {
                     />
                 );
 
+                // set editable and save
                 await user.click(screen.getByText('common.actions.edit'));
                 await user.click(screen.getByText('common.actions.save'));
 
+                // validate exception handling
                 expect(updateUniformGeneration).toHaveBeenCalledTimes(1);
-                
                 expect(mutate).not.toHaveBeenCalled();
                 expect(onHide).not.toHaveBeenCalled();
 
@@ -533,7 +556,7 @@ describe('<UniformgenerationOffcanvas>', () => {
         });
     });
     describe('form validation', () => {
-        it('should show error if name is empty', async () => {
+        it('shows error if name is empty', async () => {
             const user = userEvent.setup();
             render(
                 <UniformgenerationOffcanvas
@@ -543,18 +566,18 @@ describe('<UniformgenerationOffcanvas>', () => {
                     onHide={() => { }}
                 />
             );
-
+            // set editable
             const editButton = screen.getByText('common.actions.edit');
             await user.click(editButton);
 
+            // clears name and clicks save
             const nameInput = screen.getByRole('textbox', { name: 'common.name' });
             const saveButton = screen.getByText('common.actions.save');
-
             await user.clear(nameInput);
             await user.click(saveButton);
 
+            // validate error handling
             expect(updateUniformGeneration).toHaveBeenCalledTimes(0);
-
             const errorMessage = await screen.findByRole('alert', { name: 'error message name' });
             expect(errorMessage).toBeVisible();
             expect(errorMessage).toHaveTextContent('string.required');

@@ -10,8 +10,8 @@ import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { Table } from "react-bootstrap";
-import { UniformTypeOffcanvas } from "./UniformTypeOffcanvas";
 import { toast } from "react-toastify";
+import { UniformTypeOffcanvas } from "./UniformTypeOffcanvas";
 
 const listElementStyles = {
     padding: "10px",

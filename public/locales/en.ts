@@ -197,12 +197,7 @@ export default {
             },
         },
         success: {
-            create: "The action was successful",
-            delete: "The data was deleted successfully",
-            save: "The data was saved successfully",
-            update: "Data was updated successfully",
             changeSortorder: "The order was changed successfully",
-            changePosition: "The position was changed successfully",
         },
     },
     login: {

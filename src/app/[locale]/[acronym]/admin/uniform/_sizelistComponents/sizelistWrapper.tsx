@@ -25,5 +25,5 @@ export default function UniformSizelistConfigurationWrapper() {
                     setEditable={setSizelistEditable} />
             </Col>
         </Row>
-    )
-}
+    );
+};

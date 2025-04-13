@@ -1,29 +1,33 @@
+import { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
 import { ReorderableTableBody } from "@/components/reorderDnD/ReorderableTableBody";
 import { changeUniformGenerationSortOrder } from "@/dal/uniform/generation/_index";
 import { useUniformTypeList } from "@/dataFetcher/uniformAdmin";
-import { UniformType, UniformGeneration } from "@/types/globalUniformTypes";
+import { useI18n } from "@/lib/locales/client";
+import { UniformGeneration, UniformType } from "@/types/globalUniformTypes";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
-import { Row, Table, Dropdown } from "react-bootstrap";
-import { UniformgenerationOffcanvas } from "./UniformGenerationOffcanvas";
-import { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
-import { useI18n } from "@/lib/locales/client";
+import { Row, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
+import { UniformgenerationOffcanvas } from "./UniformGenerationOffcanvas";
 
 type UniformGenerationTableProps = {
     uniformType: UniformType;
 }
 
 export const UniformGenerationTable = ({ uniformType }: UniformGenerationTableProps) => {
-    const { mutate } = useUniformTypeList();
     const t = useI18n();
+    const { mutate } = useUniformTypeList();
     const [selectedGenerationId, setSelectedGenerationId] = useState<string | null>(null);
 
     const handleChangeSortorder = async (newArray: UniformGeneration[], itemId: string) => {
-        if (newArray.length !== uniformType.uniformGenerationList?.length) return;
+        if (newArray.length !== uniformType.uniformGenerationList?.length)
+            return;
+
         const newPosition = newArray.findIndex(i => i.id === itemId);
-        if (newPosition === -1) return;
+        if (newPosition === -1)
+            return;
+
         await mutate(
             changeUniformGenerationSortOrder({ id: itemId, newPosition })
         ).then(() => {
@@ -97,5 +101,5 @@ export const UniformGenerationTable = ({ uniformType }: UniformGenerationTablePr
                 />
             }
         </div >
-    )
+    );
 }

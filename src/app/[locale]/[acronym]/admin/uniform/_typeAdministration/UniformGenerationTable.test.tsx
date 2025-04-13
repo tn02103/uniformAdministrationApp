@@ -1,14 +1,14 @@
-import { UniformType, UniformGeneration } from "@/types/globalUniformTypes";
+import { UniformGeneration, UniformType } from "@/types/globalUniformTypes";
 import { render, screen } from "@testing-library/react";
-import { UniformGenerationTable } from "./UniformGenerationTable";
 import userEvent from "@testing-library/user-event";
 import { testTypes } from "./testTypes";
-
+import { UniformGenerationTable } from "./UniformGenerationTable";
 
 const testType = testTypes[0];
 
+// ################## MOCKS ##################
 jest.mock("@/dataFetcher/uniformAdmin", () => {
-    const typeListMutate = jest.fn(async (a) => {return a; });
+    const typeListMutate = jest.fn(async (a) => { return a; });
     return {
         useUniformTypeList: jest.fn(() => ({
             mutate: typeListMutate,
@@ -40,6 +40,7 @@ jest.mock("@/components/reorderDnD/ReorderableTableBody", () => {
     };
 });
 
+// ################## TESTS ##################
 describe('<UniformGenerationTable />', () => {
     const { UniformgenerationOffcanvas } = require("./UniformGenerationOffcanvas");
     const { changeUniformGenerationSortOrder } = require("@/dal/uniform/generation/_index");
@@ -49,14 +50,14 @@ describe('<UniformGenerationTable />', () => {
         jest.clearAllMocks();
     });
 
-    it('should render the UniformGenerationTable component', () => {
+    it('renders the component', () => {
         render(<UniformGenerationTable uniformType={testType} />);
 
         expect(screen.getByTestId("uniform-generation-table")).toBeInTheDocument();
         expect(screen.getByTestId("uniform-generation-table")).toMatchSnapshot();
     });
 
-    it('should mark generation as invalid if fk_sizelist is null and usingSizes', () => {
+    it('marks generation as invalid if fk_sizelist is null and type usingSizes', () => {
         const testTypeWithInvalidGeneration: UniformType = {
             ...testType,
             uniformGenerationList: [
@@ -71,36 +72,35 @@ describe('<UniformGenerationTable />', () => {
                 },
             ],
         };
-        const { unmount } = render(<UniformGenerationTable uniformType={testTypeWithInvalidGeneration} />);
+        render(<UniformGenerationTable uniformType={testTypeWithInvalidGeneration} />);
 
-        const invalidGenerationRow = screen.getByText("Invalid Generation").closest("tr");
+        // validate invalid generation row
+        const invalidGenerationRow = screen.getByRole("row", { name: "Invalid Generation" });
         expect(invalidGenerationRow?.childNodes[0]).toHaveClass("text-danger");
         expect(invalidGenerationRow?.childNodes[1]).toHaveClass("text-danger");
         expect(invalidGenerationRow?.childNodes[2]).toHaveClass("text-danger");
         expect(invalidGenerationRow?.getElementsByTagName("button")[0]).toHaveClass("text-danger");
 
-        unmount();
-        testTypeWithInvalidGeneration.usingSizes = false;
-        render(<UniformGenerationTable uniformType={testTypeWithInvalidGeneration} />);
-
-        const validGenerationRow = screen.getByText("Invalid Generation").closest("tr");
+        // validate valid generation row
+        const validGenerationRow = screen.getByRole("row", testType.uniformGenerationList[0]);
         expect(validGenerationRow?.childNodes[0]).not.toHaveClass("text-danger");
         expect(validGenerationRow?.childNodes[1]).not.toHaveClass("text-danger");
         expect(validGenerationRow?.childNodes[2]).not.toHaveClass("text-danger");
         expect(validGenerationRow?.getElementsByTagName("button")[0]).not.toHaveClass("text-danger");
     });
 
-    it('should open the generation offcanvas when clicking the open button', async () => {
+    it('opens the generation offcanvas when clicking the open button', async () => {
         const user = userEvent.setup();
         render(<UniformGenerationTable uniformType={testType} />);
 
-        const openButton = screen.getByText("Test Generation 1").closest("tr")?.getElementsByTagName("button")[0];
+        // open generation offcanvas
+        const openButton = screen.getByRole("row", { name: "Test Generation 1" }).getElementsByTagName("button")[0];
         expect(openButton).toBeDefined();
         expect(openButton).not.toBeNull();
         await user.click(openButton!);
 
+        // validate generactionOffacanvas mock call
         expect(screen.getByTestId("generationOffcanvasMock")).toBeInTheDocument();
-
         expect(UniformgenerationOffcanvas).toHaveBeenCalledTimes(1);
         expect(UniformgenerationOffcanvas).toHaveBeenCalledWith({
             uniformTypeId: testType.id,
@@ -109,23 +109,24 @@ describe('<UniformGenerationTable />', () => {
             generation: testType.uniformGenerationList[0],
         }, {});
 
+        // close generation offcanvas
         expect(screen.getByTestId("generationOffcanvasMock")).toHaveTextContent("Generation Offcanvas");
         await user.click(screen.getByTestId("generationOffcanvasMock"));
-
         expect(screen.queryByTestId("generationOffcanvasMock")).not.toBeInTheDocument();
     });
 
-    it('should open the generation offcanvas when clicking the create button', async () => {
+    it('opens the generation offcanvas when clicking the create button', async () => {
         const user = userEvent.setup();
         render(<UniformGenerationTable uniformType={testType} />);
 
+        // open generation offcanvas
         const createButton = screen.getByTestId("btn_create");
         expect(createButton).toBeDefined();
         expect(createButton).not.toBeNull();
         await user.click(createButton!);
 
+        // validate generactionOffacanvas mock call
         expect(screen.getByTestId("generationOffcanvasMock")).toBeInTheDocument();
-
         expect(UniformgenerationOffcanvas).toHaveBeenCalledTimes(1);
         expect(UniformgenerationOffcanvas).toHaveBeenCalledWith({
             uniformTypeId: testType.id,
@@ -134,16 +135,17 @@ describe('<UniformGenerationTable />', () => {
             generation: null,
         }, {});
 
+        // close generation offcanvas
         expect(screen.getByTestId("generationOffcanvasMock")).toHaveTextContent("Generation Offcanvas");
         await user.click(screen.getByTestId("generationOffcanvasMock"));
-
         expect(screen.queryByTestId("generationOffcanvasMock")).not.toBeInTheDocument();
     });
 
-    it('should call sortOrder function when onDragEnd is triggered', async () => {
+    it('changes sortOrder when onDragEnd is triggered', async () => {
         const { toast } = require("react-toastify");
         render(<UniformGenerationTable uniformType={testType} />);
 
+        // trigger onDragEnd
         expect(onDragEndFunction).toBeDefined();
         await onDragEndFunction!([
             testType.uniformGenerationList[1],
@@ -151,6 +153,7 @@ describe('<UniformGenerationTable />', () => {
             testType.uniformGenerationList[2],
         ], testType.uniformGenerationList[0].id);
 
+        // validate changeUniformGenerationSortOrder call
         expect(changeUniformGenerationSortOrder).toHaveBeenCalledTimes(1);
         expect(changeUniformGenerationSortOrder).toHaveBeenCalledWith({
             id: testType.uniformGenerationList[0].id,
@@ -159,16 +162,17 @@ describe('<UniformGenerationTable />', () => {
         expect(useUniformTypeList().mutate).toHaveBeenCalledTimes(1);
         expect(useUniformTypeList().mutate).toHaveBeenCalledWith("uniform generation sortOrder changed");
 
+        // validate toast call
         expect(toast.success).toHaveBeenCalledTimes(1);
         expect(toast.success).toHaveBeenCalledWith("common.success.changeSortorder");
     });
 
-    it('should catch error when sortOrder function fails', async () => {
+    it('catches error when sortOrder function fails', async () => {
         const { toast } = require("react-toastify");
         changeUniformGenerationSortOrder.mockImplementationOnce(async () => { throw new Error("Error") });
-
         render(<UniformGenerationTable uniformType={testType} />);
 
+        // trigger onDragEnd
         expect(onDragEndFunction).toBeDefined();
         await onDragEndFunction!([
             testType.uniformGenerationList[1],
@@ -176,6 +180,7 @@ describe('<UniformGenerationTable />', () => {
             testType.uniformGenerationList[2],
         ], testType.uniformGenerationList[0].id);
 
+        // validate changeUniformGenerationSortOrder call
         expect(changeUniformGenerationSortOrder).toHaveBeenCalledTimes(1);
         expect(changeUniformGenerationSortOrder).toHaveBeenCalledWith({
             id: testType.uniformGenerationList[0].id,
@@ -184,12 +189,13 @@ describe('<UniformGenerationTable />', () => {
         expect(useUniformTypeList().mutate).toHaveBeenCalledTimes(1);
         expect(useUniformTypeList().mutate).not.toHaveBeenCalledWith("uniform generation sortOrder changed");
 
+        // validate toast call
         expect(toast.success).toHaveBeenCalledTimes(0);
         expect(toast.error).toHaveBeenCalledTimes(1);
         expect(toast.error).toHaveBeenCalledWith("common.error.actions.changeSortorder");
     });
 
-    it('should not call sortOrder function when itemId is not in the list', () => {
+    it('does not call sortOrder function when itemId is not in the list', () => {
         render(<UniformGenerationTable uniformType={testType} />);
 
         expect(onDragEndFunction).toBeDefined();
@@ -202,7 +208,7 @@ describe('<UniformGenerationTable />', () => {
         expect(changeUniformGenerationSortOrder).not.toHaveBeenCalled();
     });
 
-    it('should not call sortOrder function when list has wrong size', () => {
+    it('does not call sortOrder function when list has wrong size', () => {
         render(<UniformGenerationTable uniformType={testType} />);
 
         expect(onDragEndFunction).toBeDefined();
@@ -214,7 +220,7 @@ describe('<UniformGenerationTable />', () => {
         expect(changeUniformGenerationSortOrder).not.toHaveBeenCalled();
     });
 
-    it('should not show sizeList column when usingSizes is false', () => {
+    it('does not show sizeList column when usingSizes is false', () => {
         const testTypeWithoutSizeList: UniformType = {
             ...testType,
             usingSizes: false,
@@ -222,11 +228,12 @@ describe('<UniformGenerationTable />', () => {
         render(<UniformGenerationTable uniformType={testTypeWithoutSizeList} />);
 
         expect(screen.queryByText("common.uniform.sizelist.label")).not.toBeInTheDocument();
-        const row = screen.getByText("Test Generation 1").closest("tr");
+
+        const row = screen.getByRole("tr", { name: "Test Generation 1" });
         expect(row).not.toBeNull();
-        expect(row!.childNodes).toHaveLength(4); // 3 columns + 1 action column
+        expect(row!.childNodes).toHaveLength(4);
     });
-    it('should show outdated column on Mobile when usingSizes is false ', () => {
+    it('shows outdated column on Mobile when !usingSizes', () => {
         const testTypeWithoutSizeList: UniformType = {
             ...testType,
             usingSizes: false,
@@ -235,16 +242,18 @@ describe('<UniformGenerationTable />', () => {
 
         expect(screen.queryByText("common.uniform.generation.outdated")).toBeInTheDocument();
         expect(screen.queryByText("common.uniform.generation.outdated")).not.toHaveClass("d-none d-sm-table-cell");
-        const row = screen.getByText("Test Generation 1").closest("tr");
+
+        const row = screen.getByRole("tr", { name: "Test Generation 1" });
         expect(row).not.toBeNull();
         expect(row?.childNodes[2]).not.toHaveClass("d-none d-sm-table-cell");
     });
-    it('should hide outdated column on Mobile when usingSizes is true ', () => {
+    it('hides outdated column on Mobile when usingSizes', () => {
         render(<UniformGenerationTable uniformType={testType} />);
 
         expect(screen.queryByText("common.uniform.generation.outdated")).toBeInTheDocument();
         expect(screen.queryByText("common.uniform.generation.outdated")).toHaveClass("d-none d-sm-table-cell");
-        const row = screen.getByText("Test Generation 1").closest("tr");
+
+        const row = screen.getByRole("tr", { name: "Test Generation 1" });
         expect(row).not.toBeNull();
         expect(row?.childNodes[2]).toHaveClass("d-none d-sm-table-cell");
     });

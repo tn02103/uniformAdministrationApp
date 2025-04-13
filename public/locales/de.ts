@@ -197,12 +197,7 @@ export default {
             },
         },
         success: {
-            create: "EelErfolgreich angelegt",
-            delete: "Erfolgreich gelöscht",
-            save: "Erfolgreich gespeichert",
-            update: "Erfolgreich aktualisiert",
             changeSortorder: "Reihenfolge erfolgreich geändert",
-            changePosition: "Position erfolgreich geändert",
         },
     },
     login: {

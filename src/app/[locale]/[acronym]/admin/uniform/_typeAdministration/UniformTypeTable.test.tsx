@@ -4,6 +4,8 @@ import userEvent from "@testing-library/user-event";
 import { testTypes } from "./testTypes";
 import { UniformTypeTable } from "./UniformTypeTable";
 
+
+// ################## MOCKS ##################
 jest.mock("@/dal/uniform/type/_index", () => ({
     changeUniformTypeSortOrder: jest.fn(async () => "uniform type sortOrder changed"),
 }));
@@ -40,6 +42,7 @@ jest.mock("./UniformTypeOffcanvas", () => ({
 }));
 
 
+// ################## TESTS ##################
 describe("<UniformTypeTable />", () => {
     const { changeUniformTypeSortOrder } = require("@/dal/uniform/type/_index");
     const { useUniformTypeList } = require("@/dataFetcher/uniformAdmin");
@@ -51,14 +54,14 @@ describe("<UniformTypeTable />", () => {
         jest.clearAllMocks();
     });
 
-    it("should render the component correctly", () => {
+    it("renders the component", () => {
         render(<UniformTypeTable initialTypeList={testTypes} />);
 
         expect(screen.getByRole("table")).toBeInTheDocument();
         expect(screen.getByRole("table").closest('div')).toMatchSnapshot();
     });
 
-    it("should call onDragEnd and change sort order correctly", async () => {
+    it("calls changeUniformTypeSortOrder when onDragEnd is triggered", async () => {
         changeUniformTypeSortOrder.mockReturnValue("uniform type sortOrder changed");
         render(<UniformTypeTable initialTypeList={testTypes} />);
 
@@ -78,7 +81,7 @@ describe("<UniformTypeTable />", () => {
         expect(toast.success).toHaveBeenCalledWith("common.success.changeSortorder");
     });
 
-    it('should catch error when change sort order fails', async () => {
+    it('catchs exeption in changeUniformTypeSortOrder', async () => {
         changeUniformTypeSortOrder.mockImplementation(async () => { throw new Error("error") });
         render(<UniformTypeTable initialTypeList={testTypes} />);
 
@@ -99,7 +102,7 @@ describe("<UniformTypeTable />", () => {
         expect(toast.error).toHaveBeenCalledWith("common.error.actions.changeSortorder");
     });
 
-    it("should not call sortOrder function when itemId is not in the list", () => {
+    it("does not call sortOrder function when itemId is not in the list", () => {
         render(<UniformTypeTable initialTypeList={testTypes} />);
 
         expect(onDragEndFunction).toBeDefined();
@@ -112,7 +115,7 @@ describe("<UniformTypeTable />", () => {
 
         expect(changeUniformTypeSortOrder).not.toHaveBeenCalled();
     });
-    it("should not call sortOrder function when list has wrong size", () => {
+    it("does not call sortOrder function when list has wrong size", () => {
         render(<UniformTypeTable initialTypeList={testTypes} />);
 
         expect(onDragEndFunction).toBeDefined();
@@ -126,14 +129,16 @@ describe("<UniformTypeTable />", () => {
     });
 
     describe("Render UniformTypeOffcanvas", () => {
-        it("should open and close UniformTypeOffcanvas for the correct element", async () => {
+        it("opens and closes UniformTypeOffcanvas for the correct element", async () => {
             const user = userEvent.setup();
             render(<UniformTypeTable initialTypeList={testTypes} />);
 
+            // open the offcanvas to edit the second type
             const openButtons = screen.getAllByRole('button', { name: 'open' });
             expect(openButtons).toHaveLength(4);
             await user.click(openButtons[1]);
 
+            // check if the offcanvas is opened with the correct type
             expect(screen.getByTestId("uniform-type-offcanvas")).toBeInTheDocument();
             expect(UniformTypeOffcanvas).toHaveBeenCalledTimes(1);
             expect(UniformTypeOffcanvas).toHaveBeenCalledWith(
@@ -145,13 +150,29 @@ describe("<UniformTypeTable />", () => {
                 },
                 {}
             );
+
+            // close the offcanvas by calling the setSelectedTypeId function with null
             act(() => {
                 UniformTypeOffcanvas.mock.calls[0][0].setSelectedTypeId(null);
             });
             expect(screen.queryByTestId("uniform-type-offcanvas")).not.toBeInTheDocument();
+
+            // open the offcanvas for the forth type
+            await user.click(openButtons[3]);
+            expect(screen.getByTestId("uniform-type-offcanvas")).toBeInTheDocument();
+            expect(UniformTypeOffcanvas).toHaveBeenCalledTimes(2);
+            expect(UniformTypeOffcanvas).toHaveBeenLastCalledWith(
+                {
+                    editable: false,
+                    setEditable: expect.any(Function),
+                    setSelectedTypeId: expect.any(Function),
+                    uniformType: testTypes[3]
+                },
+                {}
+            );
         });
 
-        it("should open UniformTypeOffcanvas to create a new type", async () => {
+        it("opens UniformTypeOffcanvas to create a new type", async () => {
             const user = userEvent.setup();
             render(<UniformTypeTable initialTypeList={testTypes} />);
 
@@ -176,7 +197,7 @@ describe("<UniformTypeTable />", () => {
             expect(screen.queryByTestId("uniform-type-offcanvas")).not.toBeInTheDocument();
         });
 
-        it("should rerender when selectedTypeId changes", async () => {
+        it("rerenders when selectedTypeId changes", async () => {
             const user = userEvent.setup();
             render(<UniformTypeTable initialTypeList={testTypes} />);
 
