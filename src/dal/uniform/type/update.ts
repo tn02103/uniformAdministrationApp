@@ -1,17 +1,24 @@
 import { genericSAValidator } from "@/actions/validations";
+import { SAReturnType } from "@/dal/_helper/testHelper";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { UniformType } from "@/types/globalUniformTypes";
-import { uniformTypeFormSchema, UniformTypeFormType } from "@/zod/uniformConfig";
+import { uniformTypeFormSchema } from "@/zod/uniformConfig";
+import { z } from "zod";
 import { __unsecuredGetUniformTypeList } from "./get";
-import { SAReturnType } from "@/dal/_helper/testHelper";
 
-export const update = (props: UniformTypeFormType): SAReturnType<UniformType[]> => genericSAValidator(
+const propSchema = z.object({
+    id: z.string().uuid(),
+    data: uniformTypeFormSchema,
+});
+type UniformTypeUpdateProps = z.infer<typeof propSchema>;
+
+export const update = (props: UniformTypeUpdateProps): SAReturnType<UniformType[]> => genericSAValidator(
     AuthRole.materialManager,
     props,
-    uniformTypeFormSchema,
-    { uniformTypeId: props.id, uniformSizelistId: props.fk_defaultSizelist }
-).then(([{ assosiation }, data]) => prisma.$transaction(async (client) => {
+    propSchema,
+    { uniformTypeId: props.id, uniformSizelistId: props.data.fk_defaultSizelist }
+).then(([{ assosiation }, {id, data}]) => prisma.$transaction(async (client) => {
     const list = await client.uniformType.findMany({
         where: {
             fk_assosiation: assosiation,
@@ -19,7 +26,7 @@ export const update = (props: UniformTypeFormType): SAReturnType<UniformType[]> 
         }
     });
 
-    if (list.find(t => t.id !== data.id && t.name === data.name)) {
+    if (list.find(t => t.id !== id && t.name === data.name)) {
         return {
             error: {
                 message: "custom.uniform.type.nameDuplication",
@@ -28,7 +35,7 @@ export const update = (props: UniformTypeFormType): SAReturnType<UniformType[]> 
         };
     }
 
-    const acronymDupl = list.find(t => t.id !== data.id && t.acronym === data.acronym);
+    const acronymDupl = list.find(t => t.id !== id && t.acronym === data.acronym);
     if (acronymDupl) {
         return {
             error: {
@@ -48,7 +55,7 @@ export const update = (props: UniformTypeFormType): SAReturnType<UniformType[]> 
 
     await client.uniformType.update({
         where: {
-            id: data.id,
+            id,
         },
         data: data
     });

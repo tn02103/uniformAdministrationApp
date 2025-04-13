@@ -9,7 +9,7 @@ import { __unsecuredGetUniformTypeList } from "../type/get";
 
 const propSchema = z.object({
     id: z.string().uuid(),
-    up: z.boolean(),
+    newPosition: z.number(),
 });
 type PropType = z.infer<typeof propSchema>;
 
@@ -18,42 +18,56 @@ export const changeSortOrder = (props: PropType): Promise<UniformType[]> => gene
     props,
     propSchema,
     { uniformGenerationId: props.id }
-).then(([{ assosiation }, { id, up }]) => prisma.$transaction(async (client) => {
-    const gen = await client.uniformGeneration.findUniqueOrThrow({
+).then(([{ assosiation }, { id, newPosition }]) => prisma.$transaction(async (client) => {
+    const generation = await prisma.uniformGeneration.findUniqueOrThrow({
         where: { id }
     });
-
-    // UPDATE sortorder of other generation
-    const newSortOrder = up ? (gen.sortOrder - 1) : (gen.sortOrder + 1);
-
-
-    if (!await updateSeccondGeneration(newSortOrder, gen.fk_uniformType, !up, client)) {
-        throw new SaveDataException("Could not update sortOrder of seccond generation");
+    if (generation.sortOrder === newPosition) {
+        return __unsecuredGetUniformTypeList(assosiation, client);
     }
 
-    // UPDATE sortorder of generation
-    await updatePrimaryGeneration(id, up, client);
+    const count = await prisma.uniformGeneration.count({
+        where: {
+            fk_uniformType: generation.fk_uniformType,
+            recdelete: null
+        }
+    });
 
-    return __unsecuredGetUniformTypeList(assosiation, client);
+    if (newPosition < 0 || newPosition >= count) {
+        throw new SaveDataException("Invalid newPosition");
+    }
+
+    // UPDATE sortorder of other type
+    const up = newPosition < generation.sortOrder;
+    const upperLimit = up ? newPosition : (generation.sortOrder + 1);
+    const lowerLimit = up ? (generation.sortOrder - 1) : newPosition;
+    if (!await updateOtherTypes(upperLimit, lowerLimit, up, generation.fk_uniformType, client)) {
+        throw new SaveDataException("Could not update sortOrder of other types");
+    }
+
+    // UPDATE sortorder of type
+    await updateInitialType(id, newPosition, client);
+    return __unsecuredGetUniformTypeList(assosiation, client)
 }));
 
-function updateSeccondGeneration(sortOrder: number, fk_uniformType: string, up: boolean, client: Prisma.TransactionClient) {
-    return client.uniformGeneration.updateMany({
+const updateOtherTypes = async (upperLimit: number, lowerLimit: number, up: boolean, fk_uniformType: string, client: Prisma.TransactionClient) =>
+    client.uniformGeneration.updateMany({
         where: {
-            sortOrder,
+            sortOrder: { gte: upperLimit, lte: lowerLimit },
             fk_uniformType,
             recdelete: null
         },
         data: {
-            sortOrder: up ? { decrement: 1 } : { increment: 1 }
+            sortOrder: up ? { increment: 1 } : { decrement: 1 }
         }
-    }).then((res) => res.count === 1);
-}
-function updatePrimaryGeneration(id: string, up: boolean, client: Prisma.TransactionClient) {
-    return client.uniformGeneration.update({
-        where: { id },
+    }).then((result) => result.count === ((lowerLimit - upperLimit) + 1));
+
+const updateInitialType = async (id: string, newPosition: number, client: Prisma.TransactionClient) =>
+    client.uniformGeneration.update({
+        where: {
+            id,
+        },
         data: {
-            sortOrder: up ? { decrement: 1 } : { increment: 1 }
+            sortOrder: newPosition
         }
     });
-}

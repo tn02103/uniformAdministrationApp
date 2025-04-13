@@ -1,11 +1,11 @@
 "use client";
 
-import { TooltipActionButton } from "@/components/TooltipIconButton";
+import { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/card";
 import ErrorMessage from "@/components/errorMessage";
 import { useModal } from "@/components/modals/modalProvider";
 import { deleteMaterialGroup, updateMaterialGroup } from "@/dal/material/group/_index";
-import { SAFormHandler } from "@/lib/SAFormHandler";
+import { asyncSAFormHandler } from "@/lib/SAFormHandler";
 import { useI18n } from "@/lib/locales/client";
 import { AdministrationMaterialGroup } from "@/types/globalMaterialTypes";
 import { materialGroupFormSchema, MaterialGroupFormType } from "@/zod/material";
@@ -71,7 +71,7 @@ export default function MaterialConfigGroupDetail({
             issuedDefault = Number(data.issuedDefault);
         }
 
-        await SAFormHandler<typeof updateMaterialGroup>(
+        await asyncSAFormHandler<typeof updateMaterialGroup>(
             updateMaterialGroup({
                 id: materialGroup.id,
                 data,

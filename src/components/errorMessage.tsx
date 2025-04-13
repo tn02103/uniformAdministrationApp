@@ -5,7 +5,7 @@ import engl from "@/../public/locales/en";
 import { useCurrentLocale } from "@/lib/locales/client";
 import { useCallback, useEffect, useState } from "react";
 
-export default function ErrorMessage({ error, testId }: { error?: string, testId: string }) {
+export default function ErrorMessage({ error, testId, ariaLabel, id }: { error?: string; testId: string; id?: string; ariaLabel?: string }) {
     const locale = useCurrentLocale();
 
     const [message, setMessage] = useState('');
@@ -59,8 +59,11 @@ export default function ErrorMessage({ error, testId }: { error?: string, testId
         setMessage(text);
     }, [error, locale, setMessage, getTranslationText, getTranslation]);
 
+    if (!message)
+        return null;
+
     return (
-        <div className="text-danger fs-7" data-testid={testId}>
+        <div className="text-danger fs-7" role="alert" data-testid={testId} id={id} aria-label={ariaLabel}>
             {message}
         </div>
     );

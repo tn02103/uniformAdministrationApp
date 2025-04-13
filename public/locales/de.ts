@@ -3,6 +3,7 @@ export default {
         of: "von",
         comment: "Kommentar",
         description: "Beschreibung",
+        details: "Details",
         name: "Name",
         type: "Typ",
         loading: "Lädt",
@@ -128,7 +129,7 @@ export default {
             },
         },
         error: {
-                pleaseSelect: "Bitte Auswählen",
+            pleaseSelect: "Bitte Auswählen",
             unknown: "Es ist ein unerwarteter Fehler aufgetreten",
             number: {
                 required: "Bitte eine Zahl angeben",
@@ -178,7 +179,7 @@ export default {
             custom: {
                 material: {
                     typename: {
-                        duplication: "Der Name wird bereits von einem anderen Material der Gruppe verwendet",   
+                        duplication: "Der Name wird bereits von einem anderen Material der Gruppe verwendet",
                     },
                     groupname: {
                         duplication: "Der Name wird bereits von einer anderen Gruppe verwendet",
@@ -194,6 +195,9 @@ export default {
                     }
                 },
             },
+        },
+        success: {
+            changeSortorder: "Reihenfolge erfolgreich geändert",
         },
     },
     login: {
@@ -362,6 +366,7 @@ export default {
                 }
             },
             generationList: {
+                "header.create": "Neue Generation anlegen",
                 deleteModal: {
                     header: "Generation \"{generation}\" Löschen",
                     message: {
@@ -372,8 +377,6 @@ export default {
                     confirmationText: "Generation-{generation}",
                 },
                 updateModal: {
-                    editHeader: "Generation \"{generation}\" bearbeiten",
-                    createHeader: "Neue Generation anlegen",
                     changeSizeHeader: "Ändern der Größenliste",
                     changeSizeMessage: "Beim Ändern der ausgewählten Größenliste, kann bei Uniformteilen dieser Generation die Information der Größe verlohren gehen",
                     nameDuplicationError: "Es existiert bereits eine Generation mit diesem Namen",

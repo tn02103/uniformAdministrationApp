@@ -1,7 +1,7 @@
 import { Config } from "jest";
 
 const customJestConfig: Config = { // CONFIGURATION FOR DATA-ACCESS-LAYER
-    displayName: "Data access layer",
+    displayName: "DataAccessLayer",
     setupFilesAfterEnv: [
         './tests/_jestConfig/data.setup.ts',
     ],
@@ -17,6 +17,7 @@ const customJestConfig: Config = { // CONFIGURATION FOR DATA-ACCESS-LAYER
     testMatch: [
         "**/src/dal/**/*.test.[jt]s?(x)",
     ],
+    maxWorkers: 1,
 }
 
 export default customJestConfig;

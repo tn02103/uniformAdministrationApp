@@ -1,0 +1,403 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<UniformTypeTable /> renders the component 1`] = `
+<div>
+  <table
+    aria-label="common.uniform.type.type"
+    class="table table-striped"
+  >
+    <thead>
+      <tr>
+        <th />
+        <th>
+          common.uniform.type.type
+        </th>
+        <th>
+          common.uniform.type.acronym
+        </th>
+        <th
+          class="d-none d-md-table-cell"
+        >
+          common.uniform.type.issuedDefault
+        </th>
+        <th
+          class="d-none d-sm-table-cell"
+        >
+          common.uniform.type.usingSizes
+        </th>
+        <th
+          class="d-none d-sm-table-cell"
+        >
+          common.uniform.type.usingGenerations
+        </th>
+        <th
+          class="d-none d-lg-table-cell"
+        >
+          common.uniform.type.defaultSizelist
+        </th>
+        <th
+          class="d-none d-lg-table-cell"
+        >
+          common.uniform.generation.label
+        </th>
+        <th>
+          <button
+            aria-label="create"
+            class="border-0 align-self-center undefined btn btn-outline-success btn-sm"
+            data-testid="btn_create"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="svg-inline--fa fa-plus "
+              data-icon="plus"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 448 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
+        </th>
+      </tr>
+    </thead>
+    <tbody
+      data-testid="reorderable-table-body"
+    >
+      <tr
+        aria-label="Test Type"
+        style="padding: 10px; margin: 0px;"
+      >
+        <td>
+          <span
+            aria-label="move Item"
+            class="p-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="svg-inline--fa fa-bars text-seccondary"
+              data-icon="bars"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 448 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M0 96C0 78.3 14.3 64 32 64l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 128C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 288c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32L32 448c-17.7 0-32-14.3-32-32s14.3-32 32-32l384 0c17.7 0 32 14.3 32 32z"
+                fill="currentColor"
+              />
+            </svg>
+          </span>
+        </td>
+        <td>
+          Test Type
+        </td>
+        <td>
+          TT
+        </td>
+        <td
+          class="d-none d-md-table-cell"
+        >
+          2
+        </td>
+        <td
+          class="d-none d-sm-table-cell"
+        >
+          common.yes
+        </td>
+        <td
+          class="d-none d-sm-table-cell"
+        >
+          common.yes
+        </td>
+        <td
+          class="d-none d-lg-table-cell"
+        >
+          Test Size List
+        </td>
+        <td
+          class="d-none d-lg-table-cell"
+        >
+          3
+        </td>
+        <td>
+          <button
+            aria-label="open"
+            class="border-0 align-self-center undefined btn btn-outline-secondary btn-sm"
+            data-testid="btn_open"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="svg-inline--fa fa-arrow-up-right-from-square "
+              data-icon="arrow-up-right-from-square"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 512 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
+        </td>
+      </tr>
+      <tr
+        aria-label="Test Type 2"
+        style="padding: 10px; margin: 0px;"
+      >
+        <td>
+          <span
+            aria-label="move Item"
+            class="p-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="svg-inline--fa fa-bars text-seccondary"
+              data-icon="bars"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 448 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M0 96C0 78.3 14.3 64 32 64l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 128C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 288c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32L32 448c-17.7 0-32-14.3-32-32s14.3-32 32-32l384 0c17.7 0 32 14.3 32 32z"
+                fill="currentColor"
+              />
+            </svg>
+          </span>
+        </td>
+        <td>
+          Test Type 2
+        </td>
+        <td>
+          TT2
+        </td>
+        <td
+          class="d-none d-md-table-cell"
+        >
+          1
+        </td>
+        <td
+          class="d-none d-sm-table-cell"
+        >
+          common.no
+        </td>
+        <td
+          class="d-none d-sm-table-cell"
+        >
+          common.no
+        </td>
+        <td
+          class="d-none d-lg-table-cell"
+        >
+          Test Size List 3
+        </td>
+        <td
+          class="d-none d-lg-table-cell"
+        >
+          0
+        </td>
+        <td>
+          <button
+            aria-label="open"
+            class="border-0 align-self-center undefined btn btn-outline-secondary btn-sm"
+            data-testid="btn_open"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="svg-inline--fa fa-arrow-up-right-from-square "
+              data-icon="arrow-up-right-from-square"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 512 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
+        </td>
+      </tr>
+      <tr
+        aria-label="Test Type 3"
+        style="padding: 10px; margin: 0px;"
+      >
+        <td>
+          <span
+            aria-label="move Item"
+            class="p-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="svg-inline--fa fa-bars text-seccondary"
+              data-icon="bars"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 448 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M0 96C0 78.3 14.3 64 32 64l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 128C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 288c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32L32 448c-17.7 0-32-14.3-32-32s14.3-32 32-32l384 0c17.7 0 32 14.3 32 32z"
+                fill="currentColor"
+              />
+            </svg>
+          </span>
+        </td>
+        <td>
+          Test Type 3
+        </td>
+        <td>
+          TT3
+        </td>
+        <td
+          class="d-none d-md-table-cell"
+        >
+          0
+        </td>
+        <td
+          class="d-none d-sm-table-cell"
+        >
+          common.yes
+        </td>
+        <td
+          class="d-none d-sm-table-cell"
+        >
+          common.no
+        </td>
+        <td
+          class="d-none d-lg-table-cell"
+        >
+          Test Size List 1
+        </td>
+        <td
+          class="d-none d-lg-table-cell"
+        >
+          1
+        </td>
+        <td>
+          <button
+            aria-label="open"
+            class="border-0 align-self-center undefined btn btn-outline-secondary btn-sm"
+            data-testid="btn_open"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="svg-inline--fa fa-arrow-up-right-from-square "
+              data-icon="arrow-up-right-from-square"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 512 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
+        </td>
+      </tr>
+      <tr
+        aria-label="Test Type 4"
+        style="padding: 10px; margin: 0px;"
+      >
+        <td>
+          <span
+            aria-label="move Item"
+            class="p-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="svg-inline--fa fa-bars text-seccondary"
+              data-icon="bars"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 448 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M0 96C0 78.3 14.3 64 32 64l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 128C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 288c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32L32 448c-17.7 0-32-14.3-32-32s14.3-32 32-32l384 0c17.7 0 32 14.3 32 32z"
+                fill="currentColor"
+              />
+            </svg>
+          </span>
+        </td>
+        <td>
+          Test Type 4
+        </td>
+        <td>
+          TT4
+        </td>
+        <td
+          class="d-none d-md-table-cell"
+        >
+          0
+        </td>
+        <td
+          class="d-none d-sm-table-cell"
+        >
+          common.yes
+        </td>
+        <td
+          class="d-none d-sm-table-cell"
+        >
+          common.yes
+        </td>
+        <td
+          class="d-none d-lg-table-cell"
+        >
+          Test Size List 1
+        </td>
+        <td
+          class="d-none d-lg-table-cell"
+        >
+          2
+        </td>
+        <td>
+          <button
+            aria-label="open"
+            class="border-0 align-self-center undefined btn btn-outline-secondary btn-sm"
+            data-testid="btn_open"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="svg-inline--fa fa-arrow-up-right-from-square "
+              data-icon="arrow-up-right-from-square"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 512 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+`;

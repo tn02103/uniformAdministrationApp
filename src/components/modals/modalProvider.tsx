@@ -2,11 +2,10 @@
 
 import { useI18n } from "@/lib/locales/client";
 import { AdministrationMaterial, CadetMaterial, MaterialGroup } from "@/types/globalMaterialTypes";
-import { UniformGeneration, UniformType } from "@/types/globalUniformTypes";
+import { UniformType } from "@/types/globalUniformTypes";
 import { ReactNode, createContext, useCallback, useContext, useState } from "react";
 import ChangeLanguageModal from "./changeLanguageModal";
 import DangerConfirmationModal, { DangerConfirmationModalPropType } from "./dangerConfirmationModal";
-import EditGenerationModal, { EditGenerationModalPropType } from "./editGenerationModal";
 import EditMaterialTypeModal, { EditMaterialTypeModalPropType } from "./editMaterialType";
 import IssueMaterialModal, { IssueMaterialModalProps } from "./issueMaterial";
 import MessageModal, { MessageModalOption, MessageModalPropType, MessageModalType } from "./messageModal";
@@ -23,7 +22,6 @@ type ModalContextType = {
     simpleFormModal: (props: SimpleFormModalProps) => void,
     issueMaterialModal: (cadetId: string, materialGroup: MaterialGroup, issuedMaterialList: CadetMaterial[], oldMaterial?: CadetMaterial) => void,
     uniformItemDetailModal: (uniformId: string, uniformType: UniformType, ownerId: string | null, onDataChanged?: () => void) => void,
-    editGenerationModal: (generation: UniformGeneration | null, uniformType: UniformType) => void,
     changeUserPasswordModal: (save: (p: string) => Promise<any>, nameOfUser?: string) => void,
     editMaterialTypeModal: (groupName: string, groupId: string, type?: AdministrationMaterial) => void,
     changeLanguage: () => void,
@@ -33,7 +31,7 @@ type ModalCapsule = {
     modalType: ModalTypes,
     props: any,
 }
-type ModalTypes = "DangerConfirmationModal" | "EditGenerationModal" | "EditMaterialTypeModal" | "InspectionReviewPopup" | "IssueMaterialModal"
+type ModalTypes = "DangerConfirmationModal" | "EditMaterialTypeModal" | "InspectionReviewPopup" | "IssueMaterialModal"
     | "IssueUniformModal" | "ChangeUserPasswordModal" | "SimpleFormModal" | "UniformItemDetailModal" | "ChangeLanguageModal"
 
 export const ModalContext = createContext<ModalContextType | undefined>(undefined);
@@ -170,15 +168,6 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         showModal("UniformItemDetailModal", props);
     }, []);
 
-    const editGenerationModal = useCallback((generation: UniformGeneration | null, uniformType: UniformType) => {
-        const props: EditGenerationModalPropType = {
-            generation,
-            type: uniformType,
-            onClose: onClose,
-        }
-        showModal("EditGenerationModal", props);
-    }, []);
-
     const editMaterialTypeModal = useCallback((groupName: string, groupId: string, type?: AdministrationMaterial) => {
         const props: EditMaterialTypeModalPropType = {
             type,
@@ -210,7 +199,6 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             simpleYesNoModal,
             simpleWarningModal,
             dangerConfirmationModal,
-            editGenerationModal,
             simpleErrorModal,
             editMaterialTypeModal,
             /*issueUniformModal,
@@ -225,7 +213,6 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         simpleYesNoModal,
         simpleWarningModal,
         dangerConfirmationModal,
-        editGenerationModal,
         simpleErrorModal,
         editMaterialTypeModal,
         /* issueUniformModal,
@@ -241,8 +228,6 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         switch (modal.modalType) {
             case "DangerConfirmationModal":
                 return <DangerConfirmationModal {...modal.props} onClose={onClose} />
-            case "EditGenerationModal":
-                return <EditGenerationModal {...modal.props} />
             case "EditMaterialTypeModal":
                 return <EditMaterialTypeModal {...modal.props} />
             /*      case "IssueUniformModal":

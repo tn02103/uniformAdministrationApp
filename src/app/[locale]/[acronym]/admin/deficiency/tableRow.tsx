@@ -1,7 +1,7 @@
 import { createDeficiencyType, deactivateDeficiencyType, deleteDeficiencyType, reactivateDeficiencyType, saveDeficiencyType } from "@/actions/controllers/DeficiencyTypeController";
 import ErrorMessage from "@/components/errorMessage";
 import { useModal } from "@/components/modals/modalProvider";
-import { TooltipActionButton } from "@/components/TooltipIconButton";
+import { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
 import { useScopedI18n } from "@/lib/locales/client";
 import { AdminDeficiencyType } from "@/types/deficiencyTypes";
 import { AdminDeficiencytypeFormSchema } from "@/zod/deficiency";

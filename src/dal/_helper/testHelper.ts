@@ -19,13 +19,14 @@ export const runServerActionTest = async <T>(functionPromise: Promise<T>): Promi
         result: error,
     }));
 
-export type SAReturnType<T> = Promise<{
+export type SAReturnType<T> = Promise<T | SAErrorType>
+
+export type SAErrorType = {
     error: {
         message: string,
         formElement: string,
     }
-} | T>
-
+}
 export const compareDates = (stringDate: string, date: Date) => {
     return dayjs(stringDate).isSame(date, "day");
 }

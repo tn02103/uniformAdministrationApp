@@ -3,6 +3,7 @@ export default {
         of: "from",
         comment: "Comment",
         description: "Description",
+        details: "Details",
         name: "Name",
         type: "Type",
         loading: "Loading",
@@ -195,6 +196,9 @@ export default {
                 },
             },
         },
+        success: {
+            changeSortorder: "The order was changed successfully",
+        },
     },
     login: {
         header: "Login",
@@ -362,6 +366,7 @@ export default {
                 }
             },
             generationList: {
+                "header.create": "create new generation",
                 deleteModal: {
                     header: "Delete generation \"{generation}\"",
                     message: {

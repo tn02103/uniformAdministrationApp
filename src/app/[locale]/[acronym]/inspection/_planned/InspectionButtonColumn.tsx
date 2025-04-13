@@ -1,4 +1,4 @@
-import { TooltipActionButton } from "@/components/TooltipIconButton";
+import { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
 import { useScopedI18n } from "@/lib/locales/client";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
 import dayjs from "dayjs";

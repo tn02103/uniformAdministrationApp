@@ -1,0 +1,869 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<UniformTypeOffcanvas /> handles editable state correctly 1`] = `
+<div
+  aria-labelledby="typeCanvasHeader"
+  aria-modal="true"
+  class="offcanvas offcanvas-end offcanvas-toggling show"
+  role="dialog"
+  style="width: 500px; visibility: visible;"
+  tabindex="-1"
+>
+  <div
+    class="offcanvas-header"
+  >
+    <div
+      class="offcanvas-title h5"
+    >
+      <h2
+        id="typeCanvasHeader"
+      >
+        Test Type
+      </h2>
+    </div>
+    <button
+      aria-label="Close"
+      class="btn-close"
+      type="button"
+    />
+  </div>
+  <div
+    class="offcanvas-body"
+  >
+    <h3
+      class="text-center"
+    >
+      common.details
+    </h3>
+    <hr
+      class="my-0"
+    />
+    <div
+      class="mb-4 justify-content-evenly row"
+    >
+      <button
+        class="col-auto border-0 btn btn-outline-secondary"
+        disabled=""
+        type="button"
+      >
+        common.actions.edit
+         
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-pen fa-sm "
+          data-icon="pen"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 512 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M362.7 19.3L314.3 67.7 444.3 197.7l48.4-48.4c25-25 25-65.5 0-90.5L453.3 19.3c-25-25-65.5-25-90.5 0zm-71 71L58.6 323.5c-10.4 10.4-18 23.3-22.2 37.4L1 481.2C-1.5 489.7 .8 498.8 7 505s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L421.7 220.3 291.7 90.3z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+      <button
+        class="col-auto border-0 btn btn-outline-danger"
+        disabled=""
+        type="button"
+      >
+        common.actions.delete
+         
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-trash fa-sm "
+          data-icon="trash"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 448 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 296.3 0 284.2 0L163.8 0c-12.1 0-23.2 6.8-28.6 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+    </div>
+    <form
+      autocomplete="off"
+      novalidate=""
+    >
+      <div
+        class="row"
+      >
+        <div
+          class="col-6"
+        >
+          <div
+            class="mb-3"
+          >
+            <label
+              class="fw-bold m-0 form-label"
+              for="uniformTypeForm_input-name"
+            >
+              common.name
+               *
+            </label>
+            <input
+              aria-invalid="false"
+              aria-required="true"
+              class="form-control"
+              id="uniformTypeForm_input-name"
+              name="name"
+              type="text"
+              value="Test Type"
+              width="auto"
+            />
+            <div
+              aria-label="error message name"
+              class="text-danger fs-7"
+              data-testid="err_name"
+              id="uniformTypeForm_err_name"
+              role="alert"
+            />
+          </div>
+        </div>
+        <div
+          class="col-6"
+        >
+          <div
+            class="mb-3"
+          >
+            <label
+              class="fw-bold m-0 form-label"
+              for="uniformTypeForm_input-acronym"
+            >
+              common.uniform.type.acronym
+               *
+            </label>
+            <input
+              aria-invalid="false"
+              aria-required="true"
+              class="form-control"
+              id="uniformTypeForm_input-acronym"
+              name="acronym"
+              placeholder="XX"
+              type="text"
+              value="TT"
+              width="auto"
+            />
+            <div
+              aria-label="error message acronym"
+              class="text-danger fs-7"
+              data-testid="err_acronym"
+              id="uniformTypeForm_err_acronym"
+              role="alert"
+            />
+          </div>
+        </div>
+        <div
+          class="col-6"
+        >
+          <div
+            class="mb-3"
+          >
+            <label
+              class="fw-bold m-0 form-label"
+              for="uniformTypeForm_numberInput-issuedDefault"
+            >
+              common.uniform.type.issuedDefault
+            </label>
+            <input
+              aria-invalid="true"
+              class="form-control"
+              id="uniformTypeForm_numberInput-issuedDefault"
+              name="issuedDefault"
+              type="number"
+              value="2"
+            />
+            <div
+              class="text-danger fs-7"
+              data-testid="err_issuedDefault"
+              id="uniformTypeForm_err_issuedDefault"
+              role="alert"
+            />
+          </div>
+        </div>
+        <div
+          class="col-6"
+        >
+          <div
+            class="mb-3"
+          >
+            <label
+              class="fw-bold m-0 undefined form-label"
+              for="uniformTypeForm_select-fk_defaultSizelist"
+            >
+              common.uniform.type.defaultSizelist
+            </label>
+            <select
+              aria-invalid="false"
+              class="form-select"
+              id="uniformTypeForm_select-fk_defaultSizelist"
+              name="fk_defaultSizelist"
+            >
+              <option
+                disabled=""
+              >
+                common.error.pleaseSelect
+              </option>
+              <option
+                value="e667d674-7df8-436b-a2b8-77b06e063d36"
+              >
+                Test Size List
+              </option>
+              <option
+                value="a961545b-28a7-409e-9200-1d85ccd53522"
+              >
+                Test Size List 2
+              </option>
+              <option
+                value="07de1d59-4fc6-447b-98a6-da916e5792ef"
+              >
+                Test Size List 3
+              </option>
+            </select>
+            <div
+              aria-label="error message fk_defaultSizelist"
+              class="text-danger fs-7"
+              data-testid="err_fk_defaultSizelist"
+              id="uniformTypeForm_err_fk_defaultSizelist"
+              role="alert"
+            />
+          </div>
+        </div>
+        <div
+          class="col-6"
+        >
+          <div
+            class="mb-3"
+          >
+            <label
+              class="fw-bold m-0 form-label"
+              for="uniformTypeForm_toggle-usingSizes"
+            >
+              common.uniform.type.usingSizes
+            </label>
+            <div
+              class="form-check form-switch"
+            >
+              <input
+                aria-checked="true"
+                aria-disabled="false"
+                checked=""
+                class="form-check-input fw-bold"
+                id="uniformTypeForm_toggle-usingSizes"
+                name="usingSizes"
+                role="switch"
+                style="cursor: pointer;"
+                tabindex="0"
+                type="checkbox"
+                value="true"
+              />
+            </div>
+            <div
+              class="text-danger fs-7"
+              data-testid="err_usingSizes"
+              role="alert"
+            />
+          </div>
+        </div>
+        <div
+          class="col-6"
+        >
+          <div
+            class="mb-3"
+          >
+            <label
+              class="fw-bold m-0 form-label"
+              for="uniformTypeForm_toggle-usingGenerations"
+            >
+              common.uniform.type.usingGenerations
+            </label>
+            <div
+              class="form-check form-switch"
+            >
+              <input
+                aria-checked="true"
+                aria-disabled="false"
+                checked=""
+                class="form-check-input fw-bold"
+                id="uniformTypeForm_toggle-usingGenerations"
+                name="usingGenerations"
+                role="switch"
+                style="cursor: pointer;"
+                tabindex="0"
+                type="checkbox"
+                value="true"
+              />
+            </div>
+            <div
+              class="text-danger fs-7"
+              data-testid="err_usingGenerations"
+              role="alert"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="justify-content-evenly mt-2 mb-4 row"
+      >
+        <button
+          class="col-auto btn btn-outline-primary"
+          type="submit"
+        >
+          common.actions.save
+        </button>
+        <button
+          class="col-auto btn btn-outline-secondary"
+          type="button"
+        >
+          common.actions.cancel
+        </button>
+      </div>
+    </form>
+    <div
+      data-testid="generationTableMock"
+    >
+      Generation Table
+    </div>
+  </div>
+</div>
+`;
+
+exports[`<UniformTypeOffcanvas /> renders correct layout when no uniformType is provided 1`] = `
+<div
+  aria-labelledby="typeCanvasHeader"
+  aria-modal="true"
+  class="offcanvas offcanvas-end offcanvas-toggling show"
+  role="dialog"
+  style="width: 500px; visibility: visible;"
+  tabindex="-1"
+>
+  <div
+    class="offcanvas-header"
+  >
+    <div
+      class="offcanvas-title h5"
+    >
+      <h2
+        id="typeCanvasHeader"
+      >
+        common.actions.create
+      </h2>
+    </div>
+    <button
+      aria-label="Close"
+      class="btn-close"
+      type="button"
+    />
+  </div>
+  <div
+    class="offcanvas-body"
+  >
+    <h3
+      class="text-center"
+    >
+      common.details
+    </h3>
+    <hr
+      class="my-0"
+    />
+    <form
+      autocomplete="off"
+      novalidate=""
+    >
+      <div
+        class="row"
+      >
+        <div
+          class="col-6"
+        >
+          <div
+            class="mb-3"
+          >
+            <label
+              class="fw-bold m-0 form-label"
+              for="uniformTypeForm_input-name"
+            >
+              common.name
+               *
+            </label>
+            <input
+              aria-invalid="false"
+              aria-required="true"
+              class="form-control"
+              id="uniformTypeForm_input-name"
+              name="name"
+              type="text"
+              value=""
+              width="auto"
+            />
+            <div
+              aria-label="error message name"
+              class="text-danger fs-7"
+              data-testid="err_name"
+              id="uniformTypeForm_err_name"
+              role="alert"
+            />
+          </div>
+        </div>
+        <div
+          class="col-6"
+        >
+          <div
+            class="mb-3"
+          >
+            <label
+              class="fw-bold m-0 form-label"
+              for="uniformTypeForm_input-acronym"
+            >
+              common.uniform.type.acronym
+               *
+            </label>
+            <input
+              aria-invalid="false"
+              aria-required="true"
+              class="form-control"
+              id="uniformTypeForm_input-acronym"
+              name="acronym"
+              placeholder="XX"
+              type="text"
+              value=""
+              width="auto"
+            />
+            <div
+              aria-label="error message acronym"
+              class="text-danger fs-7"
+              data-testid="err_acronym"
+              id="uniformTypeForm_err_acronym"
+              role="alert"
+            />
+          </div>
+        </div>
+        <div
+          class="col-6"
+        >
+          <div
+            class="mb-3"
+          >
+            <label
+              class="fw-bold m-0 form-label"
+              for="uniformTypeForm_numberInput-issuedDefault"
+            >
+              common.uniform.type.issuedDefault
+            </label>
+            <input
+              aria-invalid="true"
+              class="form-control"
+              id="uniformTypeForm_numberInput-issuedDefault"
+              name="issuedDefault"
+              type="number"
+              value=""
+            />
+            <div
+              class="text-danger fs-7"
+              data-testid="err_issuedDefault"
+              id="uniformTypeForm_err_issuedDefault"
+              role="alert"
+            />
+          </div>
+        </div>
+        <div
+          class="col-6"
+        />
+        <div
+          class="col-6"
+        >
+          <div
+            class="mb-3"
+          >
+            <label
+              class="fw-bold m-0 form-label"
+              for="uniformTypeForm_toggle-usingSizes"
+            >
+              common.uniform.type.usingSizes
+            </label>
+            <div
+              class="form-check form-switch"
+            >
+              <input
+                aria-checked="false"
+                aria-disabled="false"
+                class="form-check-input fw-bold"
+                id="uniformTypeForm_toggle-usingSizes"
+                name="usingSizes"
+                role="switch"
+                style="cursor: pointer;"
+                tabindex="0"
+                type="checkbox"
+                value="false"
+              />
+            </div>
+            <div
+              class="text-danger fs-7"
+              data-testid="err_usingSizes"
+              role="alert"
+            />
+          </div>
+        </div>
+        <div
+          class="col-6"
+        >
+          <div
+            class="mb-3"
+          >
+            <label
+              class="fw-bold m-0 form-label"
+              for="uniformTypeForm_toggle-usingGenerations"
+            >
+              common.uniform.type.usingGenerations
+            </label>
+            <div
+              class="form-check form-switch"
+            >
+              <input
+                aria-checked="false"
+                aria-disabled="false"
+                class="form-check-input fw-bold"
+                id="uniformTypeForm_toggle-usingGenerations"
+                name="usingGenerations"
+                role="switch"
+                style="cursor: pointer;"
+                tabindex="0"
+                type="checkbox"
+                value="false"
+              />
+            </div>
+            <div
+              class="text-danger fs-7"
+              data-testid="err_usingGenerations"
+              role="alert"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="justify-content-evenly mt-2 mb-4 row"
+      >
+        <button
+          class="col-auto btn btn-outline-primary"
+          type="submit"
+        >
+          common.actions.create
+        </button>
+        <button
+          class="col-auto btn btn-outline-secondary"
+          type="button"
+        >
+          common.actions.cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+`;
+
+exports[`<UniformTypeOffcanvas /> renders the component and handles setEditable 1`] = `
+<div
+  aria-labelledby="typeCanvasHeader"
+  aria-modal="true"
+  class="offcanvas offcanvas-end offcanvas-toggling show"
+  role="dialog"
+  style="width: 500px; visibility: visible;"
+  tabindex="-1"
+>
+  <div
+    class="offcanvas-header"
+  >
+    <div
+      class="offcanvas-title h5"
+    >
+      <h2
+        id="typeCanvasHeader"
+      >
+        Test Type
+      </h2>
+    </div>
+    <button
+      aria-label="Close"
+      class="btn-close"
+      type="button"
+    />
+  </div>
+  <div
+    class="offcanvas-body"
+  >
+    <h3
+      class="text-center"
+    >
+      common.details
+    </h3>
+    <hr
+      class="my-0"
+    />
+    <div
+      class="mb-4 justify-content-evenly row"
+    >
+      <button
+        class="col-auto border-0 btn btn-outline-secondary"
+        type="button"
+      >
+        common.actions.edit
+         
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-pen fa-sm "
+          data-icon="pen"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 512 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M362.7 19.3L314.3 67.7 444.3 197.7l48.4-48.4c25-25 25-65.5 0-90.5L453.3 19.3c-25-25-65.5-25-90.5 0zm-71 71L58.6 323.5c-10.4 10.4-18 23.3-22.2 37.4L1 481.2C-1.5 489.7 .8 498.8 7 505s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L421.7 220.3 291.7 90.3z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+      <button
+        class="col-auto border-0 btn btn-outline-danger"
+        type="button"
+      >
+        common.actions.delete
+         
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-trash fa-sm "
+          data-icon="trash"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 448 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 296.3 0 284.2 0L163.8 0c-12.1 0-23.2 6.8-28.6 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+    </div>
+    <form
+      autocomplete="off"
+      novalidate=""
+    >
+      <div
+        class="row"
+      >
+        <div
+          class="col-6"
+        >
+          <div
+            class="mb-3"
+          >
+            <label
+              class="fw-bold m-0 form-label"
+              for="uniformTypeForm_input-name"
+            >
+              common.name
+               *
+            </label>
+            <input
+              aria-invalid="false"
+              aria-required="true"
+              class="form-control-plaintext"
+              disabled=""
+              id="uniformTypeForm_input-name"
+              name="name"
+              type="text"
+              value="Test Type"
+              width="auto"
+            />
+            <div
+              aria-label="error message name"
+              class="text-danger fs-7"
+              data-testid="err_name"
+              id="uniformTypeForm_err_name"
+              role="alert"
+            />
+          </div>
+        </div>
+        <div
+          class="col-6"
+        >
+          <div
+            class="mb-3"
+          >
+            <label
+              class="fw-bold m-0 form-label"
+              for="uniformTypeForm_input-acronym"
+            >
+              common.uniform.type.acronym
+               *
+            </label>
+            <input
+              aria-invalid="false"
+              aria-required="true"
+              class="form-control-plaintext"
+              disabled=""
+              id="uniformTypeForm_input-acronym"
+              name="acronym"
+              placeholder="XX"
+              type="text"
+              value="TT"
+              width="auto"
+            />
+            <div
+              aria-label="error message acronym"
+              class="text-danger fs-7"
+              data-testid="err_acronym"
+              id="uniformTypeForm_err_acronym"
+              role="alert"
+            />
+          </div>
+        </div>
+        <div
+          class="col-6"
+        >
+          <div
+            class="mb-3"
+          >
+            <label
+              class="fw-bold m-0 form-label"
+              for="uniformTypeForm_numberInput-issuedDefault"
+            >
+              common.uniform.type.issuedDefault
+            </label>
+            <input
+              aria-invalid="true"
+              class="form-control-plaintext"
+              disabled=""
+              id="uniformTypeForm_numberInput-issuedDefault"
+              name="issuedDefault"
+              type="number"
+              value="2"
+            />
+            <div
+              class="text-danger fs-7"
+              data-testid="err_issuedDefault"
+              id="uniformTypeForm_err_issuedDefault"
+              role="alert"
+            />
+          </div>
+        </div>
+        <div
+          class="col-6"
+        >
+          <div
+            class="mb-3"
+          >
+            <label
+              class="fw-bold m-0 undefined form-label"
+              for="uniformTypeForm_select-fk_defaultSizelist"
+            >
+              common.uniform.type.defaultSizelist
+            </label>
+            <p
+              aria-label="common.uniform.type.defaultSizelist"
+              aria-readonly="true"
+              class="py-2 m-0"
+            >
+              Test Size List
+            </p>
+            <div
+              aria-label="error message fk_defaultSizelist"
+              class="text-danger fs-7"
+              data-testid="err_fk_defaultSizelist"
+              id="uniformTypeForm_err_fk_defaultSizelist"
+              role="alert"
+            />
+          </div>
+        </div>
+        <div
+          class="col-6"
+        >
+          <div
+            class="mb-3"
+          >
+            <label
+              class="fw-bold m-0 form-label"
+              for="uniformTypeForm_toggle-usingSizes"
+            >
+              common.uniform.type.usingSizes
+            </label>
+            <div
+              class="form-check form-switch"
+            >
+              <input
+                aria-checked="true"
+                aria-disabled="true"
+                checked=""
+                class="form-check-input fw-bold"
+                id="uniformTypeForm_toggle-usingSizes"
+                name="usingSizes"
+                role="switch"
+                style="pointer-events: none; opacity: 0.5;"
+                tabindex="-1"
+                type="checkbox"
+                value="true"
+              />
+            </div>
+            <div
+              class="text-danger fs-7"
+              data-testid="err_usingSizes"
+              role="alert"
+            />
+          </div>
+        </div>
+        <div
+          class="col-6"
+        >
+          <div
+            class="mb-3"
+          >
+            <label
+              class="fw-bold m-0 form-label"
+              for="uniformTypeForm_toggle-usingGenerations"
+            >
+              common.uniform.type.usingGenerations
+            </label>
+            <div
+              class="form-check form-switch"
+            >
+              <input
+                aria-checked="true"
+                aria-disabled="true"
+                checked=""
+                class="form-check-input fw-bold"
+                id="uniformTypeForm_toggle-usingGenerations"
+                name="usingGenerations"
+                role="switch"
+                style="pointer-events: none; opacity: 0.5;"
+                tabindex="-1"
+                type="checkbox"
+                value="true"
+              />
+            </div>
+            <div
+              class="text-danger fs-7"
+              data-testid="err_usingGenerations"
+              role="alert"
+            />
+          </div>
+        </div>
+      </div>
+    </form>
+    <div
+      data-testid="generationTableMock"
+    >
+      Generation Table
+    </div>
+  </div>
+</div>
+`;

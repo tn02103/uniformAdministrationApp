@@ -134,6 +134,7 @@ export const TooltipActionButton = ({ onClick, disabled, variantKey, testId, but
     const t = useScopedI18n("common.actions");
     const variant = Variants[variantKey];
     const translation = t(variant.tooltipKey);
+    const isMobile = window?.innerWidth < 992;
 
     return (
         <OverlayTrigger
@@ -153,7 +154,7 @@ export const TooltipActionButton = ({ onClick, disabled, variantKey, testId, but
                 size={(!buttonSize) ? "sm" : buttonSize == "lg" ? "lg" : undefined}
                 aria-label={variant.ariaLabel}
             >
-                <FontAwesomeIcon icon={variant.icon} className={iconClass} />
+                <FontAwesomeIcon icon={variant.icon} className={iconClass} size={isMobile ? "lg" : undefined} />
             </Button>
         </OverlayTrigger>
     )
