@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<UniformGenerationTable /> should render the UniformGenerationTable component 1`] = `
+exports[`<UniformGenerationTable /> renders the component 1`] = `
 <div
   data-testid="uniform-generation-table"
 >

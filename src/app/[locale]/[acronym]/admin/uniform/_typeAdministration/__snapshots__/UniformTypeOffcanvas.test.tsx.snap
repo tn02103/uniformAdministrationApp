@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<UniformTypeOffcanvas /> should handle editable states correctly 1`] = `
+exports[`<UniformTypeOffcanvas /> handles editable state correctly 1`] = `
 <div
   aria-labelledby="typeCanvasHeader"
   aria-modal="true"
@@ -335,7 +335,7 @@ exports[`<UniformTypeOffcanvas /> should handle editable states correctly 1`] = 
 </div>
 `;
 
-exports[`<UniformTypeOffcanvas /> should render correct layout when no uniformType is provided 1`] = `
+exports[`<UniformTypeOffcanvas /> renders correct layout when no uniformType is provided 1`] = `
 <div
   aria-labelledby="typeCanvasHeader"
   aria-modal="true"
@@ -568,7 +568,7 @@ exports[`<UniformTypeOffcanvas /> should render correct layout when no uniformTy
 </div>
 `;
 
-exports[`<UniformTypeOffcanvas /> should render the component and handle setEditable 1`] = `
+exports[`<UniformTypeOffcanvas /> renders the component and handles setEditable 1`] = `
 <div
   aria-labelledby="typeCanvasHeader"
   aria-modal="true"

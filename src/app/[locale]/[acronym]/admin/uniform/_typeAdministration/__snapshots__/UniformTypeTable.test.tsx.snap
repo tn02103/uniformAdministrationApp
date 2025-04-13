@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<UniformTypeTable /> should render the component correctly 1`] = `
+exports[`<UniformTypeTable /> renders the component 1`] = `
 <div>
   <table
     aria-label="common.uniform.type.type"

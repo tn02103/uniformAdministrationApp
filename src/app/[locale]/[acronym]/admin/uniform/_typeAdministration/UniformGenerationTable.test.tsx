@@ -229,7 +229,7 @@ describe('<UniformGenerationTable />', () => {
 
         expect(screen.queryByText("common.uniform.sizelist.label")).not.toBeInTheDocument();
 
-        const row = screen.getByRole("tr", { name: "Test Generation 1" });
+        const row = screen.getByRole("row", { name: "Test Generation 1" });
         expect(row).not.toBeNull();
         expect(row!.childNodes).toHaveLength(4);
     });
@@ -243,7 +243,7 @@ describe('<UniformGenerationTable />', () => {
         expect(screen.queryByText("common.uniform.generation.outdated")).toBeInTheDocument();
         expect(screen.queryByText("common.uniform.generation.outdated")).not.toHaveClass("d-none d-sm-table-cell");
 
-        const row = screen.getByRole("tr", { name: "Test Generation 1" });
+        const row = screen.getByRole("row", { name: "Test Generation 1" });
         expect(row).not.toBeNull();
         expect(row?.childNodes[2]).not.toHaveClass("d-none d-sm-table-cell");
     });
@@ -253,7 +253,7 @@ describe('<UniformGenerationTable />', () => {
         expect(screen.queryByText("common.uniform.generation.outdated")).toBeInTheDocument();
         expect(screen.queryByText("common.uniform.generation.outdated")).toHaveClass("d-none d-sm-table-cell");
 
-        const row = screen.getByRole("tr", { name: "Test Generation 1" });
+        const row = screen.getByRole("row", { name: "Test Generation 1" });
         expect(row).not.toBeNull();
         expect(row?.childNodes[2]).toHaveClass("d-none d-sm-table-cell");
     });

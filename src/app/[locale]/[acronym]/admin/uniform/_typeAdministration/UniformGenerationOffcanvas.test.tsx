@@ -193,7 +193,7 @@ describe('<UniformgenerationOffcanvas>', () => {
         });
     });
     describe('without generation', () => {
-        it('should render in editable state if no generation is passed', async () => {
+        it('renders in editable state if no generation is passed', async () => {
             render(
                 <UniformgenerationOffcanvas
                     generation={null}
@@ -206,7 +206,7 @@ describe('<UniformgenerationOffcanvas>', () => {
             expect(screen.getByRole('dialog')).toMatchSnapshot();
         });
 
-        it('should hide on Cancel', async () => {
+        it('hides on Cancel', async () => {
             const user = userEvent.setup();
             const onHide = jest.fn();
             render(

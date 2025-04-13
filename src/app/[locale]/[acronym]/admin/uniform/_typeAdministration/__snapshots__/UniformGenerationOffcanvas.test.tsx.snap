@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<UniformgenerationOffcanvas> with generation should render the component 1`] = `
+exports[`<UniformgenerationOffcanvas> with generation renders the component 1`] = `
 <div
   aria-labelledby="generation-offcanvas-header"
   aria-modal="true"
@@ -185,7 +185,7 @@ exports[`<UniformgenerationOffcanvas> with generation should render the componen
 </div>
 `;
 
-exports[`<UniformgenerationOffcanvas> without generation should render in editable state if no generation is passed 1`] = `
+exports[`<UniformgenerationOffcanvas> without generation renders in editable state if no generation is passed 1`] = `
 <div
   aria-labelledby="generation-offcanvas-header"
   aria-modal="true"
