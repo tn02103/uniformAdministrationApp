@@ -50,7 +50,7 @@ export const changeSortOrder = (props: PropType): Promise<UniformType[]> => gene
     return __unsecuredGetUniformTypeList(assosiation, client)
 }));
 
-const updateOtherTypes = (upperLimit: number, lowerLimit: number, up: boolean, fk_uniformType: string, client: Prisma.TransactionClient) =>
+const updateOtherTypes = async (upperLimit: number, lowerLimit: number, up: boolean, fk_uniformType: string, client: Prisma.TransactionClient) =>
     client.uniformGeneration.updateMany({
         where: {
             sortOrder: { gte: upperLimit, lte: lowerLimit },
@@ -62,7 +62,7 @@ const updateOtherTypes = (upperLimit: number, lowerLimit: number, up: boolean, f
         }
     }).then((result) => result.count === ((lowerLimit - upperLimit) + 1));
 
-const updateInitialType = (id: string, newPosition: number, client: Prisma.TransactionClient) =>
+const updateInitialType = async (id: string, newPosition: number, client: Prisma.TransactionClient) =>
     client.uniformGeneration.update({
         where: {
             id,

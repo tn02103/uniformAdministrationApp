@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "dev": "next dev -p 3021",
-        "build": "prisma generate && next build",
+        "build": "next build",
         "start": "next start -p 3021",
         "test:e2e": "playwright test",
         "test:jest": "npm run test:jest:components && npm run test:jest:dal",

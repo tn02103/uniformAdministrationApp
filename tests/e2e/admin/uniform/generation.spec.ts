@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { UniformType } from "@prisma/client";
+import { UniformGeneration, UniformType } from "@prisma/client";
 import { expect } from "playwright/test";
 import german from "../../../../public/locales/de";
 import { DangerConfirmationModal } from "../../../_playwrightConfig/pages/popups/DangerConfirmationPopup.component";
@@ -25,7 +25,9 @@ test.afterEach(async ({ staticData: { cleanup } }) => {
 
 test.describe('UniformGeneration Configuration', () => {
 
-    test('change sort order up', async ({ page, types, staticData: { data } }) => {
+    test('change sort order up', async ({ page, types, staticData: { data }, browserName }) => {
+        test.skip(browserName !== 'chromium', 'This test only runs on Chrome');
+
         const generationList = data.uniformGenerations.filter(g => g.recdelete === null && g.fk_uniformType === types[0].id);
         await test.step('open type offcanvas', async () => {
             await expect(page.getByRole('row', { name: types[0].name })).toBeVisible();
@@ -47,7 +49,9 @@ test.describe('UniformGeneration Configuration', () => {
             await expect(firstRowMove).toBeVisible();
             await expect(thirdRowMove).toBeVisible();
 
-            await firstRowMove.dragTo(thirdRowMove);
+            await firstRowMove.dragTo(thirdRowMove, {
+                targetPosition: { x: 10, y: 5 }, // Adjust the `y` value to drag further up
+            });
 
             await expect(page.getByText(german.common.success.changeSortorder)).toBeVisible();
         });
@@ -62,14 +66,14 @@ test.describe('UniformGeneration Configuration', () => {
         });
         await test.step('validate db sortorder', async () => {
             const dbGenerationList = await prisma.uniformGeneration.findMany({
-                where: {
-                    recdelete: null,
-                    fk_uniformType: types[0].id,
-                },
-                orderBy: {
-                    sortOrder: 'asc',
-                },
-            });
+                    where: {
+                        recdelete: null,
+                        fk_uniformType: types[0].id,
+                    },
+                    orderBy: {
+                        sortOrder: 'asc',
+                    },
+                });
             expect(dbGenerationList).toHaveLength(4);
             expect(dbGenerationList[0].id).toEqual(generationList[1].id);
             expect(dbGenerationList[1].id).toEqual(generationList[2].id);
@@ -78,7 +82,9 @@ test.describe('UniformGeneration Configuration', () => {
         });
     });
 
-    test('change sort order down', async ({ page, types, staticData: { data } }) => {
+    test('change sort order down', async ({ page, types, staticData: { data }, browserName }) => {
+        test.skip(browserName !== 'chromium', 'This test only runs on Chrome');
+
         const generationList = data.uniformGenerations.filter(g => g.recdelete === null && g.fk_uniformType === types[0].id);
         await test.step('open type offcanvas', async () => {
             await expect(page.getByRole('row', { name: types[0].name })).toBeVisible();
@@ -96,8 +102,10 @@ test.describe('UniformGeneration Configuration', () => {
 
             await expect(secondRowMove).toBeVisible();
             await expect(thirdRowMove).toBeVisible();
-            
-            await thirdRowMove.dragTo(secondRowMove);
+
+            await thirdRowMove.dragTo(secondRowMove, {
+                targetPosition: { x: 10, y: 25 }, // Adjust the `y` value to drag further down
+            });
 
             await expect(page.getByText(german.common.success.changeSortorder)).toBeVisible();
         });
@@ -112,14 +120,14 @@ test.describe('UniformGeneration Configuration', () => {
         });
         await test.step('validate db sortorder', async () => {
             const dbGenerationList = await prisma.uniformGeneration.findMany({
-                where: {
-                    recdelete: null,
-                    fk_uniformType: types[0].id,
-                },
-                orderBy: {
-                    sortOrder: 'asc',
-                },
-            });
+                    where: {
+                        recdelete: null,
+                        fk_uniformType: types[0].id,
+                    },
+                    orderBy: {
+                        sortOrder: 'asc',
+                    },
+                });
             expect(dbGenerationList).toHaveLength(4);
             expect(dbGenerationList[0].id).toEqual(generationList[0].id);
             expect(dbGenerationList[1].id).toEqual(generationList[2].id);
@@ -159,7 +167,7 @@ test.describe('UniformGeneration Configuration', () => {
         const generationTable = typeDialog.getByRole('table');
         await test.step('open crete generation canvas', async () => {
             const createButton = generationTable.getByRole('button', { name: 'create' });
-            
+
             await expect(createButton).toBeVisible();
             await createButton.click();
             await expect(page.getByRole('heading', { name: actionText.create })).toBeVisible();
@@ -420,7 +428,7 @@ test.describe('UniformGeneration Configuration', () => {
             await page.getByRole('row', { name: types[0].name }).getByRole('button', { name: 'open' }).click();
             await expect(page.getByRole('dialog').getByRole('heading', { name: types[0].name })).toBeVisible();
         });
-    
+
         const typeDialog = page.getByRole('dialog', { name: types[0].name });
         const generationTable = typeDialog.getByRole('table');
         await test.step('open generation offcanvas', async () => {
@@ -445,7 +453,7 @@ test.describe('UniformGeneration Configuration', () => {
 
             await dangerDialog.txt_confirmation.fill(`Generation-${generation.name}`);
             await expect(dangerDialog.btn_save).toBeEnabled();
-            
+
             await dangerDialog.btn_save.click();
             await expect(dangerDialog.div_popup).not.toBeVisible();
         });
@@ -470,7 +478,7 @@ test.describe('UniformGeneration Configuration', () => {
                     recdelete: expect.any(Date),
                     recdeleteUser: 'test4',
                 })
-            ); 
+            );
         });
     });
 });

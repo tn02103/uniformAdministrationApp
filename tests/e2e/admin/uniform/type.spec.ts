@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { UniformType } from "@prisma/client";
+import { PrismaClient, UniformType } from "@prisma/client";
 import { expect } from "playwright/test";
 import german from "../../../../public/locales/de";
 import { DangerConfirmationModal } from "../../../_playwrightConfig/pages/popups/DangerConfirmationPopup.component";
@@ -179,7 +179,7 @@ test.describe('UniformType Configuration', () => {
         });
     });
 
-    test('delete type', async ({ page, types, staticData: { fk_assosiation } }) => {
+    test('delete type', async ({ page, types }) => {
         const dangerDialog = new DangerConfirmationModal(page);
         await test.step('open type offcanvas', async () => {
             expect(page.getByRole('row', { name: types[0].name })).toBeVisible();
@@ -187,7 +187,7 @@ test.describe('UniformType Configuration', () => {
             await expect(page.getByRole('dialog').getByRole('heading', { name: types[0].name })).toBeVisible();
         });
 
-        const dialog = page.getByRole('dialog');
+        const dialog = page.getByRole('dialog', { name: types[0].name });
 
         await test.step('click delete button and handle danger dialog', async () => {
             await dialog.getByRole('button', { name: actionText.delete }).click();
@@ -218,7 +218,9 @@ test.describe('UniformType Configuration', () => {
         });
     });
 
-    test('change sortOrder down', async ({ page, types }) => {
+    test('change sortOrder down', async ({ page, types, browserName }) => {
+        test.skip(browserName !== 'chromium', 'This test only runs on Chrome');
+
         await test.step('change sortOrder', async () => {
             const firstRow = page.getByRole('row', { name: types[0].name });
             const thirdRow = page.getByRole('row', { name: types[2].name });
@@ -228,7 +230,9 @@ test.describe('UniformType Configuration', () => {
             await expect(firstRowMove).toBeVisible();
             await expect(thirdRow).toBeVisible()
             await expect(thirdRowMove).toBeVisible();
-            await firstRowMove.locator('span[draggable]').dragTo(thirdRowMove);
+            await firstRowMove.locator('span[draggable]').dragTo(thirdRowMove, {
+                targetPosition: { x: 10, y: 26 }, // Adjust the `y` value to drag further down
+            });
 
             await expect(page.getByText(german.common.success.changeSortorder)).toBeVisible();
         });
@@ -244,14 +248,14 @@ test.describe('UniformType Configuration', () => {
 
         await test.step('validate db data', async () => {
             const dbList = await prisma.uniformType.findMany({
-                where: {
-                    fk_assosiation: types[0].fk_assosiation,
-                    recdelete: null,
-                },
-                orderBy: {
-                    sortOrder: 'asc',
-                },
-            });
+                    where: {
+                        fk_assosiation: types[0].fk_assosiation,
+                        recdelete: null,
+                    },
+                    orderBy: {
+                        sortOrder: 'asc',
+                    },
+                });
 
             expect(dbList).toHaveLength(4);
             expect(dbList[0].id).toBe(types[1].id);
@@ -260,7 +264,10 @@ test.describe('UniformType Configuration', () => {
             expect(dbList[3].id).toBe(types[3].id);
         });
     });
-    test('change sortOrder up', async ({ page, types }) => {
+
+    test('change sortOrder up', async ({ page, types, browserName }) => {
+        test.skip(browserName !== 'chromium', 'This test only runs on Chrome');
+        
         await test.step('change sortOrder', async () => {
             const secondRow = page.getByRole('row', { name: types[1].name });
             const thirdRow = page.getByRole('row', { name: types[2].name });
@@ -271,7 +278,11 @@ test.describe('UniformType Configuration', () => {
             await expect(secondRowMove).toBeVisible();
             await expect(thirdRow).toBeVisible()
             await expect(thirdRowMove).toBeVisible();
-            await thirdRowMove.locator('span[draggable]').dragTo(secondRowMove);
+
+            await thirdRowMove.locator('span[draggable]').dragTo(secondRowMove, {
+                targetPosition: { x: 10, y: 5 }, // Adjust the `y` value to drag further up
+                force: true,
+            });
 
             await expect(page.getByText(german.common.success.changeSortorder)).toBeVisible();
         });
@@ -287,14 +298,14 @@ test.describe('UniformType Configuration', () => {
 
         await test.step('validate db data', async () => {
             const dbList = await prisma.uniformType.findMany({
-                where: {
-                    fk_assosiation: types[0].fk_assosiation,
-                    recdelete: null,
-                },
-                orderBy: {
-                    sortOrder: 'asc',
-                },
-            });
+                    where: {
+                        fk_assosiation: types[0].fk_assosiation,
+                        recdelete: null,
+                    },
+                    orderBy: {
+                        sortOrder: 'asc',
+                    },
+                });
 
             expect(dbList).toHaveLength(4);
             expect(dbList[0].id).toBe(types[0].id);

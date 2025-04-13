@@ -17,22 +17,23 @@ export const changeSortOrder = (props: PropType) => genericSAValidator(
     propShema,
     { uniformTypeId: props.typeId }
 ).then(([{ assosiation }, { typeId, newPosition }]) => prisma.$transaction(async (client) => {
-    const type = await prisma.uniformType.findUniqueOrThrow({
+    const type = await client.uniformType.findUniqueOrThrow({
         where: {
             id: typeId
         }
     });
+
     if (type.sortOrder === newPosition) {
         return __unsecuredGetUniformTypeList(assosiation, client);
     }
 
-    const listsize = await prisma.uniformType.count({
+    const listsize = await client.uniformType.count({
         where: {
             fk_assosiation: assosiation,
             recdelete: null
         }
     });
-  
+
     if (newPosition < 0 || newPosition >= listsize) {
         throw new SaveDataException("Invalid newPosition");
     }
@@ -50,7 +51,7 @@ export const changeSortOrder = (props: PropType) => genericSAValidator(
     return __unsecuredGetUniformTypeList(assosiation, client)
 }));
 
-const updateOtherTypes = (upperLimit: number, lowerLimit: number, up: boolean, fk_assosiation: string, client: Prisma.TransactionClient) =>
+const updateOtherTypes = async (upperLimit: number, lowerLimit: number, up: boolean, fk_assosiation: string, client: Prisma.TransactionClient) =>
     client.uniformType.updateMany({
         where: {
             sortOrder: { gte: upperLimit, lte: lowerLimit },
@@ -62,7 +63,7 @@ const updateOtherTypes = (upperLimit: number, lowerLimit: number, up: boolean, f
         }
     }).then((result) => result.count === ((lowerLimit - upperLimit) + 1));
 
-const updateInitialType = (id: string, newPosition: number, client: Prisma.TransactionClient) =>
+const updateInitialType = async (id: string, newPosition: number, client: Prisma.TransactionClient) =>
     client.uniformType.update({
         where: {
             id,
