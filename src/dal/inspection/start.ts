@@ -1,12 +1,12 @@
 "use server";
 
-import { genericSAValidatiorV2 } from "@/actions/validations";
+import { genericSAValidatorV2 } from "@/actions/validations";
 import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { revalidateTag } from "next/cache";
 
-export const startInspection = () => genericSAValidatiorV2(
+export const startInspection = async () => genericSAValidatorV2(
     AuthRole.materialManager,
     true,
     {}

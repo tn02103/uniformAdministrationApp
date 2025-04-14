@@ -40,10 +40,10 @@ export function getStaticDataIds() {
         sizeIds: uuidArray(21),
         sizelistIds: uuidArray(4),
         uniformTypeIds: uuidArray(5),
-        uniformGenerationIds: uuidArray(7),
+        uniformGenerationIds: uuidArray(8),
         uniformIds: [87, 16, 66, 13].map((value) => uuidArray(value)),
-        materialGroupIds: uuidArray(4),
-        materialIds: uuidArray(10),
+        materialGroupIds: uuidArray(5),
+        materialIds: uuidArray(12),
         deficiencyTypeIds: uuidArray(7),
         deficiencyIds: uuidArray(14),
         inspectionIds: uuidArray(6),
@@ -135,6 +135,7 @@ export default class StaticDataGenerator {
             { id: this.ids.uniformGenerationIds[4], fk_uniformType: this.ids.uniformTypeIds[1], name: 'Generation2-1', fk_sizelist: null, outdated: true, sortOrder: 0, recdelete: null, recdeleteUser: null },
             { id: this.ids.uniformGenerationIds[5], fk_uniformType: this.ids.uniformTypeIds[1], name: 'Generation2-2', fk_sizelist: null, outdated: false, sortOrder: 1, recdelete: null, recdeleteUser: null },
             { id: this.ids.uniformGenerationIds[6], fk_uniformType: this.ids.uniformTypeIds[1], name: 'Generation2-3', fk_sizelist: null, outdated: true, sortOrder: 2, recdelete: new Date('2023-08-15 16:07:58'), recdeleteUser: 'test4' },
+            { id: this.ids.uniformGenerationIds[7], fk_uniformType: this.ids.uniformTypeIds[0], name: 'Generation1-5', fk_sizelist: null, outdated: true, sortOrder: 2, recdelete: new Date('2023-08-15 16:07:58'), recdeleteUser: 'test4' },
         ]
     }
 
@@ -240,9 +241,9 @@ export default class StaticDataGenerator {
             { id: this.ids.uniformIds[1][10], number: 1210, fk_uniformType: this.ids.uniformTypeIds[1], fk_generation: this.ids.uniformGenerationIds[5], fk_size: null, active: true, comment: '', recdelete: null, recdeleteUser: null },
             { id: this.ids.uniformIds[1][11], number: 1211, fk_uniformType: this.ids.uniformTypeIds[1], fk_generation: this.ids.uniformGenerationIds[5], fk_size: null, active: true, comment: '', recdelete: null, recdeleteUser: null },
             { id: this.ids.uniformIds[1][12], number: 1212, fk_uniformType: this.ids.uniformTypeIds[1], fk_generation: this.ids.uniformGenerationIds[5], fk_size: null, active: true, comment: '', recdelete: null, recdeleteUser: null },
-            { id: this.ids.uniformIds[1][13], number: 1213, fk_uniformType: this.ids.uniformTypeIds[1], fk_generation: this.ids.uniformGenerationIds[5], fk_size: null, active: true, comment: '', recdelete: null, recdeleteUser: null },
-            { id: this.ids.uniformIds[1][14], number: 1214, fk_uniformType: this.ids.uniformTypeIds[1], fk_generation: this.ids.uniformGenerationIds[5], fk_size: null, active: true, comment: '', recdelete: null, recdeleteUser: null },
-            { id: this.ids.uniformIds[1][15], number: 1215, fk_uniformType: this.ids.uniformTypeIds[1], fk_generation: this.ids.uniformGenerationIds[5], fk_size: null, active: true, comment: '', recdelete: null, recdeleteUser: null },
+            { id: this.ids.uniformIds[1][13], number: 1213, fk_uniformType: this.ids.uniformTypeIds[1], fk_generation: this.ids.uniformGenerationIds[5], fk_size: null, active: true, comment: '', recdelete: new Date('2023-08-16 09:45:25'), recdeleteUser: 'test4' },
+            { id: this.ids.uniformIds[1][14], number: 1214, fk_uniformType: this.ids.uniformTypeIds[1], fk_generation: this.ids.uniformGenerationIds[5], fk_size: null, active: true, comment: '', recdelete: new Date('2023-08-16 09:45:25'), recdeleteUser: 'test4' },
+            { id: this.ids.uniformIds[1][15], number: 1215, fk_uniformType: this.ids.uniformTypeIds[1], fk_generation: this.ids.uniformGenerationIds[5], fk_size: null, active: true, comment: '', recdelete: new Date('2023-08-16 09:45:25'), recdeleteUser: 'test4' },
             { id: this.ids.uniformIds[2][0], number: 1300, fk_uniformType: this.ids.uniformTypeIds[2], fk_generation: null, fk_size: this.ids.sizeIds[1], active: true, comment: '', recdelete: null, recdeleteUser: null },
             { id: this.ids.uniformIds[2][1], number: 1301, fk_uniformType: this.ids.uniformTypeIds[2], fk_generation: null, fk_size: this.ids.sizeIds[1], active: true, comment: '', recdelete: null, recdeleteUser: null },
             { id: this.ids.uniformIds[2][2], number: 1302, fk_uniformType: this.ids.uniformTypeIds[2], fk_generation: null, fk_size: this.ids.sizeIds[1], active: true, comment: '', recdelete: null, recdeleteUser: null },
@@ -399,6 +400,7 @@ export default class StaticDataGenerator {
             { id: this.ids.materialGroupIds[1], fk_assosiation: this.ids.fk_assosiation, description: 'Gruppe2', issuedDefault: 4, sortOrder: 1, recdelete: null, recdeleteUser: null, multitypeAllowed: false },
             { id: this.ids.materialGroupIds[2], fk_assosiation: this.ids.fk_assosiation, description: 'Gruppe3', issuedDefault: null, sortOrder: 2, recdelete: null, recdeleteUser: null, multitypeAllowed: true },
             { id: this.ids.materialGroupIds[3], fk_assosiation: this.ids.fk_assosiation, description: 'Gruppe4', issuedDefault: null, sortOrder: 1, recdelete: new Date('2023-08-16 09:45:25'), recdeleteUser: 'test4', multitypeAllowed: true },
+            { id: this.ids.materialGroupIds[4], fk_assosiation: this.ids.fk_assosiation, description: 'Gruppe5', issuedDefault: null, sortOrder: 3, recdelete: null, recdeleteUser: null, multitypeAllowed: false },
         ]
     }
 
@@ -414,6 +416,8 @@ export default class StaticDataGenerator {
             { id: this.ids.materialIds[7], typename: 'Typ3-1', fk_materialGroup: this.ids.materialGroupIds[2], actualQuantity: 0, targetQuantity: 0, sortOrder: 0, recdelete: null, recdeleteUser: null },
             { id: this.ids.materialIds[8], typename: 'Typ3-2', fk_materialGroup: this.ids.materialGroupIds[2], actualQuantity: 0, targetQuantity: 0, sortOrder: 1, recdelete: null, recdeleteUser: null },
             { id: this.ids.materialIds[9], typename: 'Typ3-3', fk_materialGroup: this.ids.materialGroupIds[2], actualQuantity: 0, targetQuantity: 0, sortOrder: 2, recdelete: null, recdeleteUser: null },
+            { id: this.ids.materialIds[10], typename: 'Typ2-4', fk_materialGroup: this.ids.materialGroupIds[1], actualQuantity: 1, targetQuantity: 20, sortOrder: 2, recdelete: dayjs().subtract(20, "days").toDate(), recdeleteUser: "admin" },
+            { id: this.ids.materialIds[11], typename: 'Type4-1', fk_materialGroup: this.ids.materialGroupIds[4], actualQuantity: 0, targetQuantity: 0, sortOrder: 0, recdelete: dayjs().subtract(20, "days").toDate(), recdeleteUser: "admin" }
         ]
     }
 
@@ -479,7 +483,7 @@ export default class StaticDataGenerator {
             {
                 id: this.ids.deficiencyIds[0], fk_deficiencyType: this.ids.deficiencyTypeIds[0], description: 'Typ1-1184', comment: 'Uniform Deficiency Sven Keller Resolved',
                 fk_inspection_created: this.ids.inspectionIds[0], fk_inspection_resolved: this.ids.inspectionIds[1],
-                dateCreated: new Date('2023-06-18T00:00:00.000Z'), dateUpdated: new Date('2023-06-18T00:00:00.000Z'), dateResolved: new Date('2023-08-13T14:14:28.000Z'),
+                dateCreated: new Date('2023-06-18T00:00:00.000Z'), dateUpdated: new Date('2023-06-18T00:00:00.000Z'), dateResolved: new Date('2023-08-13T00:00:00.000Z'),
                 userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4'
             },
             {
@@ -491,7 +495,7 @@ export default class StaticDataGenerator {
             {
                 id: this.ids.deficiencyIds[2], fk_deficiencyType: this.ids.deficiencyTypeIds[0], description: 'Typ1-1146', comment: 'Uniform Deficiency Sven Keller Resolved',
                 fk_inspection_created: this.ids.inspectionIds[0], fk_inspection_resolved: this.ids.inspectionIds[1],
-                dateCreated: new Date('2023-06-18T00:00:00.000Z'), dateUpdated: new Date('2023-06-18T00:00:00.000Z'), dateResolved: new Date('2023-08-13T14:14:28.000Z'),
+                dateCreated: new Date('2023-06-18T00:00:00.000Z'), dateUpdated: new Date('2023-06-18T00:00:00.000Z'), dateResolved: new Date('2023-08-13T00:00:00.000Z'),
                 userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4'
             },
             {
@@ -503,7 +507,7 @@ export default class StaticDataGenerator {
             {
                 id: this.ids.deficiencyIds[4], fk_deficiencyType: this.ids.deficiencyTypeIds[1], description: 'Ungewaschen', comment: 'Cadet Deficiency Marie Becker Resolved',
                 fk_inspection_created: this.ids.inspectionIds[0], fk_inspection_resolved: this.ids.inspectionIds[1],
-                dateCreated: new Date('2023-06-18T00:00:00.000Z'), dateUpdated: new Date('2023-06-18T00:00:00.000Z'), dateResolved: new Date('2023-08-13T14:14:28.000Z'),
+                dateCreated: new Date('2023-06-18T00:00:00.000Z'), dateUpdated: new Date('2023-06-18T00:00:00.000Z'), dateResolved: new Date('2023-08-13T00:00:00.000Z'),
                 userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4'
             },
             {
@@ -515,7 +519,7 @@ export default class StaticDataGenerator {
             {
                 id: this.ids.deficiencyIds[6], fk_deficiencyType: this.ids.deficiencyTypeIds[1], description: 'Resoved Test', comment: 'Cadet Deficiency Sven Keller Resolved',
                 fk_inspection_created: this.ids.inspectionIds[0], fk_inspection_resolved: this.ids.inspectionIds[1],
-                dateCreated: new Date('2023-06-18T00:00:00.000Z'), dateUpdated: new Date('2023-06-18T00:00:00.000Z'), dateResolved: new Date('2023-08-13T14:14:28.000Z'),
+                dateCreated: new Date('2023-06-18T00:00:00.000Z'), dateUpdated: new Date('2023-06-18T00:00:00.000Z'), dateResolved: new Date('2023-08-13T00:00:00.000Z'),
                 userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4'
             },
             {

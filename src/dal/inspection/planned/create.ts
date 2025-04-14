@@ -18,12 +18,12 @@ const dbQuery = new PlannedInspectionDBQuery();
  * @param props PlannedInspectionFormSchema includes Name and Date
  * @returns 
  */
-export const createInspection = (props: PlannedInspectionFormShema) => genericSAValidator(
+export const createInspection = async (props: PlannedInspectionFormShema) => genericSAValidator(
     AuthRole.materialManager,
     props,
     plannedInspectionFormShema,
     {}
-).then(async ([data, user]) => prisma.$transaction(async (client) => {
+).then(async ([user,data]) => prisma.$transaction(async (client) => {
     const inspList = await client.inspection.findMany({
         where: {
             fk_assosiation: user.assosiation,

@@ -1,5 +1,5 @@
 import { getUsedSizesByType } from "@/dal/size/getUsedByType";
-import { getUniformType } from "@/dal/uniform/type/getter";
+import { getUniformType } from "@/dal/uniform/type/_index";
 import { getI18n, getScopedI18n } from "@/lib/locales/config";
 import { UniformSize, UniformType } from "@/types/globalUniformTypes";
 import { Col, Row } from "react-bootstrap";
@@ -7,10 +7,12 @@ import { z } from "zod";
 import FilterPanel from "./_filterPanel";
 import ListPanel from "./_listPanel";
 
-export async function generateMetadata({ params }: { params: { typeId: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ typeId: string }> }) {
+    const { typeId } = await params;
+
     const t = await getScopedI18n('pageTitles')
-    if (z.string().uuid().safeParse(params.typeId).success) {
-        const type = await getUniformType(params.typeId);
+    if (z.string().uuid().safeParse(typeId).success) {
+        const type = await getUniformType(typeId);
         if (type) {
             return {
                 title: t('uniform.list', { type: type.name })
@@ -23,13 +25,14 @@ export async function generateMetadata({ params }: { params: { typeId: string } 
 }
 
 export default async function UniformListPage({
-    params: { typeId }
+    params
 }: {
-    params: {
+    params: Promise<{
         typeId: string
-    }
+    }>
 }) {
     const t = await getI18n();
+    const { typeId } = await params;
 
     let uniformType: UniformType | null = null
     if (z.string().uuid().safeParse(typeId).success) {

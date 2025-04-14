@@ -16,12 +16,12 @@ const dbQuery = new PlannedInspectionDBQuery();
  * @param props props is the id of inspection
  * @returns 
  */
-export const deleteInspection = (props: string): Promise<PlannedInspectionType[]> => genericSAValidator(
+export const deleteInspection = async (props: string): Promise<PlannedInspectionType[]> => genericSAValidator(
     AuthRole.materialManager,
     props,
     z.string().uuid(),
     { inspectionId: props }
-).then(async ([id, { assosiation }]) => prisma.$transaction(async (client) => {
+).then(async ([{ assosiation }, id]) => prisma.$transaction(async (client) => {
     const inspection = await client.inspection.findUnique({
         where: { id }
     });

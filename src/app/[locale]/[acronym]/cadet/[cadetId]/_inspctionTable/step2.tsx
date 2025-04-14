@@ -1,4 +1,4 @@
-import TooltipIconButton from "@/components/TooltipIconButton";
+import TooltipIconButton from "@/components/Buttons/TooltipIconButton";
 import { useCadetUniformComplete } from "@/dataFetcher/cadet";
 import { useCadetInspection } from "@/dataFetcher/cadetInspection";
 import { Deficiency } from "@/types/deficiencyTypes";

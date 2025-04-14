@@ -6,7 +6,7 @@ import Calendar from 'react-calendar';
 
 export default function DatePicker({ onChange, value, error }: { onChange: any, value: string | Date, error?: string }) {
     const [showCalendar, setShowCalendar] = useState(false);
-    const refCalendar = useRef();
+    const refCalendar = useRef(null);
 
     useEffect(() => {
         const handler = (e: MouseEvent) => {

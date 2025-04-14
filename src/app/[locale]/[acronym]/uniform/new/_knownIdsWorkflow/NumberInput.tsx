@@ -1,4 +1,4 @@
-import { validateUniformNumberAvaiability } from "@/actions/controllers/UniformIdController";
+import { validateUniformNumberAvailability } from "@/actions/controllers/UniformIdController";
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/card";
 import { useI18n } from "@/lib/locales/client";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -54,7 +54,7 @@ const NumberInput = ({ stepBack, handleCreate, uniformTypeId }: PropType) => {
             return;
         }
 
-        validateUniformNumberAvaiability(uniformTypeId, newNumberList).then((result) => {
+        validateUniformNumberAvailability(uniformTypeId, newNumberList).then((result) => {
             setNumbers(prevState => { return [...prevState, ...result] });
         }).catch((error) => {
             toast.error(t('common.error.unknown'));

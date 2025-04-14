@@ -15,12 +15,12 @@ const stopInspectionPropShema = z.object({
     id: z.string().uuid(),
 });
 type stopInspectionPropShema = z.infer<typeof stopInspectionPropShema>;
-export const stopInspection = (props: stopInspectionPropShema) => genericSAValidator(
+export const stopInspection = async (props: stopInspectionPropShema) => genericSAValidator(
     AuthRole.materialManager,
     props,
     stopInspectionPropShema,
     { inspectionId: props.id }
-).then(async ([data, user]) => prisma.$transaction(async (client) => {
+).then(async ([user, data]) => prisma.$transaction(async (client) => {
     const inspection = await client.inspection.findUniqueOrThrow({
         where: { id: data.id },
     });

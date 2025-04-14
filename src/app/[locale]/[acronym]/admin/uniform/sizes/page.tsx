@@ -15,10 +15,11 @@ export async function generateMetadata() {
     }
 }
 
-export default async function UniformsizeConfigurationPage({ params }: { params: { acronym: string } }) {
+export default async function UniformsizeConfigurationPage({ params }: { params: Promise<{ acronym: string }> }) {
+    const { acronym } = await params;
     const t = await getI18n();
     const dbHandler = new UniformSizeDBHandler();
-    const assosiation = await prisma.assosiation.findFirstOrThrow({ where: { acronym: params.acronym } });
+    const assosiation = await prisma.assosiation.findFirstOrThrow({ where: { acronym } });
     const sizes = await dbHandler.getAllUniformSizesByAssosiation(assosiation.id);
 
     const quad = Math.round((sizes.length / 4) + 0.25);

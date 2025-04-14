@@ -1,7 +1,7 @@
 "use client";
 
 import { createUniformSizelist } from "@/actions/controllers/UniformSizeController";
-import TooltipIconButton from "@/components/TooltipIconButton";
+import TooltipIconButton from "@/components/Buttons/TooltipIconButton";
 import { Card, CardBody, CardHeader } from "@/components/card";
 import { useModal } from "@/components/modals/modalProvider";
 import { useUniformSizelists } from "@/dataFetcher/uniformAdmin";

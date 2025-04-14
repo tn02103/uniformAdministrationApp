@@ -1,12 +1,13 @@
+"use server"
+
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
+import { prisma } from "@/lib/db";
 import { PersonnelListCadet } from "@/types/globalCadetTypes";
 import { z } from "zod";
 import { getInspectionState } from "../inspection/state";
-import { Prisma } from "@prisma/client";
-import { prisma } from "@/lib/db";
 
-const getPersonnelListPropShema = z.object({
+const getPersonnelListPropSchema = z.object({
     orderBy: z.enum(['lastname', 'firstname']),
     asc: z.boolean(),
     include: z.object({
@@ -14,12 +15,12 @@ const getPersonnelListPropShema = z.object({
         inspected: z.boolean(),
     }).partial(),
 });
-type getPersonnelListPropShema = z.infer<typeof getPersonnelListPropShema>;
-export const getPersonnelListOverviewData = (props: getPersonnelListPropShema): Promise<PersonnelListCadet[]> => genericSAValidator(
+type getPersonnelListPropSchema = z.infer<typeof getPersonnelListPropSchema>;
+export const getPersonnelListOverviewData = async (props: getPersonnelListPropSchema): Promise<PersonnelListCadet[]> => genericSAValidator(
     AuthRole.user,
     props,
-    getPersonnelListPropShema,
-).then(async ([{ orderBy, asc, include }, { assosiation, role }]) => {
+    getPersonnelListPropSchema,
+).then(async ([{ assosiation, role }, { orderBy, asc, include }]) => {
     const inspectionState = await getInspectionState();
     if (role < AuthRole.inspector) {
         return getRestrictedPersonnelList(

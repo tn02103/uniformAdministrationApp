@@ -72,8 +72,14 @@ export const uniformGenerationArgs = Prisma.validator<Prisma.UniformGenerationFi
         fk_sizelist: true,
         outdated: true,
         sortOrder: true,
+        sizelist: {
+            select: {
+                id: true,
+                name: true,
+            },
+        },
     },
-    orderBy: { sortOrder: "asc" }
+    orderBy: { sortOrder: "asc" },
 })
 export const uniformTypeArgs = Prisma.validator<Prisma.UniformTypeFindManyArgs>()({
     select: {
@@ -84,6 +90,12 @@ export const uniformTypeArgs = Prisma.validator<Prisma.UniformTypeFindManyArgs>(
         usingGenerations: true,
         usingSizes: true,
         fk_defaultSizelist: true,
+        defaultSizelist: {
+            select: {
+                id: true,
+                name: true,
+            }
+        },
         uniformGenerationList: {
             ...uniformGenerationArgs,
             where: {

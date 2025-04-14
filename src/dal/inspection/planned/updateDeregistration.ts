@@ -12,12 +12,12 @@ const updateCadetRegistrationPropShema = z.object({
 });
 type updateCadetRegistrationPropShema = z.infer<typeof updateCadetRegistrationPropShema>;
 
-export const updateCadetRegistrationForInspection = (props: updateCadetRegistrationPropShema) => genericSAValidator(
+export const updateCadetRegistrationForInspection = async (props: updateCadetRegistrationPropShema) => genericSAValidator(
     AuthRole.materialManager,
     props,
     updateCadetRegistrationPropShema,
     { cadetId: props.cadetId, inspectionId: props.inspectionId }
-).then(([data,]) => prisma.$transaction(async (client) => {
+).then(([, data]) => prisma.$transaction(async (client) => {
     const deregistration = await client.deregistration.findUnique({
         where: {
             fk_cadet_fk_inspection: {

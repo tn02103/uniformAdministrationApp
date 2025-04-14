@@ -1,6 +1,6 @@
 "use client";
 
-import TooltipIconButton from "@/components/TooltipIconButton";
+import TooltipIconButton from "@/components/Buttons/TooltipIconButton";
 import { useGlobalData } from "@/components/globalDataProvider";
 import { useModal } from "@/components/modals/modalProvider";
 import { useCadetMaterialMap } from "@/dataFetcher/cadet";
