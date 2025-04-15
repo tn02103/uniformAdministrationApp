@@ -43,6 +43,9 @@ export const issue = async (props: IssuePropType): Promise<CadetUniformMap | SAE
         include: {
             type: true,
             issuedEntries: {
+                where: {
+                    dateReturned: null,
+                },
                 include: { cadet: { ...cadetArgs } }
             },
         }
