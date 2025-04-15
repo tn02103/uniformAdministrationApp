@@ -4,17 +4,13 @@ import { getStaticParams } from '@/lib/locales/config';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import 'react-calendar/dist/Calendar.css';
+import 'react-date-picker/dist/DatePicker.css';
 import { ToastContainer, Zoom } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-tooltip/dist/react-tooltip.css';
-import 'react-date-picker/dist/DatePicker.css';
-import 'react-calendar/dist/Calendar.css';
 import './../../styles/global.scss';
 import './../../styles/globals.css';
-
-
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
     title: 'Uniformverwaltung',
@@ -22,22 +18,21 @@ export const metadata: Metadata = {
     applicationName: 'Uniformadmin',
 }
 
-
 export function generateStaticParams() {
     return getStaticParams();
 }
 
-export default function RootLayout({
+export default async function RootLayout({
     children, params
 }: {
     children: React.ReactNode,
-    params: { locale: string }
+    params: Promise<{ locale: string }>
 }) {
-
+    const { locale } = await params;
     return (
         <html lang="en">
             <body>
-                <I18nProviderClient locale={params.locale}>
+                <I18nProviderClient locale={locale}>
                     <ModalProvider>
                         {children}
                     </ModalProvider>

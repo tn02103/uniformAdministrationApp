@@ -1,6 +1,5 @@
 import "server-only";
 
-import { getUniformTypeList } from "@/actions/controllers/UniformConfigController";
 import { getUniformSizelists } from "@/actions/controllers/UniformSizeController";
 import GlobalDataProvider from "@/components/globalDataProvider";
 import Sidebar from "@/components/navigation/Sidebar";
@@ -10,6 +9,7 @@ import { redirect } from "next/navigation";
 import { ReactNode } from "react";
 import { AuthRole } from "@/lib/AuthRoles";
 import { getInspectionState } from "@/dal/inspection/state";
+import { getUniformTypeList } from "@/dal/uniform/type/_index";
 
 export const dynamic = "force-dynamic";
 
@@ -26,14 +26,16 @@ const Layout = async ({
 }: {
     children: ReactNode;
     modal: ReactNode;
-    params: { locale: string, acronym: string }
+    params: Promise<{ acronym: string }>
 }) => {
+    const { acronym } = await params;
     const { user } = await getIronSession();
+    
     if (!user) {
         return redirect('/login');
 
     }
-    if (user.acronym !== params.acronym) {
+    if (user.acronym !== acronym) {
         return redirect('/login');
     }
 

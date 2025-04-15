@@ -1,60 +1,27 @@
-"use client"
-
-import { useI18n } from "@/lib/locales/client";
-import { useState } from "react";
-import { Col, Row } from "react-bootstrap";
-import UniformConfigSizelistDetail from "./_sizelistComponents/sizelistDetail";
-import UniformConfigSizelistsList from "./_sizelistComponents/sizelistList";
-import UniformConfigTypeGenerationList from "./_typeComponents/generationList";
-import UniformConfigTypeDetails from "./_typeComponents/typeDetail";
-import UniformConfigTypeList from "./_typeComponents/typeList";
+import { getUniformTypeList } from "@/dal/uniform/type/_index";
+import { getI18n } from "@/lib/locales/config";
+import { Row } from "react-bootstrap";
+import UniformSizelistConfigurationWrapper from "./_sizelistComponents/sizelistWrapper";
+import { UniformTypeTable } from "./_typeAdministration/UniformTypeTable";
 
 
-export default function UniformAdminPage() {
-    const t = useI18n();
-    const [selectedTypeId, setSelectedTypeId] = useState('');
-    const selectedTypeEditableState = useState(false);
-
-    const [selectedSizelistId, setSelectedSizelistId] = useState('');
-    const [sizelistEditable, setSizelistEditable] = useState(false);
-
+export default async function UniformAdminPage() {
+    const t = await getI18n();
+    const typeList = await getUniformTypeList();
+   
     return (
         <div className="container-xl content-center bg-light rounded">
             <h1 className="text-center">
                 {t('admin.uniform.header')}
             </h1>
-            <Row className="justify-content-center">
-                <Col xs={12} md={4} lg={3} className="p-0 my-2 px-md-2">
-                    <UniformConfigTypeList
-                        selectedTypeId={selectedTypeId}
-                        selectType={setSelectedTypeId}
-                        selectedEditable={selectedTypeEditableState[0]} />
-                </Col>
-                <Col xs={12} md={7} lg={4} className="p-0 my-2 px-md-2">
-                    <UniformConfigTypeDetails
-                        selectedTypeId={selectedTypeId}
-                        editableState={selectedTypeEditableState} />
-                </Col>
-                <Col xs={12} lg={5} className="p-0 my-2 px-lg-2">
-                    <UniformConfigTypeGenerationList
-                        selectedTypeId={selectedTypeId} />
-                </Col>
+            <h2>Uniformtypen</h2>
+            <hr />
+            <Row>
+                <UniformTypeTable initialTypeList={typeList} />
             </Row>
-            <Row className="justify-content-center">
-                <Col xs={12} lg={4} xl={3} className="p-0 my-2 px-lg-2">
-                    <UniformConfigSizelistsList
-                        selectedSizelistId={selectedSizelistId}
-                        selectList={setSelectedSizelistId}
-                        editable={sizelistEditable}
-                    />
-                </Col>
-                <Col xs={12} lg={8} xl={9} className="p-0 my-2 px-lg-2">
-                    <UniformConfigSizelistDetail
-                        selectedSizelistId={selectedSizelistId}
-                        editable={sizelistEditable}
-                        setEditable={setSizelistEditable} />
-                </Col>
-            </Row>
+            <h2 className="mt-5">Größenlisten</h2>
+            <hr />
+            <UniformSizelistConfigurationWrapper />
         </div>
     )
 }

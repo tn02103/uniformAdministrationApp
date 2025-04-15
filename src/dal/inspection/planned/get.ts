@@ -1,6 +1,6 @@
 "use server";
 
-import { genericSAValidatiorV2 } from "@/actions/validations";
+import { genericSAValidatorV2 } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
@@ -12,6 +12,6 @@ const dbQuery = new PlannedInspectionDBQuery();
  * @scope **
  * @returns list of Inspections
  */
-export const getPlannedInspectionList = (): Promise<PlannedInspectionType[]> => genericSAValidatiorV2(
+export const getPlannedInspectionList = async (): Promise<PlannedInspectionType[]> => genericSAValidatorV2(
     AuthRole.materialManager, true, {}
 ).then(async ({ assosiation }) => dbQuery.plannedInspectionListQuery(assosiation, prisma));

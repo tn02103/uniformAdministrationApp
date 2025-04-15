@@ -1,7 +1,7 @@
 "use client";
 
 import { createSize } from "@/actions/controllers/UniformSizeController";
-import TooltipIconButton from "@/components/TooltipIconButton";
+import TooltipIconButton from "@/components/Buttons/TooltipIconButton";
 import { CardHeader } from "@/components/card";
 import { useModal } from "@/components/modals/modalProvider";
 import { useI18n } from "@/lib/locales/client";

@@ -1,6 +1,6 @@
 "use client";
 
-import { TooltipActionButton } from "@/components/TooltipIconButton";
+import { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
 import { usePlannedInspectionList } from "@/dataFetcher/inspection";
 import { useScopedI18n } from "@/lib/locales/client";
 import { CadetLabel } from "@/types/globalCadetTypes";

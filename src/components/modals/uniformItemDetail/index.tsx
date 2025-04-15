@@ -1,6 +1,7 @@
-import { deleteUniformItem, getUniformFormValues, getUniformIssueHistory, saveUniformItem } from "@/actions/controllers/UniformController";
+import { getUniformFormValues, getUniformIssueHistory } from "@/actions/controllers/UniformController";
 import { useGlobalData } from "@/components/globalDataProvider";
-import TooltipIconButton from "@/components/TooltipIconButton";
+import TooltipIconButton from "@/components/Buttons/TooltipIconButton";
+import { deleteUniformItem, updateUniformItem } from "@/dal/uniform/item/_index";
 import { AuthRole } from "@/lib/AuthRoles";
 import { getUniformSizelist } from "@/lib/uniformHelper";
 import { UniformFormData, UniformSizelist, UniformType } from "@/types/globalUniformTypes";
@@ -61,7 +62,7 @@ export default function UniformItemDetailModal({ uniformId, uniformType, ownerId
 
         mutate(
             `uniform.${uniformId}.formValues`,
-            saveUniformItem(data),
+            updateUniformItem(data),
             {
                 optimisticData: data
             }
@@ -69,7 +70,7 @@ export default function UniformItemDetailModal({ uniformId, uniformType, ownerId
             if (ownerId) {
                 mutate(`cadet.${ownerId}.uniform`);
             }
-            if (props.onDataChanged){
+            if (props.onDataChanged) {
                 props.onDataChanged();
             }
         }).catch((e) => {

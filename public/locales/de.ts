@@ -3,6 +3,7 @@ export default {
         of: "von",
         comment: "Kommentar",
         description: "Beschreibung",
+        details: "Details",
         name: "Name",
         type: "Typ",
         loading: "Lädt",
@@ -133,7 +134,8 @@ export default {
             number: {
                 required: "Bitte eine Zahl angeben",
                 pattern: "Bitte eine valide Zahl eingeben",
-                patternPositive: "Bitte eine gültige positive Zahl eingeben",
+                patternPositiv: "Bitte eine gültige positive Zahl eingeben",
+                positiv: "Die Zahl muss positiv sein",
                 max: "Die Zahl darf nicht höher als {value} sein",
                 maxLength: "Es sind höchstens {value} Stellige Zahlen erlaubt",
                 min: "Die Zahl muss größer {value} sein",
@@ -146,8 +148,10 @@ export default {
             string: {
                 required: "Bitte ausfüllen",
                 maxLength: "Es sind höchtens {value} Zeichen erlaubt",
+                lengthRequired: "Es wird eine Länge von {value} benötigt",
                 noSpecialChars: "Es dürfen keine Sonderzeichen genutzt werden",
                 commentValidation: "Nicht alle Zeichen die Sie genutzt haben sind erlaubt",
+                descriptionPattern: "Nur die Sonderzeichen -_ sind erlaubt",
             },
             actions: {
                 changeSortorder: "Beim ändern der Reihnfolge ist ein unbekannter Fehler aufgetreten.",
@@ -172,6 +176,28 @@ export default {
                     duplicate: "Der Nutzername wird bereits von einem anderen Nutzer benutzt",
                 },
             },
+            custom: {
+                material: {
+                    typename: {
+                        duplication: "Der Name wird bereits von einem anderen Material der Gruppe verwendet",
+                    },
+                    groupname: {
+                        duplication: "Der Name wird bereits von einer anderen Gruppe verwendet",
+                    },
+                },
+                uniform: {
+                    type: {
+                        nameDuplication: "Es existiert bereits ein Uniformtyp mit diesem Namen",
+                        acronymDuplication: "Das Acronym wird bereits vom Uniformtyp {name} benutzt",
+                    },
+                    generation: {
+                        nameDuplication: "Für diesen Uniformtyp existiert bereits eine Generation mit diesem Namen",
+                    }
+                },
+            },
+        },
+        success: {
+            changeSortorder: "Reihenfolge erfolgreich geändert",
         },
     },
     login: {
@@ -340,6 +366,7 @@ export default {
                 }
             },
             generationList: {
+                "header.create": "Neue Generation anlegen",
                 deleteModal: {
                     header: "Generation \"{generation}\" Löschen",
                     message: {
@@ -350,8 +377,6 @@ export default {
                     confirmationText: "Generation-{generation}",
                 },
                 updateModal: {
-                    editHeader: "Generation \"{generation}\" bearbeiten",
-                    createHeader: "Neue Generation anlegen",
                     changeSizeHeader: "Ändern der Größenliste",
                     changeSizeMessage: "Beim Ändern der ausgewählten Größenliste, kann bei Uniformteilen dieser Generation die Information der Größe verlohren gehen",
                     nameDuplicationError: "Es existiert bereits eine Generation mit diesem Namen",

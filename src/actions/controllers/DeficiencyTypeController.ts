@@ -1,14 +1,13 @@
 "use server";
 
 import { AuthRole } from "@/lib/AuthRoles";
-import { genericSAValidatiorV2, genericSAValidator } from "../validations";
 import { prisma } from "@/lib/db";
 import { AdminDeficiencyType } from "@/types/deficiencyTypes";
-import { z } from "zod";
 import { AdminDeficiencytypeFormSchema } from "@/zod/deficiency";
-import { DeficiencyTypeDBHandler } from "../dbHandlers/DeficiencyTypeDBHandler";
 import { revalidatePath } from "next/cache";
-import { uuidValidationPattern } from "@/lib/validations";
+import { z } from "zod";
+import { DeficiencyTypeDBHandler } from "../dbHandlers/DeficiencyTypeDBHandler";
+import { genericSAValidator, genericSAValidatorV2 } from "../validations";
 
 const dbHandler = new DeficiencyTypeDBHandler();
 
@@ -17,7 +16,7 @@ const dbHandler = new DeficiencyTypeDBHandler();
  * @requires AuthRole.materialManager
  * @returns 
  */
-export const getDeficiencyAdmintypeList = (): Promise<AdminDeficiencyType[]> => genericSAValidatiorV2(
+export const getDeficiencyAdmintypeList = async (): Promise<AdminDeficiencyType[]> => genericSAValidatorV2(
     AuthRole.materialManager, true, {}
 ).then(({ assosiation }) => dbHandler.getDeficiencyAdmintypeList(assosiation));
 
@@ -27,13 +26,13 @@ const SaveDeficiencyTypePropSchema = z.object({
 })
 type SaveDeficiencyTypePropSchema = z.infer<typeof SaveDeficiencyTypePropSchema>;
 
-export const saveDeficiencyType = (props: SaveDeficiencyTypePropSchema) =>
+export const saveDeficiencyType = async (props: SaveDeficiencyTypePropSchema) =>
     genericSAValidator(
         AuthRole.materialManager,
         props,
         SaveDeficiencyTypePropSchema,
         { deficiencytypeId: props.id }
-    ).then(async ([{ id, data }, { assosiation }]) => {
+    ).then(async ([{ assosiation }, { id, data }]) => {
         await prisma.$transaction(async (client) => {
             const list = await dbHandler.getDeficiencyAdmintypeList(assosiation);
 
@@ -57,13 +56,13 @@ export const saveDeficiencyType = (props: SaveDeficiencyTypePropSchema) =>
         revalidatePath(`/[locale]/${assosiation}/app/admin/deficiency`, 'page');
     });
 
-export const createDeficiencyType = (props: AdminDeficiencytypeFormSchema) =>
+export const createDeficiencyType = async (props: AdminDeficiencytypeFormSchema) =>
     genericSAValidator(
         AuthRole.materialManager,
         props,
         AdminDeficiencytypeFormSchema,
         {}
-    ).then(async ([data, { assosiation }]) => {
+    ).then(async ([{ assosiation }, data]) => {
         const value = await prisma.$transaction(async (client) => {
             const list = await dbHandler.getDeficiencyAdmintypeList(assosiation, client);
 
@@ -85,12 +84,12 @@ export const createDeficiencyType = (props: AdminDeficiencytypeFormSchema) =>
  * @param props id of the deficiencyType
  * @returns void
  */
-export const deactivateDeficiencyType = (props: string) => genericSAValidator(
+export const deactivateDeficiencyType = async (props: string) => genericSAValidator(
     AuthRole.inspector,
     props,
     z.string().uuid(),
     { deficiencytypeId: props }
-).then(async ([id, user]) => {
+).then(async ([user, id]) => {
     const type = await prisma.deficiencyType.findUniqueOrThrow({
         where: { id }
     });
@@ -114,12 +113,12 @@ export const deactivateDeficiencyType = (props: string) => genericSAValidator(
  * @param props id of type
  * @returns void
  */
-export const reactivateDeficiencyType = (props: string) => genericSAValidator(
+export const reactivateDeficiencyType = async (props: string) => genericSAValidator(
     AuthRole.inspector,
     props,
     z.string().uuid(),
     { deficiencytypeId: props }
-).then(async ([id, { assosiation }]) => {
+).then(async ([{ assosiation }, id]) => {
     await prisma.deficiencyType.update({
         where: { id },
         data: {
@@ -138,12 +137,12 @@ export const reactivateDeficiencyType = (props: string) => genericSAValidator(
  * @param props id of type
  * @returns void
  */
-export const deleteDeficiencyType = (props: string) => genericSAValidator(
+export const deleteDeficiencyType = async (props: string) => genericSAValidator(
     AuthRole.materialManager,
     props,
     z.string().uuid(),
     { deficiencytypeId: props }
-).then(async ([id, { assosiation }]) => prisma.$transaction(async (client) => {
+).then(async ([{ assosiation }, id]) => prisma.$transaction(async (client) => {
     const type = await client.deficiencyType.findUniqueOrThrow({
         where: { id },
         include: {

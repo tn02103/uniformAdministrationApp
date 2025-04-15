@@ -1,0 +1,176 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getMaterialAdministrationConfiguration, validate snapshot 1`] = `
+[
+  {
+    "description": "Gruppe1",
+    "issuedDefault": null,
+    "multitypeAllowed": false,
+    "sortOrder": 0,
+    "typeList": [
+      {
+        "actualQuantity": 200,
+        "issuedQuantity": 13,
+        "sortOrder": 0,
+        "targetQuantity": 150,
+        "typename": "Typ1-1",
+      },
+      {
+        "actualQuantity": 300,
+        "issuedQuantity": 0,
+        "sortOrder": 1,
+        "targetQuantity": 0,
+        "typename": "Typ1-2",
+      },
+      {
+        "actualQuantity": 100,
+        "issuedQuantity": 1,
+        "sortOrder": 2,
+        "targetQuantity": 200,
+        "typename": "Typ1-3",
+      },
+      {
+        "actualQuantity": 1,
+        "issuedQuantity": 3,
+        "sortOrder": 3,
+        "targetQuantity": 20,
+        "typename": "Typ1-4",
+      },
+    ],
+  },
+  {
+    "description": "Gruppe2",
+    "issuedDefault": 4,
+    "multitypeAllowed": false,
+    "sortOrder": 1,
+    "typeList": [
+      {
+        "actualQuantity": 200,
+        "issuedQuantity": 8,
+        "sortOrder": 0,
+        "targetQuantity": 200,
+        "typename": "Typ2-1",
+      },
+      {
+        "actualQuantity": 200,
+        "issuedQuantity": 24,
+        "sortOrder": 1,
+        "targetQuantity": 200,
+        "typename": "Typ2-2",
+      },
+      {
+        "actualQuantity": 200,
+        "issuedQuantity": 11,
+        "sortOrder": 2,
+        "targetQuantity": 200,
+        "typename": "Typ2-3",
+      },
+    ],
+  },
+  {
+    "description": "Gruppe3",
+    "issuedDefault": null,
+    "multitypeAllowed": true,
+    "sortOrder": 2,
+    "typeList": [
+      {
+        "actualQuantity": 0,
+        "issuedQuantity": 8,
+        "sortOrder": 0,
+        "targetQuantity": 0,
+        "typename": "Typ3-1",
+      },
+      {
+        "actualQuantity": 0,
+        "issuedQuantity": 9,
+        "sortOrder": 1,
+        "targetQuantity": 0,
+        "typename": "Typ3-2",
+      },
+      {
+        "actualQuantity": 0,
+        "issuedQuantity": 12,
+        "sortOrder": 2,
+        "targetQuantity": 0,
+        "typename": "Typ3-3",
+      },
+    ],
+  },
+  {
+    "description": "Gruppe5",
+    "issuedDefault": null,
+    "multitypeAllowed": false,
+    "sortOrder": 3,
+    "typeList": [],
+  },
+]
+`;
+
+exports[`getMaterialConfiguration, validate snapshot 1`] = `
+[
+  {
+    "description": "Gruppe1",
+    "issuedDefault": null,
+    "multitypeAllowed": false,
+    "sortOrder": 0,
+    "typeList": [
+      {
+        "sortOrder": 0,
+        "typename": "Typ1-1",
+      },
+      {
+        "sortOrder": 1,
+        "typename": "Typ1-2",
+      },
+      {
+        "sortOrder": 2,
+        "typename": "Typ1-3",
+      },
+      {
+        "sortOrder": 3,
+        "typename": "Typ1-4",
+      },
+    ],
+  },
+  {
+    "description": "Gruppe2",
+    "issuedDefault": 4,
+    "multitypeAllowed": false,
+    "sortOrder": 1,
+    "typeList": [
+      {
+        "sortOrder": 0,
+        "typename": "Typ2-1",
+      },
+      {
+        "sortOrder": 1,
+        "typename": "Typ2-2",
+      },
+      {
+        "sortOrder": 2,
+        "typename": "Typ2-3",
+      },
+    ],
+  },
+  {
+    "description": "Gruppe3",
+    "issuedDefault": null,
+    "multitypeAllowed": true,
+    "sortOrder": 2,
+    "typeList": [
+      {
+        "sortOrder": 0,
+        "typename": "Typ3-1",
+      },
+      {
+        "sortOrder": 1,
+        "typename": "Typ3-2",
+      },
+      {
+        "sortOrder": 2,
+        "typename": "Typ3-3",
+      },
+    ],
+  },
+]
+`;

@@ -1,9 +1,10 @@
 "use client"
 
-import { IssueUniformItemDataType, SAErrorResponseType, issueUniformItem } from "@/actions/controllers/CadetUniformController";
-import TooltipIconButton from "@/components/TooltipIconButton";
+import TooltipIconButton from "@/components/Buttons/TooltipIconButton";
 import { useGlobalData } from "@/components/globalDataProvider";
 import { useModal } from "@/components/modals/modalProvider";
+import { SAErrorResponseType } from "@/dal/_index";
+import { issueUniformItem, IssueUniformItemDataType } from "@/dal/uniform/item/_index";
 import { useCadetUniformMap } from "@/dataFetcher/cadet";
 import { useUniformTypeList } from "@/dataFetcher/uniformAdmin";
 import { ExceptionType } from "@/errors/CustomException";
@@ -16,8 +17,6 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
 import UniformRow from "./uniformRow";
-
-
 
 type PropType = {
     uniformMap: CadetUniformMap,

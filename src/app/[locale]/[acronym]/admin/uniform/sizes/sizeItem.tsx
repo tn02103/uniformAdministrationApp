@@ -1,7 +1,7 @@
 "use client";
 
 import { deleteSize, moveSize, setSizeSortorder } from "@/actions/controllers/UniformSizeController";
-import TooltipIconButton from "@/components/TooltipIconButton";
+import TooltipIconButton from "@/components/Buttons/TooltipIconButton";
 import { useModal } from "@/components/modals/modalProvider";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
 import { t } from "@/lib/test";

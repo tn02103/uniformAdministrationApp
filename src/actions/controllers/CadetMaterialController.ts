@@ -1,6 +1,6 @@
 "use server";
 
-import { genericSAValidatiorV2 } from "@/actions/validations";
+import { genericSAValidatorV2 } from "@/actions/validations";
 import { NullValueException } from "@/errors/LoadDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
@@ -11,13 +11,13 @@ import { PrismaClient } from "@prisma/client";
 import { CadetMaterialDBHandler } from "../dbHandlers/CadetMaterialDBHandler";
 
 const dbHandler = new CadetMaterialDBHandler();
-export const getCadetMaterialMap = async (cadetId: string): Promise<CadetMaterialMap> => genericSAValidatiorV2(
+export const getCadetMaterialMap = async (cadetId: string): Promise<CadetMaterialMap> => genericSAValidatorV2(
     AuthRole.user,
     uuidValidationPattern.test(cadetId),
     { cadetId }
 ).then(async ({ assosiation }) => dbHandler.getMaterialMap(cadetId, assosiation));
 
-export const getCadetMaterialList = async (cadetId: string): Promise<any[]> => genericSAValidatiorV2(
+export const getCadetMaterialList = async (cadetId: string): Promise<any[]> => genericSAValidatorV2(
     AuthRole.user,
     uuidValidationPattern.test(cadetId),
     { cadetId }
@@ -36,7 +36,7 @@ export const getCadetMaterialList = async (cadetId: string): Promise<any[]> => g
     )
 );
 
-export const issueMaterial = async (cadetId: string, newMaterialId: string, quantity: number, oldMaterialId?: string): Promise<CadetMaterialMap | undefined> => genericSAValidatiorV2(
+export const issueMaterial = async (cadetId: string, newMaterialId: string, quantity: number, oldMaterialId?: string): Promise<CadetMaterialMap | undefined> => genericSAValidatorV2(
     AuthRole.inspector,
     (uuidValidationPattern.test(cadetId)
         && uuidValidationPattern.test(newMaterialId)
@@ -65,7 +65,7 @@ export const issueMaterial = async (cadetId: string, newMaterialId: string, quan
     return dbHandler.getMaterialMap(cadetId, assosiation, prismaCl as PrismaClient);
 }));
 
-export const returnMaterial = async (cadetId: string, materialId: string): Promise<CadetMaterialMap> => genericSAValidatiorV2(
+export const returnMaterial = async (cadetId: string, materialId: string): Promise<CadetMaterialMap> => genericSAValidatorV2(
     AuthRole.inspector,
     (uuidValidationPattern.test(cadetId)
         && uuidValidationPattern.test(materialId)),

@@ -1,48 +1,59 @@
-import { createMaterial, updateMaterial } from "@/actions/controllers/MaterialController";
 import { useI18n } from "@/lib/locales/client";
+import { asyncSAFormHandler } from "@/lib/SAFormHandler";
+import { materialTypeFormSchema, MaterialTypeFormType } from "@/zod/material";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Col, Form, FormControl, FormGroup, FormLabel, Modal, ModalBody, ModalFooter, ModalHeader, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { descriptionValidationPattern } from "../../lib/validations";
-import { AdministrationMaterial, Material } from "../../types/globalMaterialTypes";
+import { AdministrationMaterial } from "../../types/globalMaterialTypes";
+import ErrorMessage from "../errorMessage";
+import { updateMaterial, createMaterial } from "@/dal/material/type/_index";
+
 
 export type EditMaterialTypeModalPropType = {
     type?: AdministrationMaterial;
     groupName: string;
     groupId: string;
-    typeList: Material[];
     onClose: () => void;
 }
-type FormType = {
-    typename: string;
-    actualQuantity: number;
-    targetQuantity: number;
-}
-const EditMaterialTypeModal = ({ type, groupName, groupId, typeList, ...props }: EditMaterialTypeModalPropType) => {
-    const t = useI18n();
-    const { register, handleSubmit, formState: { errors } } = useForm<FormType>({ mode: "onChange", values: type });
 
-    async function handleSave(data: FormType) {
+const EditMaterialTypeModal = ({ type, groupName, groupId, ...props }: EditMaterialTypeModalPropType) => {
+    const t = useI18n();
+
+    const { register, handleSubmit, formState: { errors }, setError } = useForm<MaterialTypeFormType>({
+        mode: "onTouched",
+        values: type,
+        resolver: zodResolver(materialTypeFormSchema)
+    });
+
+    async function handleSave(data: MaterialTypeFormType) {
         if (!type)
             return await handleCreate(data);
 
-        await updateMaterial(type.id, data.typename, data.actualQuantity, data.targetQuantity).then(() => {
-            props.onClose();
-        }).catch((e) => {
-            console.error(e);
-            toast.error(t('common.error.actions.save'));
-        });
+        await asyncSAFormHandler<typeof updateMaterial>(updateMaterial({ id: type.id, data }), setError)
+            .then((result: any) => {
+                if (result.success) {
+                    props.onClose();
+                }
+            }).catch((e: any) => {
+                console.error(e);
+                toast.error(t('common.error.actions.save'));
+            });
     }
-    async function handleCreate(data: FormType) {
-        await createMaterial(groupId, data.typename, data.actualQuantity, data.targetQuantity).then(() => {
-            props.onClose();
+    async function handleCreate(data: MaterialTypeFormType) {
+        await asyncSAFormHandler<typeof createMaterial>(
+            createMaterial({ groupId, data }),
+            setError
+        ).then((result) => {
+            if (result.success) {
+                props.onClose();
+            }
         }).catch((e) => {
             console.error(e);
             toast.error(t('common.error.actions.create'));
         });
     }
 
-    const filteredList = typeList.filter(tl => tl.id !== type?.id);
     return (
         <Modal data-testid="div_popup" show onHide={props.onClose}>
             <ModalHeader data-testid="div_header" closeButton>
@@ -59,25 +70,9 @@ const EditMaterialTypeModal = ({ type, groupName, groupId, typeList, ...props }:
                         <FormControl
                             className="w-50"
                             isInvalid={!!errors.typename}
-                            {...register("typename", {
-                                required: {
-                                    value: true,
-                                    message: t('common.error.string.required')
-                                },
-                                pattern: {
-                                    value: descriptionValidationPattern,
-                                    message: t('common.error.string.noSpecialChars')
-                                },
-                                maxLength: {
-                                    value: 20,
-                                    message: t('common.error.string.maxLength', { value: 20 })
-                                },
-                                validate: (value) => filteredList.every(t => t.typename !== value) || t('admin.material.error.materialNameDuplicate')
-                            })}
+                            {...register("typename")}
                         />
-                        <span data-testid="err_typename" className="fs-7 text-danger">
-                            {errors.typename?.message}
-                        </span>
+                        <ErrorMessage testId="err_typename" error={errors.typename?.message} />
                     </FormGroup>
                     <FormGroup>
                         <FormLabel>
@@ -86,17 +81,9 @@ const EditMaterialTypeModal = ({ type, groupName, groupId, typeList, ...props }:
                         <FormControl
                             className="w-25"
                             isInvalid={!!errors.actualQuantity}
-                            {...register("actualQuantity", {
-                                valueAsNumber: true,
-                                required: {
-                                    value: true,
-                                    message: t('common.error.amount.required'),
-                                },
-                                validate: (value) => (Number.isInteger(value) && value >= 0) || t('common.error.amount.notNegative'),
-                            })} />
-                        <span data-testid="err_actualQuantity" className="fs-7 text-danger">
-                            {errors.actualQuantity?.message}
-                        </span>
+                            {...register("actualQuantity", { valueAsNumber: true })}
+                        />
+                        <ErrorMessage testId="err_actualQuantity" error={errors.actualQuantity?.message} />
                     </FormGroup>
                     <FormGroup>
                         <FormLabel>
@@ -105,24 +92,15 @@ const EditMaterialTypeModal = ({ type, groupName, groupId, typeList, ...props }:
                         <FormControl
                             className="w-25"
                             isInvalid={!!errors.targetQuantity}
-                            {...register("targetQuantity", {
-                                valueAsNumber: true,
-                                required: {
-                                    value: true,
-                                    message: t('common.error.amount.required'),
-                                },
-                                validate: (value) => (Number.isInteger(value) && value >= 0) || t('common.error.number.pattern'),
-                            })} />
-                        <span data-testid="err_targetQuantity" className="fs-7 text-danger">
-                            {errors.targetQuantity?.message}
-                        </span>
+                            {...register("targetQuantity", { valueAsNumber: true })} />
+                        <ErrorMessage testId="err_targetQuantity" error={errors.targetQuantity?.message} />
                     </FormGroup>
                 </ModalBody>
                 <ModalFooter>
                     <Row className="justify-content-between">
                         <Col xs={"auto"}>
                             <Button
-                                variant="outline-seccondary"
+                                variant="outline-secondary"
                                 onClick={props.onClose}
                                 data-testid="btn_cancel"
                             >

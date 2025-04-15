@@ -1,6 +1,6 @@
 "use client";
 
-import { TooltipActionButton } from "@/components/TooltipIconButton";
+import { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
 import { useScopedI18n } from "@/lib/locales/client";
 import { AdminDeficiencyType } from "@/types/deficiencyTypes";
 import { faCircle } from "@fortawesome/free-regular-svg-icons";
