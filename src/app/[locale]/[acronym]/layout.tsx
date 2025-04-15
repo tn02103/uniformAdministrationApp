@@ -26,14 +26,16 @@ const Layout = async ({
 }: {
     children: ReactNode;
     modal: ReactNode;
-    params: { locale: string, acronym: string }
+    params: Promise<{ acronym: string }>
 }) => {
+    const { acronym } = await params;
     const { user } = await getIronSession();
+    
     if (!user) {
         return redirect('/login');
 
     }
-    if (user.acronym !== params.acronym) {
+    if (user.acronym !== acronym) {
         return redirect('/login');
     }
 
