@@ -30,6 +30,7 @@ const Layout = async ({
 }) => {
     const { acronym } = await params;
     const { user } = await getIronSession();
+    
     if (!user) {
         return redirect('/login');
 

@@ -9,8 +9,10 @@ export async function generateMetadata() {
         title: t('personnel'),
     }
 }
-const CadetListPage = async ({ searchParams }: any) => {
+const CadetListPage = async ({ searchParams: searchParamsPromise }: {searchParams: Promise<Record<string, string>>}) => {
+    const searchParams = await searchParamsPromise;
     const t = await getI18n();
+    
     const data = await getPersonnelListOverviewData({
         orderBy: searchParams.orderBy === "firstname" ? "firstname" : "lastname",
         asc: searchParams.asc ? searchParams.asc === "true" ? true : false : true,
