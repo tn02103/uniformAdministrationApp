@@ -7,6 +7,7 @@ export default {
         name: "Name",
         type: "Typ",
         loading: "Lädt",
+        status: "Status",
         dates: {
             created: "Erstellt am:",
             updated: "zulest Verändert:",
