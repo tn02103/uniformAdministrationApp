@@ -26,10 +26,10 @@ export interface Deficiency {
     comment: string;
     dateCreated?: Date;
     dateUpdated?: Date;
-    dateResolved?: Date;
-    userCreated?: Date;
-    userUpdated?: Date;
-    userResolved?: Date;
+    dateResolved?: Date | null;
+    userCreated?: string;
+    userUpdated?: string;
+    userResolved?: string | null;
 }
 export interface CadetDeficiency extends Deficiency {
     fk_cadet: string;

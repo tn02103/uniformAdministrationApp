@@ -62,3 +62,35 @@ function removeAttribute(obj: any, keys: string[]) {
         }
     }
 }
+
+export function cleanDataV2(dataObject: any): any {
+    if (Array.isArray(dataObject)) {
+        return dataObject.map(item => cleanDataV2(item));
+    } else if (typeof dataObject === 'object' && dataObject !== null) {
+        const cleanedObject: any = {};
+        for (const key in dataObject) {
+            if (dataObject.hasOwnProperty(key)) {
+                const value = dataObject[key];
+                if (typeof value === 'string' && isUUID(value)) {
+                    cleanedObject[key] = removeFirstTwoDigits(value);
+                } else {
+                    cleanedObject[key] = cleanDataV2(value);
+                }
+            }
+        }
+        return cleanedObject;
+    } else if (typeof dataObject === "string" && isUUID(dataObject)) {
+        return removeFirstTwoDigits(dataObject);
+    }
+    return dataObject;
+}
+
+const uuidRegex = /^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/;
+function isUUID(value: string): boolean {
+    return uuidRegex.test(value);
+}
+
+function removeFirstTwoDigits(uuid: string): string {
+    return uuid.replace(/^([0-9a-fA-F]{2})/, '');
+}
+

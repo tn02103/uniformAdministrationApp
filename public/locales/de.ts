@@ -284,6 +284,15 @@ export default {
         noData: "Keine Daten geladen",
         header: "Uniformteile",
     },
+    uniformOffcanvas: {
+        deleteAction: {
+            header: "{type} {number} löschen",
+            "message.one": "Soll das Uniformteil {type} {number} wirklich gelöscht werden?",
+            "message.two": "Diese Aktion kann nicht wieder umgekehrt werden",
+            "success": "Das Uniformteil wurde erfolgreich gelöscht",
+            "failed": "Das Uniformteil konnte nicht gelöscht werden",
+        }
+    },
     createUniform: {
         pagination: {
             known: "Nummern bekannt",

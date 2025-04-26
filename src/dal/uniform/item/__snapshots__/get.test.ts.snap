@@ -1,0 +1,130 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should return a list of defficiencies 1`] = `
+[
+  {
+    "comment": "Uniform Deficiency Sven Keller Unresolved",
+    "dateCreated": {},
+    "dateResolved": null,
+    "dateUpdated": {},
+    "description": "Typ1-1146",
+    "id": "c41263-aa86-489b-a4cf-536062ac413b",
+    "typeId": "8ddf5b-3238-4105-9749-70b86a6c1e00",
+    "typeName": "Uniform",
+    "userCreated": "test4",
+    "userResolved": null,
+    "userUpdated": "test4",
+  },
+  {
+    "comment": "Uniform Deficiency Unresolved",
+    "dateCreated": {},
+    "dateResolved": null,
+    "dateUpdated": {},
+    "description": "Typ1-1146",
+    "id": "d3a7f8-0a9e-4b6c-bd2e-0f1a5b8c3d7e",
+    "typeId": "8ddf5b-3238-4105-9749-70b86a6c1e00",
+    "typeName": "Uniform",
+    "userCreated": "test4",
+    "userResolved": null,
+    "userUpdated": "test4",
+  },
+]
+`;
+
+exports[`should return a list of defficiencies with resolved 1`] = `
+[
+  {
+    "comment": "Uniform Deficiency Sven Keller Unresolved",
+    "dateCreated": {},
+    "dateResolved": null,
+    "dateUpdated": {},
+    "description": "Typ1-1146",
+    "id": "c41263-aa86-489b-a4cf-536062ac413b",
+    "typeId": "8ddf5b-3238-4105-9749-70b86a6c1e00",
+    "typeName": "Uniform",
+    "userCreated": "test4",
+    "userResolved": null,
+    "userUpdated": "test4",
+  },
+  {
+    "comment": "Uniform Deficiency Sven Keller Resolved",
+    "dateCreated": {},
+    "dateResolved": {},
+    "dateUpdated": {},
+    "description": "Typ1-1146",
+    "id": "69d747-c9b1-4a63-9795-d2c51939fc18",
+    "typeId": "8ddf5b-3238-4105-9749-70b86a6c1e00",
+    "typeName": "Uniform",
+    "userCreated": "test4",
+    "userResolved": "test4",
+    "userUpdated": "test4",
+  },
+  {
+    "comment": "Uniform Deficiency Resolved",
+    "dateCreated": {},
+    "dateResolved": {},
+    "dateUpdated": {},
+    "description": "Typ1-1146",
+    "id": "c0f1a2-4b5d-4e8f-9a3b-6c7d0e1f2b5c",
+    "typeId": "8ddf5b-3238-4105-9749-70b86a6c1e00",
+    "typeName": "Uniform",
+    "userCreated": "test4",
+    "userResolved": "test4",
+    "userUpdated": "test4",
+  },
+  {
+    "comment": "Uniform Deficiency Unresolved",
+    "dateCreated": {},
+    "dateResolved": null,
+    "dateUpdated": {},
+    "description": "Typ1-1146",
+    "id": "d3a7f8-0a9e-4b6c-bd2e-0f1a5b8c3d7e",
+    "typeId": "8ddf5b-3238-4105-9749-70b86a6c1e00",
+    "typeName": "Uniform",
+    "userCreated": "test4",
+    "userResolved": null,
+    "userUpdated": "test4",
+  },
+]
+`;
+
+exports[`should return a list of uniform history entries 1`] = `
+[
+  {
+    "cadet": {
+      "firstname": "Marie",
+      "lastname": "Becker",
+      "recdelete": null,
+    },
+    "dateIssued": 2023-08-16T00:00:00.000Z,
+    "dateReturned": null,
+  },
+  {
+    "cadet": {
+      "firstname": "Antje",
+      "lastname": "Fried",
+      "recdelete": null,
+    },
+    "dateIssued": 2023-08-11T00:00:00.000Z,
+    "dateReturned": 2023-08-15T00:00:00.000Z,
+  },
+  {
+    "cadet": {
+      "firstname": "Christina",
+      "lastname": "Faber",
+      "recdelete": null,
+    },
+    "dateIssued": 2023-08-06T00:00:00.000Z,
+    "dateReturned": 2023-08-10T00:00:00.000Z,
+  },
+  {
+    "cadet": {
+      "firstname": "Simone",
+      "lastname": "Osterhagen",
+      "recdelete": 2023-08-16T07:45:25.000Z,
+    },
+    "dateIssued": 2023-08-01T00:00:00.000Z,
+    "dateReturned": 2023-08-05T00:00:00.000Z,
+  },
+]
+`;

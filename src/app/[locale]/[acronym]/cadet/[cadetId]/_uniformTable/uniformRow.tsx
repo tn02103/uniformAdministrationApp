@@ -91,8 +91,8 @@ const UniformRow = ({ uniform, uniformType, replaceItem, openUniformId, setOpenU
                             />
                         </div>
                     }
-                    <Col xs={10} sm={9} md={9} lg={9} xxl={10} className="ps-2 pe-0">
-                        <Row>
+                    <Col xs={10} sm={9} md={9} lg={9} xxl={10} className="ps-md-2 pe-0">
+                        <Row className="m-0 p-0">
                             <Col xs={3} md={2} lg={1}>
                                 <Row className="fs-8 fw-bold fst-italic">
                                     {t('common.uniform.number')}
@@ -129,7 +129,7 @@ const UniformRow = ({ uniform, uniformType, replaceItem, openUniformId, setOpenU
                         </Row>
                     </Col>
                     {(userRole >= AuthRole.inspector) &&
-                        <div className="col-1 col-sm-auto d-sm-none align-self-center">
+                        <div className="col-2 col-sm-auto d-sm-none align-self-center">
                             <Dropdown drop="start">
                                 <Dropdown.Toggle variant="outline-primary" className="border-0" id={uniform.id + "-dropdown"} data-testid={"btn_menu"}>
                                     <FontAwesomeIcon icon={faBars} />
@@ -142,7 +142,7 @@ const UniformRow = ({ uniform, uniformType, replaceItem, openUniformId, setOpenU
                                         {t('common.actions.return')}
                                     </Dropdown.Item>
                                     <Link prefetch={false} href={'/[locale]/app/uniform/[uniformId]'} as={`/${locale}/app/uniform/${uniform.id}`}>
-                                        <Dropdown.Item onClick={() => { modal?.uniformItemDetailModal(uniform.id, uniformType, cadetId) }} data-testid={"btn_menu_open"}>
+                                        <Dropdown.Item onClick={() => { setOpenUniformId(uniform.id) }} data-testid={"btn_menu_open"}>
                                             {t('common.actions.open')}
                                         </Dropdown.Item>
                                     </Link>

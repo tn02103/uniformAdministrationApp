@@ -20,7 +20,7 @@ export const TextareaFormField = <FormType extends FieldValues>({ label, name, r
     });
 
     return (
-        <Form.Group className="mb-3">
+        <Form.Group>
             <Form.Label htmlFor={`${formName}_input-${name}`} className="fw-bold m-0">{label}{required ? " *" : ""}</Form.Label>
             <Form.Control
                 {...inputProps}

@@ -22,27 +22,33 @@ export const ToggleFormField = <FormType extends FieldValues>({ label, name, dis
     return (
         <Form.Group className="mb-3">
             <Form.Label className="fw-bold m-0" htmlFor={`${formName}_toggle-${name}`}>{label}</Form.Label>
-            <div className="form-check form-switch px-0 my-auto">
-                {(hideToggle && toggleText)
-                    ? <p aria-label={label} aria-readonly>{toggleText}</p>
-                    : (
+
+            {(hideToggle && toggleText)
+                ? <p className="mt-2" aria-label={label} aria-readonly>{toggleText}</p>
+                : (
+                    <div className="form-check form-switch px-0 my-auto">
                         <input
                             {...inputProps}
                             {...field}
                             id={`${formName}_toggle-${name}`}
                             type="checkbox"
+                            value={"some"}
                             role="switch"
-                            className="form-check-input fw-bold mx-0 my-2"
+                            className="form-check-input ms-0 my-2"
                             checked={field.value}
                             tabIndex={disabled ? -1 : 0}
                             style={disabled ? { pointerEvents: "none", opacity: 0.5 } : { cursor: "pointer" }}
                             aria-disabled={disabled}
                             aria-checked={field.value}
+                            aria-describedby={toggleText ? `${formName}_${name}_toggleText` : undefined}
                             onChange={() => disabled ? undefined : field.onChange(!field.value)}
                         />
-                    )
-                }
-            </div>
+                        {toggleText && (
+                            <label id={`${formName}_${name}_toggleText`} className="form-check-label ms-2">{toggleText}</label>
+                        )}
+                    </div>
+                )
+            }
             <ErrorMessage error={fieldState.error?.message} testId={`err_${name}`} />
         </Form.Group>
     );

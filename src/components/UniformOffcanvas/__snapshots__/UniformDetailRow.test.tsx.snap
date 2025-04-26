@@ -1,0 +1,348 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UniformDetailRow should render correctly 1`] = `
+<div>
+  <form
+    autocomplete="off"
+    novalidate=""
+  >
+    <div
+      class="mb-3 mt-2 row"
+    >
+      <div
+        class="col-6"
+      >
+        <div
+          class="mb-3"
+        >
+          <label
+            class="fw-bold m-0 form-label"
+            for="uniform_toggle-active"
+          >
+            common.status
+          </label>
+          <div
+            class="form-check form-switch px-0 my-auto"
+          >
+            <p
+              aria-label="common.status"
+              aria-readonly="true"
+            >
+              common.uniform.active.true
+            </p>
+          </div>
+          <div
+            class="text-danger fs-7"
+            data-testid="err_active"
+            role="alert"
+          />
+        </div>
+      </div>
+      <div
+        class="col-6"
+      >
+        <div
+          class="mb-3"
+        >
+          <label
+            class="fw-bold m-0 undefined form-label"
+            for="uniform_select-generation"
+          >
+            common.uniform.generation.label
+          </label>
+          <p
+            aria-label="common.uniform.generation.label"
+            aria-readonly="true"
+            class="py-2 m-0"
+          >
+            Generation1-2
+          </p>
+          <div
+            aria-label="error message generation"
+            class="text-danger fs-7"
+            data-testid="err_generation"
+            id="uniform_err_generation"
+            role="alert"
+          />
+        </div>
+      </div>
+      <div
+        class="col-6"
+      >
+        <div
+          class="mb-3"
+        >
+          <label
+            class="fw-bold m-0 undefined form-label"
+            for="uniform_select-size"
+          >
+            common.uniform.size
+          </label>
+          <p
+            aria-label="common.uniform.size"
+            aria-readonly="true"
+            class="py-2 m-0"
+          >
+            0
+          </p>
+          <div
+            aria-label="error message size"
+            class="text-danger fs-7"
+            data-testid="err_size"
+            id="uniform_err_size"
+            role="alert"
+          />
+        </div>
+      </div>
+      <div
+        class="col-12"
+      >
+        <div
+          class="mb-3"
+        >
+          <label
+            class="fw-bold m-0 form-label"
+            for="uniform_input-comment"
+          >
+            common.comment
+          </label>
+          <textarea
+            aria-invalid="false"
+            class="form-control-plaintext"
+            disabled=""
+            id="uniform_input-comment"
+            name="comment"
+            rows="3"
+            width="auto"
+          >
+            Test comment
+          </textarea>
+          <div
+            aria-label="error message comment"
+            class="text-danger fs-7"
+            data-testid="err_comment"
+            id="uniform_err_comment"
+            role="alert"
+          />
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+`;
+
+exports[`UniformDetailRow should render correctly when editable 1`] = `
+<div>
+  <form
+    autocomplete="off"
+    novalidate=""
+  >
+    <div
+      class="mb-3 mt-2 row"
+    >
+      <div
+        class="col-6"
+      >
+        <div
+          class="mb-3"
+        >
+          <label
+            class="fw-bold m-0 form-label"
+            for="uniform_toggle-active"
+          >
+            common.status
+          </label>
+          <div
+            class="form-check form-switch px-0 my-auto"
+          >
+            <input
+              aria-checked="true"
+              aria-disabled="false"
+              checked=""
+              class="form-check-input fw-bold mx-0 my-2"
+              id="uniform_toggle-active"
+              name="active"
+              role="switch"
+              style="cursor: pointer;"
+              tabindex="0"
+              type="checkbox"
+              value="true"
+            />
+          </div>
+          <div
+            class="text-danger fs-7"
+            data-testid="err_active"
+            role="alert"
+          />
+        </div>
+      </div>
+      <div
+        class="col-6"
+      >
+        <div
+          class="mb-3"
+        >
+          <label
+            class="fw-bold m-0 undefined form-label"
+            for="uniform_select-generation"
+          >
+            common.uniform.generation.label
+          </label>
+          <select
+            aria-invalid="false"
+            class="form-select"
+            id="uniform_select-generation"
+            name="generation"
+          >
+            <option
+              disabled=""
+            >
+              common.error.pleaseSelect
+            </option>
+            <option
+              value="8c0e873b-2b7d-4624-8a61-a192146f6587"
+            >
+              Generation1-1
+            </option>
+            <option
+              value="0292fdd9-9d47-4470-86b6-107c6f8797e4"
+            >
+              Generation1-2
+            </option>
+            <option
+              value="6649bcce-7ea2-4f8c-b5cc-85242f2f4dec"
+            >
+              Generation1-3
+            </option>
+            <option
+              value="654d3e11-caee-410d-af04-427a052d37dd"
+            >
+              Generation1-4
+            </option>
+          </select>
+          <div
+            aria-label="error message generation"
+            class="text-danger fs-7"
+            data-testid="err_generation"
+            id="uniform_err_generation"
+            role="alert"
+          />
+        </div>
+      </div>
+      <div
+        class="col-6"
+      >
+        <div
+          class="mb-3"
+        >
+          <label
+            class="fw-bold m-0 undefined form-label"
+            for="uniform_select-size"
+          >
+            common.uniform.size
+          </label>
+          <select
+            aria-invalid="false"
+            class="form-select"
+            id="uniform_select-size"
+            name="size"
+          >
+            <option
+              disabled=""
+            >
+              common.error.pleaseSelect
+            </option>
+            <option
+              value="bc27d3eb-20f5-46fa-9140-7bb85c89b5bc"
+            >
+              0
+            </option>
+            <option
+              value="3e41ad07-23c6-44f6-b1eb-3f620a6811f8"
+            >
+              1
+            </option>
+            <option
+              value="caef6dc5-9af5-461e-8025-551e9e240957"
+            >
+              2
+            </option>
+            <option
+              value="51d811d5-e624-4c03-859b-3fc2c26d185e"
+            >
+              3
+            </option>
+            <option
+              value="4ec167be-923b-4237-98de-fc62283f9c42"
+            >
+              4
+            </option>
+          </select>
+          <div
+            aria-label="error message size"
+            class="text-danger fs-7"
+            data-testid="err_size"
+            id="uniform_err_size"
+            role="alert"
+          />
+        </div>
+      </div>
+      <div
+        class="col-12"
+      >
+        <div
+          class="mb-3"
+        >
+          <label
+            class="fw-bold m-0 form-label"
+            for="uniform_input-comment"
+          >
+            common.comment
+          </label>
+          <textarea
+            aria-invalid="false"
+            class="form-control"
+            id="uniform_input-comment"
+            name="comment"
+            rows="3"
+            width="auto"
+          >
+            Test comment
+          </textarea>
+          <div
+            aria-label="error message comment"
+            class="text-danger fs-7"
+            data-testid="err_comment"
+            id="uniform_err_comment"
+            role="alert"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="justify-content-evenly row"
+    >
+      <div
+        class="col-auto"
+      >
+        <button
+          class="btn btn-outline-secondary"
+          type="button"
+        >
+          common.actions.cancel
+        </button>
+      </div>
+      <div
+        class="col-auto"
+      >
+        <button
+          class="btn btn-outline-primary"
+          type="submit"
+        >
+          common.actions.save
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+`;

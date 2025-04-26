@@ -22,9 +22,11 @@ jest.mock("@/components/errorMessage", () => {
 });
 jest.mock("@/components/modals/modalProvider", () => {
     const dangerModal = jest.fn();
+    const simpleWarningModal = jest.fn();
     return {
         useModal: jest.fn(() => ({
             dangerConfirmationModal: dangerModal,
+            simpleWarningModal: simpleWarningModal,
         })),
     };
 });

@@ -1,38 +1,69 @@
+import { deleteUniformItem } from "@/dal/uniform/item/_index";
 import { useI18n } from "@/lib/locales/client";
 import { Uniform } from "@/types/globalUniformTypes";
-import { Offcanvas, Row } from "react-bootstrap"
-import { LabelIconButton } from "../Buttons/LabelIconButton";
-import { UniformDetailRow } from "./UniformDetailRow";
-import { useState } from "react";
 import { UniformFormType } from "@/zod/uniform";
+import { useState } from "react";
+import { Form, Offcanvas, Row } from "react-bootstrap";
+import { toast } from "react-toastify";
+import { LabelIconButton } from "../Buttons/LabelIconButton";
+import { useModal } from "../modals/modalProvider";
+import { UniformDetailRow } from "./UniformDetailRow";
+import UniformHistoryRow from "./UniformHistoryRow";
+import { UniformDeficiencyRow } from "./UniformDeficiencyRow";
 
 export type UniformOffcanvasProps = {
     uniform: Uniform;
     onClose: () => void;
-    onSave: (data: UniformFormType) => void;
+    onSave: (data?: UniformFormType) => void;
 }
 export const UniformOffcanvas = ({ uniform, onClose, onSave }: UniformOffcanvasProps) => {
     const t = useI18n();
     const [editable, setEditable] = useState(false);
+    const modal = useModal();
+
+    const handleDelete = () => {
+        const deleteAction = () => deleteUniformItem(uniform.id)
+            .then(() => {
+                toast.success(t('uniformOffcanvas.deleteAction.success'));
+                onSave();
+                onClose();
+            }).catch(() =>
+                toast.error(t('uniformOffcanvas.deleteAction.failed'))
+            );
+
+        modal?.simpleWarningModal({
+            header: t('uniformOffcanvas.deleteAction.header', { type: uniform.type.name, number: uniform.number }),
+            message: (
+                <p>
+                    {t('uniformOffcanvas.deleteAction.message.one', { type: uniform.type.name, number: uniform.number })}<br />
+                    {t('uniformOffcanvas.deleteAction.message.two')}
+                </p>
+            ),
+            primaryOption: t('common.actions.delete'),
+            type: 'danger',
+            primaryFunction: deleteAction,
+        });
+    }
 
     return (
         <Offcanvas
             show={true}
             onHide={onClose}
             placement="end"
-            backdrop={false}
-            style={{ width: "500px" }}
+            backdrop={true}
+            scroll={false}
+            style={{ width: "576px" }}
             aria-labelledby="offcanvas-uniform-header"
         >
             <Offcanvas.Header closeButton>
                 <Offcanvas.Title>
-                    <h2 id="offcanvas-uniform-header">
-                        {uniform.type.name} {uniform.number}
-                    </h2>
+                    <h3 id="offcanvas-uniform-header">
+                        {uniform.type.name}: <b>{uniform.number}</b>
+                    </h3>
                 </Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
-                <h3>{t('common.details')}</h3>
+                <h4>{t('common.details')}</h4>
                 <hr className="mb-0" />
                 <Row className="justify-content-evenly">
                     <LabelIconButton
@@ -43,7 +74,7 @@ export const UniformOffcanvas = ({ uniform, onClose, onSave }: UniformOffcanvasP
                     <LabelIconButton
                         variantKey="delete"
                         disabled={editable}
-                        onClick={() => { }}
+                        onClick={handleDelete}
                     />
                 </Row>
                 <UniformDetailRow
@@ -52,12 +83,12 @@ export const UniformOffcanvas = ({ uniform, onClose, onSave }: UniformOffcanvasP
                     setEditable={() => setEditable(!editable)}
                     onSave={onSave}
                 />
-                <h3>Historie</h3>
-                <Row>
-
-                </Row>
-
-
+                <h4>Mängel</h4>
+                <hr className="mb-0" />
+                <UniformDeficiencyRow uniformId={uniform.id} />
+                <h4 className="mt-4">Historie</h4>
+                <hr className="mb-0" />
+                <UniformHistoryRow uniformId={uniform.id} />
             </Offcanvas.Body>
         </Offcanvas>
     );

@@ -49,6 +49,7 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
                     isInvalid={!!fieldState.error}
                     aria-errormessage={fieldState.error ? `${formName}_err_${name}` : undefined}
                     aria-invalid={!!fieldState.error}
+                    className="text-truncate"
                 >
                     <option value={undefined} selected={!field.value} disabled>{t('common.error.pleaseSelect')}</option>
                     {options.map((option, index) => (

@@ -45,7 +45,7 @@ export function getStaticDataIds() {
         materialGroupIds: uuidArray(5),
         materialIds: uuidArray(12),
         deficiencyTypeIds: uuidArray(7),
-        deficiencyIds: uuidArray(14),
+        deficiencyIds: uuidArray(16),
         inspectionIds: uuidArray(6),
         dynamic: {
             inspectionId: uuid(),
@@ -391,7 +391,16 @@ export default class StaticDataGenerator {
             { fk_cadet: this.ids.cadetIds[9], fk_uniform: this.ids.uniformIds[0][70], dateIssued: new Date('2023-08-13T09:13:45.000Z'), dateReturned: null },
             { fk_cadet: this.ids.cadetIds[9], fk_uniform: this.ids.uniformIds[3][9], dateIssued: new Date('2023-08-13T09:06:44.000Z'), dateReturned: null },
             { fk_cadet: this.ids.cadetIds[9], fk_uniform: this.ids.uniformIds[2][61], dateIssued: new Date('2023-08-13T09:18:32.000Z'), dateReturned: null },
-        ]
+            { fk_cadet: this.ids.cadetIds[2], fk_uniform: this.ids.uniformIds[0][55], dateIssued: new Date('2023-08-20T09:00:00.000Z'), dateReturned: new Date('2023-08-25T09:00:00.000Z') },
+            { fk_cadet: this.ids.cadetIds[3], fk_uniform: this.ids.uniformIds[0][55], dateIssued: new Date('2023-08-26T09:00:00.000Z'), dateReturned: new Date('2023-08-30T09:00:00.000Z') },
+            { fk_cadet: this.ids.cadetIds[4], fk_uniform: this.ids.uniformIds[0][55], dateIssued: new Date('2023-09-01T09:00:00.000Z'), dateReturned: new Date('2023-09-05T09:00:00.000Z') },
+            { fk_cadet: this.ids.cadetIds[5], fk_uniform: this.ids.uniformIds[0][56], dateIssued: new Date('2023-08-20T10:00:00.000Z'), dateReturned: new Date('2023-08-24T10:00:00.000Z') },
+            { fk_cadet: this.ids.cadetIds[6], fk_uniform: this.ids.uniformIds[0][56], dateIssued: new Date('2023-08-25T10:00:00.000Z'), dateReturned: new Date('2023-08-29T10:00:00.000Z') },
+            { fk_cadet: this.ids.cadetIds[7], fk_uniform: this.ids.uniformIds[0][56], dateIssued: new Date('2023-09-01T10:00:00.000Z'), dateReturned: new Date('2023-09-04T10:00:00.000Z') },
+            { fk_cadet: this.ids.cadetIds[8], fk_uniform: this.ids.uniformIds[0][86], dateIssued: new Date('2023-08-01T09:00:00.000Z'), dateReturned: new Date('2023-08-05T09:00:00.000Z') },
+            { fk_cadet: this.ids.cadetIds[9], fk_uniform: this.ids.uniformIds[0][86], dateIssued: new Date('2023-08-06T09:00:00.000Z'), dateReturned: new Date('2023-08-10T09:00:00.000Z') },
+            { fk_cadet: this.ids.cadetIds[0], fk_uniform: this.ids.uniformIds[0][86], dateIssued: new Date('2023-08-11T09:00:00.000Z'), dateReturned: new Date('2023-08-15T09:00:00.000Z') },
+        ];
     }
 
     materialGroup() {
@@ -564,6 +573,18 @@ export default class StaticDataGenerator {
                 dateCreated: new Date('2023-08-13T00:00:00.000Z'), dateUpdated: new Date('2023-08-13T00:00:00.000Z'), dateResolved: null,
                 userCreated: 'test4', userUpdated: 'test4', userResolved: null
             },
+            {
+                id: this.ids.deficiencyIds[14], fk_deficiencyType: this.ids.deficiencyTypeIds[0], description: 'Typ1-1146', comment: 'Uniform Deficiency Resolved',
+                fk_inspection_created: null, fk_inspection_resolved: this.ids.inspectionIds[1],
+                dateCreated: new Date('2023-07-01T00:00:00.000Z'), dateUpdated: new Date('2023-07-01T00:00:00.000Z'), dateResolved: new Date('2023-08-13T00:00:00.000Z'),
+                userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4'
+            },
+            {
+                id: this.ids.deficiencyIds[15], fk_deficiencyType: this.ids.deficiencyTypeIds[0], description: 'Typ1-1146', comment: 'Uniform Deficiency Unresolved',
+                fk_inspection_created: null, fk_inspection_resolved: null,
+                dateCreated: new Date('2023-07-15T00:00:00.000Z'), dateUpdated: new Date('2023-07-15T00:00:00.000Z'), dateResolved: null,
+                userCreated: 'test4', userUpdated: 'test4', userResolved: null
+            },
         ]
     }
 
@@ -587,6 +608,8 @@ export default class StaticDataGenerator {
             { deficiencyId: this.ids.deficiencyIds[1], fk_uniform: this.ids.uniformIds[0][46] },
             { deficiencyId: this.ids.deficiencyIds[2], fk_uniform: this.ids.uniformIds[0][46] },
             { deficiencyId: this.ids.deficiencyIds[3], fk_uniform: this.ids.uniformIds[0][68] },
+            { deficiencyId: this.ids.deficiencyIds[14], fk_uniform: this.ids.uniformIds[0][46] },
+            { deficiencyId: this.ids.deficiencyIds[15], fk_uniform: this.ids.uniformIds[0][46] },
         ];
     }
     inspection() {
