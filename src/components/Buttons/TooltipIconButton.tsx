@@ -1,5 +1,3 @@
-"use client"
-
 import { useScopedI18n } from "@/lib/locales/client";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faArrowUpRightFromSquare, faCircleDown, faCirclePlay, faCircleUp, faEdit, faEye, faEyeSlash, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";

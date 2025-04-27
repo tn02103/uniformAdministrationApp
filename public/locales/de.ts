@@ -1,3 +1,5 @@
+import { ExpandableArea } from "@/components/ExpandableArea/ExpandableArea";
+
 export default {
     common: {
         of: "von",
@@ -32,6 +34,7 @@ export default {
             edit_item: "{item} Bearbeiten",
             issue_item: "{item} Ausgeben",
             issue: "Ausgeben",
+            resolve: "Beheben",
             return: "Zurückziehen",
             replace: "Austauschen",
             rename: "Umbenennen",
@@ -201,6 +204,10 @@ export default {
             changeSortorder: "Reihenfolge erfolgreich geändert",
         },
     },
+    expandableArea: {
+        showMore: "Mehr anzeigen",
+        showLess: "Weniger anzeigen",
+    },
     login: {
         header: "Login",
         label: {
@@ -291,6 +298,9 @@ export default {
             "message.two": "Diese Aktion kann nicht wieder umgekehrt werden",
             "success": "Das Uniformteil wurde erfolgreich gelöscht",
             "failed": "Das Uniformteil konnte nicht gelöscht werden",
+        },
+        deficiency: {
+            includeResolved: "Behobene Mängel anzeigen",
         }
     },
     createUniform: {

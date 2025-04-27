@@ -18,6 +18,7 @@ type AssosiationValidationDataType = {
     materialId?: string | (string | undefined)[],
     materialGroupId?: string | string[],
     deficiencytypeId?: string | string[],
+    deficiencyId?: string | string[],
     inspectionId?: string | string[],
 }
 
@@ -63,6 +64,10 @@ function assosiationValidator(assosiationValidations: AssosiationValidationDataT
         validate(assosiationValidations.materialId, validateMaterailAssosiation);
     }
 
+    if (assosiationValidations.materialGroupId) {
+        validate(assosiationValidations.materialGroupId, validateMaterialGroupAssosiation);
+    }
+
     if (assosiationValidations.uniformSizelistId && assosiationValidations.uniformSizelistId !== null) {
         validate(assosiationValidations.uniformSizelistId, validateUniformSizelistAssosiation);
     }
@@ -73,6 +78,9 @@ function assosiationValidator(assosiationValidations: AssosiationValidationDataT
 
     if (assosiationValidations.deficiencytypeId) {
         validate(assosiationValidations.deficiencytypeId, validateDeficiencytypeAssosiation);
+    }
+    if (assosiationValidations.deficiencyId) {
+        validate(assosiationValidations.deficiencyId, validateDeficiencyAssosiation);
     }
     if (assosiationValidations.inspectionId) {
         validate(assosiationValidations.inspectionId, validateInspectionAssosiation);
@@ -176,6 +184,7 @@ const validateMaterialGroupAssosiation = async (materialGroupId: string, assosia
             fk_assosiation: assosiationId,
         }
     });
+
 const validateMaterailAssosiation = async (materialId: string, assosiationId: string) => prisma.material.findUniqueOrThrow({
     where: {
         id: materialId,
@@ -200,6 +209,15 @@ const validateDeficiencytypeAssosiation = async (id: string, fk_assosiation: str
     prisma.deficiencyType.findUniqueOrThrow({
         where: {
             id, fk_assosiation
+        }
+    });
+const validateDeficiencyAssosiation = async (id: string, fk_assosiation: string) =>
+    prisma.deficiency.findUniqueOrThrow({
+        where: {
+            id,
+            type: {
+                fk_assosiation
+            }
         }
     });
 const validateInspectionAssosiation = async (id: string, fk_assosiation: string) =>
