@@ -38,20 +38,215 @@ exports[`UniformDeficiencyRow renders correctly 1`] = `
         class="form-check form-switch"
       >
         <input
+          aria-label="uniformOffcanvas.deficiency.includeResolved"
           class="form-check-input"
+          name="showResolved"
           type="checkbox"
         />
         <label
           class="form-check-label"
           title=""
         >
-          gelöste Mängel anzeigen
+          uniformOffcanvas.deficiency.includeResolved
         </label>
       </div>
     </div>
   </div>
   <div
+    aria-label="Deficiency list"
     class="m-0 row"
-  />
+    role="list"
+  >
+    <div
+      aria-label="uniformOffcanvas.deficiency.cardLabel"
+      class="m-1 p-0  card"
+      role="listitem"
+    >
+      <div
+        class="position-relative card-body"
+      >
+        <form
+          autocomplete="off"
+          class="mb-4"
+          novalidate=""
+        >
+          <div
+            class="fs-6 fw-bold card-title h5"
+          >
+            Test Type
+             
+          </div>
+          <div
+            class="position-absolute top-0 end-0"
+          >
+            <div
+              class="dropstart"
+            >
+              <button
+                aria-expanded="false"
+                aria-label="uniformOffcanvas.deficiency.label.actions"
+                class="border-0 dropdown-toggle btn btn-outline-secondary"
+                id="Cadetdropdown"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-ellipsis-vertical "
+                  data-icon="ellipsis-vertical"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 128 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <p
+            class="card-text"
+          >
+            Test comment
+          </p>
+          <div
+            class="align-items-center justify-content-center row"
+            style="height: 2rem;"
+          >
+            <div
+              class="position-relative"
+            >
+              <hr
+                class=""
+              />
+              <div
+                class="w-auto bg-white align-center position-absolute top-50 start-50 translate-middle"
+              >
+                <button
+                  class="border-0 btn btn-light btn-sm"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="svg-inline--fa fa-chevron-down text-dark me-2 false"
+                    data-icon="chevron-down"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    viewBox="0 0 512 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  expandableArea.showMore
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div
+      aria-label="uniformOffcanvas.deficiency.cardLabel"
+      class="m-1 p-0  card"
+      role="listitem"
+    >
+      <div
+        class="position-relative card-body"
+      >
+        <form
+          autocomplete="off"
+          class="mb-4"
+          novalidate=""
+        >
+          <div
+            class="fs-6 fw-bold card-title h5"
+          >
+            Another One
+             
+          </div>
+          <div
+            class="position-absolute top-0 end-0"
+          >
+            <div
+              class="dropstart"
+            >
+              <button
+                aria-expanded="false"
+                aria-label="uniformOffcanvas.deficiency.label.actions"
+                class="border-0 dropdown-toggle btn btn-outline-secondary"
+                id="Cadetdropdown"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-ellipsis-vertical "
+                  data-icon="ellipsis-vertical"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 128 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <p
+            class="card-text"
+          >
+            Test comment 2
+          </p>
+          <div
+            class="align-items-center justify-content-center row"
+            style="height: 2rem;"
+          >
+            <div
+              class="position-relative"
+            >
+              <hr
+                class=""
+              />
+              <div
+                class="w-auto bg-white align-center position-absolute top-50 start-50 translate-middle"
+              >
+                <button
+                  class="border-0 btn btn-light btn-sm"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="svg-inline--fa fa-chevron-down text-dark me-2 false"
+                    data-icon="chevron-down"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    viewBox="0 0 512 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  expandableArea.showMore
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 `;

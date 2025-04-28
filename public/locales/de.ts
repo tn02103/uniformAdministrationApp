@@ -301,6 +301,17 @@ export default {
         },
         deficiency: {
             includeResolved: "Behobene Mängel anzeigen",
+            cardLabel: "Magnel {index}",
+            createCardLabel: "Neuen Mangel anlegen",
+            "label.actions": "Aktionen für Mangel {index}",
+            "label.comment": "Kommentar",
+            "label.deficiencyType": "Art des Mangels",
+            "label.date.created": "Erstellt am:",
+            "label.date.resolved": "Behoben am:",
+            "label.date.updated": "Zuletzt aktualisiert am:",
+            "label.user.created": "Erstellt von:",
+            "label.user.resolved": "Behoben von:",
+            "label.user.updated": "Zuletzt aktualisiert von:",
         }
     },
     createUniform: {

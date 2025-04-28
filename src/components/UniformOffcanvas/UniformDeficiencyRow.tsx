@@ -33,6 +33,8 @@ export const UniformDeficiencyRow = ({ uniformId }: { uniformId: string }) => {
                 </Col>
                 <Col xs="auto" className="text-end m-2">
                     <Form.Switch
+                        name="showResolved"
+                        aria-label={t('uniformOffcanvas.deficiency.includeResolved')}
                         onChange={(e) => setShowResolved(e.target.checked)}
                         label={t('uniformOffcanvas.deficiency.includeResolved')}
                     />
@@ -41,13 +43,15 @@ export const UniformDeficiencyRow = ({ uniformId }: { uniformId: string }) => {
             <Row className="m-0" role="list" aria-label="Deficiency list">
                 {showCreateCard && (
                     <DeficiencyCard
+                        index={-1}
                         deficiency={null}
                         uniformId={uniformId}
                         hideCreateCard={() => setShowCreateCard(false)}
                     />
                 )}
-                {deficiencies?.map((deficiency) => (
+                {deficiencies?.map((deficiency, index) => (
                     <DeficiencyCard
+                        index={index}
                         key={deficiency.id}
                         deficiency={deficiency}
                         uniformId={uniformId}
@@ -59,11 +63,12 @@ export const UniformDeficiencyRow = ({ uniformId }: { uniformId: string }) => {
 }
 
 type DeficiencyCardProps = {
+    index: number;
     deficiency: Deficiency | null;
     uniformId: string;
     hideCreateCard?: () => void;
 }
-const DeficiencyCard = ({ deficiency, uniformId, hideCreateCard }: DeficiencyCardProps) => {
+const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: DeficiencyCardProps) => {
     const t = useI18n();
     const form = useForm<UpdateUniformDeficiencySchema>({
         mode: "onTouched",
@@ -77,29 +82,31 @@ const DeficiencyCard = ({ deficiency, uniformId, hideCreateCard }: DeficiencyCar
     const [editable, setEditable] = useState(!deficiency);
     const { deficiencyTypeList } = useDeficiencyTypes();
     const filteredTypes = deficiencyTypeList?.filter((type) => type.dependent === "uniform");
+    const cardLabel = deficiency ? t('uniformOffcanvas.deficiency.cardLabel', { index }) : t('uniformOffcanvas.deficiency.createCardLabel');
 
-    const handleSave = (data: UpdateUniformDeficiencySchema) => {
+    const handleSave = async (data: UpdateUniformDeficiencySchema) => {
         if (!deficiency) return handleCreate(data);
-        updateUniformDeficiency({
+
+        await updateUniformDeficiency({
             id: deficiency.id!,
             data: {
                 comment: data.comment,
                 typeId: data.typeId,
             },
-        }).then(() => {
-            mutate((key: Arguments) => (typeof key === "string") && key.startsWith("uniform." + uniformId + ".deficiencies."));
+        }).then(async () => {
             setEditable(false);
+            await mutate((key: Arguments) => (typeof key === "string") && key.startsWith("uniform." + uniformId + ".deficiencies."));
         }).catch(() => {
             toast.error(t('common.error.actions.save'));
         });
     }
-    const handleCreate = (data: UpdateUniformDeficiencySchema) => {
-        createUniformDeficiency({
+    const handleCreate = async (data: UpdateUniformDeficiencySchema) => {
+        await createUniformDeficiency({
             uniformId,
             data
-        }).then(() => {
-            mutate((key: Arguments) => (typeof key === "string") && key.startsWith("uniform." + uniformId + ".deficiencies."));
+        }).then(async () => {
             hideCreateCard?.();
+            await mutate((key: Arguments) => (typeof key === "string") && key.startsWith("uniform." + uniformId + ".deficiencies."));
         }).catch(() => {
             toast.error(t('common.error.actions.create'));
         });
@@ -116,7 +123,10 @@ const DeficiencyCard = ({ deficiency, uniformId, hideCreateCard }: DeficiencyCar
     }
 
     return (
-        <Card role="listitem" aria-roledescription={deficiency ? deficiency.typeName : "new Deficiency"} className={`m-1 p-0 ${deficiency?.dateResolved ? "text-secondary" : ""}`}>
+        <Card role="listitem"
+            aria-label={cardLabel}
+            className={`m-1 p-0 ${deficiency?.dateResolved ? "text-secondary" : ""}`}
+        >
             <Card.Body className="position-relative">
                 <form onSubmit={form.handleSubmit(handleSave)} noValidate autoComplete="off" className="mb-4">
                     {editable ?
@@ -125,7 +135,7 @@ const DeficiencyCard = ({ deficiency, uniformId, hideCreateCard }: DeficiencyCar
                                 <FormSelect
                                     className="mb-2"
                                     {...form.register('typeId')}
-                                    aria-label="Select deficiency type"
+                                    aria-label={t('uniformOffcanvas.deficiency.label.deficiencyType')}
                                 >
                                     {filteredTypes?.map((type) => (
                                         <option
@@ -149,7 +159,7 @@ const DeficiencyCard = ({ deficiency, uniformId, hideCreateCard }: DeficiencyCar
                                     variant="outline-secondary"
                                     className="border-0"
                                     id={"Cadetdropdown"}
-                                    aria-label="Deficiency actions menu"
+                                    aria-label={t('uniformOffcanvas.deficiency.label.actions', { index })}
                                 >
                                     <FontAwesomeIcon icon={faEllipsisV} />
                                 </Dropdown.Toggle>
@@ -163,7 +173,6 @@ const DeficiencyCard = ({ deficiency, uniformId, hideCreateCard }: DeficiencyCar
                                                 });
                                                 setEditable(true);
                                             }}
-                                            aria-label="Edit deficiency"
                                         >
                                             {t('common.actions.edit')}
                                         </Dropdown.Item>
@@ -171,7 +180,6 @@ const DeficiencyCard = ({ deficiency, uniformId, hideCreateCard }: DeficiencyCar
                                     {!deficiency.dateResolved &&
                                         <Dropdown.Item
                                             onClick={handleResolve}
-                                            aria-label="Resolve deficiency"
                                         >
                                             {t('common.actions.resolve')}
                                         </Dropdown.Item>
@@ -187,16 +195,15 @@ const DeficiencyCard = ({ deficiency, uniformId, hideCreateCard }: DeficiencyCar
                                 rows={2}
                                 placeholder="Kommentar"
                                 className="mb-2"
+                                aria-label={t('uniformOffcanvas.deficiency.label.comment')}
                                 {...form.register('comment')}
-                                aria-label="Deficiency comment"
                             />
                             <Row>
                                 <Col xs="auto" className="text-end">
                                     <Button
                                         variant="outline-secondary"
                                         type="button"
-                                        onClick={() => setEditable(false)}
-                                        aria-label="Cancel editing"
+                                        onClick={() => deficiency ? setEditable(false) : hideCreateCard?.()}
                                     >
                                         {t('common.actions.cancel')}
                                     </Button>
@@ -206,7 +213,6 @@ const DeficiencyCard = ({ deficiency, uniformId, hideCreateCard }: DeficiencyCar
                                         variant="outline-primary"
                                         type="submit"
                                         onClick={() => { }}
-                                        aria-label={deficiency ? "Save deficiency changes" : "Create deficiency"}
                                     >
                                         {deficiency ? t('common.actions.save') : t('common.actions.create')}
                                     </Button>
@@ -221,29 +227,29 @@ const DeficiencyCard = ({ deficiency, uniformId, hideCreateCard }: DeficiencyCar
                     {deficiency &&
                         <ExpandableArea>
                             <Col xs={6}>
-                                <div className="fw-bold">Erstellt am:</div>
+                                <div className="fw-bold">{t('uniformOffcanvas.deficiency.label.date.created')}</div>
                                 {formatDate(deficiency.dateCreated!, "dd.MM.yyyy")}
                             </Col>
                             <Col xs={6} className="mb-2">
-                                <div className="fw-bold">Erstellt von:</div>
+                                <div className="fw-bold">{t('uniformOffcanvas.deficiency.label.user.created')}</div>
                                 <div>{deficiency.userCreated}</div>
                             </Col>
                             <Col xs={6}>
-                                <div className="fw-bold">Zuletzt bearbeitet am:</div>
+                                <div className="fw-bold">{t('uniformOffcanvas.deficiency.label.date.updated')}</div>
                                 {deficiency.dateUpdated && formatDate(deficiency.dateUpdated, "dd.MM.yyyy")}
                             </Col>
                             <Col xs={6} className="mb-2">
-                                <div className="fw-bold">Zuletzt bearbeitet von:</div>
+                                <div className="fw-bold">{t('uniformOffcanvas.deficiency.label.user.updated')}</div>
                                 <div>{deficiency.userUpdated}</div>
                             </Col>
                             {deficiency.dateResolved && (
                                 <>
                                     <Col xs={6}>
-                                        <div className="fw-bold">Behoben am:</div>
+                                        <div className="fw-bold">{t('uniformOffcanvas.deficiency.label.date.resolved')}</div>
                                         {formatDate(deficiency.dateResolved, "dd.MM.yyyy")}
                                     </Col>
                                     <Col xs={6} className="mb-2">
-                                        <div className="fw-bold">Behoben von:</div>
+                                        <div className="fw-bold">{t('uniformOffcanvas.deficiency.label.user.resolved')}</div>
                                         <div>{deficiency.userResolved}</div>
                                     </Col>
                                 </>
@@ -254,7 +260,4 @@ const DeficiencyCard = ({ deficiency, uniformId, hideCreateCard }: DeficiencyCar
             </Card.Body>
         </Card >
     );
-}
-export const exportForTesting = {
-    DeficiencyCard
 }
