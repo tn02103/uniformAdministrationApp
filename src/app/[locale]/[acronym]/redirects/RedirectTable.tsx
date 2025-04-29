@@ -78,7 +78,7 @@ const RedirectTableRow = ({ redirect, closeNewRow, isARowEditable, setIsARowEdit
         resolver: zodResolver(RedirectFormSchema),
     });
 
-    const [editabel, setEditabel] = useState(!redirect);
+    const [isEditable, setIsEditable] = useState(!redirect);
 
 
     const handleSave = async (data: RedirectFormType) => {
@@ -113,7 +113,7 @@ const RedirectTableRow = ({ redirect, closeNewRow, isARowEditable, setIsARowEdit
         <tr aria-label={redirect ? redirect.code : 'new'}>
             <td className="col-2">
                 <div className=" d-flex flex-row">
-                    {!editabel && (
+                    {!isEditable && (
                         <TooltipIconButton
                             buttonSize="sm"
                             icon={faCopy}
@@ -126,8 +126,8 @@ const RedirectTableRow = ({ redirect, closeNewRow, isARowEditable, setIsARowEdit
                         />
                     )}
                     <FormControl
-                        plaintext={!editabel}
-                        disabled={!editabel}
+                        plaintext={!isEditable}
+                        disabled={!isEditable}
                         aria-label={t('redirects.code')}
                         {...form.register('code')} />
                 </div>
@@ -136,14 +136,14 @@ const RedirectTableRow = ({ redirect, closeNewRow, isARowEditable, setIsARowEdit
                 <FormControl
                     {...form.register('target')}
                     type="url"
-                    plaintext={!editabel}
-                    disabled={!editabel}
+                    plaintext={!isEditable}
+                    disabled={!isEditable}
                     aria-label={t('redirects.target')}
                     placeholder={t('redirects.targetPlaceholder')}
                 />
             </td>
             <td>
-                {(editabel || !redirect) ? (
+                {(isEditable || !redirect) ? (
                     <FormCheck
                         {...form.register('active')}
                         type="switch"
@@ -152,7 +152,7 @@ const RedirectTableRow = ({ redirect, closeNewRow, isARowEditable, setIsARowEdit
                     />
                 ) : redirect.active ? t('redirects.activeLabel.true') : t('redirects.activeLabel.false')}
             </td>
-            {editabel ? (
+            {isEditable ? (
                 <td className="col-1">
                     <form id={`form_redirect_${redirect?.id ?? 'new'}`} onSubmit={form.handleSubmit(handleSave)} noValidate autoComplete="off">
                         <TooltipIconButton
@@ -164,7 +164,7 @@ const RedirectTableRow = ({ redirect, closeNewRow, isARowEditable, setIsARowEdit
                             testId="btn_cancel"
                             onClick={() => {
                                 if (redirect) {
-                                    setEditabel(false);
+                                    setIsEditable(false);
                                     form.reset(redirect);
                                 } else {
                                     closeNewRow?.();
@@ -187,7 +187,7 @@ const RedirectTableRow = ({ redirect, closeNewRow, isARowEditable, setIsARowEdit
                     <TooltipActionButton
                         variantKey="edit"
                         onClick={() => {
-                            setEditabel(true);
+                            setIsEditable(true);
                             setIsARowEditable(true);
                         }}
                         disabled={isARowEditable}
