@@ -319,6 +319,12 @@ export function getStaticDataIds(index: number) {
             `${prefix}0dffb6-2ac1-48d9-880c-d310715e91a3`,
             `${prefix}83dacb-8aea-4c5e-9989-46854ca0a383`
         ],
+        redirectIds: [
+            `${prefix}1a2b3c-4d5e-6f7g-8h9i-0j1k2l3m4n5o`,
+            `${prefix}2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p`,
+            `${prefix}3c4d5e-6f7g-8h9i-0j1k-2l3m4n5o6p7q`,
+            `${prefix}4d5e6f-7g8h-9i0j-1k2l-3m4n5o6p7q8r`
+        ],
         dynamic: {
             firstInspection: {
                 id: `${prefix}cde146-9a10-4480-b665-720996118b91`,

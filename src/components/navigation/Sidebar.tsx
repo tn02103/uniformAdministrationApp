@@ -8,7 +8,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import dayjs from "@/lib/dayjs";
 import { useI18n } from "@/lib/locales/client";
 import { AuthItem } from "@/lib/storageTypes";
-import { faAddressCard, faAngleLeft, faAngleRight, faClipboardCheck, faGear, faPlus, faShirt, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faAddressCard, faAngleLeft, faAngleRight, faClipboardCheck, faGear, faLink, faPlus, faShirt, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Assosiation } from "@prisma/client";
 import Link from "next/link";
@@ -243,6 +243,14 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                 requiredRole={AuthRole.admin}
                                 isRoute={pathname.startsWith("/users")}
                                 testId="lnk_users" />
+                            <NavLink
+                                text={t('sidebar.links.redirects')}
+                                icon={faLink}
+                                href={"/app/redirects"}
+                                collapsed={collapsed}
+                                requiredRole={AuthRole.admin}
+                                isRoute={pathname.startsWith("/redirects")}
+                                testId="lnk_redirects" />
                         </ul>
                         <div className="w-100">
                             <hr className={`my-0 ${collapsed ? "mx-1" : "mx-3"}`} />

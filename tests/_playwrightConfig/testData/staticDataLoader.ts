@@ -71,6 +71,7 @@ class StaticDataGetter {
     readonly inspections: Inspection[];
     readonly cadetInspections: Prisma.CadetInspectionCreateManyInput[];
     readonly deregistrations: Prisma.DeregistrationCreateManyInput[];
+    readonly redirects: Prisma.RedirectCreateManyInput[];
 
     constructor(i: number, ids: StaticDataIdType) {
         this.index = i;
@@ -150,6 +151,7 @@ class StaticDataGetter {
         this.inspections = generator.inspection();
         this.cadetInspections = generator.cadetInspection();
         this.deregistrations = generator.deregistrations();
+        this.redirects = generator.redirects(i);
     }
 
     async users() {
@@ -279,6 +281,7 @@ class StaticDataCleanup {
     }
 
     async removeAssosiation() {
+        await this.deleteRedirects();
         await this.deleteDeficiency();
         await this.deleteDeficiencyType();
 
@@ -352,6 +355,9 @@ class StaticDataCleanup {
     private deleteAssosiation = () => prisma.assosiation.delete({
         where: { id: this.fk_assosiation }
     });
+    private deleteRedirects = () => prisma.redirect.deleteMany({
+        where: { assosiationId: this.fk_assosiation }
+    });
 }
 class StaticDataLoader {
     readonly data: StaticDataGetter;
@@ -384,6 +390,7 @@ class StaticDataLoader {
         await this.deficienciesUniform();
         await this.deficienciesCadet();
         await this.cadetInspections();
+        await this.redirects();
     }
     async assosiation() {
         await prisma.assosiation.create({
@@ -498,6 +505,11 @@ class StaticDataLoader {
     async deregistration() {
         await prisma.deregistration.createMany({
             data: this.data.deregistrations,
+        });
+    }
+    async redirects() {
+        await prisma.redirect.createMany({
+            data: this.data.redirects,
         });
     }
 }

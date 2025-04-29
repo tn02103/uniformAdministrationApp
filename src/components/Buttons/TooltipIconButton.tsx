@@ -133,8 +133,12 @@ const Variants: {
 export const TooltipActionButton = ({ onClick, disabled, variantKey, testId, buttonClass, iconClass, buttonSize }: SimplePropType) => {
     const t = useScopedI18n("common.actions");
     const variant = Variants[variantKey];
+    if (!variant) {
+        throw new Error(`Variant ${variantKey} not found`);
+    }
+
     const translation = t(variant.tooltipKey);
-    const isMobile = window?.innerWidth < 992;
+    const isMobile = false;
 
     return (
         <OverlayTrigger
