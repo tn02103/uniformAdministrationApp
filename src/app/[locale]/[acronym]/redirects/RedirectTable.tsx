@@ -110,7 +110,7 @@ const RedirectTableRow = ({ redirect, closeNewRow, isARowEditable, setIsARowEdit
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://uniformadmin.com";
 
     return (
-        <tr>
+        <tr aria-label={redirect ? redirect.code : 'new'}>
             <td className="col-2">
                 <div className=" d-flex flex-row">
                     {!editabel && (
@@ -120,6 +120,7 @@ const RedirectTableRow = ({ redirect, closeNewRow, isARowEditable, setIsARowEdit
                             variant="outline-secondary"
                             buttonClass="border-0 me-2"
                             tooltipText={t('redirects.sourceUrl')}
+                            aria-label={t('redirects.sourceUrl')}
                             testId="btn_copy"
                             onClick={() => { navigator.clipboard.writeText(`${baseUrl}/api/redirects?code=${redirect?.code}`) }}
                         />
@@ -127,7 +128,7 @@ const RedirectTableRow = ({ redirect, closeNewRow, isARowEditable, setIsARowEdit
                     <FormControl
                         plaintext={!editabel}
                         disabled={!editabel}
-                        className="w-auto"
+                        aria-label={t('redirects.code')}
                         {...form.register('code')} />
                 </div>
             </td>
@@ -137,6 +138,7 @@ const RedirectTableRow = ({ redirect, closeNewRow, isARowEditable, setIsARowEdit
                     type="url"
                     plaintext={!editabel}
                     disabled={!editabel}
+                    aria-label={t('redirects.target')}
                     placeholder={t('redirects.targetPlaceholder')}
                 />
             </td>
@@ -145,6 +147,7 @@ const RedirectTableRow = ({ redirect, closeNewRow, isARowEditable, setIsARowEdit
                     <FormCheck
                         {...form.register('active')}
                         type="switch"
+                        aria-label={t('redirects.active')}
                         label={form.watch('active') ? t('redirects.activeLabel.true') : t('redirects.activeLabel.false')}
                     />
                 ) : redirect.active ? t('redirects.activeLabel.true') : t('redirects.activeLabel.false')}
@@ -160,15 +163,20 @@ const RedirectTableRow = ({ redirect, closeNewRow, isARowEditable, setIsARowEdit
                             aria-label={t('common.actions.cancel')}
                             testId="btn_cancel"
                             onClick={() => {
-                                redirect ? setEditabel(false) : closeNewRow?.();
+                                if (redirect) {
+                                    setEditabel(false);
+                                    form.reset(redirect);
+                                } else {
+                                    closeNewRow?.();
+                                }
                                 setIsARowEditable(false);
                             }} />
                         <TooltipIconButton
                             icon={faCheck}
                             variant="outline-success"
                             buttonClass="border-0"
-                            tooltipText={t('common.actions.save')}
-                            aria-label={t('common.actions.save')}
+                            tooltipText={redirect ? t('common.actions.save') : t('common.actions.create')}
+                            aria-label={redirect ? t('common.actions.save') : t('common.actions.create')}
                             testId="btn_save"
                             buttonType="submit"
                             onClick={() => { }} />

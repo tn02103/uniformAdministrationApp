@@ -18,11 +18,12 @@ type PropType = {
     buttonClass?: string,
     disabled?: boolean,
     buttonType?: "button" | "submit";
+    "aria-label"?: string,
 }
 
 
 const TooltipIconButton = (props: PropType) => {
-    const { icon, variant, tooltipText, testId, onClick, buttonSize, buttonClass, disabled, iconClass, buttonType } = props;
+    const { icon, variant, tooltipText, testId, onClick, buttonSize, buttonClass, disabled, iconClass, buttonType, "aria-label": ariaLabel } = props;
     return (
         <OverlayTrigger
             delay={{ show: 1000, hide: 150 }}
@@ -40,6 +41,7 @@ const TooltipIconButton = (props: PropType) => {
                 onClick={onClick}
                 disabled={disabled}
                 size={buttonSize}
+                aria-label={ariaLabel}
             >
                 <FontAwesomeIcon
                     icon={icon}
