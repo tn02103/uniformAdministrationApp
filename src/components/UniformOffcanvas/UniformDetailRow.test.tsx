@@ -36,8 +36,9 @@ jest.mock('../globalDataProvider', () => ({
 
 describe('UniformDetailRow', () => {
     const { updateUniformItem } = require('@/dal/uniform/item/_index');
-    const defaultProps = {
+    const defaultProps: UniformDetailRowProps = {
         uniform: testUniform,
+        uniformType: typeList[0],
         editable: false,
         setEditable: jest.fn(),
         onSave: jest.fn(),
@@ -56,10 +57,10 @@ describe('UniformDetailRow', () => {
         const { container, rerender } = render(<UniformDetailRow {...defaultProps} />);
         rerender(<UniformDetailRow {...defaultProps} editable />);
 
-        const generationSelect = screen.getByRole('combobox', { name: 'common.uniform.generation.label' });
-        const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.size' });
-        const commentInput = screen.getByRole('textbox', { name: 'common.comment' });
-        const activeCheckbox = screen.getByRole('switch', { name: 'common.status' });
+        const generationSelect = screen.getByRole('combobox', { name: /generation/i });
+        const sizeSelect = screen.getByRole('combobox', { name: /size/i });
+        const commentInput = screen.getByRole('textbox', { name: /comment/i });
+        const activeCheckbox = screen.getByRole('switch', { name: /status/i });
 
         expect(generationSelect).toBeInTheDocument();
         expect(sizeSelect).toBeInTheDocument();
@@ -84,11 +85,11 @@ describe('UniformDetailRow', () => {
         const { rerender } = render(<UniformDetailRow {...defaultProps} />);
         rerender(<UniformDetailRow {...defaultProps} editable />);
 
-        const generationSelect = screen.getByRole('combobox', { name: 'common.uniform.generation.label' });
-        const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.size' });
-        const commentInput = screen.getByRole('textbox', { name: 'common.comment' });
-        const activeCheckbox = screen.getByRole('switch', { name: 'common.status' });
-        const saveButton = screen.getByRole('button', { name: 'common.actions.save' });
+        const generationSelect = screen.getByRole('combobox', { name: /generation/i });
+        const sizeSelect = screen.getByRole('combobox', { name: /size/i });
+        const commentInput = screen.getByRole('textbox', { name: /comment/i });
+        const activeCheckbox = screen.getByRole('switch', { name: /status/i });
+        const saveButton = screen.getByRole('button', { name: /save/i });
 
         await user.selectOptions(generationSelect, generationLists[0][0].id);
         await user.selectOptions(sizeSelect, sizeLists[0].uniformSizes[1].id);
@@ -124,11 +125,11 @@ describe('UniformDetailRow', () => {
         const { rerender } = render(<UniformDetailRow {...defaultProps} />);
         rerender(<UniformDetailRow {...defaultProps} editable />);
 
-        const generationSelect = screen.getByRole('combobox', { name: 'common.uniform.generation.label' });
-        const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.size' });
-        const commentInput = screen.getByRole('textbox', { name: 'common.comment' });
-        const activeCheckbox = screen.getByRole('switch', { name: 'common.status' });
-        const cancelButton = screen.getByRole('button', { name: 'common.actions.cancel' });
+        const generationSelect = screen.getByRole('combobox', { name: /generation/i });
+        const sizeSelect = screen.getByRole('combobox', { name: /size/i });
+        const commentInput = screen.getByRole('textbox', { name: /comment/i });
+        const activeCheckbox = screen.getByRole('switch', { name: /status/i });
+        const cancelButton = screen.getByRole('button', { name: /cancel/i });
 
         await user.selectOptions(generationSelect, generationLists[0][0].id);
         await user.selectOptions(sizeSelect, sizeLists[0].uniformSizes[1].id);
@@ -165,9 +166,10 @@ describe('UniformDetailRow', () => {
         expect(screen.getByText('Nonexistent Size')).toBeInTheDocument();
 
         rerender(<UniformDetailRow {...defaultProps} uniform={uniform} editable />);
-        const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.size' });
+        const sizeSelect = screen.getByRole('combobox', { name: /size/i });
         expect(sizeSelect).toBeInTheDocument();
-        expect(sizeSelect).toHaveValue('common.error.pleaseSelect');
+        expect(sizeSelect).toHaveValue('');
+        expect(sizeSelect).toHaveTextContent('common.error.pleaseSelect');
     });
 
     it('should show correct size options', async () => {
@@ -175,8 +177,8 @@ describe('UniformDetailRow', () => {
         const { rerender } = render(<UniformDetailRow {...defaultProps} />);
         rerender(<UniformDetailRow {...defaultProps} editable />);
 
-        const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.size' });
-        const generationSelect = screen.getByRole('combobox', { name: 'common.uniform.generation.label' });
+        const sizeSelect = screen.getByRole('combobox', { name: /size/i });
+        const generationSelect = screen.getByRole('combobox', { name: /generation/i });
         expect(sizeSelect).toBeInTheDocument();
 
         // initial state with sizelist
@@ -208,8 +210,8 @@ describe('UniformDetailRow', () => {
         const { rerender } = render(<UniformDetailRow {...defaultProps} />);
         rerender(<UniformDetailRow {...defaultProps} editable />);
 
-        const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.size' });
-        const generationSelect = screen.getByRole('combobox', { name: 'common.uniform.generation.label' });
+        const sizeSelect = screen.getByRole('combobox', { name: /size/i });
+        const generationSelect = screen.getByRole('combobox', { name: /generation/i });
 
         // initial state with sizelist
         expect(sizeSelect).toHaveValue(testUniform.size.id);
@@ -220,8 +222,24 @@ describe('UniformDetailRow', () => {
 
         // different generation without sizelist
         await user.selectOptions(generationSelect, generationLists[0][3].id);
-        expect(sizeSelect).toHaveValue('common.error.pleaseSelect');
+        expect(sizeSelect).toHaveValue('');
+        expect(sizeSelect).toHaveTextContent('common.error.pleaseSelect');
     });
+
+    it('should hide sizeField if !usingSizes', () => {
+        render(<UniformDetailRow {...defaultProps} uniformType={typeList[1]} />);
+
+        expect(screen.queryByLabelText('common.uniform.size')).not.toBeInTheDocument();
+        expect(screen.queryByText(defaultProps.uniform.size?.name!)).not.toBeInTheDocument();
+    });
+
+    it('should hide generationField if !usingGenerations', () => {
+        render(<UniformDetailRow {...defaultProps} uniformType={typeList[2]} />);
+
+        expect(screen.queryByLabelText('common.uniform.generation.label')).not.toBeInTheDocument();
+        expect(screen.queryByText(defaultProps.uniform.generation?.name!)).not.toBeInTheDocument();
+    });
+
     describe('handle update to uniform', () => {
         const newUniform = {
             ...testUniform,

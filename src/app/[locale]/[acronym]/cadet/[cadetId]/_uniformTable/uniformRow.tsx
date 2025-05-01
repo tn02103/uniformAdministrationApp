@@ -141,11 +141,9 @@ const UniformRow = ({ uniform, uniformType, replaceItem, openUniformId, setOpenU
                                     <Dropdown.Item onClick={() => withdraw(uniform)} data-testid={"btn_menu_withdraw"}>
                                         {t('common.actions.return')}
                                     </Dropdown.Item>
-                                    <Link prefetch={false} href={'/[locale]/app/uniform/[uniformId]'} as={`/${locale}/app/uniform/${uniform.id}`}>
-                                        <Dropdown.Item onClick={() => { setOpenUniformId(uniform.id) }} data-testid={"btn_menu_open"}>
-                                            {t('common.actions.open')}
-                                        </Dropdown.Item>
-                                    </Link>
+                                    <Dropdown.Item onClick={() => { setOpenUniformId(uniform.id) }} data-testid={"btn_menu_open"}>
+                                        {t('common.actions.open')}
+                                    </Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>
                         </div>
@@ -168,6 +166,7 @@ const UniformRow = ({ uniform, uniformType, replaceItem, openUniformId, setOpenU
             {openUniformId === uniform.id &&
                 <UniformOffcanvas
                     uniform={uniform}
+                    uniformType={uniformType}
                     onClose={() => setOpenUniformId(null)}
                     onSave={() => mutate()} />
             }

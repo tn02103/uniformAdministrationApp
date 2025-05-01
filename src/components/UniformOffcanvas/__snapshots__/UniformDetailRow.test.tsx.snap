@@ -4,13 +4,14 @@ exports[`UniformDetailRow should render correctly 1`] = `
 <div>
   <form
     autocomplete="off"
+    class="mb-4"
     novalidate=""
   >
     <div
-      class="mb-3 mt-2 row"
+      class="mb-3 mt-2 justify-content-between row"
     >
       <div
-        class="col-6"
+        class="col-sm-auto col-12"
       >
         <div
           class="mb-3"
@@ -21,16 +22,13 @@ exports[`UniformDetailRow should render correctly 1`] = `
           >
             common.status
           </label>
-          <div
-            class="form-check form-switch px-0 my-auto"
+          <p
+            aria-label="common.status"
+            aria-readonly="true"
+            class="mt-2"
           >
-            <p
-              aria-label="common.status"
-              aria-readonly="true"
-            >
-              common.uniform.active.true
-            </p>
-          </div>
+            common.uniform.active.true
+          </p>
           <div
             class="text-danger fs-7"
             data-testid="err_active"
@@ -39,7 +37,7 @@ exports[`UniformDetailRow should render correctly 1`] = `
         </div>
       </div>
       <div
-        class="col-6"
+        class="col-sm-auto col-7"
       >
         <div
           class="mb-3"
@@ -67,7 +65,8 @@ exports[`UniformDetailRow should render correctly 1`] = `
         </div>
       </div>
       <div
-        class="col-6"
+        class="p-0 col-sm-auto col-5"
+        style="min-width: 100px;"
       >
         <div
           class="mb-3"
@@ -97,9 +96,7 @@ exports[`UniformDetailRow should render correctly 1`] = `
       <div
         class="col-12"
       >
-        <div
-          class="mb-3"
-        >
+        <div>
           <label
             class="fw-bold m-0 form-label"
             for="uniform_input-comment"
@@ -112,7 +109,7 @@ exports[`UniformDetailRow should render correctly 1`] = `
             disabled=""
             id="uniform_input-comment"
             name="comment"
-            rows="3"
+            rows="2"
             width="auto"
           >
             Test comment
@@ -135,13 +132,14 @@ exports[`UniformDetailRow should render correctly when editable 1`] = `
 <div>
   <form
     autocomplete="off"
+    class="mb-4"
     novalidate=""
   >
     <div
-      class="mb-3 mt-2 row"
+      class="mb-3 mt-2 justify-content-between row"
     >
       <div
-        class="col-6"
+        class="col-sm-auto col-12"
       >
         <div
           class="mb-3"
@@ -157,9 +155,10 @@ exports[`UniformDetailRow should render correctly when editable 1`] = `
           >
             <input
               aria-checked="true"
+              aria-describedby="uniform_active_toggleText"
               aria-disabled="false"
               checked=""
-              class="form-check-input fw-bold mx-0 my-2"
+              class="form-check-input ms-0 my-2"
               id="uniform_toggle-active"
               name="active"
               role="switch"
@@ -168,6 +167,12 @@ exports[`UniformDetailRow should render correctly when editable 1`] = `
               type="checkbox"
               value="true"
             />
+            <label
+              class="form-check-label ms-2"
+              id="uniform_active_toggleText"
+            >
+              common.uniform.active.true
+            </label>
           </div>
           <div
             class="text-danger fs-7"
@@ -177,7 +182,7 @@ exports[`UniformDetailRow should render correctly when editable 1`] = `
         </div>
       </div>
       <div
-        class="col-6"
+        class="col-sm-auto col-7"
       >
         <div
           class="mb-3"
@@ -190,12 +195,13 @@ exports[`UniformDetailRow should render correctly when editable 1`] = `
           </label>
           <select
             aria-invalid="false"
-            class="form-select"
+            class="text-truncate form-select"
             id="uniform_select-generation"
             name="generation"
           >
             <option
               disabled=""
+              value=""
             >
               common.error.pleaseSelect
             </option>
@@ -230,7 +236,8 @@ exports[`UniformDetailRow should render correctly when editable 1`] = `
         </div>
       </div>
       <div
-        class="col-6"
+        class="p-0 col-sm-auto col-5"
+        style="min-width: 100px;"
       >
         <div
           class="mb-3"
@@ -243,12 +250,13 @@ exports[`UniformDetailRow should render correctly when editable 1`] = `
           </label>
           <select
             aria-invalid="false"
-            class="form-select"
+            class="text-truncate form-select"
             id="uniform_select-size"
             name="size"
           >
             <option
               disabled=""
+              value=""
             >
               common.error.pleaseSelect
             </option>
@@ -290,9 +298,7 @@ exports[`UniformDetailRow should render correctly when editable 1`] = `
       <div
         class="col-12"
       >
-        <div
-          class="mb-3"
-        >
+        <div>
           <label
             class="fw-bold m-0 form-label"
             for="uniform_input-comment"
@@ -304,7 +310,7 @@ exports[`UniformDetailRow should render correctly when editable 1`] = `
             class="form-control"
             id="uniform_input-comment"
             name="comment"
-            rows="3"
+            rows="2"
             width="auto"
           >
             Test comment

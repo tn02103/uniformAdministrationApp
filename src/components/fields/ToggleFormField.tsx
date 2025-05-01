@@ -32,7 +32,6 @@ export const ToggleFormField = <FormType extends FieldValues>({ label, name, dis
                             {...field}
                             id={`${formName}_toggle-${name}`}
                             type="checkbox"
-                            value={"some"}
                             role="switch"
                             className="form-check-input ms-0 my-2"
                             checked={field.value}

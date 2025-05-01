@@ -3,12 +3,13 @@ import { useUniformGenerationListByType, useUniformTypeList } from "@/dataFetche
 import { useI18n } from "@/lib/locales/client";
 import { SAFormHandler } from "@/lib/SAFormHandler";
 import { getUniformSizelist } from "@/lib/uniformHelper";
-import { Uniform } from "@/types/globalUniformTypes";
-import { UniformFormType } from "@/zod/uniform";
+import { useBreakpoint } from "@/lib/useBreakpoint";
+import { Uniform, UniformType } from "@/types/globalUniformTypes";
+import { uniformFormSchema, UniformFormType } from "@/zod/uniform";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useMemo } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { FormProvider, useForm } from "react-hook-form";
-import { NumberInputFormField } from "../fields/NumberInputFormField";
 import { SelectFormField } from "../fields/SelectFormField";
 import { TextareaFormField } from "../fields/TextareaFormField";
 import { ToggleFormField } from "../fields/ToggleFormField";
@@ -16,6 +17,7 @@ import { useGlobalData } from "../globalDataProvider";
 
 export type UniformDetailRowProps = {
     uniform: Uniform;
+    uniformType: UniformType;
     editable: boolean;
     setEditable: (editable: boolean) => void;
     onSave: (data: UniformFormType) => void;
@@ -24,19 +26,20 @@ const getUniformFormData = (uniform: Uniform): UniformFormType => {
     return {
         id: uniform.id,
         number: uniform.number,
-        generation: uniform.generation?.id || null,
-        size: uniform.size?.id || null,
+        generation: uniform.generation?.id || "",
+        size: uniform.size?.id || "",
         comment: uniform.comment || "",
         active: uniform.active || false,
     }
 }
 
-export const UniformDetailRow = ({ uniform, editable, setEditable, onSave }: UniformDetailRowProps) => {
+export const UniformDetailRow = ({ uniform, uniformType, editable, setEditable, onSave }: UniformDetailRowProps) => {
     // HOOKS
     const t = useI18n();
     const form = useForm<UniformFormType>({
         mode: 'onTouched',
         defaultValues: getUniformFormData(uniform),
+        resolver: zodResolver(uniformFormSchema),
     });
     const { reset, handleSubmit, watch, setValue, setError } = form;
 
@@ -46,14 +49,14 @@ export const UniformDetailRow = ({ uniform, editable, setEditable, onSave }: Uni
     const { typeList } = useUniformTypeList();
     const selectedGeneration = watch('generation');
     const selectedSizeId = watch('size');
+    const { match: isSizeXS } = useBreakpoint("xs", 'eq');
 
     // DATA PROCESSING
     const sizelist = useMemo(() => {
         if (!typeList) return null;
         return getUniformSizelist({
-            type: uniform.type.id,
+            type: uniformType,
             generationId: selectedGeneration,
-            typeList: typeList,
             sizelists: sizelists,
         });
     }, [uniform.type.id, selectedGeneration]);
@@ -68,6 +71,7 @@ export const UniformDetailRow = ({ uniform, editable, setEditable, onSave }: Uni
     const generationOptions = useMemo(() => {
         return generationList?.map(g => ({ value: g.id, label: g.name })) || [];
     }, [generationList]);
+
     // USE EFFECTS
     useEffect(() => {
         if (!editable) {
@@ -79,7 +83,7 @@ export const UniformDetailRow = ({ uniform, editable, setEditable, onSave }: Uni
         if (editable && selectedSizeId && sizeOptions) {
             const selectedSize = sizeOptions.find(s => s.value === selectedSizeId);
             if (!selectedSize) {
-                setValue("size", null);
+                setValue("size", "");
             }
         }
     }, [selectedSizeId, sizeOptions, setValue, editable]);
@@ -103,7 +107,7 @@ export const UniformDetailRow = ({ uniform, editable, setEditable, onSave }: Uni
         <FormProvider {...form}>
             <form noValidate autoComplete="off" onSubmit={handleSubmit(handleSave)} className="mb-4">
                 <Row className="mb-3 mt-2 justify-content-between">
-                    <Col xs={12} sm={"auto"}>
+                    <Col xs={(uniformType.usingGenerations && uniformType.usingSizes) ? 12 : 5} sm={"auto"}>
                         <ToggleFormField<UniformFormType>
                             label={t('common.status')}
                             name={"active"}
@@ -113,26 +117,30 @@ export const UniformDetailRow = ({ uniform, editable, setEditable, onSave }: Uni
                             toggleText={t(`common.uniform.active.${form.watch('active') ? "true" : "false"}`)}
                         />
                     </Col>
-                    <Col xs={7} sm={"auto"}>
-                        <SelectFormField<UniformFormType>
-                            name="generation"
-                            label={t('common.uniform.generation.label', { count: 1 })}
-                            formName="uniform"
-                            disabled={!editable}
-                            plaintext={!editable}
-                            options={generationOptions}
-                        />
-                    </Col>
-                    <Col xs={5} sm={"auto"} className="p-0" style={{minWidth: "100px"}}>
-                        <SelectFormField<UniformFormType>
-                            name="size"
-                            label={t('common.uniform.size')}
-                            formName="uniform"
-                            disabled={!editable}
-                            plaintext={!editable}
-                            options={sizeOptions}
-                        />
-                    </Col>
+                    {uniformType.usingGenerations &&
+                        <Col xs={7} sm={"auto"} style={{ minWidth: (uniformType.usingSizes || isSizeXS) ? undefined : "300px" }}>
+                            <SelectFormField<UniformFormType>
+                                name="generation"
+                                label={t('common.uniform.generation.label', { count: 1 })}
+                                formName="uniform"
+                                disabled={!editable}
+                                plaintext={!editable}
+                                options={generationOptions}
+                            />
+                        </Col>
+                    }
+                    {uniformType.usingSizes &&
+                        <Col xs={5} sm={"auto"} className="p-0" style={{ minWidth: isSizeXS ? undefined : uniformType.usingGenerations ? "100px" : "300px" }}>
+                            <SelectFormField<UniformFormType>
+                                name="size"
+                                label={t('common.uniform.size')}
+                                formName="uniform"
+                                disabled={!editable}
+                                plaintext={!editable}
+                                options={sizeOptions}
+                            />
+                        </Col>
+                    }
                     <Col xs={12}>
                         <TextareaFormField<UniformFormType>
                             name="comment"

@@ -128,7 +128,7 @@ test.describe(() => {
             await uniformListPage.txt_search_input.fill('1101');
             await uniformListPage.btn_search_submit.click();
 
-            await expect(uniformListPage.div_header_count).toContainText('1');// BUG: should be 1
+            await expect(uniformListPage.div_header_count).toContainText('1');
             await expect(uniformListPage.div_uitem_list).toHaveCount(1);
         });
     });

@@ -1,22 +1,23 @@
 import { deleteUniformItem } from "@/dal/uniform/item/_index";
 import { useI18n } from "@/lib/locales/client";
-import { Uniform } from "@/types/globalUniformTypes";
+import { Uniform, UniformType } from "@/types/globalUniformTypes";
 import { UniformFormType } from "@/zod/uniform";
 import { useState } from "react";
-import { Form, Offcanvas, Row } from "react-bootstrap";
+import { Offcanvas, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { LabelIconButton } from "../Buttons/LabelIconButton";
 import { useModal } from "../modals/modalProvider";
+import { UniformDeficiencyRow } from "./UniformDeficiencyRow";
 import { UniformDetailRow } from "./UniformDetailRow";
 import UniformHistoryRow from "./UniformHistoryRow";
-import { UniformDeficiencyRow } from "./UniformDeficiencyRow";
 
 export type UniformOffcanvasProps = {
     uniform: Uniform;
+    uniformType: UniformType;
     onClose: () => void;
     onSave: (data?: UniformFormType) => void;
 }
-export const UniformOffcanvas = ({ uniform, onClose, onSave }: UniformOffcanvasProps) => {
+export const UniformOffcanvas = ({ uniform, uniformType, onClose, onSave }: UniformOffcanvasProps) => {
     const t = useI18n();
     const [editable, setEditable] = useState(false);
     const modal = useModal();
@@ -79,6 +80,7 @@ export const UniformOffcanvas = ({ uniform, onClose, onSave }: UniformOffcanvasP
                 </Row>
                 <UniformDetailRow
                     uniform={uniform}
+                    uniformType={uniformType}
                     editable={editable}
                     setEditable={() => setEditable(!editable)}
                     onSave={onSave}
@@ -93,3 +95,14 @@ export const UniformOffcanvas = ({ uniform, onClose, onSave }: UniformOffcanvasP
         </Offcanvas>
     );
 }
+
+/*
+    LIST OF TODOS:
+    - [x] Connect to uniform-list-overview
+    - [x] DetailRow: size and generation shouldn't be visible if not beeing used by type
+    - [ ] DetailRow: Delete not working when issued
+    - [ ] DeficiencyRow: Show no Deficiency Message if no deficiencies are present
+    - [ ] DeficiencyRow: (BUG) LabelIconButtons are in two rows on small screens
+    - [ ] HistoryRow: Show no History Message if no history is present
+    - [ ] 
+*/

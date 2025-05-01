@@ -24,7 +24,6 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
     const { field, fieldState } = useController({
         name,
     });
-
     const error = useMemo(() => {
         if (fieldState.error?.message === "string.required") {
             return "pleaseSelect";
@@ -50,8 +49,9 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
                     aria-errormessage={fieldState.error ? `${formName}_err_${name}` : undefined}
                     aria-invalid={!!fieldState.error}
                     className="text-truncate"
+                    value={field.value || ""} // Set the value prop to manage the selected option
                 >
-                    <option value={undefined} selected={!field.value} disabled>{t('common.error.pleaseSelect')}</option>
+                    <option value="" disabled>{t('common.error.pleaseSelect')}</option>
                     {options.map((option, index) => (
                         <option key={index} value={option.value}>{option.label}</option>
                     ))}
