@@ -18,15 +18,15 @@ type PropType = {
     buttonClass?: string,
     disabled?: boolean,
     buttonType?: "button" | "submit";
+    "aria-label"?: string,
 }
 
 
 const TooltipIconButton = (props: PropType) => {
-    const { icon, variant, tooltipText, testId, onClick, buttonSize, buttonClass, disabled, iconClass, buttonType } = props;
+    const { icon, variant, tooltipText, testId, onClick, buttonSize, buttonClass, disabled, iconClass, buttonType, "aria-label": ariaLabel } = props;
     return (
         <OverlayTrigger
-            delay={{ show: 1000, hide: 150 }}
-            trigger={"focus"}
+            delay={{ show: 500, hide: 150 }}
             overlay={
                 <Tooltip className="d-none d-lg-inline">{tooltipText}</Tooltip>
             }
@@ -40,6 +40,7 @@ const TooltipIconButton = (props: PropType) => {
                 onClick={onClick}
                 disabled={disabled}
                 size={buttonSize}
+                aria-label={ariaLabel}
             >
                 <FontAwesomeIcon
                     icon={icon}
@@ -133,12 +134,16 @@ const Variants: {
 export const TooltipActionButton = ({ onClick, disabled, variantKey, testId, buttonClass, iconClass, buttonSize }: SimplePropType) => {
     const t = useScopedI18n("common.actions");
     const variant = Variants[variantKey];
+    if (!variant) {
+        throw new Error(`Variant ${variantKey} not found`);
+    }
+
     const translation = t(variant.tooltipKey);
-    const isMobile = window?.innerWidth < 992;
+    const isMobile = false;
 
     return (
         <OverlayTrigger
-            delay={{ show: 1000, hide: 150 }}
+            delay={{ show: 500, hide: 150 }}
             overlay={
                 <Tooltip className="d-none d-lg-inline">{translation}</Tooltip>
             }

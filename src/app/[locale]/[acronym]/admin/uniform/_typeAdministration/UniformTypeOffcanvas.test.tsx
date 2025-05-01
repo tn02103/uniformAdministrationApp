@@ -3,7 +3,6 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { testTypes } from "./testTypes";
 import { UniformTypeOffcanvas } from "./UniformTypeOffcanvas";
-import exp from "constants";
 
 const sizeListIds = [
     'e667d674-7df8-436b-a2b8-77b06e063d36',

@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getRedirects should return redirects successfully 1`] = `
+[
+  {
+    "active": true,
+    "assosiationId": "00bf2ef8-3894-47d4-ada4-e8b5cda5095c",
+    "code": "homepage0",
+    "target": "https://example.com/homepage",
+  },
+  {
+    "active": true,
+    "assosiationId": "00bf2ef8-3894-47d4-ada4-e8b5cda5095c",
+    "code": "ausbildung0",
+    "target": "https://example.com/ausbildung",
+  },
+  {
+    "active": true,
+    "assosiationId": "00bf2ef8-3894-47d4-ada4-e8b5cda5095c",
+    "code": "kontakt0",
+    "target": "https://example.com/kontakt",
+  },
+  {
+    "active": false,
+    "assosiationId": "00bf2ef8-3894-47d4-ada4-e8b5cda5095c",
+    "code": "impressum0",
+    "target": "https://example.com/impressum",
+  },
+]
+`;
