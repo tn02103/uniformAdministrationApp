@@ -14,6 +14,9 @@ export const getRedirectsByAssosiation = async () => genericSANoDataValidator(
         where: {
             assosiationId: assosiation,
         },
+        orderBy: {
+            code: "asc",
+        }
     });
 });
 
