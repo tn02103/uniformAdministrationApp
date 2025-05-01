@@ -26,8 +26,7 @@ const TooltipIconButton = (props: PropType) => {
     const { icon, variant, tooltipText, testId, onClick, buttonSize, buttonClass, disabled, iconClass, buttonType, "aria-label": ariaLabel } = props;
     return (
         <OverlayTrigger
-            delay={{ show: 1000, hide: 150 }}
-            trigger={"focus"}
+            delay={{ show: 500, hide: 150 }}
             overlay={
                 <Tooltip className="d-none d-lg-inline">{tooltipText}</Tooltip>
             }
@@ -144,7 +143,7 @@ export const TooltipActionButton = ({ onClick, disabled, variantKey, testId, but
 
     return (
         <OverlayTrigger
-            delay={{ show: 1000, hide: 150 }}
+            delay={{ show: 500, hide: 150 }}
             overlay={
                 <Tooltip className="d-none d-lg-inline">{translation}</Tooltip>
             }

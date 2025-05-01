@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`RedirectTable allows adding a new redirect row 1`] = `
+exports[`RedirectTable creating a redirect allows adding a new redirect 1`] = `
 <div>
   <table
     class="table"
@@ -359,7 +359,7 @@ exports[`RedirectTable allows adding a new redirect row 1`] = `
 </div>
 `;
 
-exports[`RedirectTable allows editing a redirect row 1`] = `
+exports[`RedirectTable editing a redirect allows editing a redirect row 1`] = `
 <div>
   <table
     class="table"

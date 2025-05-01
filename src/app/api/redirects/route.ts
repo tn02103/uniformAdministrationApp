@@ -19,5 +19,10 @@ export async function GET(request: Request) {
             return NextResponse.redirect(redirect.target, 302);
         }
     }
-    return NextResponse.redirect("https://www.verkehrskadetten-mettmann.de/index.php", 302);
+    if (process.env.DEFAULT_REDIRECT_URL) {
+        return NextResponse.redirect(process.env.DEFAULT_REDIRECT_URL, 302);
+    }
+    return NextResponse.json({
+        message: "No redirect found"
+    }, { status: 404 });
 }

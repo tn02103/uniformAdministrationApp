@@ -280,6 +280,11 @@ class StaticDataCleanup {
         await this.loader.materialIssued();
     }
 
+    async redirects() {
+        await this.deleteRedirects();
+        await this.loader.redirects();
+    }
+
     async removeAssosiation() {
         await this.deleteRedirects();
         await this.deleteDeficiency();

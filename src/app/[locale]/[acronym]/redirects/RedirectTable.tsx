@@ -107,8 +107,6 @@ const RedirectTableRow = ({ redirect, closeNewRow, isARowEditable, setIsARowEdit
         });
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://uniformadmin.com";
-
     return (
         <tr aria-label={redirect ? redirect.code : 'new'}>
             <td className="col-2">
@@ -122,7 +120,7 @@ const RedirectTableRow = ({ redirect, closeNewRow, isARowEditable, setIsARowEdit
                             tooltipText={t('redirects.sourceUrl')}
                             aria-label={t('redirects.sourceUrl')}
                             testId="btn_copy"
-                            onClick={() => { navigator.clipboard.writeText(`${baseUrl}/api/redirects?code=${redirect?.code}`) }}
+                            onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/api/redirects?code=${redirect?.code}`) }}
                         />
                     )}
                     <FormControl

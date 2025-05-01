@@ -320,10 +320,10 @@ export function getStaticDataIds(index: number) {
             `${prefix}83dacb-8aea-4c5e-9989-46854ca0a383`
         ],
         redirectIds: [
-            `${prefix}1a2b3c-4d5e-6f7g-8h9i-0j1k2l3m4n5o`,
-            `${prefix}2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p`,
-            `${prefix}3c4d5e-6f7g-8h9i-0j1k-2l3m4n5o6p7q`,
-            `${prefix}4d5e6f-7g8h-9i0j-1k2l-3m4n5o6p7q8r`
+            `${prefix}724b8f-0020-467e-b86e-9e21940f72e1`,
+            `${prefix}d65d8b-22c9-42be-ae37-d35be31e7d63`,
+            `${prefix}f6c2a0-93de-45dd-aa20-eb882f574283`,
+            `${prefix}d1f277-408a-4408-834f-7941624517d3`
         ],
         dynamic: {
             firstInspection: {
