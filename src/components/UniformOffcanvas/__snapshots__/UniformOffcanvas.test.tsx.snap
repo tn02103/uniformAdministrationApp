@@ -218,10 +218,10 @@ exports[`UniformOffcanvas should render correctly 1`] = `
       class="mb-0"
     />
     <div
-      class="m-0 mb-2 row"
+      class="m-0 mb-2 justify-content-between row"
     >
       <div
-        class="col"
+        class="col-sm-auto col-5"
       >
         <button
           class="mb-2 border-0 btn btn-outline-success"
@@ -247,7 +247,7 @@ exports[`UniformOffcanvas should render correctly 1`] = `
         </button>
       </div>
       <div
-        class="text-end m-2 col-auto"
+        class="text-start m-2 col-sm-auto col-6"
       >
         <div
           class="form-check form-switch"

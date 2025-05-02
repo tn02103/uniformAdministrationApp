@@ -311,6 +311,7 @@ export default {
             "label.user.created": "Erstellt von:",
             "label.user.resolved": "Behoben von:",
             "label.user.updated": "Zuletzt aktualisiert von:",
+            "noDeficiencies": "Keine Mängel vorhanden",
         },
         history: {
             "header": "Historie",
@@ -318,6 +319,7 @@ export default {
             "label.dateReturned": "Rückgabe",
             "label.cadet": "Person",
             "title.deleted": "Person gelöscht",
+            "noEntries": "Keine Einträge vorhanden",
         }
     },
     createUniform: {

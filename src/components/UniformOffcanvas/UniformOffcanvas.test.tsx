@@ -1,6 +1,6 @@
 import "./UniformOffcanvasJestHelper";
 
-import { getByText, render, screen } from "@testing-library/react";
+import { getAllByRole, getByLabelText, getByText, queryAllByRole, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { typeList } from "../../../tests/_jestConfig/staticMockData";
 import { UniformOffcanvas } from "./UniformOffcanvas";
@@ -96,6 +96,54 @@ describe('UniformOffcanvas', () => {
         expect(queryByRole('button', { name: /save/i })).toBeNull();
         expect(queryByRole('button', { name: /cancel/i })).toBeNull();
         expect(getByRole('textbox', { name: /comment/i })).toHaveAttribute('disabled');
+    });
+
+    describe('history', () => {
+        it('should render history', () => {
+            render(
+                <UniformOffcanvas
+                    uniform={mockUniform}
+                    uniformType={typeList[0]}
+                    onClose={jest.fn()}
+                    onSave={jest.fn()}
+                />
+            );
+
+            const list = screen.getByRole('list', { name: 'uniformOffcanvas.history.header' });
+            expect(getAllByRole(list, 'listitem')).toHaveLength(2);
+
+            const firstitem = getAllByRole(list, 'listitem')[0];
+            expect(getByLabelText(firstitem, 'dateIssued')).toHaveTextContent('01.10.2023');
+            expect(getByLabelText(firstitem, 'dateReturned')).toHaveTextContent('');
+            expect(getByLabelText(firstitem, 'person')).toHaveTextContent('John Doe');
+            expect(getByLabelText(firstitem, 'person')).not.toHaveClass('text-decoration-line-through');
+
+            const secondItem = getAllByRole(list, 'listitem')[1];
+            expect(getByLabelText(secondItem, 'dateIssued')).toHaveTextContent('02.10.2023');
+            expect(getByLabelText(secondItem, 'dateReturned')).toHaveTextContent('03.10.2023');
+            expect(getByLabelText(secondItem, 'person')).toHaveTextContent('Jane Smith');
+            expect(getByLabelText(secondItem, 'person')).toHaveClass('text-decoration-line-through');
+        });
+
+        it('should render empty history', () => {
+            const { useUniformItemHistory } = jest.requireMock('@/dataFetcher/uniform');
+            useUniformItemHistory.mockReturnValue({
+                history: [],
+            });
+
+            render(
+                <UniformOffcanvas
+                    uniform={mockUniform}
+                    uniformType={typeList[0]}
+                    onClose={jest.fn()}
+                    onSave={jest.fn()}
+                />
+            );
+
+            const list = screen.getByRole('list', { name: 'uniformOffcanvas.history.header' });
+            expect(queryAllByRole(list, 'listitem')).toHaveLength(0);
+            expect(getByText(list, 'uniformOffcanvas.history.noEntries')).toBeInTheDocument();
+        });
     });
 
     describe('dal-methods', () => {

@@ -55,6 +55,19 @@ describe('UniformDeficiencyRow', () => {
         expect(screen.getAllByRole('listitem')).toHaveLength(2);
     });
 
+    it('shows empty state when no deficiencies', () => {
+        const { useDeficienciesByUniformId } = jest.requireMock('@/dataFetcher/deficiency');
+        useDeficienciesByUniformId.mockReturnValueOnce({ deficiencies: [] });
+
+        render(
+            <UniformDeficiencyRow
+                uniformId={mockUniform.id}
+            />
+        );
+
+        expect(screen.getByText(/noDeficiencies/i)).toBeInTheDocument();
+    });
+
     describe('expand/collapse', () => {
         it('should expand/collapse the card - unresolved', async () => {
             const user = userEvent.setup();
@@ -220,7 +233,6 @@ describe('UniformDeficiencyRow', () => {
                 }
             });
             expect(mutate).toHaveBeenCalledTimes(1);
-            console.log(mutate.mock.calls[0][0]);
             expect(mutate.mock.calls[0][0](`uniform.${mockUniform.id}.deficiencies.true`)).toBeTruthy();
             expect(mutate.mock.calls[0][0](`uniform.${mockUniform.id}.deficiencies.false`)).toBeTruthy();
             expect(mutate.mock.calls[0][0](`uniform.${mockUniform.id}.somethingElse`)).toBeFalsy();

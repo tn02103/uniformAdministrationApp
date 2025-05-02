@@ -23,15 +23,15 @@ export const UniformDeficiencyRow = ({ uniformId }: { uniformId: string }) => {
 
     return (
         <>
-            <Row className="m-0 mb-2">
-                <Col>
+            <Row className="m-0 mb-2 justify-content-between">
+                <Col xs="5" sm="auto">
                     <LabelIconButton
                         variantKey="create"
                         className="mb-2 border-0"
                         onClick={() => setShowCreateCard(true)}
                     />
                 </Col>
-                <Col xs="auto" className="text-end m-2">
+                <Col xs="6" sm="auto" className="text-start m-2">
                     <Form.Switch
                         name="showResolved"
                         aria-label={t('uniformOffcanvas.deficiency.includeResolved')}
@@ -57,6 +57,11 @@ export const UniformDeficiencyRow = ({ uniformId }: { uniformId: string }) => {
                         uniformId={uniformId}
                     />
                 ))}
+                {(!deficiencies || deficiencies?.length === 0) && (
+                    <Col className="text-center text-secondary">
+                        {t('uniformOffcanvas.deficiency.noDeficiencies')}
+                    </Col>
+                )}
             </Row>
         </>
     )
@@ -226,7 +231,7 @@ const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: Defici
                     )}
                     {deficiency &&
                         <ExpandableArea>
-                            <Col xs={6}>
+                            <Col xs={6} className="mt-2">
                                 <div className="fw-bold" id={`def-${deficiency.id}-dateCreated`}>
                                     {t('uniformOffcanvas.deficiency.label.date.created')}
                                 </div>
@@ -234,14 +239,14 @@ const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: Defici
                                     {formatDate(deficiency.dateCreated!, "dd.MM.yyyy")}
                                 </div>
                             </Col>
-                            <Col xs={6} className="mb-2">
+                            <Col xs={6} className="mt-2">
                                 <div className="fw-bold" id={`def-${deficiency.id}-userCreated`}>
                                     {t('uniformOffcanvas.deficiency.label.user.created')}
                                 </div>
                                 <div aria-labelledby={`def-${deficiency.id}-userCreated`}>
                                     {deficiency.userCreated}</div>
                             </Col>
-                            <Col xs={6}>
+                            <Col xs={6} className="mt-2">
                                 <div className="fw-bold" id={`def-${deficiency.id}-dateUpdated`}>
                                     {t('uniformOffcanvas.deficiency.label.date.updated')}
                                 </div>
@@ -249,7 +254,7 @@ const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: Defici
                                     {deficiency.dateUpdated && formatDate(deficiency.dateUpdated, "dd.MM.yyyy")}
                                 </div>
                             </Col>
-                            <Col xs={6} className="mb-2">
+                            <Col xs={6} className="mt-2">
                                 <div className="fw-bold" id={`def-${deficiency.id}-userUpdated`}>
                                     {t('uniformOffcanvas.deficiency.label.user.updated')}
                                 </div>
@@ -259,7 +264,7 @@ const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: Defici
                             </Col>
                             {deficiency.dateResolved && (
                                 <>
-                                    <Col xs={6}>
+                                    <Col xs={6} className="mt-2">
                                         <div className="fw-bold" id={`def-${deficiency.id}-dateResolved`}>
                                             {t('uniformOffcanvas.deficiency.label.date.resolved')}
                                         </div>
@@ -267,7 +272,7 @@ const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: Defici
                                             {formatDate(deficiency.dateResolved, "dd.MM.yyyy")}
                                         </div>
                                     </Col>
-                                    <Col xs={6} className="mb-2">
+                                    <Col xs={6} className="mt-2">
                                         <div className="fw-bold" id={`def-${deficiency.id}-userResolved`}>
                                             {t('uniformOffcanvas.deficiency.label.user.resolved')}
                                         </div>
