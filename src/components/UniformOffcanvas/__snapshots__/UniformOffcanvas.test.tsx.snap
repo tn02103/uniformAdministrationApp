@@ -475,7 +475,9 @@ exports[`UniformOffcanvas should render correctly 1`] = `
       class="row"
     >
       <div
+        aria-label="uniformOffcanvas.history.header"
         class="m-0 p-4 col"
+        role="list"
       >
         <div
           class="bg-light p-2 row"
@@ -501,16 +503,20 @@ exports[`UniformOffcanvas should render correctly 1`] = `
         </div>
         <div
           class="row"
+          role="listitem"
         >
           <div
+            aria-label="dateIssued"
             class="col"
           >
             01.10.2023
           </div>
           <div
+            aria-label="dateReturned"
             class="col"
           />
           <div
+            aria-label="person"
             class="col"
             title=""
           >
@@ -521,18 +527,22 @@ exports[`UniformOffcanvas should render correctly 1`] = `
         </div>
         <div
           class="row"
+          role="listitem"
         >
           <div
+            aria-label="dateIssued"
             class="col"
           >
             02.10.2023
           </div>
           <div
+            aria-label="dateReturned"
             class="col"
           >
             03.10.2023
           </div>
           <div
+            aria-label="person"
             class="text-decoration-line-through text-danger col"
             title="uniformOffcanvas.history.title.deleted"
           >
