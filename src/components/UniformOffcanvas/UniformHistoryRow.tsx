@@ -1,28 +1,25 @@
-import { getUniformItemHistory } from "@/dal/uniform/item/_index";
+import { useUniformItemHistory } from "@/dataFetcher/uniform";
+import { useI18n } from "@/lib/locales/client";
 import { format } from "date-fns";
 import { Col, Row } from "react-bootstrap";
-import useSWR from "swr";
 
 type UniformHistoryRowProps = {
     uniformId: string;
 }
 
-export default function UniformHistoryRow({ uniformId }: UniformHistoryRowProps) {
+export function UniformHistoryRow({ uniformId }: UniformHistoryRowProps) {
+    const t = useI18n();
+    const { history } = useUniformItemHistory(uniformId);
 
-    const { data: uniformHistory } = useSWR(
-        `uniform.${uniformId}.history`,
-        () => getUniformItemHistory(uniformId)
-    );
-    
     return (
         <Row>
             <Col className="m-0 p-4">
                 <Row className="bg-light p-2">
-                    <Col xs={4} className="fw-bold text-truncate">Ausgabe:</Col>
-                    <Col xs={4} className="fw-bold text-truncate">Rückgabe:</Col>
-                    <Col xs={4} className="fw-bold text-truncate">Person:</Col>
+                    <Col xs={4} className="fw-bold text-truncate">{t('uniformOffcanvas.history.label.dateIssued')}:</Col>
+                    <Col xs={4} className="fw-bold text-truncate">{t('uniformOffcanvas.history.label.dateReturned')}:</Col>
+                    <Col xs={4} className="fw-bold text-truncate">{t('uniformOffcanvas.history.label.cadet')}:</Col>
                 </Row>
-                {uniformHistory?.map((issueEntry, index) => (
+                {history?.map((issueEntry, index) => (
                     <Row key={index}>
                         <Col>{format(issueEntry.dateIssued, "dd.MM.yyyy")}</Col>
                         <Col>
@@ -30,7 +27,7 @@ export default function UniformHistoryRow({ uniformId }: UniformHistoryRowProps)
                         </Col>
                         <Col
                             className={issueEntry.cadet.recdelete ? "text-decoration-line-through text-danger" : ""}
-                            title={issueEntry.cadet.recdelete ? "Person gelöscht" : ""}
+                            title={issueEntry.cadet.recdelete ? t('uniformOffcanvas.history.title.deleted') : ""}
                         >
                             {issueEntry.cadet.firstname} {issueEntry.cadet.lastname}
                         </Col>

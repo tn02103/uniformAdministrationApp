@@ -1,5 +1,3 @@
-import { ExpandableArea } from "@/components/ExpandableArea/ExpandableArea";
-
 export default {
     common: {
         of: "von",
@@ -300,6 +298,7 @@ export default {
             "failed": "Das Uniformteil konnte nicht gelöscht werden",
         },
         deficiency: {
+            header: "Mängel",
             includeResolved: "Behobene Mängel anzeigen",
             cardLabel: "Magnel {index}",
             createCardLabel: "Neuen Mangel anlegen",
@@ -312,6 +311,13 @@ export default {
             "label.user.created": "Erstellt von:",
             "label.user.resolved": "Behoben von:",
             "label.user.updated": "Zuletzt aktualisiert von:",
+        },
+        history: {
+            "header": "Historie",
+            "label.dateIssued": "Ausgabe",
+            "label.dateReturned": "Rückgabe",
+            "label.cadet": "Person",
+            "title.deleted": "Person gelöscht",
         }
     },
     createUniform: {

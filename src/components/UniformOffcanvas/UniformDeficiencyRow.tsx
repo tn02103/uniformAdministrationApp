@@ -227,30 +227,53 @@ const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: Defici
                     {deficiency &&
                         <ExpandableArea>
                             <Col xs={6}>
-                                <div className="fw-bold">{t('uniformOffcanvas.deficiency.label.date.created')}</div>
-                                {formatDate(deficiency.dateCreated!, "dd.MM.yyyy")}
+                                <div className="fw-bold" id={`def-${deficiency.id}-dateCreated`}>
+                                    {t('uniformOffcanvas.deficiency.label.date.created')}
+                                </div>
+                                <div aria-labelledby={`def-${deficiency.id}-dateCreated`}>
+                                    {formatDate(deficiency.dateCreated!, "dd.MM.yyyy")}
+                                </div>
                             </Col>
                             <Col xs={6} className="mb-2">
-                                <div className="fw-bold">{t('uniformOffcanvas.deficiency.label.user.created')}</div>
-                                <div>{deficiency.userCreated}</div>
+                                <div className="fw-bold" id={`def-${deficiency.id}-userCreated`}>
+                                    {t('uniformOffcanvas.deficiency.label.user.created')}
+                                </div>
+                                <div aria-labelledby={`def-${deficiency.id}-userCreated`}>
+                                    {deficiency.userCreated}</div>
                             </Col>
                             <Col xs={6}>
-                                <div className="fw-bold">{t('uniformOffcanvas.deficiency.label.date.updated')}</div>
-                                {deficiency.dateUpdated && formatDate(deficiency.dateUpdated, "dd.MM.yyyy")}
+                                <div className="fw-bold" id={`def-${deficiency.id}-dateUpdated`}>
+                                    {t('uniformOffcanvas.deficiency.label.date.updated')}
+                                </div>
+                                <div aria-labelledby={`def-${deficiency.id}-dateUpdated`}>
+                                    {deficiency.dateUpdated && formatDate(deficiency.dateUpdated, "dd.MM.yyyy")}
+                                </div>
                             </Col>
                             <Col xs={6} className="mb-2">
-                                <div className="fw-bold">{t('uniformOffcanvas.deficiency.label.user.updated')}</div>
-                                <div>{deficiency.userUpdated}</div>
+                                <div className="fw-bold" id={`def-${deficiency.id}-userUpdated`}>
+                                    {t('uniformOffcanvas.deficiency.label.user.updated')}
+                                </div>
+                                <div aria-labelledby={`def-${deficiency.id}-userUpdated`}>
+                                    {deficiency.userUpdated}
+                                </div>
                             </Col>
                             {deficiency.dateResolved && (
                                 <>
                                     <Col xs={6}>
-                                        <div className="fw-bold">{t('uniformOffcanvas.deficiency.label.date.resolved')}</div>
-                                        {formatDate(deficiency.dateResolved, "dd.MM.yyyy")}
+                                        <div className="fw-bold" id={`def-${deficiency.id}-dateResolved`}>
+                                            {t('uniformOffcanvas.deficiency.label.date.resolved')}
+                                        </div>
+                                        <div aria-labelledby={`def-${deficiency.id}-dateResolved`}>
+                                            {formatDate(deficiency.dateResolved, "dd.MM.yyyy")}
+                                        </div>
                                     </Col>
                                     <Col xs={6} className="mb-2">
-                                        <div className="fw-bold">{t('uniformOffcanvas.deficiency.label.user.resolved')}</div>
-                                        <div>{deficiency.userResolved}</div>
+                                        <div className="fw-bold" id={`def-${deficiency.id}-userResolved`}>
+                                            {t('uniformOffcanvas.deficiency.label.user.resolved')}
+                                        </div>
+                                        <div aria-labelledby={`def-${deficiency.id}-userResolved`}>
+                                            {deficiency.userResolved}
+                                        </div>
                                     </Col>
                                 </>
                             )}

@@ -1,38 +1,10 @@
-import { render } from "@testing-library/react";
+import "./UniformOffcanvasJestHelper";
+
+import { getByText, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { generationLists, sizeLists, typeList } from "../../../tests/_jestConfig/staticMockData";
+import { typeList } from "../../../tests/_jestConfig/staticMockData";
 import { UniformOffcanvas } from "./UniformOffcanvas";
-
-const testUniform = {
-    id: "c227ac23-93d4-42b5-be2e-956ea35c2db9",
-    number: 2501,
-    generation: generationLists[0][1],
-    size: sizeLists[0].uniformSizes[0],
-    comment: "Test comment",
-    active: true,
-    type: {
-        id: typeList[0].id,
-        name: typeList[0].name,
-    },
-}
-
-jest.mock('@/dataFetcher/uniformAdmin', () => ({
-    useUniformGenerationListByType: jest.fn(() => ({
-        generationList: generationLists[0]
-    })),
-    useUniformTypeList: jest.fn(() => ({
-        typeList
-    })),
-}));
-jest.mock('@/dal/uniform/item/_index', () => ({
-    updateUniformItem: jest.fn(() => Promise.resolve('Saved item')),
-    deleteUniformItem: jest.fn(() => Promise.resolve('Deleted item')),
-}));
-jest.mock('../globalDataProvider', () => ({
-    useGlobalData: jest.fn(() => ({
-        sizelists: sizeLists,
-    })),
-}));
+import { mockUniform } from "./UniformOffcanvasJestHelper";
 
 describe('UniformOffcanvas', () => {
     const { useModal } = jest.requireMock('../modals/modalProvider');
@@ -45,22 +17,26 @@ describe('UniformOffcanvas', () => {
     });
 
     it('should render correctly', () => {
-        const { container } = render(
-            <UniformOffcanvas
-                uniform={testUniform}
-                onClose={jest.fn()}
-                onSave={jest.fn()}
-            />
+        render(
+            <div>
+                <UniformOffcanvas
+                    uniform={mockUniform}
+                    uniformType={typeList[0]}
+                    onClose={jest.fn()}
+                    onSave={jest.fn()}
+                />
+            </div>
         );
 
-        expect(container).toMatchSnapshot();
+        expect(screen.getByRole('dialog')).toMatchSnapshot();
     });
 
     it('should call onClose when close button is clicked', () => {
         const onCloseMock = jest.fn();
         const { getByLabelText } = render(
             <UniformOffcanvas
-                uniform={testUniform}
+                uniform={mockUniform}
+                uniformType={typeList[0]}
                 onClose={onCloseMock}
                 onSave={jest.fn()}
             />
@@ -76,50 +52,51 @@ describe('UniformOffcanvas', () => {
         const user = userEvent.setup();
         const { getByRole } = render(
             <UniformOffcanvas
-                uniform={testUniform}
+                uniform={mockUniform}
+                uniformType={typeList[0]}
                 onClose={jest.fn()}
                 onSave={jest.fn()}
             />
         );
 
-        const editButton = getByRole('button', { name: 'common.actions.edit' });
+        const editButton = getByRole('button', { name: /edit/i });
         await user.click(editButton);
 
         expect(editButton).toBeDisabled();
-        expect(getByRole('button', { name: 'common.actions.delete' })).toBeDisabled();
-        expect(getByRole('button', { name: 'common.actions.save' })).toBeEnabled();
-        expect(getByRole('button', { name: 'common.actions.cancel' })).toBeEnabled();
+        expect(getByRole('button', { name: /delete/i })).toBeDisabled();
+        expect(getByRole('button', { name: /save/i })).toBeEnabled();
+        expect(getByRole('button', { name: /cancel/i })).toBeEnabled();
 
         expect(getByRole('switch', { name: 'common.status' })).toBeEnabled();
         expect(getByRole('combobox', { name: 'common.uniform.size' })).toBeEnabled();
         expect(getByRole('combobox', { name: 'common.uniform.generation.label' })).toBeEnabled();
-        expect(getByRole('textbox', { name: 'common.comment' })).toBeEnabled();
+        expect(getByRole('textbox', { name: /comment/i })).toBeEnabled();
     });
 
     it('should reset editable if cancel button is clicked', async () => {
         const user = userEvent.setup();
         const { getByRole, queryByRole } = render(
             <UniformOffcanvas
-                uniform={testUniform}
+                uniform={mockUniform}
+                uniformType={typeList[0]}
                 onClose={jest.fn()}
                 onSave={jest.fn()}
             />
         );
 
-        const editButton = getByRole('button', { name: 'common.actions.edit' });
+        const editButton = getByRole('button', { name: /edit/i });
         await user.click(editButton);
 
-        const cancelButton = getByRole('button', { name: 'common.actions.cancel' });
+        const cancelButton = getByRole('button', { name: /cancel/i });
         await user.click(cancelButton);
 
-        expect(getByRole('button', { name: 'common.actions.edit' })).toBeEnabled();
-        expect(getByRole('button', { name: 'common.actions.delete' })).toBeEnabled();
+        expect(getByRole('button', { name: /edit/i })).toBeEnabled();
+        expect(getByRole('button', { name: /delete/i })).toBeEnabled();
 
-        expect(queryByRole('button', { name: 'common.actions.save' })).toBeNull();
-        expect(queryByRole('button', { name: 'common.actions.cancel' })).toBeNull();
-        expect(getByRole('textbox', { name: 'common.comment' })).toHaveAttribute('disabled');
+        expect(queryByRole('button', { name: /save/i })).toBeNull();
+        expect(queryByRole('button', { name: /cancel/i })).toBeNull();
+        expect(getByRole('textbox', { name: /comment/i })).toHaveAttribute('disabled');
     });
-
 
     describe('dal-methods', () => {
         describe('updateUniformItem', () => {
@@ -128,33 +105,34 @@ describe('UniformOffcanvas', () => {
                 const onSaveMock = jest.fn();
                 const { getByRole } = render(
                     <UniformOffcanvas
-                        uniform={testUniform}
+                        uniform={mockUniform}
+                        uniformType={typeList[0]}
                         onClose={jest.fn()}
                         onSave={onSaveMock}
                     />
                 );
 
-                const editButton = getByRole('button', { name: 'common.actions.edit' });
+                const editButton = getByRole('button', { name: /edit/i });
                 await user.click(editButton);
 
-                const saveButton = getByRole('button', { name: 'common.actions.save' });
+                const saveButton = getByRole('button', { name: /save/i });
                 await user.click(saveButton);
 
                 expect(updateUniformItem).toHaveBeenCalledTimes(1);
                 expect(updateUniformItem).toHaveBeenCalledWith({
-                    id: testUniform.id,
-                    number: testUniform.number,
-                    generation: testUniform.generation.id,
-                    size: testUniform.size.id,
-                    comment: testUniform.comment,
-                    active: testUniform.active,
+                    id: mockUniform.id,
+                    number: mockUniform.number,
+                    generation: mockUniform.generation.id,
+                    size: mockUniform.size.id,
+                    comment: mockUniform.comment,
+                    active: mockUniform.active,
                 });
                 expect(onSaveMock).toHaveBeenCalledTimes(1);
                 expect(onSaveMock).toHaveBeenCalledWith('Saved item');
 
-                expect(getByRole('button', { name: 'common.actions.edit' })).toBeEnabled();
-                expect(getByRole('button', { name: 'common.actions.delete' })).toBeEnabled();
-                expect(getByRole('textbox', { name: 'common.comment' })).toHaveAttribute('disabled');
+                expect(getByRole('button', { name: /edit/i })).toBeEnabled();
+                expect(getByRole('button', { name: /delete/i })).toBeEnabled();
+                expect(getByRole('textbox', { name: /comment/i })).toHaveAttribute('disabled');
             });
             it('should catch exception', async () => {
                 const user = userEvent.setup();
@@ -163,26 +141,27 @@ describe('UniformOffcanvas', () => {
 
                 const { getByRole } = render(
                     <UniformOffcanvas
-                        uniform={testUniform}
+                        uniform={mockUniform}
+                        uniformType={typeList[0]}
                         onClose={jest.fn()}
                         onSave={onSaveMock}
                     />
                 );
 
-                const editButton = getByRole('button', { name: 'common.actions.edit' });
+                const editButton = getByRole('button', { name: /edit/i });
                 await user.click(editButton);
 
-                const saveButton = getByRole('button', { name: 'common.actions.save' });
+                const saveButton = getByRole('button', { name: /save/i });
                 await user.click(saveButton);
 
                 expect(onSaveMock).toHaveBeenCalledTimes(0);
                 expect(toast.error).toHaveBeenCalledTimes(1);
                 expect(toast.error).toHaveBeenCalledWith('common.error.actions.save');
 
-                expect(getByRole('button', { name: 'common.actions.edit' })).toBeDisabled();
-                expect(getByRole('button', { name: 'common.actions.delete' })).toBeDisabled();
-                expect(getByRole('button', { name: 'common.actions.save' })).toBeInTheDocument();
-                expect(getByRole('textbox', { name: 'common.comment' })).not.toHaveAttribute('disabled');
+                expect(getByRole('button', { name: /edit/i })).toBeDisabled();
+                expect(getByRole('button', { name: /delete/i })).toBeDisabled();
+                expect(getByRole('button', { name: /save/i })).toBeInTheDocument();
+                expect(getByRole('textbox', { name: /comment/i })).not.toHaveAttribute('disabled');
             });
         });
 
@@ -194,13 +173,14 @@ describe('UniformOffcanvas', () => {
                 const user = userEvent.setup();
                 const { getByRole } = render(
                     <UniformOffcanvas
-                        uniform={testUniform}
+                        uniform={mockUniform}
+                        uniformType={typeList[0]}
                         onClose={onCloseMock}
                         onSave={onSaveMock}
                     />
                 );
 
-                const deleteButton = getByRole('button', { name: 'common.actions.delete' });
+                const deleteButton = getByRole('button', { name: /delete/i });
                 await user.click(deleteButton);
 
                 expect(simpleWarningModal).toHaveBeenCalledTimes(1);
@@ -219,7 +199,7 @@ describe('UniformOffcanvas', () => {
                 await simpleWarningModal.mock.calls[0][0].primaryFunction!();
 
                 expect(deleteUniformItem).toHaveBeenCalledTimes(1);
-                expect(deleteUniformItem).toHaveBeenCalledWith(testUniform.id);
+                expect(deleteUniformItem).toHaveBeenCalledWith(mockUniform.id);
                 expect(onCloseMock).toHaveBeenCalledTimes(1);
                 expect(onSaveMock).toHaveBeenCalledTimes(1);
                 expect(toast.success).toHaveBeenCalledTimes(1);
@@ -233,19 +213,20 @@ describe('UniformOffcanvas', () => {
                 const user = userEvent.setup();
                 const { getByRole } = render(
                     <UniformOffcanvas
-                        uniform={testUniform}
+                        uniform={mockUniform}
+                        uniformType={typeList[0]}
                         onClose={onCloseMock}
                         onSave={onSaveMock}
                     />
                 );
 
-                const deleteButton = getByRole('button', { name: 'common.actions.delete' });
+                const deleteButton = getByRole('button', { name: /delete/i });
                 await user.click(deleteButton);
                 expect(simpleWarningModal).toHaveBeenCalledTimes(1);
 
                 await simpleWarningModal.mock.calls[0][0].primaryFunction!();
                 expect(deleteUniformItem).toHaveBeenCalledTimes(1);
-                expect(deleteUniformItem).toHaveBeenCalledWith(testUniform.id);
+                expect(deleteUniformItem).toHaveBeenCalledWith(mockUniform.id);
                 expect(onCloseMock).toHaveBeenCalledTimes(0);
                 expect(onSaveMock).toHaveBeenCalledTimes(0);
                 expect(toast.error).toHaveBeenCalledTimes(1);

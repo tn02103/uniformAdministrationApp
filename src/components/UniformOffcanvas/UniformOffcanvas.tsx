@@ -9,7 +9,7 @@ import { LabelIconButton } from "../Buttons/LabelIconButton";
 import { useModal } from "../modals/modalProvider";
 import { UniformDeficiencyRow } from "./UniformDeficiencyRow";
 import { UniformDetailRow } from "./UniformDetailRow";
-import UniformHistoryRow from "./UniformHistoryRow";
+import { UniformHistoryRow } from "./UniformHistoryRow";
 
 export type UniformOffcanvasProps = {
     uniform: Uniform;
@@ -85,10 +85,10 @@ export const UniformOffcanvas = ({ uniform, uniformType, onClose, onSave }: Unif
                     setEditable={() => setEditable(!editable)}
                     onSave={onSave}
                 />
-                <h4>Mängel</h4>
+                <h4>{t('uniformOffcanvas.deficiency.header')}</h4>
                 <hr className="mb-0" />
                 <UniformDeficiencyRow uniformId={uniform.id} />
-                <h4 className="mt-4">Historie</h4>
+                <h4 className="mt-4">{t('uniformOffcanvas.history.header')}</h4>
                 <hr className="mb-0" />
                 <UniformHistoryRow uniformId={uniform.id} />
             </Offcanvas.Body>
@@ -104,5 +104,6 @@ export const UniformOffcanvas = ({ uniform, uniformType, onClose, onSave }: Unif
     - [ ] DeficiencyRow: Show no Deficiency Message if no deficiencies are present
     - [ ] DeficiencyRow: (BUG) LabelIconButtons are in two rows on small screens
     - [ ] HistoryRow: Show no History Message if no history is present
-    - [ ] 
+    - [x] Fix jest tests
+    - [ ] Add e2e tests
 */

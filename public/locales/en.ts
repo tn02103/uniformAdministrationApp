@@ -7,6 +7,7 @@ export default {
         name: "Name",
         type: "Type",
         loading: "Loading",
+        status: "State",
         dates: {
             "created": "Created on:",
             "updated": "Last modified:",
@@ -31,6 +32,7 @@ export default {
             edit_item: "Edit {item}",
             issue_item: "Issue {item}",
             issue: "Issue",
+            resolve: "Resolve",
             return: "Withdraw",
             replace: "Replace",
             rename: "Rename",
@@ -200,6 +202,10 @@ export default {
             changeSortorder: "The order was changed successfully",
         },
     },
+    expandableArea: {
+        showMore: "Mehr anzeigen",
+        showLess: "Weniger anzeigen",
+    },
     login: {
         header: "Login",
         label: {
@@ -282,6 +288,37 @@ export default {
         'numberOfEntries#other': "{count} entries",
         noData: "No data loaded",
         header: "Uniform parts",
+    },
+    uniformOffcanvas: {
+        deleteAction: {
+            header: "{type} {number} löschen",
+            "message.one": "Soll das Uniformteil {type} {number} wirklich gelöscht werden?",
+            "message.two": "Diese Aktion kann nicht wieder umgekehrt werden",
+            "success": "Das Uniformteil wurde erfolgreich gelöscht",
+            "failed": "Das Uniformteil konnte nicht gelöscht werden",
+        },
+        deficiency: {
+            header: "Mängel",
+            includeResolved: "Behobene Mängel anzeigen",
+            cardLabel: "Magnel {index}",
+            createCardLabel: "Neuen Mangel anlegen",
+            "label.actions": "Aktionen für Mangel {index}",
+            "label.comment": "Kommentar",
+            "label.deficiencyType": "Art des Mangels",
+            "label.date.created": "Erstellt am:",
+            "label.date.resolved": "Behoben am:",
+            "label.date.updated": "Zuletzt aktualisiert am:",
+            "label.user.created": "Erstellt von:",
+            "label.user.resolved": "Behoben von:",
+            "label.user.updated": "Zuletzt aktualisiert von:",
+        },
+        history: {
+            "header": "Historie",
+            "label.dateIssued": "Ausgabe",
+            "label.dateReturned": "Rückgabe",
+            "label.cadet": "Person",
+            "title.deleted": "Person gelöscht",
+        }
     },
     createUniform: {
         pagination: {
@@ -377,8 +414,6 @@ export default {
                     confirmationText: "Generation-{generation}",
                 },
                 updateModal: {
-                    editHeader: "Edit generation \"{generation}\"",
-                    createHeader: "Create new generation",
                     changeSizeHeader: "Change size list",
                     changeSizeMessage: "When changing the selected size list, the size information of uniform parts of this generation may be lost",
                     nameDuplicationError: "A generation with this name already exists",

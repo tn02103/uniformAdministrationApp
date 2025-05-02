@@ -250,3 +250,131 @@ exports[`UniformDeficiencyRow renders correctly 1`] = `
   </div>
 </div>
 `;
+
+exports[`UniformDeficiencyRow should render correctly 1`] = `
+<div>
+  <form
+    autocomplete="off"
+    class="mb-4"
+    novalidate=""
+  >
+    <div
+      class="mb-3 mt-2 justify-content-between row"
+    >
+      <div
+        class="col-sm-auto col-12"
+      >
+        <div
+          class="mb-3"
+        >
+          <label
+            class="fw-bold m-0 form-label"
+            for="uniform_toggle-active"
+          >
+            common.status
+          </label>
+          <p
+            aria-label="common.status"
+            aria-readonly="true"
+            class="mt-2"
+          >
+            common.uniform.active.true
+          </p>
+          <div
+            class="text-danger fs-7"
+            data-testid="err_active"
+            role="alert"
+          />
+        </div>
+      </div>
+      <div
+        class="col-sm-auto col-7"
+      >
+        <div
+          class="mb-3"
+        >
+          <label
+            class="fw-bold m-0 undefined form-label"
+            for="uniform_select-generation"
+          >
+            common.uniform.generation.label
+          </label>
+          <p
+            aria-label="common.uniform.generation.label"
+            aria-readonly="true"
+            class="py-2 m-0"
+          >
+            Generation1-2
+          </p>
+          <div
+            aria-label="error message generation"
+            class="text-danger fs-7"
+            data-testid="err_generation"
+            id="uniform_err_generation"
+            role="alert"
+          />
+        </div>
+      </div>
+      <div
+        class="p-0 col-sm-auto col-5"
+        style="min-width: 100px;"
+      >
+        <div
+          class="mb-3"
+        >
+          <label
+            class="fw-bold m-0 undefined form-label"
+            for="uniform_select-size"
+          >
+            common.uniform.size
+          </label>
+          <p
+            aria-label="common.uniform.size"
+            aria-readonly="true"
+            class="py-2 m-0"
+          >
+            0
+          </p>
+          <div
+            aria-label="error message size"
+            class="text-danger fs-7"
+            data-testid="err_size"
+            id="uniform_err_size"
+            role="alert"
+          />
+        </div>
+      </div>
+      <div
+        class="col-12"
+      >
+        <div>
+          <label
+            class="fw-bold m-0 form-label"
+            for="uniform_input-comment"
+          >
+            common.comment
+          </label>
+          <textarea
+            aria-invalid="false"
+            class="form-control-plaintext"
+            disabled=""
+            id="uniform_input-comment"
+            name="comment"
+            rows="2"
+            width="auto"
+          >
+            Test comment
+          </textarea>
+          <div
+            aria-label="error message comment"
+            class="text-danger fs-7"
+            data-testid="err_comment"
+            id="uniform_err_comment"
+            role="alert"
+          />
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+`;
