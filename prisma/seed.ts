@@ -98,6 +98,9 @@ async function main() {
         await prisma.deregistration.createMany({
             data: generator.deregistrations(),
         });
+        await prisma.redirect.createMany({
+            data: generator.redirects("AA")
+        });
     }, { timeout: 15000 });
 }
 

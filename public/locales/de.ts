@@ -196,6 +196,11 @@ export default {
                         nameDuplication: "Für diesen Uniformtyp existiert bereits eine Generation mit diesem Namen",
                     }
                 },
+                redirects: {
+                    code: {
+                        duplication: "Der Code wird bereits von einem anderen Redirect ihrer/ oder einer anderen Organisation benutzt.",
+                    },
+                }
             },
         },
         success: {
@@ -385,7 +390,18 @@ export default {
                 deficiency: "Mängel",
             },
             userOverview: "Zugänge",
+            redirects: "Weiterleitungen",
         },
+    },
+    redirects: {
+        title: "Weiterleitungen",
+        code: "Code",
+        target: "Ziel",
+        targetPlaceholder: "https://www.test.de",
+        active: "Status",
+        "activeLabel.true": "Aktiv",
+        "activeLabel.false": "Inaktiv",
+        sourceUrl: "Quell-URL",
     },
     admin: {
         uniform: {
@@ -419,6 +435,8 @@ export default {
                     changeSizeHeader: "Ändern der Größenliste",
                     changeSizeMessage: "Beim Ändern der ausgewählten Größenliste, kann bei Uniformteilen dieser Generation die Information der Größe verlohren gehen",
                     nameDuplicationError: "Es existiert bereits eine Generation mit diesem Namen",
+                    editHeader: "Generation \"{generation}\" bearbeiten",
+                    createHeader: "Neue Generation anlegen",
                 }
             },
             size: {

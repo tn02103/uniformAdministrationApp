@@ -197,6 +197,11 @@ export default {
                     }
                 },
             },
+            redirects: {
+                code: {
+                    duplication: "The code is already used by another redirect of this or another association",
+                },
+            }
         },
         success: {
             changeSortorder: "The order was changed successfully",
@@ -385,7 +390,18 @@ export default {
                 deficiency: "Deficiency",
             },
             userOverview: "Accesses",
+            redirects: "Redirects",
         },
+    },
+    redirects: {
+        title: "Redirects",
+        code: "Code",
+        target: "Target",
+        targetPlaceholder: "https://www.test.com",
+        active: "Status",
+        "activeLabel.true": "Active",
+        "activeLabel.false": "Inactive",
+        sourceUrl: "Source URL",
     },
     admin: {
         uniform: {
@@ -445,7 +461,7 @@ export default {
                     header: "create new size list",
                 },
                 renameModal: {
-                    header: "rename sizelist",
+                    header: "Rename size list",
                 },
                 deleteWarning: {
                     header: "Delete size list \"{name}\"",

@@ -1,4 +1,4 @@
-import { AssosiationConfiguration, Deregistration, Inspection, Prisma } from "@prisma/client";
+import { AssosiationConfiguration, Deregistration, Inspection, Prisma, Redirect } from "@prisma/client";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -22,6 +22,7 @@ export type StaticDataIdType = {
     uniformGenerationIds: string[];
     uniformIds: string[][];
     uniformTypeIds: string[];
+    redirectIds: string[];
     dynamic: {
         firstInspection: {
             id: string;
@@ -47,6 +48,7 @@ export function getStaticDataIds() {
         deficiencyTypeIds: uuidArray(7),
         deficiencyIds: uuidArray(16),
         inspectionIds: uuidArray(6),
+        redirectIds: uuidArray(4),
         dynamic: {
             inspectionId: uuid(),
             firstInspection: {
@@ -645,5 +647,14 @@ export default class StaticDataGenerator {
             { fk_cadet: this.ids.cadetIds[7], fk_inspection: this.ids.inspectionIds[2], date: dayjs().subtract(5, "day").toDate() },
             { fk_cadet: this.ids.cadetIds[8], fk_inspection: this.ids.inspectionIds[2], date: dayjs().subtract(5, "day").toDate() },
         ] satisfies Deregistration[]
+    }
+
+    redirects(index: number | string) {
+        return [
+            { id: this.ids.redirectIds[0], assosiationId: this.ids.fk_assosiation, code: 'homepage' + index, target: 'https://example.com/homepage', active: true },
+            { id: this.ids.redirectIds[1], assosiationId: this.ids.fk_assosiation, code: 'ausbildung' + index, target: 'https://example.com/ausbildung', active: true },
+            { id: this.ids.redirectIds[2], assosiationId: this.ids.fk_assosiation, code: 'kontakt' + index, target: 'https://example.com/kontakt', active: true },
+            { id: this.ids.redirectIds[3], assosiationId: this.ids.fk_assosiation, code: 'impressum' + index, target: 'https://example.com/impressum', active: false },
+        ] satisfies Redirect[];
     }
 }
