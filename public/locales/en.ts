@@ -608,6 +608,12 @@ export default {
         "admin.deficiency": "deficiency configuration - Uniformadmin"
     },
     modals: {
+        ariaLabel: {
+            message: "Message",
+            danger: "Danger message",
+            warning: "Warning message",
+            error: "Error message",
+        },
         messageModal: {
             uniform: {
                 return: {

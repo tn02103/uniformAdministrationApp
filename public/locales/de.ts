@@ -610,6 +610,12 @@ export default {
         "admin.deficiency": "Mängel Konfiguration - Uniformadmin"
     },
     modals: {
+        ariaLabel: {
+            message: "Nachricht",
+            danger: "Gefahrenmeldung",
+            warning: "Warnungsmeldung",
+            error: "Fehlermeldung",
+        },
         messageModal: {
             uniform: {
                 return: {
