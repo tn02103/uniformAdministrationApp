@@ -207,6 +207,7 @@ test.describe('Offcanvas - CadetOverview', () => {
     test.describe('deficiencies', () => {
         test.beforeEach(async ({ page, staticData: { ids } }) => {
             await page.goto(`/de/app/cadet/${ids.cadetIds[2]}`);
+            await page.waitForTimeout(1000); // wait for the page to load
         });
 
         test('should toggle show resolved', async ({ page, staticData: { ids, data } }) => {
@@ -228,7 +229,7 @@ test.describe('Offcanvas - CadetOverview', () => {
             await Promise.all([
                 expect(deficiencyItems.nth(0).getByText('Uniform', { exact: true })).toBeVisible(),
                 expect(deficiencyItems.nth(0).locator('p[class="card-text"]')).toHaveText(deficiencies[0].comment),
-                expect(deficiencyItems.nth(1).getByText('Uniform', { exact: true })).toBeVisible(),
+                expect(deficiencyItems.nth(1).getByText('Uniform Broken', { exact: true })).toBeVisible(),
                 expect(deficiencyItems.nth(1).locator('p[class="card-text"]')).toHaveText(deficiencies[3].comment),
             ]);
 
@@ -238,24 +239,84 @@ test.describe('Offcanvas - CadetOverview', () => {
             await Promise.all([
                 expect(deficiencyItems.nth(0).locator('p[class="card-text"]')).toHaveText(deficiencies[0].comment),
                 expect(deficiencyItems.nth(0).getByText('Gelöst')).not.toBeVisible(),
+                expect(deficiencyItems.nth(0).getByText('Uniform', { exact: true })).toBeVisible(),
                 expect(deficiencyItems.nth(1).locator('p[class="card-text"]')).toHaveText(deficiencies[1].comment),
                 expect(deficiencyItems.nth(1).getByText('Gelöst')).toBeVisible(),
+                expect(deficiencyItems.nth(1).getByText('Uniform Gelöst', { exact: true })).toBeVisible(),
                 expect(deficiencyItems.nth(2).locator('p[class="card-text"]')).toHaveText(deficiencies[2].comment),
                 expect(deficiencyItems.nth(2).getByText('Gelöst')).toBeVisible(),
+                expect(deficiencyItems.nth(2).getByText('Uniform Broken Gelöst', { exact: true })).toBeVisible(),
                 expect(deficiencyItems.nth(3).locator('p[class="card-text"]')).toHaveText(deficiencies[3].comment),
                 expect(deficiencyItems.nth(3).getByText('Gelöst')).not.toBeVisible(),
+                expect(deficiencyItems.nth(3).getByText('Uniform Broken', { exact: true })).toBeVisible(),
             ]);
         });
 
         test('should show no deficiencies Message', async ({ page, staticData: { ids } }) => {
             const dialog = await openOffcanvas(page, ids.uniformIds[0][48], 1148);
-            const showRewolvedToggle = dialog.getByRole('checkbox', { name: /Behobene Mängel anzeigen/i });
 
             const deficiencyList = dialog.getByRole('list', { name: /Deficiency list/i });
             await expect(deficiencyList).toBeVisible();
             await expect(deficiencyList.getByRole('listitem')).toHaveCount(0);
-
-
+            await expect(deficiencyList.getByText(/keine Mängel/i)).toBeVisible();
         });
+
+        test('edit and save deficiency', async ({ page, staticData: { ids, data } }) => {
+            const dialog = await openOffcanvas(page, ids.uniformIds[0][46], 1146);
+            const deficiency = data.deficiencies[1];
+            const deficiencyList = dialog.getByRole('list', { name: /Deficiency list/i });
+            const firstItem = deficiencyList.getByRole('listitem').nth(0);
+            const actionMenu = firstItem.getByRole('button', { name: /Aktionen/i });
+            const editButton = firstItem.getByRole('button', { name: /Bearbeiten/i });
+            const commentField = firstItem.getByLabel(/Kommentar/i);
+            const typeField = firstItem.getByLabel(/Art/i);
+
+            await test.step('Edit and save deficiency', async () => {
+                await expect(deficiencyList).toBeVisible();
+                await expect(firstItem).toBeVisible();
+                await actionMenu.click();
+                await expect(editButton).toBeVisible();
+                await editButton.click();
+
+                await expect(commentField).toBeEditable();
+                await expect(typeField).toBeEditable();
+                await expect(typeField.getByRole('option')).toHaveCount(2);
+                await expect(typeField.getByRole('option', { name: "Uniform" })).toBeDefined();
+                await expect(typeField.getByRole('option', { name: "Uniform Broken" })).toBeDefined();
+                await expect(commentField).toHaveText(deficiency.comment);
+                await expect(typeField).toHaveText('Uniform');
+                await commentField.fill('Test comment');
+
+                const saveButton = firstItem.getByRole('button', { name: /Speichern/i });
+                await saveButton.click();
+                await expect(commentField).toBeDisabled();
+            });
+            await test.step('validate ui', async () => {
+                await expect(deficiencyList).toBeVisible();
+                await expect(firstItem).toBeVisible();
+                await expect(firstItem.getByText('Test comment')).toBeVisible();
+                await expect(firstItem.getByText('Uniform')).toBeVisible();
+            });
+            await test.step('validate db', async () => {
+                const deficiency = await prisma.deficiency.findUnique({
+                    where: {
+                        id: ids.deficiencyIds[0][1],
+                    },
+                });
+                expect(deficiency).toBeDefined();
+                expect(deficiency).toEqual(expect.objectContaining({
+                    id: ids.deficiencyIds[0][1],
+                    comment: 'Test comment',
+                    fk_deficiencyType: ids.deficiencyTypeIds[0],
+                    fk_uniform: ids.uniformIds[0][46],
+                    recdelete: null,
+                    recdeleteUser: null
+                }));
+            });
+        });
+
+        test('resolve deficiency', async ({ page, staticData: { ids, data } }) => {
+        });
+
     });
 });

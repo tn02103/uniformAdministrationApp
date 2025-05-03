@@ -45,7 +45,7 @@ export function getStaticDataIds() {
         uniformIds: [87, 16, 66, 13].map((value) => uuidArray(value)),
         materialGroupIds: uuidArray(5),
         materialIds: uuidArray(12),
-        deficiencyTypeIds: uuidArray(7),
+        deficiencyTypeIds: uuidArray(8),
         deficiencyIds: uuidArray(16),
         inspectionIds: uuidArray(6),
         redirectIds: uuidArray(4),
@@ -487,6 +487,7 @@ export default class StaticDataGenerator {
             { id: this.ids.deficiencyTypeIds[4], fk_assosiation: this.ids.fk_assosiation, name: 'inactive', dependent: 'cadet', relation: null, disabledDate: new Date('2023-08-13T09:58:00.000Z'), disabledUser: 'test4' },
             { id: this.ids.deficiencyTypeIds[5], fk_assosiation: this.ids.fk_assosiation, name: 'XX unused type', dependent: 'cadet', relation: 'material', disabledDate: null, disabledUser: null },
             { id: this.ids.deficiencyTypeIds[6], fk_assosiation: this.ids.fk_assosiation, name: 'inactive seccond', dependent: 'cadet', relation: 'material', disabledDate: new Date('2023-08-01T09:58:00.000Z'), disabledUser: 'test4' },
+            { id: this.ids.deficiencyTypeIds[7], fk_assosiation: this.ids.fk_assosiation, name: 'Uniform Broken', dependent: 'uniform', relation: null, disabledDate: null, disabledUser: null },
         ]
     }
     deficiency() {
@@ -576,13 +577,13 @@ export default class StaticDataGenerator {
                 userCreated: 'test4', userUpdated: 'test4', userResolved: null
             },
             {
-                id: this.ids.deficiencyIds[14], fk_deficiencyType: this.ids.deficiencyTypeIds[0], description: 'Typ1-1146', comment: 'Uniform Deficiency Resolved',
+                id: this.ids.deficiencyIds[14], fk_deficiencyType: this.ids.deficiencyTypeIds[7], description: 'Typ1-1146', comment: 'Broken Uniform Deficiency Resolved',
                 fk_inspection_created: null, fk_inspection_resolved: this.ids.inspectionIds[1],
                 dateCreated: new Date('2023-07-01T00:00:00.000Z'), dateUpdated: new Date('2023-07-01T00:00:00.000Z'), dateResolved: new Date('2023-08-13T00:00:00.000Z'),
                 userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4'
             },
             {
-                id: this.ids.deficiencyIds[15], fk_deficiencyType: this.ids.deficiencyTypeIds[0], description: 'Typ1-1146', comment: 'Uniform Deficiency Unresolved',
+                id: this.ids.deficiencyIds[15], fk_deficiencyType: this.ids.deficiencyTypeIds[7], description: 'Typ1-1146', comment: 'Broken Uniform Deficiency Unresolved',
                 fk_inspection_created: null, fk_inspection_resolved: null,
                 dateCreated: new Date('2023-07-15T00:00:00.000Z'), dateUpdated: new Date('2023-07-15T00:00:00.000Z'), dateResolved: null,
                 userCreated: 'test4', userUpdated: 'test4', userResolved: null

@@ -293,7 +293,8 @@ export function getStaticDataIds(index: number) {
             `${prefix}9c895f-e3e1-4f4d-9f04-c54e39d958e8`,
             `${prefix}3842f0-77bf-4d61-934b-d88e284e78f6`,
             `${prefix}639326-2ba1-4c50-a1af-2b7f631090ee`,
-            `${prefix}89da5e-99a4-40e9-ae1d-b256e5b138b5`
+            `${prefix}89da5e-99a4-40e9-ae1d-b256e5b138b5`,
+            `${prefix}ab6b52-309a-4355-bd47-36234dc370ec`,
         ],
         deficiencyIds: [
             `${prefix}49ebe3-6d74-4e6d-9c79-271686ac3a2f`,
