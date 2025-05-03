@@ -153,11 +153,11 @@ const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: Defici
                                 </FormSelect>
                             </Card.Title>
                         </>
-                        : <Card.Title className="fs-6 fw-bold">
+                        : <Card.Title className="fs-6 fw-bold"  aria-label={t('uniformOffcanvas.deficiency.label.deficiencyType')}>
                             {deficiency?.typeName} {deficiency?.dateResolved && <Badge bg="success" className="ms-2">Gelöst</Badge>}
                         </Card.Title>
                     }
-                    {(!editable && deficiency) && (
+                    {(!editable && deficiency && !deficiency.dateResolved) && (
                         <div className="position-absolute top-0 end-0">
                             <Dropdown drop="start">
                                 <Dropdown.Toggle
@@ -225,7 +225,7 @@ const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: Defici
                             </Row>
                         </>
                     ) : (
-                        <Card.Text>
+                        <Card.Text aria-label={t('uniformOffcanvas.deficiency.label.comment')}>
                             {deficiency?.comment}
                         </Card.Text>
                     )}

@@ -210,6 +210,9 @@ test.describe('Offcanvas - CadetOverview', () => {
             await page.waitForTimeout(1000); // wait for the page to load
         });
 
+        const today = new Date();
+        today.setUTCHours(0, 0, 0, 0);
+
         test('should toggle show resolved', async ({ page, staticData: { ids, data } }) => {
             const deficiencies = [
                 data.deficiencies[1],
@@ -283,13 +286,14 @@ test.describe('Offcanvas - CadetOverview', () => {
                 await expect(typeField.getByRole('option')).toHaveCount(2);
                 await expect(typeField.getByRole('option', { name: "Uniform" })).toBeDefined();
                 await expect(typeField.getByRole('option', { name: "Uniform Broken" })).toBeDefined();
-                await expect(commentField).toHaveText(deficiency.comment);
-                await expect(typeField).toHaveText('Uniform');
+                await expect(commentField).toHaveValue(deficiency.comment);
+                await expect(typeField).toHaveValue(data.deficiencyTypes[0].id);
                 await commentField.fill('Test comment');
+                await typeField.selectOption({ label: 'Uniform Broken' });
 
                 const saveButton = firstItem.getByRole('button', { name: /Speichern/i });
                 await saveButton.click();
-                await expect(commentField).toBeDisabled();
+                await expect(commentField).not.toHaveRole('textbox');
             });
             await test.step('validate ui', async () => {
                 await expect(deficiencyList).toBeVisible();
@@ -298,25 +302,130 @@ test.describe('Offcanvas - CadetOverview', () => {
                 await expect(firstItem.getByText('Uniform')).toBeVisible();
             });
             await test.step('validate db', async () => {
-                const deficiency = await prisma.deficiency.findUnique({
+                const dbDeficiency = await prisma.deficiency.findUnique({
                     where: {
-                        id: ids.deficiencyIds[0][1],
+                        id: deficiency.id,
                     },
                 });
-                expect(deficiency).toBeDefined();
-                expect(deficiency).toEqual(expect.objectContaining({
-                    id: ids.deficiencyIds[0][1],
+                expect(dbDeficiency).toBeDefined();
+                expect(dbDeficiency).toEqual(expect.objectContaining({
+                    id: deficiency.id,
                     comment: 'Test comment',
-                    fk_deficiencyType: ids.deficiencyTypeIds[0],
-                    fk_uniform: ids.uniformIds[0][46],
-                    recdelete: null,
-                    recdeleteUser: null
+                    fk_deficiencyType: ids.deficiencyTypeIds[7],
+                    dateResolved: null,
+                    dateUpdated: expect.any(Date),
+                    dateCreated: expect.any(Date),
+                    userResolved: null,
+                    userCreated: 'test2',
+                    userUpdated: 'test4',
                 }));
+                expect(dbDeficiency?.dateUpdated.getTime()).toEqual(today.getTime());
+                expect(dbDeficiency?.dateCreated.getTime()).toBeLessThan(today.getTime());
             });
         });
 
         test('resolve deficiency', async ({ page, staticData: { ids, data } }) => {
+            const dialog = await openOffcanvas(page, ids.uniformIds[0][46], 1146);
+            const deficiencyList = dialog.getByRole('list', { name: /Deficiency list/i });
+            const firstItem = deficiencyList.getByRole('listitem').nth(0);
+            const actionMenu = firstItem.getByRole('button', { name: /Aktionen/i });
+            const resolveButton = firstItem.getByRole('button', { name: /Beheben/i });
+            const showResolvedToggle = dialog.getByRole('checkbox', { name: /Behobene Mängel anzeigen/i });
+
+            await test.step('Resolve deficiency', async () => {
+                await expect(deficiencyList).toBeVisible();
+                await expect(firstItem).toBeVisible();
+                await actionMenu.click();
+                await expect(resolveButton).toBeVisible();
+                await resolveButton.click();
+            });
+            await test.step('validate ui', async () => {
+                await expect(deficiencyList.getByRole('listitem')).toHaveCount(1);
+                await showResolvedToggle.check();
+                await expect(deficiencyList.getByRole('listitem').nth(0)).toBeVisible();// wait for the deficiency to load
+                await expect(deficiencyList.getByRole('listitem')).toHaveCount(4);
+
+                await expect(firstItem).toBeVisible();
+                await expect(firstItem.getByText('Gelöst')).toBeVisible();
+                await expect(firstItem.getByText('Uniform Gelöst')).toBeVisible();
+            });
+            await test.step('validate db', async () => {
+                const dbDeficiency = await prisma.deficiency.findUnique({
+                    where: {
+                        id: ids.deficiencyIds[1],
+                    },
+                });
+                expect(dbDeficiency).toBeDefined();
+                expect(dbDeficiency).toEqual(expect.objectContaining({
+                    id: ids.deficiencyIds[1],
+                    dateCreated: expect.any(Date),
+                    dateUpdated: expect.any(Date),
+                    dateResolved: expect.any(Date),
+                    userCreated: 'test2',
+                    userUpdated: 'test3',
+                    userResolved: 'test4',
+                }));
+
+                expect(dbDeficiency!.dateCreated.getTime()).toBeLessThan(today.getTime());
+                expect(dbDeficiency!.dateUpdated.getTime()).toBeLessThan(today.getTime());
+                expect(dbDeficiency!.dateResolved!.getTime()).toEqual(today.getTime());
+            });
         });
 
+        test('create deficiency', async ({ page, staticData: { ids, data } }) => {
+            const dialog = await openOffcanvas(page, ids.uniformIds[0][46], 1146);
+            const deficiencyList = dialog.getByRole('list', { name: /Deficiency list/i });
+            const addButton = dialog.getByRole('button', { name: /Anlegen/i });
+            const newDeficiencyRow = deficiencyList.getByRole('listitem', { name: /Neu/i });
+            const commentField = newDeficiencyRow.getByLabel(/Kommentar/i);
+            const typeField = newDeficiencyRow.getByLabel(/Art/i);
+            const saveButton = newDeficiencyRow.getByRole('button', { name: /Anlegen/i });
+
+            await test.step('Create deficiency', async () => {
+                await expect(deficiencyList).toBeVisible();
+                await expect(deficiencyList.getByRole('listitem')).toHaveCount(2);
+                await addButton.click();
+                await expect(newDeficiencyRow).toBeVisible();
+                await expect(commentField).toBeEditable();
+                await expect(typeField).toBeEditable();
+                await expect(typeField.getByRole('option')).toHaveCount(2);
+                await expect(typeField.getByRole('option', { name: "Uniform" })).toBeDefined();
+                await expect(typeField.getByRole('option', { name: "Uniform Broken" })).toBeDefined();
+
+                await commentField.fill('Test new comment');
+                await typeField.selectOption({ label: 'Uniform' });
+                await saveButton.click();
+            });
+
+            await test.step('validate ui', async () => {
+                await expect(deficiencyList).toBeVisible();
+                await expect(newDeficiencyRow).not.toBeVisible();
+                await expect(deficiencyList.getByRole('listitem', { name: /Mangel/i })).toHaveCount(3);
+                const thirdItem = deficiencyList.getByRole('listitem').nth(2);
+                await expect(thirdItem.getByText('Test new comment')).toBeVisible();
+                await expect(thirdItem.getByText('Uniform')).toBeVisible();
+            });
+            await test.step('validate db', async () => {
+                const dbDeficiency = await prisma.deficiency.findFirst({
+                    where: {
+                        comment: 'Test new comment',
+                    },
+                });
+                expect(dbDeficiency).toBeDefined();
+                expect(dbDeficiency).toEqual(expect.objectContaining({
+                    id: expect.any(String),
+                    comment: 'Test new comment',
+                    fk_deficiencyType: ids.deficiencyTypeIds[0],
+                    dateResolved: null,
+                    dateCreated: expect.any(Date),
+                    dateUpdated: expect.any(Date),
+                    userCreated: 'test4',
+                    userUpdated: 'test4',
+                    userResolved: null,
+                }));
+                expect(dbDeficiency?.dateCreated.getTime()).toEqual(today.getTime());
+                expect(dbDeficiency?.dateUpdated.getTime()).toEqual(today.getTime());
+            });
+        });
     });
 });

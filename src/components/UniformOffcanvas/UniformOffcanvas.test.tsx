@@ -1,5 +1,6 @@
 import "./UniformOffcanvasJestHelper";
 
+import { AuthRole } from "@/lib/AuthRoles";
 import { getAllByRole, getByLabelText, getByText, queryAllByRole, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { typeList } from "../../../tests/_jestConfig/staticMockData";
@@ -280,6 +281,67 @@ describe('UniformOffcanvas', () => {
                 expect(toast.error).toHaveBeenCalledTimes(1);
                 expect(toast.error).toHaveBeenCalledWith('uniformOffcanvas.deleteAction.failed');
             });
+        });
+    });
+    describe('authRoles', () => {
+        afterEach(() => delete global.__ROLE__);
+
+        it('should not render edit & delete button if userRole is user', () => {
+            global.__ROLE__ = AuthRole.user;
+            const { queryByRole } = render(
+                <UniformOffcanvas
+                    uniform={mockUniform}
+                    uniformType={typeList[0]}
+                    onClose={jest.fn()}
+                    onSave={jest.fn()}
+                />
+            );
+
+            expect(queryByRole('button', { name: /edit/i })).toBeNull();
+            expect(queryByRole('button', { name: /delete/i })).toBeNull();
+        });
+        it('should render edit & delete button if userRole is higher than user', () => {
+            global.__ROLE__ = AuthRole.inspector;
+            const { getByRole } = render(
+                <UniformOffcanvas
+                    uniform={mockUniform}
+                    uniformType={typeList[0]}
+                    onClose={jest.fn()}
+                    onSave={jest.fn()}
+                />
+            );
+
+            expect(getByRole('button', { name: /edit/i })).toBeInTheDocument();
+            expect(getByRole('button', { name: /delete/i })).toBeInTheDocument();
+        });
+
+        it('should not render deficiency and history Rows if userRole is user', () => {
+            global.__ROLE__ = AuthRole.user;
+            const { queryByRole } = render(
+                <UniformOffcanvas
+                    uniform={mockUniform}
+                    uniformType={typeList[0]}
+                    onClose={jest.fn()}
+                    onSave={jest.fn()}
+                />
+            );
+
+            expect(queryByRole('list', { name: /deficiency/i })).toBeNull();
+            expect(queryByRole('list', { name: /history/i })).toBeNull();
+        });
+        it('should render deficiency and history Rows if userRole is higher than user', () => {
+            global.__ROLE__ = AuthRole.admin;
+            const { getByRole } = render(
+                <UniformOffcanvas
+                    uniform={mockUniform}
+                    uniformType={typeList[0]}
+                    onClose={jest.fn()}
+                    onSave={jest.fn()}
+                />
+            );
+
+            expect(getByRole('list', { name: /deficiency/i })).toBeInTheDocument();
+            expect(getByRole('list', { name: /history/i })).toBeInTheDocument();
         });
     })
 });

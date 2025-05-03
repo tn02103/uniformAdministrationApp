@@ -42,8 +42,6 @@ export const UniformDetailRow = ({ uniform, uniformType, editable, setEditable, 
         resolver: zodResolver(getUniformFormSchema(uniformType.usingGenerations, uniformType.usingSizes)),
     });
     const { reset, handleSubmit, watch, setValue, setError, formState: { errors } } = form;
-    console.log("🚀 ~ UniformDetailRow ~ errors:", errors);
-    console.log("🚀 ~ UniformDetailRow ~ watch:", watch());
 
     // DATA Fetcher
     const { generationList } = useUniformGenerationListByType(uniform.type.id);
@@ -97,7 +95,6 @@ export const UniformDetailRow = ({ uniform, uniformType, editable, setEditable, 
             setError,
             (result) => {
                 setEditable(false);
-                console.log("save", result);
                 reset(getUniformFormData(result));
                 onSave(result);
             },

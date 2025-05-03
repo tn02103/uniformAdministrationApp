@@ -28,7 +28,6 @@ test.describe(() => {
                 expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toBeVisible(),
                 expect.soft(uniformComponent.div_utype_name(ids.uniformTypeIds[0])).toBeVisible(),
 
-                expect.soft(uniformComponent.btn_uitem_edit(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_open(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_switch(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_withdraw(ids.uniformIds[0][84])).toBeVisible(),
@@ -52,7 +51,6 @@ test.describe(() => {
                 expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toBeVisible(),
                 expect.soft(uniformComponent.div_utype_name(ids.uniformTypeIds[0])).toBeVisible(),
 
-                expect.soft(uniformComponent.btn_uitem_edit(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_open(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_switch(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_withdraw(ids.uniformIds[0][84])).toBeVisible(),
@@ -76,7 +74,6 @@ test.describe(() => {
                 expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toBeVisible(),
                 expect.soft(uniformComponent.div_utype_name(ids.uniformTypeIds[0])).toBeVisible(),
 
-                expect.soft(uniformComponent.btn_uitem_edit(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_open(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_switch(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_withdraw(ids.uniformIds[0][84])).toBeVisible(),
@@ -100,7 +97,6 @@ test.describe(() => {
                 expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toBeVisible(),
                 expect.soft(uniformComponent.div_utype_name(ids.uniformTypeIds[0])).toBeVisible(),
 
-                expect.soft(uniformComponent.btn_uitem_edit(ids.uniformIds[0][84])).not.toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_open(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_switch(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_withdraw(ids.uniformIds[0][84])).toBeVisible(),
@@ -124,7 +120,6 @@ test.describe(() => {
                 expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toBeVisible(),
                 expect.soft(uniformComponent.div_utype_name(ids.uniformTypeIds[0])).toBeVisible(),
 
-                expect.soft(uniformComponent.btn_uitem_edit(ids.uniformIds[0][84])).not.toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_open(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_switch(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_withdraw(ids.uniformIds[0][84])).toBeVisible(),
@@ -148,7 +143,6 @@ test.describe(() => {
                 expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toBeVisible(),
                 expect.soft(uniformComponent.div_utype_name(ids.uniformTypeIds[0])).toBeVisible(),
 
-                expect.soft(uniformComponent.btn_uitem_edit(ids.uniformIds[0][84])).not.toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_open(ids.uniformIds[0][84])).not.toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_switch(ids.uniformIds[0][84])).not.toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_withdraw(ids.uniformIds[0][84])).not.toBeVisible(),
@@ -174,7 +168,7 @@ test.describe(() => {
             const types = data.uniformTypes.filter(type => !type.recdelete).sort((a, b) => a.sortOrder - b.sortOrder);
 
             for (let i = 0; i < types.length; i++) {
-                await expect.soft(uniformComponent.div_typeList.locator('> div').locator(`nth=${i}`)).toHaveAttribute('data-testid', `div_utype_${types[i].id}`);
+                await expect.soft(uniformComponent.div_typeList.locator('> div > div').locator(`nth=${i}`)).toHaveAttribute('data-testid', `div_utype_${types[i].id}`);
                 await expect.soft(uniformComponent.div_utype_name(types[i].id)).toHaveText(types[i].name);
             }
         });
@@ -316,7 +310,6 @@ managerTest('validate Authroles: manager', async ({ page, staticData: { ids } })
         expect.soft(uniformComponent.div_utype_name(ids.uniformTypeIds[0])).toBeVisible(),
 
         expect.soft(uniformComponent.btn_uitem_open(ids.uniformIds[0][84])).toBeVisible(),
-        expect.soft(uniformComponent.btn_uitem_edit(ids.uniformIds[0][84])).toBeVisible(),
         expect.soft(uniformComponent.btn_uitem_switch(ids.uniformIds[0][84])).toBeVisible(),
         expect.soft(uniformComponent.btn_uitem_withdraw(ids.uniformIds[0][84])).toBeVisible(),
 
@@ -345,7 +338,6 @@ inspectorTest('validate Authroles: inspector', async ({ page, staticData: { ids 
         expect.soft(uniformComponent.div_utype_name(ids.uniformTypeIds[0])).toBeVisible(),
 
         expect.soft(uniformComponent.btn_uitem_open(ids.uniformIds[0][84])).toBeVisible(),
-        expect.soft(uniformComponent.btn_uitem_edit(ids.uniformIds[0][84])).toBeVisible(),
         expect.soft(uniformComponent.btn_uitem_switch(ids.uniformIds[0][84])).toBeVisible(),
         expect.soft(uniformComponent.btn_uitem_withdraw(ids.uniformIds[0][84])).toBeVisible(),
         expect.soft(uniformComponent.div_uitem_number(ids.uniformIds[0][84])).toBeVisible(),
@@ -374,7 +366,6 @@ userTest('validate Authroles: user', async ({ page, staticData: { ids } }) => {
         expect.soft(uniformComponent.div_utype_name(ids.uniformTypeIds[0])).toBeVisible(),
 
         expect.soft(uniformComponent.btn_uitem_open(ids.uniformIds[0][84])).toBeVisible(),
-        expect.soft(uniformComponent.btn_uitem_edit(ids.uniformIds[0][84])).not.toBeVisible(),
         expect.soft(uniformComponent.btn_uitem_switch(ids.uniformIds[0][84])).not.toBeVisible(),
         expect.soft(uniformComponent.btn_uitem_withdraw(ids.uniformIds[0][84])).not.toBeVisible(),
         expect.soft(uniformComponent.div_uitem_number(ids.uniformIds[0][84])).toBeVisible(),

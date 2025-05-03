@@ -50,7 +50,7 @@ test('E2E0266: validate step1 devList after Inspection', async ({ inspectionComp
     await test.step('setup', async () => {
         await inspectionComponent.btn_inspect.click();
     });
-    const activeIds = [ids.deficiencyIds[5], ids.deficiencyIds[10], ids.deficiencyIds[1], ids.deficiencyIds[9], ids.deficiencyIds[13]];
+    const activeIds = [ids.deficiencyIds[5], ids.deficiencyIds[10], ids.deficiencyIds[1], ids.deficiencyIds[9], ids.deficiencyIds[15], ids.deficiencyIds[13]];
     const div_list = inspectionComponent.div_ci.getByTestId(/div_olddef_/);
 
     await test.step('visible with correct sortorder', async () => {

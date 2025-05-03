@@ -25,13 +25,11 @@ export const Reorderable = <T extends { id: string }>({ itemType, item, findItem
                 isDragging: monitor.isDragging(),
             }),
             end: (item, monitor) => {
-                console.log("end", item, monitor);
                 const { id: droppedId, originalIndex } = item;
                 const didDrop = monitor.didDrop();
                 if (didDrop) {
                     onDragEnd?.(item.id);
                 } else {
-                    console.log("did not drop", droppedId, originalIndex);
                     moveItem(droppedId, originalIndex);
                 }
             },
@@ -43,7 +41,6 @@ export const Reorderable = <T extends { id: string }>({ itemType, item, findItem
         () => ({
             accept: DragableTypes[itemType],
             hover({ id: draggedId }: T) {
-                console.log("hover", draggedId, item.id);
                 if (draggedId !== item.id) {
                     const overIndex = findItem(item.id).index;
                     moveItem(draggedId, overIndex)

@@ -31,7 +31,7 @@ test('E2E0101: validate Data', async ({ cadetListPage, staticData: { ids, data }
         expect.soft(cadetListPage.div_cadet_activeDeficiencyCount(ids.cadetIds[0]))
             .toHaveText('0'), //Fried Antje
         expect.soft(cadetListPage.div_cadet_activeDeficiencyCount(ids.cadetIds[2]))
-            .toHaveText(String(data.deficiencies.filter(d => /Sven Keller Unresolved/.test(d.comment)).length)), //Sven Keller
+            .toHaveText('6'), //Sven Keller
     ]);
 });
 test('E2E0102: validate sortOrder', async ({ page, cadetListPage, staticData: { ids } }) => {

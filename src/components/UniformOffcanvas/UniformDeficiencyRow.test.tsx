@@ -1,6 +1,6 @@
 import "./UniformOffcanvasJestHelper";
 
-import { getByLabelText, getByRole, getByText, queryByText, render, screen } from "@testing-library/react";
+import { getByLabelText, getByRole, getByText, queryByRole, queryByText, render, screen } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 import { UniformDeficiencyRow } from "./UniformDeficiencyRow";
 import { mockDeficiencyList, mockDeficiencyTypeList, mockUniform } from "./UniformOffcanvasJestHelper";
@@ -66,6 +66,23 @@ describe('UniformDeficiencyRow', () => {
         );
 
         expect(screen.getByText(/noDeficiencies/i)).toBeInTheDocument();
+    });
+
+    it('doesnt show actionMenu when resolved', async () => {
+        const user = userEvent.setup();
+        render(
+            <UniformDeficiencyRow
+                uniformId={mockUniform.id}
+            />
+        );
+
+        const showResolvedToggle = screen.getByRole('checkbox', { name: /includeResolved/i });
+        await user.click(showResolvedToggle);
+
+        const card = screen.getAllByRole('listitem')[2];
+        expect(card).toBeInTheDocument();
+        const actionMenu = queryByRole(card, 'button', { name: /deficiency.label.actions/i });
+        expect(actionMenu).toBeNull();
     });
 
     describe('expand/collapse', () => {

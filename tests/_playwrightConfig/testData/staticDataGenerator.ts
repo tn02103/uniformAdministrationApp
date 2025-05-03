@@ -502,7 +502,7 @@ export default class StaticDataGenerator {
                 id: this.ids.deficiencyIds[1], fk_deficiencyType: this.ids.deficiencyTypeIds[0], description: 'Typ1-1146', comment: 'Uniform Deficiency Sven Keller Unresolved',
                 fk_inspection_created: this.ids.inspectionIds[0], fk_inspection_resolved: null,
                 dateCreated: new Date('2023-06-17T00:00:00.000Z'), dateUpdated: new Date('2023-06-17T00:00:00.000Z'), dateResolved: null,
-                userCreated: 'test4', userUpdated: 'test4', userResolved: null
+                userCreated: 'test2', userUpdated: 'test3', userResolved: null
             },
             {
                 id: this.ids.deficiencyIds[2], fk_deficiencyType: this.ids.deficiencyTypeIds[0], description: 'Typ1-1146', comment: 'Uniform Deficiency Sven Keller Resolved',

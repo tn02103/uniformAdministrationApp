@@ -30,9 +30,10 @@ test('E2E060401: validate typelist', async ({typeComponent, staticData: { data }
             expect.soft(typeComponent.div_typeList.nth(1)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[3].id}`),
             expect.soft(typeComponent.div_typeList.nth(2)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[2].id}`),
             expect.soft(typeComponent.div_typeList.nth(3)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[0].id}`),
-            expect.soft(typeComponent.div_typeList.nth(4)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[5].id}`),
-            expect.soft(typeComponent.div_typeList.nth(5)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[4].id}`),
-            expect.soft(typeComponent.div_typeList.nth(6)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[6].id}`),
+            expect.soft(typeComponent.div_typeList.nth(4)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[7].id}`),
+            expect.soft(typeComponent.div_typeList.nth(5)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[5].id}`),
+            expect.soft(typeComponent.div_typeList.nth(6)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[4].id}`),
+            expect.soft(typeComponent.div_typeList.nth(7)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[6].id}`),
         ]);
     });
 
@@ -222,7 +223,7 @@ test('E2E060405: deactivate type', async ({ page, typeComponent, staticData }) =
         await expect(typeComponent.div_typeList.nth(0)).toHaveAttribute('data-testid', `div_type_${rowComponent.id}`);
         await rowComponent.btn_deactivate.click();
 
-        await expect(typeComponent.div_typeList.nth(4)).toHaveAttribute('data-testid', `div_type_${rowComponent.id}`);
+        await expect(typeComponent.div_typeList.nth(5)).toHaveAttribute('data-testid', `div_type_${rowComponent.id}`);
         await expect(rowComponent.div_disabled).toBeVisible();
     });
     await test.step('validate db', async () => {

@@ -337,7 +337,7 @@ export default {
             configurator: "Configuration",
             numberInput: "Enter numbers",
             itemAmounts: "Number of uniform parts",
-            revalidateNumbers: "Check numbers",
+            revalidteNumbers: "Check numbers",
         },
         label: {
             add: "Add",

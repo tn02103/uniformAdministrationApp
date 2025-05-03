@@ -1,4 +1,5 @@
 import { deleteUniformItem } from "@/dal/uniform/item/_index";
+import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n } from "@/lib/locales/client";
 import { Uniform, UniformType } from "@/types/globalUniformTypes";
 import { UniformFormType } from "@/zod/uniform";
@@ -6,6 +7,7 @@ import { useState } from "react";
 import { Offcanvas, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { LabelIconButton } from "../Buttons/LabelIconButton";
+import { useGlobalData } from "../globalDataProvider";
 import { useModal } from "../modals/modalProvider";
 import { UniformDeficiencyRow } from "./UniformDeficiencyRow";
 import { UniformDetailRow } from "./UniformDetailRow";
@@ -21,6 +23,7 @@ export const UniformOffcanvas = ({ uniform, uniformType, onClose, onSave }: Unif
     const t = useI18n();
     const [editable, setEditable] = useState(false);
     const modal = useModal();
+    const { userRole } = useGlobalData();
 
     const handleDelete = () => {
         const deleteAction = () => deleteUniformItem(uniform.id)
@@ -66,18 +69,20 @@ export const UniformOffcanvas = ({ uniform, uniformType, onClose, onSave }: Unif
             <Offcanvas.Body>
                 <h4>{t('common.details')}</h4>
                 <hr className="mb-0" />
-                <Row className="justify-content-evenly">
-                    <LabelIconButton
-                        variantKey="edit"
-                        disabled={editable}
-                        onClick={() => setEditable(true)}
-                    />
-                    <LabelIconButton
-                        variantKey="delete"
-                        disabled={editable}
-                        onClick={handleDelete}
-                    />
-                </Row>
+                {userRole > AuthRole.user && (
+                    <Row className="justify-content-evenly">
+                        <LabelIconButton
+                            variantKey="edit"
+                            disabled={editable}
+                            onClick={() => setEditable(true)}
+                        />
+                        <LabelIconButton
+                            variantKey="delete"
+                            disabled={editable}
+                            onClick={handleDelete}
+                        />
+                    </Row>
+                )}
                 <UniformDetailRow
                     uniform={uniform}
                     uniformType={uniformType}
@@ -85,12 +90,16 @@ export const UniformOffcanvas = ({ uniform, uniformType, onClose, onSave }: Unif
                     setEditable={() => setEditable(!editable)}
                     onSave={onSave}
                 />
-                <h4>{t('uniformOffcanvas.deficiency.header')}</h4>
-                <hr className="mb-0" />
-                <UniformDeficiencyRow uniformId={uniform.id} />
-                <h4 className="mt-4">{t('uniformOffcanvas.history.header')}</h4>
-                <hr className="mb-0" />
-                <UniformHistoryRow uniformId={uniform.id} />
+                {userRole > AuthRole.user && (
+                    <>
+                        <h4>{t('uniformOffcanvas.deficiency.header')}</h4>
+                        <hr className="mb-0" />
+                        <UniformDeficiencyRow uniformId={uniform.id} />
+                        <h4 className="mt-4">{t('uniformOffcanvas.history.header')}</h4>
+                        <hr className="mb-0" />
+                        <UniformHistoryRow uniformId={uniform.id} />
+                    </>
+                )}
             </Offcanvas.Body>
         </Offcanvas>
     );
@@ -105,5 +114,5 @@ export const UniformOffcanvas = ({ uniform, uniformType, onClose, onSave }: Unif
     - [x] DeficiencyRow: (BUG) LabelIconButtons are in two rows on small screens
     - [x] HistoryRow: Show no History Message if no history is present
     - [x] Fix jest tests
-    - [ ] Add e2e tests
+    - [x] Add e2e tests
 */

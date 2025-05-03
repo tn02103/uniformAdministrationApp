@@ -1,5 +1,6 @@
 import { Deficiency } from "@/types/deficiencyTypes";
 import { generationLists, sizeLists, typeList } from "../../../tests/_jestConfig/staticMockData";
+import { AuthRole } from "@/lib/AuthRoles";
 
 
 // ------------- MOCKS FOR DEFICIENCY -------------
@@ -42,6 +43,7 @@ jest.mock("@/dal/uniform/item/_index", () => ({
 jest.mock('../globalDataProvider', () => ({
     useGlobalData: jest.fn(() => ({
         sizelists: sizeLists,
+        userRole: global.__ROLE__ ?? AuthRole.admin,
     })),
 }));
 jest.mock('@/dataFetcher/uniform', () => ({

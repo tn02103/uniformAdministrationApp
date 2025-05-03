@@ -305,7 +305,7 @@ export default {
         deficiency: {
             header: "Mängel",
             includeResolved: "Behobene Mängel anzeigen",
-            cardLabel: "Magnel {index}",
+            cardLabel: "Mangel {index}",
             createCardLabel: "Neuen Mangel anlegen",
             "label.actions": "Aktionen für Mangel {index}",
             "label.comment": "Kommentar",
