@@ -5,7 +5,7 @@ import { SAFormHandler } from "@/lib/SAFormHandler";
 import { getUniformSizelist } from "@/lib/uniformHelper";
 import { useBreakpoint } from "@/lib/useBreakpoint";
 import { Uniform, UniformType } from "@/types/globalUniformTypes";
-import { uniformFormSchema, UniformFormType } from "@/zod/uniform";
+import { getUniformFormSchema, UniformFormType } from "@/zod/uniform";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useMemo } from "react";
 import { Button, Col, Row } from "react-bootstrap";
@@ -26,8 +26,8 @@ const getUniformFormData = (uniform: Uniform): UniformFormType => {
     return {
         id: uniform.id,
         number: uniform.number,
-        generation: uniform.generation?.id || "",
-        size: uniform.size?.id || "",
+        generation: uniform.generation?.id,
+        size: uniform.size?.id,
         comment: uniform.comment || "",
         active: uniform.active || false,
     }
@@ -39,9 +39,11 @@ export const UniformDetailRow = ({ uniform, uniformType, editable, setEditable, 
     const form = useForm<UniformFormType>({
         mode: 'onTouched',
         defaultValues: getUniformFormData(uniform),
-        resolver: zodResolver(uniformFormSchema),
+        resolver: zodResolver(getUniformFormSchema(uniformType.usingGenerations, uniformType.usingSizes)),
     });
-    const { reset, handleSubmit, watch, setValue, setError } = form;
+    const { reset, handleSubmit, watch, setValue, setError, formState: { errors } } = form;
+    console.log("🚀 ~ UniformDetailRow ~ errors:", errors);
+    console.log("🚀 ~ UniformDetailRow ~ watch:", watch());
 
     // DATA Fetcher
     const { generationList } = useUniformGenerationListByType(uniform.type.id);

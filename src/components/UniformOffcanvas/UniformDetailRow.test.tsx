@@ -51,78 +51,6 @@ describe('UniformDetailRow', () => {
         expect(container).toMatchSnapshot();
     });
 
-    it('should handle save', async () => {
-        const { updateUniformItem } = jest.requireMock('@/dal/uniform/item/_index');
-        const user = userEvent.setup();
-        const { rerender } = render(<UniformDetailRow {...defaultProps} />);
-        rerender(<UniformDetailRow {...defaultProps} editable />);
-
-        const generationSelect = screen.getByRole('combobox', { name: /generation/i });
-        const sizeSelect = screen.getByRole('combobox', { name: /size/i });
-        const commentInput = screen.getByRole('textbox', { name: /comment/i });
-        const activeCheckbox = screen.getByRole('switch', { name: /status/i });
-        const saveButton = screen.getByRole('button', { name: /save/i });
-
-        await user.selectOptions(generationSelect, generationLists[0][0].id);
-        await user.selectOptions(sizeSelect, sizeLists[0].uniformSizes[1].id);
-        await user.clear(commentInput);
-        await user.type(commentInput, 'New comment');
-        await user.click(activeCheckbox);
-
-        expect(generationSelect).toHaveValue(generationLists[0][0].id);
-        expect(sizeSelect).toHaveValue(sizeLists[0].uniformSizes[1].id);
-        expect(commentInput).toHaveValue('New comment');
-        expect(activeCheckbox).not.toBeChecked();
-
-        await user.click(saveButton);
-        expect(defaultProps.onSave).toHaveBeenCalledTimes(1);
-        expect(defaultProps.onSave).toHaveBeenCalledWith('Saved item');
-        expect(defaultProps.setEditable).toHaveBeenCalledTimes(1);
-        expect(defaultProps.setEditable).toHaveBeenCalledWith(false);
-
-        expect(updateUniformItem).toHaveBeenCalledTimes(1);
-        expect(updateUniformItem).toHaveBeenCalledWith({
-            number: mockUniform.number,
-            id: mockUniform.id,
-            generation: generationLists[0][0].id,
-            size: sizeLists[0].uniformSizes[1].id,
-            comment: 'New comment',
-            active: false,
-        });
-    });
-
-    it('should reset form on cancel', async () => {
-        const user = userEvent.setup();
-
-        const { rerender } = render(<UniformDetailRow {...defaultProps} />);
-        rerender(<UniformDetailRow {...defaultProps} editable />);
-
-        const generationSelect = screen.getByRole('combobox', { name: /generation/i });
-        const sizeSelect = screen.getByRole('combobox', { name: /size/i });
-        const commentInput = screen.getByRole('textbox', { name: /comment/i });
-        const activeCheckbox = screen.getByRole('switch', { name: /status/i });
-        const cancelButton = screen.getByRole('button', { name: /cancel/i });
-
-        await user.selectOptions(generationSelect, generationLists[0][0].id);
-        await user.selectOptions(sizeSelect, sizeLists[0].uniformSizes[1].id);
-        await user.clear(commentInput);
-        await user.type(commentInput, 'New comment');
-        await user.click(activeCheckbox);
-
-        expect(generationSelect).toHaveValue(generationLists[0][0].id);
-        expect(sizeSelect).toHaveValue(sizeLists[0].uniformSizes[1].id);
-        expect(commentInput).toHaveValue('New comment');
-        expect(activeCheckbox).not.toBeChecked();
-
-        await user.click(cancelButton);
-        expect(defaultProps.setEditable).toHaveBeenCalledTimes(1);
-        expect(defaultProps.setEditable).toHaveBeenCalledWith(false);
-
-        expect(generationSelect).toHaveValue(mockUniform.generation.id);
-        expect(sizeSelect).toHaveValue(mockUniform.size.id);
-        expect(commentInput).toHaveValue(mockUniform.comment);
-        expect(activeCheckbox).toBeChecked();
-    });
 
     it('should show size if not in sizelist', async () => {
         const uniform = {
@@ -261,5 +189,175 @@ describe('UniformDetailRow', () => {
             expect(commentInput).toHaveTextContent(mockUniform.comment);
             expect(activeCheckbox).toBeChecked();
         });
-    }); 
+    });
+    describe('edit uniform', () => {
+        it('should call updateUniformItem', async () => {
+            const { updateUniformItem } = jest.requireMock('@/dal/uniform/item/_index');
+            const user = userEvent.setup();
+            const { rerender } = render(<UniformDetailRow {...defaultProps} />);
+            rerender(<UniformDetailRow {...defaultProps} editable />);
+
+            const generationSelect = screen.getByRole('combobox', { name: /generation/i });
+            const sizeSelect = screen.getByRole('combobox', { name: /size/i });
+            const commentInput = screen.getByRole('textbox', { name: /comment/i });
+            const activeCheckbox = screen.getByRole('switch', { name: /status/i });
+            const saveButton = screen.getByRole('button', { name: /save/i });
+
+            await user.selectOptions(generationSelect, generationLists[0][0].id);
+            await user.selectOptions(sizeSelect, sizeLists[0].uniformSizes[1].id);
+            await user.clear(commentInput);
+            await user.type(commentInput, 'New comment');
+            await user.click(activeCheckbox);
+
+            expect(generationSelect).toHaveValue(generationLists[0][0].id);
+            expect(sizeSelect).toHaveValue(sizeLists[0].uniformSizes[1].id);
+            expect(commentInput).toHaveValue('New comment');
+            expect(activeCheckbox).not.toBeChecked();
+
+            await user.click(saveButton);
+            expect(defaultProps.onSave).toHaveBeenCalledTimes(1);
+            expect(defaultProps.onSave).toHaveBeenCalledWith('Saved item');
+            expect(defaultProps.setEditable).toHaveBeenCalledTimes(1);
+            expect(defaultProps.setEditable).toHaveBeenCalledWith(false);
+
+            expect(updateUniformItem).toHaveBeenCalledTimes(1);
+            expect(updateUniformItem).toHaveBeenCalledWith({
+                number: mockUniform.number,
+                id: mockUniform.id,
+                generation: generationLists[0][0].id,
+                size: sizeLists[0].uniformSizes[1].id,
+                comment: 'New comment',
+                active: false,
+            });
+        });
+
+        it('should reset form on cancel', async () => {
+            const user = userEvent.setup();
+
+            const { rerender } = render(<UniformDetailRow {...defaultProps} />);
+            rerender(<UniformDetailRow {...defaultProps} editable />);
+
+            const generationSelect = screen.getByRole('combobox', { name: /generation/i });
+            const sizeSelect = screen.getByRole('combobox', { name: /size/i });
+            const commentInput = screen.getByRole('textbox', { name: /comment/i });
+            const activeCheckbox = screen.getByRole('switch', { name: /status/i });
+            const cancelButton = screen.getByRole('button', { name: /cancel/i });
+
+            await user.selectOptions(generationSelect, generationLists[0][0].id);
+            await user.selectOptions(sizeSelect, sizeLists[0].uniformSizes[1].id);
+            await user.clear(commentInput);
+            await user.type(commentInput, 'New comment');
+            await user.click(activeCheckbox);
+
+            expect(generationSelect).toHaveValue(generationLists[0][0].id);
+            expect(sizeSelect).toHaveValue(sizeLists[0].uniformSizes[1].id);
+            expect(commentInput).toHaveValue('New comment');
+            expect(activeCheckbox).not.toBeChecked();
+
+            await user.click(cancelButton);
+            expect(defaultProps.setEditable).toHaveBeenCalledTimes(1);
+            expect(defaultProps.setEditable).toHaveBeenCalledWith(false);
+
+            expect(generationSelect).toHaveValue(mockUniform.generation.id);
+            expect(sizeSelect).toHaveValue(mockUniform.size.id);
+            expect(commentInput).toHaveValue(mockUniform.comment);
+            expect(activeCheckbox).toBeChecked();
+        });
+
+        it('should not allow null value for generation', async () => {
+            const props = {
+                ...defaultProps,
+                uniform: {
+                    ...mockUniform,
+                    generation: null,
+                }
+            }
+            const user = userEvent.setup();
+            const { rerender } = render(<UniformDetailRow {...props} />);
+            rerender(<UniformDetailRow {...props} editable />);
+
+            const generationSelect = screen.getByRole('combobox', { name: /generation/i });
+            const saveButton = screen.getByRole('button', { name: /save/i });
+
+            expect(generationSelect).toHaveValue('');
+
+            await user.click(saveButton);
+            expect(defaultProps.onSave).not.toHaveBeenCalled();
+            expect(generationSelect).toBeInvalid();
+            expect(generationSelect).toHaveTextContent('common.error.pleaseSelect');
+        });
+
+        it('should not allow null value for size', async () => {
+            const props = {
+                ...defaultProps,
+                uniform: {
+                    ...mockUniform,
+                    size: null,
+                }
+            }
+            const user = userEvent.setup();
+            const { rerender } = render(<UniformDetailRow {...props} />);
+            rerender(<UniformDetailRow {...props} editable />);
+
+            const sizeSelect = screen.getByRole('combobox', { name: /size/i });
+            const saveButton = screen.getByRole('button', { name: /save/i });
+
+            expect(sizeSelect).toHaveValue('');
+
+            await user.click(saveButton);
+            expect(defaultProps.onSave).not.toHaveBeenCalled();
+            expect(sizeSelect).toBeInvalid();
+            expect(sizeSelect).toHaveTextContent('common.error.pleaseSelect');
+        });
+        it('should allow null values if not using sizes or generations', async () => {
+            const props = {
+                ...defaultProps,
+                uniformType: typeList[3],
+                uniform: {
+                    ...mockUniform,
+                    generation: null,
+                    size: null,
+                }
+            }
+            const user = userEvent.setup();
+            const { rerender } = render(<UniformDetailRow {...props} />);
+            rerender(<UniformDetailRow {...props} editable />);
+
+            const generationSelect = screen.queryByRole('combobox', { name: /generation/i });
+            const sizeSelect = screen.queryByRole('combobox', { name: /size/i });
+            const saveButton = screen.getByRole('button', { name: /save/i });
+
+            expect(generationSelect).toBeNull();
+            expect(sizeSelect).toBeNull();
+
+            await user.click(saveButton);
+            expect(defaultProps.onSave).toHaveBeenCalledTimes(1);
+        });
+
+        it('should not allow size not in sizelist', async () => {
+            const props = {
+                ...defaultProps,
+                uniform: {
+                    ...mockUniform,
+                    size: {
+                        id: 'nonexistent-size',
+                        name: 'Nonexistent Size',
+                    },
+                }
+            }
+            const user = userEvent.setup();
+            const { rerender } = render(<UniformDetailRow {...props} />);
+            rerender(<UniformDetailRow {...props} editable />);
+
+            const sizeSelect = screen.getByRole('combobox', { name: /size/i });
+            const saveButton = screen.getByRole('button', { name: /save/i });
+
+            expect(sizeSelect).toHaveValue('');
+
+            await user.click(saveButton);
+            expect(defaultProps.onSave).not.toHaveBeenCalled();
+            expect(sizeSelect).toBeInvalid();
+            expect(sizeSelect).toHaveTextContent('common.error.pleaseSelect');
+        });
+    });
 });

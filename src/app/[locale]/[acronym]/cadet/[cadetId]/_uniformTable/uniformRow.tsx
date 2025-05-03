@@ -1,25 +1,20 @@
 "use client"
 
-import TooltipIconButton from "@/components/Buttons/TooltipIconButton";
+import TooltipIconButton, { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
 import { useGlobalData } from "@/components/globalDataProvider";
 import { useModal } from "@/components/modals/modalProvider";
 import { UniformOffcanvas } from "@/components/UniformOffcanvas/UniformOffcanvas";
-import { returnUniformItem, updateUniformItem } from "@/dal/uniform/item/_index";
+import { returnUniformItem } from "@/dal/uniform/item/_index";
 import { useCadetUniformMap } from "@/dataFetcher/cadet";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
-import { getUniformSizelist } from "@/lib/uniformHelper";
-import { Uniform, UniformFormData, UniformSizelist, UniformType } from "@/types/globalUniformTypes";
-import { UniformFormType } from "@/zod/uniform";
-import { faArrowUpRightFromSquare, faBars, faCheck, faPencil, faRightLeft, faRightToBracket, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { Uniform, UniformType } from "@/types/globalUniformTypes";
+import { faBars, faRightLeft, faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Col, Dropdown, Form, FormControl, Row } from "react-bootstrap";
-import { FormProvider, useForm, useFormContext } from "react-hook-form";
+import { useState } from "react";
+import { Col, Dropdown, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { useSWRConfig } from "swr";
 
 type PropType = {
     uniform: Uniform;
@@ -64,6 +59,18 @@ const UniformRow = ({ uniform, uniformType, replaceItem, openUniformId, setOpenU
         });
     }
 
+    const getGenerationRowTextColor = () => {
+        if (!uniformType.usingGenerations) return "text-secondary";
+        if (!uniform.generation) return "text-danger";
+        if (uniform.generation.outdated) return "text-warning";
+        return "";
+    }
+    const getSizeRowTextColor = () => {
+        if (!uniformType.usingSizes) return "text-secondary";
+        if (!uniform.size) return "text-danger";
+        return "";
+    }
+
     return (
         <div data-testid={`div_uitem_${uniform.id}`} className={`row border-top border-1 white m-0`}>
             <div className="col-12 p-0">
@@ -105,16 +112,20 @@ const UniformRow = ({ uniform, uniformType, replaceItem, openUniformId, setOpenU
                                 <Row className="fs-8 fw-bold fst-italic">
                                     {uniformType.usingGenerations ? t('common.uniform.generation.label', { count: 1 }) : ""}
                                 </Row>
-                                <GenerationRow
-                                    uniform={uniform}
-                                    uniformType={uniformType} />
+                                <Row
+                                    data-testid={"div_generation"}
+                                    className={`text-truncate pe-2 ${getGenerationRowTextColor()}`}
+                                >
+                                    {uniformType.usingGenerations ? uniform.generation?.name ?? "K.A." : "---"}
+                                </Row>
                             </Col>
                             <Col xs={uniformType.usingSizes ? 3 : 0} sm={2} md={2} xxl={1}>
                                 <Row className="fs-8 fw-bold fst-italic">
                                     {uniformType.usingSizes ? t('common.uniform.size') : ""}
                                 </Row>
-                                <SizeRow uniform={uniform}
-                                    uniformType={uniformType} />
+                                <Row data-testid={"div_size"} className={`text-truncate pe-2 ${getSizeRowTextColor()}`}>
+                                    {uniformType.usingSizes ? uniform.size?.name ?? "K.A." : "---"}
+                                </Row>
                             </Col>
                             <Col md={4} lg={6} xl={6} xxl={8} className="d-none d-md-inline">
                                 <Row className="fs-8 fw-bold fst-italic">
@@ -149,16 +160,10 @@ const UniformRow = ({ uniform, uniformType, replaceItem, openUniformId, setOpenU
                         </div>
                     }
                     <Col sx="auto" className={`d-none d-sm-block col-auto ${"pt-1"}`}>
-                        <TooltipIconButton
-                            icon={faArrowUpRightFromSquare}
-                            variant="outline-secondary"
-                            tooltipText="Detailansicht öffnen"
-                            testId="btn_open"
+                        <TooltipActionButton
+                            variantKey="open"
                             disabled={uniform.id === openUniformId}
                             onClick={() => setOpenUniformId(uniform.id)}
-                            buttonSize="sm"
-                            buttonType="button"
-                            key={"btn_open"}
                         />
                     </Col>
                 </div>

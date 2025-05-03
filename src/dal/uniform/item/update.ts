@@ -3,7 +3,7 @@ import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { uniformArgs, UniformFormData } from "@/types/globalUniformTypes";
-import { uniformFormSchema, UniformFormType } from "@/zod/uniform";
+import { getUniformFormSchema, UniformFormType } from "@/zod/uniform";
 import { notFound } from "next/navigation";
 
 /**
@@ -15,7 +15,7 @@ import { notFound } from "next/navigation";
 export const update = (props: UniformFormType): Promise<UniformFormData> => genericSAValidator(
     AuthRole.inspector,
     props,
-    uniformFormSchema,
+    getUniformFormSchema(),
     { uniformId: props.id }
 ).then(async ([, data]) => prisma.$transaction(async (client) => {
     const type = await client.uniformType.findFirstOrThrow({
