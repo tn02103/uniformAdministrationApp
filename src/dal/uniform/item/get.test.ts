@@ -9,8 +9,12 @@ it('should return a list of uniform history entries', async () => {
     const result = await getHistory(uniformId);
     expect(result).toBeDefined();
     expect(result.length).toBeGreaterThan(0);
-    cleanData(result, ["id", "cadet.id"]);
+    cleanData(result, ["id", "cadet.id", "cadet.recdelete"]);
     expect(result).toMatchSnapshot();
+    expect(result[0].cadet.recdelete).toBeNull();
+    expect(result[1].cadet.recdelete).toBeNull();
+    expect(result[2].cadet.recdelete).toBeNull();
+    expect(result[3].cadet.recdelete).not.toBeNull();
 });
 it('should return a list of defficiencies', async () => {
     const result = await getDeficiencies({ uniformId: ids.uniformIds[0][46] });

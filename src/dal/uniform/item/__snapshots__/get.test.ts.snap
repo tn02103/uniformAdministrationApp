@@ -94,7 +94,6 @@ exports[`should return a list of uniform history entries 1`] = `
     "cadet": {
       "firstname": "Marie",
       "lastname": "Becker",
-      "recdelete": null,
     },
     "dateIssued": 2023-08-16T00:00:00.000Z,
     "dateReturned": null,
@@ -103,7 +102,6 @@ exports[`should return a list of uniform history entries 1`] = `
     "cadet": {
       "firstname": "Antje",
       "lastname": "Fried",
-      "recdelete": null,
     },
     "dateIssued": 2023-08-11T00:00:00.000Z,
     "dateReturned": 2023-08-15T00:00:00.000Z,
@@ -112,7 +110,6 @@ exports[`should return a list of uniform history entries 1`] = `
     "cadet": {
       "firstname": "Christina",
       "lastname": "Faber",
-      "recdelete": null,
     },
     "dateIssued": 2023-08-06T00:00:00.000Z,
     "dateReturned": 2023-08-10T00:00:00.000Z,
@@ -121,7 +118,6 @@ exports[`should return a list of uniform history entries 1`] = `
     "cadet": {
       "firstname": "Simone",
       "lastname": "Osterhagen",
-      "recdelete": 2023-08-16T07:45:25.000Z,
     },
     "dateIssued": 2023-08-01T00:00:00.000Z,
     "dateReturned": 2023-08-05T00:00:00.000Z,
