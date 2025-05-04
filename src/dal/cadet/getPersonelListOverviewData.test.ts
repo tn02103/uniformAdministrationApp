@@ -92,7 +92,7 @@ describe('manager tests', () => {
         expect(result[4].lastname).toBe(data.cadets[2].lastname);
         expect(compareDates('2023-06-18', result[4].lastInspection!)).toBeTruthy();
         expect(result[4].uniformComplete).toBeFalsy();
-        expect(result[4].activeDeficiencyCount).toBe(5);
+        expect(result[4].activeDeficiencyCount).toBe(6);
     });
     runSortOrderTests();
     describe('filter tests', () => {

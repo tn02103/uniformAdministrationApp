@@ -15,10 +15,9 @@ import { CadetUniformMap } from "@/types/globalCadetTypes";
 import { Uniform, UniformType } from "@/types/globalUniformTypes";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import UniformRow from "./uniformRow";
-import { useState } from "react";
-import { UniformOffcanvas } from "@/components/UniformOffcanvas/UniformOffcanvas";
 
 type PropType = {
     uniformMap: CadetUniformMap,
@@ -145,7 +144,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
 
 
     return (
-        <div>
+        <>
             {typeList?.map((type) => {
                 const items = map?.[type.id] ?? [];
                 return (
@@ -185,7 +184,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
                     </div>
                 )
             })}
-        </div>
+        </>
     )
 }
 

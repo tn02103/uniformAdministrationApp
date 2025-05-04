@@ -168,7 +168,7 @@ test.describe(() => {
             const types = data.uniformTypes.filter(type => !type.recdelete).sort((a, b) => a.sortOrder - b.sortOrder);
 
             for (let i = 0; i < types.length; i++) {
-                await expect.soft(uniformComponent.div_typeList.locator('> div > div').locator(`nth=${i}`)).toHaveAttribute('data-testid', `div_utype_${types[i].id}`);
+                await expect.soft(uniformComponent.div_typeList.locator('> div').locator(`nth=${i}`)).toHaveAttribute('data-testid', `div_utype_${types[i].id}`);
                 await expect.soft(uniformComponent.div_utype_name(types[i].id)).toHaveText(types[i].name);
             }
         });
