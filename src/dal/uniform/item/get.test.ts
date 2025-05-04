@@ -11,9 +11,9 @@ it('should return a list of uniform history entries', async () => {
     expect(result.length).toBeGreaterThan(0);
     cleanData(result, ["id", "cadet.id", "cadet.recdelete"]);
     expect(result).toMatchSnapshot();
-    expect(result[0].cadet.recdelete).toBeNull();
-    expect(result[1].cadet.recdelete).toBeNull();
-    expect(result[2].cadet.recdelete).toBeNull();
+    expect(result[0].cadet.recdelete).toBeUndefined();
+    expect(result[1].cadet.recdelete).toBeUndefined();
+    expect(result[2].cadet.recdelete).toBeUndefined();
     expect(result[3].cadet.recdelete).not.toBeNull();
 });
 it('should return a list of defficiencies', async () => {

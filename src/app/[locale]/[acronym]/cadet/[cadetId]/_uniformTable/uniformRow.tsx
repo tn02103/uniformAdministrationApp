@@ -179,47 +179,4 @@ const UniformRow = ({ uniform, uniformType, replaceItem, openUniformId, setOpenU
     )
 }
 
-const GenerationRow = ({
-    uniformType, uniform
-}: {
-    uniformType: UniformType,
-    uniform: Uniform,
-}) => {
-    if (!uniformType.usingGenerations) return (
-        <Row data-testid={"div_generation"} className="text-secondary">
-            ---
-        </Row>
-    );
-
-    <Row data-testid={"div_generation"} className={`text-truncate pe-2 ${!uniform.generation ? "text-danger" : uniform.generation.outdated ? "text-warning" : ""}`}>
-        <p className="text-truncate p-0 m-0">
-            {uniform.generation ? uniform.generation.name : "K.A."}
-        </p>
-    </Row>
-}
-
-const SizeRow = ({ uniform, uniformType
-}: {
-    uniform: Uniform;
-    uniformType: UniformType;
-}) => {
-
-    if (!uniformType.usingSizes) return (
-        <Row data-testid={"div_size"} className={"text-secondary"}>
-            ---
-        </Row>
-    )
-
-    return (
-        <Row data-testid={"div_size"} className={!uniform.size ? "text-danger" : ""}>
-            <p className="d-none d-md-block p-0 m-0 text-truncate">
-                {uniform.size ? uniform.size.name : "K.A."}
-            </p>
-            <p className="d-md-none p-0 m-0">
-                {uniform.size ? uniform.size.name : "K.A."}
-            </p>
-        </Row>
-    )
-}
-
 export default UniformRow;
