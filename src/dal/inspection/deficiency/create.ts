@@ -1,7 +1,7 @@
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { updateUniformDeficiencySchema, UpdateUniformDeficiencySchema } from "@/zod/deficiency";
+import { updateUniformDeficiencySchema } from "@/zod/deficiency";
 import { z } from "zod";
 
 const createUniformDeficiencySchema = z.object({

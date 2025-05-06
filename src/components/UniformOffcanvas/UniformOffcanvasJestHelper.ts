@@ -34,8 +34,6 @@ jest.mock('@/dataFetcher/uniformAdmin', () => ({
 jest.mock("@/dal/uniform/item/_index", () => ({
     updateUniformItem: jest.fn(() => Promise.resolve('Saved item')),
     deleteUniformItem: jest.fn(() => Promise.resolve('Deleted item')),
-    getUniformItemHistory: jest.fn(() => Promise.resolve([])), // Mock for history
-    getUniformItemCountByType: jest.fn(() => Promise.resolve(0)), // Mock for count
     issueUniformItem: jest.fn(),
     createUniformItems: jest.fn(),
     getUniformItemDeficiencies: jest.fn(),
