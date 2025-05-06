@@ -15,6 +15,7 @@ import { CadetUniformMap } from "@/types/globalCadetTypes";
 import { Uniform, UniformType } from "@/types/globalUniformTypes";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import UniformRow from "./uniformRow";
 
@@ -30,6 +31,8 @@ const CadetUniformTable = ({ ...props }: PropType) => {
     const { userRole } = useGlobalData();
     const { typeList } = useUniformTypeList();
     const { map, mutate: keyedMutator, error } = useCadetUniformMap(cadetId, props.uniformMap);
+    const [openUniformId, setOpenUniformId] = useState<string | null>(null);
+
     if (error)
         throw error;
 
@@ -172,7 +175,10 @@ const CadetUniformTable = ({ ...props }: PropType) => {
                                         uniform={uniform}
                                         uniformType={type}
                                         replaceItem={() => openIssueModal(type, uniform)}
-                                    />);
+                                        openUniformId={openUniformId}
+                                        setOpenUniformId={setOpenUniformId}
+                                    />
+                                );
                             })}
                         </div>
                     </div>

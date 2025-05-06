@@ -25,6 +25,7 @@ const customJestConfig: Config = {
         "**/tests/ct/**/*.[jt]s?(x)",
         "**/src/components/**/*.test.[jt]s?(x)",
         "**/src/app/**/*.test.[jt]s?(x)",
+        "**/src/lib/**/*.test.[jt]s?(x)",
     ],
 };
 

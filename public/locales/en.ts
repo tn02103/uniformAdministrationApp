@@ -7,6 +7,7 @@ export default {
         name: "Name",
         type: "Type",
         loading: "Loading",
+        status: "State",
         dates: {
             "created": "Created on:",
             "updated": "Last modified:",
@@ -24,13 +25,14 @@ export default {
             create: "Create",
             addNew: "Add new",
             open: "Open",
-            reactivate: "Reaktivieren",
-            deactivate: "Deaktivieren",
+            reactivate: "Reactivate",
+            deactivate: "Deactivate",
             prevStep: "Back",
             nextStep: "Next",
             edit_item: "Edit {item}",
             issue_item: "Issue {item}",
             issue: "Issue",
+            resolve: "Resolve",
             return: "Withdraw",
             replace: "Replace",
             rename: "Rename",
@@ -44,7 +46,7 @@ export default {
             changePosition: "Change position",
             changePassword: "Change password",
             ok: "Understood",
-            startInspection: "start inspection",
+            startInspection: "Start inspection",
         },
         cadet: {
             cadet: "Person",
@@ -205,6 +207,10 @@ export default {
             changeSortorder: "The order was changed successfully",
         },
     },
+    expandableArea: {
+        showMore: "Show more",
+        showLess: "Show less",
+    },
     login: {
         header: "Login",
         label: {
@@ -241,8 +247,8 @@ export default {
             inspection: "Uniform inspection",
             inspecting: "Inspecting VK",
             deficiencies: "Deficiencies",
-            oldDeficiencies: "old deficiencies",
-            newDeficiencies: "new deficiencies",
+            oldDeficiencies: "Old deficiencies",
+            newDeficiencies: "New deficiencies",
             "amountUnresolved#other": "- {count} unresolved",
             "amountUnresolved#zero": "- All resolved",
         },
@@ -288,13 +294,46 @@ export default {
         noData: "No data loaded",
         header: "Uniform parts",
     },
+    uniformOffcanvas: {
+        deleteAction: {
+            header: "Delete {type} {number}",
+            "message.one": "Should the uniform part {type} {number} really be deleted?",
+            "message.two": "This action cannot be undone.",
+            "success": "The uniform part was successfully deleted.",
+            "failed": "The uniform part could not be deleted.",
+        },
+        deficiency: {
+            header: "Deficiencies",
+            includeResolved: "Show resolved deficiencies",
+            cardLabel: "Deficiency {index}",
+            createCardLabel: "Create new deficiency",
+            "label.actions": "Actions for deficiency {index}",
+            "label.comment": "Comment",
+            "label.deficiencyType": "Type of deficiency",
+            "label.date.created": "Created on:",
+            "label.date.resolved": "Resolved on:",
+            "label.date.updated": "Last updated on:",
+            "label.user.created": "Created by:",
+            "label.user.resolved": "Resolved by:",
+            "label.user.updated": "Last updated by:",
+            "noDeficiencies": "No deficiencies present",
+        },
+        history: {
+            "header": "History",
+            "label.dateIssued": "Issued on",
+            "label.dateReturned": "Returned on",
+            "label.cadet": "Person",
+            "title.deleted": "Person deleted",
+            "noEntries": "No entries",
+        }
+    },
     createUniform: {
         pagination: {
-            known: "Numbers known",
+            known: "Known numbers",
             generate: "Generate numbers",
         },
         header: {
-            page: "create new uniform items",
+            page: "Create new uniform items",
             configurator: "Configuration",
             numberInput: "Enter numbers",
             itemAmounts: "Number of uniform parts",
@@ -304,53 +343,53 @@ export default {
             add: "Add",
             amount: "Amount",
             numberStart: "Numbers (from)",
-            until: "until",
+            until: "Until",
             continuous: "Continuous numbers",
             continuousTooltip: {
                 line1: "For continuous numbers, consecutive numbers are searched for each size.",
-                line2: "There can still be jumps between the sizes.",
+                line2: "There can still be gaps between the sizes.",
             },
         },
         create: {
             "label": "Create {count}",
-            "success#one": "One uniform part was successfully created",
-            "success#other": "{count} uniform parts were successfully created",
-            "failed#one": "The uniform part could not be created",
-            "failed#other": "The uniform parts could not be created",
+            "success#one": "One uniform part was successfully created.",
+            "success#other": "{count} uniform parts were successfully created.",
+            "failed#one": "The uniform part could not be created.",
+            "failed#other": "The uniform parts could not be created.",
         },
         errors: {
-            "endBiggerStart": "The start number must be smaller or equal to the end number",
-            "maxItems": "No more than 99 uniform parts can be created at the same time",
-            "minNumber": "At least one number must be generated",
-            "inUse": "The number is already assigned",
+            "endBiggerStart": "The start number must be smaller than or equal to the end number.",
+            "maxItems": "No more than 99 uniform parts can be created at the same time.",
+            "minNumber": "At least one number must be generated.",
+            "inUse": "The number is already assigned.",
         }
     },
     sidebar: {
-        logout: "logout",
-        changeLanguage: "change Language",
+        logout: "Logout",
+        changeLanguage: "Change language",
         links: {
-            cadetOverview: "staff",
-            uniformOverview: "uniform",
+            cadetOverview: "Staff",
+            uniformOverview: "Uniform",
             create: {
-                group: "create",
-                cadet: "person",
-                uniform: "uniform",
+                group: "Create",
+                cadet: "Person",
+                uniform: "Uniform",
             },
             inspection: {
-                group: "inspection",
-                start: "start",
-                stop: "stop",
-                unfinished: "finishe old inspection",
-                inspection: "administration",
+                group: "Inspection",
+                start: "Start",
+                stop: "Stop",
+                unfinished: "Finish old inspection",
+                inspection: "Administration",
             },
             administration: {
-                group: "administration",
-                uniform: "uniform",
-                size: "sizes",
-                material: "materials",
-                deficiency: "deficiency"
+                group: "Administration",
+                uniform: "Uniform",
+                size: "Sizes",
+                material: "Materials",
+                deficiency: "Deficiency",
             },
-            userOverview: "accesses",
+            userOverview: "Accesses",
             redirects: "Redirects",
         },
     },
@@ -367,18 +406,18 @@ export default {
     admin: {
         uniform: {
             header: "Uniform administration",
-            changeSizelistWarning: "When changing the selected size list, the size information of uniform parts of this generation may be lost",
+            changeSizelistWarning: "When changing the selected size list, the size information of uniform parts of this generation may be lost.",
             type: {
                 deleteModal: {
                     header: "Delete uniform type \"{type}\"",
                     message: {
-                        part1: "Should the uniform type \"{type}\" really be deleted.",
+                        part1: "Should the uniform type \"{type}\" really be deleted?",
                         part2: "All ",
                         'part3#one': "{count} uniform part",
                         'part3#other': "{count} uniform parts",
-                        part4: " of this type will be deleted"
+                        part4: " of this type will be deleted.",
                     },
-                    confirmationText: "Uniform type-{type}"
+                    confirmationText: "Uniform type-{type}",
                 }
             },
             generationList: {
@@ -393,8 +432,6 @@ export default {
                     confirmationText: "Generation-{generation}",
                 },
                 updateModal: {
-                    editHeader: "Edit generation \"{generation}\"",
-                    createHeader: "Create new generation",
                     changeSizeHeader: "Change size list",
                     changeSizeMessage: "When changing the selected size list, the size information of uniform parts of this generation may be lost",
                     nameDuplicationError: "A generation with this name already exists",
@@ -571,6 +608,12 @@ export default {
         "admin.deficiency": "deficiency configuration - Uniformadmin"
     },
     modals: {
+        ariaLabel: {
+            message: "Message",
+            danger: "Danger message",
+            warning: "Warning message",
+            error: "Error message",
+        },
         messageModal: {
             uniform: {
                 return: {

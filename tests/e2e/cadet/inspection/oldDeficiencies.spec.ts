@@ -18,7 +18,7 @@ const test = adminTest.extend<Fixture>({
         const { deficiencyIds } = staticData.ids;
         use({
             ...staticData,
-            unresolvedIds: [deficiencyIds[5], deficiencyIds[10], deficiencyIds[1], deficiencyIds[9], deficiencyIds[13]],
+            unresolvedIds: [deficiencyIds[5], deficiencyIds[10], deficiencyIds[1], deficiencyIds[9], deficiencyIds[15], deficiencyIds[13]],
             resolvedIds: [deficiencyIds[0], deficiencyIds[2], deficiencyIds[6]],
         });
     },

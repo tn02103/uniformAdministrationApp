@@ -1,7 +1,7 @@
-import { UniformConfiguration, UniformSizelist, UniformType } from "../types/globalUniformTypes";
+import { UniformSizelist, UniformType } from "../types/globalUniformTypes";
 
 type Props = {
-    generationId?: string;
+    generationId?: string | null;
     sizelists: UniformSizelist[];
 } & ({ type: UniformType } | ComplextProps)
 type ComplextProps = {
@@ -39,7 +39,7 @@ export const getUniformSizelist = (props: Props) => {
         }
     }
     if (!sizelist) {
-        sizelist = sizelists.find(list => list.id === uniformType!.fk_defaultSizelist);
+        sizelist = sizelists.find(list => list.id === uniformType.fk_defaultSizelist);
     }
     return sizelist;
 }

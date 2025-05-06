@@ -202,12 +202,13 @@ exports[`<UniformTypeOffcanvas /> handles editable state correctly 1`] = `
             </label>
             <select
               aria-invalid="false"
-              class="form-select"
+              class="text-truncate form-select"
               id="uniformTypeForm_select-fk_defaultSizelist"
               name="fk_defaultSizelist"
             >
               <option
                 disabled=""
+                value=""
               >
                 common.error.pleaseSelect
               </option>
@@ -249,13 +250,13 @@ exports[`<UniformTypeOffcanvas /> handles editable state correctly 1`] = `
               common.uniform.type.usingSizes
             </label>
             <div
-              class="form-check form-switch"
+              class="form-check form-switch px-0 my-auto"
             >
               <input
                 aria-checked="true"
                 aria-disabled="false"
                 checked=""
-                class="form-check-input fw-bold"
+                class="form-check-input ms-0 my-2"
                 id="uniformTypeForm_toggle-usingSizes"
                 name="usingSizes"
                 role="switch"
@@ -285,13 +286,13 @@ exports[`<UniformTypeOffcanvas /> handles editable state correctly 1`] = `
               common.uniform.type.usingGenerations
             </label>
             <div
-              class="form-check form-switch"
+              class="form-check form-switch px-0 my-auto"
             >
               <input
                 aria-checked="true"
                 aria-disabled="false"
                 checked=""
-                class="form-check-input fw-bold"
+                class="form-check-input ms-0 my-2"
                 id="uniformTypeForm_toggle-usingGenerations"
                 name="usingGenerations"
                 role="switch"
@@ -489,12 +490,12 @@ exports[`<UniformTypeOffcanvas /> renders correct layout when no uniformType is 
               common.uniform.type.usingSizes
             </label>
             <div
-              class="form-check form-switch"
+              class="form-check form-switch px-0 my-auto"
             >
               <input
                 aria-checked="false"
                 aria-disabled="false"
-                class="form-check-input fw-bold"
+                class="form-check-input ms-0 my-2"
                 id="uniformTypeForm_toggle-usingSizes"
                 name="usingSizes"
                 role="switch"
@@ -524,12 +525,12 @@ exports[`<UniformTypeOffcanvas /> renders correct layout when no uniformType is 
               common.uniform.type.usingGenerations
             </label>
             <div
-              class="form-check form-switch"
+              class="form-check form-switch px-0 my-auto"
             >
               <input
                 aria-checked="false"
                 aria-disabled="false"
-                class="form-check-input fw-bold"
+                class="form-check-input ms-0 my-2"
                 id="uniformTypeForm_toggle-usingGenerations"
                 name="usingGenerations"
                 role="switch"
@@ -798,13 +799,13 @@ exports[`<UniformTypeOffcanvas /> renders the component and handles setEditable 
               common.uniform.type.usingSizes
             </label>
             <div
-              class="form-check form-switch"
+              class="form-check form-switch px-0 my-auto"
             >
               <input
                 aria-checked="true"
                 aria-disabled="true"
                 checked=""
-                class="form-check-input fw-bold"
+                class="form-check-input ms-0 my-2"
                 id="uniformTypeForm_toggle-usingSizes"
                 name="usingSizes"
                 role="switch"
@@ -834,13 +835,13 @@ exports[`<UniformTypeOffcanvas /> renders the component and handles setEditable 
               common.uniform.type.usingGenerations
             </label>
             <div
-              class="form-check form-switch"
+              class="form-check form-switch px-0 my-auto"
             >
               <input
                 aria-checked="true"
                 aria-disabled="true"
                 checked=""
-                class="form-check-input fw-bold"
+                class="form-check-input ms-0 my-2"
                 id="uniformTypeForm_toggle-usingGenerations"
                 name="usingGenerations"
                 role="switch"

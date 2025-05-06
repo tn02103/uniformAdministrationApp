@@ -1,0 +1,562 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UniformOffcanvas should render correctly 1`] = `
+<div
+  aria-labelledby="offcanvas-uniform-header"
+  aria-modal="true"
+  class="offcanvas offcanvas-end offcanvas-toggling show"
+  role="dialog"
+  style="width: 576px; visibility: visible;"
+  tabindex="-1"
+>
+  <div
+    class="offcanvas-header"
+  >
+    <div
+      class="offcanvas-title h5"
+    >
+      <h3
+        id="offcanvas-uniform-header"
+      >
+        Typ1
+        : 
+        <b>
+          2501
+        </b>
+      </h3>
+    </div>
+    <button
+      aria-label="Close"
+      class="btn-close"
+      type="button"
+    />
+  </div>
+  <div
+    class="offcanvas-body"
+  >
+    <h4>
+      common.details
+    </h4>
+    <hr
+      class="mb-0"
+    />
+    <div
+      class="justify-content-evenly row"
+    >
+      <button
+        class="col-auto border-0 btn btn-outline-secondary"
+        type="button"
+      >
+        common.actions.edit
+         
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-pen fa-sm "
+          data-icon="pen"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 512 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M362.7 19.3L314.3 67.7 444.3 197.7l48.4-48.4c25-25 25-65.5 0-90.5L453.3 19.3c-25-25-65.5-25-90.5 0zm-71 71L58.6 323.5c-10.4 10.4-18 23.3-22.2 37.4L1 481.2C-1.5 489.7 .8 498.8 7 505s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L421.7 220.3 291.7 90.3z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+      <button
+        class="col-auto border-0 btn btn-outline-danger"
+        type="button"
+      >
+        common.actions.delete
+         
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-trash fa-sm "
+          data-icon="trash"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 448 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 296.3 0 284.2 0L163.8 0c-12.1 0-23.2 6.8-28.6 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+    </div>
+    <form
+      autocomplete="off"
+      class="mb-4"
+      novalidate=""
+    >
+      <div
+        class="mb-3 mt-2 justify-content-between row"
+      >
+        <div
+          class="col-sm-auto col-12"
+        >
+          <div
+            class="mb-3"
+          >
+            <label
+              class="fw-bold m-0 form-label"
+              for="uniform_toggle-active"
+            >
+              common.status
+            </label>
+            <p
+              aria-label="common.status"
+              aria-readonly="true"
+              class="mt-2"
+            >
+              common.uniform.active.true
+            </p>
+            <div
+              class="text-danger fs-7"
+              data-testid="err_active"
+              role="alert"
+            />
+          </div>
+        </div>
+        <div
+          class="col-sm-auto col-7"
+        >
+          <div
+            class="mb-3"
+          >
+            <label
+              class="fw-bold m-0 undefined form-label"
+              for="uniform_select-generation"
+            >
+              common.uniform.generation.label
+            </label>
+            <p
+              aria-label="common.uniform.generation.label"
+              aria-readonly="true"
+              class="py-2 m-0"
+            >
+              Generation1-2
+            </p>
+            <div
+              aria-label="error message generation"
+              class="text-danger fs-7"
+              data-testid="err_generation"
+              id="uniform_err_generation"
+              role="alert"
+            />
+          </div>
+        </div>
+        <div
+          class="p-0 col-sm-auto col-5"
+          style="min-width: 100px;"
+        >
+          <div
+            class="mb-3"
+          >
+            <label
+              class="fw-bold m-0 undefined form-label"
+              for="uniform_select-size"
+            >
+              common.uniform.size
+            </label>
+            <p
+              aria-label="common.uniform.size"
+              aria-readonly="true"
+              class="py-2 m-0"
+            >
+              0
+            </p>
+            <div
+              aria-label="error message size"
+              class="text-danger fs-7"
+              data-testid="err_size"
+              id="uniform_err_size"
+              role="alert"
+            />
+          </div>
+        </div>
+        <div
+          class="col-12"
+        >
+          <div>
+            <label
+              class="fw-bold m-0 form-label"
+              for="uniform_input-comment"
+            >
+              common.comment
+            </label>
+            <textarea
+              aria-invalid="false"
+              class="form-control-plaintext"
+              disabled=""
+              id="uniform_input-comment"
+              name="comment"
+              rows="2"
+              width="auto"
+            >
+              Test comment
+            </textarea>
+            <div
+              aria-label="error message comment"
+              class="text-danger fs-7"
+              data-testid="err_comment"
+              id="uniform_err_comment"
+              role="alert"
+            />
+          </div>
+        </div>
+      </div>
+    </form>
+    <h4>
+      uniformOffcanvas.deficiency.header
+    </h4>
+    <hr
+      class="mb-0"
+    />
+    <div
+      class="m-0 mb-2 justify-content-between row"
+    >
+      <div
+        class="col-sm-auto col-5"
+      >
+        <button
+          class="mb-2 border-0 btn btn-outline-success"
+          type="button"
+        >
+          common.actions.create
+           
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-plus fa-sm "
+            data-icon="plus"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 448 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+      </div>
+      <div
+        class="text-start m-2 col-sm-auto col-6"
+      >
+        <div
+          class="form-check form-switch"
+        >
+          <input
+            aria-label="uniformOffcanvas.deficiency.includeResolved"
+            class="form-check-input"
+            name="showResolved"
+            type="checkbox"
+          />
+          <label
+            class="form-check-label"
+            title=""
+          >
+            uniformOffcanvas.deficiency.includeResolved
+          </label>
+        </div>
+      </div>
+    </div>
+    <div
+      aria-label="Deficiency list"
+      class="m-0 row"
+      role="list"
+    >
+      <div
+        aria-label="uniformOffcanvas.deficiency.cardLabel"
+        class="m-1 p-0  card"
+        role="listitem"
+      >
+        <div
+          class="position-relative card-body"
+        >
+          <form
+            autocomplete="off"
+            class="mb-4"
+            novalidate=""
+          >
+            <div
+              aria-label="uniformOffcanvas.deficiency.label.deficiencyType"
+              class="fs-6 fw-bold card-title h5"
+            >
+              Test Type
+               
+            </div>
+            <div
+              class="position-absolute top-0 end-0"
+            >
+              <div
+                class="dropstart"
+              >
+                <button
+                  aria-expanded="false"
+                  aria-label="uniformOffcanvas.deficiency.label.actions"
+                  class="border-0 dropdown-toggle btn btn-outline-secondary"
+                  id="Cadetdropdown"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="svg-inline--fa fa-ellipsis-vertical "
+                    data-icon="ellipsis-vertical"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    viewBox="0 0 128 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <p
+              aria-label="uniformOffcanvas.deficiency.label.comment"
+              class="card-text"
+            >
+              Test comment
+            </p>
+            <div
+              class="align-items-center justify-content-center row"
+              style="height: 2rem;"
+            >
+              <div
+                class="position-relative"
+              >
+                <hr
+                  class=""
+                />
+                <div
+                  class="w-auto bg-white align-center position-absolute top-50 start-50 translate-middle"
+                >
+                  <button
+                    class="border-0 btn btn-light btn-sm"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="svg-inline--fa fa-chevron-down text-dark me-2 false"
+                      data-icon="chevron-down"
+                      data-prefix="fas"
+                      focusable="false"
+                      role="img"
+                      viewBox="0 0 512 512"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                    expandableArea.showMore
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div
+        aria-label="uniformOffcanvas.deficiency.cardLabel"
+        class="m-1 p-0  card"
+        role="listitem"
+      >
+        <div
+          class="position-relative card-body"
+        >
+          <form
+            autocomplete="off"
+            class="mb-4"
+            novalidate=""
+          >
+            <div
+              aria-label="uniformOffcanvas.deficiency.label.deficiencyType"
+              class="fs-6 fw-bold card-title h5"
+            >
+              Another One
+               
+            </div>
+            <div
+              class="position-absolute top-0 end-0"
+            >
+              <div
+                class="dropstart"
+              >
+                <button
+                  aria-expanded="false"
+                  aria-label="uniformOffcanvas.deficiency.label.actions"
+                  class="border-0 dropdown-toggle btn btn-outline-secondary"
+                  id="Cadetdropdown"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="svg-inline--fa fa-ellipsis-vertical "
+                    data-icon="ellipsis-vertical"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    viewBox="0 0 128 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <p
+              aria-label="uniformOffcanvas.deficiency.label.comment"
+              class="card-text"
+            >
+              Test comment 2
+            </p>
+            <div
+              class="align-items-center justify-content-center row"
+              style="height: 2rem;"
+            >
+              <div
+                class="position-relative"
+              >
+                <hr
+                  class=""
+                />
+                <div
+                  class="w-auto bg-white align-center position-absolute top-50 start-50 translate-middle"
+                >
+                  <button
+                    class="border-0 btn btn-light btn-sm"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="svg-inline--fa fa-chevron-down text-dark me-2 false"
+                      data-icon="chevron-down"
+                      data-prefix="fas"
+                      focusable="false"
+                      role="img"
+                      viewBox="0 0 512 512"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                    expandableArea.showMore
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <h4
+      class="mt-4"
+    >
+      uniformOffcanvas.history.header
+    </h4>
+    <hr
+      class="mb-0"
+    />
+    <div
+      class="row"
+    >
+      <div
+        aria-label="uniformOffcanvas.history.header"
+        class="m-0 p-4 col"
+        role="list"
+      >
+        <div
+          class="bg-light p-2 row"
+        >
+          <div
+            class="fw-bold text-truncate col-4"
+          >
+            uniformOffcanvas.history.label.dateIssued
+            :
+          </div>
+          <div
+            class="fw-bold text-truncate col-4"
+          >
+            uniformOffcanvas.history.label.dateReturned
+            :
+          </div>
+          <div
+            class="fw-bold text-truncate col-4"
+          >
+            uniformOffcanvas.history.label.cadet
+            :
+          </div>
+        </div>
+        <div
+          class="row"
+          role="listitem"
+        >
+          <div
+            aria-label="dateIssued"
+            class="col"
+          >
+            01.10.2023
+          </div>
+          <div
+            aria-label="dateReturned"
+            class="col"
+          />
+          <div
+            aria-label="person"
+            class="col"
+            title=""
+          >
+            John
+             
+            Doe
+          </div>
+        </div>
+        <div
+          class="row"
+          role="listitem"
+        >
+          <div
+            aria-label="dateIssued"
+            class="col"
+          >
+            02.10.2023
+          </div>
+          <div
+            aria-label="dateReturned"
+            class="col"
+          >
+            03.10.2023
+          </div>
+          <div
+            aria-label="person"
+            class="text-decoration-line-through text-danger col"
+            title="uniformOffcanvas.history.title.deleted"
+          >
+            Jane
+             
+            Smith
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
