@@ -104,15 +104,3 @@ export const UniformOffcanvas = ({ uniform, uniformType, onClose, onSave }: Unif
         </Offcanvas>
     );
 }
-
-/*
-    LIST OF TODOS:
-    - [x] Connect to uniform-list-overview
-    - [x] DetailRow: size and generation shouldn't be visible if not beeing used by type
-    - [x] DetailRow: Delete not working when issued
-    - [x] DeficiencyRow: Show no Deficiency Message if no deficiencies are present
-    - [x] DeficiencyRow: (BUG) LabelIconButtons are in two rows on small screens
-    - [x] HistoryRow: Show no History Message if no history is present
-    - [x] Fix jest tests
-    - [x] Add e2e tests
-*/
