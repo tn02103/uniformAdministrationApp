@@ -560,6 +560,13 @@ export default {
             planned: 'Geplannte Kontrollen',
         },
         planned: {
+            deregistration: {
+                header: "Abmeldungen für {name}",
+                "label.person": "Person",
+                "label.date": "Datum",
+                "label.remove": "Abmeldung entfernen",
+                "label.add": "Person abmelden",
+            },
             badge: {
                 new: "Neu",
                 planned: "Geplant",

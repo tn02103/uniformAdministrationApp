@@ -3,7 +3,7 @@ import { PlannedInspectionType } from "@/types/inspectionTypes";
 import React from "react";
 import { Col, OverlayTrigger } from "react-bootstrap";
 
-export function InspectionDeregistrationColumn({ inspection, openDeregistrationModal }: { inspection: PlannedInspectionType, openDeregistrationModal: () => void }) {
+export function InspectionDeregistrationColumn({ inspection, openOffcanvas }: { inspection: PlannedInspectionType, openOffcanvas: () => void }) {
     const t = useScopedI18n('inspection.planned.label')
     return (
         <OverlayTrigger
@@ -16,7 +16,7 @@ export function InspectionDeregistrationColumn({ inspection, openDeregistrationM
             }
         >
             <Col xs={6} md={1} className="my-1">
-                <a className="link-opacity-100 text-primary link-opacity-25-hover" role="button" onClick={openDeregistrationModal}>
+                <a className="link-opacity-100 text-primary link-opacity-25-hover" role="button" onClick={openOffcanvas}>
                     {inspection.deregistrations.length} <p className="m-0 d-inline d-md-none">{t('deregistrations')}</p>
                 </a>
             </Col>
