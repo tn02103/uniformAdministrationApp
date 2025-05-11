@@ -12,9 +12,8 @@ type ButtonColumnPropType = {
     handleFinish: () => void;
     editable: boolean;
     inspection: PlannedInspectionType | null;
-    nameDuplicationError: boolean
 };
-export function InspectionButtonColumn({ editable, inspection, nameDuplicationError, handleCancel, handleEdit, handleDelete, handleStart, handleFinish }: ButtonColumnPropType) {
+export function InspectionButtonColumn({ editable, inspection, handleCancel, handleEdit, handleDelete, handleStart, handleFinish }: ButtonColumnPropType) {
     const t = useScopedI18n('common.actions');
     if (editable || !inspection) {
         return (
@@ -23,7 +22,6 @@ export function InspectionButtonColumn({ editable, inspection, nameDuplicationEr
                     type="submit"
                     variant="outline-primary"
                     className="mx-2"
-                    disabled={nameDuplicationError}
                     aria-label="save"
                 >
                     {t('save')}

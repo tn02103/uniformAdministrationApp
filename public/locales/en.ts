@@ -558,6 +558,13 @@ export default {
             planned: 'planned inspections',
         },
         planned: {
+            deregistration: {
+                header: "Deregistrations {name}",
+                "label.person": "person",
+                "label.date": "Date",
+                "label.remove": "Remove deregistration",
+                "label.add": "deregister person",
+            },
             badge: {
                 new: "new",
                 planned: "planned",
