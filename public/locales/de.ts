@@ -135,6 +135,10 @@ export default {
             unknown: "Es ist ein unerwarteter Fehler aufgetreten",
             date: {
                 invalid: "Bitte ein gültiges Datum angeben",
+                minExcluded: "Das Datum muss nach dem {date} liegen",
+                "minExcluded#today": "Das Datum muss nach heute liegen",
+                minIncluded: "Das Datum muss nach dem oder am {date} liegen",
+                "minIncluded#today": "Das Datum muss am oder nach dem heutigen Tag liegen",
             },
             number: {
                 required: "Bitte eine Zahl angeben",
@@ -571,6 +575,11 @@ export default {
                 "label.date": "Datum",
                 "label.remove": "Abmeldung entfernen",
                 "label.add": "Person abmelden",
+            },
+            delete: {
+                header: "Inspektion löschen",
+                message: "Soll die Inspektion \"{name}\" wirklich gelöscht werden? Diese Aktion ist nicht wieder umkehrbar",
+                primary: "löschen",
             },
             badge: {
                 new: "Neu",

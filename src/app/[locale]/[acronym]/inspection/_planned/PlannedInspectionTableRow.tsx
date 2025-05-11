@@ -10,9 +10,9 @@ import { useScopedI18n } from "@/lib/locales/client";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
 import { PlannedInspectionFormShema, plannedInspectionFormShema } from "@/zod/inspection";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Col, FormControl, Row } from "react-bootstrap";
-import { Controller, FormProvider, useForm, useFormContext, useWatch } from "react-hook-form";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { InspectionBadge } from "./InspectionBadge";
 import { InspectionButtonColumn } from "./InspectionButtonColumn";
@@ -30,11 +30,27 @@ export function PlannedInspectionTableRow({
     const t = useScopedI18n('inspection.planned');
     const tError = useScopedI18n('common.error');
     const modal = useModal();
+
+    const refienedShema = plannedInspectionFormShema.refine(
+        (data) => !inspectionList?.find(i => (i.name === data.name) && (i.id !== inspection?.id)),
+        {
+            path: ['name'],
+            message: 'custom.inspection.nameDuplication',
+        }
+    ).refine(
+        (data) => !inspectionList?.find(i => (dayjs(data.date).isSame(i.date, "day")) && ((i.id !== inspection?.id) || !inspection)),
+        {
+            path: ['date'],
+            message: 'custom.inspection.dateDuplication',
+        }
+    );
+
     const form = useForm<PlannedInspectionFormShema>({
-        resolver: zodResolver(plannedInspectionFormShema),
+        resolver: zodResolver(refienedShema),
         mode: "onChange",
     });
-    const { handleSubmit, reset } = form;
+    const { handleSubmit, reset, register, formState, control } = form;
+
     const [editable, setEditable] = useState(!inspection);
     const { mutate, inspectionList } = usePlannedInspectionList();
 
@@ -54,26 +70,37 @@ export function PlannedInspectionTableRow({
     }
     function handleSave(data: PlannedInspectionFormShema) {
         if (inspection) {
-            setEditable(false);
-            mutate(updatePlannedInspection({ data, id: inspection.id }))
-                .catch(() => {
-                    toast.error(tError('actions.save'));
-                });
+            mutate(
+                updatePlannedInspection({ data, id: inspection.id })
+            ).then(() =>
+                setEditable(false)
+            ).catch(() => {
+                toast.error(tError('actions.save'));
+            });
         } else {
-            mutate(createInspection(data))
-                .then(() => {
-                    closeNewLine!();
-                }).catch(() => {
-                    toast.error(tError('actions.create'))
-                });
+            mutate(
+                createInspection(data)
+            ).then(() => {
+                closeNewLine!();
+            }).catch(() => {
+                toast.error(tError('actions.create'));
+            });
         }
     }
     function handleDelete() {
         if (!inspection) return;
-        mutate(
-            deleteInspection(inspection?.id)
-        ).catch(() => {
-            toast.error(tError('actions.delete'));
+
+        modal?.simpleWarningModal({
+            header: t('delete.header'),
+            message: t('delete.message', { name: inspection.name }),
+            primaryOption: t('delete.primary'),
+            primaryFunction: async () => {
+                await mutate(
+                    deleteInspection(inspection?.id)
+                ).catch(() => {
+                    toast.error(tError('actions.delete'));
+                });
+            }
         });
     }
 
@@ -131,8 +158,38 @@ export function PlannedInspectionTableRow({
                     <Col xs={12} md={2} className="my-1">
                         <InspectionBadge inspection={inspection} />
                     </Col>
-                    <DateColumn editable={editable} inspection={inspection} />
-                    <NameColumn editable={editable} inspection={inspection} />
+                    <Col xs={editable ? 12 : 6} md={3} className="my-1" role="cell" aria-label={t('label.date')}>
+                        {(!editable && inspection)
+                            ? <span data-testid="div_date">{dayjs(inspection.date).locale('de').format("dd DD.MM.YYYY")}</span>
+                            : <Controller
+                                name="date"
+                                control={control}
+                                render={({ field: { onChange, value } }) =>
+                                    <DatePicker
+                                        onChange={onChange}
+                                        value={value}
+                                        error={formState.errors.date?.message}
+                                        ariaLabel={t('label.date')}
+                                    />
+                                }
+                            />
+                        }
+                    </Col>
+                    <Col
+                        xs={editable ? 12 : 6} md={3} xl={editable ? 4 : 3}
+                        className="my-1"
+                        role="cell"
+                        aria-label={t('label.name')}
+                    >
+                        {(!editable && inspection)
+                            ? <span data-testid="div_name">{inspection.name}</span>
+                            : <FormControl
+                                aria-label={t('label.name')}
+                                isInvalid={!!formState.errors.name}
+                                {...register('name')} />
+                        }
+                        <ErrorMessage error={formState.errors.name?.message} testId="err_name" />
+                    </Col>
                     {(!editable && inspection) &&
                         <InspectionDeregistrationColumn inspection={inspection} openOffcanvas={() => openDeregistrationOffcanvas!(inspection.id)} />
                     }
@@ -150,101 +207,5 @@ export function PlannedInspectionTableRow({
                 </Row>
             </FormProvider>
         </form>
-    )
-}
-
-type NameColumnProps = {
-    editable: boolean;
-    inspection: PlannedInspectionType | null;
-}
-const NameColumn = ({ editable, inspection }: NameColumnProps) => {
-    const t = useScopedI18n('inspection.planned');
-    const name = useWatch({ name: 'name' });
-
-    const { register, formState, setError, clearErrors } = useFormContext<PlannedInspectionFormShema>();
-    const { inspectionList } = usePlannedInspectionList();
-
-    useEffect(() => {
-        if (editable) {
-            if (name && inspectionList?.find(i => (i.name === name) && (i.id !== inspection?.id))) {
-                setTimeout(() => {
-                    setError('name', {
-                        type: 'validation',
-                        message: 'custom.inspection.nameDuplication',
-                    })
-                }, 0);
-            }
-        } else {
-            clearErrors('name');
-        }
-    }, [name, editable, inspectionList, inspection]);
-
-    return (
-        <Col
-            xs={editable ? 12 : 6} md={3} xl={editable ? 4 : 3}
-            className="my-1"
-            role="cell"
-            aria-label={t('label.name')}
-        >
-            {(!editable && inspection)
-                ? <span data-testid="div_name">{inspection.name}</span>
-                : <FormControl
-                    aria-label={t('label.name')}
-                    isInvalid={!!formState.errors.name}
-                    {...register('name')} />
-            }
-            <ErrorMessage error={formState.errors.name?.message} testId="err_name" />
-        </Col>
-    )
-}
-
-type DateColumnProps = {
-    editable: boolean;
-    inspection: PlannedInspectionType | null;
-}
-const DateColumn = ({ editable, inspection }: DateColumnProps) => {
-    const t = useScopedI18n('inspection.planned');
-    const { inspectionList } = usePlannedInspectionList();
-
-    const { control, formState, setError, clearErrors } = useFormContext<PlannedInspectionFormShema>();
-    const date = useWatch({ name: 'date' });
-
-    useEffect(() => {
-        if (editable) {
-            if (date && inspectionList?.find(i => (
-                (dayjs(date).isSame(i.date, "day"))
-                && ((i.id !== inspection?.id) || !inspection)
-            ))) {
-                console.log("🚀 ~ useEffect ~ setError: date",)
-                setTimeout(() => {
-                    setError('date', {
-                        type: 'validation',
-                        message: 'custom.inspection.dateDuplication',
-                    });
-                }, 0);
-            }
-        } else {
-            clearErrors('date');
-        }
-    }, [date, inspectionList, editable, inspection]);
-
-    return (
-        <Col xs={editable ? 12 : 6} md={3} className="my-1" role="cell" aria-label={t('label.date')}>
-            {(!editable && inspection)
-                ? <span data-testid="div_date">{dayjs(inspection.date).locale('de').format("dd DD.MM.YYYY")}</span>
-                : <Controller
-                    name="date"
-                    control={control}
-                    render={({ field: { onChange, value } }) =>
-                        <DatePicker
-                            onChange={onChange}
-                            value={value}
-                            error={formState.errors.date?.message}
-                            ariaLabel={t('label.date')}
-                        />
-                    }
-                />
-            }
-        </Col>
     );
 }

@@ -10,7 +10,6 @@ import { Col, Row } from "react-bootstrap";
 import { DeregistrationOffcanvas } from "./DeregistrationOffcanvas";
 import { PlannedInspectionTableRow } from "./PlannedInspectionTableRow";
 
-
 export function PlannedInspectionTable({
     ...props
 }: {
@@ -25,7 +24,7 @@ export function PlannedInspectionTable({
 
     return (
         <div data-testid="div_plannedTable">
-            <Row className="bg-white border-bottom border-1 border-dark p-2 position-relative">
+            <Row className="bg-white border-bottom border-1 border-dark p-2 position-relative" role="row" aria-label="header">
                 <Col md={2} className="fs-bold d-none d-md-grid">{t('state')}</Col>
                 <Col md={3} className="fs-bold d-none d-md-grid">{t('date')}</Col>
                 <Col md={3} className="fs-bold d-none d-md-grid">{t('name')}</Col>

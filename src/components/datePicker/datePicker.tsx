@@ -27,7 +27,7 @@ export default function DatePicker({ onChange, value, error, ariaLabel }: DatePi
         }
     });
 
-    function handleOnChangeCalendar(value: any, event: React.MouseEvent) {
+    function handleOnChangeCalendar(value: any) {
         setShowCalendar(false);
         const date = new Date(value.getTime() - value.getTimezoneOffset() * 60000);
         onChange(dayjs.utc(date).toDate());
@@ -49,7 +49,7 @@ export default function DatePicker({ onChange, value, error, ariaLabel }: DatePi
                     type="string"
                     name={"date"}
                     aria-label={ariaLabel}
-                    className={`form-control ${error ? "isInvaild" : ""}`}
+                    className={`form-control ${error ? "is-invalid" : ""}`}
                     onChange={(e) => handleInputOnChange(e.target.value)}
                     value={(typeof value === "string") ? value : dayjs(value).format('DD.MM.YYYY')}
                 />
@@ -58,10 +58,10 @@ export default function DatePicker({ onChange, value, error, ariaLabel }: DatePi
                 </button>
             </div>
             {error &&
-                <ErrorMessage error={error} testId={"err_date"}/>
+                <ErrorMessage error={error} testId={"err_date"} />
             }
             <div style={{ display: "contents" }} >
-                <div className="position-absolute"  ref={refCalendar as any} style={{ zIndex: 9999 }} >
+                <div className="position-absolute" ref={refCalendar as any} style={{ zIndex: 9999 }} >
                     {showCalendar &&
                         <Calendar
                             minDate={dayjs().toDate()}

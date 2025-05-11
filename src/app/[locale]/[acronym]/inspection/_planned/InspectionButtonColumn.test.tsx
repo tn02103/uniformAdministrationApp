@@ -28,7 +28,6 @@ const renderButton = (inspection: PlannedInspectionType, editable?: boolean, nam
             <InspectionButtonColumn
                 inspection={inspection}
                 editable={!!editable}
-                nameDuplicationError={!!nameDuplicationError}
                 handleCancel={functions.cancel}
                 handleDelete={functions.delete}
                 handleEdit={functions.edit}
@@ -164,20 +163,5 @@ describe('<InspectionButtonColumn/>', () => {
 
         screen.getByRole('button', { name: 'save' }).click();
         expect(functions.submit).toHaveBeenCalled();
-    });
-    it('editable nameDuplicationError', async () => {
-        const insp: PlannedInspectionType = { ...defaultValues, date: dayjs().add(2, "day").toDate() }
-        const functions = renderButton(insp, true, true);
-
-        const buttons = screen.queryAllByRole('button');
-        expect(buttons).toHaveLength(2);
-
-        expect(screen.getByRole('button', { name: 'save' })).toBeVisible();
-        expect(screen.getByRole('button', { name: 'cancel' })).toBeVisible();
-        expect(screen.getByRole('button', { name: 'save' })).toBeDisabled();
-
-        screen.getByRole('button', { name: 'cancel' }).click();
-        expect(functions.cancel).toHaveBeenCalled();
-        expect(functions.submit).not.toHaveBeenCalled();
     });
 });

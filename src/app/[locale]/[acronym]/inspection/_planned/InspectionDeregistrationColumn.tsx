@@ -16,7 +16,11 @@ export function InspectionDeregistrationColumn({ inspection, openOffcanvas }: { 
             }
         >
             <Col xs={6} md={1} className="my-1">
-                <a className="link-opacity-100 text-primary link-opacity-25-hover" role="button" onClick={openOffcanvas}>
+                <a className="link-opacity-100 text-primary link-opacity-25-hover"
+                    aria-label="open deregistration list"
+                    role="button"
+                    onClick={openOffcanvas}
+                >
                     {inspection.deregistrations.length} <p className="m-0 d-inline d-md-none">{t('deregistrations')}</p>
                 </a>
             </Col>
