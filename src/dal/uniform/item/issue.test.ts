@@ -1,7 +1,7 @@
 import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { ExceptionType } from "@/errors/CustomException";
 import { prisma } from "@/lib/db";
-import dayjs from "dayjs";
+import dayjs from "@/lib/dayjs";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { issue } from "./issue";
 

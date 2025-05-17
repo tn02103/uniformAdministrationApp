@@ -259,8 +259,8 @@ model Inspection {
     fk_assosiation     String            @db.Char(36)
     date               DateTime          @default(now()) @db.Date
     name               String
-    timeStart          DateTime?         @map("time_start") @db.Time()
-    timeEnd            DateTime?         @map("time_end") @db.Time()
+    timeStart          String?           @map("time_start")
+    timeEnd            String?           @map("time_end")
     cadetInspection    CadetInspection[]
     deficiencyCreated  Deficiency[]      @relation("Deficiency_InspectionCreated")
     deficiencyResolved Deficiency[]      @relation("Deficiency_InspectionResolved")
@@ -378,14 +378,14 @@ enum deficiencytype_relation {
 }
 
 model Redirect {
-    id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    assosiationId  String      @db.Char(36)
-    code           String      @db.VarChar(30)
-    target         String      @db.VarChar(100)
-    active         Boolean     @default(true)
-    assosiation    Assosiation @relation(fields: [assosiationId], references: [id], onUpdate: Restrict)
+    id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    assosiationId String      @db.Char(36)
+    code          String      @db.VarChar(30)
+    target        String      @db.VarChar(100)
+    active        Boolean     @default(true)
+    assosiation   Assosiation @relation(fields: [assosiationId], references: [id], onUpdate: Restrict)
 
+    @@unique(code)
     @@map("redirect")
     @@schema("public")
-    @@unique(code)
 }

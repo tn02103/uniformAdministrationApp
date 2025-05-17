@@ -31,15 +31,16 @@ export const stopInspection = async (props: stopInspectionPropShema) => genericS
         throw new SaveDataException('Could not finish inspection: Inspection already finished');
     }
 
-    const startTime = dayjs.utc(inspection.timeStart).format('HH:mm');
-    if (startTime > data.time) {
+    const startTime = dayjs(inspection.timeStart, "HH:mm");
+    const endTime = dayjs(data.time, "HH:mm");
+    if (!startTime.isBefore(endTime)) {
         throw new SaveDataException('Could not finish inspection: Endtime is before starttime of inspection');
     }
 
     // update Inspection
     await prisma.inspection.update({
         where: { id: data.id },
-        data: { timeEnd: dayjs.utc(data.time, 'HH:mm').toDate() }
+        data: { timeEnd: data.time }
     });
     // send Mails
     const config = await prisma.assosiationConfiguration.findUnique({

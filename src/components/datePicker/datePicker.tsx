@@ -1,6 +1,6 @@
 import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import dayjs from "dayjs";
+import dayjs from "@/lib/dayjs";
 import { useEffect, useRef, useState } from "react";
 import Calendar from 'react-calendar';
 import ErrorMessage from "../errorMessage";

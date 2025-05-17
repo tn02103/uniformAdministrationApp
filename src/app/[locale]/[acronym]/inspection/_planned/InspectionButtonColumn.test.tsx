@@ -2,7 +2,7 @@ import { InspectionButtonColumn } from "@/app/[locale]/[acronym]/inspection/_pla
 import { PlannedInspectionType } from "@/types/inspectionTypes";
 import '@testing-library/jest-dom';
 import { render, screen } from "@testing-library/react";
-import dayjs from "dayjs";
+import dayjs from "@/lib/dayjs";
 
 const defaultValues: PlannedInspectionType = {
     id: "",
@@ -82,7 +82,7 @@ describe('<InspectionButtonColumn/>', () => {
     it('active', async () => {
         const insp: PlannedInspectionType = {
             ...defaultValues,
-            timeStart: dayjs('09:00', "HH:mm").toDate(),
+            timeStart: '09:00',
         }
         const functions = renderButton(insp);
 
@@ -97,8 +97,8 @@ describe('<InspectionButtonColumn/>', () => {
     it('finished', async () => {
         const insp: PlannedInspectionType = {
             ...defaultValues,
-            timeStart: dayjs('09:00', 'HH:mm').toDate(),
-            timeEnd: dayjs('12:00', 'HH:mm').toDate()
+            timeStart: '09:00',
+            timeEnd: '12:00'
         };
         const functions = renderButton(insp);
 
@@ -114,7 +114,7 @@ describe('<InspectionButtonColumn/>', () => {
         const insp: PlannedInspectionType = {
             ...defaultValues,
             date: dayjs().subtract(2, "day").toDate(),
-            timeStart: dayjs('09:00', 'HH:mm').toDate(),
+            timeStart: '09:00',
         }
         const functions = renderButton(insp);
 

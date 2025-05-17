@@ -1,8 +1,8 @@
 import { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
+import dayjs from "@/lib/dayjs";
 import { useScopedI18n } from "@/lib/locales/client";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
-import dayjs from "dayjs";
-import { Button, Col } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 
 type ButtonColumnPropType = {
     handleCancel: () => void;
