@@ -2,7 +2,7 @@ import { InspectionBadge } from "@/app/[locale]/[acronym]/inspection/_planned/In
 import { PlannedInspectionType } from "@/types/inspectionTypes";
 import '@testing-library/jest-dom';
 import { render, screen } from "@testing-library/react";
-import dayjs from "dayjs";
+import dayjs from "@/lib/dayjs";
 
 const defaultValues = { id: "", fk_assosiation: "", active: true, name: '', deregistrations: [] };
 
@@ -46,7 +46,7 @@ describe('InspectionBadge', () => {
         expect(comp).toHaveClass(/bg-secondary/);
     });
     it('active', () => {
-        const insp: PlannedInspectionType = { ...defaultValues, date: dayjs().toDate(), timeStart: dayjs().toDate(), timeEnd: null }
+        const insp: PlannedInspectionType = { ...defaultValues, date: dayjs().toDate(), timeStart: "10:00", timeEnd: null }
         render(<InspectionBadge inspection={insp} />);
 
         const comp = screen.getByTestId('lbl_badge');
@@ -55,7 +55,7 @@ describe('InspectionBadge', () => {
         expect(comp).toHaveClass(/bg-success/);
     });
     it('finished', () => {
-        const insp: PlannedInspectionType = { ...defaultValues, date: dayjs().toDate(), timeStart: dayjs().toDate(), timeEnd: dayjs().toDate() }
+        const insp: PlannedInspectionType = { ...defaultValues, date: dayjs().toDate(), timeStart: "10:00", timeEnd: "12:00" }
         render(<InspectionBadge inspection={insp} />);
 
         const comp = screen.getByTestId('lbl_badge');
@@ -73,7 +73,7 @@ describe('InspectionBadge', () => {
         expect(comp).toHaveClass(/bg-danger/);
     });
     it('unfinished', () => {
-        const insp: PlannedInspectionType = { ...defaultValues, date: dayjs().subtract(2, "day").toDate(), timeStart: dayjs().toDate(), timeEnd: null }
+        const insp: PlannedInspectionType = { ...defaultValues, date: dayjs().subtract(2, "day").toDate(), timeStart: "10:00", timeEnd: null }
         render(<InspectionBadge inspection={insp} />);
 
         const comp = screen.getByTestId('lbl_badge');

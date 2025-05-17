@@ -2,7 +2,7 @@
 
 import { useScopedI18n } from "@/lib/locales/client";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
-import dayjs from "dayjs";
+import dayjs from "@/lib/dayjs";
 import { Badge } from "react-bootstrap";
 
 export function InspectionBadge({ inspection }: { inspection: PlannedInspectionType | null }): React.ReactNode {

@@ -1,7 +1,7 @@
+import { useScopedI18n } from "@/lib/locales/client";
 import { Button, Form, Modal } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { passwordValidationPattern } from "../../lib/validations";
-import { useI18n, useScopedI18n } from "@/lib/locales/client";
 
 export type ChangeUserPasswordModalPropType = {
     nameOfUser?: string,

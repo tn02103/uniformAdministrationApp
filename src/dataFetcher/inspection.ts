@@ -1,6 +1,5 @@
 
-import { getPlannedInspectionList } from "@/dal/inspection/planned/get";
-import { getInspectionState } from "@/dal/inspection/state";
+import { getInspectionState, getPlannedInspectionList } from "@/dal/inspection";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
 import useSWR from "swr";
 
