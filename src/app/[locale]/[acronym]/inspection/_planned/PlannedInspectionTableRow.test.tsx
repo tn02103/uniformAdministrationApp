@@ -8,7 +8,6 @@ import { toast } from "react-toastify";
 import { mockInspectionList } from "./jestHelper";
 import { PlannedInspectionTableRow } from "./PlannedInspectionTableRow";
 
-
 describe('<PlannedInspectionTableRow />', () => {
 
     afterEach(() => {
@@ -376,33 +375,249 @@ describe('<PlannedInspectionTableRow />', () => {
             expect(simpleWarningModal).toHaveBeenCalledTimes(1);
             act(() => {
                 simpleWarningModal.mock.calls[0][0].primaryFunction();
-            })
+            });
 
             expect(deleteInspection).toHaveBeenCalledWith(mockInspectionList[0].id);
             expect(mutate).toHaveBeenCalled();
         });
-        /* it('should catch DAL-Exception', async () => {
-             const { deleteInspection } = jest.requireMock("@/dal/inspection");
-             const { simpleWarningModal } = jest.requireMock("@/components/modals/modalProvider").useModal();
-             deleteInspection.mockRejectedValueOnce(new Error("error"));
- 
-             const user = userEvent.setup();
-             render(
-                 <PlannedInspectionTableRow
-                     inspection={mockInspectionList[0]}
-                 />
-             );
- 
-             await user.click(screen.getByTestId('btn_delete'));
-             expect(deleteInspection).not.toHaveBeenCalled();
- 
-             expect(simpleWarningModal).toHaveBeenCalledTimes(1);
-             act(() => {
-                 simpleWarningModal.mock.calls[0][0].primaryFunction();
-             });
- 
-             expect(deleteInspection).toHaveBeenCalledWith(mockInspectionList[0].id);
-             expect(toast.error).toHaveBeenCalled();
-         }); */
+        it('should catch DAL-Exception', async () => {
+            const { deleteInspection } = jest.requireMock("@/dal/inspection");
+            const { simpleWarningModal } = jest.requireMock("@/components/modals/modalProvider").useModal();
+            deleteInspection.mockRejectedValueOnce(new Error("error"));
+
+            const user = userEvent.setup();
+            render(
+                <PlannedInspectionTableRow
+                    inspection={mockInspectionList[0]}
+                />
+            );
+
+            await user.click(screen.getByTestId('btn_delete'));
+            expect(deleteInspection).not.toHaveBeenCalled();
+
+            expect(simpleWarningModal).toHaveBeenCalledTimes(1);
+            await act(async () => {
+                await simpleWarningModal.mock.calls[0][0].primaryFunction();
+            });
+
+            expect(deleteInspection).toHaveBeenCalledWith(mockInspectionList[0].id);
+            expect(toast.error).toHaveBeenCalled();
+        });
+    });
+    describe('start inspection', () => {
+        it('should start the inspection', async () => {
+            const { startInspection } = jest.requireMock("@/dal/inspection");
+            const { mutate } = jest.requireMock("@/dataFetcher/inspection").usePlannedInspectionList();
+
+            const user = userEvent.setup();
+            render(
+                <PlannedInspectionTableRow
+                    inspection={mockInspectionList[0]}
+                />
+            );
+
+            await user.click(screen.getByTestId('btn_start'));
+            expect(startInspection).toHaveBeenCalled();
+            expect(mutate).toHaveBeenCalled();
+        });
+
+        it('should not start inspection if other hasnt finished', async () => {
+            const { startInspection } = jest.requireMock("@/dal/inspection");
+            const { usePlannedInspectionList } = jest.requireMock("@/dataFetcher/inspection");
+            const { simpleErrorModal } = jest.requireMock("@/components/modals/modalProvider").useModal();
+            const mutate = usePlannedInspectionList().mutate;
+            usePlannedInspectionList.mockReturnValueOnce({
+                inspectionList: [
+                    mockInspectionList[0], mockInspectionList[1],
+                    {
+                        ...mockInspectionList[2],
+                        timeStart: dayjs.utc().startOf('day').hour(2).toDate(),
+                    }
+                ],
+                mutate,
+            });
+
+            const user = userEvent.setup();
+            render(
+                <PlannedInspectionTableRow
+                    inspection={mockInspectionList[0]}
+                />
+            );
+
+            await user.click(screen.getByTestId('btn_start'));
+            expect(startInspection).not.toHaveBeenCalled();
+            expect(mutate).not.toHaveBeenCalled();
+            expect(simpleErrorModal).toHaveBeenCalledTimes(1);
+        });
+
+        it('should catch exception from dal-method', async () => {
+            const { startInspection } = jest.requireMock("@/dal/inspection");
+            const { mutate } = jest.requireMock("@/dataFetcher/inspection").usePlannedInspectionList();
+            startInspection.mockRejectedValueOnce(new Error("error"));
+
+            const user = userEvent.setup();
+            render(
+                <PlannedInspectionTableRow
+                    inspection={mockInspectionList[0]}
+                />
+            );
+            await user.click(screen.getByTestId('btn_start'));
+            expect(startInspection).toHaveBeenCalledTimes(1);
+            expect(mutate).not.toHaveBeenCalled();
+            expect(toast.error).toHaveBeenCalled();
+        });
+    });
+    describe('stop inspection', () => {
+        const { stopInspection } = jest.requireMock("@/dal/inspection");
+        const { usePlannedInspectionList } = jest.requireMock("@/dataFetcher/inspection");
+        const { simpleFormModal } = jest.requireMock("@/components/modals/modalProvider").useModal();
+        const { mutate } = usePlannedInspectionList();
+
+        it('should stop passed inspection', async () => {
+            usePlannedInspectionList.mockReturnValueOnce({
+                inspectionList: [
+                    mockInspectionList[0], mockInspectionList[1],
+                    {
+                        ...mockInspectionList[2],
+                        timeStart: "07:00",
+                    }
+                ],
+                mutate,
+            });
+
+            const mockInspection = {
+                ...mockInspectionList[2],
+                timeStart: "07:00",
+            }
+
+            const user = userEvent.setup();
+            render(
+                <PlannedInspectionTableRow
+                    inspection={mockInspection}
+                />
+            );
+            await user.click(screen.getByTestId('btn_complete'));
+            expect(simpleFormModal).toHaveBeenCalledTimes(1);
+            expect(simpleFormModal).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    header: expect.stringContaining("inspection.planned.label.finishInspection"),
+                    elementLabel: expect.stringContaining("inspection.planned.label.time.finished"),
+                    elementValidation: expect.objectContaining({
+                        validate: expect.any(Function),
+                    }),
+                    save: expect.any(Function),
+                    type: "time",
+                    defaultValue: { input: "" },
+                })
+            );
+            expect(stopInspection).not.toHaveBeenCalled();
+            expect(mutate).not.toHaveBeenCalled();
+
+            const validate = simpleFormModal.mock.calls[0][0].elementValidation.validate;
+            expect(validate('6:59')).toEqual("inspection.planned.errors.endBeforStart");
+            expect(validate('7:00')).toEqual("inspection.planned.errors.endBeforStart");
+            expect(validate('7:01')).toBeTruthy();
+
+            await act(async () => {
+                await simpleFormModal.mock.calls[0][0].save({ input: "12:00" });
+            });
+            expect(stopInspection).toHaveBeenCalledWith({
+                id: mockInspection.id,
+                time: "12:00",
+            });
+            expect(mutate).toHaveBeenCalled();
+        });
+        it('should stop active inspection', async () => {
+            const newDate = dayjs().hour(14).minute(10).toDate();
+            jest.useFakeTimers({ advanceTimers: true, now: newDate });
+
+            usePlannedInspectionList.mockReturnValueOnce({
+                inspectionList: [
+                    {
+                        ...mockInspectionList[0],
+                        timeStart: "07:00",
+                    },
+                    mockInspectionList[1],
+                    mockInspectionList[2],
+                ],
+                mutate,
+            });
+            const mockInspection = {
+                ...mockInspectionList[0],
+                timeStart: "07:00",
+            }
+
+            const user = userEvent.setup();
+            render(
+                <PlannedInspectionTableRow
+                    inspection={mockInspection}
+                />
+            );
+
+            await user.click(screen.getByTestId('btn_complete'));
+
+            // Advance timers if necessary
+            jest.runAllTimers();
+
+            expect(simpleFormModal).toHaveBeenCalledTimes(1);
+            expect(simpleFormModal).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    header: expect.stringContaining("inspection.planned.label.finishInspection"),
+                    elementLabel: expect.stringContaining("inspection.planned.label.time.finished"),
+                    elementValidation: expect.objectContaining({
+                        validate: expect.any(Function),
+                    }),
+                    save: expect.any(Function),
+                    type: "time",
+                    defaultValue: { input: "14:10" },
+                })
+            );
+            const validate = simpleFormModal.mock.calls[0][0].elementValidation.validate;
+            expect(validate('6:59')).toEqual("inspection.planned.errors.endBeforStart");
+            expect(validate('7:00')).toEqual("inspection.planned.errors.endBeforStart");
+            expect(validate('7:01')).toBeTruthy();
+
+            await act(async () => {
+                await simpleFormModal.mock.calls[0][0].save({ input: "12:00" });
+            });
+            expect(stopInspection).toHaveBeenCalledWith({
+                id: mockInspectionList[0].id,
+                time: "12:00",
+            });
+            expect(mutate).toHaveBeenCalled();
+
+            jest.useRealTimers();
+        });
+        it('should catch exception from dal-method', async () => {
+            stopInspection.mockRejectedValueOnce(new Error("error"));
+            usePlannedInspectionList.mockReturnValueOnce({
+                inspectionList: [
+                    {
+                        ...mockInspectionList[0],
+                        timeStart: "07:00",
+                    },
+                    mockInspectionList[1],
+                    mockInspectionList[2],
+                ],
+                mutate,
+            });
+            const mockInspection = {
+                ...mockInspectionList[0],
+                timeStart: "07:00",
+            }
+            const user = userEvent.setup();
+            render(
+                <PlannedInspectionTableRow
+                    inspection={mockInspection}
+                />
+            );
+            await user.click(screen.getByTestId('btn_complete'));
+            await act(async () => {
+                await simpleFormModal.mock.calls[0][0].save({ input: "12:00" });
+            });
+            expect(stopInspection).toHaveBeenCalledTimes(1);
+            expect(mutate).not.toHaveBeenCalled();
+            expect(toast.error).toHaveBeenCalled();
+        });
     });
 });

@@ -51,7 +51,7 @@ export const mockInspectionList: PlannedInspectionType[] = [
         id: "1777e18f-f4fa-4ec4-90d8-58a9b1ce16ae",
         name: "Inspection 3",
         date: new Date("2023-10-01"),
-        timeStart: new Date("2023-10-01T10:00:00"),
+        timeStart: null,
         timeEnd: null,
         deregistrations: []
     }

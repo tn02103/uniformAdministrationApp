@@ -9,7 +9,7 @@ export const customErrorMap: ZodErrorMap = (issue, _ctx) => {
         case ZodIssueCode.invalid_type:
             if (issue.received === ZodParsedType.undefined || issue.received === ZodParsedType.null) {
                 message = "string.required";
-            } if (issue.expected === ZodParsedType.date) {
+            } else if (issue.expected === ZodParsedType.date) {
                 message = "date.invalid";
             } else {
                 message = `Expected ${issue.expected}, received ${issue.received}`;

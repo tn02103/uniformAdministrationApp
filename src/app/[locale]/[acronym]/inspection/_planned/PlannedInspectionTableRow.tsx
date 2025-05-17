@@ -121,26 +121,29 @@ export function PlannedInspectionTableRow({
 
     function handleFinish() {
         if (!inspection) return;
-        const startTime = dayjs.utc(inspection.timeStart).format('HH:mm');
-        const compareTime = (value: string) => (startTime < value);
+
+        const startTime = dayjs(inspection.timeStart, "HH:mm");
+        const compareTime = (value: string) => (dayjs(value, "HH:mm").isAfter(startTime));
 
         modal?.simpleFormModal({
             header: t('label.finishInspection'),
             elementLabel: t('label.time.finished'),
             elementValidation: {
-                validate: (value) => compareTime(value) || t('errors.endBeforStart', { startTime }),
+                validate: (value) => compareTime(value) || t('errors.endBeforStart', { startTime: inspection.timeStart }),
             },
             defaultValue: {
                 input: dayjs().isSame(inspection?.date, "day") ? dayjs().format('HH:mm') : ''
             },
             type: "time",
             async save({ input }) {
-                stopInspection({
+                await stopInspection({
                     time: input,
                     id: inspection.id,
-                }).then(() => mutate()).catch((e) => {
-                    console.error(e);
-                })
+                }).then(() => {
+                    mutate();
+                }).catch(() => {
+                    toast.error(tError('unknown'));
+                });
             },
             abort() { },
         });

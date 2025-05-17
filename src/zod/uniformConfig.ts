@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { descriptionSchema, nameSchema } from "./global";
 import { customErrorMap } from "./customZod/customErrorMap";
+import { descriptionSchema } from "./global";
 
 z.setErrorMap(customErrorMap);
 
