@@ -7,7 +7,7 @@ import { plannedInspectionFormShema } from "@/zod/inspection";
 import { z } from "zod";
 import { PlannedInspectionDBQuery } from "./_dbQuerys";
 import SaveDataException from "@/errors/SaveDataException";
-import dayjs from "dayjs";
+import dayjs from "@/lib/dayjs";
 
 const dbQuery = new PlannedInspectionDBQuery();
 

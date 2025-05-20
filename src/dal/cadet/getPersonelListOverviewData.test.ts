@@ -99,7 +99,7 @@ describe('manager tests', () => {
         beforeAll(async () => {
             await prisma.inspection.update({
                 where: { id: ids.inspectionIds[4] },
-                data: { timeStart: new Date() }
+                data: { timeStart: "10:00" }
             });
             await insertSvenKellerFirstInspection(0);
         });
@@ -194,7 +194,7 @@ describe('user tests', () => {
         beforeAll(async () => {
             await prisma.inspection.update({
                 where: { id: ids.inspectionIds[4] },
-                data: { timeStart: new Date() }
+                data: { timeStart: "10:00" }
             });
             await insertSvenKellerFirstInspection(0);
         });

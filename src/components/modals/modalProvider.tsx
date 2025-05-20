@@ -2,7 +2,6 @@
 
 import { useI18n } from "@/lib/locales/client";
 import { AdministrationMaterial, CadetMaterial, MaterialGroup } from "@/types/globalMaterialTypes";
-import { UniformType } from "@/types/globalUniformTypes";
 import { ReactNode, createContext, useCallback, useContext, useState } from "react";
 import ChangeLanguageModal from "./changeLanguageModal";
 import DangerConfirmationModal, { DangerConfirmationModalPropType } from "./dangerConfirmationModal";
@@ -10,7 +9,6 @@ import EditMaterialTypeModal, { EditMaterialTypeModalPropType } from "./editMate
 import IssueMaterialModal, { IssueMaterialModalProps } from "./issueMaterial";
 import MessageModal, { MessageModalOption, MessageModalPropType, MessageModalType } from "./messageModal";
 import SimpleFormModal, { SimpleFormModalProps } from "./simpleFormModal";
-import UniformItemDetailModal, { UIDModalProps } from "./uniformItemDetail";
 import ChangeUserPasswordModal, { ChangeUserPasswordModalPropType } from "./userPassword";
 
 type ModalContextType = {
@@ -21,8 +19,7 @@ type ModalContextType = {
     dangerConfirmationModal: (props: DangerConfirmationModalPropType) => void,
     simpleFormModal: (props: SimpleFormModalProps) => void,
     issueMaterialModal: (cadetId: string, materialGroup: MaterialGroup, issuedMaterialList: CadetMaterial[], oldMaterial?: CadetMaterial) => void,
-    uniformItemDetailModal: (uniformId: string, uniformType: UniformType, ownerId: string | null, onDataChanged?: () => void) => void,
-    changeUserPasswordModal: (save: (p: string) => Promise<any>, nameOfUser?: string) => void,
+     changeUserPasswordModal: (save: (p: string) => Promise<any>, nameOfUser?: string) => void,
     editMaterialTypeModal: (groupName: string, groupId: string, type?: AdministrationMaterial) => void,
     changeLanguage: () => void,
 }
@@ -32,7 +29,7 @@ type ModalCapsule = {
     props: any,
 }
 type ModalTypes = "DangerConfirmationModal" | "EditMaterialTypeModal" | "InspectionReviewPopup" | "IssueMaterialModal"
-    | "IssueUniformModal" | "ChangeUserPasswordModal" | "SimpleFormModal" | "UniformItemDetailModal" | "ChangeLanguageModal"
+    | "IssueUniformModal" | "ChangeUserPasswordModal" | "SimpleFormModal" | "ChangeLanguageModal"
 
 export const ModalContext = createContext<ModalContextType | undefined>(undefined);
 export const useModal = () => useContext(ModalContext);
@@ -157,17 +154,6 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         showModal("IssueMaterialModal", props);
     }, []);
 
-    const uniformItemDetailModal = useCallback((uniformId: string, uniformType: UniformType, ownerId: string | null, onDataChanged?: () => void) => {
-        const props: UIDModalProps = {
-            uniformId,
-            uniformType,
-            ownerId,
-            onClose,
-            onDataChanged,
-        };
-        showModal("UniformItemDetailModal", props);
-    }, []);
-
     const editMaterialTypeModal = useCallback((groupName: string, groupId: string, type?: AdministrationMaterial) => {
         const props: EditMaterialTypeModalPropType = {
             type,
@@ -206,7 +192,6 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             changeUserPasswordModal,
             issueMaterialModal,
             simpleFormModal,
-            uniformItemDetailModal,
             changeLanguage,
         }
     }, [showMessageModal,
@@ -220,7 +205,6 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         changeUserPasswordModal,
         issueMaterialModal,
         simpleFormModal,
-        uniformItemDetailModal,
         changeLanguage
     ]);
 
@@ -240,8 +224,6 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
                 return <SimpleFormModal {...modal.props} />
             case "IssueMaterialModal":
                 return <IssueMaterialModal {...modal.props} />
-            case "UniformItemDetailModal":
-                return <UniformItemDetailModal {...modal.props} />
             case "ChangeLanguageModal":
                 return <ChangeLanguageModal onClose={onClose} />
         }

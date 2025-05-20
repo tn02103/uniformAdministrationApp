@@ -7,27 +7,26 @@ import { CadetLabel } from "@/types/globalCadetTypes";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
 import { useState } from "react";
 import { Col, Row } from "react-bootstrap";
-import PlannedInspectionTableRow from "./plannedRow";
-import DeregistrationModal from "./deregistrationModal";
+import { DeregistrationOffcanvas } from "./DeregistrationOffcanvas";
+import { PlannedInspectionTableRow } from "./PlannedInspectionTableRow";
 
-
-export default function PlannedInspectionTable({
+export function PlannedInspectionTable({
     ...props
 }: {
     inspections: PlannedInspectionType[],
     cadets: CadetLabel[]
 }) {
     const t = useScopedI18n('inspection.planned.label')
-    
+
     const [showNewLine, setShowNewLine] = useState(false);
     const { inspectionList } = usePlannedInspectionList(props.inspections);
-    
-    const [deragistrationModalInspectionId, setDeregistrationModalInspectionId] = useState<string | null>(null);
-    const deregistrationModalInspection = inspectionList?.find(i => i.id === deragistrationModalInspectionId);
+
+    const [deregistrationOCInspectionId, setDeregistrationOCInspectionId] = useState<string | null>(null);
+    const deregistrationOCInspection = inspectionList?.find(i => i.id === deregistrationOCInspectionId);
 
     return (
         <div data-testid="div_plannedTable">
-            <Row className="bg-white border-bottom border-1 border-dark p-2 position-relative">
+            <Row className="bg-white border-bottom border-1 border-dark p-2 position-relative" role="row" aria-label="header">
                 <Col md={2} className="fs-bold d-none d-md-grid">{t('state')}</Col>
                 <Col md={3} className="fs-bold d-none d-md-grid">{t('date')}</Col>
                 <Col md={3} className="fs-bold d-none d-md-grid">{t('name')}</Col>
@@ -41,18 +40,18 @@ export default function PlannedInspectionTable({
                 <PlannedInspectionTableRow inspection={null} closeNewLine={() => setShowNewLine(false)} />
             }
             {(inspectionList && inspectionList.length > 0) && inspectionList?.map((insp) => (
-                <PlannedInspectionTableRow inspection={insp} key={insp.id} openDeregistrationModal={setDeregistrationModalInspectionId} />
+                <PlannedInspectionTableRow inspection={insp} key={insp.id} openDeregistrationOffcanvas={setDeregistrationOCInspectionId} />
             ))}
             {(inspectionList?.length === 0) &&
                 <Row data-testid="div_noData">
                     {t('noInspections')}
                 </Row>
             }
-            {deregistrationModalInspection &&
-                <DeregistrationModal
-                    inspection={deregistrationModalInspection}
+            {deregistrationOCInspection &&
+                <DeregistrationOffcanvas
+                    inspection={deregistrationOCInspection}
                     cadetList={props.cadets}
-                    onHide={() => setDeregistrationModalInspectionId(null)} />
+                    onClose={() => setDeregistrationOCInspectionId(null)} />
             }
         </div >
     )

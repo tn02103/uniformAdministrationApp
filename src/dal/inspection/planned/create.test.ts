@@ -57,7 +57,7 @@ describe('validate date not in the past constraint', () => {
         const result = await createInspection(data).catch(e => e);
 
         expect(result.issues[0]).toBeDefined();
-        expect(result.issues[0].message).toBe('date.minToday');
+        expect(result.issues[0].message).toBe('date.minIncluded#today');
         expect(result.issues[0].code).toBe('too_small');
     });
     it('today', async () => {

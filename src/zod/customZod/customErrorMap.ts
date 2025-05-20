@@ -1,4 +1,6 @@
 
+import dayjs from "@/lib/dayjs";
+import { format } from "date-fns";
 import { util, ZodErrorMap, ZodIssueCode, ZodParsedType } from "zod";
 
 export const customErrorMap: ZodErrorMap = (issue, _ctx) => {
@@ -7,6 +9,8 @@ export const customErrorMap: ZodErrorMap = (issue, _ctx) => {
         case ZodIssueCode.invalid_type:
             if (issue.received === ZodParsedType.undefined || issue.received === ZodParsedType.null) {
                 message = "string.required";
+            } else if (issue.expected === ZodParsedType.date) {
+                message = "date.invalid";
             } else {
                 message = `Expected ${issue.expected}, received ${issue.received}`;
             }
@@ -43,7 +47,7 @@ export const customErrorMap: ZodErrorMap = (issue, _ctx) => {
             message = `Invalid function return type`;
             break;
         case ZodIssueCode.invalid_date:
-            message = `Invalid date`;
+            message = `date.invalid`;
             break;
         case ZodIssueCode.invalid_string:
             if (typeof issue.validation === "object") {
@@ -88,14 +92,22 @@ export const customErrorMap: ZodErrorMap = (issue, _ctx) => {
                         ? `greater than or equal to `
                         : `greater than `
                     }${issue.minimum}`;
-            else if (issue.type === "date")
-                message = `Date must be ${issue.exact
-                    ? `exactly equal to `
-                    : issue.inclusive
-                        ? `greater than or equal to `
-                        : `greater than `
-                    }${new Date(Number(issue.minimum))}`;
-            else message = "Invalid input";
+            else if (issue.type === "date") {
+                if (issue.exact)
+                    throw new Error("Exact date is not supported in this context");
+                const isToday = dayjs(Number(issue.minimum)).isSame(dayjs(), "day");
+
+                if (issue.inclusive)
+                    if (isToday)
+                        message = "date.minIncluded#today";
+                    else
+                        message = "date.minIncluded;date:" + format(new Date(Number(issue.minimum)), "dd.MM.yyyy");
+                else
+                    if (isToday)
+                        message = "date.minExcluded#today";
+                    else
+                        message = "date.minExcluded;date:" + format(new Date(Number(issue.minimum)), "dd.MM.yyyy");
+            } else message = "Invalid input";
             break;
         case ZodIssueCode.too_big:
             if (issue.type === "array")
