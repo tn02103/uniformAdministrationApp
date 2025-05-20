@@ -31,6 +31,9 @@ export function PlannedInspectionTableRow({
     const tError = useScopedI18n('common.error');
     const modal = useModal();
 
+    const [editable, setEditable] = useState(!inspection);
+    const { mutate, inspectionList } = usePlannedInspectionList();
+
     const refienedShema = plannedInspectionFormShema.refine(
         (data) => !inspectionList?.find(i => (i.name === data.name) && (i.id !== inspection?.id)),
         {
@@ -50,9 +53,6 @@ export function PlannedInspectionTableRow({
         mode: "onChange",
     });
     const { handleSubmit, reset, register, formState, control } = form;
-
-    const [editable, setEditable] = useState(!inspection);
-    const { mutate, inspectionList } = usePlannedInspectionList();
 
     function handleEdit() {
         reset({

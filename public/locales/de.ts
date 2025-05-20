@@ -602,8 +602,8 @@ export default {
                 noInspections: 'Keine Inspektionen geplannt',
             },
             errors: {
-                deregistration: 'Die Person konnte nicht von der Inspektion abgemeldet werden',
-                register: 'Die Abmeldung der Person konnte nicht zurückgenommen werden',
+                deregistration: 'Die Person {firstname} {lastname} konnte nicht von der Inspektion abgemeldet werden. Bitte laden Sie die Seite neu und versuchen es erneut.',
+                register: 'Die Abmeldung der Person {firstname} {lastname} konnte nicht zurückgenommen werden. Bitte laden Sie die Seite neu und versuchen es erneut.',
                 start: 'Die Kontrolle konte nicht gestartet werden',
                 nameDuplication: 'Der Name wird bereits von einer anderen Kontrolle verwendet',
                 endBeforStart: 'Die Endzeit muss nach der Startzeit um {startTime} sein',

@@ -602,8 +602,8 @@ export default {
                 noInspections: 'No inspections planned',
             },
             errors: {
-                deregistration: "The person could not be deregistered from the inspection",
-                register: "The deregistration of the person could not be undone",
+                deregistration: "The person {firstname} {lastname} could not be deregistered from the inspection. Please reload the page and try again.",
+                register: "The deregistration of the person {firstname} {lastname} could not be undone. Please reload the page and try again.",
                 start: "The inspection could not be started",
                 nameDuplication: "The name is already used by another inspection",
                 endBeforStart: "The end time must be after the start time by {startTime}",

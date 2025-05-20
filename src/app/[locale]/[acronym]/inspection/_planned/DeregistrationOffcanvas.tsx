@@ -2,7 +2,7 @@ import AutocompleteField from "@/components/fields/AutocompleteField";
 import { updateCadetRegistrationForInspection } from "@/dal/inspection";
 import { usePlannedInspectionList } from "@/dataFetcher/inspection";
 import { useScopedI18n } from "@/lib/locales/client";
-import { CadetLabel } from "@/types/globalCadetTypes";
+import { cadetArgs, CadetLabel } from "@/types/globalCadetTypes";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
 import { faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,7 +18,7 @@ type DeregistrationOffcanvasProps = {
 }
 export const DeregistrationOffcanvas = ({ inspection, cadetList, onClose }: DeregistrationOffcanvasProps) => {
     const { mutate } = usePlannedInspectionList();
-    const t = useScopedI18n('inspection.planned.deregistration');
+    const t = useScopedI18n('inspection.planned');
 
     const options = useMemo(() => {
         return cadetList.filter(c =>
@@ -30,27 +30,30 @@ export const DeregistrationOffcanvas = ({ inspection, cadetList, onClose }: Dere
 
     const handleAdd = (value: string | null) => {
         if (value) {
+            const cadet = cadetList.find(c => c.id === value);
+            if(!cadet) return;
+
             updateCadetRegistrationForInspection({
                 cadetId: value,
                 inspectionId: inspection.id,
                 deregister: true
             }).then(() => {
                 mutate();
-            }).catch((e) => {
-                toast.error("Fehler beim Abmelden von  ");
+            }).catch(() => {
+                toast.error(t('errors.deregistration', cadet));
             });
         }
     }
 
-    const handleRemove = (value: string) => {
+    const handleRemove = (cadet: CadetLabel) => {
         updateCadetRegistrationForInspection({
-            cadetId: value,
+            cadetId: cadet.id,
             inspectionId: inspection.id,
             deregister: false
         }).then(() => {
             mutate();
-        }).catch((e) => {
-            toast.error("Fehler beim Abmelden von  ");
+        }).catch(() => {
+            toast.error(t('errors.register', cadet));
         });
     }
 
@@ -66,7 +69,7 @@ export const DeregistrationOffcanvas = ({ inspection, cadetList, onClose }: Dere
         >
             <Offcanvas.Header closeButton>
                 <Offcanvas.Title id="offcanvas-inspection-deregistration">
-                    {t('header', { name: inspection.name })}
+                    {t('deregistration.header', { name: inspection.name })}
                 </Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
@@ -74,7 +77,7 @@ export const DeregistrationOffcanvas = ({ inspection, cadetList, onClose }: Dere
                     <div className="col-auto">
                         <AutocompleteField
                             resetOnChange
-                            label={t('label.add')}
+                            label={t('deregistration.label.add')}
                             options={options}
                             onChange={handleAdd}
                         />
@@ -84,8 +87,8 @@ export const DeregistrationOffcanvas = ({ inspection, cadetList, onClose }: Dere
                     <thead>
                         <tr>
                             <th></th>
-                            <th>{t('label.person')}</th>
-                            <th>{t('label.date')}</th>
+                            <th>{t('deregistration.label.person')}</th>
+                            <th>{t('deregistration.label.date')}</th>
                         </tr>
                     </thead>
                     <tbody data-testid="deregistration-table-body" role="rowgroup" aria-label="body">
@@ -96,8 +99,8 @@ export const DeregistrationOffcanvas = ({ inspection, cadetList, onClose }: Dere
                                         variant={"light"}
                                         className="hoverColHidden"
                                         size="sm"
-                                        onClick={() => handleRemove(dereg.cadet.id)}
-                                        aria-label={t('label.remove')}
+                                        onClick={() => handleRemove(dereg.cadet)}
+                                        aria-label={t('deregistration.label.remove')}
                                     >
                                         <FontAwesomeIcon icon={faX} className="text-danger" />
                                     </Button>
@@ -110,5 +113,5 @@ export const DeregistrationOffcanvas = ({ inspection, cadetList, onClose }: Dere
                 </Table>
             </Offcanvas.Body>
         </Offcanvas >
-    )
+    );
 }
