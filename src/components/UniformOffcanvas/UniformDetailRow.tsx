@@ -59,7 +59,8 @@ export const UniformDetailRow = ({ uniform, uniformType, editable, setEditable, 
             generationId: selectedGeneration,
             sizelists: sizelists,
         });
-    }, [uniform.type.id, selectedGeneration]);
+    }, [typeList, uniformType, selectedGeneration, sizelists]);
+
     const sizeOptions = useMemo(() => {
         if (!editable) {
             if (uniform.size)
@@ -77,7 +78,7 @@ export const UniformDetailRow = ({ uniform, uniformType, editable, setEditable, 
         if (!editable) {
             reset(getUniformFormData(uniform));
         }
-    }, [uniform]);
+    }, [uniform, editable, reset]);
 
     useEffect(() => {
         if (editable && selectedSizeId && sizeOptions) {

@@ -21,7 +21,7 @@ const getFunctions = () => ({
     start: jest.fn(),
     submit: jest.fn(e => e.preventDefault()),
 });
-const renderButton = (inspection: PlannedInspectionType, editable?: boolean, nameDuplicationError?: boolean) => {
+const renderButton = (inspection: PlannedInspectionType, editable?: boolean) => {
     const functions = getFunctions();
     render(
         <form onSubmit={functions.submit}>
