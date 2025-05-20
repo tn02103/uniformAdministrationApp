@@ -16,7 +16,7 @@ import { PlannedInspectionFormShema, plannedInspectionFormShema } from "@/zod/in
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { Col, FormControl, Row } from "react-bootstrap";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { toast } from "react-toastify";
 import { InspectionBadge } from "./InspectionBadge";
 import { InspectionButtonColumn } from "./InspectionButtonColumn";
@@ -34,7 +34,7 @@ export default function PlannedInspectionTableRow({
     const t = useScopedI18n('inspection.planned');
     const tError = useScopedI18n('common.error');
     const modal = useModal();
-    const { register, handleSubmit, control, reset, formState, watch } = useForm<PlannedInspectionFormShema>({
+    const { register, handleSubmit, control, reset, formState } = useForm<PlannedInspectionFormShema>({
         resolver: zodResolver(plannedInspectionFormShema),
         mode: "onChange",
     });
@@ -43,9 +43,9 @@ export default function PlannedInspectionTableRow({
     const [nameDuplicationError, setNameDuplicationError] = useState(false);
     const { mutate, inspectionList } = usePlannedInspectionList();
 
+    const name = useWatch<PlannedInspectionFormShema>({name: 'name'});
     useEffect(() => {
         if (editable) {
-            const name = watch('name')
             if (inspectionList?.find(i => (i.name === name) && (i.id !== inspection?.id))) {
                 setNameDuplicationError(true);
             } else {
@@ -54,7 +54,7 @@ export default function PlannedInspectionTableRow({
         } else {
             setNameDuplicationError(false);
         }
-    }, [watch('name'), editable]);
+    }, [name, editable, inspectionList, inspection?.id]);
 
     function handleEdit() {
         reset({

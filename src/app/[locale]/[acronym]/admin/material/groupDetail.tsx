@@ -66,11 +66,6 @@ export default function MaterialConfigGroupDetail({
     async function handleSave(data: MaterialGroupFormType) {
         if (!materialGroup) return;
 
-        let issuedDefault = null;
-        if (data.issuedDefault && Number.isInteger(+data.issuedDefault) && +data.issuedDefault > 0) {
-            issuedDefault = Number(data.issuedDefault);
-        }
-
         await asyncSAFormHandler<typeof updateMaterialGroup>(
             updateMaterialGroup({
                 id: materialGroup.id,

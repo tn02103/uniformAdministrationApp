@@ -130,14 +130,14 @@ describe('UniformDetailRow', () => {
         render(<UniformDetailRow {...defaultProps} uniformType={typeList[1]} />);
 
         expect(screen.queryByLabelText('common.uniform.size')).not.toBeInTheDocument();
-        expect(screen.queryByText(defaultProps.uniform.size?.name!)).not.toBeInTheDocument();
+        expect(screen.queryByText(defaultProps.uniform.size!.name!)).not.toBeInTheDocument();
     });
 
     it('should hide generationField if !usingGenerations', () => {
         render(<UniformDetailRow {...defaultProps} uniformType={typeList[2]} />);
 
         expect(screen.queryByLabelText('common.uniform.generation.label')).not.toBeInTheDocument();
-        expect(screen.queryByText(defaultProps.uniform.generation?.name!)).not.toBeInTheDocument();
+        expect(screen.queryByText(defaultProps.uniform.generation!.name!)).not.toBeInTheDocument();
     });
 
     describe('handle update to uniform', () => {

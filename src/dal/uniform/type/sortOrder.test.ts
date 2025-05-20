@@ -16,7 +16,7 @@ jest.mock('@/lib/db', () => ({
         uniformType: {
             update: jest.fn(),
             findUniqueOrThrow: jest.fn(async () => ({ sortOrder: 2, fk_uniformType: 'typeId' })),
-            count: jest.fn(async () => { 6 }),
+            count: jest.fn(async () => { }),
             updateMany: jest.fn(async () => ({ count: 2 })),
             findMany: jest.fn(() => 'ReturnedList'),
         },
@@ -29,7 +29,6 @@ jest.mock("@/actions/validations", () => ({
 describe('<UniformType> sortOrder', () => {
     afterEach(jest.clearAllMocks);
 
-    const prismafindUnique = prisma.uniformType.findUniqueOrThrow as jest.Mock;
     const prismaUpdateMany = prisma.uniformType.updateMany as jest.Mock;
     const prismaUpdate = prisma.uniformType.update as jest.Mock;
     const prismaCount = prisma.uniformType.count as jest.Mock;

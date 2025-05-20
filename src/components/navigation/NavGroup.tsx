@@ -24,7 +24,7 @@ const NavGroup = ({ title, icon, childSelected, collapsed, setCollapsed, childre
         if (collapsed && showChildren) {
             setShowChilden(false);
         }
-    }, [collapsed])
+    }, [collapsed, showChildren])
 
     function onHeaderClicked() {
         if (showChildren) {

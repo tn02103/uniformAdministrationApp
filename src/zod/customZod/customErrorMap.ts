@@ -1,5 +1,5 @@
 
-import { ParseContext, util, ZodErrorMap, ZodIssueCode, ZodParsedType } from "zod";
+import { util, ZodErrorMap, ZodIssueCode, ZodParsedType } from "zod";
 
 export const customErrorMap: ZodErrorMap = (issue, _ctx) => {
     let message: string;

@@ -79,7 +79,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
             if (inspectionState?.state === "planned") {
                 startInspection().then(() => {
                     toast.success("Uniformkontrolle erfolgreich gestartet");
-                    mutate((key: any) => ((typeof key === "string") && /^(\/api\/inspection\/status)|(\/api\/cadet\/[\w\d-]+\/inspection)$/));
+                    mutate((key: object | string) => ((typeof key === "string") && /^(\/api\/inspection\/status)|(\/api\/cadet\/[\w\d-]+\/inspection)$/));
                 });
             }
         }

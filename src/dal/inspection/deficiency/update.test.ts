@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/db";
 import { updateUniform } from "./update";
 
 jest.mock('@/lib/db', () => ({

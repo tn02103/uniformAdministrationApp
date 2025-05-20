@@ -16,7 +16,7 @@ jest.mock('@/lib/db', () => ({
         uniformGeneration: {
             update: jest.fn(),
             findUniqueOrThrow: jest.fn(async () => ({ sortOrder: 2, fk_uniformType: 'typeId' })),
-            count: jest.fn(async () => { 6 }),
+            count: jest.fn(async () => { }),
             updateMany: jest.fn(async () => ({ count: 2 })),
         },
         uniformType: {

@@ -67,7 +67,7 @@ export class CadetMaterialDBHandler {
             }
         });
 
-    returnMaterial = async (issuedEntryId: any, dateIssued: any, client?: PrismaClient) => {
+    returnMaterial = async (issuedEntryId: string, dateIssued: Date, client?: PrismaClient) => {
         if (isToday(dateIssued)) {
             // delete entry
             return (client ?? prisma).materialIssued.delete({

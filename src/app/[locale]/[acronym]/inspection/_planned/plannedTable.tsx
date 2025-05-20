@@ -18,11 +18,12 @@ export default function PlannedInspectionTable({
     cadets: CadetLabel[]
 }) {
     const t = useScopedI18n('inspection.planned.label')
-    const [deragistrationModalInspectionId, setDeregistrationModalInspectionId] = useState<string | null>(null);
-
+    
     const [showNewLine, setShowNewLine] = useState(false);
     const { inspectionList } = usePlannedInspectionList(props.inspections);
-
+    
+    const [deragistrationModalInspectionId, setDeregistrationModalInspectionId] = useState<string | null>(null);
+    const deregistrationModalInspection = inspectionList?.find(i => i.id === deragistrationModalInspectionId);
 
     return (
         <div data-testid="div_plannedTable">
@@ -47,9 +48,9 @@ export default function PlannedInspectionTable({
                     {t('noInspections')}
                 </Row>
             }
-            {deragistrationModalInspectionId && inspectionList?.find(i => i.id === deragistrationModalInspectionId) &&
+            {deregistrationModalInspection &&
                 <DeregistrationModal
-                    inspection={inspectionList?.find(i => i.id === deragistrationModalInspectionId)!}
+                    inspection={deregistrationModalInspection}
                     cadetList={props.cadets}
                     onHide={() => setDeregistrationModalInspectionId(null)} />
             }

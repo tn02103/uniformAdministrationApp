@@ -1,19 +1,16 @@
 "use server";
 
 import { FilterType } from "@/app/[locale]/[acronym]/uniform/list/[typeId]/_filterPanel";
-import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { uuidValidationPattern } from "@/lib/validations";
-import { IssuedEntryType, UniformFormData, UniformNumbersSizeMap, UniformWithOwner, uniformArgs } from "@/types/globalUniformTypes";
+import { IssuedEntryType, UniformFormData, UniformWithOwner } from "@/types/globalUniformTypes";
 import { Prisma } from "@prisma/client";
 import { notFound } from "next/navigation";
 import { UniformDBHandler } from "../dbHandlers/UniformDBHandler";
-import { UniformTypeDBHandler } from "../dbHandlers/UniformTypeDBHandler";
 import { genericSAValidatorV2 } from "../validations";
 
 const dbHandler = new UniformDBHandler();
-const typeHandler = new UniformTypeDBHandler();
 
 /**
  * Function counts the number Uniformitems there are for the given uniformType. 
@@ -58,7 +55,7 @@ export const getUniformListWithOwner = async (uniformTypeId: string, orderBy: st
         && (!filter || filterTypeValidator(filter))),
     { uniformTypeId }
 ).then(() => {
-    const sqlFilter: any = {};
+    const sqlFilter: Prisma.UniformFindManyArgs["where"] = {};
     const hiddenGenerations = filter ? Object.entries(filter.generations).filter(([, value]) => !value).map(([key,]) => key) : [];
     const hiddenSizes = filter ? Object.entries(filter.sizes).filter(([, value]) => !value).map(([key,]) => key) : [];
 

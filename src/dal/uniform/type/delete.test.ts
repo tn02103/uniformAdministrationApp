@@ -159,7 +159,7 @@ describe('type1', () => {
         expect(undeleted).toHaveLength(0);
         expect(newDeleted).not.toBeNull();
         expect(newDeleted?.recdelete).not.toBeNull();
-        expect(isToday(newDeleted?.recdelete!)).toBeTruthy();
+        expect(isToday(newDeleted!.recdelete!)).toBeTruthy();
         expect(newDeleted?.recdeleteUser).toEqual('mana');
 
         expect(prevDeleted).not.toBeNull();

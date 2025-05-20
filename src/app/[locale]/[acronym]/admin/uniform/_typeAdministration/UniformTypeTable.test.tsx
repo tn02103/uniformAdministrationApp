@@ -19,10 +19,11 @@ jest.mock("@/dataFetcher/uniformAdmin", () => {
         })),
     }
 });
+/* eslint-disable @typescript-eslint/no-explicit-any */
 let onDragEndFunction: undefined | ((newArray: UniformType[], itemId: string) => Promise<any>) = undefined;
 jest.mock("@/components/reorderDnD/ReorderableTableBody", () => {
     return {
-        ReorderableTableBody: jest.fn(({ items, itemType, onDragEnd, children }) => {
+        ReorderableTableBody: jest.fn(({ items, onDragEnd, children }) => {
             onDragEndFunction = onDragEnd;
             return (
                 <tbody data-testid="reorderable-table-body">
@@ -32,6 +33,7 @@ jest.mock("@/components/reorderDnD/ReorderableTableBody", () => {
         }),
     };
 });
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 jest.mock("./UniformTypeOffcanvas", () => ({
     UniformTypeOffcanvas: jest.fn(({ setSelectedTypeId }) => (
@@ -44,10 +46,10 @@ jest.mock("./UniformTypeOffcanvas", () => ({
 
 // ################## TESTS ##################
 describe("<UniformTypeTable />", () => {
-    const { changeUniformTypeSortOrder } = require("@/dal/uniform/type/_index");
-    const { useUniformTypeList } = require("@/dataFetcher/uniformAdmin");
-    const { UniformTypeOffcanvas } = require("./UniformTypeOffcanvas");
-    const { toast } = require("react-toastify");
+    const { changeUniformTypeSortOrder } = jest.requireMock("@/dal/uniform/type/_index");
+    const { useUniformTypeList } = jest.requireMock("@/dataFetcher/uniformAdmin");
+    const { UniformTypeOffcanvas } = jest.requireMock("./UniformTypeOffcanvas");
+    const { toast } = jest.requireMock("react-toastify");
     const mockMutate = useUniformTypeList().mutate;
 
     afterEach(() => {

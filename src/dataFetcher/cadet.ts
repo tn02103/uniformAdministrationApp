@@ -2,7 +2,7 @@ import { getCadetMaterialList, getCadetMaterialMap } from "@/actions/controllers
 import { getCadetUniformMap } from "@/dal/cadet/uniformMap";
 import { CadetMaterialMap, CadetUniformMap } from "@/types/globalCadetTypes";
 import { UniformLabel } from "@/types/globalUniformTypes";
-import useSWR, { KeyedMutator, MutatorOptions, mutate } from "swr";
+import useSWR, { KeyedMutator, MutatorOptions, SWRResponse, mutate } from "swr";
 import { useUniformTypeList } from "./uniformAdmin";
 
 
@@ -10,7 +10,7 @@ import { useUniformTypeList } from "./uniformAdmin";
 type useCadetUniformMapReturnType = {
     map?: CadetUniformMap;
     mutate: KeyedMutator<CadetUniformMap>,
-    error: any
+    error: SWRResponse["error"],
 }
 export function useCadetUniformMap(cadetId: string, initialData?: CadetUniformMap): useCadetUniformMapReturnType {
     const { data, mutate, error } = useSWR(

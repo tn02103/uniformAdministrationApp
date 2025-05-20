@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/db";
 import { PersonnelListCadet, cadetArgs } from "@/types/globalCadetTypes";
 import { Prisma, PrismaClient } from "@prisma/client";
-import { z } from "zod";
 
 export class CadetDBHandler {
     getCadet = (id: string, client?: PrismaClient) =>

@@ -3,7 +3,6 @@ import { UnauthorizedException } from "@/errors/CustomException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { IronSessionUser, getIronSession } from "@/lib/ironSession";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -22,17 +21,9 @@ type AssosiationValidationDataType = {
     inspectionId?: string | string[],
 }
 
-export const getSAReturnType = <t>() => {
-    type returntype = {
-        error: {
-            message: string,
-            formField?: string,
-        }
-    }
-}
 function assosiationValidator(assosiationValidations: AssosiationValidationDataType, fk_assosiation: string) {
-    const validationPromisses: Promise<any>[] = [];
-    const validate = (ids: string | (string | undefined)[], validator: (id: string, assosiationId: string) => Promise<any>) => {
+    const validationPromisses: Promise<object>[] = [];
+    const validate = (ids: string | (string | undefined)[], validator: (id: string, assosiationId: string) => Promise<object>) => {
         if (Array.isArray(ids)) {
             validationPromisses.push(
                 ...ids.filter(id => id != undefined).map((id) => validator(id as string, fk_assosiation))
@@ -91,7 +82,7 @@ function assosiationValidator(assosiationValidations: AssosiationValidationDataT
 
 export const genericSAValidator = async <T>(
     requiredRole: AuthRole,
-    data: any,
+    data: T,
     shema: z.ZodType<T>,
     assosiationValidations?: AssosiationValidationDataType
 ): Promise<[IronSessionUser, T]> => {

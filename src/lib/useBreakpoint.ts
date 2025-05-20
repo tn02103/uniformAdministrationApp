@@ -59,6 +59,7 @@ export const useBreakpoint = (breakpoint: keyof typeof BreakpointMap, mode: UseB
 
         window.addEventListener('resize', calcInnerWidth);
         return () => window.removeEventListener('resize', calcInnerWidth);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return { size, match: matchingBreakpoint };

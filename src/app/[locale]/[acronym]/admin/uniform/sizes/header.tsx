@@ -5,7 +5,6 @@ import TooltipIconButton from "@/components/Buttons/TooltipIconButton";
 import { CardHeader } from "@/components/card";
 import { useModal } from "@/components/modals/modalProvider";
 import { useI18n } from "@/lib/locales/client";
-import { t } from "@/lib/test";
 import { nameValidationPattern } from "@/lib/validations";
 import { UniformSize } from "@/types/globalUniformTypes";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";

@@ -34,7 +34,7 @@ export default function UniformConfigSizelistDetail({
     }, [dbSizelist]);
     useEffect(() => {
         setEditedSizeslist(dbSizelist?.uniformSizes ?? []);
-    }, [editable]);
+    }, [editable ]);
 
 
     async function handleRename() {

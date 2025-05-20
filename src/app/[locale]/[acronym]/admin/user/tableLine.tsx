@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { changeUserPassword, createUser, deleteUser, updateUser } from "@/actions/controllers/UserController";
@@ -14,7 +15,7 @@ import { FieldErrors, UseFormRegister, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 export default function UserAdminTableRow({
-    user, userList, onCancel, save
+    user, userList, onCancel
 }: {
     user: User | undefined;
     userList: User[];

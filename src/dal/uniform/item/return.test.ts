@@ -1,7 +1,7 @@
 import { runServerActionTest } from "@/dal/_helper/testHelper";
-import { returnItem } from "./return";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { prisma } from "@/lib/db";
+import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { returnItem } from "./return";
 
 const { ids, cleanup } = new StaticData(0);
 const uniformId = ids.uniformIds[0][42];
@@ -74,12 +74,12 @@ describe('', () => {
     });
     it('should fail if uniformItem is deleted', async () => {
         await prisma.uniform.update({ where: { id: uniformId }, data: { recdelete: new Date() } });
-        const { success, result } = await runServerActionTest(returnItem({ uniformId, cadetId }));
+        const { success } = await runServerActionTest(returnItem({ uniformId, cadetId }));
         expect(success).toBeFalsy();
     });
     it('should fail if cadet is deleted', async () => {
         await prisma.cadet.update({ where: { id: cadetId }, data: { recdelete: new Date() } });
-        const { success, result } = await runServerActionTest(returnItem({ uniformId, cadetId }));
+        const { success } = await runServerActionTest(returnItem({ uniformId, cadetId }));
         expect(success).toBeFalsy();
     })
 })
