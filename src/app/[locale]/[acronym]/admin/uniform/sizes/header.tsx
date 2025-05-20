@@ -34,11 +34,12 @@ export default function UniformsizeConfigurationHeader({ sizes }: { sizes: Unifo
                 },
                 validate: (value) => !sizes.find(s => s.name === value) || t('admin.uniform.size.createModal.nameDuplicationError'),
             },
-            save: async ({ input }) =>
-                createSize(input).catch(e => {
+            save: async ({ input }) => {
+                await createSize(input).catch(e => {
                     console.error(e);
                     toast.error(t('common.error.actions.save'));
-                }),
+                });
+            },
             abort: () => { }
         })
     }

@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 export default function SizeItem({
     size, upDisabled, downDisabled
 }: {
+    index: number;
     size: UniformSize;
     upDisabled: boolean;
     downDisabled: boolean;
@@ -34,10 +35,12 @@ export default function SizeItem({
                 validate: (value) => Number.isInteger(value) || t('common.error.number.pattern'),
             },
             inputMode: "numeric",
-            save: async ({ input }) => setSizeSortorder(size.id, +input).catch(e => {
-                console.error(e);
-                toast.error(t('common.error.actions.save'));
-            }),
+            save: async ({ input }) => {
+                await setSizeSortorder(size.id, +input).catch(e => {
+                    console.error(e);
+                    toast.error(t('common.error.actions.save'));
+                });
+            },
             abort: () => { },
         });
     }

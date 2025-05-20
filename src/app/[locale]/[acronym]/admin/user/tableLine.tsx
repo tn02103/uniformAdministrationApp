@@ -60,10 +60,12 @@ export default function UserAdminTableRow({
         if (!user) return;
 
         modal?.changeUserPasswordModal(
-            (password: string) => changeUserPassword(user?.id, password).catch((error) => {
-                console.error(error);
-                toast.error(t('admin.user.error.changePassword'));
-            }),
+            async (password: string) => {
+                await changeUserPassword(user?.id, password).catch((error) => {
+                    console.error(error);
+                    toast.error(t('admin.user.error.changePassword'));
+                });
+            },
             user.name,
         );
     }
