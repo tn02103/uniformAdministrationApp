@@ -77,7 +77,7 @@ describe('stopInspection', () => {
         expect(result.exceptionType).toBe(ExceptionType.SaveDataException);
         expect(result.message).toMatch(/Endtime is before starttime of inspection/);
     });
-    describe('', () => {
+    describe('different data', () => {
         const wrongAssosiation = new StaticData(1);
         afterEach(() => wrongAssosiation.cleanup.inspection());
         it('wrong assosiation', async () => {

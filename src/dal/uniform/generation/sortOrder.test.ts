@@ -92,7 +92,7 @@ describe('<UniformGeneration> sortOrder', () => {
     it('should not allow position greater/ equal than amount of types', async () => {
         prismaCount.mockReturnValueOnce(4);
         const result = changeSortOrder({ id: 'SomeGenerationId', newPosition: 4 });
-        expect(result).rejects.toThrow('Invalid newPosition');
+        await expect(result).rejects.toThrow('Invalid newPosition');
 
         expect(prismaUpdate).not.toHaveBeenCalled();
         expect(prismaUpdateMany).not.toHaveBeenCalled();

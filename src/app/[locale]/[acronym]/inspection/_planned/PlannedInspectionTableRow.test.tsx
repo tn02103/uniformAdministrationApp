@@ -215,7 +215,7 @@ describe('<PlannedInspectionTableRow />', () => {
             expect(updatePlannedInspection).toHaveBeenCalledTimes(1);
             expect(toast.error).toHaveBeenCalled();
             expect(mutate).toHaveBeenCalled();
-            expect(screen.queryByText(/actions.save/i)).toBeInTheDocument();
+            expect(screen.getByText(/actions.save/i)).toBeInTheDocument();
         });
     });
 

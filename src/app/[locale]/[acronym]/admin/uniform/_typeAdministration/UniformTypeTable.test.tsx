@@ -212,7 +212,7 @@ describe("<UniformTypeTable />", () => {
             act(() => {
                 UniformTypeOffcanvas.mock.calls[0][0].setSelectedTypeId(testTypes[1].id);
             });
-            expect(screen.queryByTestId("uniform-type-offcanvas")).toBeInTheDocument();
+            expect(screen.getByTestId("uniform-type-offcanvas")).toBeInTheDocument();
             expect(UniformTypeOffcanvas).toHaveBeenCalledTimes(2);
             expect(UniformTypeOffcanvas).toHaveBeenCalledWith(
                 {

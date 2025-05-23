@@ -31,7 +31,7 @@ test.afterEach(async ({ staticData: { cleanup } }) => {
     cleanup.materialIssued();
 });
 
-test.describe(async () => {
+test.describe(() => {
     const date = new Date();
     date.setUTCHours(0, 0, 0, 0);
     test.beforeEach(async ({ page, staticData }) => {
@@ -79,7 +79,7 @@ test.describe(async () => {
                     if (set.valid) {
                         await expect.soft(popupComponent.div_popup).toBeVisible();
                         await expect.soft(popupComponent.txt_issued).not.toHaveClass(/is-invalid/);
-                        await expect.soft(popupComponent.err_issued).not.toBeVisible();
+                        await expect.soft(popupComponent.err_issued).toBeHidden();
                     } else {
                         await expect.soft(popupComponent.div_popup).toBeVisible();
                         await expect.soft(popupComponent.txt_issued).toHaveClass(/is-invalid/);
@@ -138,7 +138,7 @@ test.describe(async () => {
             await popupComponent.btn_save.click();
         });
         await test.step('validate ui', async () => {
-            await expect.soft(popupComponent.div_popup).not.toBeVisible();
+            await expect.soft(popupComponent.div_popup).toBeHidden();
             await expect.soft(materialComponent.div_material(ids.materialIds[1])).toBeVisible();
         });
         await test.step('validate db', async () => {
@@ -167,7 +167,7 @@ test.describe(async () => {
         });
 
         await test.step('validate ui', async () => {
-            await expect.soft(materialComponent.div_material(oldMaterial)).not.toBeVisible();
+            await expect.soft(materialComponent.div_material(oldMaterial)).toBeHidden();
             await expect.soft(materialComponent.div_material(newMaterial)).toBeVisible();
             await expect.soft(materialComponent.div_material_issued(newMaterial)).toHaveText('2');
             await expect.soft(materialComponent.div_material_name(newMaterial)).toHaveText('Typ1-2');
@@ -225,7 +225,7 @@ test.describe(async () => {
         await test.step('return and validate ui', async () => {
             await expect.soft(materialComponent.div_material(ids.materialIds[2])).toBeVisible();
             await materialComponent.btn_material_return(ids.materialIds[2]).click();
-            await expect.soft(materialComponent.div_material(ids.materialIds[2])).not.toBeVisible();
+            await expect.soft(materialComponent.div_material(ids.materialIds[2])).toBeHidden();
         });
         await test.step('validate db', async () => {
             await dbReturnedCheck(ids.materialIds[2], ids.cadetIds[1], 1);

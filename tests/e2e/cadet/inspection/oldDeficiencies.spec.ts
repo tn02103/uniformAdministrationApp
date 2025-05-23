@@ -14,12 +14,13 @@ type Fixture = {
     }
 };
 const test = adminTest.extend<Fixture>({
-    staticData: async ({ staticData }: { staticData: StaticData }, use: (arg0: any) => void) => {
+    staticData: async ({ staticData }: { staticData: StaticData }, use: (arg0: Fixture["staticData"]) => void) => {
         const { deficiencyIds } = staticData.ids;
         use({
             ...staticData,
             unresolvedIds: [deficiencyIds[5], deficiencyIds[10], deficiencyIds[1], deficiencyIds[9], deficiencyIds[15], deficiencyIds[13]],
             resolvedIds: [deficiencyIds[0], deficiencyIds[2], deficiencyIds[6]],
+            resetData: staticData.resetData,
         });
     },
     inspectionComponent: async ({ page, staticData }, use) => {
@@ -43,7 +44,7 @@ test('E2E0265: validate step0 defList prev. Inspction', async ({ page, inspectio
     });
 
     await page.reload();
-    await expect(inspectionComponent.div_step0_loading).not.toBeVisible();
+    await expect(inspectionComponent.div_step0_loading).toBeHidden();
     await Promise.all([
         test.step('visible with correct sortorder', async () => {
             const div_list = inspectionComponent.div_ci.getByTestId(/div_olddef_/);
@@ -58,14 +59,14 @@ test('E2E0265: validate step0 defList prev. Inspction', async ({ page, inspectio
         test.step('not shown', async () => {
             await Promise.all([
                 resolvedIds.map(async (id) =>
-                    expect.soft(inspectionComponent.div_oldDeficiency(id)).not.toBeVisible()
+                    expect.soft(inspectionComponent.div_oldDeficiency(id)).toBeHidden()
                 )
             ]);
         }),
     ]);
     await startInspection(index);
     await page.reload();
-    await expect(inspectionComponent.div_step0_loading).not.toBeVisible();
+    await expect(inspectionComponent.div_step0_loading).toBeHidden();
 });
 
 test('E2E0267: validate step1 devList prev. Inspection', async ({ inspectionComponent, staticData: { unresolvedIds, resolvedIds } }) => {
@@ -91,7 +92,7 @@ test('E2E0267: validate step1 devList prev. Inspection', async ({ inspectionComp
     await test.step('not shown', async () => {
         await Promise.all(
             resolvedIds.map(async (id) =>
-                expect.soft(inspectionComponent.div_oldDeficiency(id)).not.toBeVisible()
+                expect.soft(inspectionComponent.div_oldDeficiency(id)).toBeHidden()
             )
         );
     });
@@ -112,7 +113,7 @@ test('E2E0268: validate step1 chk_resolved', async ({ inspectionComponent, stati
 test('E2E0269: validate oldDeficiencyRow data', async ({ inspectionComponent, staticData: { ids } }) => {
     await test.step('validate visiblity of components step0', async () => {
         await Promise.all([
-            expect.soft(inspectionComponent.chk_olddef_resolved(ids.deficiencyIds[1])).not.toBeVisible(),
+            expect.soft(inspectionComponent.chk_olddef_resolved(ids.deficiencyIds[1])).toBeHidden(),
             expect.soft(inspectionComponent.div_olddef_description(ids.deficiencyIds[1])).toBeVisible(),
             expect.soft(inspectionComponent.div_olddef_type(ids.deficiencyIds[1])).toBeVisible(),
             expect.soft(inspectionComponent.div_olddef_created(ids.deficiencyIds[1])).toBeVisible(),
@@ -144,11 +145,11 @@ test('E2E0269: validate oldDeficiencyRow data', async ({ inspectionComponent, st
     });
     await test.step('validate visiblity of components step2', async () => {
         await Promise.all([
-            expect.soft(inspectionComponent.chk_olddef_resolved(ids.deficiencyIds[1])).not.toBeVisible(),
+            expect.soft(inspectionComponent.chk_olddef_resolved(ids.deficiencyIds[1])).toBeHidden(),
             expect.soft(inspectionComponent.div_olddef_description(ids.deficiencyIds[1])).toBeVisible(),
             expect.soft(inspectionComponent.div_olddef_type(ids.deficiencyIds[1])).toBeVisible(),
-            expect.soft(inspectionComponent.div_olddef_created(ids.deficiencyIds[1])).not.toBeVisible(),
-            expect.soft(inspectionComponent.div_olddef_comment(ids.deficiencyIds[1])).not.toBeVisible(),
+            expect.soft(inspectionComponent.div_olddef_created(ids.deficiencyIds[1])).toBeHidden(),
+            expect.soft(inspectionComponent.div_olddef_comment(ids.deficiencyIds[1])).toBeHidden(),
         ]);
     });
 });

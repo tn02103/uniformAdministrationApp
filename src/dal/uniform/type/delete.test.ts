@@ -12,6 +12,7 @@ describe('type2', () => {
         const { success } = await runServerActionTest(
             markDeleted(ids.uniformTypeIds[1])
         );
+        // eslint-disable-next-line jest/no-standalone-expect
         expect(success).toBeTruthy();
     });
     afterAll(async () => {
@@ -94,7 +95,7 @@ describe('type2', () => {
         expect(prevDeleted?.recdeleteUser).toBe('test4');
     });
 
-    it('it deletes the type', async () => {
+    it('deletes the type', async () => {
         const dbType = await prisma.uniformType.findUnique({
             where: {
                 id: ids.uniformTypeIds[1],
@@ -105,7 +106,7 @@ describe('type2', () => {
         expect(isToday(dbType!.recdelete!)).toBeTruthy();
         expect(dbType?.recdeleteUser).toEqual('mana');
     });
-    it('it moves the other types up', async () => {
+    it('moves the other types up', async () => {
         const dbTypeList = await prisma.uniformType.findMany({
             where: {
                 fk_assosiation: ids.fk_assosiation,
@@ -131,6 +132,7 @@ describe('type1', () => {
         const { success } = await runServerActionTest(
             markDeleted(ids.uniformTypeIds[0])
         );
+        // eslint-disable-next-line jest/no-standalone-expect
         expect(success).toBeTruthy();
     });
     afterAll(async () => {

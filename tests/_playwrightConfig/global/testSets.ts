@@ -1,7 +1,7 @@
 import { AuthRole } from "../../../src/lib/AuthRoles";
 
 export type ValidationTestType = {
-    testValue: any;
+    testValue: string | number | boolean;
     valid: boolean;
 }
 

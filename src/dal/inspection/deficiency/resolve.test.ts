@@ -29,7 +29,7 @@ describe('resolveDeficiency', () => {
     });
     afterAll(() => global.__ASSOSIATION__ = undefined)
 
-    it('it resolves the deficiency', async () => {
+    it('resolves the deficiency', async () => {
         prisma.inspection.findFirst.mockResolvedValueOnce(null);
         prisma.deficiency.findFirst.mockResolvedValueOnce(null);
 

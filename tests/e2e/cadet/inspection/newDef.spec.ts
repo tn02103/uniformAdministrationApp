@@ -29,11 +29,11 @@ test.afterAll(async ({ staticData }) => {
 
 test('E2E0271: validate add and remove newDef', async ({ page, inspectionComponent }) => {
     await test.step('add new', async () => {
-        await expect(inspectionComponent.div_newDeficiency(0)).not.toBeVisible();
+        await expect(inspectionComponent.div_newDeficiency(0)).toBeHidden();
 
         await inspectionComponent.btn_step2_newDef.click();
         await expect(inspectionComponent.div_newDeficiency(0)).toBeVisible();
-        await expect(inspectionComponent.div_newDeficiency(1)).not.toBeVisible();
+        await expect(inspectionComponent.div_newDeficiency(1)).toBeHidden();
 
         await inspectionComponent.btn_step2_newDef.click();
         await expect(inspectionComponent.div_newDeficiency(0)).toBeVisible();
@@ -49,20 +49,20 @@ test('E2E0271: validate add and remove newDef', async ({ page, inspectionCompone
 
     await test.step('validate delete desctop', async () => {
         await expect(inspectionComponent.btn_newDef_delete(0)).toBeVisible();
-        await expect(inspectionComponent.btn_newDef_delete_mobile(0)).not.toBeVisible();
+        await expect(inspectionComponent.btn_newDef_delete_mobile(0)).toBeHidden();
 
         await inspectionComponent.btn_newDef_delete(1).click();
-        await expect(inspectionComponent.div_newDeficiency(2)).not.toBeVisible();
+        await expect(inspectionComponent.div_newDeficiency(2)).toBeHidden();
         await expect(inspectionComponent.txt_newDef_comment(1)).toHaveValue('2');
     });
 
     await test.step('validate delete mobile', async () => {
         await page.setViewportSize(viewports.xs);
-        await expect(inspectionComponent.btn_newDef_delete(0)).not.toBeVisible();
+        await expect(inspectionComponent.btn_newDef_delete(0)).toBeHidden();
         await expect(inspectionComponent.btn_newDef_delete_mobile(0)).toBeVisible();
 
         await inspectionComponent.btn_newDef_delete_mobile(0).click();
-        await expect(inspectionComponent.div_newDeficiency(1)).not.toBeVisible();
+        await expect(inspectionComponent.div_newDeficiency(1)).toBeHidden();
         await expect(inspectionComponent.txt_newDef_comment(0)).toHaveValue('2');
     });
 });
@@ -71,16 +71,16 @@ test('E2E0274: validate material selects', async ({ inspectionComponent, staticD
     await test.step('type with materialRelation', async () => {
         await inspectionComponent.btn_step2_newDef.click();
         await inspectionComponent.sel_newDef_type(0).selectOption(ids.deficiencyTypeIds[3]);
-        await expect(inspectionComponent.txt_newDef_description(0)).not.toBeVisible();
+        await expect(inspectionComponent.txt_newDef_description(0)).toBeHidden();
         await expect(inspectionComponent.sel_newDef_material(0)).toBeVisible();
-        await expect(inspectionComponent.sel_newDef_materialType(0)).not.toBeVisible();
-        await expect(inspectionComponent.sel_newDef_materialGroup(0)).not.toBeVisible();
+        await expect(inspectionComponent.sel_newDef_materialType(0)).toBeHidden();
+        await expect(inspectionComponent.sel_newDef_materialGroup(0)).toBeHidden();
     });
     await test.step('content of sel. MaterialId', async () => {
         const x = await inspectionComponent.sel_newDef_material(0).locator('option:not(:disabled)').all();
         expect(x).toHaveLength(2)
-        expect(x[0]).toHaveText('Gruppe2-Typ2-1');
-        expect(x[1]).toHaveText('Andere Materialien');
+        await expect(x[0]).toHaveText('Gruppe2-Typ2-1');
+        await expect(x[1]).toHaveText('Andere Materialien');
     });
     await test.step('other materials', async () => {
         await inspectionComponent.sel_newDef_material(0).selectOption('others');
@@ -108,7 +108,7 @@ test('E2E0274: validate material selects', async ({ inspectionComponent, staticD
             await inspectionComponent.sel_newDef_materialGroup(0).selectOption(groupId);
 
             const options = await inspectionComponent.sel_newDef_materialType(0).locator('option:not(:disabled)').all();
-            await expect(options).toHaveLength(materialTypes.length);
+            expect(options).toHaveLength(materialTypes.length);
 
             await Promise.all(
                 options.map(async (option, index) => {
@@ -129,25 +129,25 @@ test('E2E0272: validate uniformSelect', async ({ inspectionComponent, staticData
         await inspectionComponent.btn_step2_newDef.click();
         await inspectionComponent.sel_newDef_type(0).selectOption(ids.deficiencyTypeIds[0]);
 
-        await expect(inspectionComponent.txt_newDef_description(0)).not.toBeVisible();
+        await expect(inspectionComponent.txt_newDef_description(0)).toBeHidden();
         await expect(inspectionComponent.sel_newDef_uniform(0)).toBeVisible();
     });
     await test.step('uniformDescriptions', async () => {
         const x = await inspectionComponent.sel_newDef_uniform(0).locator('option').all();
-        await expect(x).toHaveLength(3)
-        expect(x[1]).toHaveText('Typ1-1146');
-        expect(x[2]).toHaveText('Typ1-1148');
+        expect(x).toHaveLength(3)
+        await expect(x[1]).toHaveText('Typ1-1146');
+        await expect(x[2]).toHaveText('Typ1-1148');
     });
     await test.step('relative uniform', async () => {
         await inspectionComponent.sel_newDef_type(0).selectOption(ids.deficiencyTypeIds[2]);
-        await expect(inspectionComponent.txt_newDef_description(0)).not.toBeVisible();
+        await expect(inspectionComponent.txt_newDef_description(0)).toBeHidden();
         await expect(inspectionComponent.sel_newDef_uniform(0)).toBeVisible();
     });
     await test.step('required', async () => {
         await inspectionComponent.btn_step2_submit.click();
         await expect(inspectionComponent.err_newDef_uniform(0)).toBeVisible();
         await inspectionComponent.sel_newDef_uniform(0).selectOption(ids.uniformIds[0][48]);
-        await expect(inspectionComponent.err_newDef_uniform(0)).not.toBeVisible();
+        await expect(inspectionComponent.err_newDef_uniform(0)).toBeHidden();
     });
 });
 
@@ -165,7 +165,7 @@ test('E2E0273: validate update of uniformSelect Content', async ({ page, inspect
         await expect(uniformComponent.div_uitem(ids.uniformIds[0][11])).toBeVisible();
     });
     await test.step('validate change', async () => {
-        await expect(
+        expect(
             inspectionComponent
                 .sel_newDef_uniform(0)
                 .locator(`option[value="${ids.uniformIds[0][11]}"]`)
@@ -177,7 +177,7 @@ test('E2E0273: validate update of uniformSelect Content', async ({ page, inspect
 test('E2E0280: validate formValidations', async ({ inspectionComponent, staticData: { ids } }) => {
     await test.step('sel_type validation', async () => {
         await inspectionComponent.btn_step2_newDef.click();
-        await expect(inspectionComponent.err_newDef_type(0)).not.toBeVisible();
+        await expect(inspectionComponent.err_newDef_type(0)).toBeHidden();
         await expect(inspectionComponent.sel_newDef_type(0)).toBeVisible();
 
         await inspectionComponent.btn_step2_submit.click();
@@ -193,7 +193,7 @@ test('E2E0280: validate formValidations', async ({ inspectionComponent, staticDa
             await test.step(set.testValue, async () => {
                 await inspectionComponent.txt_newDef_description(0).fill(set.testValue);
                 if (set.valid) {
-                    await expect(inspectionComponent.err_newDef_description(0)).not.toBeVisible();
+                    await expect(inspectionComponent.err_newDef_description(0)).toBeHidden();
                 } else {
                     await expect(inspectionComponent.err_newDef_description(0)).toBeVisible();
                 }
@@ -204,44 +204,44 @@ test('E2E0280: validate formValidations', async ({ inspectionComponent, staticDa
     await test.step('sel_uniform', async () => {
         await inspectionComponent.sel_newDef_type(0).selectOption(ids.deficiencyTypeIds[2]); // CadetUniform
         await expect(inspectionComponent.sel_newDef_uniform(0)).toBeVisible();
-        await expect(inspectionComponent.err_newDef_uniform(0)).not.toBeVisible();
+        await expect(inspectionComponent.err_newDef_uniform(0)).toBeHidden();
 
         await inspectionComponent.btn_step2_submit.click();
         await expect(inspectionComponent.err_newDef_uniform(0)).toBeVisible();
 
         await inspectionComponent.sel_newDef_uniform(0).selectOption(ids.uniformIds[0][46]);
-        await expect(inspectionComponent.err_newDef_uniform(0)).not.toBeVisible();
+        await expect(inspectionComponent.err_newDef_uniform(0)).toBeHidden();
     });
     await test.step('sel_material', async () => {
         await inspectionComponent.sel_newDef_type(0).selectOption(ids.deficiencyTypeIds[3]); // CadetMaterial
         await expect(inspectionComponent.sel_newDef_material(0)).toBeVisible();
-        await expect(inspectionComponent.err_newDef_material(0)).not.toBeVisible();
+        await expect(inspectionComponent.err_newDef_material(0)).toBeHidden();
 
         await inspectionComponent.btn_step2_submit.click();
         await expect(inspectionComponent.err_newDef_material(0)).toBeVisible();
 
         await inspectionComponent.sel_newDef_material(0).selectOption(ids.materialIds[4]);
-        await expect(inspectionComponent.err_newDef_material(0)).not.toBeVisible();
+        await expect(inspectionComponent.err_newDef_material(0)).toBeHidden();
 
         await inspectionComponent.sel_newDef_material(0).selectOption('others');
-        await expect(inspectionComponent.err_newDef_material(0)).not.toBeVisible();
+        await expect(inspectionComponent.err_newDef_material(0)).toBeHidden();
     });
     await test.step('sel_matGroup/ sel_matType', async () => {
         await expect(inspectionComponent.sel_newDef_materialGroup(0)).toBeVisible();
         await expect(inspectionComponent.sel_newDef_materialType(0)).toBeVisible();
 
-        await expect(inspectionComponent.err_newDef_materialGroup(0)).not.toBeVisible();
-        await expect(inspectionComponent.err_newDef_materialType(0)).not.toBeVisible();
+        await expect(inspectionComponent.err_newDef_materialGroup(0)).toBeHidden();
+        await expect(inspectionComponent.err_newDef_materialType(0)).toBeHidden();
 
         await inspectionComponent.btn_step2_submit.click();
         await expect(inspectionComponent.err_newDef_materialGroup(0)).toBeVisible();
         await expect(inspectionComponent.err_newDef_materialType(0)).toBeVisible();
 
         await inspectionComponent.sel_newDef_materialGroup(0).selectOption(ids.materialGroupIds[0]);
-        await expect(inspectionComponent.err_newDef_materialGroup(0)).not.toBeVisible();
+        await expect(inspectionComponent.err_newDef_materialGroup(0)).toBeHidden();
 
         await inspectionComponent.sel_newDef_materialType(0).selectOption(ids.materialIds[0]);
-        await expect(inspectionComponent.err_newDef_materialType(0)).not.toBeVisible();
+        await expect(inspectionComponent.err_newDef_materialType(0)).toBeHidden();
     });
     await test.step('txt_comment', async () => {
         const testSets = CommentValidationTests({ maxLength: 300 });
@@ -249,7 +249,7 @@ test('E2E0280: validate formValidations', async ({ inspectionComponent, staticDa
             await test.step(set.testValue, async () => {
                 await inspectionComponent.txt_newDef_comment(0).fill(set.testValue);
                 if (set.valid) {
-                    await expect(inspectionComponent.err_newDef_comment(0)).not.toBeVisible();
+                    await expect(inspectionComponent.err_newDef_comment(0)).toBeHidden();
                 } else {
                     await expect(inspectionComponent.err_newDef_comment(0)).toBeVisible();
                 }

@@ -11,10 +11,10 @@ beforeAll(async () => {
 afterAll(async () => {
     try {
         await staticData.cleanup.removeAssosiation();
-    } catch (e) { };
+    } catch { };
     try {
         await wrongAssosiation.cleanup.removeAssosiation();
-    } catch (e) { };
+    } catch { };
 });
 jest.mock('@/lib/ironSession', () => ({
 
@@ -34,7 +34,7 @@ jest.mock('@/lib/ironSession', () => ({
 }));
 
 jest.mock('next/cache', () => ({
-    unstable_cache: jest.fn((fun: () => any, ...x: any) => fun),
-    revalidateTag: jest.fn((...args) => { }),
-    revalidatePath: jest.fn((...args) => { }),
+    unstable_cache: jest.fn(),
+    revalidateTag: jest.fn(),
+    revalidatePath: jest.fn(),
 }));

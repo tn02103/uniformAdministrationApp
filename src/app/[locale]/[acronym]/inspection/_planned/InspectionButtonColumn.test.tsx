@@ -14,25 +14,25 @@ const defaultValues: PlannedInspectionType = {
 };
 
 const getFunctions = () => ({
-    cancel: jest.fn(),
-    delete: jest.fn(),
-    edit: jest.fn(),
-    finish: jest.fn(),
-    start: jest.fn(),
-    submit: jest.fn(e => e.preventDefault()),
+    mockCancel: jest.fn(),
+    mockDelete: jest.fn(),
+    mockEdit: jest.fn(),
+    mockFinish: jest.fn(),
+    mockStart: jest.fn(),
+    mockSubmit: jest.fn(e => e.preventDefault()),
 });
 const renderButton = (inspection: PlannedInspectionType, editable?: boolean) => {
     const functions = getFunctions();
     render(
-        <form onSubmit={functions.submit}>
+        <form onSubmit={functions.mockSubmit}>
             <InspectionButtonColumn
                 inspection={inspection}
                 editable={!!editable}
-                handleCancel={functions.cancel}
-                handleDelete={functions.delete}
-                handleEdit={functions.edit}
-                handleFinish={functions.finish}
-                handleStart={functions.start} />
+                handleCancel={functions.mockCancel}
+                handleDelete={functions.mockDelete}
+                handleEdit={functions.mockEdit}
+                handleFinish={functions.mockFinish}
+                handleStart={functions.mockStart} />
         </form>
     );
     return functions;
@@ -42,7 +42,7 @@ describe('<InspectionButtonColumn/>', () => {
 
     it('planned', () => {
         const insp: PlannedInspectionType = { ...defaultValues, date: dayjs().add(2, "day").toDate() }
-        const functions = renderButton(insp);
+        const {mockEdit, mockSubmit, mockDelete} = renderButton(insp);
 
         const buttons = screen.queryAllByRole('button');
         expect(buttons).toHaveLength(2);
@@ -51,15 +51,15 @@ describe('<InspectionButtonColumn/>', () => {
         expect(screen.getByRole('button', { name: 'delete' })).toBeVisible();
 
         screen.getByRole('button', { name: 'edit' }).click();
-        expect(functions.edit).toHaveBeenCalled();
-        expect(functions.submit).not.toHaveBeenCalled();
+        expect(mockEdit).toHaveBeenCalled();
+        expect(mockSubmit).not.toHaveBeenCalled();
         screen.getByRole('button', { name: 'delete' }).click();
-        expect(functions.delete).toHaveBeenCalled();
-        expect(functions.submit).not.toHaveBeenCalled();
+        expect(mockDelete).toHaveBeenCalled();
+        expect(mockSubmit).not.toHaveBeenCalled();
     });
     it('today', async () => {
         const insp: PlannedInspectionType = defaultValues
-        const functions = renderButton(insp);
+        const {mockEdit, mockSubmit, mockDelete, mockStart} = renderButton(insp);
 
         const buttons = screen.queryAllByRole('button');
         expect(buttons).toHaveLength(3);
@@ -69,14 +69,14 @@ describe('<InspectionButtonColumn/>', () => {
         expect(screen.getByRole('button', { name: 'start inspection' })).toBeVisible();
 
         screen.getByRole('button', { name: 'edit' }).click();
-        expect(functions.edit).toHaveBeenCalled();
-        expect(functions.submit).not.toHaveBeenCalled();
+        expect(mockEdit).toHaveBeenCalled();
+        expect(mockSubmit).not.toHaveBeenCalled();
         screen.getByRole('button', { name: 'delete' }).click();
-        expect(functions.delete).toHaveBeenCalled();
-        expect(functions.submit).not.toHaveBeenCalled();
+        expect(mockDelete).toHaveBeenCalled();
+        expect(mockSubmit).not.toHaveBeenCalled();
         screen.getByRole('button', { name: 'start inspection' }).click();
-        expect(functions.start).toHaveBeenCalled();
-        expect(functions.submit).not.toHaveBeenCalled();
+        expect(mockStart).toHaveBeenCalled();
+        expect(mockSubmit).not.toHaveBeenCalled();
     });
 
     it('active', async () => {
@@ -84,15 +84,15 @@ describe('<InspectionButtonColumn/>', () => {
             ...defaultValues,
             timeStart: '09:00',
         }
-        const functions = renderButton(insp);
+        const {mockFinish, mockSubmit} = renderButton(insp);
 
         const buttons = screen.queryAllByRole('button');
         expect(buttons).toHaveLength(1);
 
         expect(screen.getByRole('button', { name: 'finish inspection' })).toBeVisible();
         screen.getByRole('button', { name: 'finish inspection' }).click();
-        expect(functions.finish).toHaveBeenCalled();
-        expect(functions.submit).not.toHaveBeenCalled();
+        expect(mockFinish).toHaveBeenCalled();
+        expect(mockSubmit).not.toHaveBeenCalled();
     });
     it('finished', async () => {
         const insp: PlannedInspectionType = {
@@ -100,15 +100,15 @@ describe('<InspectionButtonColumn/>', () => {
             timeStart: '09:00',
             timeEnd: '12:00'
         };
-        const functions = renderButton(insp);
+        const {mockStart, mockSubmit} = renderButton(insp);
 
         const buttons = screen.queryAllByRole('button');
         expect(buttons).toHaveLength(1);
         expect(screen.getByRole('button', { name: 'restart inspection' })).toBeVisible();
 
         screen.getByRole('button', { name: 'restart inspection' }).click();
-        expect(functions.start).toHaveBeenCalled();
-        expect(functions.submit).not.toHaveBeenCalled();
+        expect(mockStart).toHaveBeenCalled();
+        expect(mockSubmit).not.toHaveBeenCalled();
     });
     it('unfinised', async () => {
         const insp: PlannedInspectionType = {
@@ -116,7 +116,7 @@ describe('<InspectionButtonColumn/>', () => {
             date: dayjs().subtract(2, "day").toDate(),
             timeStart: '09:00',
         }
-        const functions = renderButton(insp);
+        const {mockFinish, mockSubmit} = renderButton(insp);
 
         const buttons = screen.queryAllByRole('button');
         expect(buttons).toHaveLength(1);
@@ -124,15 +124,15 @@ describe('<InspectionButtonColumn/>', () => {
         expect(screen.getByRole('button', { name: 'finish inspection' })).toBeVisible();
 
         screen.getByRole('button', { name: 'finish inspection' }).click();
-        expect(functions.finish).toHaveBeenCalled();
-        expect(functions.submit).not.toHaveBeenCalled();
+        expect(mockFinish).toHaveBeenCalled();
+        expect(mockSubmit).not.toHaveBeenCalled();
     });
     it('expired', async () => {
         const insp: PlannedInspectionType = {
             ...defaultValues,
             date: dayjs().subtract(2, "day").toDate(),
         };
-        const functions = renderButton(insp);
+        const {mockEdit, mockSubmit, mockDelete} = renderButton(insp);
 
         const buttons = screen.queryAllByRole('button');
         expect(buttons).toHaveLength(2);
@@ -141,15 +141,15 @@ describe('<InspectionButtonColumn/>', () => {
         expect(screen.getByRole('button', { name: 'delete' })).toBeVisible();
 
         screen.getByRole('button', { name: 'edit' }).click();
-        expect(functions.edit).toHaveBeenCalled();
-        expect(functions.submit).not.toHaveBeenCalled();
+        expect(mockEdit).toHaveBeenCalled();
+        expect(mockSubmit).not.toHaveBeenCalled();
         screen.getByRole('button', { name: 'delete' }).click();
-        expect(functions.delete).toHaveBeenCalled();
-        expect(functions.submit).not.toHaveBeenCalled();
+        expect(mockDelete).toHaveBeenCalled();
+        expect(mockSubmit).not.toHaveBeenCalled();
     });
     it('editable', async () => {
         const insp: PlannedInspectionType = { ...defaultValues, date: dayjs().add(2, "day").toDate() }
-        const functions = renderButton(insp, true);
+        const {mockCancel, mockSubmit} = renderButton(insp, true);
 
         const buttons = screen.queryAllByRole('button');
         expect(buttons).toHaveLength(2);
@@ -158,10 +158,10 @@ describe('<InspectionButtonColumn/>', () => {
         expect(screen.getByRole('button', { name: 'cancel' })).toBeVisible();
 
         screen.getByRole('button', { name: 'cancel' }).click();
-        expect(functions.cancel).toHaveBeenCalled();
-        expect(functions.submit).not.toHaveBeenCalled();
+        expect(mockCancel).toHaveBeenCalled();
+        expect(mockSubmit).not.toHaveBeenCalled();
 
         screen.getByRole('button', { name: 'save' }).click();
-        expect(functions.submit).toHaveBeenCalled();
+        expect(mockSubmit).toHaveBeenCalled();
     });
 });

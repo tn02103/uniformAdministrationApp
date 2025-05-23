@@ -56,7 +56,7 @@ describe('successfull in all allowed combinations', () => {
         expect(dbData[2].fk_size).toBe(ids.sizeIds[1]);
         expect(dbData[3].fk_size).toBe(ids.sizeIds[0]);
     });
-    it('creates without size, with generation ', async () => {
+    it('creates without size, with generation', async () => {
         const { result, success } = await runServerActionTest(
             create({
                 numberMap: [

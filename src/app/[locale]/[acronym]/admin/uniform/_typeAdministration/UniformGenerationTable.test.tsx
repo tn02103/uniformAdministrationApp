@@ -242,7 +242,7 @@ describe('<UniformGenerationTable />', () => {
         };
         render(<UniformGenerationTable uniformType={testTypeWithoutSizeList} />);
 
-        expect(screen.queryByText("common.uniform.generation.outdated")).toBeInTheDocument();
+        expect(screen.getByText("common.uniform.generation.outdated")).toBeInTheDocument();
         expect(screen.queryByText("common.uniform.generation.outdated")).not.toHaveClass("d-none d-sm-table-cell");
 
         const row = screen.getByRole("row", { name: "Test Generation 1" });
@@ -252,7 +252,7 @@ describe('<UniformGenerationTable />', () => {
     it('hides outdated column on Mobile when usingSizes', () => {
         render(<UniformGenerationTable uniformType={testType} />);
 
-        expect(screen.queryByText("common.uniform.generation.outdated")).toBeInTheDocument();
+        expect(screen.getByText("common.uniform.generation.outdated")).toBeInTheDocument();
         expect(screen.queryByText("common.uniform.generation.outdated")).toHaveClass("d-none d-sm-table-cell");
 
         const row = screen.getByRole("row", { name: "Test Generation 1" });
