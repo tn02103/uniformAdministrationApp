@@ -133,11 +133,18 @@ export default {
         error: {
             pleaseSelect: "Please select",
             unknown: "There has been an unexpected Error",
+            date: {
+                invalid: "Please enter a valid date",
+                minExcluded: "The date must be after {date}",
+                "minExcluded#today": "The date must be after today",
+                minIncluded: "The date must be on or after {date}",
+                "minIncluded#today": "The date must be on or after today",
+            },
             number: {
                 required: "Please enter a number",
                 pattern: "Please enter a valid number",
                 patternPositiv: "Please enter a valid positive number",
-                positiv: "The number needs to be positiv",
+                positiv: "The number needs to be positive",
                 max: "The number must not be higher than {value}",
                 maxLength: "Only {value} digit numbers are allowed",
                 min: "The number must be greater than {value}",
@@ -145,7 +152,7 @@ export default {
             amount: {
                 required: "Please enter a quantity",
                 max: "The quantity must not exceed {value}",
-                notNegative: "The quantity must be a positiv value"
+                notNegative: "The quantity must be a positive value"
             },
             string: {
                 required: "Please fill in",
@@ -175,7 +182,7 @@ export default {
             user: {
                 username: {
                     pattern: "The username may not contain special or blank characters",
-                    duplicate: "The username is allready used by different user",
+                    duplicate: "The username is already used by a different user",
                 },
             },
             custom: {
@@ -196,12 +203,16 @@ export default {
                         nameDuplication: "For this type of Uniform a generation with the name already exists",
                     }
                 },
-            },
-            redirects: {
-                code: {
-                    duplication: "The code is already used by another redirect of this or another association",
+                inspection: {
+                    nameDuplication: "An inspection with this name already exists",
+                    dateDuplication: "An inspection on this day already exists",
                 },
-            }
+                redirects: {
+                    code: {
+                        duplication: "The code is already used by another redirect of this or another association",
+                    },
+                },
+            },
         },
         success: {
             changeSortorder: "The order was changed successfully",
@@ -513,13 +524,13 @@ export default {
             },
             deleteWarning: {
                 header: "Delete user {user}",
-                message: "Are you sure the user schould be deleted",
+                message: "Are you sure the user should be deleted",
             },
             error: {
                 changePassword: "Saving of the password failed",
             },
-            saved: "User updated successfuly",
-            created: "User created successfuly",
+            saved: "User updated successfully",
+            created: "User created successfully",
         },
         deficiency: {
             disabled: "disabled on: ",
@@ -536,9 +547,9 @@ export default {
                 relation: "Indicates whether a person’s defect indirectly relates to another entity. For example, in the case of the type 'Item too small' the defect would depend on the person but indirectly relate to a uniform part."
             },
             errors: {
-                deactivate: "Der Typ konnte nicht deaktiviert werden. Laden Sie die Seite neu und versuchen es erneut",
-                delete: "Das Löschen des Typs ist fehlgeschlagen. Versuchen Sie es nach einem relaod erneut",
-                reactivate: "Der Typ konnte nicht reaktiviert werden. Laden sie die Seite neu und versuchen es erneut",
+                deactivate: "The type could not be deactivated. Please reload the page and try again.",
+                delete: "Deleting the type failed. Please try again after a reload.",
+                reactivate: "The type could not be reactivated. Please reload the page and try again.",
             },
             entity: {
                 cadet: "person",
@@ -546,10 +557,10 @@ export default {
                 material: "material",
             },
             delete: {
-                header: "Typ {type} löschen",
-                'message#zero': "Soll der Typ wirklich gelöscht werden? Diese Aktion ist nicht wieder umkehrbar.",
-                'message#one': "Soll der Typ wirklich gelöscht werden? Hierbei wird der eine vorhandene Mangel ebenfalls gelöscht. Diese Aktion ist nicht wieder umkehrbar.",
-                'message#other': "Soll der Typ wirklich gelöscht werden? Hierbei werden alle {count} vorhandenen Mängel ebenfalls gelöscht. Diese Aktion ist nicht wieder umkehrbar.",
+                header: "Delete type {type}",
+                'message#zero': "Should the type really be deleted? This action cannot be undone.",
+                'message#one': "Should the type really be deleted? The one existing deficiency will also be deleted. This action cannot be undone.",
+                'message#other': "Should the type really be deleted? All {count} existing deficiencies will also be deleted. This action cannot be undone.",
             },
         },
     },
@@ -558,6 +569,18 @@ export default {
             planned: 'planned inspections',
         },
         planned: {
+            deregistration: {
+                header: "Deregistrations {name}",
+                "label.person": "person",
+                "label.date": "Date",
+                "label.remove": "Remove deregistration",
+                "label.add": "deregister person",
+            },
+            delete: {
+                header: "Delete inspection",
+                message: "Should the inspection \"{name}\" really be deleted? This action cannot be undone.",
+                primary: "delete",
+            },
             badge: {
                 new: "new",
                 planned: "planned",
@@ -579,8 +602,8 @@ export default {
                 noInspections: 'No inspections planned',
             },
             errors: {
-                deregistration: "The person could not be deregistered from the inspection",
-                register: "The deregistration of the person could not be undone",
+                deregistration: "The person {firstname} {lastname} could not be deregistered from the inspection. Please reload the page and try again.",
+                register: "The deregistration of the person {firstname} {lastname} could not be undone. Please reload the page and try again.",
                 start: "The inspection could not be started",
                 nameDuplication: "The name is already used by another inspection",
                 endBeforStart: "The end time must be after the start time by {startTime}",

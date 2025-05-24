@@ -13,14 +13,18 @@ export const plannedInspectionTypeArgs = Prisma.validator<Prisma.InspectionFindM
                 cadet: {
                     recdelete: null,
                     active: true,
-                }
+                },
             },
             include: {
                 cadet: {
                     ...cadetLableArgs,
-                }
-            }
-        }
+                },
+            },
+            orderBy: [
+                { cadet: { firstname: "asc" } },
+                { cadet: { lastname: "asc" } },
+            ],
+        },
     }
 });
 export type PlannedInspectionType = Prisma.InspectionGetPayload<typeof plannedInspectionTypeArgs>;

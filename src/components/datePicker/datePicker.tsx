@@ -1,10 +1,17 @@
 import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import dayjs from "dayjs";
+import dayjs from "@/lib/dayjs";
 import { useEffect, useRef, useState } from "react";
 import Calendar from 'react-calendar';
+import ErrorMessage from "../errorMessage";
 
-export default function DatePicker({ onChange, value, error }: { onChange: any, value: string | Date, error?: string }) {
+type DatePickerProps = {
+    onChange: (value: Date) => void;
+    value: string | Date;
+    error?: string;
+    ariaLabel?: string;
+};
+export default function DatePicker({ onChange, value, error, ariaLabel }: DatePickerProps) {
     const [showCalendar, setShowCalendar] = useState(false);
     const refCalendar = useRef(null);
 
@@ -20,7 +27,7 @@ export default function DatePicker({ onChange, value, error }: { onChange: any, 
         }
     });
 
-    function handleOnChangeCalendar(value: any, event: React.MouseEvent) {
+    function handleOnChangeCalendar(value: any) {
         setShowCalendar(false);
         const date = new Date(value.getTime() - value.getTimezoneOffset() * 60000);
         onChange(dayjs.utc(date).toDate());
@@ -41,7 +48,8 @@ export default function DatePicker({ onChange, value, error }: { onChange: any, 
                 <input
                     type="string"
                     name={"date"}
-                    className={`form-control ${error ? "isInvaild" : ""}`}
+                    aria-label={ariaLabel}
+                    className={`form-control ${error ? "is-invalid" : ""}`}
                     onChange={(e) => handleInputOnChange(e.target.value)}
                     value={(typeof value === "string") ? value : dayjs(value).format('DD.MM.YYYY')}
                 />
@@ -50,12 +58,10 @@ export default function DatePicker({ onChange, value, error }: { onChange: any, 
                 </button>
             </div>
             {error &&
-                <div className="text-danger fs-7">
-                    {error}
-                </div>
+                <ErrorMessage error={error} testId={"err_date"} />
             }
             <div style={{ display: "contents" }} >
-                <div className="position-absolute " ref={refCalendar as any} style={{ zIndex: 9999 }} >
+                <div className="position-absolute" ref={refCalendar as any} style={{ zIndex: 9999 }} >
                     {showCalendar &&
                         <Calendar
                             minDate={dayjs().toDate()}

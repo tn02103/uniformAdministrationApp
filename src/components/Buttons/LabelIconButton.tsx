@@ -28,7 +28,7 @@ const variants: { [key in string]: Variant } = {
 
 
 type LabelIconButtonProp = Omit<ButtonProps, "varaint" | "onClick"> & ({
-    variantKey: undefined;
+    variantKey?: undefined;
     label: string;
     icon: IconDefinition;
     buttonVariant: ButtonProps["variant"];

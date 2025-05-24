@@ -133,6 +133,13 @@ export default {
         error: {
             pleaseSelect: "Bitte Auswählen",
             unknown: "Es ist ein unerwarteter Fehler aufgetreten",
+            date: {
+                invalid: "Bitte ein gültiges Datum angeben",
+                minExcluded: "Das Datum muss nach dem {date} liegen",
+                "minExcluded#today": "Das Datum muss nach heute liegen",
+                minIncluded: "Das Datum muss nach dem oder am {date} liegen",
+                "minIncluded#today": "Das Datum muss am oder nach dem heutigen Tag liegen",
+            },
             number: {
                 required: "Bitte eine Zahl angeben",
                 pattern: "Bitte eine valide Zahl eingeben",
@@ -195,6 +202,10 @@ export default {
                     generation: {
                         nameDuplication: "Für diesen Uniformtyp existiert bereits eine Generation mit diesem Namen",
                     }
+                },
+                inspection: {
+                    nameDuplication: "Es existiert bereits eine Inspektion mit diesem Namen",
+                    dateDuplication: "Es existiert bereits eine Inspektion an diesem Tag",
                 },
                 redirects: {
                     code: {
@@ -435,8 +446,6 @@ export default {
                     changeSizeHeader: "Ändern der Größenliste",
                     changeSizeMessage: "Beim Ändern der ausgewählten Größenliste, kann bei Uniformteilen dieser Generation die Information der Größe verlohren gehen",
                     nameDuplicationError: "Es existiert bereits eine Generation mit diesem Namen",
-                    editHeader: "Generation \"{generation}\" bearbeiten",
-                    createHeader: "Neue Generation anlegen",
                 }
             },
             size: {
@@ -560,6 +569,18 @@ export default {
             planned: 'Geplannte Kontrollen',
         },
         planned: {
+            deregistration: {
+                header: "Abmeldungen für {name}",
+                "label.person": "Person",
+                "label.date": "Datum",
+                "label.remove": "Abmeldung entfernen",
+                "label.add": "Person abmelden",
+            },
+            delete: {
+                header: "Inspektion löschen",
+                message: "Soll die Inspektion \"{name}\" wirklich gelöscht werden? Diese Aktion ist nicht wieder umkehrbar",
+                primary: "löschen",
+            },
             badge: {
                 new: "Neu",
                 planned: "Geplant",
@@ -581,8 +602,8 @@ export default {
                 noInspections: 'Keine Inspektionen geplannt',
             },
             errors: {
-                deregistration: 'Die Person konnte nicht von der Inspektion abgemeldet werden',
-                register: 'Die Abmeldung der Person konnte nicht zurückgenommen werden',
+                deregistration: 'Die Person {firstname} {lastname} konnte nicht von der Inspektion abgemeldet werden. Bitte laden Sie die Seite neu und versuchen es erneut.',
+                register: 'Die Abmeldung der Person {firstname} {lastname} konnte nicht zurückgenommen werden. Bitte laden Sie die Seite neu und versuchen es erneut.',
                 start: 'Die Kontrolle konte nicht gestartet werden',
                 nameDuplication: 'Der Name wird bereits von einer anderen Kontrolle verwendet',
                 endBeforStart: 'Die Endzeit muss nach der Startzeit um {startTime} sein',
