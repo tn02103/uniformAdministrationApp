@@ -99,9 +99,10 @@ describe('<PlannedInspectionTableRow />', () => {
             const saveButton = screen.getByRole('button', { name: /save/i });
             const cancelButton = screen.getByRole('button', { name: /cancel/i });
 
-            expect(nameField).toHaveValue(inspection.name);
-            expect(dateField).toHaveValue(format(inspection.date, "dd.MM.yyyy"));
-            expect(cancelButton).toBeInTheDocument();
+            await user.clear(nameField);
+            await user.type(nameField, 'TestName');
+            await user.clear(dateField);
+            await user.type(dateField, dayjs().add(23, "days").format('dd.MM.yyyy'));
             await user.click(cancelButton);
 
             expect(nameField).not.toBeInTheDocument();
@@ -127,23 +128,39 @@ describe('<PlannedInspectionTableRow />', () => {
                     inspection={mockInspectionList[0]}
                 />
             );
+
+
+            // DUPLICATION
+            // Edit name to duplicate
             await user.click(screen.getByTestId('btn_edit'));
+            const nameField = screen.getByRole('textbox', { name: /name/i });
 
-            expect(screen.getByRole('textbox', { name: /name/i })).toBeInTheDocument();
-            expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue(mockInspectionList[0].name);
-            expect(screen.getByRole('textbox', { name: /date/i })).toBeInTheDocument();
-            expect(screen.getByRole('textbox', { name: /date/i })).toHaveValue(format(mockInspectionList[0].date, "dd.MM.yyyy"));
-            expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
-            expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
+            await user.clear(nameField);
+            await user.type(nameField, mockInspectionList[1].name);
 
-            await user.clear(screen.getByRole('textbox', { name: /name/i }));
-            await user.type(screen.getByRole('textbox', { name: /name/i }), mockInspectionList[1].name);
-            expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue(mockInspectionList[1].name);
+            // validate edit
+            expect(nameField).toHaveValue(mockInspectionList[1].name);
             expect(screen.getByText(/custom.inspection.nameDuplication/i)).toBeInTheDocument();
 
+            // trying to save
             await user.click(screen.getByRole('button', { name: /save/i }));
             expect(updatePlannedInspection).not.toHaveBeenCalled();
             expect(mutate).not.toHaveBeenCalled();
+
+            // ORIGINAL
+            // edit name to original
+            expect(screen.queryByTestId('btn_edit')).toBeNull();
+            await user.clear(nameField);
+            await user.type(nameField, mockInspectionList[0].name);
+
+            // validate edit
+            expect(nameField).toHaveValue(mockInspectionList[0].name);
+            expect(screen.queryByText(/custom.inspection.nameDuplication/i)).toBeNull();
+
+            // trying to save
+            await user.click(screen.getByRole('button', { name: /save/i }));
+            expect(updatePlannedInspection).toHaveBeenCalled();
+            expect(mutate).toHaveBeenCalled();
         });
 
         it('should catch dateDuplication error before submit', async () => {
@@ -156,28 +173,41 @@ describe('<PlannedInspectionTableRow />', () => {
                     inspection={mockInspectionList[0]}
                 />
             );
+
+            // DUPLICATION
+            // edit name
             await user.click(screen.getByTestId('btn_edit'));
-
-            expect(screen.getByRole('textbox', { name: /name/i })).toBeInTheDocument();
-            expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue(mockInspectionList[0].name);
-            expect(screen.getByRole('textbox', { name: /date/i })).toBeInTheDocument();
-            expect(screen.getByRole('textbox', { name: /date/i })).toHaveValue(format(mockInspectionList[0].date, "dd.MM.yyyy"));
-            expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
-            expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
-
             await user.clear(screen.getByRole('textbox', { name: /date/i }));
             await user.type(screen.getByRole('textbox', { name: /date/i }), format(mockInspectionList[1].date, "dd.MM.yyyy"));
+
+            // validate edit
             expect(screen.getByRole('textbox', { name: /date/i })).toHaveValue(format(mockInspectionList[1].date, "dd.MM.yyyy"));
             expect(screen.getByText(/custom.inspection.dateDuplication/i)).toBeInTheDocument();
 
+            // trying to save
             await user.click(screen.getByRole('button', { name: /save/i }));
             expect(updatePlannedInspection).not.toHaveBeenCalled();
             expect(mutate).not.toHaveBeenCalled();
+
+            // ORIGINAL
+            // edit name to original
+            expect(screen.queryByTestId('btn_edit')).toBeNull();
+            await user.clear(screen.getByRole('textbox', { name: /date/i }));
+            await user.type(screen.getByRole('textbox', { name: /date/i }), format(mockInspectionList[0].date, "dd.MM.yyyy"));
+
+            // validate edit
+            expect(screen.getByRole('textbox', { name: /date/i })).toHaveValue(format(mockInspectionList[0].date, "dd.MM.yyyy"));
+            expect(screen.queryByText(/custom.inspection.dateDuplication/i)).toBeNull();
+           
+            // trying to save
+            await user.click(screen.getByRole('button', { name: /save/i }));
+            expect(updatePlannedInspection).toHaveBeenCalled();
+            expect(mutate).toHaveBeenCalled();
         });
         it('should not allow date before today', async () => {
             const { updatePlannedInspection } = jest.requireMock("@/dal/inspection");
             const { mutate } = jest.requireMock("@/dataFetcher/inspection").usePlannedInspectionList();
-            const testDay = dayjs().subtract(1, "day").startOf("day").format("DD.MM.YYYY");
+            const testDay = dayjs().subtract(1, "day").format("DD.MM.YYYY");
 
             const user = userEvent.setup();
             render(
@@ -195,7 +225,6 @@ describe('<PlannedInspectionTableRow />', () => {
             await user.click(screen.getByRole('button', { name: /save/i }));
             expect(updatePlannedInspection).not.toHaveBeenCalled();
             expect(mutate).not.toHaveBeenCalled();
-
         });
 
         it('should catch exception from dal-method', async () => {
@@ -555,9 +584,6 @@ describe('<PlannedInspectionTableRow />', () => {
             );
 
             await user.click(screen.getByTestId('btn_complete'));
-
-            // Advance timers if necessary
-            jest.runAllTimers();
 
             expect(simpleFormModal).toHaveBeenCalledTimes(1);
             expect(simpleFormModal).toHaveBeenCalledWith(
