@@ -26,13 +26,15 @@ jest.mock("./UniformGenerationOffcanvas", () => {
         UniformgenerationOffcanvas: mock,
     };
 });
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let onDragEndFunction: undefined | ((newArray: UniformGeneration[], itemId: string) => Promise<any>) = undefined;
 jest.mock("@/components/reorderDnD/ReorderableTableBody", () => {
     return {
-        ReorderableTableBody: jest.fn(({ items, itemType, onDragEnd, children }) => {
+        ReorderableTableBody: jest.fn(({ items, onDragEnd, children }) => {
             onDragEndFunction = onDragEnd;
             return (
                 <tbody data-testid="reorderable-table-body">
+                    { /* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                     {items.map(((item: any) => children({ item, draggableRef: undefined, previewRef: undefined, isDragging: false })))}
                 </tbody>
             )
@@ -42,9 +44,9 @@ jest.mock("@/components/reorderDnD/ReorderableTableBody", () => {
 
 // ################## TESTS ##################
 describe('<UniformGenerationTable />', () => {
-    const { UniformgenerationOffcanvas } = require("./UniformGenerationOffcanvas");
-    const { changeUniformGenerationSortOrder } = require("@/dal/uniform/generation/_index");
-    const { useUniformTypeList } = require("@/dataFetcher/uniformAdmin");
+    const { UniformgenerationOffcanvas } = jest.requireMock("./UniformGenerationOffcanvas");
+    const { changeUniformGenerationSortOrder } = jest.requireMock("@/dal/uniform/generation/_index");
+    const { useUniformTypeList } = jest.requireMock("@/dataFetcher/uniformAdmin");
 
     afterEach(() => {
         jest.clearAllMocks();
@@ -142,7 +144,7 @@ describe('<UniformGenerationTable />', () => {
     });
 
     it('changes sortOrder when onDragEnd is triggered', async () => {
-        const { toast } = require("react-toastify");
+        const { toast } = jest.requireMock("react-toastify");
         render(<UniformGenerationTable uniformType={testType} />);
 
         // trigger onDragEnd
@@ -168,7 +170,7 @@ describe('<UniformGenerationTable />', () => {
     });
 
     it('catches error when sortOrder function fails', async () => {
-        const { toast } = require("react-toastify");
+        const { toast } = jest.requireMock("react-toastify");
         changeUniformGenerationSortOrder.mockImplementationOnce(async () => { throw new Error("Error") });
         render(<UniformGenerationTable uniformType={testType} />);
 
@@ -240,7 +242,7 @@ describe('<UniformGenerationTable />', () => {
         };
         render(<UniformGenerationTable uniformType={testTypeWithoutSizeList} />);
 
-        expect(screen.queryByText("common.uniform.generation.outdated")).toBeInTheDocument();
+        expect(screen.getByText("common.uniform.generation.outdated")).toBeInTheDocument();
         expect(screen.queryByText("common.uniform.generation.outdated")).not.toHaveClass("d-none d-sm-table-cell");
 
         const row = screen.getByRole("row", { name: "Test Generation 1" });
@@ -250,7 +252,7 @@ describe('<UniformGenerationTable />', () => {
     it('hides outdated column on Mobile when usingSizes', () => {
         render(<UniformGenerationTable uniformType={testType} />);
 
-        expect(screen.queryByText("common.uniform.generation.outdated")).toBeInTheDocument();
+        expect(screen.getByText("common.uniform.generation.outdated")).toBeInTheDocument();
         expect(screen.queryByText("common.uniform.generation.outdated")).toHaveClass("d-none d-sm-table-cell");
 
         const row = screen.getByRole("row", { name: "Test Generation 1" });

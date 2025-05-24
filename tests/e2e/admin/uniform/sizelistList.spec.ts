@@ -106,7 +106,7 @@ test.describe('sizeList Configuration', () => {
                 await editListPopup.btn_save.click();
 
                 if (testSet.valid) {
-                    await expect.soft(editListPopup.err_input).not.toBeVisible();
+                    await expect.soft(editListPopup.err_input).toBeHidden();
                 } else {
                     await expect.soft(editListPopup.err_input).toBeVisible();
                 }
@@ -124,11 +124,11 @@ test.describe('sizeList Configuration', () => {
         await test.step('check data', async () => {
             await Promise.all(sizeIdArray.map(async (id) => {
                 await expect(detailComponent.btn_selectedSize(id)).toBeVisible();
-                await expect(detailComponent.btn_backupSize(id)).not.toBeVisible();
+                await expect(detailComponent.btn_backupSize(id)).toBeHidden();
             }));
             await Promise.all(data.uniformSizes.filter(size => (!sizeIdArray.includes(size.id!)))
                 .map(async (size) => {
-                    await expect(detailComponent.btn_selectedSize(size.id!)).not.toBeVisible();
+                    await expect(detailComponent.btn_selectedSize(size.id!)).toBeHidden();
                     await expect(detailComponent.btn_backupSize(size.id!)).toBeVisible();
                 })
             );
@@ -139,15 +139,15 @@ test.describe('sizeList Configuration', () => {
             await detailComponent.btn_backupSize(ids.sizeIds[16]).click();
 
             await Promise.all([
-                expect.soft(detailComponent.btn_selectedSize(ids.sizeIds[0])).not.toBeVisible(),
+                expect.soft(detailComponent.btn_selectedSize(ids.sizeIds[0])).toBeHidden(),
                 expect.soft(detailComponent.btn_backupSize(ids.sizeIds[0])).toBeVisible(),
                 expect.soft(detailComponent.btn_selectedSize(ids.sizeIds[16])).toBeVisible(),
-                expect.soft(detailComponent.btn_backupSize(ids.sizeIds[16])).not.toBeVisible(),
+                expect.soft(detailComponent.btn_backupSize(ids.sizeIds[16])).toBeHidden(),
             ]);
         });
         await test.step('validate save', async () => {
             await detailComponent.btn_save.click();
-            await expect.soft(detailComponent.div_selectedSize(ids.sizeIds[0])).not.toBeVisible();
+            await expect.soft(detailComponent.div_selectedSize(ids.sizeIds[0])).toBeHidden();
             await expect.soft(detailComponent.div_selectedSize(ids.sizeIds[16])).toBeVisible();
         });
         await test.step('validate db', async () => {
@@ -196,7 +196,7 @@ test.describe('sizeList Configuration', () => {
         await expect.soft(messageModal.div_header).toHaveAttribute("class", /bg-danger/);
         await expect.soft(messageModal.div_header).toHaveText(inUseError.header);
         await expect.soft(messageModal.div_message).toHaveText(message);
-        await expect.soft(messageModal.btn_cancel).not.toBeVisible();
+        await expect.soft(messageModal.btn_cancel).toBeHidden();
         await messageModal.btn_save.click();
 
         await expect.soft(listComponent.div_sizelist(ids.sizelistIds[0])).toBeVisible();
@@ -214,7 +214,7 @@ test.describe('sizeList Configuration', () => {
         await expect.soft(messageModal.div_message).toContainText(deleteWarning.message.line2);
         await messageModal.btn_save.click();
 
-        await expect.soft(listComponent.div_sizelist(ids.sizelistIds[3])).not.toBeVisible();
+        await expect.soft(listComponent.div_sizelist(ids.sizelistIds[3])).toBeHidden();
         const data = await prisma.uniformSizelist.findUnique({ where: { id: ids.sizelistIds[3] } });
         expect(data).toBeNull();
     });

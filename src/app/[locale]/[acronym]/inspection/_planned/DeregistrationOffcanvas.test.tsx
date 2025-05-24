@@ -1,11 +1,11 @@
 
 import "./jestHelper";
 
-import { getAllByRole, getByRole, getByTestId, queryByRole, render, screen } from "@testing-library/react";
-import { mockCadetList, mockInspectionList } from "./jestHelper";
-import { DeregistrationOffcanvas } from "./DeregistrationOffcanvas";
+import { getAllByRole, getByRole, queryByRole, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { format } from "date-fns";
+import { DeregistrationOffcanvas } from "./DeregistrationOffcanvas";
+import { mockCadetList, mockInspectionList } from "./jestHelper";
 
 describe('<DeregistrationOffcanvas/>', () => {
     afterEach(() => {

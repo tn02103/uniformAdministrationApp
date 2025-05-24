@@ -13,7 +13,7 @@ import { getUniformTypeList } from "@/dal/uniform/type/_index";
 
 export const dynamic = "force-dynamic";
 
-export async function generateStaticParams(props: any) {
+export async function generateStaticParams() {
     const assosiations = await prisma.assosiation.findMany();
 
     return assosiations.map((a) => ({ acronym: a.acronym }))

@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/db";
 import { updateUniform } from "./update";
 
 jest.mock('@/lib/db', () => ({
@@ -26,7 +25,7 @@ describe('updateUniformDeficiency', () => {
         jest.clearAllMocks();
     });
 
-    it('it updates the deficiency', async () => {
+    it('updates the deficiency', async () => {
         prisma.deficiencyType.findUnique.mockResolvedValueOnce({
             id: 'typeId',
             dependent: 'uniform',

@@ -54,7 +54,7 @@ export const UniformgenerationOffcanvas = ({ generation, uniformTypeId, usingSiz
                 deleteUniformGeneration(generation.id)
             ).then(() => {
                 onHide();
-            }).catch((e) => {
+            }).catch(() => {
                 toast.error(t('common.error.actions.delete'));
             });
         }

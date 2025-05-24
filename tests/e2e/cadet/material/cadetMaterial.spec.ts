@@ -44,33 +44,33 @@ userTest('Authroles: User', async ({ page, staticData: { ids } }) => {
             expect.soft(cadetMaterialComponent.div_material_name(ids.materialIds[2])).toBeVisible(),
             expect.soft(cadetMaterialComponent.div_material_issued(ids.materialIds[2])).toBeVisible(),
             // btn
-            expect.soft(cadetMaterialComponent.btn_group_issue(ids.materialGroupIds[1])).not.toBeVisible(),
-            expect.soft(cadetMaterialComponent.btn_material_return(ids.materialIds[2])).not.toBeVisible(),
-            expect.soft(cadetMaterialComponent.btn_material_switch(ids.materialIds[2])).not.toBeVisible(),
+            expect.soft(cadetMaterialComponent.btn_group_issue(ids.materialGroupIds[1])).toBeHidden(),
+            expect.soft(cadetMaterialComponent.btn_material_return(ids.materialIds[2])).toBeHidden(),
+            expect.soft(cadetMaterialComponent.btn_material_switch(ids.materialIds[2])).toBeHidden(),
         ]);
     });
 });
 
 
-test.describe(async () => {
+test.describe(() => {
     test.beforeEach(async ({ page, staticData }) => {
         await page.goto(`/de/app/cadet/${staticData.ids.cadetIds[1]}`);
     });
 
     test('validate MarterialGroupRows', async ({ page, materialComponent, staticData: { ids } }) => {
         await test.step('sortOrder', async () => {
-            expect(page.locator('div[data-testid^="div_matGroup_"]')).toHaveCount(3);
+            await expect(page.locator('div[data-testid^="div_matGroup_"]')).toHaveCount(3);
 
             const divList = await page.locator('div[data-testid^="div_matGroup_"]').all()
-            expect.soft(divList[0]).toHaveAttribute('data-testid', `div_matGroup_${ids.materialGroupIds[0]}`);
-            expect.soft(divList[0].getByTestId('div_groupName')).toHaveText('Gruppe1');
-            expect.soft(divList[1]).toHaveAttribute('data-testid', `div_matGroup_${ids.materialGroupIds[1]}`);
-            expect.soft(divList[1].getByTestId('div_groupName')).toHaveText('Gruppe2');
-            expect.soft(divList[2]).toHaveAttribute('data-testid', `div_matGroup_${ids.materialGroupIds[2]}`);
-            expect.soft(divList[2].getByTestId('div_groupName')).toHaveText('Gruppe3');
+            await expect.soft(divList[0]).toHaveAttribute('data-testid', `div_matGroup_${ids.materialGroupIds[0]}`);
+            await expect.soft(divList[0].getByTestId('div_groupName')).toHaveText('Gruppe1');
+            await expect.soft(divList[1]).toHaveAttribute('data-testid', `div_matGroup_${ids.materialGroupIds[1]}`);
+            await expect.soft(divList[1].getByTestId('div_groupName')).toHaveText('Gruppe2');
+            await expect.soft(divList[2]).toHaveAttribute('data-testid', `div_matGroup_${ids.materialGroupIds[2]}`);
+            await expect.soft(divList[2].getByTestId('div_groupName')).toHaveText('Gruppe3');
         });
         await test.step('deleted', async () => {
-            expect(materialComponent.div_group(ids.materialGroupIds[3])).not.toBeVisible();
+            await expect(materialComponent.div_group(ids.materialGroupIds[3])).toBeHidden();
         });
 
         await test.step('validate btn_issued dissabled', async () => {
@@ -89,7 +89,7 @@ test.describe(async () => {
                     .soft(materialComponent.div_group_name(groupId2))
                     .not
                     .toHaveClass(/text-danger/);
-                await expect
+                expect
                     .soft(await getTextColor(materialComponent.div_group_name(groupId2)))
                     .toBe(defaultTextColor);
             });
@@ -100,7 +100,7 @@ test.describe(async () => {
                     .soft(materialComponent.div_group_name(groupId2))
                     .not
                     .toHaveClass(/text-danger/);
-                await expect
+                expect
                     .soft(await getTextColor(materialComponent.div_group_name(groupId2)))
                     .toBe(defaultTextColor);
             });
@@ -110,7 +110,7 @@ test.describe(async () => {
                 await expect
                     .soft(materialComponent.div_group_name(groupId2))
                     .toHaveClass(/text-danger/);
-                await expect
+                expect
                     .soft(await getTextColor(materialComponent.div_group_name(groupId2)))
                     .not
                     .toBe(defaultTextColor);
@@ -121,7 +121,7 @@ test.describe(async () => {
                     .soft(materialComponent.div_group_name(groupId3))
                     .not
                     .toHaveClass(/text-danger/);
-                await expect
+                expect
                     .soft(await getTextColor(materialComponent.div_group_name(groupId3)))
                     .toBe(defaultTextColor);
             });
@@ -175,8 +175,8 @@ test.describe(async () => {
             }
         });
         await test.step('validate returned material', async () => {
-            await expect.soft(materialComponent.div_material(ids.materialIds[0])).not.toBeVisible();
-            await expect.soft(materialComponent.div_material(ids.materialIds[4])).not.toBeVisible();
+            await expect.soft(materialComponent.div_material(ids.materialIds[0])).toBeHidden();
+            await expect.soft(materialComponent.div_material(ids.materialIds[4])).toBeHidden();
         });
 
         await test.step('validate issued label highlighting', async () => {
@@ -189,7 +189,7 @@ test.describe(async () => {
                 await expect
                     .soft(materialComponent.div_material_issued(ids.materialIds[5]))
                     .toHaveText("4");
-                await expect
+                expect
                     .soft(await getTextColor(materialComponent.div_material_issued(ids.materialIds[5])))
                     .toBe(defaultTextColor);
             });
@@ -203,7 +203,7 @@ test.describe(async () => {
                 await expect
                     .soft(materialComponent.div_material_issued(ids.materialIds[4]))
                     .toHaveClass(/text-warning/);
-                await expect
+                expect
                     .soft(await getTextColor(materialComponent.div_material_issued(ids.materialIds[4])))
                     .not
                     .toBe(defaultTextColor);
@@ -218,7 +218,7 @@ test.describe(async () => {
                 await expect
                     .soft(materialComponent.div_material_issued(ids.materialIds[6]))
                     .toHaveClass(/text-warning/);
-                await expect
+                expect
                     .soft(await getTextColor(materialComponent.div_material_issued(ids.materialIds[6])))
                     .not
                     .toBe(defaultTextColor);

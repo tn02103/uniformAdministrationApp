@@ -4,7 +4,7 @@ import ExcelJS from 'exceljs';
 
 export const generateInspectionReviewXLSX = (inspectionReview: InspectionReview) => {
 
-    const { activeDeficiencyList, cadetList, ...inspection } = inspectionReview
+    const { activeDeficiencyList, cadetList } = inspectionReview
     // create Workbook
     const workbook = new ExcelJS.Workbook();
     workbook.created = new Date();

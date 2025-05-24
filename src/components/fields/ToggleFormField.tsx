@@ -1,5 +1,5 @@
-import { Form, FormLabel } from "react-bootstrap";
-import { FieldValue, FieldValues, Path, useController } from "react-hook-form"
+import { Form } from "react-bootstrap";
+import { FieldValue, FieldValues, Path, useController } from "react-hook-form";
 import ErrorMessage from "../errorMessage";
 
 export type ToggleFormFieldProps<FormType extends FieldValues> = {

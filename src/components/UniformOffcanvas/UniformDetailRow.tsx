@@ -20,7 +20,7 @@ export type UniformDetailRowProps = {
     uniformType: UniformType;
     editable: boolean;
     setEditable: (editable: boolean) => void;
-    onSave: (data: UniformFormType) => void;
+    onSave: () => void;
 }
 const getUniformFormData = (uniform: Uniform): UniformFormType => {
     return {
@@ -41,7 +41,7 @@ export const UniformDetailRow = ({ uniform, uniformType, editable, setEditable, 
         defaultValues: getUniformFormData(uniform),
         resolver: zodResolver(getUniformFormSchema(uniformType.usingGenerations, uniformType.usingSizes)),
     });
-    const { reset, handleSubmit, watch, setValue, setError, formState: { errors } } = form;
+    const { reset, handleSubmit, watch, setValue, setError } = form;
 
     // DATA Fetcher
     const { generationList } = useUniformGenerationListByType(uniform.type.id);
@@ -59,7 +59,8 @@ export const UniformDetailRow = ({ uniform, uniformType, editable, setEditable, 
             generationId: selectedGeneration,
             sizelists: sizelists,
         });
-    }, [uniform.type.id, selectedGeneration]);
+    }, [typeList, uniformType, selectedGeneration, sizelists]);
+
     const sizeOptions = useMemo(() => {
         if (!editable) {
             if (uniform.size)
@@ -77,7 +78,7 @@ export const UniformDetailRow = ({ uniform, uniformType, editable, setEditable, 
         if (!editable) {
             reset(getUniformFormData(uniform));
         }
-    }, [uniform]);
+    }, [uniform, editable, reset]);
 
     useEffect(() => {
         if (editable && selectedSizeId && sizeOptions) {
@@ -90,13 +91,13 @@ export const UniformDetailRow = ({ uniform, uniformType, editable, setEditable, 
 
     // DATA HANDLERS
     const handleSave = async (data: UniformFormType) => {
-        await SAFormHandler(
+        await SAFormHandler<Uniform, UniformFormType>(
             updateUniformItem(data),
             setError,
             (result) => {
                 setEditable(false);
                 reset(getUniformFormData(result));
-                onSave(result);
+                onSave();
             },
             t('common.error.actions.save')
         );

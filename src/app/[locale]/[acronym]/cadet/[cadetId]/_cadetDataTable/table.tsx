@@ -35,7 +35,7 @@ const CadetDataTableForm = ({ initialData }: PropType) => {
     const { cadetId, locale }: { cadetId: string, locale: string } = useParams();
     const [submitting, setSubmitting] = useState(false);
     const [editable, setEditable] = useState(!initialData);
-    const { data: lastInspectionDate, error } = useSWR(
+    const { data: lastInspectionDate } = useSWR(
         `cadet/inspection/lastInspection`,
         (!initialData || userRole < AuthRole.inspector)
             ? null : () => getCadetLastInspectionDate(cadetId).catch((e) => console.log(e)),
@@ -50,7 +50,7 @@ const CadetDataTableForm = ({ initialData }: PropType) => {
             reset(initialData);
             setEditable(false);
         }
-    }, [cadetId]);
+    }, [cadetId, initialData, reset]);
 
     async function updateCadet(data: Cadet) {
         setSubmitting(true);

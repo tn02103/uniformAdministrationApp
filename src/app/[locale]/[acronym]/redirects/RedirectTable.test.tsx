@@ -88,7 +88,7 @@ describe("RedirectTable", () => {
         });
 
         const user = userEvent.setup();
-        const { container, rerender } = render(<RedirectTable redirects={mockRedirects} />);
+        const { container } = render(<RedirectTable redirects={mockRedirects} />);
 
         const firstRow = getByRole(container, "row", { name: mockRedirects[0].code });
         const copyButton = getByRole(firstRow, "button", { name: /sourceUrl/i });

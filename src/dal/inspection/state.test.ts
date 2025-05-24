@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getInspectionState } from "@/dal/inspection/state";
 import { prisma } from "@/lib/db";
 import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";

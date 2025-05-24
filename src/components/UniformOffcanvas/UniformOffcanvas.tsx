@@ -2,7 +2,6 @@ import { deleteUniformItem } from "@/dal/uniform/item/_index";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n } from "@/lib/locales/client";
 import { Uniform, UniformType } from "@/types/globalUniformTypes";
-import { UniformFormType } from "@/zod/uniform";
 import { useState } from "react";
 import { Offcanvas, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
@@ -17,7 +16,7 @@ export type UniformOffcanvasProps = {
     uniform: Uniform;
     uniformType: UniformType;
     onClose: () => void;
-    onSave: (data?: UniformFormType) => void;
+    onSave: () => void;
 }
 export const UniformOffcanvas = ({ uniform, uniformType, onClose, onSave }: UniformOffcanvasProps) => {
     const t = useI18n();

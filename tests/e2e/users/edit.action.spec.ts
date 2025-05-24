@@ -1,12 +1,13 @@
 import { prisma } from "@/lib/db";
 import { User } from "@prisma/client";
 import bcrypt from 'bcrypt';
-import { ViewportSize, expect } from "playwright/test";
+import { Page, ViewportSize, expect } from "playwright/test";
 import german from "../../../public/locales/de";
 import { viewports } from "../../_playwrightConfig/global/helper";
 import { newNameValidationTests, passwordTests, usernameTests } from "../../_playwrightConfig/global/testSets";
 import { UserAdministrationPage } from "../../_playwrightConfig/pages/admin/user/userAdministration.page";
 import { adminTest } from "../../_playwrightConfig/setup";
+import { StaticDataIdType } from "../../_playwrightConfig/testData/staticDataGenerator";
 
 type Fixture = {
     userPage: UserAdministrationPage;
@@ -31,16 +32,16 @@ test('validate visibleItems', async ({ page, userPage, staticData: { ids } }) =>
             expect(userPage.txt_user_name(userId)).toBeVisible(),
             expect(userPage.div_user_role(userId)).toBeVisible(),
             expect(userPage.div_user_active(userId)).toBeVisible(),
-            expect(userPage.sel_user_role(userId)).not.toBeVisible(),
-            expect(userPage.sel_user_active(userId)).not.toBeVisible(),
+            expect(userPage.sel_user_role(userId)).toBeHidden(),
+            expect(userPage.sel_user_active(userId)).toBeHidden(),
 
             expect(userPage.txt_user_username(userId)).toBeDisabled(),
             expect(userPage.txt_user_name(userId)).toBeDisabled(),
             expect(userPage.txt_user_username(userId)).toHaveClass('form-control-plaintext'),
             expect(userPage.txt_user_name(userId)).toHaveClass('form-control-plaintext'),
 
-            expect(userPage.btn_user_cancel(userId)).not.toBeVisible(),
-            expect(userPage.btn_user_save(userId)).not.toBeVisible(),
+            expect(userPage.btn_user_cancel(userId)).toBeHidden(),
+            expect(userPage.btn_user_save(userId)).toBeHidden(),
             expect(userPage.btn_user_menu(userId)).toBeVisible(),
         ]);
     });
@@ -51,8 +52,8 @@ test('validate visibleItems', async ({ page, userPage, staticData: { ids } }) =>
         await Promise.all([
             expect(userPage.txt_user_username(userId)).toBeVisible(),
             expect(userPage.txt_user_name(userId)).toBeVisible(),
-            expect(userPage.div_user_role(userId)).not.toBeVisible(),
-            expect(userPage.div_user_active(userId)).not.toBeVisible(),
+            expect(userPage.div_user_role(userId)).toBeHidden(),
+            expect(userPage.div_user_active(userId)).toBeHidden(),
             expect(userPage.sel_user_role(userId)).toBeVisible(),
             expect(userPage.sel_user_active(userId)).toBeVisible(),
 
@@ -63,7 +64,7 @@ test('validate visibleItems', async ({ page, userPage, staticData: { ids } }) =>
 
             expect(userPage.btn_user_cancel(userId)).toBeVisible(),
             expect(userPage.btn_user_save(userId)).toBeVisible(),
-            expect(userPage.btn_user_menu(userId)).not.toBeVisible(),
+            expect(userPage.btn_user_menu(userId)).toBeHidden(),
         ]);
     });
     await test.step('editable mobile', async () => {
@@ -95,18 +96,19 @@ test('validate visibleItems', async ({ page, userPage, staticData: { ids } }) =>
     });
 });
 
-test('user formValidations', async ({ page, userPage, staticData: { ids } }) => {
+test('user formValidations', async ({ page, userPage }) => {
     await userPage.btn_create.click();
 
     for (const [mobile, view] of [[false, viewports.xxl], [true, viewports.xs]]) {
         await page.setViewportSize(view as ViewportSize);
-        await test.step(`username ${mobile ? "mobile" : "desktop"}`, async () => {
+        const title = `username ${mobile ? "mobile" : "desktop"}`;
+        await test.step(title, async () => {
             for (const set of usernameTests) {
-                await test.step(set.testValue, async () => {
-                    await userPage.txt_user_username("new").fill(set.testValue);
+                await test.step(String(set.testValue), async () => {
+                    await userPage.txt_user_username("new").fill(String(set.testValue));
 
                     if (set.valid) {
-                        await expect(userPage.err_user_username("new", mobile as boolean)).not.toBeVisible();
+                        await expect(userPage.err_user_username("new", mobile as boolean)).toBeHidden();
                     } else {
                         await expect(userPage.err_user_username("new", mobile as boolean)).toBeVisible();
                     }
@@ -116,11 +118,11 @@ test('user formValidations', async ({ page, userPage, staticData: { ids } }) => 
         await test.step(`name ${mobile ? "mobile" : "desktop"}`, async () => {
             const testSets = newNameValidationTests({ minLength: 1, maxLength: 20 });
             for (const set of testSets) {
-                await test.step(set.testValue, async () => {
-                    await userPage.txt_user_name("new").fill(set.testValue);
+                await test.step(String(set.testValue), async () => {
+                    await userPage.txt_user_name("new").fill(String(set.testValue));
 
                     if (set.valid) {
-                        await expect(userPage.err_user_name("new", mobile as boolean)).not.toBeVisible();
+                        await expect(userPage.err_user_name("new", mobile as boolean)).toBeHidden();
                     } else {
                         await expect(userPage.err_user_name("new", mobile as boolean)).toBeVisible();
                     }
@@ -132,12 +134,12 @@ test('user formValidations', async ({ page, userPage, staticData: { ids } }) => 
 test('password formValidation', async ({ userPage, staticData: { ids } }) => {
     await userPage.openUserPasswordModal(ids.userIds[0]);
     for (const set of passwordTests) {
-        await test.step(set.testValue, async () => {
-            await userPage.passwordPopup.txt_password.fill(set.testValue);
+        await test.step(String(set.testValue), async () => {
+            await userPage.passwordPopup.txt_password.fill(String(set.testValue));
             await userPage.passwordPopup.div_header.click();
 
             if (set.valid) {
-                await expect.soft(userPage.passwordPopup.err_password).not.toBeVisible();
+                await expect.soft(userPage.passwordPopup.err_password).toBeHidden();
             } else {
                 await expect.soft(userPage.passwordPopup.err_password).toBeVisible();
             }
@@ -178,43 +180,56 @@ test('cancel function', async ({ userPage, staticData: { ids, index } }) => {
     });
 });
 
-test.describe('save function', async () => {
-    [true, false].map((mobile) =>
-        test(mobile ? "mobile" : "desktop", async ({ page, userPage, staticData: { ids } }) => {
-            await page.setViewportSize(mobile ? viewports.sm : viewports.xxl);
+test.describe('save function', () => {
+    const changeDataStep = async (userPage: UserAdministrationPage, ids: StaticDataIdType, page: Page) => {
+        await test.step('change data', async () => {
+            await userPage.btn_user_menu(ids.userIds[0]).click();
+            await userPage.btn_user_menu_edit(ids.userIds[0]).click();
 
-            await test.step('change data', async () => {
-                await userPage.btn_user_menu(ids.userIds[0]).click();
-                await userPage.btn_user_menu_edit(ids.userIds[0]).click();
-
-                await userPage.txt_user_name(ids.userIds[0]).fill('Test Changed');
-                await userPage.sel_user_role(ids.userIds[0]).selectOption('2');
-                await userPage.sel_user_active(ids.userIds[0]).selectOption('false');
-                await userPage.btn_user_save(ids.userIds[0]).click();
-                await expect(page.locator('.Toastify__toast--success')).toBeVisible();
+            await userPage.txt_user_name(ids.userIds[0]).fill('Test Changed');
+            await userPage.sel_user_role(ids.userIds[0]).selectOption('2');
+            await userPage.sel_user_active(ids.userIds[0]).selectOption('false');
+            await userPage.btn_user_save(ids.userIds[0]).click();
+            await expect(page.locator('.Toastify__toast--success')).toBeVisible();
+        });
+    }
+    const validateDBStep = async (id: string) => {
+        await test.step('validate db', async () => {
+            const dbUser = await prisma.user.findUniqueOrThrow({
+                where: { id }
             });
 
-            await test.step('validate ui', async () => {
-                await expect(userPage.txt_user_name(ids.userIds[0])).toHaveValue('Test Changed');
-                if (!mobile) {
-                    await expect(userPage.div_user_role(ids.userIds[0])).toContainText(german.common.user.authRole['2']);
-                    await expect(userPage.div_user_active(ids.userIds[0])).toContainText(german.common.user.active.false);
-                }
-            });
-            await test.step('validate db', async () => {
-                const dbUser = await prisma.user.findUniqueOrThrow({
-                    where: { id: ids.userIds[0] }
-                });
+            expect(dbUser).toStrictEqual(expect.objectContaining({
+                username: 'test4',
+                name: 'Test Changed',
+                role: 2,
+                active: false
+            }));
+        });
+    }
 
-                expect(dbUser).toStrictEqual(expect.objectContaining({
-                    username: 'test4',
-                    name: 'Test Changed',
-                    role: 2,
-                    active: false
-                }));
-            });
-        })
-    );
+    test('mobile', async ({ page, userPage, staticData: { ids } }) => {
+        await page.setViewportSize(viewports.sm);
+        await changeDataStep(userPage, ids, page);
+
+        await test.step('validate ui', async () => {
+            await expect(userPage.txt_user_name(ids.userIds[0])).toHaveValue('Test Changed');
+        });
+
+        await validateDBStep(ids.userIds[0]);
+    });
+    test('desktop', async ({ page, userPage, staticData: { ids } }) => {
+        await page.setViewportSize(viewports.xxl);
+        await changeDataStep(userPage, ids, page);
+
+        await test.step('validate ui', async () => {
+            await expect(userPage.txt_user_name(ids.userIds[0])).toHaveValue('Test Changed');
+            await expect(userPage.div_user_role(ids.userIds[0])).toContainText(german.common.user.authRole['2']);
+            await expect(userPage.div_user_active(ids.userIds[0])).toContainText(german.common.user.active.false);
+        });
+
+        await validateDBStep(ids.userIds[0]);
+    });
 });
 test('changePassword', async ({ userPage, staticData: { ids, index } }) => {
     await test.step('change Password', async () => {
@@ -225,7 +240,7 @@ test('changePassword', async ({ userPage, staticData: { ids, index } }) => {
         await userPage.passwordPopup.txt_password.fill('newPassword123');
         await userPage.passwordPopup.txt_confirmationPassword.fill('newPassword123');
         await userPage.passwordPopup.btn_save.click();
-        await expect(userPage.passwordPopup.div_popup).not.toBeVisible();
+        await expect(userPage.passwordPopup.div_popup).toBeHidden();
     });
     await test.step('validate db', async () => {
         const dbUser = await prisma.user.findUniqueOrThrow({
@@ -235,7 +250,7 @@ test('changePassword', async ({ userPage, staticData: { ids, index } }) => {
         expect(await bcrypt.compare("newPassword123", dbUser.password)).toBeTruthy();
     });
 });
-test('create new user', async ({ userPage, page, staticData: { fk_assosiation } }) => {
+test('create new user', async ({ userPage, staticData: { fk_assosiation } }) => {
     await test.step('fill Data', async () => {
         await userPage.btn_create.click();
 
@@ -253,7 +268,7 @@ test('create new user', async ({ userPage, page, staticData: { fk_assosiation } 
         await userPage.passwordPopup.txt_confirmationPassword.fill('TestPassword1');
 
         await userPage.passwordPopup.btn_save.click();
-        await expect(userPage.passwordPopup.div_popup).not.toBeVisible();
+        await expect(userPage.passwordPopup.div_popup).toBeHidden();
     });
 
     await test.step('validate ui and db', async () => {
@@ -261,7 +276,7 @@ test('create new user', async ({ userPage, page, staticData: { fk_assosiation } 
             where: { username: 'test9', fk_assosiation }
         });
 
-        await expect(dbUser).not.toBeNull();
+        expect(dbUser).not.toBeNull();
 
         await expect(userPage.div_user(dbUser!.id)).toBeVisible();
         await expect(userPage.txt_user_username(dbUser!.id)).toHaveValue('test9');
@@ -269,7 +284,7 @@ test('create new user', async ({ userPage, page, staticData: { fk_assosiation } 
         await expect(userPage.div_user_role(dbUser!.id)).toContainText(german.common.user.authRole['3']);
         await expect(userPage.div_user_active(dbUser!.id)).toContainText(german.common.user.active.true);
 
-        await expect(dbUser).toStrictEqual(expect.objectContaining({
+        expect(dbUser).toStrictEqual(expect.objectContaining({
             username: 'test9',
             name: 'Test newUser',
             role: 3,

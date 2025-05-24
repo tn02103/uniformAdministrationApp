@@ -29,12 +29,12 @@ test('E2E0264: validate step0 defList after Inspction', async ({ inspectionCompo
             inspectionComponent.div_oldDeficiency(
                 svenKellerFirstInspectionData(index).oldDefIdsToResolve[0]
             )
-        ).not.toBeVisible();
+        ).toBeHidden();
         await expect.soft(
             inspectionComponent.div_oldDeficiency(
                 svenKellerFirstInspectionData(index).oldDefIdsToResolve[1]
             )
-        ).not.toBeVisible();
+        ).toBeHidden();
     });
 
     await test.step('new are shown', async () =>
@@ -81,10 +81,10 @@ test('E2E0266: validate step1 devList after Inspection', async ({ inspectionComp
 
         await Promise.all([
             ...resolvedIds.map(async (id) =>
-                expect.soft(inspectionComponent.div_oldDeficiency(id)).not.toBeVisible()
+                expect.soft(inspectionComponent.div_oldDeficiency(id)).toBeHidden()
             ),
             ...svenKellerFirstInspectionData(index).newDeficiencyList.map(async (insp) =>
-                expect.soft(inspectionComponent.div_oldDeficiency(insp.id)).not.toBeVisible()
+                expect.soft(inspectionComponent.div_oldDeficiency(insp.id)).toBeHidden()
             ),
         ]);
     });

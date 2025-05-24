@@ -1,32 +1,16 @@
 import { Page, test as setup } from 'playwright/test';
 import { v4 as uuid } from "uuid";
 import { StaticData } from './testData/staticDataLoader';
-import { StaticDataIdType, getStaticDataIds } from './testData/staticDataGenerator';
-const fs = require('fs');
 
 setup.use({ storageState: { cookies: [], origins: [] } });
 export type authenticatedFixture = { page: Page, staticData: StaticData }
 
-export const dataFixture = setup.extend<{}, { staticData: StaticData }>({
+export const dataFixture = setup.extend<object, { staticData: StaticData }>({
     staticData: [async ({ }, use) => {
         const i = process.env.TEST_PARALLEL_INDEX;
         if (!i) throw new Error("Could not get TEST_PARALLEL_INDEX: " + i);
 
         const index = Number(i);
-
-
-        let staticDataIds = [];
-        if (!fs.existsSync('tests/_playwrightConfig/testData/staticDataIds.json')) {
-            fs.writeFileSync('tests/_playwrightConfig/testData/staticDataIds.json', '[]');
-        }
-        staticDataIds = require('./testData/staticDataIds.json');
-
-        while (index >= staticDataIds.length) {
-            const ids: StaticDataIdType[] = staticDataIds;
-            ids.push(getStaticDataIds());
-            await fs.writeFileSync('tests/_playwrightConfig/testData/staticDataIds.json', JSON.stringify(ids, null, 4));
-        }
-
         const staticData = new StaticData(index);
         await staticData.resetData();
 

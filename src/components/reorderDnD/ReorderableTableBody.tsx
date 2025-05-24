@@ -7,7 +7,7 @@ import { DragableTypes } from "./ReorderHelper";
 type ReorderableTableBodyProps<T> = {
     items: T[];
     itemType: keyof typeof DragableTypes;
-    children: (p: ReorderableChildRenderProps<T> & { item: T }) => React.ReactNode;
+    children: (p: ReorderableChildRenderProps & { item: T }) => React.ReactNode;
     onDragEnd?: (newArray: T[], id: string) => void;
 }
 export const ReorderableTableBody = <T extends { id: string }>({ items: propItems, itemType, children, onDragEnd }: ReorderableTableBodyProps<T>) => {

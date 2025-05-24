@@ -27,7 +27,7 @@ test('E2E0278: validate typedisabled', async ({ inspectionComponent, staticData:
     const i = svenKellerFirstInspectionData(index).newDeficiencyList.length;
     await test.step('setup', async () => {
         await expect(inspectionComponent.div_newDeficiency(0)).toBeVisible();
-        await expect(inspectionComponent.div_newDeficiency(i)).not.toBeVisible();
+        await expect(inspectionComponent.div_newDeficiency(i)).toBeHidden();
         await inspectionComponent.btn_step2_newDef.click();
         await expect(inspectionComponent.div_newDeficiency(i)).toBeVisible();
     });
@@ -39,7 +39,7 @@ test('E2E0278: validate typedisabled', async ({ inspectionComponent, staticData:
 test('E2E0277: validate data for repeated inspection', async ({ inspectionComponent, staticData: { ids, index } }) => {
     const newDefs = svenKellerFirstInspectionData(index).newDeficiencyList;
 
-    expect(inspectionComponent.div_newDeficiency(newDefs.length - 1)).toBeVisible();
+    await expect(inspectionComponent.div_newDeficiency(newDefs.length - 1)).toBeVisible();
 
     const commentList = new Array(newDefs.length);
     for (let i = 0; i < newDefs.length; i++) {
@@ -64,7 +64,7 @@ test('E2E0277: validate data for repeated inspection', async ({ inspectionCompon
 
             expect(i).toBeGreaterThanOrEqual(0);
             await Promise.all([
-                expect.soft(inspectionComponent.txt_newDef_description(i)).not.toBeVisible(),
+                expect.soft(inspectionComponent.txt_newDef_description(i)).toBeHidden(),
                 expect.soft(inspectionComponent.sel_newDef_uniform(i)).toBeVisible(),
                 expect.soft(inspectionComponent.sel_newDef_uniform(i)).toHaveValue(newDefs[4].cadetDeficiency!.create.fk_uniform!),
             ]);
@@ -74,7 +74,7 @@ test('E2E0277: validate data for repeated inspection', async ({ inspectionCompon
 
             expect(i).toBeGreaterThanOrEqual(0);
             await Promise.all([
-                expect.soft(inspectionComponent.txt_newDef_description(i)).not.toBeVisible(),
+                expect.soft(inspectionComponent.txt_newDef_description(i)).toBeHidden(),
                 expect.soft(inspectionComponent.sel_newDef_uniform(i)).toBeVisible(),
                 expect.soft(inspectionComponent.sel_newDef_uniform(i)).toHaveValue(newDefs[1].uniformDeficiency!.create.fk_uniform!),
             ]);
@@ -84,7 +84,7 @@ test('E2E0277: validate data for repeated inspection', async ({ inspectionCompon
 
             expect(i).toBeGreaterThanOrEqual(0);
             await Promise.all([
-                expect.soft(inspectionComponent.txt_newDef_description(i)).not.toBeVisible(),
+                expect.soft(inspectionComponent.txt_newDef_description(i)).toBeHidden(),
                 expect.soft(inspectionComponent.sel_newDef_material(i)).toBeVisible(),
                 expect.soft(inspectionComponent.sel_newDef_materialGroup(i)).toBeVisible(),
                 expect.soft(inspectionComponent.sel_newDef_materialType(i)).toBeVisible(),
@@ -98,10 +98,10 @@ test('E2E0277: validate data for repeated inspection', async ({ inspectionCompon
 
             expect(i).toBeGreaterThanOrEqual(0);
             await Promise.all([
-                expect.soft(inspectionComponent.txt_newDef_description(i)).not.toBeVisible(),
+                expect.soft(inspectionComponent.txt_newDef_description(i)).toBeHidden(),
                 expect.soft(inspectionComponent.sel_newDef_material(i)).toBeVisible(),
-                expect.soft(inspectionComponent.sel_newDef_materialGroup(i)).not.toBeVisible(),
-                expect.soft(inspectionComponent.sel_newDef_materialType(i)).not.toBeVisible(),
+                expect.soft(inspectionComponent.sel_newDef_materialGroup(i)).toBeHidden(),
+                expect.soft(inspectionComponent.sel_newDef_materialType(i)).toBeHidden(),
                 expect.soft(inspectionComponent.sel_newDef_material(i)).toHaveValue(newDefs[3].cadetDeficiency!.create.fk_material!),
             ]);
         }),

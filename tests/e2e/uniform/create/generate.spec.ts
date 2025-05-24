@@ -11,7 +11,7 @@ type Fixture = {
 const year = (+(new Date().getFullYear()) % 100);
 const test = adminTest.extend<Fixture>({
     createPage: async ({ page }, use) => use(new CreateUniformPage(page)),
-    staticData: async ({ staticData }: { staticData: StaticData }, use: any) => {
+    staticData: async ({ staticData }: { staticData: StaticData }, use: (r: StaticData) => Promise<void>) => {
         const uniformNumbers = [`${year}03`, `${year}04`, `${year}10`, `${year}11`, `${year}12`];
         await prisma.uniform.createMany({
             data: uniformNumbers.map(number => {
@@ -27,12 +27,12 @@ const test = adminTest.extend<Fixture>({
         });
     }
 });
-test.beforeEach(async ({ page, createPage, staticData: { ids } }) => {
+test.beforeEach(async ({ page, createPage }) => {
     await page.goto(`/de/app/uniform/new`)
     await createPage.btn_tab_generateIds.click();
 });
 
-test.describe('validate Inputs', async () => {
+test.describe('validate Inputs', () => {
     test('without sizes Input', async ({ createPage: { configurator, generateStep1 }, staticData: { ids } }) => {
         await configurator.sel_type.selectOption(ids.uniformTypeIds[3]);
         await configurator.btn_continue.click();
@@ -47,8 +47,8 @@ test.describe('validate Inputs', async () => {
 
             await Promise.all([
                 expect.soft(generateStep1.txt_amount_size(ids.sizeIds[5])).toBeVisible(), // 5
-                expect.soft(generateStep1.txt_amount_size(ids.sizeIds[10])).not.toBeVisible(), // 10
-                expect.soft(generateStep1.txt_amount_size(ids.sizeIds[16])).not.toBeVisible(), // Größe16
+                expect.soft(generateStep1.txt_amount_size(ids.sizeIds[10])).toBeHidden(), // 10
+                expect.soft(generateStep1.txt_amount_size(ids.sizeIds[16])).toBeHidden(), // Größe16
             ]);
         });
         await test.step('sizelist Liste2', async () => {
@@ -59,7 +59,7 @@ test.describe('validate Inputs', async () => {
             await Promise.all([
                 expect.soft(generateStep1.txt_amount_size(ids.sizeIds[5])).toBeVisible(), // 5
                 expect.soft(generateStep1.txt_amount_size(ids.sizeIds[10])).toBeVisible(), // 10
-                expect.soft(generateStep1.txt_amount_size(ids.sizeIds[16])).not.toBeVisible(), // Größe16
+                expect.soft(generateStep1.txt_amount_size(ids.sizeIds[16])).toBeHidden(), // Größe16
             ]);
         });
         await test.step('sizelist Liste3', async () => {
@@ -68,8 +68,8 @@ test.describe('validate Inputs', async () => {
             await configurator.btn_continue.click();
 
             await Promise.all([
-                expect.soft(generateStep1.txt_amount_size(ids.sizeIds[5])).not.toBeVisible(), // 5
-                expect.soft(generateStep1.txt_amount_size(ids.sizeIds[10])).not.toBeVisible(), // 10
+                expect.soft(generateStep1.txt_amount_size(ids.sizeIds[5])).toBeHidden(), // 5
+                expect.soft(generateStep1.txt_amount_size(ids.sizeIds[10])).toBeHidden(), // 10
                 expect.soft(generateStep1.txt_amount_size(ids.sizeIds[16])).toBeVisible(), // Größe16
             ]);
         });
@@ -83,7 +83,7 @@ test.describe('validate Inputs', async () => {
             await test.step(testValue, async () => {
                 await generateStep1.txt_amount_default.fill(String(testValue));
                 if (valid) {
-                    await expect.soft(generateStep1.err_amount_default).not.toBeVisible();
+                    await expect.soft(generateStep1.err_amount_default).toBeHidden();
                 } else {
                     await expect.soft(generateStep1.err_amount_default).toBeVisible();
                 }
@@ -99,7 +99,7 @@ test.describe('validate Inputs', async () => {
             await generateStep1.txt_amount_size(ids.sizeIds[5]).fill('1'); // 5
             await generateStep1.txt_amount_size(ids.sizeIds[10]).fill('0'); // 10
 
-            await expect(generateStep1.err_itemCount).not.toBeVisible();
+            await expect(generateStep1.err_itemCount).toBeHidden();
         });
         await test.step('under min', async () => {
             await generateStep1.txt_amount_size(ids.sizeIds[5]).fill('0'); // 5
@@ -109,7 +109,7 @@ test.describe('validate Inputs', async () => {
             await generateStep1.txt_amount_size(ids.sizeIds[5]).fill('50'); // 5
             await generateStep1.txt_amount_size(ids.sizeIds[10]).fill('49'); // 10
 
-            await expect(generateStep1.err_itemCount).not.toBeVisible();
+            await expect(generateStep1.err_itemCount).toBeHidden();
         });
         await test.step('over max', async () => {
             await generateStep1.txt_amount_size(ids.sizeIds[5]).fill('50'); // 5

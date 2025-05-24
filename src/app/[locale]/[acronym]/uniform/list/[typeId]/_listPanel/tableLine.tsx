@@ -2,15 +2,12 @@ import { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
 import HighlightedText from "@/components/HighlightedText";
 import { UniformOffcanvas } from "@/components/UniformOffcanvas/UniformOffcanvas";
 import { useGlobalData } from "@/components/globalDataProvider";
-import { useModal } from "@/components/modals/modalProvider";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n } from "@/lib/locales/client";
 import { UniformType, UniformWithOwner } from "@/types/globalUniformTypes";
-import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useState } from "react";
-import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 export default function TableLine({
     uniform,
@@ -57,7 +54,7 @@ export default function TableLine({
                         lastname={uniform.issuedEntries[0].cadet.lastname}
                         firstname={uniform.issuedEntries[0].cadet.firstname}
                         testId="lnk_owner"
-                        t={t} />
+                        tooltip={t('common.actions.open')} />
                 }
             </td>
             <td data-testid="div_comment" className={`d-none d-md-table-cell col-3 `}>
@@ -87,12 +84,12 @@ type OpenCadetLinkProps = {
     lastname: string;
     firstname: string;
     testId: string;
-    t: any
+    tooltip: string
 }
 const OpenCadetLink = (props: OpenCadetLinkProps) => {
     const tooltip = (
         <Tooltip>
-            {props.t('tooltip.cadet.open')}
+            {props.tooltip}
         </Tooltip>
     )
 

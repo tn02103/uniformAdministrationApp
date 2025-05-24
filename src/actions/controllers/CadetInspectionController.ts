@@ -72,6 +72,7 @@ export const saveCadetInspection = async (data: FormType, cadetId: string, unifo
     }
 
     // LOADING DATA FROM DATABASE
+    // eslint-disable-next-line prefer-const
     let [previousInspectionDeficiencies, activeInspectionDeficiencies]: Deficiency[][] = await prisma.$transaction([
         dbHandler.getPreviouslyUnresolvedDeficiencies(cadetId, inspection.id, inspection.date),
         dbHandler.getCadetDeficienciesFromInspection(cadetId, inspection.id)

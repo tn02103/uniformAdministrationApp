@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { UniformGeneration, UniformType } from "@prisma/client";
+import { UniformType } from "@prisma/client";
 import { expect } from "playwright/test";
 import german from "../../../../public/locales/de";
 import { DangerConfirmationModal } from "../../../_playwrightConfig/pages/popups/DangerConfirmationPopup.component";
@@ -58,7 +58,7 @@ test.describe('UniformGeneration Configuration', () => {
         await test.step('check if sortorder is changed', async () => {
             const rows = await generationTable.locator('tbody').getByRole('row').all();
 
-            await expect(rows).toHaveLength(4);
+            expect(rows).toHaveLength(4);
             await expect(rows[0]).toHaveAttribute('aria-label', generationList[1].name);
             await expect(rows[1]).toHaveAttribute('aria-label', generationList[2].name);
             await expect(rows[2]).toHaveAttribute('aria-label', generationList[0].name);
@@ -112,7 +112,7 @@ test.describe('UniformGeneration Configuration', () => {
         await test.step('check if sortorder is changed', async () => {
             const rows = await generationTable.locator('tbody').getByRole('row').all();
 
-            await expect(rows).toHaveLength(4);
+            expect(rows).toHaveLength(4);
             await expect(rows[0]).toHaveAttribute('aria-label', generationList[0].name);
             await expect(rows[1]).toHaveAttribute('aria-label', generationList[2].name);
             await expect(rows[2]).toHaveAttribute('aria-label', generationList[1].name);
@@ -218,7 +218,7 @@ test.describe('UniformGeneration Configuration', () => {
             );
         });
     });
-    test('create generation without size', async ({ page, types, staticData: { data, fk_assosiation } }) => {
+    test('create generation without size', async ({ page, types, staticData: {fk_assosiation } }) => {
         await test.step('open type offcanvas', async () => {
             await expect(page.getByRole('row', { name: types[1].name })).toBeVisible();
             await page.getByRole('row', { name: types[1].name }).getByRole('button', { name: 'open' }).click();
@@ -238,7 +238,7 @@ test.describe('UniformGeneration Configuration', () => {
             const dialog = page.getByRole('dialog', { name: actionText.create });
             await expect(dialog).toBeVisible();
             await expect(dialog.getByRole('textbox')).toBeVisible();
-            await expect(dialog.getByRole('combobox', { name: german.common.uniform.sizelist.label })).not.toBeVisible();
+            await expect(dialog.getByRole('combobox', { name: german.common.uniform.sizelist.label })).toBeHidden();
 
             await dialog.getByRole('textbox', { name: german.common.name }).fill('Test Generation 1');
             await dialog.getByRole('switch', { name: german.common.uniform.generation.outdated }).check();
@@ -280,7 +280,7 @@ test.describe('UniformGeneration Configuration', () => {
     test('update generation with size', async ({ page, types, staticData: { data } }) => {
         const generation = data.uniformGenerations[0];
         await test.step('open type offcanvas', async () => {
-            expect(page.getByRole('row', { name: types[0].name })).toBeVisible();
+            await expect(page.getByRole('row', { name: types[0].name })).toBeVisible();
             await page.getByRole('row', { name: types[0].name }).getByRole('button', { name: 'open' }).click();
             await expect(page.getByRole('dialog').getByRole('heading', { name: types[0].name })).toBeVisible();
         });
@@ -289,7 +289,7 @@ test.describe('UniformGeneration Configuration', () => {
         const generationTable = typeDialog.getByRole('table');
         await test.step('open crete generation canvas', async () => {
             const genRow = generationTable.getByRole('row', { name: generation.name });
-            expect(genRow).toBeVisible();
+            await expect(genRow).toBeVisible();
             await genRow.getByRole('button', { name: 'open' }).click();
             await expect(page.getByRole('heading', { name: generation.name })).toBeVisible();
         });
@@ -311,14 +311,14 @@ test.describe('UniformGeneration Configuration', () => {
 
             await expect(dialog.getByRole('textbox', { name: german.common.name })).toBeDisabled();
             await expect(dialog.getByRole('switch', { name: german.common.uniform.generation.outdated })).toBeDisabled();
-            await expect(dialog.getByRole('combobox', { name: german.common.uniform.sizelist.label })).not.toBeVisible();
+            await expect(dialog.getByRole('combobox', { name: german.common.uniform.sizelist.label })).toBeHidden();
             await expect(dialog.getByLabel(german.common.uniform.sizelist.label)).toBeVisible();
 
             await expect(dialog.getByRole('textbox', { name: german.common.name })).toHaveValue('Test Generation 1');
             await expect(dialog.getByRole('switch', { name: german.common.uniform.generation.outdated })).not.toBeChecked();
             await expect(dialog.getByLabel(german.common.uniform.sizelist.label)).toHaveText(data.uniformSizelists[2].name);
             await dialog.getByRole('button', { name: 'close' }).click();
-            await expect(dialog).not.toBeVisible();
+            await expect(dialog).toBeHidden();
         });
 
         await test.step('check table', async () => {
@@ -353,7 +353,7 @@ test.describe('UniformGeneration Configuration', () => {
     test('update generation without size', async ({ page, types, staticData: { data } }) => {
         const generation = data.uniformGenerations[5];
         await test.step('open type offcanvas', async () => {
-            expect(page.getByRole('row', { name: types[1].name })).toBeVisible();
+            await expect(page.getByRole('row', { name: types[1].name })).toBeVisible();
             await page.getByRole('row', { name: types[1].name }).getByRole('button', { name: 'open' }).click();
             await expect(page.getByRole('dialog').getByRole('heading', { name: types[1].name })).toBeVisible();
         });
@@ -362,7 +362,7 @@ test.describe('UniformGeneration Configuration', () => {
         const generationTable = typeDialog.getByRole('table');
         await test.step('open crete generation canvas', async () => {
             const genRow = generationTable.getByRole('row', { name: generation.name });
-            expect(genRow).toBeVisible();
+            await expect(genRow).toBeVisible();
             await genRow.getByRole('button', { name: 'open' }).click();
             await expect(page.getByRole('heading', { name: generation.name })).toBeVisible();
         });
@@ -388,7 +388,7 @@ test.describe('UniformGeneration Configuration', () => {
             await expect(dialog.getByRole('switch', { name: german.common.uniform.generation.outdated })).not.toBeChecked();
 
             await dialog.getByRole('button', { name: 'close' }).click();
-            await expect(dialog).not.toBeVisible();
+            await expect(dialog).toBeHidden();
         });
 
         await test.step('check table', async () => {
@@ -424,7 +424,7 @@ test.describe('UniformGeneration Configuration', () => {
         const dangerDialog = new DangerConfirmationModal(page);
         const generation = data.uniformGenerations[0];
         await test.step('open type offcanvas', async () => {
-            expect(page.getByRole('row', { name: types[0].name })).toBeVisible();
+            await expect(page.getByRole('row', { name: types[0].name })).toBeVisible();
             await page.getByRole('row', { name: types[0].name }).getByRole('button', { name: 'open' }).click();
             await expect(page.getByRole('dialog').getByRole('heading', { name: types[0].name })).toBeVisible();
         });
@@ -433,7 +433,7 @@ test.describe('UniformGeneration Configuration', () => {
         const generationTable = typeDialog.getByRole('table');
         await test.step('open generation offcanvas', async () => {
             const genRow = generationTable.getByRole('row', { name: generation.name });
-            expect(genRow).toBeVisible();
+            await expect(genRow).toBeVisible();
 
             await genRow.getByRole('button', { name: 'open' }).click();
             await expect(page.getByRole('heading', { name: generation.name })).toBeVisible();
@@ -455,13 +455,13 @@ test.describe('UniformGeneration Configuration', () => {
             await expect(dangerDialog.btn_save).toBeEnabled();
 
             await dangerDialog.btn_save.click();
-            await expect(dangerDialog.div_popup).not.toBeVisible();
+            await expect(dangerDialog.div_popup).toBeHidden();
         });
 
         await test.step('check if generation is delete in table', async () => {
-            await expect(generationDialog).not.toBeVisible();
-            await expect(generationTable.getByRole('row', { name: generation.name })).not.toBeVisible();
-            await expect(page.getByText(generation.name)).not.toBeVisible();
+            await expect(generationDialog).toBeHidden();
+            await expect(generationTable.getByRole('row', { name: generation.name })).toBeHidden();
+            await expect(page.getByText(generation.name)).toBeHidden();
         });
 
         await test.step('check if generation is delete in db', async () => {

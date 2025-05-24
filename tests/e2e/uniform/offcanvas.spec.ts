@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { adminTest as test } from "../../_playwrightConfig/setup";
-import { expect, Locator } from "playwright/test";
+import { expect, Locator, Page } from "playwright/test";
 
 
 
@@ -10,8 +10,8 @@ test.describe('Offcanvas - CadetOverview', () => {
         await cleanup.uniform();
     });
 
-    const openOffcanvas = async (page: any, uniformId: string, number: number): Promise<Locator> => {
-        const cadetUniformRow = await page.getByTestId(`div_uniform_typeList`).getByTestId(`div_uitem_${uniformId}`);
+    const openOffcanvas = async (page: Page, uniformId: string, number: number): Promise<Locator> => {
+        const cadetUniformRow = page.getByTestId(`div_uniform_typeList`).getByTestId(`div_uitem_${uniformId}`);
         await cadetUniformRow.getByRole('button', { name: /open/i }).click();
         await page.waitForSelector('div[role="dialog"]', { state: 'visible' });
 
@@ -24,14 +24,14 @@ test.describe('Offcanvas - CadetOverview', () => {
         });
 
         test('should open and close offcanvas', async ({ page, staticData: { ids } }) => {
-            const cadetUniformRow = await page.getByTestId(`div_uniform_typeList`).getByTestId(`div_uitem_${ids.uniformIds[0][84]}`)
+            const cadetUniformRow = page.getByTestId(`div_uniform_typeList`).getByTestId(`div_uitem_${ids.uniformIds[0][84]}`)
             await cadetUniformRow.getByRole('button', { name: /open/i }).click();
             await page.waitForSelector('div[role="dialog"]', { state: 'visible' });
 
             const offcanvas = page.getByRole('dialog');
             await expect(offcanvas).toBeVisible();
             await offcanvas.getByRole('button', { name: /close/i }).click();
-            await expect(offcanvas).not.toBeVisible();
+            await expect(offcanvas).toBeHidden();
         });
 
         test('should allow to edit and save uniform', async ({ page, staticData: { ids } }) => {
@@ -55,7 +55,7 @@ test.describe('Offcanvas - CadetOverview', () => {
                 await saveButton.click();
                 await expect(commentField).toBeDisabled();
             });
-            expect(cadetUniformRow).toBeVisible();
+            await expect(cadetUniformRow).toBeVisible();
             await Promise.all([
                 test.step('validate dialog', async () => Promise.all([
                     expect(activeField).toHaveText('Reserve'),
@@ -101,8 +101,8 @@ test.describe('Offcanvas - CadetOverview', () => {
             const commentField = dialog.getByLabel(/Kommentar/i);
 
             await test.step('Edit and save uniform', async () => {
-                expect(generationField).not.toBeVisible();
-                expect(sizeField).not.toBeVisible();
+                await expect(generationField).toBeHidden();
+                await expect(sizeField).toBeHidden();
 
                 const editButton = dialog.getByRole('button', { name: /Bearbeiten/i });
                 await editButton.click();
@@ -113,7 +113,7 @@ test.describe('Offcanvas - CadetOverview', () => {
                 await saveButton.click();
                 await expect(commentField).toBeDisabled();
             });
-            expect(cadetUniformRow).toBeVisible();
+            await expect(cadetUniformRow).toBeVisible();
             await Promise.all([
                 test.step('validate dialog', async () => Promise.all([
                     expect(activeField).toHaveText('Reserve'),
@@ -156,12 +156,12 @@ test.describe('Offcanvas - CadetOverview', () => {
                 const warningModal = page.getByRole('dialog', { name: /Warnung/i });
                 await expect(warningModal).toBeVisible();
                 await warningModal.getByRole('button', { name: /Löschen/i }).click();
-                await expect(warningModal).not.toBeVisible();
+                await expect(warningModal).toBeHidden();
             });
 
             await test.step('validate ui', async () => {
-                await expect(dialog).not.toBeVisible();
-                await expect(cadetUniformRow).not.toBeVisible();
+                await expect(dialog).toBeHidden();
+                await expect(cadetUniformRow).toBeHidden();
             });
 
             await test.step('validate db', async () => {
@@ -241,7 +241,7 @@ test.describe('Offcanvas - CadetOverview', () => {
             await expect(deficiencyList.getByRole('listitem')).toHaveCount(4);
             await Promise.all([
                 expect(deficiencyItems.nth(0).locator('p[class="card-text"]')).toHaveText(deficiencies[0].comment),
-                expect(deficiencyItems.nth(0).getByText('Gelöst')).not.toBeVisible(),
+                expect(deficiencyItems.nth(0).getByText('Gelöst')).toBeHidden(),
                 expect(deficiencyItems.nth(0).getByText('Uniform', { exact: true })).toBeVisible(),
                 expect(deficiencyItems.nth(1).locator('p[class="card-text"]')).toHaveText(deficiencies[1].comment),
                 expect(deficiencyItems.nth(1).getByText('Gelöst')).toBeVisible(),
@@ -250,7 +250,7 @@ test.describe('Offcanvas - CadetOverview', () => {
                 expect(deficiencyItems.nth(2).getByText('Gelöst')).toBeVisible(),
                 expect(deficiencyItems.nth(2).getByText('Uniform Broken Gelöst', { exact: true })).toBeVisible(),
                 expect(deficiencyItems.nth(3).locator('p[class="card-text"]')).toHaveText(deficiencies[3].comment),
-                expect(deficiencyItems.nth(3).getByText('Gelöst')).not.toBeVisible(),
+                expect(deficiencyItems.nth(3).getByText('Gelöst')).toBeHidden(),
                 expect(deficiencyItems.nth(3).getByText('Uniform Broken', { exact: true })).toBeVisible(),
             ]);
         });
@@ -284,8 +284,8 @@ test.describe('Offcanvas - CadetOverview', () => {
                 await expect(commentField).toBeEditable();
                 await expect(typeField).toBeEditable();
                 await expect(typeField.getByRole('option')).toHaveCount(2);
-                await expect(typeField.getByRole('option', { name: "Uniform" })).toBeDefined();
-                await expect(typeField.getByRole('option', { name: "Uniform Broken" })).toBeDefined();
+                expect(typeField.getByRole('option', { name: "Uniform" })).toBeDefined();
+                expect(typeField.getByRole('option', { name: "Uniform Broken" })).toBeDefined();
                 await expect(commentField).toHaveValue(deficiency.comment);
                 await expect(typeField).toHaveValue(data.deficiencyTypes[0].id);
                 await commentField.fill('Test comment');
@@ -324,7 +324,7 @@ test.describe('Offcanvas - CadetOverview', () => {
             });
         });
 
-        test('resolve deficiency', async ({ page, staticData: { ids, data } }) => {
+        test('resolve deficiency', async ({ page, staticData: { ids } }) => {
             const dialog = await openOffcanvas(page, ids.uniformIds[0][46], 1146);
             const deficiencyList = dialog.getByRole('list', { name: /Deficiency list/i });
             const firstItem = deficiencyList.getByRole('listitem').nth(0);
@@ -372,7 +372,7 @@ test.describe('Offcanvas - CadetOverview', () => {
             });
         });
 
-        test('create deficiency', async ({ page, staticData: { ids, data } }) => {
+        test('create deficiency', async ({ page, staticData: { ids } }) => {
             const dialog = await openOffcanvas(page, ids.uniformIds[0][46], 1146);
             const deficiencyList = dialog.getByRole('list', { name: /Deficiency list/i });
             const addButton = dialog.getByRole('button', { name: /Anlegen/i });
@@ -389,8 +389,8 @@ test.describe('Offcanvas - CadetOverview', () => {
                 await expect(commentField).toBeEditable();
                 await expect(typeField).toBeEditable();
                 await expect(typeField.getByRole('option')).toHaveCount(2);
-                await expect(typeField.getByRole('option', { name: "Uniform" })).toBeDefined();
-                await expect(typeField.getByRole('option', { name: "Uniform Broken" })).toBeDefined();
+                expect(typeField.getByRole('option', { name: "Uniform" })).toBeDefined();
+                expect(typeField.getByRole('option', { name: "Uniform Broken" })).toBeDefined();
 
                 await commentField.fill('Test new comment');
                 await typeField.selectOption({ label: 'Uniform' });
@@ -399,7 +399,7 @@ test.describe('Offcanvas - CadetOverview', () => {
 
             await test.step('validate ui', async () => {
                 await expect(deficiencyList).toBeVisible();
-                await expect(newDeficiencyRow).not.toBeVisible();
+                await expect(newDeficiencyRow).toBeHidden();
                 await expect(deficiencyList.getByRole('listitem', { name: /Mangel/i })).toHaveCount(3);
                 const thirdItem = deficiencyList.getByRole('listitem').nth(2);
                 await expect(thirdItem.getByText('Test new comment')).toBeVisible();

@@ -32,12 +32,12 @@ export class InspectionDBHandler {
             name: string,
             time_start: Date,
             time_end: Date,
-            cadetsInspected: BigInt,
-            deregisteredCadets: BigInt,
-            activeCadets: BigInt,
-            newlyResolvedDeficiencies: BigInt,
-            newDeficiencies: BigInt,
-            activeDeficiencies: BigInt
+            cadetsInspected: bigint,
+            deregisteredCadets: bigint,
+            activeCadets: bigint,
+            newlyResolvedDeficiencies: bigint,
+            newDeficiencies: bigint,
+            activeDeficiencies: bigint
         }[]>`
              SELECT i.id,
                     i.name,
@@ -74,6 +74,7 @@ export class InspectionDBHandler {
         ;
 
     getActiveDeficiencyList = (id: string, client: Prisma.TransactionClient): Promise<InspectionReviewDeficiency[]> =>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         client.$queryRaw<any[]>`
          SELECT v.*,
 	            CASE
@@ -108,6 +109,7 @@ export class InspectionDBHandler {
         })));
 
     getInspectionReviewCadetList = (fk_assosiation: string, inspectionId: string, date: Date, client: Prisma.TransactionClient): Promise<InspectionReviewCadet[]> =>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         client.$queryRaw<any[]>`
          SELECT c."id" as "cadetId",
                 c."firstname",

@@ -16,7 +16,7 @@ test.afterEach(async ({ staticData: { cleanup } }) => {
     await cleanup.inspection();
 });
 
-test.describe('Planned Inspection Overview', async () => {
+test.describe('Planned Inspection Overview', () => {
     test('sortOrder', async ({ plannedComponent, staticData: { ids } }) => {
         await expect(plannedComponent.div_row_list).toHaveCount(3);
         await expect(plannedComponent.div_row_list.nth(0)).toHaveAttribute('data-testid', `div_inspection_${ids.inspectionIds[2]}`);
@@ -39,7 +39,7 @@ test.describe('Planned Inspection Overview', async () => {
             await nameField.fill("Test Inspection");
 
             await page.getByRole('button', { name: /save/i }).click();
-            await expect(row).not.toBeVisible();
+            await expect(row).toBeHidden();
         });
         await test.step('check ui', async () => {
             const rows = page.getByRole('row');
@@ -86,7 +86,7 @@ test.describe('Planned Inspection Overview', async () => {
             await nameField.fill("Test Inspection 2");
 
             await page.getByRole('button', { name: /save/i }).click();
-            await expect(dateField).not.toBeVisible();
+            await expect(dateField).toBeHidden();
         });
 
         await test.step('check ui', async () => {
@@ -129,7 +129,7 @@ test.describe('Planned Inspection Overview', async () => {
             const dialog = page.getByRole('dialog');
             await expect(dialog).toBeVisible();
             await dialog.getByRole('button', { name: /Löschen/i }).click();
-            await expect(row).not.toBeVisible();
+            await expect(row).toBeHidden();
         });
         await test.step('check db', async () => {
             const inspection = await prisma.inspection.findFirst({
@@ -198,7 +198,7 @@ test.describe('Planned Inspection Overview', async () => {
 
             await textbox.fill('12:00');
             await expect(textbox).not.toHaveClass(/is-invalid/);
-            await expect(dialog.getByTestId('err_input')).not.toBeVisible();
+            await expect(dialog.getByTestId('err_input')).toBeHidden();
 
             await dialog.getByRole('button', { name: /Speichern/i }).click();
             await expect(row).toBeVisible();
@@ -254,10 +254,10 @@ test.describe('Planned Inspection Overview', async () => {
 
             await textbox.fill('12:00');
             await expect(textbox).not.toHaveClass(/is-invalid/);
-            await expect(dialog.getByTestId('err_input')).not.toBeVisible();
+            await expect(dialog.getByTestId('err_input')).toBeHidden();
 
             await dialog.getByRole('button', { name: /Speichern/i }).click();
-            await expect(row).not.toBeVisible();
+            await expect(row).toBeHidden();
         });
 
         await test.step('check db', async () => {
@@ -318,9 +318,9 @@ test.describe('Planned Inspection Overview', async () => {
         });
     });
 });
-test.describe('Planned Inspection deregistrations', async () => {
+test.describe('Planned Inspection deregistrations', () => {
 
-    test('opends Offcanvas with correct data', async ({ page, staticData: { ids, data } }) => {
+    test('opends Offcanvas with correct data', async ({ page, staticData: { data } }) => {
         const row = page.getByRole('row').filter({ hasText: data.inspections[4].name }).nth(0);
         const offcanvas = page.getByRole('dialog', { name: /Abmeldungen für /i });
         await test.step('open Ovcanvas', async () => {
@@ -341,7 +341,7 @@ test.describe('Planned Inspection deregistrations', async () => {
         });
         await test.step('close Ovcanvas', async () => {
             await offcanvas.getByRole('button', { name: /close/i }).click();
-            await expect(offcanvas).not.toBeVisible();
+            await expect(offcanvas).toBeHidden();
         });
     });
 
@@ -359,12 +359,12 @@ test.describe('Planned Inspection deregistrations', async () => {
             const buttonRemove = row.getByRole('button', { name: /entfernen/i });
 
             await expect(row).toBeVisible();
-            await expect(buttonRemove).not.toBeVisible();
+            await expect(buttonRemove).toBeHidden();
             await row.hover();
             await expect(buttonRemove).toBeVisible();
             await buttonRemove.click();
 
-            await expect(row).not.toBeVisible();
+            await expect(row).toBeHidden();
             await expect(tableBody.locator('tr')).toHaveCount(2);
         });
         await test.step('check db', async () => {
@@ -405,7 +405,7 @@ test.describe('Planned Inspection deregistrations', async () => {
 
             await expect(autocompleteGroup).toBeVisible();
             await expect(input).toBeVisible();
-            await expect(autocompleteGroup.getByRole('listbox')).not.toBeVisible();
+            await expect(autocompleteGroup.getByRole('listbox')).toBeHidden();
 
 
             await input.fill("a");
@@ -418,7 +418,7 @@ test.describe('Planned Inspection deregistrations', async () => {
             await expect(optionList).toContainText(data.cadets[0].lastname);
 
             await optionList.click();
-            await expect(autocompleteGroup.getByRole('listbox')).not.toBeVisible();
+            await expect(autocompleteGroup.getByRole('listbox')).toBeHidden();
             await expect(rows).toHaveCount(4);
         });
         await test.step('check db', async () => {

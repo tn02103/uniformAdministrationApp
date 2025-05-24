@@ -37,14 +37,15 @@ export default function FilterPanel({
 
     const { typeList } = useUniformTypeList();
     const searchParams = useSearchParams();
+    const searchTerm = searchParams.get('search');
 
     useEffect(() => {
-        if (searchParams.has('search')) {
+        if (searchTerm) {
             searchForm.reset({
-                search: searchParams.get('search')
+                search: searchTerm,
             });
         }
-    }, [searchParams.get('search')]);
+    }, [searchTerm, searchForm]);
 
     function changeUniformType(typeId: string) {
         router.replace(`/app/uniform/list/${typeId}`);

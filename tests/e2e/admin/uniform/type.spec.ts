@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { PrismaClient, UniformType } from "@prisma/client";
+import { UniformType } from "@prisma/client";
 import { expect } from "playwright/test";
 import german from "../../../../public/locales/de";
 import { DangerConfirmationModal } from "../../../_playwrightConfig/pages/popups/DangerConfirmationPopup.component";
@@ -43,8 +43,8 @@ test.describe('UniformType Configuration', () => {
 
         await test.step('check if the type is created', async () => {
             await offcanvas.getByRole('heading', { name: 'New Type' }).waitFor({ state: 'visible' });
-            await expect(offcanvas.getByRole('button', { name: actionText.cancel })).not.toBeVisible();
-            await expect(offcanvas.getByRole('button', { name: actionText.create })).not.toBeVisible();
+            await expect(offcanvas.getByRole('button', { name: actionText.cancel })).toBeHidden();
+            await expect(offcanvas.getByRole('button', { name: actionText.create })).toBeHidden();
 
             await expect(offcanvas.getByRole('textbox', { name: typeText.name })).toHaveValue('New Type');
             await expect(offcanvas.getByRole('textbox', { name: typeText.acronym })).toHaveValue('NT');
@@ -54,7 +54,7 @@ test.describe('UniformType Configuration', () => {
             await expect(offcanvas.getByRole('spinbutton', { name: typeText.issuedDefault })).toBeDisabled();
 
             await expect(page.getByRole('table', { name: typeText["type#other"] })).toBeVisible();
-            expect(page.getByRole('table', { name: typeText["type#other"] }).getByRole('row', { name: 'New Type' })).toBeVisible();
+            await expect(page.getByRole('table', { name: typeText["type#other"] }).getByRole('row', { name: 'New Type' })).toBeVisible();
         });
 
         await test.step('validate db data', async () => {
@@ -97,8 +97,8 @@ test.describe('UniformType Configuration', () => {
 
         await test.step('check if the type is created', async () => {
             await offcanvas.getByRole('heading', { name: 'New Type 2' }).waitFor({ state: 'visible' });
-            await expect(offcanvas.getByRole('button', { name: actionText.cancel })).not.toBeVisible();
-            await expect(offcanvas.getByRole('button', { name: actionText.create })).not.toBeVisible();
+            await expect(offcanvas.getByRole('button', { name: actionText.cancel })).toBeHidden();
+            await expect(offcanvas.getByRole('button', { name: actionText.create })).toBeHidden();
 
             await expect(offcanvas.getByRole('textbox', { name: typeText.name })).toHaveValue('New Type 2');
             await expect(offcanvas.getByRole('textbox', { name: typeText.acronym })).toHaveValue('NB');
@@ -132,7 +132,7 @@ test.describe('UniformType Configuration', () => {
 
     test('update type', async ({ page, types }) => {
         await test.step('open type offcanvas', async () => {
-            expect(page.getByRole('row', { name: types[0].name })).toBeVisible();
+            await expect(page.getByRole('row', { name: types[0].name })).toBeVisible();
             await page.getByRole('row', { name: types[0].name }).getByRole('button', { name: 'open' }).click();
             await expect(page.getByRole('dialog').getByRole('heading', { name: types[0].name })).toBeVisible();
         });
@@ -150,8 +150,8 @@ test.describe('UniformType Configuration', () => {
 
         await test.step('check if the type is updated', async () => {
             await expect(dialog.getByRole('heading', { name: 'Updated' })).toBeVisible();
-            await expect(dialog.getByRole('button', { name: actionText.cancel })).not.toBeVisible();
-            await expect(dialog.getByRole('button', { name: actionText.save })).not.toBeVisible();
+            await expect(dialog.getByRole('button', { name: actionText.cancel })).toBeHidden();
+            await expect(dialog.getByRole('button', { name: actionText.save })).toBeHidden();
 
             await expect(dialog.getByRole('textbox', { name: typeText.name })).toHaveValue('Updated');
             await expect(dialog.getByRole('textbox', { name: typeText.acronym })).toHaveValue('UT');
@@ -182,7 +182,7 @@ test.describe('UniformType Configuration', () => {
     test('delete type', async ({ page, types }) => {
         const dangerDialog = new DangerConfirmationModal(page);
         await test.step('open type offcanvas', async () => {
-            expect(page.getByRole('row', { name: types[0].name })).toBeVisible();
+            await expect(page.getByRole('row', { name: types[0].name })).toBeVisible();
             await page.getByRole('row', { name: types[0].name }).getByRole('button', { name: 'open' }).click();
             await expect(page.getByRole('dialog').getByRole('heading', { name: types[0].name })).toBeVisible();
         });
@@ -201,7 +201,7 @@ test.describe('UniformType Configuration', () => {
 
         await test.step('check if offcanvas is closed and type is removed from table', async () => {
             await dialog.waitFor({ state: 'hidden' });
-            await expect(page.getByRole('row', { name: types[0].name })).not.toBeVisible();
+            await expect(page.getByRole('row', { name: types[0].name })).toBeHidden();
         });
 
         await test.step('validate recdelete in database', async () => {
@@ -239,7 +239,7 @@ test.describe('UniformType Configuration', () => {
 
         await test.step('check if the order is changed', async () => {
             const rows = await page.locator('tbody').getByRole('row').all();
-            await expect(rows).toHaveLength(4);
+            expect(rows).toHaveLength(4);
             await expect(rows[0]).toHaveAttribute('aria-label', types[1].name);
             await expect(rows[1]).toHaveAttribute('aria-label', types[2].name);
             await expect(rows[2]).toHaveAttribute('aria-label', types[0].name);
@@ -289,7 +289,7 @@ test.describe('UniformType Configuration', () => {
 
         await test.step('check if the order is changed', async () => {
             const rows = await page.locator('tbody').getByRole('row').all();
-            await expect(rows).toHaveLength(4);
+            expect(rows).toHaveLength(4);
             await expect(rows[0]).toHaveAttribute('aria-label', types[0].name);
             await expect(rows[1]).toHaveAttribute('aria-label', types[2].name);
             await expect(rows[2]).toHaveAttribute('aria-label', types[1].name);

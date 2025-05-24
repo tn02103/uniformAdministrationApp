@@ -25,23 +25,23 @@ type GlobalDataProviderPropType = {
 export let GlobalDataContext: Context<GlobalDataProviderContextType>;
 export const useGlobalData = () => useContext(GlobalDataContext);
 
-const GlobalDataProvider = ({ children, ...props }: GlobalDataProviderPropType) => {
+const GlobalDataProvider = ({ children, userRole, useBeta, sizelists, typeList, inspectionState }: GlobalDataProviderPropType) => {
 
     const getProviderContext = useCallback(() => {
         return {
-            userRole: props.userRole,
-            useBeta: props.useBeta,
-            sizelists: props.sizelists,
+            userRole: userRole,
+            useBeta: useBeta,
+            sizelists: sizelists,
         }
-    }, [props.userRole]);
+    }, [sizelists, useBeta, userRole]);
 
     GlobalDataContext = createContext<GlobalDataProviderContextType>(getProviderContext());
     return (
         <SWRConfig value={{
             fallback: {
-                "uniform.type.list": props.typeList,
-                "uniform.sizelist.list": props.sizelists,
-                "inspection.status": props.inspectionState,
+                "uniform.type.list": typeList,
+                "uniform.sizelist.list": sizelists,
+                "inspection.status": inspectionState,
             }
         }}>
             <GlobalDataContext.Provider value={getProviderContext()}>

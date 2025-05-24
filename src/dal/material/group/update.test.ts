@@ -15,7 +15,7 @@ const defaultProps = {
 
 afterEach(() => staticData.cleanup.materialConfig());
 it('valid update call', async () => {
-    const { success, result } = await runServerActionTest(update(defaultProps));
+    const { success } = await runServerActionTest(update(defaultProps));
     expect(success).toBeTruthy();
 
     const dbData = await prisma.materialGroup.findUnique({
@@ -36,6 +36,6 @@ it('should prevent duplication error', async () => {
 });
 it('should succeed duplication with deleted group', async () => {
     const props = { ...defaultProps, data: { ...defaultProps.data, description: "Gruppe4" } };
-    const { success, result } = await runServerActionTest(update(props));
+    const { success } = await runServerActionTest(update(props));
     expect(success).toBeTruthy();
 });

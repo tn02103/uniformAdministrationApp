@@ -39,12 +39,14 @@ export default function UniformConfigSizelistDetail({
 
     async function handleRename() {
         if (!dbSizelist) return;
-        const renameMutation = async ({ input }: { input: string }) => mutate(
-            renameSizelist(selectedSizelistId, input)
-        ).catch((e) => {
-            console.error(e);
-            toast.error(t('common.error.actions.save'));
-        });
+        const renameMutation = async ({ input }: { input: string }) => {
+            await mutate(
+                renameSizelist(selectedSizelistId, input)
+            ).catch((e) => {
+                console.error(e);
+                toast.error(t('common.error.actions.save'));
+            })
+        }
 
         await modal?.simpleFormModal({
             header: t('admin.uniform.sizelist.renameModal.header'),

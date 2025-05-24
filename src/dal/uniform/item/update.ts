@@ -2,9 +2,8 @@ import { genericSAValidator } from "@/actions/validations";
 import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { uniformArgs, UniformFormData } from "@/types/globalUniformTypes";
+import { Uniform, uniformArgs } from "@/types/globalUniformTypes";
 import { getUniformFormSchema, UniformFormType } from "@/zod/uniform";
-import { notFound } from "next/navigation";
 
 /**
  * used to change the data of a uniformItem.
@@ -12,7 +11,7 @@ import { notFound } from "next/navigation";
  * @param data 
  * @returns FormData of the uniform
  */
-export const update = (props: UniformFormType): Promise<UniformFormData> => genericSAValidator(
+export const update = (props: UniformFormType): Promise<Uniform> => genericSAValidator(
     AuthRole.inspector,
     props,
     getUniformFormSchema(),
@@ -61,11 +60,4 @@ export const update = (props: UniformFormType): Promise<UniformFormData> => gene
             fk_size: type?.usingSizes ? data.size ?? null : undefined,
         },
     })
-})).then(data => !data ? notFound() : ({
-    id: data.id,
-    number: data.number,
-    generation: data.generation?.id,
-    size: data.size?.id,
-    comment: data.comment ?? "",
-    active: data.active,
 }));

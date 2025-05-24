@@ -27,7 +27,7 @@ test.afterEach(async ({ staticData: { cleanup } }) => {
 });
 
 test('validate data', async ({ page, materialListComponent, staticData: { data } }) => {
-    const divList = await page.locator('div[data-testid^="div_material_"]');
+    const divList = page.locator('div[data-testid^="div_material_"]');
     await expect(divList).toHaveCount(4);
 
     for (let i = 0; i < 4; i++) {
@@ -59,10 +59,10 @@ test('validate moveUp', async ({ page, materialListComponent, staticData: { ids 
     await test.step('do action and validate ui', async () => {
         await materialListComponent.btn_material_moveUp(ids.materialIds[1]).click();
 
-        const divList = await page.locator('div[data-testid^="div_material_"]');
+        const divList = page.locator('div[data-testid^="div_material_"]');
         await expect.soft(divList.nth(0)).toHaveAttribute('data-testid', `div_material_${ids.materialIds[1]}`);
     });
-    await test.step('validate db ', async () => {
+    await test.step('validate db', async () => {
         const [initial, seccond] = await prisma.$transaction([
             prisma.material.findUnique({
                 where: { id: ids.materialIds[1] }
@@ -83,10 +83,10 @@ test('validate moveDown', async ({ page, materialListComponent, staticData: { id
     await test.step('do action and validate ui', async () => {
         await materialListComponent.btn_material_moveDown(ids.materialIds[1]).click();
 
-        const divList = await page.locator('div[data-testid^="div_material_"]');
+        const divList = page.locator('div[data-testid^="div_material_"]');
         await expect.soft(divList.nth(2)).toHaveAttribute('data-testid', `div_material_${ids.materialIds[1]}`);
     });
-    await test.step('validate db ', async () => {
+    await test.step('validate db', async () => {
         const [initial, seccond] = await prisma.$transaction([
             prisma.material.findUnique({
                 where: { id: ids.materialIds[1] }
@@ -103,7 +103,7 @@ test('validate moveDown', async ({ page, materialListComponent, staticData: { id
     });
 });
 test('validate create', async ({ materialListComponent, editMaterialPopup, staticData: { ids } }) => {
-    await test.step('create ', async () => {
+    await test.step('create', async () => {
         await materialListComponent.btn_create.click();
 
         await expect(editMaterialPopup.div_popup).toBeVisible();
@@ -147,7 +147,7 @@ test('validate edit', async ({ materialListComponent, editMaterialPopup, staticD
     await test.step('open and validate modal', async () => {
         await materialListComponent.btn_material_edit(material.id).click();
 
-        expect(editMaterialPopup.div_popup).toBeVisible();
+        await expect(editMaterialPopup.div_popup).toBeVisible();
         await Promise.all([
             expect.soft(editMaterialPopup.div_header).toContainText('Gruppe1'),
             expect.soft(editMaterialPopup.div_header).toContainText('Typ1-1'),
@@ -209,7 +209,7 @@ test('validate delete', async ({ page, materialListComponent, staticData: { data
             .replace("{type}", material.typename));
         await dangerModal.btn_save.click();
 
-        await expect(materialListComponent.div_material(material.id)).not.toBeVisible();
+        await expect(materialListComponent.div_material(material.id)).toBeHidden();
     });
     await test.step('validate db', async () => {
         const [dbIssued, dbMaterial] = await prisma.$transaction([
@@ -251,7 +251,7 @@ test.describe('validate formValidation', () => {
                 await editMaterialPopup.txt_name.fill(String(testSet.testValue));
                 await page.keyboard.press('Tab');
                 if (testSet.valid) {
-                    await expect.soft(editMaterialPopup.err_name).not.toBeVisible();
+                    await expect.soft(editMaterialPopup.err_name).toBeHidden();
                 } else {
                     await expect.soft(editMaterialPopup.err_name).toBeVisible();
                 }
@@ -259,14 +259,14 @@ test.describe('validate formValidation', () => {
         }
         await test.step('Name duplication', async () => {
             await editMaterialPopup.txt_name.fill('Typ1-2');
-            await expect(editMaterialPopup.err_name).not.toBeVisible();
+            await expect(editMaterialPopup.err_name).toBeHidden();
             await editMaterialPopup.btn_save.click();
             await expect(editMaterialPopup.div_popup).toBeVisible();
             await expect(editMaterialPopup.err_name).toBeVisible();
 
             await editMaterialPopup.txt_name.fill('Typ1-1');
             await editMaterialPopup.btn_save.click();
-            await expect(editMaterialPopup.div_popup).not.toBeVisible();
+            await expect(editMaterialPopup.div_popup).toBeHidden();
         });
     });
     test('actualQuantity', async ({ page, editMaterialPopup }) => {
@@ -279,7 +279,7 @@ test.describe('validate formValidation', () => {
                 await page.keyboard.press('Tab');
 
                 if (testSet.valid) {
-                    await expect.soft(editMaterialPopup.err_actualQuantity).not.toBeVisible();
+                    await expect.soft(editMaterialPopup.err_actualQuantity).toBeHidden();
                 } else {
                     await expect.soft(editMaterialPopup.err_actualQuantity).toBeVisible();
                 }
@@ -296,7 +296,7 @@ test.describe('validate formValidation', () => {
                 await page.keyboard.press('Tab');
 
                 if (testSet.valid) {
-                    await expect.soft(editMaterialPopup.err_targetQuantity).not.toBeVisible();
+                    await expect.soft(editMaterialPopup.err_targetQuantity).toBeHidden();
                 } else {
                     await expect.soft(editMaterialPopup.err_targetQuantity).toBeVisible();
                 }

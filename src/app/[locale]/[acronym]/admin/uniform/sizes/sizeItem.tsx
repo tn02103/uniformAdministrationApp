@@ -4,15 +4,14 @@ import { deleteSize, moveSize, setSizeSortorder } from "@/actions/controllers/Un
 import TooltipIconButton from "@/components/Buttons/TooltipIconButton";
 import { useModal } from "@/components/modals/modalProvider";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
-import { t } from "@/lib/test";
 import { UniformSize } from "@/types/globalUniformTypes";
-import { faCircleUp, faCircleDown, faBars } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faCircleDown, faCircleUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Row, Col, Dropdown, DropdownMenu } from "react-bootstrap";
+import { Col, Dropdown, DropdownMenu, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 
 export default function SizeItem({
-    index, size, upDisabled, downDisabled
+    size, upDisabled, downDisabled
 }: {
     index: number;
     size: UniformSize;
@@ -36,10 +35,12 @@ export default function SizeItem({
                 validate: (value) => Number.isInteger(value) || t('common.error.number.pattern'),
             },
             inputMode: "numeric",
-            save: async ({ input }) => setSizeSortorder(size.id, +input).catch(e => {
-                console.error(e);
-                toast.error(t('common.error.actions.save'));
-            }),
+            save: async ({ input }) => {
+                await setSizeSortorder(size.id, +input).catch(e => {
+                    console.error(e);
+                    toast.error(t('common.error.actions.save'));
+                });
+            },
             abort: () => { },
         });
     }
@@ -55,7 +56,7 @@ export default function SizeItem({
         });
     }
 
-    function handleSimpleSA(action: () => Promise<any>) {
+    function handleSimpleSA(action: () => Promise<boolean>) {
         action().catch(e => {
             console.error(e);
             toast.error(t('common.error.actions.save'));

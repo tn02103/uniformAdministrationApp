@@ -19,11 +19,11 @@ export default function Step2({ uniformNumberMap, usedSizelist, stepBack, onCrea
     const { register, handleSubmit, watch, reset } = useForm<FormType>();
 
     useEffect(() => {
-        const formData: any = {}
+        const formData: Record<number, boolean> = {}
         uniformNumberMap.forEach(x => x.numbers.forEach(n => formData[n] = true));
         reset(formData);
 
-    }, [uniformNumberMap])
+    }, [uniformNumberMap, reset]);
 
     const onSubmit = (data: FormType) => {
         onCreate(uniformNumberMap.map(map => {

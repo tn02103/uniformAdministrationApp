@@ -15,6 +15,7 @@ it('valid call', async () => {
     }
     data.date.setUTCHours(0, 0, 0, 0);
     const result = await createInspection(data).catch(() => ({ error: true }));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((result as any).error).toBeUndefined();
     expect(Array.isArray(result)).toBeTruthy();
     expect(result).toHaveLength(4);

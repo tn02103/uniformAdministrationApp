@@ -1,9 +1,9 @@
-import { Locator, Page } from "playwright/test";
+import { Page } from "playwright/test";
 import { GenerationListComponent } from "./GenerationList.component";
-import { SizelistListComponent } from "./SizelistList.component";
 import { SizelistDetailComponent } from "./SizelistDetail.component";
-import { TypeListComponent } from "./typeList.component";
+import { SizelistListComponent } from "./SizelistList.component";
 import { TypeDetailComponent } from "./typeDetail.component";
+import { TypeListComponent } from "./typeList.component";
 
 export class UniformAdministrationPage {
 

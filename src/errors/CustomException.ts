@@ -1,6 +1,6 @@
 export default class CustomException extends Error {
     exceptionType: ExceptionType;
-    data?: any;
+    data?: unknown;
     constructor(msg: string, excpetionType: ExceptionType) {
         super(msg);
         this.exceptionType = excpetionType;

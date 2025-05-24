@@ -27,6 +27,6 @@ describe('deleteInspection', () => {
     });
     it('catches wrong assosiation', async () => {
         const wrongData = new StaticData(1);
-        expect(deleteInspection(wrongData.ids.inspectionIds[3])).rejects.toBeDefined();
+        await expect(deleteInspection(wrongData.ids.inspectionIds[3])).rejects.toBeDefined();
     });
 });

@@ -1,7 +1,7 @@
 import { useDrag, useDrop } from "react-dnd";
 import { DragableTypes } from "./ReorderHelper";
 
-export type ReorderableChildRenderProps<T> = {
+export type ReorderableChildRenderProps = {
     draggableRef: (node: HTMLElement | null) => void;
     previewRef: (node: HTMLElement | null) => void;
     isDragging: boolean;
@@ -11,7 +11,7 @@ export type ReorderableProps<T> = {
     itemType: keyof typeof DragableTypes;
     moveItem: (id: string, to: number) => void;
     findItem: (id: string) => { index: number, item: T };
-    children: (p: ReorderableChildRenderProps<T>) => React.ReactNode;
+    children: (p: ReorderableChildRenderProps) => React.ReactNode;
     onDragEnd?: (itemId: string) => void;
 }
 

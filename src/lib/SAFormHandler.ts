@@ -1,6 +1,8 @@
-import { UseFormSetError } from "react-hook-form";
+import { FieldValues, Path, UseFormSetError } from "react-hook-form";
 import { toast } from "react-toastify";
 
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export function asyncSAFormHandler<ActionType extends (...args: any) => Promise<any>>(
     serverActionPromise: ReturnType<ActionType>,
     setError: UseFormSetError<any>
@@ -30,20 +32,33 @@ export function asyncSAFormHandler<ActionType extends (...args: any) => Promise<
         }
     })
 };
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
-export async function SAFormHandler(
-    serverActionPromise: Promise<any>,
-    setError: UseFormSetError<any>,
-    successCallback: (data: any) => void,
-    unhandledErrorCallback?: ((error: any) => void) | string
+type SAFormError = {
+    error: {
+        formElement: string;
+        message: string;
+    }
+}
+type SAError = {
+    error: object;
+}
+
+export async function SAFormHandler<T, FormType extends FieldValues>(
+    serverActionPromise: Promise<T | SAFormError | SAError>,
+    setError: UseFormSetError<FormType>,
+    successCallback: (data: T) => void,
+    unhandledErrorCallback?: ((error: unknown) => void) | string
 ) {
     return serverActionPromise.then((result) => {
-        if (!result || !result.error) {
-            successCallback(result);
+        if (!result || typeof result === "object" && result.hasOwnProperty("error")) {
+            successCallback(result as T);
             return;
         }
-        if (result.error.formElement) {
-            setError(result.error.formElement, { message: result.error.message });
+        if (((result as SAError).error).hasOwnProperty("formElement")) {
+            const formElement = (result as SAFormError).error.formElement as Path<FormType>;
+            const message = (result as SAFormError).error.formElement as string;
+            setError(formElement, { message: message });
         } else {
             if (unhandledErrorCallback) {
                 if (typeof unhandledErrorCallback === "string") {

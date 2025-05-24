@@ -1,9 +1,6 @@
 import { createI18nMiddleware } from "next-international/middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { getIronSession } from "./lib/ironSession";
-import { prisma } from "./lib/db";
-import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
-
 
 const I18nMiddleware = createI18nMiddleware({
     locales: ['en', 'de'],

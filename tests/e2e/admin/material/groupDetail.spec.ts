@@ -33,7 +33,7 @@ test.describe('formValidation', () => {
                 await groupDetailComponent.txt_name.fill(String(set.testValue));
                 await page.keyboard.press('Tab');
                 if (set.valid) {
-                    await expect(groupDetailComponent.err_name).not.toBeVisible();
+                    await expect(groupDetailComponent.err_name).toBeHidden();
                 } else {
                     await expect(groupDetailComponent.err_name).toBeVisible();
                 }
@@ -49,7 +49,7 @@ test.describe('formValidation', () => {
                 await groupDetailComponent.txt_issuedDefault.fill(String(set.testValue));
                 await page.keyboard.press('Tab');
                 if (set.valid) {
-                    await expect(groupDetailComponent.err_issuedDefault).not.toBeVisible();
+                    await expect(groupDetailComponent.err_issuedDefault).toBeHidden();
                 } else {
                     await expect(groupDetailComponent.err_issuedDefault).toBeVisible();
                 }
@@ -67,14 +67,14 @@ test('validate Data', async ({ groupDetailComponent, staticData: { data } }) => 
 
         expect.soft(groupDetailComponent.btn_edit).toBeVisible(),
         expect.soft(groupDetailComponent.btn_delete).toBeVisible(),
-        expect.soft(groupDetailComponent.btn_cancel).not.toBeVisible(),
-        expect.soft(groupDetailComponent.btn_save).not.toBeVisible(),
-        expect.soft(groupDetailComponent.chk_multitypeAllowed).not.toBeVisible(),
+        expect.soft(groupDetailComponent.btn_cancel).toBeHidden(),
+        expect.soft(groupDetailComponent.btn_save).toBeHidden(),
+        expect.soft(groupDetailComponent.chk_multitypeAllowed).toBeHidden(),
     ]);
     await groupDetailComponent.btn_edit.click();
     await Promise.all([
-        expect.soft(groupDetailComponent.btn_edit).not.toBeVisible(),
-        expect.soft(groupDetailComponent.btn_delete).not.toBeVisible(),
+        expect.soft(groupDetailComponent.btn_edit).toBeHidden(),
+        expect.soft(groupDetailComponent.btn_delete).toBeHidden(),
         expect.soft(groupDetailComponent.btn_cancel).toBeVisible(),
         expect.soft(groupDetailComponent.btn_save).toBeVisible(),
         expect.soft(groupDetailComponent.chk_multitypeAllowed).toBeVisible(),
@@ -143,8 +143,8 @@ test('validate delete', async ({ page, groupDetailComponent, groupListComponent,
         await dangerModal.txt_confirmation.fill(translation.confirmationText.replace('{group}', group.description));
         await dangerModal.btn_save.click();
 
-        await expect(groupListComponent.div_mGroup(group.id)).not.toBeVisible();
-        await expect(groupDetailComponent.div_mGroup).not.toBeVisible();
+        await expect(groupListComponent.div_mGroup(group.id)).toBeHidden();
+        await expect(groupDetailComponent.div_mGroup).toBeHidden();
     });
     await test.step('validate db', async () => {
         const [dbIssued, dbTypes, dbGroup, dbGroup3] = await prisma.$transaction([

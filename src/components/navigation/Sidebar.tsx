@@ -33,8 +33,8 @@ type SidebarPropType = {
 const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
     const t = useI18n();
     const modal = useModal();
-    const [collapsed, setCollapsed] = useState<boolean>(false);
-    const [showSidebar, setShowSidebar] = useState<boolean>(false);
+    const [collapsed, setCollapsed] = useState(false);
+    const [showSidebar, setShowSidebar] = useState(false);
     const { inspectionState } = useInspectionState();
     const pathname = usePathname();
     const { locale } = useParams();
@@ -79,7 +79,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
             if (inspectionState?.state === "planned") {
                 startInspection().then(() => {
                     toast.success("Uniformkontrolle erfolgreich gestartet");
-                    mutate((key: any) => ((typeof key === "string") && /^(\/api\/inspection\/status)|(\/api\/cadet\/[\w\d-]+\/inspection)$/));
+                    mutate((key: object | string) => ((typeof key === "string") && /^(\/api\/inspection\/status)|(\/api\/cadet\/[\w\d-]+\/inspection)$/));
                 });
             }
         }
@@ -91,7 +91,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
             <div className="p-0 w-auto navbar">
                 <div className='d-lg-none'>
                     <Footer />
-                    <Header showSidebar={setShowSidebar} />
+                    <Header showSidebar={() => setShowSidebar(true)} />
                 </div>
                 <div className={`navbar-small ${showSidebar ? "show2" : ""}`}>
                     <div data-testid="div_sidebar" className="d-flex flex-column align-items-start pt-2 text-white min-vh-100 bg-navy text-decoration-none sticky-top z-3">

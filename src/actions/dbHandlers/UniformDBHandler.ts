@@ -32,7 +32,7 @@ export class UniformDBHandler {
             }, {}
         ));
 
-    getListWithOwner = async (fk_uniformType: string, hiddenGenerations: string[], hiddenSizes: string[], sqlFilter: object, sortOrder: Prisma.UniformOrderByWithRelationInput[], orderByOwner: boolean, asc: boolean) => prisma.uniform.findMany({
+    getListWithOwner = async (fk_uniformType: string, hiddenGenerations: string[], hiddenSizes: string[], sqlFilter: Prisma.UniformFindManyArgs["where"], sortOrder: Prisma.UniformOrderByWithRelationInput[], orderByOwner: boolean, asc: boolean) => prisma.uniform.findMany({
         ...uniformWithOwnerArgs,
         where: {
             ...sqlFilter,

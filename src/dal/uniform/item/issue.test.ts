@@ -23,7 +23,7 @@ describe('<UniformItem> issue', () => {
         const { success, result } = await runServerActionTest(
             issue(defaultProps)
         );
-        expect(success);
+        expect(success).toBeTruthy();
         expect(result[ids.uniformTypeIds[0]]).toHaveLength(5);
 
         const dbIssuedEntry = await prisma.uniformIssued.findFirst({

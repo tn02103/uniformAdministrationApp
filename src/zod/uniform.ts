@@ -11,5 +11,6 @@ export const getUniformFormSchema = (usingGeneration: boolean = false, usingSize
     comment: z.string(),
     active: z.boolean(),
 })
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const schema = getUniformFormSchema();
 export type UniformFormType = z.infer<typeof schema>;

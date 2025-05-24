@@ -9,6 +9,7 @@ describe('validate deletion', () => {
     afterAll(async () => staticData.cleanup.materialConfig());
     beforeAll(async () => {
         const { success } = await runServerActionTest(markDeleted(groupId));
+        // eslint-disable-next-line jest/no-standalone-expect
         expect(success).toBeTruthy();
     });
 
@@ -51,7 +52,7 @@ describe('validate deletion', () => {
         expect(groupList).toHaveLength(5);
         expect(groupList[1].id).toBe(groupId)
         expect(groupList[1]?.recdelete).not.toBeNull();
-        expect(isToday(groupList[1]?.recdelete!)).toBeTruthy();
+        expect(isToday(groupList[1]!.recdelete!)).toBeTruthy();
         expect(groupList[1]?.recdeleteUser).toBe('mana');
     });
     it('updates sortOrders of others', async () => {

@@ -1,10 +1,10 @@
 import { prisma } from "@/lib/db";
-import { UniformType } from "@prisma/client";
+import { Uniform } from "@prisma/client";
 import { expect } from "playwright/test";
 import t from "../../../../public/locales/de";
-import { adminTest, inspectorTest, managerTest, userTest } from "../../../_playwrightConfig/setup";
 import { getTextColor } from "../../../_playwrightConfig/global/helper";
 import { CadetUniformComponent } from "../../../_playwrightConfig/pages/cadet/cadetUniform.component";
+import { adminTest, inspectorTest, managerTest, userTest } from "../../../_playwrightConfig/setup";
 
 type Fixture = {
     uniformComponent: CadetUniformComponent;
@@ -17,7 +17,7 @@ const test = adminTest.extend<Fixture>({
 test.describe(() => {
     test.beforeEach(async ({ page, staticData: { ids } }) => page.goto(`/de/app/cadet/${ids.cadetIds[1]}`));
 
-    test('Test different Displaysizes', async ({ page, uniformComponent, staticData: { ids } }) => {
+    test('different Displaysizes', async ({ page, uniformComponent, staticData: { ids } }) => {
         // Test with Marie Becker, uniform 1184 of Typ1
 
         await test.step('Displaysize xxl', async () => {
@@ -37,10 +37,10 @@ test.describe(() => {
                 expect.soft(uniformComponent.div_uitem_generation(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.div_uitem_comment(ids.uniformIds[0][84])).toBeVisible(),
 
-                expect.soft(uniformComponent.btn_uitem_menu(ids.uniformIds[0][84])).not.toBeVisible(),
-                expect.soft(uniformComponent.btn_uitem_menu_open(ids.uniformIds[0][84])).not.toBeVisible(),
-                expect.soft(uniformComponent.btn_uitem_menu_switch(ids.uniformIds[0][84])).not.toBeVisible(),
-                expect.soft(uniformComponent.btn_uitem_menu_withdraw(ids.uniformIds[0][84])).not.toBeVisible(),
+                expect.soft(uniformComponent.btn_uitem_menu(ids.uniformIds[0][84])).toBeHidden(),
+                expect.soft(uniformComponent.btn_uitem_menu_open(ids.uniformIds[0][84])).toBeHidden(),
+                expect.soft(uniformComponent.btn_uitem_menu_switch(ids.uniformIds[0][84])).toBeHidden(),
+                expect.soft(uniformComponent.btn_uitem_menu_withdraw(ids.uniformIds[0][84])).toBeHidden(),
             ]);
         });
         await test.step('Displaysize xl', async () => {
@@ -60,10 +60,10 @@ test.describe(() => {
                 expect.soft(uniformComponent.div_uitem_generation(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.div_uitem_comment(ids.uniformIds[0][84])).toBeVisible(),
 
-                expect.soft(uniformComponent.btn_uitem_menu(ids.uniformIds[0][84])).not.toBeVisible(),
-                expect.soft(uniformComponent.btn_uitem_menu_open(ids.uniformIds[0][84])).not.toBeVisible(),
-                expect.soft(uniformComponent.btn_uitem_menu_switch(ids.uniformIds[0][84])).not.toBeVisible(),
-                expect.soft(uniformComponent.btn_uitem_menu_withdraw(ids.uniformIds[0][84])).not.toBeVisible(),
+                expect.soft(uniformComponent.btn_uitem_menu(ids.uniformIds[0][84])).toBeHidden(),
+                expect.soft(uniformComponent.btn_uitem_menu_open(ids.uniformIds[0][84])).toBeHidden(),
+                expect.soft(uniformComponent.btn_uitem_menu_switch(ids.uniformIds[0][84])).toBeHidden(),
+                expect.soft(uniformComponent.btn_uitem_menu_withdraw(ids.uniformIds[0][84])).toBeHidden(),
             ]);
         });
         await test.step('Displaysize lg', async () => {
@@ -83,10 +83,10 @@ test.describe(() => {
                 expect.soft(uniformComponent.div_uitem_generation(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.div_uitem_comment(ids.uniformIds[0][84])).toBeVisible(),
 
-                expect.soft(uniformComponent.btn_uitem_menu(ids.uniformIds[0][84])).not.toBeVisible(),
-                expect.soft(uniformComponent.btn_uitem_menu_open(ids.uniformIds[0][84])).not.toBeVisible(),
-                expect.soft(uniformComponent.btn_uitem_menu_switch(ids.uniformIds[0][84])).not.toBeVisible(),
-                expect.soft(uniformComponent.btn_uitem_menu_withdraw(ids.uniformIds[0][84])).not.toBeVisible(),
+                expect.soft(uniformComponent.btn_uitem_menu(ids.uniformIds[0][84])).toBeHidden(),
+                expect.soft(uniformComponent.btn_uitem_menu_open(ids.uniformIds[0][84])).toBeHidden(),
+                expect.soft(uniformComponent.btn_uitem_menu_switch(ids.uniformIds[0][84])).toBeHidden(),
+                expect.soft(uniformComponent.btn_uitem_menu_withdraw(ids.uniformIds[0][84])).toBeHidden(),
             ]);
         });
         await test.step('Displaysize md', async () => {
@@ -106,10 +106,10 @@ test.describe(() => {
                 expect.soft(uniformComponent.div_uitem_generation(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.div_uitem_comment(ids.uniformIds[0][84])).toBeVisible(),
 
-                expect.soft(uniformComponent.btn_uitem_menu(ids.uniformIds[0][84])).not.toBeVisible(),
-                expect.soft(uniformComponent.btn_uitem_menu_open(ids.uniformIds[0][84])).not.toBeVisible(),
-                expect.soft(uniformComponent.btn_uitem_menu_switch(ids.uniformIds[0][84])).not.toBeVisible(),
-                expect.soft(uniformComponent.btn_uitem_menu_withdraw(ids.uniformIds[0][84])).not.toBeVisible(),
+                expect.soft(uniformComponent.btn_uitem_menu(ids.uniformIds[0][84])).toBeHidden(),
+                expect.soft(uniformComponent.btn_uitem_menu_open(ids.uniformIds[0][84])).toBeHidden(),
+                expect.soft(uniformComponent.btn_uitem_menu_switch(ids.uniformIds[0][84])).toBeHidden(),
+                expect.soft(uniformComponent.btn_uitem_menu_withdraw(ids.uniformIds[0][84])).toBeHidden(),
             ]);
         });
         await test.step('Displaysize sm', async () => {
@@ -127,12 +127,12 @@ test.describe(() => {
                 expect.soft(uniformComponent.div_uitem_number(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84]).getByTestId('div_size')).toBeVisible(),
                 expect.soft(uniformComponent.div_uitem_generation(ids.uniformIds[0][84])).toBeVisible(),
-                expect.soft(uniformComponent.div_uitem_comment(ids.uniformIds[0][84])).not.toBeVisible(),
+                expect.soft(uniformComponent.div_uitem_comment(ids.uniformIds[0][84])).toBeHidden(),
 
-                expect.soft(uniformComponent.btn_uitem_menu(ids.uniformIds[0][84])).not.toBeVisible(),
-                expect.soft(uniformComponent.btn_uitem_menu_open(ids.uniformIds[0][84])).not.toBeVisible(),
-                expect.soft(uniformComponent.btn_uitem_menu_switch(ids.uniformIds[0][84])).not.toBeVisible(),
-                expect.soft(uniformComponent.btn_uitem_menu_withdraw(ids.uniformIds[0][84])).not.toBeVisible(),
+                expect.soft(uniformComponent.btn_uitem_menu(ids.uniformIds[0][84])).toBeHidden(),
+                expect.soft(uniformComponent.btn_uitem_menu_open(ids.uniformIds[0][84])).toBeHidden(),
+                expect.soft(uniformComponent.btn_uitem_menu_switch(ids.uniformIds[0][84])).toBeHidden(),
+                expect.soft(uniformComponent.btn_uitem_menu_withdraw(ids.uniformIds[0][84])).toBeHidden(),
             ]);
         });
         await test.step('Displaysize xs', async () => {
@@ -143,14 +143,14 @@ test.describe(() => {
                 expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toBeVisible(),
                 expect.soft(uniformComponent.div_utype_name(ids.uniformTypeIds[0])).toBeVisible(),
 
-                expect.soft(uniformComponent.btn_uitem_open(ids.uniformIds[0][84])).not.toBeVisible(),
-                expect.soft(uniformComponent.btn_uitem_switch(ids.uniformIds[0][84])).not.toBeVisible(),
-                expect.soft(uniformComponent.btn_uitem_withdraw(ids.uniformIds[0][84])).not.toBeVisible(),
+                expect.soft(uniformComponent.btn_uitem_open(ids.uniformIds[0][84])).toBeHidden(),
+                expect.soft(uniformComponent.btn_uitem_switch(ids.uniformIds[0][84])).toBeHidden(),
+                expect.soft(uniformComponent.btn_uitem_withdraw(ids.uniformIds[0][84])).toBeHidden(),
 
                 expect.soft(uniformComponent.div_uitem_number(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84]).getByTestId('div_size')).toBeVisible(),
                 expect.soft(uniformComponent.div_uitem_generation(ids.uniformIds[0][84])).toBeVisible(),
-                expect.soft(uniformComponent.div_uitem_comment(ids.uniformIds[0][84])).not.toBeVisible(),
+                expect.soft(uniformComponent.div_uitem_comment(ids.uniformIds[0][84])).toBeHidden(),
             ]);
 
             await expect.soft(uniformComponent.btn_uitem_menu(ids.uniformIds[0][84])).toBeVisible();
@@ -161,7 +161,7 @@ test.describe(() => {
             await expect.soft(uniformComponent.btn_uitem_menu_withdraw(ids.uniformIds[0][84])).toBeVisible();
         });
     });
-    test.describe('Test uniformType Rows', async () => {
+    test.describe('Test uniformType Rows', () => {
         const defaultTextColor = 'rgb(33, 37, 41)';
 
         test('validate correct sortOrder of the typeRows', async ({ uniformComponent, staticData: { data } }) => {
@@ -177,7 +177,7 @@ test.describe(() => {
             const deletedTypes = data.uniformTypes.filter(type => type.recdelete);
 
             await Promise.all(
-                deletedTypes.map((type) => expect.soft(uniformComponent.div_utype(type.id)).not.toBeVisible())
+                deletedTypes.map((type) => expect.soft(uniformComponent.div_utype(type.id)).toBeHidden())
             );
         });
 
@@ -186,24 +186,24 @@ test.describe(() => {
                 await page.goto(`/de/app/cadet/${ids.cadetIds[2]}`);
                 await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(2 ${t.common.of} 3)`);
                 await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveClass(/text-orange-500/);
-                await expect.soft(await getTextColor(uniformComponent.div_utype_amount(ids.uniformTypeIds[0]))).not.toBe(defaultTextColor);
+                expect.soft(await getTextColor(uniformComponent.div_utype_amount(ids.uniformTypeIds[0]))).not.toBe(defaultTextColor);
             });
             await test.step('to many: Antje Fried -> Type1', async () => {
                 await page.goto(`/de/app/cadet/${ids.cadetIds[0]}`);
                 await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(4 ${t.common.of} 3)`);
                 await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).not.toHaveClass(/text-orange-500/);
-                await expect.soft(await getTextColor(uniformComponent.div_utype_amount(ids.uniformTypeIds[0]))).toBe(defaultTextColor);
+                expect.soft(await getTextColor(uniformComponent.div_utype_amount(ids.uniformTypeIds[0]))).toBe(defaultTextColor);
             });
             await test.step('correct amount: Marie Becker -> Type1', async () => {
                 await page.goto(`/de/app/cadet/${ids.cadetIds[1]}`);
                 await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(3 ${t.common.of} 3)`);
                 await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).not.toHaveClass(/text-orange-500/);
-                await expect.soft(await getTextColor(uniformComponent.div_utype_amount(ids.uniformTypeIds[0]))).toBe(defaultTextColor);
+                expect.soft(await getTextColor(uniformComponent.div_utype_amount(ids.uniformTypeIds[0]))).toBe(defaultTextColor);
             });
             await test.step('correct amount: Marie Becker -> Type2', async () => {
                 await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[1])).toHaveText(`(1 ${t.common.of} 1)`);
                 await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[1])).not.toHaveClass(/text-orange-500/);
-                await expect.soft(await getTextColor(uniformComponent.div_utype_amount(ids.uniformTypeIds[1]))).toBe(defaultTextColor);
+                expect.soft(await getTextColor(uniformComponent.div_utype_amount(ids.uniformTypeIds[1]))).toBe(defaultTextColor);
             });
         });
     });
@@ -212,7 +212,7 @@ test.describe(() => {
         const defaultTextColor = 'rgb(33, 37, 41)';
 
         test('validate correct uniformItems are displayed in correct sortOrder', async ({ uniformComponent, staticData: { ids, data } }) => {
-            const uniformItems: any[] = await prisma.uniform.findMany({
+            const uniformItems: Uniform[] = await prisma.uniform.findMany({
                 where: {
                     issuedEntries: {
                         some: {
@@ -223,7 +223,7 @@ test.describe(() => {
                 }
             });
 
-            for (let type of data.uniformTypes) {
+            for (const type of data.uniformTypes) {
                 await test.step(`validate uniformItems for type: ${type.name}`, async () => {
                     const filteredItems = uniformItems.filter(uitem => uitem?.fk_uniformType == type.id).sort((a, b) => a?.number - b?.number);
 
@@ -252,7 +252,7 @@ test.describe(() => {
 
             await Promise.all(
                 retunedIds.map((uitem) =>
-                    expect.soft(uniformComponent.div_uitem(uitem.id)).not.toBeVisible()
+                    expect.soft(uniformComponent.div_uitem(uitem.id)).toBeHidden()
                 )
             );
         });
@@ -278,23 +278,23 @@ test.describe(() => {
         test('validate generation hilighting', async ({ page, uniformComponent, staticData: { ids } }) => {
             await test.step('generation not outdated: Marie Becker -> 1184', async () => {
                 await page.goto(`/de/app/cadet/${ids.cadetIds[1]}`);
-                await expect.soft(await getTextColor(uniformComponent.div_uitem_generation(ids.uniformIds[0][84]))).toBe(defaultTextColor);
+                expect.soft(await getTextColor(uniformComponent.div_uitem_generation(ids.uniformIds[0][84]))).toBe(defaultTextColor);
             });
 
             await test.step('generation outdated: Maik Finkel -> 1100', async () => {
                 await page.goto(`/de/app/cadet/${ids.cadetIds[5]}`);
-                await expect.soft(await getTextColor(uniformComponent.div_uitem_generation(ids.uniformIds[0][0]))).not.toBe(defaultTextColor);
+                expect.soft(await getTextColor(uniformComponent.div_uitem_generation(ids.uniformIds[0][0]))).not.toBe(defaultTextColor);
             });
         });
 
         test('validate uniformNumber hilighting', async ({ page, uniformComponent, staticData: { ids } }) => {
             await test.step('uniform active: Marie Becker -> 1184', async () => {
                 await page.goto(`/de/app/cadet/${ids.cadetIds[1]}`);
-                await expect.soft(await getTextColor(uniformComponent.div_uitem_number(ids.uniformIds[0][84]))).toBe(defaultTextColor);
+                expect.soft(await getTextColor(uniformComponent.div_uitem_number(ids.uniformIds[0][84]))).toBe(defaultTextColor);
             });
             await test.step('uniform passive: Uwe Luft -> 1121', async () => {
                 await page.goto(`/de/app/cadet/${ids.cadetIds[4]}`);
-                await expect.soft(await getTextColor(uniformComponent.div_uitem_number(ids.uniformIds[0][21]))).not.toBe(defaultTextColor);
+                expect.soft(await getTextColor(uniformComponent.div_uitem_number(ids.uniformIds[0][21]))).not.toBe(defaultTextColor);
             });
         });
     });
@@ -366,8 +366,8 @@ userTest('validate Authroles: user', async ({ page, staticData: { ids } }) => {
         expect.soft(uniformComponent.div_utype_name(ids.uniformTypeIds[0])).toBeVisible(),
 
         expect.soft(uniformComponent.btn_uitem_open(ids.uniformIds[0][84])).toBeVisible(),
-        expect.soft(uniformComponent.btn_uitem_switch(ids.uniformIds[0][84])).not.toBeVisible(),
-        expect.soft(uniformComponent.btn_uitem_withdraw(ids.uniformIds[0][84])).not.toBeVisible(),
+        expect.soft(uniformComponent.btn_uitem_switch(ids.uniformIds[0][84])).toBeHidden(),
+        expect.soft(uniformComponent.btn_uitem_withdraw(ids.uniformIds[0][84])).toBeHidden(),
         expect.soft(uniformComponent.div_uitem_number(ids.uniformIds[0][84])).toBeVisible(),
         expect.soft(uniformComponent.div_uitem_size(ids.uniformIds[0][84])).toBeVisible(),
         expect.soft(uniformComponent.div_uitem_generation(ids.uniformIds[0][84])).toBeVisible(),
@@ -375,5 +375,5 @@ userTest('validate Authroles: user', async ({ page, staticData: { ids } }) => {
     ]);
 
     await page.setViewportSize({ height: 800, width: 500 });
-    await expect.soft(uniformComponent.btn_uitem_menu(ids.uniformIds[0][84])).not.toBeVisible();
+    await expect.soft(uniformComponent.btn_uitem_menu(ids.uniformIds[0][84])).toBeHidden();
 });

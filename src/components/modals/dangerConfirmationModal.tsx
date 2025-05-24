@@ -29,6 +29,10 @@ function DangerConfirmationModal({ header, message, confirmationText, dangerOpti
         await dangerOption.function();
         onClose();
     }
+    const handleCancel = () => {
+        onClose();
+        cancelOption?.function?.();
+    }
 
     return (
         <Modal data-testid="div_popup" show={true} onHide={onClose}>
@@ -80,10 +84,10 @@ function DangerConfirmationModal({ header, message, confirmationText, dangerOpti
                         <Col>
                             <Button
                                 variant="outline-seccondary"
-                                onClick={() => { onClose(); cancelOption?.function ? cancelOption.function() : undefined }}
+                                onClick={handleCancel}
                                 data-testid="btn_cancel"
                             >
-                                {cancelOption?.option?? tAction('common.actions.cancel')}
+                                {cancelOption?.option ?? tAction('common.actions.cancel')}
                             </Button>
                         </Col>
                         <Col>

@@ -1,7 +1,7 @@
 import TooltipIconButton from "@/components/Buttons/TooltipIconButton";
 import { useCadetUniformComplete } from "@/dataFetcher/cadet";
 import { useCadetInspection } from "@/dataFetcher/cadetInspection";
-import { Deficiency } from "@/types/deficiencyTypes";
+import { useI18n } from "@/lib/locales/client";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "next/navigation";
 import { Button, Col, Row } from "react-bootstrap";
@@ -10,7 +10,6 @@ import { ParamType } from "../page";
 import { FormType, NewDeficiencyFormType } from "./card";
 import NewDeficiencyRow from "./newDeficiencyRow";
 import OldDeficiencyRow from "./oldDeficiencyRow";
-import { useI18n } from "@/lib/locales/client";
 
 
 const initDeficiency: NewDeficiencyFormType = {

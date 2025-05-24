@@ -20,7 +20,7 @@ test.afterEach(async ({ staticData: { cleanup } }) => {
 });
 
 test('validate data', async ({ page, groupListComponent, staticData: { data } }) => {
-    const divList = await page.locator('div[data-testid^="div_mGroup_row_"]');
+    const divList = page.locator('div[data-testid^="div_mGroup_row_"]');
     await expect(divList).toHaveCount(4);
     await expect(divList.nth(0)).toHaveAttribute('data-testid', `div_mGroup_row_${data.materialGroups[0].id}`)
     await expect(divList.nth(1)).toHaveAttribute('data-testid', `div_mGroup_row_${data.materialGroups[1].id}`)
@@ -37,10 +37,10 @@ test('validate moveUp', async ({ page, groupListComponent, staticData: { ids } }
     await test.step('do action and validate ui', async () => {
         await groupListComponent.btn_mGroup_moveUp(ids.materialGroupIds[1]).click();
 
-        const divList = await page.locator('div[data-testid^="div_mGroup_row_"]');
+        const divList = page.locator('div[data-testid^="div_mGroup_row_"]');
         await expect.soft(divList.nth(0)).toHaveAttribute('data-testid', `div_mGroup_row_${ids.materialGroupIds[1]}`);
     });
-    await test.step('validate db ', async () => {
+    await test.step('validate db', async () => {
         const [initial, seccond] = await prisma.$transaction([
             prisma.materialGroup.findUnique({
                 where: { id: ids.materialGroupIds[1] }
@@ -61,7 +61,7 @@ test('validate moveDown', async ({ page, groupListComponent, staticData: { ids }
         const divList = await page.locator('div[data-testid^="div_mGroup_row_"]').all();
         await expect.soft(divList[2]).toHaveAttribute('data-testid', `div_mGroup_row_${ids.materialGroupIds[1]}`);
     });
-    await test.step('validate db ', async () => {
+    await test.step('validate db', async () => {
         const [initial, seccond] = await prisma.$transaction([
             prisma.materialGroup.findUnique({
                 where: { id: ids.materialGroupIds[1] }
@@ -97,7 +97,6 @@ test('validate create', async ({ page, groupListComponent, groupDetailComponent,
         });
 
         expect(dbGroup).not.toBeNull();
-        dbGroup?.recdeleteUser
         expect(dbGroup).toEqual(expect.objectContaining({
             description: "Gruppe-1",
             sortOrder: 4,
@@ -111,5 +110,5 @@ test('validate open', async ({groupListComponent, groupDetailComponent, staticDa
 
     groupListComponent.btn_mGroup_select(materialGroups[0].id).click();
     await expect(groupDetailComponent.div_header).toHaveText(materialGroups[0].description);
-    await expect(groupListComponent.btn_mGroup_select(materialGroups[0].id)).not.toBeVisible();
+    await expect(groupListComponent.btn_mGroup_select(materialGroups[0].id)).toBeHidden();
 });

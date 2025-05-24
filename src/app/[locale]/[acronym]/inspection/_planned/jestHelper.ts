@@ -69,10 +69,10 @@ jest.mock("@/dal/inspection", () => ({
 jest.mock("@/dataFetcher/inspection", () => ({
     usePlannedInspectionList: jest.fn().mockReturnValue({
         inspectionList: mockInspectionList,
-        mutate: jest.fn(async (promise: Promise<any>) => { await promise; return mockInspectionList; }),
+        mutate: jest.fn(async (promise: Promise<void>) => { await promise; return mockInspectionList; }),
     }),
     useInspectionState: jest.fn().mockReturnValue({
         inspectionState: { active: false },
-        mutate: jest.fn(async (promise: Promise<any>) => { await promise; return { active: false }; }),
+        mutate: jest.fn(async (promise: Promise<void>) => { await promise; return { active: false }; }),
     }),
 }));

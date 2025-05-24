@@ -1,11 +1,10 @@
+import germ from "@/../public/locales/de";
+import { prisma } from "@/lib/db";
 import { expect } from "playwright/test";
 import { CadetDataComponent } from "../../_playwrightConfig/pages/cadet/cadetData.component";
 import { CadetDetailPage } from "../../_playwrightConfig/pages/cadet/cadetDetail.page";
-import { adminTest } from "../../_playwrightConfig/setup";
-import germ from "@/../public/locales/de";
-import { prisma } from "@/lib/db";
 import { SidebarPage } from "../../_playwrightConfig/pages/global/Sidebar.component";
-import { experimental_taintObjectReference } from "react";
+import { adminTest } from "../../_playwrightConfig/setup";
 
 type Fixture = {
     dataComponent: CadetDataComponent;
@@ -35,10 +34,10 @@ test('E2E0284: validate initialState and save', async ({ page, dataComponent, pa
 
     await test.step('hidden cards', async () => {
         await expect(dataComponent.div_card).toBeVisible();
-        await expect(pageComponent.btn_menu).not.toBeVisible();
-        await expect(pageComponent.cadetInspectionComponent.div_ci).not.toBeVisible();
-        await expect(pageComponent.cadetMaterialComponent.div_groupList).not.toBeVisible();
-        await expect(pageComponent.cadetUniformComponent.div_typeList).not.toBeVisible();
+        await expect(pageComponent.btn_menu).toBeHidden();
+        await expect(pageComponent.cadetInspectionComponent.div_ci).toBeHidden();
+        await expect(pageComponent.cadetMaterialComponent.div_groupList).toBeHidden();
+        await expect(pageComponent.cadetUniformComponent.div_typeList).toBeHidden();
     });
 
     await test.step('initial dataComponent state', async () => {
@@ -46,8 +45,8 @@ test('E2E0284: validate initialState and save', async ({ page, dataComponent, pa
         await expect(dataComponent.txt_lastname).toBeEditable();
         await expect(dataComponent.btn_cancel).toBeVisible();
         await expect(dataComponent.btn_save).toBeVisible();
-        await expect(dataComponent.btn_edit).not.toBeVisible();
-        await expect(dataComponent.div_lastInspection).not.toBeVisible();
+        await expect(dataComponent.btn_edit).toBeHidden();
+        await expect(dataComponent.div_lastInspection).toBeHidden();
     });
 
     await test.step('fill data and save', async () => {
@@ -108,8 +107,8 @@ test('E2E0285: validate navigation', async ({ page, dataComponent, staticData: {
 
     await expect(page).toHaveURL('/de/app/cadet/new');
     await expect(dataComponent.txt_firstname).toBeEditable();
-    await expect(dataComponent.txt_firstname).toHaveValue(''),
-        await expect(dataComponent.txt_comment).toHaveValue('');
+    await expect(dataComponent.txt_firstname).toHaveValue('');
+    await expect(dataComponent.txt_comment).toHaveValue('');
 
     await page.goBack();
     await expect(page).toHaveURL(`/de/app/cadet/${ids.cadetIds[0]}`);

@@ -19,15 +19,17 @@ type ModalContextType = {
     dangerConfirmationModal: (props: DangerConfirmationModalPropType) => void,
     simpleFormModal: (props: SimpleFormModalProps) => void,
     issueMaterialModal: (cadetId: string, materialGroup: MaterialGroup, issuedMaterialList: CadetMaterial[], oldMaterial?: CadetMaterial) => void,
-     changeUserPasswordModal: (save: (p: string) => Promise<any>, nameOfUser?: string) => void,
+    changeUserPasswordModal: (save: (p: string) => Promise<void>, nameOfUser?: string) => void,
     editMaterialTypeModal: (groupName: string, groupId: string, type?: AdministrationMaterial) => void,
     changeLanguage: () => void,
 }
 
 type ModalCapsule = {
     modalType: ModalTypes,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     props: any,
 }
+
 type ModalTypes = "DangerConfirmationModal" | "EditMaterialTypeModal" | "InspectionReviewPopup" | "IssueMaterialModal"
     | "IssueUniformModal" | "ChangeUserPasswordModal" | "SimpleFormModal" | "ChangeLanguageModal"
 
@@ -88,7 +90,7 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             }],
             type ?? "message",
         )
-    }, []);
+    }, [showMessageModal, t]);
     const simpleWarningModal = useCallback(({ header, message, primaryOption, cancelOption, primaryFunction, cancelFunction }: SimpleYesNoPropType) => {
         showMessageModal(
             header,
@@ -107,7 +109,7 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             }],
             "warning",
         )
-    }, []);
+    }, [showMessageModal, t]);
     const simpleErrorModal = useCallback(({ header, message, option, optionFunction }: SimpleErrorPropType) => {
         showMessageModal(
             header,
@@ -120,10 +122,10 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             }],
             "error",
         );
-    }, []);
+    }, [showMessageModal, t]);
 
     // COMPLEX MODALS
-    const showModal = useCallback((type: ModalTypes, modalProps: any) => {
+    const showModal = useCallback((type: ModalTypes, modalProps: object) => {
         const modal: ModalCapsule = {
             modalType: type,
             props: modalProps,
@@ -134,14 +136,14 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
     const simpleFormModal = useCallback((props: SimpleFormModalProps) => {
         showModal("SimpleFormModal", {
             ...props,
-            save: async (data: { input: string | number }) => { onClose(); await props.save(data); },
+            save: async (data: { input: string }) => { onClose(); await props.save(data); },
             abort: () => { onClose(); props.abort(); },
         });
-    }, []);
+    }, [showModal]);
 
     const dangerConfirmationModal = useCallback((props: DangerConfirmationModalPropType) => {
         showModal("DangerConfirmationModal", props);
-    }, []);
+    }, [showModal]);
 
     const issueMaterialModal = useCallback((cadetId: string, materialGroup: MaterialGroup, issuedMaterialList: CadetMaterial[], oldMaterial?: CadetMaterial) => {
         const props: IssueMaterialModalProps = {
@@ -152,7 +154,7 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             onClose,
         };
         showModal("IssueMaterialModal", props);
-    }, []);
+    }, [showModal]);
 
     const editMaterialTypeModal = useCallback((groupName: string, groupId: string, type?: AdministrationMaterial) => {
         const props: EditMaterialTypeModalPropType = {
@@ -162,19 +164,19 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             onClose: onClose,
         }
         showModal("EditMaterialTypeModal", props);
-    }, []);
+    }, [showModal]);
 
-    const changeUserPasswordModal = useCallback((save: (password: string) => Promise<any>, nameOfUser?: string) => {
+    const changeUserPasswordModal = useCallback((save: (password: string) => Promise<void>, nameOfUser?: string) => {
         const props: ChangeUserPasswordModalPropType = {
             nameOfUser,
             onClose,
             save,
         }
         showModal("ChangeUserPasswordModal", props);
-    }, []);
+    }, [showModal]);
     const changeLanguage = useCallback(() => {
         showModal("ChangeLanguageModal", {});
-    }, [])
+    }, [showModal])
 
     const onClose = () => {
         setQueue(prevState => prevState.slice(1))

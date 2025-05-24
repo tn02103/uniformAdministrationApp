@@ -1,11 +1,8 @@
-import { runServerActionTest } from "@/dal/_helper/testHelper"
-import { create } from "./create"
-import { prisma } from "@/lib/db";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
-import { v4 as uuid } from "uuid";
 import { AuthRole } from "@/lib/AuthRoles";
-import { error } from "console";
+import { prisma } from "@/lib/db";
 import { uniformTypeArgs } from "@/types/globalUniformTypes";
+import { create } from "./create";
+import { Prisma } from "@prisma/client";
 
 
 beforeAll(() => {
@@ -88,7 +85,7 @@ describe('<UniformType> create', () => {
     });
 
     it('should return error if name is duplicated', async () => {
-        prismafindFirst.mockImplementation((props: any) => props.where.name ? { name: defaultProps.name } : null);
+        prismafindFirst.mockImplementation((props: Prisma.UniformTypeFindFirstArgs) => props.where?.name ? { name: defaultProps.name } : null);
         prismaCount.mockResolvedValue(4);
 
         const result = await create(defaultProps);
@@ -109,7 +106,7 @@ describe('<UniformType> create', () => {
         expect(prismaCreate).not.toHaveBeenCalled();
     });
     it('should return error if acronym is duplicated', async () => {
-        prismafindFirst.mockImplementation((props: any) => props.where.acronym ? { acronym: defaultProps.acronym, name: defaultProps.name } : null);
+        prismafindFirst.mockImplementation((props: Prisma.UniformTypeFindFirstArgs) => props.where?.acronym ? { acronym: defaultProps.acronym, name: defaultProps.name } : null);
         prismaCount.mockResolvedValue(4);
 
         const result = await create(defaultProps);

@@ -1,22 +1,26 @@
 import React, { ReactNode } from "react"
 import { Col, Row } from "react-bootstrap"
 
-export function Card({ children, ...props }: any) {
+type CardProps = React.HTMLAttributes<HTMLDivElement> & {
+    children: ReactNode;
+};
+
+export function Card({ children, ...props }: CardProps) {
     return (
         <div {...props} className="container border border-1 rounded-top border-dark">
             {children}
         </div>
-    )
+    );
 }
 
-export function CardBody({ children }: any) {
+export function CardBody({ children }: {children: ReactNode}) {
     return (
         <Row className="bg-white border-top border-1 border-dark">
             <Col xs={12} className="p-0">
                 {children}
             </Col>
         </Row>
-    )
+    );
 }
 
 type PropType = {
@@ -32,7 +36,7 @@ export function CardHeader({ title, children, tooltipIconButton, endButton, test
             <Row data-testid={testId} className="bg-body-secondary p-1 rounded-top text-center">
                 {children}
             </Row>
-        )
+        );
     }
 
     return (
@@ -49,13 +53,13 @@ export function CardHeader({ title, children, tooltipIconButton, endButton, test
                 {endButton}
             </Col>
         </Row>
-    )
+    );
 }
 
-export function CardFooter({ children }: any) {
+export function CardFooter({ children }: {children: ReactNode}) {
     return (
         <Row className="bg-body-tertiary border-top border-dark border-1 p-1 justify-content-between rounded-bottom-">
             {children}
         </Row>
-    )
+    );
 }

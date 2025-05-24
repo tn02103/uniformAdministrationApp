@@ -6,10 +6,8 @@ import { useEffect } from "react"
 
 export default function ErrorHandler({
     error,
-    reset,
 }: {
     error: Error & { digest?: string }
-    reset: () => void
 }) {
     useEffect(() => {
         console.log("Cought Error:", error, typeof error);

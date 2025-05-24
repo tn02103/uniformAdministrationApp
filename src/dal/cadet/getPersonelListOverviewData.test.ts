@@ -119,7 +119,7 @@ describe('manager tests', () => {
             expect(ids).not.toContain(cadetIds[7]);
             expect(ids).not.toContain(cadetIds[9]);
         });
-        it('validate filter deregistration on active inspection ', async () => {
+        it('validate filter deregistration on active inspection', async () => {
             const { success, result } = await runServerActionTest<PersonnelListCadet[]>(
                 getPersonnelListOverviewData({ ...defaultProps, include: { deregistered: true, inspected: false } })
             );
@@ -204,7 +204,7 @@ describe('user tests', () => {
             expect(success).toBeTruthy();
             expect(result).toHaveLength(9);
         });
-        it('validate filter include all ', async () => {
+        it('validate filter include all', async () => {
             const { success, result } = await runServerActionTest<PersonnelListCadet[]>(
                 getPersonnelListOverviewData({ ...defaultProps, include: { deregistered: true, inspected: true } })
             );

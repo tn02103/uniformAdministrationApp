@@ -50,7 +50,7 @@ export default function AutocompleteField(props: AutocompleteFieldProps) {
         }
         onChange(option.value);
         setHighlightedIndex(0);
-    }, [onChange]);
+    }, [onChange, props.resetOnChange]);
 
     useEffect(() => {
         if (inputValue.length === 0) {
@@ -139,13 +139,14 @@ export default function AutocompleteField(props: AutocompleteFieldProps) {
                                             padding: '5px'
                                         }}
                                         role="option"
+                                        aria-selected={props.value === option.value}
                                         onMouseDown={() => handleOptionSelect(option)}
                                     >
                                         {option.label}
                                     </div>
                                 ))}
                                 {filteredOptions.length === 0 &&
-                                    <div style={{ padding: '5px' }} role="option">
+                                    <div style={{ padding: '5px' }} role="alert">
                                         No results found
                                     </div>
                                 }

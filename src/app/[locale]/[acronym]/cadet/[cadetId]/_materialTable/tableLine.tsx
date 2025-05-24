@@ -6,7 +6,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n } from "@/lib/locales/client";
 import { CadetMaterial, MaterialGroup } from "@/types/globalMaterialTypes";
 import { faRightLeft, faRightToBracket } from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
+import React, { useState } from "react";
 
 type PropType = {
     material: CadetMaterial;
@@ -19,13 +19,16 @@ const MaterialTableLine = ({ material, group, handleEdit, handleReturn }: PropTy
     const [selected, setSelected] = useState<boolean>(false);
     const { userRole } = useGlobalData();
 
-    function onLineClick(event: any) {
-        if (event.target.tagName !== "BUTTON"
-            && event.target.parentNode?.tagName !== "BUTTON"
-            && event.target.parentNode?.parentNode?.tagName !== "BUTTON") {
+    function onLineClick(event: React.MouseEvent<HTMLDivElement>) {
+        
+        console.log("🚀 ~ onLineClick ~ event:", event.target);
+        const target = event.target as HTMLDivElement;
+        if (target.tagName !== "BUTTON"
+            && target.parentElement?.tagName !== "BUTTON"
+            && target.parentElement?.parentElement?.tagName !== "BUTTON") {
             setSelected(!selected);
         }
-    }
+    }   
     return (
         <div data-testid={`div_material_${material.id}`} className={`row border-top border-1 pb-2 pt-1 ${selected ? "bg-primary-subtle" : "bg-white"}`} onClick={onLineClick}>
             <div className="col-6 col-sm col-xl-6 ms-3">

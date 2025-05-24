@@ -89,8 +89,8 @@ test.describe(() => {
         });
         await test.step('return and verify ui', async () => {
             await messageComponent.btn_save.click();
-            await expect(messageComponent.div_popup).not.toBeVisible();
-            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).not.toBeVisible();
+            await expect(messageComponent.div_popup).toBeHidden();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).toBeHidden();
         });
         await test.step('verify db', async () => {
             await dbReturnedCheck(ids.uniformIds[0][84], cadetId, new Date('2023-08-16T00:00:00.000Z'));
@@ -106,8 +106,8 @@ test.describe(() => {
         });
         await test.step('return and verify ui', async () => {
             await messageComponent.btn_save.click();
-            await expect(messageComponent.div_popup).not.toBeVisible();
-            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).not.toBeVisible();
+            await expect(messageComponent.div_popup).toBeHidden();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).toBeHidden();
         });
         await test.step('verify db', async () => {
             await dbReturnedCheck(ids.uniformIds[0][84], cadetId, new Date('2023-08-16T00:00:00.000Z'));
@@ -131,7 +131,7 @@ test.describe(() => {
 
                 await test.step('check validation', async () => {
                     if (set.valid) {
-                        await expect.soft(issuePopupComponent.div_popup).not.toBeVisible();
+                        await expect.soft(issuePopupComponent.div_popup).toBeHidden();
                     } else {
                         await expect.soft(issuePopupComponent.div_popup).toBeVisible();
                         await expect.soft(issuePopupComponent.err_input).toBeVisible();
@@ -143,7 +143,7 @@ test.describe(() => {
     test('E2E0219: Switch UniformItem without errors', async ({ uniformComponent, issuePopupComponent, cadetId, staticData: { ids } }) => {
         await test.step('verify startData', async () => {
             await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(3 ${t.common.of} 3)`);
-            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][11])).not.toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][11])).toBeHidden();
             await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).toBeVisible();
         });
 
@@ -159,7 +159,7 @@ test.describe(() => {
         await test.step('verify ui', async () => {
             await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(3 ${t.common.of} 3)`);
             await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][11])).toBeVisible();
-            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).not.toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).toBeHidden();
         });
         await test.step('verify db', async () => {
             await Promise.all([
@@ -172,7 +172,7 @@ test.describe(() => {
     test('E2E0220: Issue UniformItem without errors', async ({ uniformComponent, issuePopupComponent, cadetId, staticData: { ids } }) => {
         await test.step('verify startData', async () => {
             await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(3 ${t.common.of} 3)`);
-            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][11])).not.toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][11])).toBeHidden();
         });
         await test.step('issue uniformItem', async () => {
             await uniformComponent.btn_utype_issue(ids.uniformTypeIds[0]).click();
@@ -205,9 +205,9 @@ test.describe(() => {
             await messageComponent.btn_save.click();
         });
         await test.step('closePopup | verify not issued', async () => {
-            await expect.soft(messageComponent.div_popup).not.toBeVisible();
+            await expect.soft(messageComponent.div_popup).toBeHidden();
             await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(3 ${t.common.of} 3)`);
-            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).not.toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).toBeHidden();
             await expect.soft(page.getByText('9999')).toBeVisible();
         });
         await test.step('verify db', async () => {
@@ -223,7 +223,7 @@ test.describe(() => {
                 },
                 include: { issuedEntries: true }
             });
-            uniform?.issuedEntries;
+
             expect(uniform).not.toBeNull();
             expect(uniform).toEqual(expect.objectContaining({
                 id: expect.stringMatching(uuidValidationPattern),
@@ -252,18 +252,18 @@ test.describe(() => {
             await issuePopupComponent.btn_save.click();
         });
         await test.step('verify errorPopup and submit', async () => {
-            await expect(messageComponent.div_popup).toBeVisible(),
-                await Promise.all([
-                    expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible(),
-                    expect.soft(messageComponent.div_header).toHaveAttribute("class", /bg-danger/),
-                    expect.soft(messageComponent.div_header).toHaveText(t.modals.messageModal.uniform.nullValueException.header),
-                    expect.soft(messageComponent.btn_save).toHaveText(t.modals.messageModal.uniform.nullValueException.createOption),
-                    expect.soft(messageComponent.div_message).toContainText(/9999/),
-                ]);
+            await expect(messageComponent.div_popup).toBeVisible();
+            await Promise.all([
+                expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible(),
+                expect.soft(messageComponent.div_header).toHaveAttribute("class", /bg-danger/),
+                expect.soft(messageComponent.div_header).toHaveText(t.modals.messageModal.uniform.nullValueException.header),
+                expect.soft(messageComponent.btn_save).toHaveText(t.modals.messageModal.uniform.nullValueException.createOption),
+                expect.soft(messageComponent.div_message).toContainText(/9999/),
+            ]);
             await messageComponent.btn_save.click();
         });
         await test.step('verify ui', async () => {
-            await expect.soft(messageComponent.div_popup).not.toBeVisible();
+            await expect.soft(messageComponent.div_popup).toBeHidden();
             await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(4 ${t.common.of} 3)`);
             await expect.soft(page.getByText('9999')).toBeVisible();
         });
@@ -279,7 +279,7 @@ test.describe(() => {
                 },
                 include: { issuedEntries: true }
             });
-            uniform?.issuedEntries;
+
             expect(uniform).not.toBeNull();
             expect(uniform).toEqual(expect.objectContaining({
                 id: expect.stringMatching(uuidValidationPattern),
@@ -312,9 +312,9 @@ test.describe(() => {
             await messageComponent.btn_save.click();
         });
         await test.step('verify not issued', async () => {
-            await expect.soft(messageComponent.div_popup).not.toBeVisible();
+            await expect.soft(messageComponent.div_popup).toBeHidden();
             await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][5])).toBeVisible();
-            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).not.toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).toBeHidden();
             await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(3 ${t.common.of} 3)`);
         });
         await test.step('verify db', async () => {
@@ -330,17 +330,17 @@ test.describe(() => {
             await issuePopupComponent.btn_save.click();
         });
         await test.step('verify errorPopup and submit', async () => {
-            expect(messageComponent.div_popup).toBeVisible(),
-                await Promise.all([
-                    expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible(),
-                    expect.soft(messageComponent.div_header).toHaveAttribute("class", /bg-danger/),
-                    expect.soft(messageComponent.div_header).toHaveText(t.modals.messageModal.uniform.inactiveException.header),
-                    expect.soft(messageComponent.div_message).toContainText(/1105/),
-                ]);
+            await expect(messageComponent.div_popup).toBeVisible();
+            await Promise.all([
+                expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible(),
+                expect.soft(messageComponent.div_header).toHaveAttribute("class", /bg-danger/),
+                expect.soft(messageComponent.div_header).toHaveText(t.modals.messageModal.uniform.inactiveException.header),
+                expect.soft(messageComponent.div_message).toContainText(/1105/),
+            ]);
             await messageComponent.btn_save.click();
         });
         await test.step('verify ui', async () => {
-            await expect.soft(messageComponent.div_popup).not.toBeVisible();
+            await expect.soft(messageComponent.div_popup).toBeHidden();
             await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][5])).toBeVisible();
             await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(4 ${t.common.of} 3)`);
         });
@@ -379,19 +379,19 @@ test.describe(() => {
             await issuePopupComponent.btn_save.click();
         });
         await test.step('verify errorPopup and submit', async () => {
-            expect(messageComponent.div_popup).toBeVisible(),
-                await Promise.all([
-                    expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible(),
-                    expect.soft(messageComponent.div_header).toHaveAttribute("class", /bg-danger/),
-                    expect.soft(messageComponent.div_header).toHaveText(t.modals.messageModal.uniform.issuedException.header),
-                    expect.soft(messageComponent.div_message).toContainText('Maik Finkel'),
-                    expect.soft(messageComponent.div_message).toContainText('1100'),
-                    expect.soft(messageComponent.div_popup.getByTestId('btn_openCadet')).toBeVisible(),
-                ]);
+            await expect(messageComponent.div_popup).toBeVisible();
+            await Promise.all([
+                expect.soft(messageComponent.div_icon.locator('svg[data-icon="circle-xmark"]')).toBeVisible(),
+                expect.soft(messageComponent.div_header).toHaveAttribute("class", /bg-danger/),
+                expect.soft(messageComponent.div_header).toHaveText(t.modals.messageModal.uniform.issuedException.header),
+                expect.soft(messageComponent.div_message).toContainText('Maik Finkel'),
+                expect.soft(messageComponent.div_message).toContainText('1100'),
+                expect.soft(messageComponent.div_popup.getByTestId('btn_openCadet')).toBeVisible(),
+            ]);
             await messageComponent.btn_save.click();
         });
         await test.step('verify ui', async () => {
-            await expect.soft(messageComponent.div_popup).not.toBeVisible();
+            await expect.soft(messageComponent.div_popup).toBeHidden();
             await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][0])).toBeVisible();
         });
         await test.step('verify db', async () => {
@@ -415,9 +415,9 @@ test.describe(() => {
         });
 
         await test.step('verify ui', async () => {
-            await expect.soft(messageComponent.div_popup).not.toBeVisible();
+            await expect.soft(messageComponent.div_popup).toBeHidden();
             await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][0])).toBeVisible();
-            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).not.toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).toBeHidden();
         });
 
         await test.step('verify db', async () => {
@@ -447,7 +447,7 @@ test.describe(() => {
             await messageComponent.btn_save.click();
         });
         await test.step('verify ui', async () => {
-            await expect.soft(messageComponent.div_popup).not.toBeVisible();
+            await expect.soft(messageComponent.div_popup).toBeHidden();
             await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][21])).toBeVisible();
         });
         await test.step('verify db', async () => {
@@ -477,9 +477,9 @@ test.describe(() => {
             await messageComponent.btn_save.click();
         });
         await test.step('verify ui', async () => {
-            await expect.soft(messageComponent.div_popup).not.toBeVisible();
+            await expect.soft(messageComponent.div_popup).toBeHidden();
             await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][21])).toBeVisible();
-            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).not.toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).toBeHidden();
         });
         await test.step('verify db', async () => {
             await Promise.all([
@@ -496,7 +496,7 @@ test.describe(() => {
 
         await test.step('verify startData', async () => {
             await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(3 ${t.common.of} 3)`);
-            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][11])).not.toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][11])).toBeHidden();
             await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).toBeVisible();
         });
 
@@ -511,7 +511,7 @@ test.describe(() => {
         await test.step('verify issued', async () => {
             await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(3 ${t.common.of} 3)`);
             await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][11])).toBeVisible();
-            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).not.toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).toBeHidden();
         });
     });
 });

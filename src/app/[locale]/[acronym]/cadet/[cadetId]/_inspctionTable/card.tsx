@@ -68,7 +68,7 @@ export default function CadetInspectionCard() {
         });
         resolve(data);
     }).then(async (data) => mutate(
-        (key: any) => (typeof key === "string") && (key === `cadet.${cadetId}.inspection` || key === `cadet.${cadetId}.deficiencies.unresolved`),
+        (key: string | object) => (typeof key === "string") && (key === `cadet.${cadetId}.inspection` || key === `cadet.${cadetId}.deficiencies.unresolved`),
         saveCadetInspection(data, cadetId, uniformComplete),
         { populateCache: false }
     )).then(() => {
@@ -152,7 +152,7 @@ export default function CadetInspectionCard() {
                                     <FontAwesomeIcon icon={faSpinner} size="lg" className="mx-5 fa-spin-pulse" />
                                 </div>
                             }
-                            {unresolvedDeficiencies?.map((def: any) =>
+                            {unresolvedDeficiencies?.map((def: Deficiency) =>
                                 <OldDeficiencyRow deficiency={def} step={step} key={def.id} />
                             )}
                             {(unresolvedDeficiencies?.length === 0) &&
@@ -167,7 +167,7 @@ export default function CadetInspectionCard() {
                     }
                     {((step === 2) && inspectionState?.active && cadetInspection) &&
                         <CadetInspectionStep2
-                            prevStep={() => { (cadetInspection!.oldCadetDeficiencies.length > 0) ? setStep(1) : aboardInspection() }}
+                            prevStep={(cadetInspection!.oldCadetDeficiencies.length > 0) ? () => setStep(1) : aboardInspection}
                         />
                     }
                 </form>

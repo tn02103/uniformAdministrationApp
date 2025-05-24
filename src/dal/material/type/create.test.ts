@@ -27,7 +27,6 @@ it('should work', async () => {
         }
     });
     expect(dbData).not.toBeNull();
-    dbData?.recdelete
     expect(dbData).toEqual(expect.objectContaining({
         ...defaultProps.data,
         id: expect.stringMatching(uuidValidationPattern),

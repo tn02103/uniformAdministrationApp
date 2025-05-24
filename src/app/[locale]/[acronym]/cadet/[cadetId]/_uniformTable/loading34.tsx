@@ -1,4 +1,4 @@
-import { getI18n, getScopedI18n } from "@/lib/locales/config";
+import { getI18n } from "@/lib/locales/config";
 
 const UniformTableLoadingState = async () => {
     const t = await getI18n();

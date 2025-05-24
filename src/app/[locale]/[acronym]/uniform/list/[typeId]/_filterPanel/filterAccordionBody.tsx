@@ -2,9 +2,10 @@
 
 import { useI18n } from "@/lib/locales/client";
 import { Accordion, Form } from "react-bootstrap";
-import { useFormContext } from "react-hook-form";
+import { Path, useFormContext } from "react-hook-form";
 import { FilterType } from ".";
 import { UniformSize } from "@/types/globalUniformTypes";
+import React from "react";
 
 
 type FilterAccordionBodyProps = {
@@ -15,9 +16,10 @@ export default function FilterAccordionBody({ itemList, name }: FilterAccordionB
     const { register, getValues, setValue, watch } = useFormContext<FilterType>();
     const t = useI18n();
 
-    const change = (e: any) => {
-        const value = getValues(e.target.name);
-        setValue(e.target.name, !value);
+    const change = (e: React.MouseEvent) => {
+        const target = e.target as HTMLInputElement;
+        const value = getValues(target.name as Path<FilterType>);
+        setValue(target.name as Path<FilterType>, !value);
 
         const list = watch(name);
         if (!list) {
@@ -36,7 +38,7 @@ export default function FilterAccordionBody({ itemList, name }: FilterAccordionB
         const list = getValues(name);
         if (!list)
             return;
-        const newObject: any = {};
+        const newObject: Record<string, boolean> = {};
 
         Object.keys(list).forEach((key) => { newObject[key] = !!checked });
         setValue(name, newObject);
