@@ -257,10 +257,10 @@ model MaterialIssued {
 model Inspection {
     id                 String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
     fk_assosiation     String            @db.Char(36)
-    date               DateTime          @default(now()) @db.Date
+    date               String            @db.Char(10)
     name               String
-    timeStart          String?           @map("time_start")
-    timeEnd            String?           @map("time_end")
+    timeStart          String?           @map("time_start") @db.Char(5)
+    timeEnd            String?           @map("time_end") @db.Char(5)
     cadetInspection    CadetInspection[]
     deficiencyCreated  Deficiency[]      @relation("Deficiency_InspectionCreated")
     deficiencyResolved Deficiency[]      @relation("Deficiency_InspectionResolved")

@@ -7,7 +7,7 @@ const staticData = new StaticData(0);
 const initialData = {
     data: {
         name: 'New Name',
-        date: dayjs().add(20, "day").toDate(),
+        date: dayjs().add(20, "day").format("YYYY-MM-DD"),
     },
     id: staticData.ids.inspectionIds[2],
 }

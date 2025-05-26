@@ -12,7 +12,7 @@ export const startInspection = async () => genericSANoDataValidator(
 ).then(async ([{ assosiation }]) => prisma.$transaction(async (client) => {
     const unfinished = await client.inspection.findFirst({
         where: {
-            date: { lt: new Date() },
+            date: { lt: dayjs().format("YYYY-MM-DD") },
             timeStart: { not: null },
             timeEnd: null,
             fk_assosiation: assosiation,
@@ -23,7 +23,7 @@ export const startInspection = async () => genericSANoDataValidator(
     }
     const i = await client.inspection.findFirst({
         where: {
-            date: new Date(),
+            date: dayjs().format("YYYY-MM-DD"),
             fk_assosiation: assosiation,
         },
     });

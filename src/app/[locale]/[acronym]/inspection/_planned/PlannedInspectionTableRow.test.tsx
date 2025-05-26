@@ -324,6 +324,7 @@ describe('<PlannedInspectionTableRow />', () => {
 
             await user.clear(nameField);
             await user.type(nameField, mockInspectionList[1].name);
+            await user.tab();
             expect(nameField).toHaveValue(mockInspectionList[1].name);
             expect(screen.getByText(/custom.inspection.nameDuplication/i)).toBeInTheDocument();
 
@@ -351,6 +352,7 @@ describe('<PlannedInspectionTableRow />', () => {
             await user.clear(dateField);
             await user.type(nameField, 'New Inspection');
             await user.type(dateField, format(mockInspectionList[1].date, "dd.MM.yyyy"));
+            await user.tab();
             expect(dateField).toHaveValue(format(mockInspectionList[1].date, "dd.MM.yyyy"));
             expect(screen.getByText(/custom.inspection.dateDuplication/i)).toBeInTheDocument();
 

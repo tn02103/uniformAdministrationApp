@@ -51,21 +51,29 @@ export async function SAFormHandler<T, FormType extends FieldValues>(
     unhandledErrorCallback?: ((error: unknown) => void) | string
 ) {
     return serverActionPromise.then((result) => {
-        if (!result || typeof result === "object" && result.hasOwnProperty("error")) {
+        // as long as result is not an error object, we can assume it is a success
+        if (!result || typeof result !== "object" || !result.hasOwnProperty("error")) {
             successCallback(result as T);
             return;
         }
-        if (((result as SAError).error).hasOwnProperty("formElement")) {
-            const formElement = (result as SAFormError).error.formElement as Path<FormType>;
-            const message = (result as SAFormError).error.formElement as string;
+
+        const saError = result as SAError;
+        // if the error object has a formElement property, we can assume it is a form error
+        if ((saError.error).hasOwnProperty("formElement")) {
+            const SAFormError = result as SAFormError;
+            const formElement = SAFormError.error.formElement as Path<FormType>;
+            const message = SAFormError.error.message as string;
+
             setError(formElement, { message: message });
-        } else {
-            if (unhandledErrorCallback) {
-                if (typeof unhandledErrorCallback === "string") {
-                    toast.error(unhandledErrorCallback);
-                } else {
-                    unhandledErrorCallback(result);
-                }
+            return;
+        }
+
+        // if the error object does not have a formElement property, we can assume it is an unhandled error
+        if (unhandledErrorCallback) {
+            if (typeof unhandledErrorCallback === "string") {
+                toast.error(unhandledErrorCallback);
+            } else {
+                unhandledErrorCallback(result);
             }
         }
     }).catch((error) => {

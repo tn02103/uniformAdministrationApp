@@ -617,11 +617,11 @@ export default class StaticDataGenerator {
     }
     inspection() {
         return [
-            { id: this.ids.inspectionIds[0], fk_assosiation: this.ids.fk_assosiation, name: "Quartal 1", date: new Date('2023-06-18T00:00:00.000Z'), timeStart: "07:58", timeEnd: "13:06" },
-            { id: this.ids.inspectionIds[1], fk_assosiation: this.ids.fk_assosiation, name: "Quartal 2", date: new Date('2023-08-13T00:00:00.000Z'), timeStart: "07:58", timeEnd: "13:06" },
-            { id: this.ids.inspectionIds[2], fk_assosiation: this.ids.fk_assosiation, name: "expired", date: new Date('2023-08-17T00:00:00.000Z'), timeStart: null, timeEnd: null },
-            { id: this.ids.inspectionIds[3], fk_assosiation: this.ids.fk_assosiation, name: "planned", date: dayjs().add(10, "day").toDate(), timeStart: null, timeEnd: null },
-            { id: this.ids.inspectionIds[4], fk_assosiation: this.ids.fk_assosiation, name: "today", date: dayjs.utc().toDate(), timeStart: null, timeEnd: null },
+            { id: this.ids.inspectionIds[0], fk_assosiation: this.ids.fk_assosiation, name: "Quartal 1", date: '2023-06-18', timeStart: "07:58", timeEnd: "13:06" },
+            { id: this.ids.inspectionIds[1], fk_assosiation: this.ids.fk_assosiation, name: "Quartal 2", date: '2023-08-13', timeStart: "07:58", timeEnd: "13:06" },
+            { id: this.ids.inspectionIds[2], fk_assosiation: this.ids.fk_assosiation, name: "expired", date: '2023-08-17', timeStart: null, timeEnd: null },
+            { id: this.ids.inspectionIds[3], fk_assosiation: this.ids.fk_assosiation, name: "planned", date: dayjs().add(10, "day").format("YYYY-MM-DD"), timeStart: null, timeEnd: null },
+            { id: this.ids.inspectionIds[4], fk_assosiation: this.ids.fk_assosiation, name: "today", date: dayjs().format("YYYY-MM-DD"), timeStart: null, timeEnd: null },
         ] satisfies Inspection[];
     }
     cadetInspection() {
