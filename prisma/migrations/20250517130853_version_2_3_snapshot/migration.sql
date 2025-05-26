@@ -32,4 +32,4 @@ CREATE OR REPLACE VIEW base.v_cadet_generaloverview
   GROUP BY c.id, ci.fk_inspection, ci.uniform_complete, i.date;
 
 ALTER TABLE base.v_cadet_generaloverview
-    OWNER TO vk_server;
+    OWNER TO CURRENT_USER;
