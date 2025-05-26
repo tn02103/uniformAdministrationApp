@@ -22,14 +22,14 @@ type AssosiationValidationDataType = {
 }
 
 function assosiationValidator(assosiationValidations: AssosiationValidationDataType, fk_assosiation: string) {
-    const validationPromisses: Promise<object>[] = [];
+    const validationPromises: Promise<object>[] = [];
     const validate = (ids: string | (string | undefined)[], validator: (id: string, assosiationId: string) => Promise<object>) => {
         if (Array.isArray(ids)) {
-            validationPromisses.push(
+            validationPromises.push(
                 ...ids.filter(id => id != undefined).map((id) => validator(id as string, fk_assosiation))
             );
         } else {
-            validationPromisses.push(
+            validationPromises.push(
                 validator(ids, fk_assosiation)
             );
         }
@@ -76,7 +76,7 @@ function assosiationValidator(assosiationValidations: AssosiationValidationDataT
     if (assosiationValidations.inspectionId) {
         validate(assosiationValidations.inspectionId, validateInspectionAssosiation);
     }
-    return Promise.all(validationPromisses);
+    return Promise.all(validationPromises);
 }
 
 
