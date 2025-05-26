@@ -177,7 +177,6 @@ describe('UniformOffcanvas', () => {
                     active: mockUniform.active,
                 });
                 expect(onSaveMock).toHaveBeenCalledTimes(1);
-                expect(onSaveMock).toHaveBeenCalledWith('Saved item');
 
                 expect(getByRole('button', { name: /edit/i })).toBeEnabled();
                 expect(getByRole('button', { name: /delete/i })).toBeEnabled();

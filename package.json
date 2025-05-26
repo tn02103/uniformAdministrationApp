@@ -13,7 +13,7 @@
         "test:jest": "npm run test:jest:components && npm run test:jest:dal",
         "test:jest:components": "jest --config jest.frontend.config.ts",
         "test:jest:dal": "jest --config jest.backend.config.ts",
-        "lint": "next lint"
+        "lint": "eslint src tests"
     },
     "prisma": {
         "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"

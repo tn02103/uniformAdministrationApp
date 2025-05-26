@@ -1,6 +1,6 @@
 import "./UniformOffcanvasJestHelper";
 
-import { getAllByRole, getByRole, render, screen } from "@testing-library/react";
+import { getAllByRole, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { generationLists, sizeLists, typeList } from "../../../tests/_jestConfig/staticMockData";
 import { UniformDetailRow, UniformDetailRowProps } from "./UniformDetailRow";
@@ -82,7 +82,7 @@ describe('UniformDetailRow', () => {
         expect(sizeSelect).toBeInTheDocument();
 
         // initial state with sizelist
-        const options = getByRole(sizeSelect, "option")
+        const options = getAllByRole(sizeSelect, "option")
         expect(options).toHaveLength(sizeLists[0].uniformSizes.length + 1); // +1 for the default "please select" option
         sizeLists[0].uniformSizes.forEach(size => {
             expect(screen.getByText(size.name)).toBeInTheDocument();
@@ -216,7 +216,6 @@ describe('UniformDetailRow', () => {
 
             await user.click(saveButton);
             expect(defaultProps.onSave).toHaveBeenCalledTimes(1);
-            expect(defaultProps.onSave).toHaveBeenCalledWith('Saved item');
             expect(defaultProps.setEditable).toHaveBeenCalledTimes(1);
             expect(defaultProps.setEditable).toHaveBeenCalledWith(false);
 

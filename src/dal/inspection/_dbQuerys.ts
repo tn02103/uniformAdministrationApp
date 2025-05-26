@@ -1,3 +1,4 @@
+import dayjs from "@/lib/dayjs";
 import { InspectionReview, InspectionReviewCadet, InspectionReviewDeficiency } from "@/types/deficiencyTypes";
 import { Prisma } from "@prisma/client";
 
@@ -62,10 +63,10 @@ export class DBQuery {
                        FROM inspection.deficiency cd3
                        JOIN inspection.deficiency_type dt
                          ON cd3.fk_deficiency_type = dt.id
-                      WHERE cd3.date_created <= i.date
+                      WHERE to_char(cd3.date_created, 'YYYY-MM-DD') <= i.date
                         AND dt.fk_assosiation = i.fk_assosiation
           	  	        AND	(cd3.date_resolved IS NULL 
-                         OR cd3.date_resolved > i.date)) as "activeDeficiencies"
+                         OR to_char(cd3.date_resolved, 'YYYY-MM-DD') > i.date)) as "activeDeficiencies"
                FROM inspection.inspection i
            GROUP BY i.id
              HAVING i.id = ${id}`
@@ -134,12 +135,12 @@ export class DBQuery {
              ON lci."fk_cadet" = c."id"
 	  LEFT JOIN (SELECT "fk_cadet",
 				    	SUM(
-                CASE WHEN ("dateResolved" IS NULL OR "dateResolved" > ${date})
+                CASE WHEN ("dateResolved" IS NULL OR "dateResolved" > ${dayjs(date).toDate()})
 							  THEN 1 
 							  ELSE 0 END
               ) as "openDeficiencies",
               SUM(
-                CASE WHEN("dateResolved" IS NOT NULL AND "dateResolved" <= ${date})
+                CASE WHEN("dateResolved" IS NOT NULL AND "dateResolved" <= ${dayjs(date).toDate()})
 							  THEN 1 
 							  ELSE 0 END
               ) as "overalClosedDeficiencies",
@@ -149,7 +150,7 @@ export class DBQuery {
 							  ELSE 0 END
               ) as "newlyClosedDeficiencies"
 			       FROM inspection.v_deficiency_by_cadet
-				  WHERE "dateCreated" <= ${date}
+				  WHERE "dateCreated" <= ${dayjs(date).toDate()}
 			   GROUP BY "fk_cadet") as "counts"
 	         ON counts.fk_cadet = c.id
           WHERE c.fk_assosiation= ${fk_assosiation}

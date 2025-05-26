@@ -49,9 +49,10 @@ const InnerDatePicker = ({ onChange, onBlur, value, error, ariaLabel, minDate }:
 
         if (value) {
             setShowCalendar(false);
-            const date = new Date(value.getTime() - value.getTimezoneOffset() * 60000);
-            setInternalInputValue(dayjs(date).format('DD.MM.YYYY'));
-            onChange(dayjs(date).format("YYYY-MM-DD"));
+            const date = dayjs(value);
+            
+            setInternalInputValue(date.format('DD.MM.YYYY'));
+            onChange(date.format("YYYY-MM-DD"));
         } else {
             onChange(null);
             setInternalInputValue("");

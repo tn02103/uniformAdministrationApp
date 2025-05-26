@@ -77,6 +77,19 @@ describe('stopInspection', () => {
         expect(result.exceptionType).toBe(ExceptionType.SaveDataException);
         expect(result.message).toMatch(/Endtime is before starttime of inspection/);
     });
+    it('invalid endTime', async () => {
+        await prisma.inspection.update({
+            where: { id: staticData.ids.inspectionIds[4] },
+            data: { timeStart: '09:00' }
+        });
+
+        const { success, result } = await runServerActionTest(
+            stopInspection({ ...defaultParams, time: '25:77' })
+        );
+        expect(success).toBeFalsy();
+        expect(result.exceptionType).toBe(ExceptionType.SaveDataException);
+        expect(result.message).toMatch(/Endtime is not a valid time/);
+    });
     describe('different data', () => {
         const wrongAssosiation = new StaticData(1);
         afterEach(() => wrongAssosiation.cleanup.inspection());

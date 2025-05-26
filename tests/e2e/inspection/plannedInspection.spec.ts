@@ -2,7 +2,6 @@ import { prisma } from "@/lib/db";
 import { expect } from "playwright/test";
 import { PlannedInspectionTestComponent } from "../../_playwrightConfig/pages/inspection/plannedInspection.component";
 import { adminTest } from "../../_playwrightConfig/setup";
-
 import dayjs from "@/lib/dayjs";
 
 type Fixture = {
@@ -25,7 +24,7 @@ test.describe('Planned Inspection Overview', () => {
     });
 
     test('create Inspection', async ({ page, staticData: { fk_assosiation } }) => {
-        const testDate = dayjs.utc().add(30, "day").locale('de');
+        const testDate = dayjs().add(30, "day").locale('de');
         await test.step('create Inspection', async () => {
             const row = page.getByRole('row', { name: /newInspection/i });
             const dateField = row.getByRole('textbox', { name: /datum/i });
@@ -64,7 +63,7 @@ test.describe('Planned Inspection Overview', () => {
                 fk_assosiation,
                 id: expect.any(String),
                 name: "Test Inspection",
-                date: testDate.startOf('day').toDate(),
+                date: testDate.format('YYYY-MM-DD'),
                 timeStart: null,
                 timeEnd: null,
             });
@@ -72,7 +71,7 @@ test.describe('Planned Inspection Overview', () => {
     });
 
     test('edit Inspection', async ({ page, staticData: { ids, fk_assosiation } }) => {
-        const testDate = dayjs.utc().add(30, "day").locale('de');
+        const testDate = dayjs().add(30, "day").locale('de');
         await test.step('edit Inspection', async () => {
             const row = page.getByRole('row').nth(1);
             const dateField = row.getByRole('textbox', { name: /datum/i });
@@ -113,7 +112,7 @@ test.describe('Planned Inspection Overview', () => {
                 fk_assosiation,
                 id: ids.inspectionIds[2],
                 name: "Test Inspection 2",
-                date: testDate.startOf('day').toDate(),
+                date: testDate.format('YYYY-MM-DD'),
                 timeStart: null,
                 timeEnd: null,
             });
@@ -141,7 +140,7 @@ test.describe('Planned Inspection Overview', () => {
         });
     });
 
-    test('start Inpsection', async ({ page, staticData: { ids } }) => {
+    test('start Inpsection', async ({ page, staticData: { ids, data } }) => {
         const row = page.getByRole('row').filter({ hasText: "today" }).nth(0);
         await test.step('start Inspection', async () => {
             await row.getByRole('button', { name: /start/i }).click();
@@ -160,14 +159,14 @@ test.describe('Planned Inspection Overview', () => {
                 fk_assosiation: expect.any(String),
                 id: ids.inspectionIds[4],
                 name: "today",
-                date: expect.any(Date),
+                date: data.inspections[4].date,
                 timeStart: expect.stringMatching(/^\d\d:\d\d$/),
                 timeEnd: null,
             });
         });
     });
 
-    test('finish active Inspection', async ({ page, staticData: { ids } }) => {
+    test('finish active Inspection', async ({ page, staticData: { ids, data } }) => {
         await test.step('prepare data', async () => {
             await prisma.inspection.update({
                 where: {
@@ -217,14 +216,14 @@ test.describe('Planned Inspection Overview', () => {
                 fk_assosiation: expect.any(String),
                 id: ids.inspectionIds[4],
                 name: "today",
-                date: expect.any(Date),
+                date: data.inspections[4].date,
                 timeStart: '10:00',
                 timeEnd: '12:00',
             });
         });
     });
 
-    test('finish expired Inspection', async ({ page, staticData: { ids } }) => {
+    test('finish expired Inspection', async ({ page, staticData: { ids, data } }) => {
         await test.step('prepare data', async () => {
             await prisma.inspection.update({
                 where: {
@@ -271,14 +270,14 @@ test.describe('Planned Inspection Overview', () => {
                 fk_assosiation: expect.any(String),
                 id: ids.inspectionIds[2],
                 name: "expired",
-                date: expect.any(Date),
+                date: data.inspections[2].date,
                 timeStart: '10:00',
                 timeEnd: '12:00',
             });
         });
     });
 
-    test('restart todays Inspection', async ({ page, staticData: { ids } }) => {
+    test('restart todays Inspection', async ({ page, staticData: { ids, data } }) => {
         await test.step('prepare data', async () => {
             await prisma.inspection.update({
                 where: {
@@ -311,7 +310,7 @@ test.describe('Planned Inspection Overview', () => {
                 fk_assosiation: expect.any(String),
                 id: ids.inspectionIds[4],
                 name: "today",
-                date: expect.any(Date),
+                date: data.inspections[4].date,
                 timeStart: "10:00",
                 timeEnd: null,
             });

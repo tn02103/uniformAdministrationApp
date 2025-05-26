@@ -34,7 +34,7 @@ jest.mock('@/lib/ironSession', () => ({
 }));
 
 jest.mock('next/cache', () => ({
-    unstable_cache: jest.fn(),
+    unstable_cache: jest.fn((fn) => fn),
     revalidateTag: jest.fn(),
     revalidatePath: jest.fn(),
 }));
