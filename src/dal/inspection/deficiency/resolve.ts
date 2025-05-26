@@ -1,5 +1,6 @@
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
+import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
 
@@ -12,7 +13,7 @@ export const resolve = async (props: string) => genericSAValidator(
     const activeInspection = await prisma.inspection.findFirst({
         where: {
             fk_assosiation: assosiation,
-            date: new Date(),
+            date: dayjs().format("YYYY-MM-DD"),
             timeStart: { not: null },
             timeEnd: null,
         }

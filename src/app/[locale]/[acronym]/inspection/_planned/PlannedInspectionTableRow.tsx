@@ -172,6 +172,7 @@ export function PlannedInspectionTableRow({
                                         {...field}
                                         error={formState.errors.date?.message}
                                         ariaLabel={t('label.date')}
+                                        minDate={new Date()}
                                     />
                                 }
                             />

@@ -1,10 +1,9 @@
 import dayjs from "@/lib/dayjs";
 import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Calendar from 'react-calendar';
 import ErrorMessage from "../errorMessage";
-import React from "react";
 
 export const INVALID_DATE = Symbol("INVALID_DATE");
 
@@ -12,11 +11,12 @@ export type DatePickerProps = {
     value: string | typeof INVALID_DATE | null;
     error?: string;
     ariaLabel?: string;
+    minDate?: Date;
     onChange: (value: string | typeof INVALID_DATE | null) => void;
     onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
 };
 
-const InnerDatePicker = ({ onChange, onBlur, value, error, ariaLabel }: DatePickerProps, ref: React.ForwardedRef<HTMLInputElement>) =>{
+const InnerDatePicker = ({ onChange, onBlur, value, error, ariaLabel, minDate }: DatePickerProps, ref: React.ForwardedRef<HTMLInputElement>) => {
     const [showCalendar, setShowCalendar] = useState(false);
     const [internalInputValue, setInternalInputValue] = useState<string>("");
     const refCalendar = useRef(null);
@@ -93,19 +93,19 @@ const InnerDatePicker = ({ onChange, onBlur, value, error, ariaLabel }: DatePick
                 <button type="button" className="input-group-text" aria-label="open calendar" onClick={() => setShowCalendar(prev => !prev)}>
                     <FontAwesomeIcon icon={faCalendar} />
                 </button>
-            </div>  
+            </div>
             {error &&
                 <ErrorMessage error={error} testId={"err_date"} />
             }
             <div style={{ display: "contents" }} >
-                <div className="position-absolute" ref={refCalendar} style={{ zIndex: 9999 }} role="dialog" aria-label="chose date">
-                    {showCalendar &&
+                {showCalendar &&
+                    <div className="position-absolute" ref={refCalendar} style={{ zIndex: 9999 }} role="dialog" aria-label="chose date">
                         <Calendar
-                            minDate={dayjs().toDate()}
+                            minDate={minDate}
                             onChange={handleOnChangeCalendar}
                             value={(value === INVALID_DATE) ? null : value} />
-                    }
-                </div>
+                    </div>
+                }
             </div>
         </div>
     )
