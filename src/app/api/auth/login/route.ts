@@ -5,8 +5,8 @@ import { IronSessionUser, getIronSession } from "@/lib/ironSession";
 import { userNameValidationPattern, uuidValidationPattern } from "@/lib/validations";
 import bcrypt from 'bcrypt';
 import { NextResponse } from "next/server";
-const crypto = require("crypto");
-var jwt = require('jsonwebtoken');
+import crypto from "crypto";
+import jwt from 'jsonwebtoken';
 
 export async function POST(request: Request) {
     const session = await getIronSession();
@@ -129,5 +129,5 @@ function createJWToken(userId: string, token: string) {
     return jwt.sign({
         userId,
         token
-    }, process.env.REFRESH_TOKEN_KEY, { expiresIn: 5 * 24 * 3600 });
+    }, process.env.REFRESH_TOKEN_KEY as string, { expiresIn: 5 * 24 * 3600 });
 }

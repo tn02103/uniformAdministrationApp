@@ -10,4 +10,10 @@ export const AdminDeficiencytypeFormSchema = z.object({
     relation: z.enum(["uniform", "material"]).nullable(),
 })
 
+export const updateUniformDeficiencySchema = z.object({
+    comment: z.string(),
+    typeId: z.string().uuid(),
+});
+
 export type AdminDeficiencytypeFormSchema = z.infer<typeof AdminDeficiencytypeFormSchema>;
+export type UpdateUniformDeficiencySchema = z.infer<typeof updateUniformDeficiencySchema>;

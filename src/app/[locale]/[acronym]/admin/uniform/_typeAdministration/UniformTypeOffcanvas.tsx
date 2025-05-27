@@ -88,8 +88,7 @@ export const UniformTypeOffcanvas = ({ uniformType, setSelectedTypeId, editable,
                 deleteUniformType(uniformType.id),
             ).then(() => {
                 setSelectedTypeId(null);
-            }).catch((e) => {
-                console.error(e);
+            }).catch(() => {
                 toast.error(t('common.error.actions.delete'));
             });
         }

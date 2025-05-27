@@ -31,15 +31,22 @@ export const stopInspection = async (props: stopInspectionPropShema) => genericS
         throw new SaveDataException('Could not finish inspection: Inspection already finished');
     }
 
-    const startTime = dayjs.utc(inspection.timeStart).format('HH:mm');
-    if (startTime > data.time) {
+    const startTime = dayjs(inspection.timeStart, "HH:mm");
+    const endTime = dayjs(data.time, "HH:mm");
+    const endTimeParts = data.time.split(':');
+    if (endTimeParts.length !== 2 
+        || isNaN(Number(endTimeParts[0])) || Number(endTimeParts[0]) < 0 || Number(endTimeParts[0]) > 23
+        || isNaN(Number(endTimeParts[1])) || Number(endTimeParts[1]) < 0 || Number(endTimeParts[1]) > 59) {
+        throw new SaveDataException('Could not finish inspection: Endtime is not a valid time');
+    }
+    if (!startTime.isBefore(endTime)) {
         throw new SaveDataException('Could not finish inspection: Endtime is before starttime of inspection');
     }
 
     // update Inspection
     await prisma.inspection.update({
         where: { id: data.id },
-        data: { timeEnd: dayjs.utc(data.time, 'HH:mm').toDate() }
+        data: { timeEnd: data.time }
     });
     // send Mails
     const config = await prisma.assosiationConfiguration.findUnique({

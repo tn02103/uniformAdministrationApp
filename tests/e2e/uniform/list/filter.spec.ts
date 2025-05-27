@@ -12,7 +12,7 @@ const test = adminTest.extend<Fixture>({
 test.describe(() => {
     test.beforeEach(async ({ page, uniformListPage, staticData: { ids } }) => {
         await page.goto(`/de/app/uniform/list/${ids.uniformTypeIds[0]}`);
-        await expect(uniformListPage.div_nodata).not.toBeVisible();
+        await expect(uniformListPage.div_nodata).toBeHidden();
     })
 
     test('E2E0301: validate typeSelect', async ({ page, uniformListPage, staticData: { ids } }) => {
@@ -26,14 +26,14 @@ test.describe(() => {
             await page.goto('/de/app/uniform/list');
             await expect(uniformListPage.sel_type).toHaveValue('null');
             await expect(uniformListPage.div_pageHeader).toHaveText('Uniformteile: ');
-            await expect(uniformListPage.div_othersAccordion).not.toBeVisible();
+            await expect(uniformListPage.div_othersAccordion).toBeHidden();
             await expect(uniformListPage.div_nodata).toBeVisible();
         });
 
         await test.step('change selected without id', async () => {
             await uniformListPage.sel_type.selectOption(ids.uniformTypeIds[1]);
             await expect(page).toHaveURL(/uniform\/list\/[\w\d-]{12,36}/);
-            await expect(page.url()).toContain(ids.uniformTypeIds[1])
+            expect(page.url()).toContain(ids.uniformTypeIds[1])
             await expect(uniformListPage.div_pageHeader).toContainText('Typ2');
             await expect(uniformListPage.div_othersAccordion).toBeVisible();
         });
@@ -71,7 +71,7 @@ test.describe(() => {
         await test.step('select type2', async () => {
             await uniformListPage.sel_type.selectOption(ids.uniformTypeIds[1])
             await Promise.all([
-                expect(uniformListPage.div_sizeAccordion).not.toBeVisible(),
+                expect(uniformListPage.div_sizeAccordion).toBeHidden(),
                 expect.soft(uniformListPage.chk_genFilter_nullValue).toBeChecked(),
                 expect.soft(uniformListPage.chk_genFilter(ids.uniformGenerationIds[4])).toBeChecked(),
                 expect.soft(uniformListPage.chk_withOwnerFilter).toBeChecked(),
@@ -100,46 +100,46 @@ test.describe(() => {
         await test.step('success- 1110', async () => {
             await uniformListPage.txt_search_input.fill(' 1110');
             await expect.soft(uniformListPage.div_search_helptext).toHaveText('1110');
-            await expect.soft(uniformListPage.err_search_invalidInput).not.toBeVisible();
+            await expect.soft(uniformListPage.err_search_invalidInput).toBeHidden();
         });
-        await test.step('success-11 10 ', async () => {
+        await test.step('success-11 10', async () => {
             await uniformListPage.txt_search_input.fill('11 10 ');
             await expect.soft(uniformListPage.div_search_helptext).toHaveText('1110');
-            await expect.soft(uniformListPage.err_search_invalidInput).not.toBeVisible();
+            await expect.soft(uniformListPage.err_search_invalidInput).toBeHidden();
         });
         await test.step('success-AA1110', async () => {
             await uniformListPage.txt_search_input.fill('AA1110');
             await expect.soft(uniformListPage.div_search_helptext).toContainText('Typ1 - 1110');
-            await expect.soft(uniformListPage.err_search_invalidInput).not.toBeVisible();
+            await expect.soft(uniformListPage.err_search_invalidInput).toBeHidden();
         });
         await test.step('success-AA-1110', async () => {
             await uniformListPage.txt_search_input.fill('AA-1110');
             await expect.soft(uniformListPage.div_search_helptext).toContainText('Typ1 - 1110');
-            await expect.soft(uniformListPage.err_search_invalidInput).not.toBeVisible();
+            await expect.soft(uniformListPage.err_search_invalidInput).toBeHidden();
         });
         await test.step('success- AB 1110', async () => {
             await uniformListPage.txt_search_input.fill(' AB 1110');
             await expect.soft(uniformListPage.div_search_helptext).toContainText('Typ2 - 1110');
-            await expect.soft(uniformListPage.err_search_invalidInput).not.toBeVisible();
+            await expect.soft(uniformListPage.err_search_invalidInput).toBeHidden();
         });
         await test.step('failure-ABC-234', async () => {
             await uniformListPage.txt_search_input.fill('ABC-234');
-            await expect.soft(uniformListPage.div_search_helptext).not.toBeVisible();
+            await expect.soft(uniformListPage.div_search_helptext).toBeHidden();
             await expect.soft(uniformListPage.err_search_invalidInput).toBeVisible();
         });
         await test.step('failure-2sw23', async () => {
             await uniformListPage.txt_search_input.fill('2sw23');
-            await expect.soft(uniformListPage.div_search_helptext).not.toBeVisible();
+            await expect.soft(uniformListPage.div_search_helptext).toBeHidden();
             await expect.soft(uniformListPage.err_search_invalidInput).toBeVisible();
         });
         await test.step('failure-A!235', async () => {
             await uniformListPage.txt_search_input.fill('A!235');
-            await expect.soft(uniformListPage.div_search_helptext).not.toBeVisible();
+            await expect.soft(uniformListPage.div_search_helptext).toBeHidden();
             await expect.soft(uniformListPage.err_search_invalidInput).toBeVisible();
         });
         await test.step('failure-23.23', async () => {
             await uniformListPage.txt_search_input.fill('23.23');
-            await expect.soft(uniformListPage.div_search_helptext).not.toBeVisible();
+            await expect.soft(uniformListPage.div_search_helptext).toBeHidden();
             await expect.soft(uniformListPage.err_search_invalidInput).toBeVisible();
         });
     });
@@ -147,23 +147,23 @@ test.describe(() => {
         await uniformListPage.txt_search_input.fill('AB 10');
         await uniformListPage.btn_search_submit.click();
 
-        await expect(uniformListPage.div_pageHeader).toContainText('Typ2'),
-            await expect(page.url()).toContain(ids.uniformTypeIds[1]),
-            await expect(uniformListPage.div_sizeAccordion).not.toBeVisible(),
-            await Promise.all([
-                expect.soft(uniformListPage.chk_genFilter_nullValue).toBeChecked(),
-                expect.soft(uniformListPage.chk_genFilter(ids.uniformGenerationIds[4])).toBeChecked(),
-                expect.soft(uniformListPage.chk_withOwnerFilter).toBeChecked(),
-                expect.soft(uniformListPage.chk_withoutOwnerFilter).toBeChecked(),
-                expect.soft(uniformListPage.chk_passiveFilter).not.toBeChecked(),
-                expect.soft(uniformListPage.chk_activeFilter).toBeChecked(),
-            ]);
+        await expect(uniformListPage.div_pageHeader).toContainText('Typ2');
+        expect(page.url()).toContain(ids.uniformTypeIds[1]);
+        await expect(uniformListPage.div_sizeAccordion).toBeHidden();
+        await Promise.all([
+            expect.soft(uniformListPage.chk_genFilter_nullValue).toBeChecked(),
+            expect.soft(uniformListPage.chk_genFilter(ids.uniformGenerationIds[4])).toBeChecked(),
+            expect.soft(uniformListPage.chk_withOwnerFilter).toBeChecked(),
+            expect.soft(uniformListPage.chk_withoutOwnerFilter).toBeChecked(),
+            expect.soft(uniformListPage.chk_passiveFilter).not.toBeChecked(),
+            expect.soft(uniformListPage.chk_activeFilter).toBeChecked(),
+        ]);
     });
     test('E2E0305: validate search filter', async ({ page, uniformListPage, staticData: { ids } }) => {
         await test.step('via button', async () => {
             await uniformListPage.txt_search_input.fill('110');
             await uniformListPage.btn_search_submit.click();
-            await expect(uniformListPage.div_uitem(ids.uniformIds[0][12])).not.toBeVisible();
+            await expect(uniformListPage.div_uitem(ids.uniformIds[0][12])).toBeHidden();
             await expect(uniformListPage.div_uitem_list).toHaveCount(6);
             await expect(page.getByTestId('div_hilight').nth(0)).toHaveText('110');
         });
@@ -183,14 +183,14 @@ test.describe(() => {
             await expect(uniformListPage.err_filter).toBeVisible();
 
             await uniformListPage.chk_passiveFilter.setChecked(true);
-            await expect(uniformListPage.err_filter).not.toBeVisible();
+            await expect(uniformListPage.err_filter).toBeHidden();
 
             await uniformListPage.chk_withOwnerFilter.setChecked(false);
             await uniformListPage.chk_withoutOwnerFilter.setChecked(false);
             await expect(uniformListPage.err_filter).toBeVisible();
 
             await uniformListPage.chk_withOwnerFilter.setChecked(true);
-            await expect(uniformListPage.err_filter).not.toBeVisible();
+            await expect(uniformListPage.err_filter).toBeHidden();
         });
 
         await test.step('gen & size for typ1', async () => {
@@ -203,21 +203,21 @@ test.describe(() => {
         await test.step('gen & size for typ2', async () => {
             await uniformListPage.sel_type.selectOption(ids.uniformTypeIds[1]);
             await expect(uniformListPage.div_genAccordion).toBeVisible();
-            await expect(uniformListPage.div_sizeAccordion).not.toBeVisible();
+            await expect(uniformListPage.div_sizeAccordion).toBeHidden();
             await expect(page.locator('input[name^="generations."]')).toHaveCount(3);
         });
 
         await test.step('gen & size for typ3', async () => {
             await uniformListPage.sel_type.selectOption(ids.uniformTypeIds[2]);
-            await expect(uniformListPage.div_genAccordion).not.toBeVisible();
+            await expect(uniformListPage.div_genAccordion).toBeHidden();
             await expect(uniformListPage.div_sizeAccordion).toBeVisible();
             await expect(page.locator('input[name^="sizes."]')).toHaveCount(12);
         });
 
         await test.step('gen & size for typ4', async () => {
             await uniformListPage.sel_type.selectOption(ids.uniformTypeIds[3]);
-            await expect(uniformListPage.div_genAccordion).not.toBeVisible();
-            await expect(uniformListPage.div_sizeAccordion).not.toBeVisible();
+            await expect(uniformListPage.div_genAccordion).toBeHidden();
+            await expect(uniformListPage.div_sizeAccordion).toBeHidden();
         });
     });
     test('E2E0307: validate selectAll', async ({ uniformListPage, staticData: { ids } }) => {

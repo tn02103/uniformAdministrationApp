@@ -10,7 +10,7 @@ const test = adminTest.extend<Fixture>({
 });
 test.beforeEach(async ({ page }) => { await page.goto('/de/app/cadet'); })
 
-test('E2E0101: validate Data', async ({ cadetListPage, staticData: { ids, data } }) => {
+test('E2E0101: validate Data', async ({ cadetListPage, staticData: { ids } }) => {
     await expect(cadetListPage.div_cadet_list).toHaveCount(9);
 
     await Promise.all([
@@ -31,7 +31,7 @@ test('E2E0101: validate Data', async ({ cadetListPage, staticData: { ids, data }
         expect.soft(cadetListPage.div_cadet_activeDeficiencyCount(ids.cadetIds[0]))
             .toHaveText('0'), //Fried Antje
         expect.soft(cadetListPage.div_cadet_activeDeficiencyCount(ids.cadetIds[2]))
-            .toHaveText(String(data.deficiencies.filter(d => /Sven Keller Unresolved/.test(d.comment)).length)), //Sven Keller
+            .toHaveText('6'), //Sven Keller
     ]);
 });
 test('E2E0102: validate sortOrder', async ({ page, cadetListPage, staticData: { ids } }) => {
@@ -151,15 +151,15 @@ userTest('E2E0106: Authrole.User', async ({ page, staticData: { ids } }) => {
     await Promise.all([
         expect.soft(cadetListPage.btn_hdr_firstname).toBeVisible(),
         expect.soft(cadetListPage.btn_hdr_lastname).toBeVisible(),
-        expect.soft(cadetListPage.div_hdr_lastInspection).not.toBeVisible(),
-        expect.soft(cadetListPage.div_hdr_uniformComplete).not.toBeVisible(),
-        expect.soft(cadetListPage.div_hdr_activeDeficiencies).not.toBeVisible(),
+        expect.soft(cadetListPage.div_hdr_lastInspection).toBeHidden(),
+        expect.soft(cadetListPage.div_hdr_uniformComplete).toBeHidden(),
+        expect.soft(cadetListPage.div_hdr_activeDeficiencies).toBeHidden(),
 
         expect.soft(cadetListPage.lnk_cadet_firstname(ids.cadetIds[0])).toBeVisible(),
         expect.soft(cadetListPage.lnk_cadet_lastname(ids.cadetIds[0])).toBeVisible(),
-        expect.soft(cadetListPage.div_cadet_lastInspection(ids.cadetIds[0])).not.toBeVisible(),
-        expect.soft(cadetListPage.div_cadet_uniformComplete(ids.cadetIds[0])).not.toBeVisible(),
-        expect.soft(cadetListPage.div_cadet_activeDeficiencyCount(ids.cadetIds[0])).not.toBeVisible(),
+        expect.soft(cadetListPage.div_cadet_lastInspection(ids.cadetIds[0])).toBeHidden(),
+        expect.soft(cadetListPage.div_cadet_uniformComplete(ids.cadetIds[0])).toBeHidden(),
+        expect.soft(cadetListPage.div_cadet_activeDeficiencyCount(ids.cadetIds[0])).toBeHidden(),
 
         expect.soft(cadetListPage.btn_clearSerach).toBeVisible(),
         expect.soft(cadetListPage.txt_searchField).toBeVisible(),

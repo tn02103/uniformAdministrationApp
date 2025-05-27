@@ -4,7 +4,7 @@ import { ExceptionType } from "./CustomException";
 export type SAErrorResponse = {
     error: {
         exceptionType: ExceptionType;
-        data: any;
+        data: unknown;
     }
 }
 

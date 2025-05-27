@@ -16,23 +16,21 @@ export const markDeleted = (props: string): Promise<void> => genericSAValidator(
     z.string().uuid(),
     { uniformId: props }
 ).then(async ([{ username }, id]) => {
-     const issued = await prisma.uniformIssued.aggregate({
-        where: {
-            fk_uniform: id,
-            dateReturned: null
-        },
-        _count: true
-    }).then((data) => data._count > 0);
-
-    if (issued) {
-        throw new Error("Item can not be deleted while issued");
-    }
     await prisma.$transaction([
         prisma.uniform.update({
             where: { id },
             data: {
                 recdelete: new Date(),
                 recdeleteUser: username,
+            }
+        }),
+        prisma.uniformIssued.updateMany({
+            where: {
+                fk_uniform: id,
+                dateReturned: null,
+            },
+            data: {
+                dateReturned: new Date(),
             }
         }),
         prisma.deficiency.updateMany({

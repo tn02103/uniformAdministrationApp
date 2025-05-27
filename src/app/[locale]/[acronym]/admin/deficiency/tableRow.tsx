@@ -44,11 +44,12 @@ export default function DefTypeAdminTableRow({
     const [editable, setEditable] = useState(!type);
     const formName = `form_deftype_${type ? type.id : "new"}`;
 
+    const dependent = watch('dependent');
     useEffect(() => {
-        if (watch('dependent') !== "cadet") {
+        if (dependent !== "cadet") {
             setValue('relation', null);
         }
-    }, [watch('dependent')]);
+    }, [dependent, setValue]);
 
     async function handleSave(data: FormSchema) {
         if (data.relation === "null") data.relation = null;

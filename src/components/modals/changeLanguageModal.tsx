@@ -1,11 +1,6 @@
-import header from "@/app/[locale]/[acronym]/cadet/[cadetId]/_inspctionTable/header";
-import { useChangeLocale, useCurrentLocale, useI18n, useScopedI18n } from "@/lib/locales/client";
-import { register } from "module";
-import { useRouter } from "next/navigation";
-import { errors } from "playwright";
+import { useChangeLocale, useCurrentLocale, useScopedI18n } from "@/lib/locales/client";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
-
 
 
 export default function ChangeLanguageModal({ onClose }: { onClose: () => void }) {

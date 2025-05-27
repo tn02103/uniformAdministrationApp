@@ -15,6 +15,8 @@ export async function sendInspectionReviewMail(emails: string[], inspreview: Ins
         html: await render(InspectionReviewMailBody(inspreview)),
         attachments: [{
             filename: `${inspreview.name}-${dayjs(inspreview.date).format('DD.MM.YYYY')}.xlsx`,
+            contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             content: buffer as any,
         }]
     });

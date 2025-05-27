@@ -5,14 +5,14 @@ export async function startInspection(i: number) {
     const staticData = new StaticData(i);
     await prisma.inspection.update({
         where: { id: staticData.ids.inspectionIds[4] },
-        data: { timeStart: new Date() }
+        data: { timeStart: "10:00" }
     });
 }
 export async function finishInspection(i: number) {
     const staticData = new StaticData(i);
     await prisma.inspection.update({
         where: { id: staticData.ids.inspectionIds[4] },
-        data: { timeEnd: new Date() }
+        data: { timeEnd: "12:00" }
     });
 }
 export const svenKellerFirstInspectionData = (i: number) => {

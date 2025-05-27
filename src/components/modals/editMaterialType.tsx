@@ -1,5 +1,5 @@
 import { useI18n } from "@/lib/locales/client";
-import { asyncSAFormHandler } from "@/lib/SAFormHandler";
+import { asyncSAFormHandler, SAFormHandler } from "@/lib/SAFormHandler";
 import { materialTypeFormSchema, MaterialTypeFormType } from "@/zod/material";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Col, Form, FormControl, FormGroup, FormLabel, Modal, ModalBody, ModalFooter, ModalHeader, Row } from "react-bootstrap";
@@ -30,15 +30,12 @@ const EditMaterialTypeModal = ({ type, groupName, groupId, ...props }: EditMater
         if (!type)
             return await handleCreate(data);
 
-        await asyncSAFormHandler<typeof updateMaterial>(updateMaterial({ id: type.id, data }), setError)
-            .then((result: any) => {
-                if (result.success) {
-                    props.onClose();
-                }
-            }).catch((e: any) => {
-                console.error(e);
-                toast.error(t('common.error.actions.save'));
-            });
+        await SAFormHandler(
+            updateMaterial({ id: type.id, data }), 
+            setError,
+            () => props.onClose(),
+            'common.error.actions.save'
+        );
     }
     async function handleCreate(data: MaterialTypeFormType) {
         await asyncSAFormHandler<typeof createMaterial>(

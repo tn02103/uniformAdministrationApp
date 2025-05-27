@@ -1,5 +1,6 @@
 "use client"
 
+import { useScopedI18n } from "@/lib/locales/client";
 import { faCircleXmark, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode } from "react";
@@ -52,7 +53,7 @@ export type MessageModalOption = {
 export type MessageModalType = "error" | "warning" | "message" | "danger";
 
 const MessageModal = ({ type, header, message, options, onClose }: MessageModalPropType) => {
-
+    const t = useScopedI18n('modals.ariaLabel');
     const modalType = MessageModalTypes[type];
 
     const handleOnClick = (option: MessageModalOption) => {
@@ -65,7 +66,7 @@ const MessageModal = ({ type, header, message, options, onClose }: MessageModalP
     }
 
     return (
-        <Modal data-testid="div_messageModal_popup" show={true} onHide={onClose}>
+        <Modal data-testid="div_messageModal_popup" aria-label={t(type)} show={true} onHide={onClose}>
             <Modal.Header data-testid="div_header" closeButton className={`${modalType.bgHeader} fs-5 fw-bold`}>
                 {header}
             </Modal.Header>

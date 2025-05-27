@@ -1,9 +1,8 @@
-import { genericSANoDataValidator, genericSAValidator } from "@/actions/validations";
+import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { uniformTypeArgs } from "@/types/globalUniformTypes";
 import { uniformTypeFormSchema, UniformTypeFormType } from "@/zod/uniformConfig";
-import { __unsecuredGetUniformTypeList } from "./get";
 
 export const create = (props: UniformTypeFormType) => genericSAValidator(
     AuthRole.materialManager,

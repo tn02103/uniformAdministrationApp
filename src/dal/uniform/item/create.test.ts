@@ -41,7 +41,7 @@ describe('successfull in all allowed combinations', () => {
             orderBy: { number: "asc" }
         });
         expect(dbData).toHaveLength(4);
-        for (let item of dbData) {
+        for (const item of dbData) {
             expect(item).toEqual(
                 expect.objectContaining({
                     fk_uniformType: ids.uniformTypeIds[0],
@@ -56,7 +56,7 @@ describe('successfull in all allowed combinations', () => {
         expect(dbData[2].fk_size).toBe(ids.sizeIds[1]);
         expect(dbData[3].fk_size).toBe(ids.sizeIds[0]);
     });
-    it('creates without size, with generation ', async () => {
+    it('creates without size, with generation', async () => {
         const { result, success } = await runServerActionTest(
             create({
                 numberMap: [
@@ -76,7 +76,7 @@ describe('successfull in all allowed combinations', () => {
             where: { number: { gte: 3000 } }
         });
         expect(dbData).toHaveLength(2);
-        for (let item of dbData) {
+        for (const item of dbData) {
             expect(item).toEqual(
                 expect.objectContaining({
                     fk_uniformType: ids.uniformTypeIds[1],

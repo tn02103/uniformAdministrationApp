@@ -20,7 +20,7 @@ export const getCadetData = cache(async (cadetId: string): Promise<Cadet> => gen
     });
 }));
 
-export const getCadetLastInspectionDate = async (cadetId: string): Promise<{date: Date}|null> => genericSAValidatorV2(
+export const getCadetLastInspectionDate = async (cadetId: string): Promise<{date: string}|null> => genericSAValidatorV2(
     AuthRole.inspector,
     uuidValidationPattern.test(cadetId),
     { cadetId }

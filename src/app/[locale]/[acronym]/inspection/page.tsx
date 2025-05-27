@@ -2,7 +2,7 @@ import { getPersonnelNameList } from "@/dal/cadet/getNameList";
 import { getPlannedInspectionList } from "@/dal/inspection/planned/get";
 import { getScopedI18n } from "@/lib/locales/config";
 import { Col, Row } from "react-bootstrap";
-import PlannedInspectionTable from "./_planned/plannedTable";
+import { PlannedInspectionTable } from "./_planned/PlannedInspectionTable";
 
 export async function generateMetadata() {
     const t = await getScopedI18n('pageTitles');

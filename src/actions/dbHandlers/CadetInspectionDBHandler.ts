@@ -1,12 +1,13 @@
 import { prisma } from "@/lib/db";
 import { Deficiency } from "@/types/deficiencyTypes";
 import { Prisma, PrismaPromise } from "@prisma/client";
+import dayjs from "@/lib/dayjs";
 
 export class CadetInspectionDBHandler {
     getActiveInspection = (fk_assosiation: string) => prisma.inspection.findFirst({
         where: {
             fk_assosiation,
-            date: new Date(),
+            date: dayjs().format("YYYY-MM-DD"),
             timeEnd: null,
             timeStart: { not: null },
         }
@@ -28,10 +29,10 @@ export class CadetInspectionDBHandler {
           ORDER BY "dateCreated"
         `;
 
-    getPreviouslyUnresolvedDeficiencies = (cadetId: string, activeInspectionId: string, date: Date): PrismaPromise<Deficiency[]> => prisma.$queryRaw`
+    getPreviouslyUnresolvedDeficiencies = (cadetId: string, activeInspectionId: string, date: string): PrismaPromise<Deficiency[]> => prisma.$queryRaw`
         SELECT vdbc.*
            FROM inspection.v_deficiency_by_cadet as vdbc
-         WHERE ((vdbc."fk_inspectionCreated" IS NULL AND vdbc."dateCreated" < ${date})
+         WHERE ((vdbc."fk_inspectionCreated" IS NULL AND to_char(vdbc."dateCreated", 'YYYY-MM-DD') < ${date})
                 OR (vdbc."fk_inspectionCreated" != ${activeInspectionId}))
            AND (vdbc."dateResolved" IS NULL
                 OR vdbc."fk_inspectionResolved" = ${activeInspectionId})

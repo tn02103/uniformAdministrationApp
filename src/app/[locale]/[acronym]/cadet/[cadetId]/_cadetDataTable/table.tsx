@@ -7,7 +7,7 @@ import { useI18n } from "@/lib/locales/client";
 import { Cadet } from "@/types/globalCadetTypes";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { format } from "date-fns";
+import dayjs from "@/lib/dayjs";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
@@ -35,10 +35,10 @@ const CadetDataTableForm = ({ initialData }: PropType) => {
     const { cadetId, locale }: { cadetId: string, locale: string } = useParams();
     const [submitting, setSubmitting] = useState(false);
     const [editable, setEditable] = useState(!initialData);
-    const { data: lastInspectionDate, error } = useSWR(
+    const { data: lastInspectionDate } = useSWR(
         `cadet/inspection/lastInspection`,
         (!initialData || userRole < AuthRole.inspector)
-            ? null : () => getCadetLastInspectionDate(cadetId).catch((e) => console.log(e)),
+            ? null : () => getCadetLastInspectionDate(cadetId).catch(),
     )
 
     // handle cadetIdChange
@@ -50,7 +50,7 @@ const CadetDataTableForm = ({ initialData }: PropType) => {
             reset(initialData);
             setEditable(false);
         }
-    }, [cadetId]);
+    }, [cadetId, initialData, reset]);
 
     async function updateCadet(data: Cadet) {
         setSubmitting(true);
@@ -214,7 +214,7 @@ const CadetDataTableForm = ({ initialData }: PropType) => {
                                 <Row>
                                     <Col data-testid="div_lastInspection" className="pb-2">
                                         {lastInspectionDate?.date
-                                            ? format(new Date(lastInspectionDate.date), "dd.MM.yyyy")
+                                            ? dayjs(lastInspectionDate.date).format("DD.MM.YYYY")
                                             : t('common.cadet.notInspected')}
                                     </Col>
                                 </Row>
