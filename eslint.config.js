@@ -1,18 +1,26 @@
 import { FlatCompat } from '@eslint/eslintrc';
 import jest from "eslint-plugin-jest";
-import testingLibrary from "eslint-plugin-testing-library";
 import playwright from 'eslint-plugin-playwright';
+import testingLibrary from "eslint-plugin-testing-library";
+import { defineConfig } from "eslint/config";
 
 const compat = new FlatCompat({
     // import.meta.dirname is available after Node.js v20.11.0
     baseDirectory: import.meta.dirname,
 })
 
-const eslintConfig = [
+export default defineConfig([
     ...compat.config({
         extends: ['next/core-web-vitals', 'next/typescript'],
     }),
     { files: ["**/src/**/*", "**/tests/**/*"] },
+    {
+        rules: {
+            'no-console': ['error', {
+                allow: ['warn', 'error', 'info'],
+            }]
+        }
+    },
     {
         ...jest.configs['flat/recommended'],
         files: ['src/**/*.test.*'],
@@ -35,8 +43,4 @@ const eslintConfig = [
             "playwright/no-standalone-expect": "off",
         },
     },
-]
-
-
-
-export default eslintConfig;
+]);

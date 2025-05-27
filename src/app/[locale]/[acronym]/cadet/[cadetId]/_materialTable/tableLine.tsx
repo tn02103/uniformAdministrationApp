@@ -20,8 +20,6 @@ const MaterialTableLine = ({ material, group, handleEdit, handleReturn }: PropTy
     const { userRole } = useGlobalData();
 
     function onLineClick(event: React.MouseEvent<HTMLDivElement>) {
-        
-        console.log("🚀 ~ onLineClick ~ event:", event.target);
         const target = event.target as HTMLDivElement;
         if (target.tagName !== "BUTTON"
             && target.parentElement?.tagName !== "BUTTON"

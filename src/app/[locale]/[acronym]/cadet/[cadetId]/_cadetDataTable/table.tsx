@@ -38,7 +38,7 @@ const CadetDataTableForm = ({ initialData }: PropType) => {
     const { data: lastInspectionDate } = useSWR(
         `cadet/inspection/lastInspection`,
         (!initialData || userRole < AuthRole.inspector)
-            ? null : () => getCadetLastInspectionDate(cadetId).catch((e) => console.log(e)),
+            ? null : () => getCadetLastInspectionDate(cadetId).catch(),
     )
 
     // handle cadetIdChange
