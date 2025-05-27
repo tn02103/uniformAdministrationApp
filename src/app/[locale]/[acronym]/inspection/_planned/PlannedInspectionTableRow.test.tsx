@@ -10,7 +10,7 @@ import { PlannedInspectionTableRow } from "./PlannedInspectionTableRow";
 
 describe('<PlannedInspectionTableRow />', () => {
 
-    afterEach(() => {
+    beforeEach(() => {
         jest.clearAllMocks();
     });
 
@@ -200,7 +200,7 @@ describe('<PlannedInspectionTableRow />', () => {
             // validate edit
             expect(screen.getByRole('textbox', { name: /date/i })).toHaveValue(format(mockInspectionList[0].date, "dd.MM.yyyy"));
             expect(screen.queryByText(/custom.inspection.dateDuplication/i)).toBeNull();
-           
+
             // trying to save
             await user.click(screen.getByRole('button', { name: /save/i }));
             expect(updatePlannedInspection).toHaveBeenCalled();
@@ -460,28 +460,41 @@ describe('<PlannedInspectionTableRow />', () => {
             const { usePlannedInspectionList } = jest.requireMock("@/dataFetcher/inspection");
             const { simpleErrorModal } = jest.requireMock("@/components/modals/modalProvider").useModal();
             const mutate = usePlannedInspectionList().mutate;
-            usePlannedInspectionList.mockReturnValueOnce({
-                inspectionList: [
-                    mockInspectionList[0], mockInspectionList[1],
-                    {
-                        ...mockInspectionList[2],
-                        timeStart: dayjs.utc().startOf('day').hour(2).toDate(),
-                    }
-                ],
-                mutate,
-            });
+            try {
+                usePlannedInspectionList.mockReturnValue({
+                    inspectionList: [
+                        mockInspectionList[0], mockInspectionList[1],
+                        {
+                            ...mockInspectionList[2],
+                            timeStart: "10:00",
+                        }
+                    ],
+                    mutate,
+                });
 
-            const user = userEvent.setup();
-            render(
-                <PlannedInspectionTableRow
-                    inspection={mockInspectionList[0]}
-                />
-            );
+                const user = userEvent.setup();
+                render(
+                    <PlannedInspectionTableRow
+                        inspection={mockInspectionList[0]}
+                    />
+                );
 
-            await user.click(screen.getByTestId('btn_start'));
-            expect(startInspection).not.toHaveBeenCalled();
-            expect(mutate).not.toHaveBeenCalled();
-            expect(simpleErrorModal).toHaveBeenCalledTimes(1);
+                await user.click(screen.getByTestId('btn_start'));
+                expect(startInspection).not.toHaveBeenCalled();
+                expect(mutate).not.toHaveBeenCalled();
+                expect(simpleErrorModal).toHaveBeenCalledTimes(1);
+
+                usePlannedInspectionList.mockReturnValue({
+                    inspectionList: mockInspectionList,
+                    mutate,
+                });
+            } catch (error) {
+                usePlannedInspectionList.mockReturnValue({
+                    inspectionList: mockInspectionList,
+                    mutate,
+                });
+                throw error;
+            }
         });
 
         it('should catch exception from dal-method', async () => {

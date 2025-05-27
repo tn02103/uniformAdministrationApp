@@ -10,7 +10,7 @@ const defaultValues: PlannedInspectionType = {
     deregistrations: [],
     timeStart: null,
     timeEnd: null,
-    date: new Date(),
+    date: dayjs().format('YYYY-MM-DD'),
 };
 
 const getFunctions = () => ({
@@ -41,7 +41,7 @@ const renderButton = (inspection: PlannedInspectionType, editable?: boolean) => 
 describe('<InspectionButtonColumn/>', () => {
 
     it('planned', () => {
-        const insp: PlannedInspectionType = { ...defaultValues, date: dayjs().add(2, "day").toDate() }
+        const insp: PlannedInspectionType = { ...defaultValues, date: dayjs().add(2, "day").format('YYYY-MM-DD') }
         const {mockEdit, mockSubmit, mockDelete} = renderButton(insp);
 
         const buttons = screen.queryAllByRole('button');
@@ -113,7 +113,7 @@ describe('<InspectionButtonColumn/>', () => {
     it('unfinised', async () => {
         const insp: PlannedInspectionType = {
             ...defaultValues,
-            date: dayjs().subtract(2, "day").toDate(),
+            date: dayjs().subtract(2, "day").format('YYYY-MM-DD'),
             timeStart: '09:00',
         }
         const {mockFinish, mockSubmit} = renderButton(insp);
@@ -130,7 +130,7 @@ describe('<InspectionButtonColumn/>', () => {
     it('expired', async () => {
         const insp: PlannedInspectionType = {
             ...defaultValues,
-            date: dayjs().subtract(2, "day").toDate(),
+            date: dayjs().subtract(2, "day").format('YYYY-MM-DD'),
         };
         const {mockEdit, mockSubmit, mockDelete} = renderButton(insp);
 
@@ -148,7 +148,7 @@ describe('<InspectionButtonColumn/>', () => {
         expect(mockSubmit).not.toHaveBeenCalled();
     });
     it('editable', async () => {
-        const insp: PlannedInspectionType = { ...defaultValues, date: dayjs().add(2, "day").toDate() }
+        const insp: PlannedInspectionType = { ...defaultValues, date: dayjs().add(2, "day").format('YYYY-MM-DD'), }
         const {mockCancel, mockSubmit} = renderButton(insp, true);
 
         const buttons = screen.queryAllByRole('button');
