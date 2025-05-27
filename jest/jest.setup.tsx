@@ -20,12 +20,16 @@ jest.mock("@/components/errorMessage", () => {
         return <div className="text-danger fs-7" role="alert" aria-label={ariaLabel} data-testid={testId} {...divProps}>{error}</div>;
     };
 });
+
 jest.mock("@/components/modals/modalProvider", () => {
-    const dangerModal = jest.fn();
+    const modals = {
+        dangerConfirmationModal: jest.fn(),
+        simpleWarningModal: jest.fn(),
+        simpleErrorModal: jest.fn(),
+        simpleFormModal: jest.fn(),
+    }
     return {
-        useModal: jest.fn(() => ({
-            dangerConfirmationModal: dangerModal,
-        })),
+        useModal: jest.fn(() => modals)
     };
 });
 

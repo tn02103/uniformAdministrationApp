@@ -37,8 +37,7 @@ export const UniformTypeTable = (props: { initialTypeList: UniformType[] }) => {
             }
         ).then(() => {
             toast.success(t('common.success.changeSortorder'));
-        }).catch((e) => {
-            console.error(e);
+        }).catch(() => {
             toast.error(t('common.error.actions.changeSortorder'));
         });
     }

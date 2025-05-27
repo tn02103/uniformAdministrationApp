@@ -1,4 +1,5 @@
 
+import dayjs from "@/lib/dayjs";
 import { plannedInspectionTypeArgs } from "@/types/inspectionTypes";
 import { Prisma } from "@prisma/client";
 
@@ -9,7 +10,7 @@ export class PlannedInspectionDBQuery {
             where: {
                 fk_assosiation,
                 OR: [
-                    { date: { gte: new Date() } },
+                    { date: { gte: dayjs().format("YYYY-MM-DD") } },
                     { timeStart: null },
                     { timeEnd: null },
                 ]

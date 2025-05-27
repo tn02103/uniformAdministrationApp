@@ -135,10 +135,10 @@ test('E2E0275: initalInspection', async ({ page, inspectionComponent, testData: 
 
         await Promise.all([
             expect.soft(inspectionComponent.btn_inspect).toBeVisible(),
-            expect.soft(inspectionComponent.btn_step1_back).not.toBeVisible(),
-            expect.soft(inspectionComponent.btn_step1_continue).not.toBeVisible(),
-            expect.soft(inspectionComponent.btn_step2_back).not.toBeVisible(),
-            expect.soft(inspectionComponent.btn_step2_submit).not.toBeVisible(),
+            expect.soft(inspectionComponent.btn_step1_back).toBeHidden(),
+            expect.soft(inspectionComponent.btn_step1_continue).toBeHidden(),
+            expect.soft(inspectionComponent.btn_step2_back).toBeHidden(),
+            expect.soft(inspectionComponent.btn_step2_submit).toBeHidden(),
         ]);
     });
     await page.waitForTimeout(2000);
@@ -318,7 +318,7 @@ test('E2E0281: validate updated inspection', async ({ page, inspectionComponent,
             await inspectionComponent.btn_newDef_delete(i).click();
         });
         await inspectionComponent.btn_step2_submit.click();
-        await expect.soft(inspectionComponent.btn_step2_submit).not.toBeVisible();
+        await expect.soft(inspectionComponent.btn_step2_submit).toBeHidden();
     });
     await test.step('validate data', async () => {
         await Promise.all([

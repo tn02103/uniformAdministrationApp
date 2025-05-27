@@ -37,15 +37,17 @@ test.describe('Uniform size configuration', () => {
         await expect(uniformSizePage.div_size(sizes[0].id)).toBeVisible();
 
         const divList = await page.locator('div[data-testid^="div_size_"]').all();
-        await expect(divList).toHaveLength(sizes.length);
+        expect(divList).toHaveLength(sizes.length);
 
         const promises = [];
+        /* eslint-disable playwright/missing-playwright-await */
         for (let i = 0; i < divList.length; i++) {
             promises.push(expect.soft(divList[i]).toHaveAttribute("data-testid", `div_size_${sizes[i].id}`));
             promises.push(expect.soft((await uniformSizePage.div_name(sizes[i].id))).toHaveText(sizes[i].name));
             promises.push(expect.soft(uniformSizePage.div_index(sizes[i].id)).toHaveText(String(i + 1)));
         }
-
+        /* eslint-enable playwright/missing-playwright-await */
+        
         await Promise.all(promises);
     });
     test('validate SizePannel hover', async ({ uniformSizePage, sizes }) => {
@@ -55,9 +57,9 @@ test.describe('Uniform size configuration', () => {
         await Promise.all([
             expect.soft(uniformSizePage.div_name(sizeId)).toBeVisible(),
             expect.soft(uniformSizePage.div_index(sizeId)).toBeVisible(),
-            expect.soft(uniformSizePage.btn_menu(sizeId)).not.toBeVisible(),
-            expect.soft(uniformSizePage.btn_moveUp(sizeId)).not.toBeVisible(),
-            expect.soft(uniformSizePage.btn_moveDown(sizeId)).not.toBeVisible(),
+            expect.soft(uniformSizePage.btn_menu(sizeId)).toBeHidden(),
+            expect.soft(uniformSizePage.btn_moveUp(sizeId)).toBeHidden(),
+            expect.soft(uniformSizePage.btn_moveDown(sizeId)).toBeHidden(),
         ]);
         await uniformSizePage.div_name(sizeId).hover();
 
@@ -143,7 +145,7 @@ test.describe('Uniform size configuration', () => {
             await simpleFormPopup.btn_save.click();
         });
         await test.step('validate ui', async () => {
-            await expect(simpleFormPopup.div_popup).not.toBeVisible();
+            await expect(simpleFormPopup.div_popup).toBeHidden();
             await expect(page.getByText('newSize')).toBeVisible();
         });
         await test.step('validate db', async () => {
@@ -164,7 +166,7 @@ test.describe('Uniform size configuration', () => {
             maxLength: 10
         });
         for (const testSet of tests) {
-            await test.step(testSet.testValue, async () => {
+            await test.step(String(testSet.testValue), async () => {
                 await page.reload();
                 await uniformSizePage.btn_create.click();
 
@@ -172,7 +174,7 @@ test.describe('Uniform size configuration', () => {
                 await simpleFormPopup.btn_save.click();
 
                 if (testSet.valid) {
-                    await expect.soft(simpleFormPopup.err_input).not.toBeVisible();
+                    await expect.soft(simpleFormPopup.err_input).toBeHidden();
                 } else {
                     await expect.soft(simpleFormPopup.err_input).toBeVisible();
                 }
@@ -219,7 +221,7 @@ test.describe('Uniform size configuration', () => {
         });
 
         for (const testSet of tests) {
-            await test.step(testSet.testValue, async () => {
+            await test.step(String(testSet.testValue), async () => {
                 await page.reload();
                 await uniformSizePage.div_size(sizes[10].id).hover();
                 await uniformSizePage.btn_menu(sizes[10].id).click();
@@ -229,7 +231,7 @@ test.describe('Uniform size configuration', () => {
                 await simpleFormPopup.btn_save.click();
 
                 if (testSet.valid) {
-                    await expect(simpleFormPopup.err_input).not.toBeVisible();
+                    await expect(simpleFormPopup.err_input).toBeHidden();
                 } else {
                     await expect(simpleFormPopup.err_input).toBeVisible();
                 }
@@ -255,7 +257,7 @@ test.describe('Uniform size configuration', () => {
             await messagePopup.btn_save.click();
         });
         await test.step('validate ui', async () => {
-            await expect(uniformSizePage.div_size(sizes[16].id)).not.toBeVisible();
+            await expect(uniformSizePage.div_size(sizes[16].id)).toBeHidden();
 
             await expect(uniformSizePage.div_index(sizes[15].id)).toHaveText('16');
             await expect(uniformSizePage.div_index(sizes[17].id)).toHaveText('17');

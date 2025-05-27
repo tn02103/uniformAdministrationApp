@@ -7,6 +7,7 @@ export default {
         name: "Name",
         type: "Typ",
         loading: "Lädt",
+        status: "Status",
         dates: {
             created: "Erstellt am:",
             updated: "zulest Verändert:",
@@ -31,6 +32,7 @@ export default {
             edit_item: "{item} Bearbeiten",
             issue_item: "{item} Ausgeben",
             issue: "Ausgeben",
+            resolve: "Beheben",
             return: "Zurückziehen",
             replace: "Austauschen",
             rename: "Umbenennen",
@@ -131,6 +133,13 @@ export default {
         error: {
             pleaseSelect: "Bitte Auswählen",
             unknown: "Es ist ein unerwarteter Fehler aufgetreten",
+            date: {
+                invalid: "Bitte ein gültiges Datum angeben",
+                minExcluded: "Das Datum muss nach dem {date} liegen",
+                "minExcluded#today": "Das Datum muss nach heute liegen",
+                minIncluded: "Das Datum muss nach dem oder am {date} liegen",
+                "minIncluded#today": "Das Datum muss am oder nach dem heutigen Tag liegen",
+            },
             number: {
                 required: "Bitte eine Zahl angeben",
                 pattern: "Bitte eine valide Zahl eingeben",
@@ -194,6 +203,10 @@ export default {
                         nameDuplication: "Für diesen Uniformtyp existiert bereits eine Generation mit diesem Namen",
                     }
                 },
+                inspection: {
+                    nameDuplication: "Es existiert bereits eine Inspektion mit diesem Namen",
+                    dateDuplication: "Es existiert bereits eine Inspektion an diesem Tag",
+                },
                 redirects: {
                     code: {
                         duplication: "Der Code wird bereits von einem anderen Redirect ihrer/ oder einer anderen Organisation benutzt.",
@@ -204,6 +217,10 @@ export default {
         success: {
             changeSortorder: "Reihenfolge erfolgreich geändert",
         },
+    },
+    expandableArea: {
+        showMore: "Mehr anzeigen",
+        showLess: "Weniger anzeigen",
     },
     login: {
         header: "Login",
@@ -287,6 +304,39 @@ export default {
         'numberOfEntries#other': "{count} Einträge",
         noData: "Keine Daten geladen",
         header: "Uniformteile",
+    },
+    uniformOffcanvas: {
+        deleteAction: {
+            header: "{type} {number} löschen",
+            "message.one": "Soll das Uniformteil {type} {number} wirklich gelöscht werden?",
+            "message.two": "Diese Aktion kann nicht wieder umgekehrt werden",
+            "success": "Das Uniformteil wurde erfolgreich gelöscht",
+            "failed": "Das Uniformteil konnte nicht gelöscht werden",
+        },
+        deficiency: {
+            header: "Mängel",
+            includeResolved: "Behobene Mängel anzeigen",
+            cardLabel: "Mangel {index}",
+            createCardLabel: "Neuen Mangel anlegen",
+            "label.actions": "Aktionen für Mangel {index}",
+            "label.comment": "Kommentar",
+            "label.deficiencyType": "Art des Mangels",
+            "label.date.created": "Erstellt am:",
+            "label.date.resolved": "Behoben am:",
+            "label.date.updated": "Zuletzt aktualisiert am:",
+            "label.user.created": "Erstellt von:",
+            "label.user.resolved": "Behoben von:",
+            "label.user.updated": "Zuletzt aktualisiert von:",
+            "noDeficiencies": "Keine Mängel vorhanden",
+        },
+        history: {
+            "header": "Historie",
+            "label.dateIssued": "Ausgabe",
+            "label.dateReturned": "Rückgabe",
+            "label.cadet": "Person",
+            "title.deleted": "Person gelöscht",
+            "noEntries": "Keine Einträge vorhanden",
+        }
     },
     createUniform: {
         pagination: {
@@ -396,8 +446,6 @@ export default {
                     changeSizeHeader: "Ändern der Größenliste",
                     changeSizeMessage: "Beim Ändern der ausgewählten Größenliste, kann bei Uniformteilen dieser Generation die Information der Größe verlohren gehen",
                     nameDuplicationError: "Es existiert bereits eine Generation mit diesem Namen",
-                    editHeader: "Generation \"{generation}\" bearbeiten",
-                    createHeader: "Neue Generation anlegen",
                 }
             },
             size: {
@@ -521,6 +569,18 @@ export default {
             planned: 'Geplannte Kontrollen',
         },
         planned: {
+            deregistration: {
+                header: "Abmeldungen für {name}",
+                "label.person": "Person",
+                "label.date": "Datum",
+                "label.remove": "Abmeldung entfernen",
+                "label.add": "Person abmelden",
+            },
+            delete: {
+                header: "Inspektion löschen",
+                message: "Soll die Inspektion \"{name}\" wirklich gelöscht werden? Diese Aktion ist nicht wieder umkehrbar",
+                primary: "löschen",
+            },
             badge: {
                 new: "Neu",
                 planned: "Geplant",
@@ -542,8 +602,8 @@ export default {
                 noInspections: 'Keine Inspektionen geplannt',
             },
             errors: {
-                deregistration: 'Die Person konnte nicht von der Inspektion abgemeldet werden',
-                register: 'Die Abmeldung der Person konnte nicht zurückgenommen werden',
+                deregistration: 'Die Person {firstname} {lastname} konnte nicht von der Inspektion abgemeldet werden. Bitte laden Sie die Seite neu und versuchen es erneut.',
+                register: 'Die Abmeldung der Person {firstname} {lastname} konnte nicht zurückgenommen werden. Bitte laden Sie die Seite neu und versuchen es erneut.',
                 start: 'Die Kontrolle konte nicht gestartet werden',
                 nameDuplication: 'Der Name wird bereits von einer anderen Kontrolle verwendet',
                 endBeforStart: 'Die Endzeit muss nach der Startzeit um {startTime} sein',
@@ -571,6 +631,12 @@ export default {
         "admin.deficiency": "Mängel Konfiguration - Uniformadmin"
     },
     modals: {
+        ariaLabel: {
+            message: "Nachricht",
+            danger: "Gefahrenmeldung",
+            warning: "Warnungsmeldung",
+            error: "Fehlermeldung",
+        },
         messageModal: {
             uniform: {
                 return: {

@@ -12,7 +12,7 @@ export default function Error({
 }) {
     const t = useI18n();
     useEffect(() => {
-        console.log("Error2", error);
+        console.error("Error2", error);
     }, [error]);
 
     return (

@@ -34,10 +34,10 @@ userTest('Authrole: user', async ({ page, staticData: { ids } }) => {
             expect.soft(dataComponent.txt_firstname).toBeVisible(),
             expect.soft(dataComponent.txt_lastname).toBeVisible(),
             expect.soft(dataComponent.div_active).toBeVisible(),
-            expect.soft(dataComponent.txt_comment).not.toBeVisible(),
-            expect.soft(dataComponent.div_lastInspection).not.toBeVisible(),
-            expect.soft(dataComponent.btn_edit).not.toBeVisible(),
-            expect.soft(detailPage.btn_menu).not.toBeVisible(),
+            expect.soft(dataComponent.txt_comment).toBeHidden(),
+            expect.soft(dataComponent.div_lastInspection).toBeHidden(),
+            expect.soft(dataComponent.btn_edit).toBeHidden(),
+            expect.soft(detailPage.btn_menu).toBeHidden(),
         ]);
     });
 });
@@ -57,7 +57,7 @@ inspectorTest('Authrole: inspector', async ({ page, staticData: { ids } }) => {
             expect.soft(dataComponent.txt_comment).toBeVisible(),
             expect.soft(dataComponent.div_lastInspection).toBeVisible(),
             expect.soft(dataComponent.btn_edit).toBeVisible(),
-            expect.soft(detailPage.btn_menu).not.toBeVisible(),
+            expect.soft(detailPage.btn_menu).toBeHidden(),
         ]);
     });
 });
@@ -81,7 +81,7 @@ managerTest('Authrole: materialManager', async ({ page, staticData: { ids } }) =
     });
 });
 
-test.describe(async () => {
+test.describe(() => {
     test.beforeEach(async ({ page, staticData }) => {
         await page.goto(`/de/app/cadet/${staticData.ids.cadetIds[1]}`);
     });
@@ -104,7 +104,7 @@ test.describe(async () => {
                 expect.soft(dataComponent.txt_firstname).toBeDisabled(),
                 expect.soft(dataComponent.txt_lastname).toBeDisabled(),
                 expect.soft(dataComponent.txt_comment).toBeDisabled(),
-                expect.soft(dataComponent.chk_active).not.toBeVisible(),
+                expect.soft(dataComponent.chk_active).toBeHidden(),
             ]);
         });
     });
@@ -128,9 +128,9 @@ test.describe(async () => {
         });
 
         await test.step('validate ui', async () => {
-            await expect.soft(messagePopup.div_popup).not.toBeVisible();
+            await expect.soft(messagePopup.div_popup).toBeHidden();
             await page.waitForURL(/app\/cadet$/);
-            await expect.soft(listPage.div_cadet(ids.cadetIds[1])).not.toBeVisible();
+            await expect.soft(listPage.div_cadet(ids.cadetIds[1])).toBeHidden();
         });
         await test.step('validate db', async () => {
             const date = new Date();
@@ -144,7 +144,7 @@ test.describe(async () => {
         });
     });
 
-    test('edit', async ({ page, dataComponent, cadet }) => {
+    test('edit', async ({ dataComponent, cadet }) => {
         const testData = {
             firstname: 'firstname',
             lastname: 'lastname',
@@ -160,7 +160,7 @@ test.describe(async () => {
                 expect.soft(dataComponent.txt_comment).toBeEnabled(),
                 expect.soft(dataComponent.chk_active).toBeVisible(),
                 expect.soft(dataComponent.chk_active).toBeEnabled(),
-                expect.soft(dataComponent.btn_edit).not.toBeVisible(),
+                expect.soft(dataComponent.btn_edit).toBeHidden(),
                 expect.soft(dataComponent.btn_save).toBeVisible(),
                 expect.soft(dataComponent.btn_cancel).toBeVisible(),
             ]);

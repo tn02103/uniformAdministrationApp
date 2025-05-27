@@ -129,12 +129,12 @@ exports[`<UniformgenerationOffcanvas> with generation renders the component 1`] 
               common.uniform.generation.outdated
             </label>
             <div
-              class="form-check form-switch"
+              class="form-check form-switch px-0 my-auto"
             >
               <input
                 aria-checked="false"
                 aria-disabled="true"
-                class="form-check-input fw-bold"
+                class="form-check-input ms-0 my-2"
                 id="uniformGenerationForm_toggle-outdated"
                 name="outdated"
                 role="switch"
@@ -315,12 +315,12 @@ exports[`<UniformgenerationOffcanvas> without generation renders in editable sta
               common.uniform.generation.outdated
             </label>
             <div
-              class="form-check form-switch"
+              class="form-check form-switch px-0 my-auto"
             >
               <input
                 aria-checked="false"
                 aria-disabled="false"
-                class="form-check-input fw-bold"
+                class="form-check-input ms-0 my-2"
                 id="uniformGenerationForm_toggle-outdated"
                 name="outdated"
                 role="switch"
@@ -351,12 +351,13 @@ exports[`<UniformgenerationOffcanvas> without generation renders in editable sta
             </label>
             <select
               aria-invalid="false"
-              class="form-select"
+              class="text-truncate form-select"
               id="uniformGenerationForm_select-fk_sizelist"
               name="fk_sizelist"
             >
               <option
                 disabled=""
+                value=""
               >
                 common.error.pleaseSelect
               </option>

@@ -1,0 +1,92 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ExpandableArea renders area closed 1`] = `
+<div>
+  <div
+    class="align-items-center justify-content-center row"
+    style="height: 2rem;"
+  >
+    <div
+      class="position-relative"
+    >
+      <hr
+        class=""
+      />
+      <div
+        class="w-auto bg-white align-center position-absolute top-50 start-50 translate-middle"
+      >
+        <button
+          class="border-0 btn btn-light btn-sm"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-chevron-down text-dark me-2 false"
+            data-icon="chevron-down"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
+              fill="currentColor"
+            />
+          </svg>
+          expandableArea.showMore
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ExpandableArea renders area open 1`] = `
+<div>
+  <div
+    class="align-items-center justify-content-center row"
+    style="height: 2rem;"
+  >
+    <div
+      class="position-relative"
+    >
+      <hr
+        class=""
+      />
+      <div
+        class="w-auto bg-white align-center position-absolute top-50 start-50 translate-middle"
+      >
+        <button
+          class="border-0 btn btn-light btn-sm"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-chevron-down text-dark me-2 open"
+            data-icon="chevron-down"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
+              fill="currentColor"
+            />
+          </svg>
+          expandableArea.showLess
+        </button>
+      </div>
+    </div>
+  </div>
+  <div
+    class="row"
+  >
+    <div>
+      Test
+    </div>
+  </div>
+</div>
+`;

@@ -293,7 +293,8 @@ export function getStaticDataIds(index: number) {
             `${prefix}9c895f-e3e1-4f4d-9f04-c54e39d958e8`,
             `${prefix}3842f0-77bf-4d61-934b-d88e284e78f6`,
             `${prefix}639326-2ba1-4c50-a1af-2b7f631090ee`,
-            `${prefix}89da5e-99a4-40e9-ae1d-b256e5b138b5`
+            `${prefix}89da5e-99a4-40e9-ae1d-b256e5b138b5`,
+            `${prefix}ab6b52-309a-4355-bd47-36234dc370ec`,
         ],
         deficiencyIds: [
             `${prefix}49ebe3-6d74-4e6d-9c79-271686ac3a2f`,
@@ -309,7 +310,9 @@ export function getStaticDataIds(index: number) {
             `${prefix}8c0f45-fa8d-46a5-b0c2-16068730134b`,
             `${prefix}11ae97-589a-467e-bd2c-24e9e167bd0d`,
             `${prefix}b702cd-5cb4-40c8-9719-790bc568cb12`,
-            `${prefix}d9489f-7b51-49e9-a375-0e63451436b7`
+            `${prefix}d9489f-7b51-49e9-a375-0e63451436b7`,
+            `${prefix}c0f1a2-4b5d-4e8f-9a3b-6c7d0e1f2b5c`,
+            `${prefix}d3a7f8-0a9e-4b6c-bd2e-0f1a5b8c3d7e`,
         ],
         inspectionIds: [
             `${prefix}5aa63d-e770-451d-b1eb-60def89744d8`,

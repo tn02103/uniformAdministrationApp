@@ -18,20 +18,20 @@ test.describe('Redirects Configuration', () => {
     test('should create a new redirect', async ({ page, staticData: { }, baseURL }) => {
         await test.step('Create a new redirect', async () => {
             await page.getByRole('button', { name: /create/i }).click();
-            const createRow = await page.getByRole('row', { name: /new/i });
+            const createRow = page.getByRole('row', { name: /new/i });
             await createRow.getByLabel(/Code/i).fill('test-e2e-create');
             await createRow.getByLabel(/Ziel/i).fill('https://example.com/e2e/create-redirect');
             await createRow.getByRole('button', { name: /Anlegen/i }).click();
-            await expect(createRow).not.toBeVisible();
+            await expect(createRow).toBeHidden();
         });
         await Promise.all([
             test.step('validate ui', async () => {
-                const row = await page.getByRole('row', { name: /test-e2e-create/i });
+                const row = page.getByRole('row', { name: /test-e2e-create/i });
                 await expect(row).toBeVisible();
                 await expect(row.getByLabel(/Code/i)).toHaveValue('test-e2e-create');
                 await expect(row.getByLabel(/Ziel/i)).toHaveValue('https://example.com/e2e/create-redirect');
                 await expect(row.getByText(german.redirects["activeLabel.true"])).toBeVisible();
-                await expect(row.getByText(german.redirects["activeLabel.false"])).not.toBeVisible();
+                await expect(row.getByText(german.redirects["activeLabel.false"])).toBeHidden();
             }),
             test.step('validate db', async () => {
                 const redirect = await prisma.redirect.findFirst({
@@ -54,7 +54,7 @@ test.describe('Redirects Configuration', () => {
 
     test('should edit an existing redirect', async ({ page, baseURL, staticData: { ids, data } }) => {
         await test.step('Edit an existing redirect', async () => {
-            const row = await page.getByRole('row', { name: data.redirects[0].code });
+            const row = page.getByRole('row', { name: data.redirects[0].code });
             await row.getByRole('button', { name: /edit/i }).click();
 
             await expect(row.getByLabel(/Code/i)).toBeEnabled();
@@ -66,16 +66,16 @@ test.describe('Redirects Configuration', () => {
             await row.getByLabel(/Ziel/i).fill('https://example.com/e2e/edit-redirect');
             await row.getByRole('button', { name: /Speichern/i }).click();
 
-            await expect(row).not.toBeVisible();
+            await expect(row).toBeHidden();
         });
         await Promise.all([
             test.step('validate ui', async () => {
-                const row = await page.getByRole('row', { name: /test-e2e-edit/i });
+                const row = page.getByRole('row', { name: /test-e2e-edit/i });
                 await expect(row).toBeVisible();
                 await expect(row.getByLabel(/Code/i)).toHaveValue('test-e2e-edit');
                 await expect(row.getByLabel(/Ziel/i)).toHaveValue('https://example.com/e2e/edit-redirect');
                 await expect(row.getByText(german.redirects["activeLabel.true"])).toBeVisible();
-                await expect(row.getByText(german.redirects["activeLabel.false"])).not.toBeVisible();
+                await expect(row.getByText(german.redirects["activeLabel.false"])).toBeHidden();
             }),
             test.step('validate db', async () => {
                 const redirect = await prisma.redirect.findUnique({
@@ -102,15 +102,15 @@ test.describe('Redirects Configuration', () => {
 
     test('should deactivate an existing redirect', async ({ page, baseURL, staticData: { ids, data } }) => {
         await test.step('Deactivate an existing redirect', async () => {
-            const row = await page.getByRole('row', { name: data.redirects[0].code });
+            const row = page.getByRole('row', { name: data.redirects[0].code });
             await row.getByRole('button', { name: /edit/i }).click();
             await row.getByLabel(/Status/i).uncheck();
             await row.getByRole('button', { name: /Speichern/i }).click();
-            await expect(row.getByRole('checkbox', { name: /Status/i })).not.toBeVisible();
+            await expect(row.getByRole('checkbox', { name: /Status/i })).toBeHidden();
         });
         await Promise.all([
             test.step('validate ui', async () => {
-                const row = await page.getByRole('row', { name: data.redirects[0].code });
+                const row = page.getByRole('row', { name: data.redirects[0].code });
                 await expect(row).toBeVisible();
                 await expect(row.getByText(german.redirects["activeLabel.false"])).toBeVisible();
                 // Its not possible to check if activelabel.true is not visible, because the translations overlap
@@ -135,9 +135,9 @@ test.describe('Redirects Configuration', () => {
 
     test("should delete an existing redirect", async ({ page, baseURL, staticData: { ids, data } }) => {
         await test.step('Delete an existing redirect', async () => {
-            const row = await page.getByRole('row', { name: data.redirects[0].code });
+            const row = page.getByRole('row', { name: data.redirects[0].code });
             await row.getByRole('button', { name: /delete/i }).click();
-            await expect(row).not.toBeVisible();
+            await expect(row).toBeHidden();
         });
         await Promise.all([
             test.step('validate db', async () => {

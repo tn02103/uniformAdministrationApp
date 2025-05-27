@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 import { PersonnelListCadet, cadetArgs } from "@/types/globalCadetTypes";
 import { Prisma, PrismaClient } from "@prisma/client";
-import { z } from "zod";
+import dayjs from "@/lib/dayjs";
 
 export class CadetDBHandler {
     getCadet = (id: string, client?: PrismaClient) =>
@@ -18,7 +18,7 @@ export class CadetDBHandler {
             filter.deregistrations = {
                 none: {
                     inspection: {
-                        date: new Date(),
+                        date: dayjs().format("YYYY-MM-DD"),
                     },
                 },
             };
@@ -27,7 +27,7 @@ export class CadetDBHandler {
             filter.cadetInspection = {
                 none: {
                     inspection: {
-                        date: new Date(),
+                        date: dayjs().format("YYYY-MM-DD"),
                     }
                 }
             };

@@ -38,8 +38,9 @@ const CadetDetailPage = async (props: PropType) => {
     const { cadetId } = await props.params;
     const newCadet = cadetId === "new";
     const { user } = await getIronSession();
+    let cadet;
     if (!newCadet) {
-        var cadet = await getCadetData(cadetId).catch(() => undefined);
+        cadet = await getCadetData(cadetId).catch(() => undefined);
 
         if (!cadet) {
             return notFound();

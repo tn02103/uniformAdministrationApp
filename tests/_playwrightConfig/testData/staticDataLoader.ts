@@ -2,8 +2,7 @@ import { prisma } from "@/lib/db";
 import { Assosiation, AssosiationConfiguration, Cadet, DeficiencyType, Inspection, Material, MaterialGroup, Prisma, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@prisma/client";
 import bcrypt from 'bcrypt';
 import StaticDataGenerator, { StaticDataIdType } from "./staticDataGenerator";
-import { getStaticDataIds } from "./staticDataIds";
-const fs = require('fs');
+import { getStaticDataIds } from "./staticDataIds"; 
 
 export class StaticData {
 

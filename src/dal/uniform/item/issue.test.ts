@@ -1,7 +1,7 @@
 import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { ExceptionType } from "@/errors/CustomException";
 import { prisma } from "@/lib/db";
-import dayjs from "dayjs";
+import dayjs from "@/lib/dayjs";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { issue } from "./issue";
 
@@ -23,7 +23,7 @@ describe('<UniformItem> issue', () => {
         const { success, result } = await runServerActionTest(
             issue(defaultProps)
         );
-        expect(success);
+        expect(success).toBeTruthy();
         expect(result[ids.uniformTypeIds[0]]).toHaveLength(5);
 
         const dbIssuedEntry = await prisma.uniformIssued.findFirst({
