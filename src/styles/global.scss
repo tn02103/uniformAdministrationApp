@@ -33,4 +33,21 @@ $utilities: map-merge($utilities,
         ),
       )));
 
+$utilities: map-merge(
+    $utilities,
+    (
+      "order": map-merge(
+        map-get($utilities, "order"),
+        (
+          values: map-merge(
+            map-get(map-get($utilities, "order"), "values"),
+            (
+              last: 7 // Change the `.order-{breakpoint}-last` utility to use the next number
+            )
+          ),
+        ),
+      ),
+    )
+  );
+
 @import "bootstrap/scss/utilities/api";

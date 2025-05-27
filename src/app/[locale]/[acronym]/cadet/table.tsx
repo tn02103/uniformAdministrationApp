@@ -80,30 +80,33 @@ const GeneralOverviewTable = ({
 
     return (
         <>
-            <div className="d-flex flex-row ">
-                <InputGroup className="w-auto">
-                    <InputGroup.Text className="bg-primary-subtle">
-                        <FontAwesomeIcon icon={faSearch} className="" />
-                    </InputGroup.Text>
-                    <FormControl
-                        inputMode="search"
-                        size="sm"
-                        {...register("search")}
-                        onKeyDown={(event) => { if (event.key == "Enter") { event.currentTarget.blur() } }} />
-                    <button
-                        data-testid="btn_clearSearch"
-                        className="button bg-primary-subtle border border-1 border-seccondary-subtle rounded-end"
-                        onClick={() => setValue("search", "")}
-                    >
-                        <FontAwesomeIcon icon={faXmark} />
-                    </button>
-                </InputGroup>
+            <div className="row">
+                <div className="col-auto d-md-inline my-0 w-auto order-last order-md-first">
+                    <InputGroup className="mt-2 p-0">
+                        <InputGroup.Text className="bg-primary-subtle">
+                            <FontAwesomeIcon icon={faSearch} className="" />
+                        </InputGroup.Text>
+                        <FormControl
+                            inputMode="search"
+                            size="sm"
+                            {...register("search")}
+                            onKeyDown={(event) => { if (event.key == "Enter") { event.currentTarget.blur() } }} />
+                        <button
+                            data-testid="btn_clearSearch"
+                            className="button bg-primary-subtle border border-1 border-seccondary-subtle rounded-end"
+                            onClick={() => setValue("search", "")}
+                        >
+                            <FontAwesomeIcon icon={faXmark} />
+                        </button>
+                    </InputGroup>
+                </div>
                 {inspectionState?.active &&
                     <FormCheck
                         type="switch"
+                        size={12}
                         label="Inkl abgemeldete Personen"
-                        className="mx-5"
-                        onClick={() => changeFilter('deregistered')}
+                        className="ms-3 my-2 col-auto d-md-inline "
+                        onChange={() => changeFilter('deregistered')}
                         checked={searchParam.has('deregistered')}
                     />
                 }
@@ -111,8 +114,8 @@ const GeneralOverviewTable = ({
                     <FormCheck
                         type="switch"
                         label="Inkl. kontrolierte Personen"
-                        className="mx-0"
-                        onClick={() => changeFilter('inspected')}
+                        className="ms-3 my-2 col-auto d-md-inline "
+                        onChange={() => changeFilter('inspected')}
                         checked={searchParam.has('inspected')}
                     />
                 }
