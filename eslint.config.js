@@ -41,6 +41,8 @@ export default defineConfig([
             ...playwright.configs['flat/recommended'].rules,
             'react-hooks/rules-of-hooks': "off",
             "playwright/no-standalone-expect": "off",
+            "playwright/no-conditional-in-test": "off",
+            "playwright/no-conditional-expect": "off",
         },
     },
 ]);

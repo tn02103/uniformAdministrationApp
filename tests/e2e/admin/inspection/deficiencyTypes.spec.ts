@@ -1,3 +1,4 @@
+/* eslint-disable playwright/missing-playwright-await */
 import german from "@/../public/locales/de";
 import { prisma } from "@/lib/db";
 import { format } from "date-fns";
@@ -22,7 +23,7 @@ test.afterEach(async ({ staticData }) => {
     await staticData.cleanup.inspection()
 });
 
-test('E2E060401: validate typelist', async ({typeComponent, staticData: { data } }) => {
+test('E2E060401: validate typelist', async ({ typeComponent, staticData: { data } }) => {
     await expect(typeComponent.div_typeList).toHaveCount(data.deficiencyTypes.length);
     await test.step('sortorder', async () => {
         await Promise.all([
@@ -43,45 +44,45 @@ test('E2E060401: validate typelist', async ({typeComponent, staticData: { data }
             const active = data.deficiencies.filter(t => t.fk_deficiencyType == type.id && t.dateResolved === null);
             const resolved = data.deficiencies.filter(t => t.fk_deficiencyType == type.id && t.dateResolved !== null);
 
-            const promises = [];
+            const promises: Promise<void>[] = [];
             promises.push(
-                await expect.soft(rowComponent.txt_name).toHaveValue(type.name),
-                await expect.soft(rowComponent.div_amount_active).toHaveText(String(active.length)),
-                await expect.soft(rowComponent.div_amount_resolved).toHaveText(String(resolved.length))
+                expect.soft(rowComponent.txt_name).toHaveValue(type.name),
+                expect.soft(rowComponent.div_amount_active).toHaveText(String(active.length)),
+                expect.soft(rowComponent.div_amount_resolved).toHaveText(String(resolved.length))
             );
 
             if (type.dependent)
-                promises.push(await expect.soft(rowComponent.div_dependent).toHaveText(german.admin.deficiency.entity[type.dependent]));
+                promises.push(expect.soft(rowComponent.div_dependent).toHaveText(german.admin.deficiency.entity[type.dependent]));
             else
-                promises.push(await expect.soft(rowComponent.div_dependent).toHaveText(''));
+                promises.push(expect.soft(rowComponent.div_dependent).toHaveText(''));
 
             if (type.relation)
-                promises.push(await expect.soft(rowComponent.div_relation).toHaveText(german.admin.deficiency.entity[type.relation]));
+                promises.push(expect.soft(rowComponent.div_relation).toHaveText(german.admin.deficiency.entity[type.relation]));
             else
-                promises.push(await expect.soft(rowComponent.div_relation).toHaveText(''));
+                promises.push(expect.soft(rowComponent.div_relation).toHaveText(''));
 
             if (type.disabledDate) {// type.disabledDate 
                 promises.push(
-                    await expect.soft(rowComponent.div_disabled).toBeVisible(),
-                    await expect.soft(rowComponent.div_disabled).toContainText(format(type.disabledDate, "dd.MM.yyyy")),
-                    await expect.soft(rowComponent.btn_edit).toBeHidden(),
-                    await expect.soft(rowComponent.btn_deactivate).toBeHidden(),
-                    await expect.soft(rowComponent.btn_reactivate).toBeVisible(),
-                    await expect.soft(rowComponent.btn_delete).toBeVisible()
+                    expect.soft(rowComponent.div_disabled).toBeVisible(),
+                    expect.soft(rowComponent.div_disabled).toContainText(format(type.disabledDate, "dd.MM.yyyy")),
+                    expect.soft(rowComponent.btn_edit).toBeHidden(),
+                    expect.soft(rowComponent.btn_deactivate).toBeHidden(),
+                    expect.soft(rowComponent.btn_reactivate).toBeVisible(),
+                    expect.soft(rowComponent.btn_delete).toBeVisible()
                 );
             } else {
                 promises.push(
-                    await expect.soft(rowComponent.div_disabled).toBeHidden(),
-                    await expect.soft(rowComponent.btn_edit).toBeVisible(),
-                    await expect.soft(rowComponent.btn_reactivate).toBeHidden()
+                    expect.soft(rowComponent.div_disabled).toBeHidden(),
+                    expect.soft(rowComponent.btn_edit).toBeVisible(),
+                    expect.soft(rowComponent.btn_reactivate).toBeHidden()
                 );
 
                 if (active.length > 0) {
-                    promises.push(await expect.soft(rowComponent.btn_deactivate).toBeVisible());
-                    promises.push(await expect.soft(rowComponent.btn_delete).toBeHidden());
+                    promises.push(expect.soft(rowComponent.btn_deactivate).toBeVisible());
+                    promises.push(expect.soft(rowComponent.btn_delete).toBeHidden());
                 } else {
-                    promises.push(await expect.soft(rowComponent.btn_deactivate).toBeHidden());
-                    promises.push(await expect.soft(rowComponent.btn_delete).toBeVisible());
+                    promises.push(expect.soft(rowComponent.btn_deactivate).toBeHidden());
+                    promises.push(expect.soft(rowComponent.btn_delete).toBeVisible());
                 }
             }
 
@@ -281,8 +282,8 @@ test('E2E060408: validate formComponents', async ({ typeComponent }) => {
     await test.step('name formvalidation', async () => {
         const testSets = newDescriptionValidationTests({ minLength: 1, maxLength: 20 })
         for (const set of testSets) {
-            await test.step(set.testValue, async () => {
-                await rowComponent.txt_name.fill(set.testValue);
+            await test.step(String(set.testValue), async () => {
+                await rowComponent.txt_name.fill(String(set.testValue));
                 if (set.valid) {
                     await expect.soft(rowComponent.err_name).toBeHidden();
                     await expect.soft(rowComponent.txt_name).not.toHaveClass(/invalid/);

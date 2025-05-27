@@ -40,12 +40,14 @@ test.describe('Uniform size configuration', () => {
         expect(divList).toHaveLength(sizes.length);
 
         const promises = [];
+        /* eslint-disable playwright/missing-playwright-await */
         for (let i = 0; i < divList.length; i++) {
-            promises.push(await expect.soft(divList[i]).toHaveAttribute("data-testid", `div_size_${sizes[i].id}`));
-            promises.push(await expect.soft((await uniformSizePage.div_name(sizes[i].id))).toHaveText(sizes[i].name));
-            promises.push(await expect.soft(uniformSizePage.div_index(sizes[i].id)).toHaveText(String(i + 1)));
+            promises.push(expect.soft(divList[i]).toHaveAttribute("data-testid", `div_size_${sizes[i].id}`));
+            promises.push(expect.soft((await uniformSizePage.div_name(sizes[i].id))).toHaveText(sizes[i].name));
+            promises.push(expect.soft(uniformSizePage.div_index(sizes[i].id)).toHaveText(String(i + 1)));
         }
-
+        /* eslint-enable playwright/missing-playwright-await */
+        
         await Promise.all(promises);
     });
     test('validate SizePannel hover', async ({ uniformSizePage, sizes }) => {
@@ -164,7 +166,7 @@ test.describe('Uniform size configuration', () => {
             maxLength: 10
         });
         for (const testSet of tests) {
-            await test.step(testSet.testValue, async () => {
+            await test.step(String(testSet.testValue), async () => {
                 await page.reload();
                 await uniformSizePage.btn_create.click();
 
@@ -219,7 +221,7 @@ test.describe('Uniform size configuration', () => {
         });
 
         for (const testSet of tests) {
-            await test.step(testSet.testValue, async () => {
+            await test.step(String(testSet.testValue), async () => {
                 await page.reload();
                 await uniformSizePage.div_size(sizes[10].id).hover();
                 await uniformSizePage.btn_menu(sizes[10].id).click();
