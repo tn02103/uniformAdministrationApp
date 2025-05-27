@@ -7,10 +7,12 @@ import { z } from "zod";
 import FilterPanel from "./_filterPanel";
 import ListPanel from "./_listPanel";
 
-export async function generateMetadata({ params }: { params: { typeId: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ typeId: string }> }) {
+    const { typeId } = await params;
+
     const t = await getScopedI18n('pageTitles')
-    if (z.string().uuid().safeParse(params.typeId).success) {
-        const type = await getUniformType(params.typeId);
+    if (z.string().uuid().safeParse(typeId).success) {
+        const type = await getUniformType(typeId);
         if (type) {
             return {
                 title: t('uniform.list', { type: type.name })
@@ -23,13 +25,14 @@ export async function generateMetadata({ params }: { params: { typeId: string } 
 }
 
 export default async function UniformListPage({
-    params: { typeId }
+    params
 }: {
-    params: {
+    params: Promise<{
         typeId: string
-    }
+    }>
 }) {
     const t = await getI18n();
+    const { typeId } = await params;
 
     let uniformType: UniformType | null = null
     if (z.string().uuid().safeParse(typeId).success) {

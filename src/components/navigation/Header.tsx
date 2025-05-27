@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "react-bootstrap";
 
 
-const Header = ({ showSidebar }: any) => {
+const Header = ({ showSidebar }: {showSidebar: () => void}) => {
     return (
         <div data-testid="div_layout_header" className=" bg-navy fixed-top p-0 m-0" data-bs-theme="dark">
             <div className="d-flex flex-row justify-content-between">

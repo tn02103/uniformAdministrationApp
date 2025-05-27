@@ -16,7 +16,7 @@ test('effect of knownIdsToggle on Configurator', async ({ createPage }) => {
         await Promise.all([
             expect(createPage.btn_tab_knownIds).toBeVisible(),
             expect(createPage.btn_tab_generateIds).toBeVisible(),
-            expect(createPage.configurator.div_configurator).not.toBeVisible(),
+            expect(createPage.configurator.div_configurator).toBeHidden(),
         ]);
     });
 
@@ -34,7 +34,7 @@ test('effect of knownIdsToggle on Configurator', async ({ createPage }) => {
         await Promise.all([
             expect.soft(createPage.configurator.div_configurator).toBeVisible(),
             expect.soft(createPage.btn_tab_generateIds.locator('..')).toHaveClass(/active/),
-            expect.soft(createPage.configurator.sel_size).not.toBeVisible(),
+            expect.soft(createPage.configurator.sel_size).toBeHidden(),
         ]);
     });
 });
@@ -114,7 +114,7 @@ test('formValidations', async ({ createPage, staticData: { ids } }) => {
         await Promise.all([
             expect.soft(createPage.configurator.sel_generation).not.toHaveClass(/is-invalid/),
             expect.soft(createPage.configurator.sel_size).not.toHaveClass(/is-invalid/),
-            expect.soft(createPage.configurator.btn_continue).not.toBeVisible(),
+            expect.soft(createPage.configurator.btn_continue).toBeHidden(),
         ]);
     });
 });

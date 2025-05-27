@@ -1,7 +1,7 @@
 import { createDeficiencyType, deactivateDeficiencyType, deleteDeficiencyType, reactivateDeficiencyType, saveDeficiencyType } from "@/actions/controllers/DeficiencyTypeController";
 import ErrorMessage from "@/components/errorMessage";
 import { useModal } from "@/components/modals/modalProvider";
-import { TooltipActionButton } from "@/components/TooltipIconButton";
+import { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
 import { useScopedI18n } from "@/lib/locales/client";
 import { AdminDeficiencyType } from "@/types/deficiencyTypes";
 import { AdminDeficiencytypeFormSchema } from "@/zod/deficiency";
@@ -44,11 +44,12 @@ export default function DefTypeAdminTableRow({
     const [editable, setEditable] = useState(!type);
     const formName = `form_deftype_${type ? type.id : "new"}`;
 
+    const dependent = watch('dependent');
     useEffect(() => {
-        if (watch('dependent') !== "cadet") {
+        if (dependent !== "cadet") {
             setValue('relation', null);
         }
-    }, [watch('dependent')]);
+    }, [dependent, setValue]);
 
     async function handleSave(data: FormSchema) {
         if (data.relation === "null") data.relation = null;

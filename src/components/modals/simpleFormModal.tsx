@@ -1,21 +1,23 @@
 import { useI18n } from "@/lib/locales/client";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
-import { FieldValues, RegisterOptions, useForm } from "react-hook-form";
+import { RegisterOptions, useForm } from "react-hook-form";
 
-
+type FormType = {
+    input: string
+}
 export type SimpleFormModalProps = {
     header: string;
     elementLabel: string;
-    elementValidation: RegisterOptions<FieldValues, "input">;
+    elementValidation: RegisterOptions<FormType, "input">;
     inputMode?: "search" | "text" | "none" | "tel" | "url" | "email" | "numeric";
     type?: string,
-    save: ({ }: { input: any }) => Promise<any>;
+    save: ({ }: { input: string }) => Promise<void>;
     abort: () => void;
     defaultValue?: { input: string }
 }
 const SimpleFormModal = (props: SimpleFormModalProps) => {
     const t = useI18n();
-    const { register, handleSubmit, formState: { errors } } = useForm({ mode: "onChange", defaultValues: props.defaultValue });
+    const { register, handleSubmit, formState: { errors } } = useForm<FormType>({ mode: "onChange", defaultValues: props.defaultValue });
 
     return (
         <Modal data-testid="div_simpleFormModal" show onHide={props.abort}>
@@ -29,7 +31,7 @@ const SimpleFormModal = (props: SimpleFormModalProps) => {
                         type={props.type}
                         isInvalid={!!errors.input}
                         inputMode={props.inputMode}
-                        {...register("input", props.elementValidation as any)} />
+                        {...register("input", props.elementValidation)} />
                     <div data-testid={`err_input`} className="text-danger fs-7">
                         {errors?.input?.message}
                     </div>

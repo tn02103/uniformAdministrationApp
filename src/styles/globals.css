@@ -13,18 +13,33 @@ body {
         Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
+.drag-handler {
+    cursor: pointer;
+}
+.drag-handler:active {
+    cursor: move;
+}
 
 nav {
     width: auto;
 }
 
-.topoffset-nav {
-    top: 45px;
-}
-
 @media (min-width: 992px) {
     .topoffset-nav {
         top: 0
+    }
+}
+
+@media (max-width: 991px) {
+    .topoffset-nav {
+        top: 45px;
+    }
+    .offcanvas {
+        margin-top: 45px;
+        margin-bottom: 60px;
+    }
+    .footer {
+        height: 60px;
     }
 }
 

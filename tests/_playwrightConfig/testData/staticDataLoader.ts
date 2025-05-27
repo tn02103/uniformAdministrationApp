@@ -2,7 +2,7 @@ import { prisma } from "@/lib/db";
 import { Assosiation, AssosiationConfiguration, Cadet, DeficiencyType, Inspection, Material, MaterialGroup, Prisma, StorageUnit, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@prisma/client";
 import bcrypt from 'bcrypt';
 import StaticDataGenerator, { StaticDataIdType } from "./staticDataGenerator";
-const fs = require('fs');
+import { getStaticDataIds } from "./staticDataIds"; 
 
 export class StaticData {
 
@@ -14,23 +14,16 @@ export class StaticData {
     readonly cleanup: StaticDataCleanup;
 
     constructor(i: number) {
-
-        if (!fs.existsSync('tests/_playwrightConfig/testData/staticDataIds.json')) {
-            throw Error('No Static Ids found');
+        if (i < 0 || i > 99) {
+            throw new Error("Index must be between 0 and 99");
         }
-        const staticDataIds = require('./staticDataIds.json');
-        if (i > staticDataIds.length) throw Error("ID-Array not long enough");
-        if (!(staticDataIds satisfies StaticDataIdType[])) {
-            throw Error('Ids do not satify the type');
-        }
-
 
         this.index = i;
-        this.ids = staticDataIds[i];
-        this.fk_assosiation = staticDataIds[i].fk_assosiation;
+        this.ids = getStaticDataIds(i);
+        this.fk_assosiation = this.ids.fk_assosiation;
         this.data = new StaticDataGetter(i, this.ids);
         this.fill = new StaticDataLoader(this.data);
-        this.cleanup = new StaticDataCleanup(this.data, this.fill)
+        this.cleanup = new StaticDataCleanup(this.data, this.fill);
     }
 
     async resetData() {
@@ -78,6 +71,7 @@ class StaticDataGetter {
     readonly inspections: Inspection[];
     readonly cadetInspections: Prisma.CadetInspectionCreateManyInput[];
     readonly deregistrations: Prisma.DeregistrationCreateManyInput[];
+    readonly redirects: Prisma.RedirectCreateManyInput[];
 
     constructor(i: number, ids: StaticDataIdType) {
         this.index = i;
@@ -160,11 +154,12 @@ class StaticDataGetter {
         this.inspections = generator.inspection();
         this.cadetInspections = generator.cadetInspection();
         this.deregistrations = generator.deregistrations();
+        this.redirects = generator.redirects(i);
     }
 
     async users() {
         const fk_assosiation = this.assosiation.id;
-        const password = await bcrypt.hash(process.env.TEST_USER_PASSWORD as string, 12);
+        const password = await bcrypt.hash(process.env.TEST_USER_PASSWORD??"Test!234" as string, 12);
         return [
             { id: this.userIds[0], fk_assosiation, role: 4, username: 'test4', name: `Test ${this.index} Admin`, password, active: true },
             { id: this.userIds[1], fk_assosiation, role: 3, username: 'test3', name: `Test ${this.index} Verwaltung`, password, active: true },
@@ -298,7 +293,13 @@ class StaticDataCleanup {
         await this.loader.materialIssued();
     }
 
+    async redirects() {
+        await this.deleteRedirects();
+        await this.loader.redirects();
+    }
+
     async removeAssosiation() {
+        await this.deleteRedirects();
         await this.deleteDeficiency();
         await this.deleteDeficiencyType();
 
@@ -353,8 +354,8 @@ class StaticDataCleanup {
         where: { type: { fk_assosiation: this.fk_assosiation } }
     });
     private deleteUniformType = () => prisma.uniformType.deleteMany({
-        where: { fk_assosiation: this.fk_assosiation }
-    });
+        where: { fk_assosiation: this.fk_assosiation } }
+    );
     private deleteUniformSize = () => prisma.uniformSize.deleteMany({
         where: { fk_assosiation: this.fk_assosiation }
     });
@@ -371,6 +372,9 @@ class StaticDataCleanup {
         where: { id: this.fk_assosiation }
     });
     private deleteStorage = () => prisma.storageUnit.deleteMany({
+        where: { assosiationId: this.fk_assosiation }
+    });
+    private deleteRedirects = () => prisma.redirect.deleteMany({
         where: { assosiationId: this.fk_assosiation }
     });
 }
@@ -406,6 +410,7 @@ class StaticDataLoader {
         await this.deficienciesUniform();
         await this.deficienciesCadet();
         await this.cadetInspections();
+        await this.redirects();
     }
     async assosiation() {
         await prisma.assosiation.create({
@@ -525,6 +530,11 @@ class StaticDataLoader {
     async deregistration() {
         await prisma.deregistration.createMany({
             data: this.data.deregistrations,
+        });
+    }
+    async redirects() {
+        await prisma.redirect.createMany({
+            data: this.data.redirects,
         });
     }
 }

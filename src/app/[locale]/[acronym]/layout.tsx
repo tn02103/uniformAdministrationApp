@@ -13,7 +13,7 @@ import { getUniformTypeList } from "@/dal/uniform/type/_index";
 
 export const dynamic = "force-dynamic";
 
-export async function generateStaticParams(props: any) {
+export async function generateStaticParams() {
     const assosiations = await prisma.assosiation.findMany();
 
     return assosiations.map((a) => ({ acronym: a.acronym }))
@@ -26,14 +26,16 @@ const Layout = async ({
 }: {
     children: ReactNode;
     modal: ReactNode;
-    params: { locale: string, acronym: string }
+    params: Promise<{ acronym: string }>
 }) => {
+    const { acronym } = await params;
     const { user } = await getIronSession();
+    
     if (!user) {
         return redirect('/login');
 
     }
-    if (user.acronym !== params.acronym) {
+    if (user.acronym !== acronym) {
         return redirect('/login');
     }
 

@@ -3,9 +3,11 @@ export default {
         of: "from",
         comment: "Comment",
         description: "Description",
+        details: "Details",
         name: "Name",
         type: "Type",
         loading: "Loading",
+        status: "State",
         dates: {
             "created": "Created on:",
             "updated": "Last modified:",
@@ -23,13 +25,14 @@ export default {
             create: "Create",
             addNew: "Add new",
             open: "Open",
-            reactivate: "Reaktivieren",
-            deactivate: "Deaktivieren",
+            reactivate: "Reactivate",
+            deactivate: "Deactivate",
             prevStep: "Back",
             nextStep: "Next",
             edit_item: "Edit {item}",
             issue_item: "Issue {item}",
             issue: "Issue",
+            resolve: "Resolve",
             return: "Withdraw",
             replace: "Replace",
             rename: "Rename",
@@ -43,7 +46,7 @@ export default {
             changePosition: "Change position",
             changePassword: "Change password",
             ok: "Understood",
-            startInspection: "start inspection",
+            startInspection: "Start inspection",
         },
         cadet: {
             cadet: "Person",
@@ -130,11 +133,18 @@ export default {
         error: {
             pleaseSelect: "Please select",
             unknown: "There has been an unexpected Error",
+            date: {
+                invalid: "Please enter a valid date",
+                minExcluded: "The date must be after {date}",
+                "minExcluded#today": "The date must be after today",
+                minIncluded: "The date must be on or after {date}",
+                "minIncluded#today": "The date must be on or after today",
+            },
             number: {
                 required: "Please enter a number",
                 pattern: "Please enter a valid number",
                 patternPositiv: "Please enter a valid positive number",
-                positiv: "The number needs to be positiv",
+                positiv: "The number needs to be positive",
                 max: "The number must not be higher than {value}",
                 maxLength: "Only {value} digit numbers are allowed",
                 min: "The number must be greater than {value}",
@@ -142,7 +152,7 @@ export default {
             amount: {
                 required: "Please enter a quantity",
                 max: "The quantity must not exceed {value}",
-                notNegative: "The quantity must be a positiv value"
+                notNegative: "The quantity must be a positive value"
             },
             string: {
                 required: "Please fill in",
@@ -172,7 +182,7 @@ export default {
             user: {
                 username: {
                     pattern: "The username may not contain special or blank characters",
-                    duplicate: "The username is allready used by different user",
+                    duplicate: "The username is already used by a different user",
                 },
             },
             custom: {
@@ -196,8 +206,24 @@ export default {
                         nameDuplication: "For this type of Uniform a generation with the name already exists",
                     }
                 },
+                inspection: {
+                    nameDuplication: "An inspection with this name already exists",
+                    dateDuplication: "An inspection on this day already exists",
+                },
+                redirects: {
+                    code: {
+                        duplication: "The code is already used by another redirect of this or another association",
+                    },
+                },
             },
         },
+        success: {
+            changeSortorder: "The order was changed successfully",
+        },
+    },
+    expandableArea: {
+        showMore: "Show more",
+        showLess: "Show less",
     },
     login: {
         header: "Login",
@@ -235,8 +261,8 @@ export default {
             inspection: "Uniform inspection",
             inspecting: "Inspecting VK",
             deficiencies: "Deficiencies",
-            oldDeficiencies: "old deficiencies",
-            newDeficiencies: "new deficiencies",
+            oldDeficiencies: "Old deficiencies",
+            newDeficiencies: "New deficiencies",
             "amountUnresolved#other": "- {count} unresolved",
             "amountUnresolved#zero": "- All resolved",
         },
@@ -282,13 +308,46 @@ export default {
         noData: "No data loaded",
         header: "Uniform parts",
     },
+    uniformOffcanvas: {
+        deleteAction: {
+            header: "Delete {type} {number}",
+            "message.one": "Should the uniform part {type} {number} really be deleted?",
+            "message.two": "This action cannot be undone.",
+            "success": "The uniform part was successfully deleted.",
+            "failed": "The uniform part could not be deleted.",
+        },
+        deficiency: {
+            header: "Deficiencies",
+            includeResolved: "Show resolved deficiencies",
+            cardLabel: "Deficiency {index}",
+            createCardLabel: "Create new deficiency",
+            "label.actions": "Actions for deficiency {index}",
+            "label.comment": "Comment",
+            "label.deficiencyType": "Type of deficiency",
+            "label.date.created": "Created on:",
+            "label.date.resolved": "Resolved on:",
+            "label.date.updated": "Last updated on:",
+            "label.user.created": "Created by:",
+            "label.user.resolved": "Resolved by:",
+            "label.user.updated": "Last updated by:",
+            "noDeficiencies": "No deficiencies present",
+        },
+        history: {
+            "header": "History",
+            "label.dateIssued": "Issued on",
+            "label.dateReturned": "Returned on",
+            "label.cadet": "Person",
+            "title.deleted": "Person deleted",
+            "noEntries": "No entries",
+        }
+    },
     createUniform: {
         pagination: {
-            known: "Numbers known",
+            known: "Known numbers",
             generate: "Generate numbers",
         },
         header: {
-            page: "create new uniform items",
+            page: "Create new uniform items",
             configurator: "Configuration",
             numberInput: "Enter numbers",
             itemAmounts: "Number of uniform parts",
@@ -298,73 +357,85 @@ export default {
             add: "Add",
             amount: "Amount",
             numberStart: "Numbers (from)",
-            until: "until",
+            until: "Until",
             continuous: "Continuous numbers",
             continuousTooltip: {
                 line1: "For continuous numbers, consecutive numbers are searched for each size.",
-                line2: "There can still be jumps between the sizes.",
+                line2: "There can still be gaps between the sizes.",
             },
         },
         create: {
             "label": "Create {count}",
-            "success#one": "One uniform part was successfully created",
-            "success#other": "{count} uniform parts were successfully created",
-            "failed#one": "The uniform part could not be created",
-            "failed#other": "The uniform parts could not be created",
+            "success#one": "One uniform part was successfully created.",
+            "success#other": "{count} uniform parts were successfully created.",
+            "failed#one": "The uniform part could not be created.",
+            "failed#other": "The uniform parts could not be created.",
         },
         errors: {
-            "endBiggerStart": "The start number must be smaller or equal to the end number",
-            "maxItems": "No more than 99 uniform parts can be created at the same time",
-            "minNumber": "At least one number must be generated",
-            "inUse": "The number is already assigned",
+            "endBiggerStart": "The start number must be smaller than or equal to the end number.",
+            "maxItems": "No more than 99 uniform parts can be created at the same time.",
+            "minNumber": "At least one number must be generated.",
+            "inUse": "The number is already assigned.",
         }
     },
     sidebar: {
-        logout: "logout",
-        changeLanguage: "change Language",
+        logout: "Logout",
+        changeLanguage: "Change language",
         links: {
-            cadetOverview: "staff",
-            uniformOverview: "uniform",
+            cadetOverview: "Staff",
+            uniformOverview: "Uniform",
             create: {
-                group: "create",
-                cadet: "person",
-                uniform: "uniform",
+                group: "Create",
+                cadet: "Person",
+                uniform: "Uniform",
             },
             inspection: {
-                group: "inspection",
-                start: "start",
-                stop: "stop",
-                unfinished: "finishe old inspection",
-                inspection: "administration",
+                group: "Inspection",
+                start: "Start",
+                stop: "Stop",
+                unfinished: "Finish old inspection",
+                inspection: "Administration",
             },
             administration: {
-                group: "administration",
-                uniform: "uniform",
-                size: "sizes",
-                material: "materials",
-                deficiency: "deficiency"
+                group: "Administration",
+                uniform: "Uniform",
+                size: "Sizes",
+                material: "Materials",
+                deficiency: "Deficiency",
             },
-            userOverview: "accesses",
+            userOverview: "Accesses",
+            redirects: "Redirects",
         },
+    },
+    redirects: {
+        title: "Redirects",
+        code: "Code",
+        target: "Target",
+        targetPlaceholder: "https://www.test.com",
+        active: "Status",
+        "activeLabel.true": "Active",
+        "activeLabel.false": "Inactive",
+        sourceUrl: "Source URL",
     },
     admin: {
         uniform: {
             header: "Uniform administration",
-            changeSizelistWarning: "When changing the selected size list, the size information of uniform parts of this generation may be lost",
+            changeSizelistWarning: "When changing the selected size list, the size information of uniform parts of this generation may be lost.",
             type: {
                 deleteModal: {
                     header: "Delete uniform type \"{type}\"",
                     message: {
-                        part1: "Should the uniform type \"{type}\" really be deleted.",
+                        part1: "Should the uniform type \"{type}\" really be deleted?",
                         part2: "All ",
                         'part3#one': "{count} uniform part",
                         'part3#other': "{count} uniform parts",
-                        part4: " of this type will be deleted"
+                        part4: " of this type will be deleted.",
                     },
-                    confirmationText: "Uniform type-{type}"
+                    confirmationText: "Uniform type-{type}",
                 }
             },
             generationList: {
+                "header.create": "create new generation",
                 deleteModal: {
                     header: "Delete generation \"{generation}\"",
                     message: {
@@ -375,8 +446,6 @@ export default {
                     confirmationText: "Generation-{generation}",
                 },
                 updateModal: {
-                    editHeader: "Edit generation \"{generation}\"",
-                    createHeader: "Create new generation",
                     changeSizeHeader: "Change size list",
                     changeSizeMessage: "When changing the selected size list, the size information of uniform parts of this generation may be lost",
                     nameDuplicationError: "A generation with this name already exists",
@@ -406,7 +475,7 @@ export default {
                     header: "create new size list",
                 },
                 renameModal: {
-                    header: "rename sizelist",
+                    header: "Rename size list",
                 },
                 deleteWarning: {
                     header: "Delete size list \"{name}\"",
@@ -458,13 +527,13 @@ export default {
             },
             deleteWarning: {
                 header: "Delete user {user}",
-                message: "Are you sure the user schould be deleted",
+                message: "Are you sure the user should be deleted",
             },
             error: {
                 changePassword: "Saving of the password failed",
             },
-            saved: "User updated successfuly",
-            created: "User created successfuly",
+            saved: "User updated successfully",
+            created: "User created successfully",
         },
         deficiency: {
             disabled: "disabled on: ",
@@ -481,9 +550,9 @@ export default {
                 relation: "Indicates whether a person’s defect indirectly relates to another entity. For example, in the case of the type 'Item too small' the defect would depend on the person but indirectly relate to a uniform part."
             },
             errors: {
-                deactivate: "Der Typ konnte nicht deaktiviert werden. Laden Sie die Seite neu und versuchen es erneut",
-                delete: "Das Löschen des Typs ist fehlgeschlagen. Versuchen Sie es nach einem relaod erneut",
-                reactivate: "Der Typ konnte nicht reaktiviert werden. Laden sie die Seite neu und versuchen es erneut",
+                deactivate: "The type could not be deactivated. Please reload the page and try again.",
+                delete: "Deleting the type failed. Please try again after a reload.",
+                reactivate: "The type could not be reactivated. Please reload the page and try again.",
             },
             entity: {
                 cadet: "person",
@@ -491,10 +560,10 @@ export default {
                 material: "material",
             },
             delete: {
-                header: "Typ {type} löschen",
-                'message#zero': "Soll der Typ wirklich gelöscht werden? Diese Aktion ist nicht wieder umkehrbar.",
-                'message#one': "Soll der Typ wirklich gelöscht werden? Hierbei wird der eine vorhandene Mangel ebenfalls gelöscht. Diese Aktion ist nicht wieder umkehrbar.",
-                'message#other': "Soll der Typ wirklich gelöscht werden? Hierbei werden alle {count} vorhandenen Mängel ebenfalls gelöscht. Diese Aktion ist nicht wieder umkehrbar.",
+                header: "Delete type {type}",
+                'message#zero': "Should the type really be deleted? This action cannot be undone.",
+                'message#one': "Should the type really be deleted? The one existing deficiency will also be deleted. This action cannot be undone.",
+                'message#other': "Should the type really be deleted? All {count} existing deficiencies will also be deleted. This action cannot be undone.",
             },
         },
     },
@@ -503,6 +572,18 @@ export default {
             planned: 'planned inspections',
         },
         planned: {
+            deregistration: {
+                header: "Deregistrations {name}",
+                "label.person": "person",
+                "label.date": "Date",
+                "label.remove": "Remove deregistration",
+                "label.add": "deregister person",
+            },
+            delete: {
+                header: "Delete inspection",
+                message: "Should the inspection \"{name}\" really be deleted? This action cannot be undone.",
+                primary: "delete",
+            },
             badge: {
                 new: "new",
                 planned: "planned",
@@ -524,8 +605,8 @@ export default {
                 noInspections: 'No inspections planned',
             },
             errors: {
-                deregistration: "The person could not be deregistered from the inspection",
-                register: "The deregistration of the person could not be undone",
+                deregistration: "The person {firstname} {lastname} could not be deregistered from the inspection. Please reload the page and try again.",
+                register: "The deregistration of the person {firstname} {lastname} could not be undone. Please reload the page and try again.",
                 start: "The inspection could not be started",
                 nameDuplication: "The name is already used by another inspection",
                 endBeforStart: "The end time must be after the start time by {startTime}",
@@ -553,6 +634,12 @@ export default {
         "admin.deficiency": "deficiency configuration - Uniformadmin"
     },
     modals: {
+        ariaLabel: {
+            message: "Message",
+            danger: "Danger message",
+            warning: "Warning message",
+            error: "Error message",
+        },
         messageModal: {
             uniform: {
                 return: {

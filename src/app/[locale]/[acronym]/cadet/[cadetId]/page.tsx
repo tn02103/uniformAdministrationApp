@@ -10,14 +10,15 @@ import CadetUniformTableContainer from "./_uniformTable/container";
 import CadetDropDown from "./cadetDropDown";
 import { getScopedI18n } from "@/lib/locales/config";
 
-export async function generateMetadata({ params }: { params: ParamType }) {
+export async function generateMetadata({ params }: { params: Promise<ParamType> }) {
+    const { cadetId } = await params;
     const t = await getScopedI18n('pageTitles');
-    if (params.cadetId === "new") {
+    if (cadetId === "new") {
         return {
             title: t('cadet.new')
         }
     }
-    const cadet = await getCadetData(params.cadetId).catch(() => null);
+    const cadet = await getCadetData(cadetId).catch(() => null);
     if (cadet) {
         return {
             title: t('cadet.person', { firstname: cadet.firstname, lastname: cadet.lastname }),
@@ -26,10 +27,7 @@ export async function generateMetadata({ params }: { params: ParamType }) {
 }
 
 type PropType = {
-    params: {
-        cadetId: string;
-        locale: string;
-    };
+    params: Promise<ParamType>;
 }
 export type ParamType = {
     cadetId: string;
@@ -37,10 +35,12 @@ export type ParamType = {
 }
 
 const CadetDetailPage = async (props: PropType) => {
-    const newCadet = props.params.cadetId === "new";
+    const { cadetId } = await props.params;
+    const newCadet = cadetId === "new";
     const { user } = await getIronSession();
+    let cadet;
     if (!newCadet) {
-        var cadet = await getCadetData(props.params.cadetId).catch(() => undefined);
+        cadet = await getCadetData(cadetId).catch(() => undefined);
 
         if (!cadet) {
             return notFound();
@@ -70,12 +70,12 @@ const CadetDetailPage = async (props: PropType) => {
                 }
                 {(!newCadet) &&
                     <Col xs={12} md={8} lg={7} xl={4} className="p-0 pb-3">
-                        <MaterialTableContainer cadetId={props.params.cadetId} />
+                        <MaterialTableContainer cadetId={cadetId} />
                     </Col>
                 }
                 {(!newCadet) &&
                     <Col xs={12} className="p-0">
-                        <CadetUniformTableContainer cadetId={props.params.cadetId} />
+                        <CadetUniformTableContainer cadetId={cadetId} />
                     </Col>
                 }
             </Row>

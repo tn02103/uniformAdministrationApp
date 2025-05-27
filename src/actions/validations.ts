@@ -3,7 +3,6 @@ import { UnauthorizedException } from "@/errors/CustomException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { IronSessionUser, getIronSession } from "@/lib/ironSession";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -18,27 +17,20 @@ type AssosiationValidationDataType = {
     materialId?: string | (string | undefined)[],
     materialGroupId?: string | string[],
     deficiencytypeId?: string | string[],
+    deficiencyId?: string | string[],
     inspectionId?: string | string[],
     storageUnitId?: string | string[],
 }
 
-export const getSAReturnType = <t>() => {
-    type returntype = {
-        error: {
-            message: string,
-            formField?: string,
-        }
-    }
-}
 function assosiationValidator(assosiationValidations: AssosiationValidationDataType, fk_assosiation: string) {
-    const validationPromisses: Promise<any>[] = [];
-    const validate = (ids: string | (string | undefined)[], validator: (id: string, assosiationId: string) => Promise<any>) => {
+    const validationPromises: Promise<object>[] = [];
+    const validate = (ids: string | (string | undefined)[], validator: (id: string, assosiationId: string) => Promise<object>) => {
         if (Array.isArray(ids)) {
-            validationPromisses.push(
+            validationPromises.push(
                 ...ids.filter(id => id != undefined).map((id) => validator(id as string, fk_assosiation))
             );
         } else {
-            validationPromisses.push(
+            validationPromises.push(
                 validator(ids, fk_assosiation)
             );
         }
@@ -79,19 +71,22 @@ function assosiationValidator(assosiationValidations: AssosiationValidationDataT
     if (assosiationValidations.deficiencytypeId) {
         validate(assosiationValidations.deficiencytypeId, validateDeficiencytypeAssosiation);
     }
+    if (assosiationValidations.deficiencyId) {
+        validate(assosiationValidations.deficiencyId, validateDeficiencyAssosiation);
+    }
     if (assosiationValidations.inspectionId) {
         validate(assosiationValidations.inspectionId, validateInspectionAssosiation);
     }
     if (assosiationValidations.storageUnitId) {
         validate(assosiationValidations.storageUnitId, validateStorageUnitAssosiation);
     }
-    return Promise.all(validationPromisses);
+    return Promise.all(validationPromises);
 }
 
 
 export const genericSAValidator = async <T>(
     requiredRole: AuthRole,
-    data: any,
+    data: T,
     shema: z.ZodType<T>,
     assosiationValidations?: AssosiationValidationDataType
 ): Promise<[IronSessionUser, T]> => {
@@ -184,6 +179,7 @@ const validateMaterialGroupAssosiation = async (materialGroupId: string, assosia
             fk_assosiation: assosiationId,
         }
     });
+
 const validateMaterailAssosiation = async (materialId: string, assosiationId: string) => prisma.material.findUniqueOrThrow({
     where: {
         id: materialId,
@@ -208,6 +204,15 @@ const validateDeficiencytypeAssosiation = async (id: string, fk_assosiation: str
     prisma.deficiencyType.findUniqueOrThrow({
         where: {
             id, fk_assosiation
+        }
+    });
+const validateDeficiencyAssosiation = async (id: string, fk_assosiation: string) =>
+    prisma.deficiency.findUniqueOrThrow({
+        where: {
+            id,
+            type: {
+                fk_assosiation
+            }
         }
     });
 const validateInspectionAssosiation = async (id: string, fk_assosiation: string) =>

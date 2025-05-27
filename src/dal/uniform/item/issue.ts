@@ -43,6 +43,9 @@ export const issue = async (props: IssuePropType): Promise<CadetUniformMap | SAE
         include: {
             type: true,
             issuedEntries: {
+                where: {
+                    dateReturned: null,
+                },
                 include: { cadet: { ...cadetArgs } }
             },
         }
@@ -130,7 +133,7 @@ export const issue = async (props: IssuePropType): Promise<CadetUniformMap | SAE
 })
 ).then((cadetId: string) =>
     __unsecuredGetCadetUniformMap(cadetId)
-).catch((error: any) => {
+).catch((error) => {
     if (error instanceof CustomException && !(error instanceof SaveDataException)) {
         return {
             error: {

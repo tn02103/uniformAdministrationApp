@@ -7,7 +7,7 @@ import { PersonnelListCadet } from "@/types/globalCadetTypes";
 import { z } from "zod";
 import { getInspectionState } from "../inspection/state";
 
-const getPersonnelListPropShema = z.object({
+const getPersonnelListPropSchema = z.object({
     orderBy: z.enum(['lastname', 'firstname']),
     asc: z.boolean(),
     include: z.object({
@@ -15,11 +15,11 @@ const getPersonnelListPropShema = z.object({
         inspected: z.boolean(),
     }).partial(),
 });
-type getPersonnelListPropShema = z.infer<typeof getPersonnelListPropShema>;
-export const getPersonnelListOverviewData = (props: getPersonnelListPropShema): Promise<PersonnelListCadet[]> => genericSAValidator(
+type getPersonnelListPropSchema = z.infer<typeof getPersonnelListPropSchema>;
+export const getPersonnelListOverviewData = async (props: getPersonnelListPropSchema): Promise<PersonnelListCadet[]> => genericSAValidator(
     AuthRole.user,
     props,
-    getPersonnelListPropShema,
+    getPersonnelListPropSchema,
 ).then(async ([{ assosiation, role }, { orderBy, asc, include }]) => {
     const inspectionState = await getInspectionState();
     if (role < AuthRole.inspector) {
@@ -60,8 +60,11 @@ const getRestrictedPersonnelList = (fk_assosiation: string, orderBy: "lastname" 
 };
 // Export to view
 const getPersonnelList = async (fk_assosiation: string, orderBy: "lastname" | "firstname", asc: boolean, exclude?: { inspectionId: string, exclDeregistrations?: boolean, exclInspected?: boolean }): Promise<PersonnelListCadet[]> => {
+    const getAsc = (asc: boolean): "asc" | "desc" => asc ? "asc" : "desc";
+    
     let joins = "";
     let where = "";
+    let order = "";
     if (exclude?.exclDeregistrations) {
         joins += `
             LEFT JOIN inspection.deregistration d 
@@ -82,13 +85,20 @@ const getPersonnelList = async (fk_assosiation: string, orderBy: "lastname" | "f
             AND ci.id IS NULL
         `;
     }
+    if (orderBy === "lastname") {
+        order = `lastname ${getAsc(asc)}, firstname ${getAsc(asc)}`;
+    } else {
+        order = `firstname ${getAsc(asc)}, lastname ${getAsc(asc)}`;
+    }
+
+
     const sql = `
         SELECT v.*
           FROM base.v_cadet_generaloverview v
                ${joins}
          WHERE fk_assosiation = '${fk_assosiation}'
                ${where}
-      ORDER BY ${(orderBy === "lastname") ? "lastname" : "firstname"} ${asc ? "asc" : "desc"}
+      ORDER BY ${order}
     `;
 
     return prisma.$queryRawUnsafe<PersonnelListCadet[]>(sql)

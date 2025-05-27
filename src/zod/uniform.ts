@@ -1,12 +1,16 @@
-import { TypeOf, z } from "zod";
+import { z } from "zod";
+import { customErrorMap } from "./customZod/customErrorMap";
 
+z.setErrorMap(customErrorMap);
 export const uniformNumberSchema = z.number().min(1, "uniform.number.min").max(16_000_000, "uniform.number.max");
-export const uniformFormSchema = z.object({
+export const getUniformFormSchema = (usingGeneration: boolean = false, usingSizes: boolean = false) => z.object({
     id: z.string().uuid(),
     number: uniformNumberSchema,
-    generation: z.string().uuid().nullable().optional(),
-    size: z.string().uuid().nullable().optional(),
+    generation: usingGeneration ? z.string().nonempty().uuid() : z.string().uuid().nullable().optional(),
+    size: usingSizes ? z.string().nonempty().uuid() : z.string().uuid().nullable().optional(),
     comment: z.string(),
     isReserve: z.boolean(),
-});
-export type UniformFormType = z.infer<typeof uniformFormSchema>;
+})
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const schema = getUniformFormSchema();
+export type UniformFormType = z.infer<typeof schema>;

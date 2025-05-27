@@ -63,7 +63,7 @@ it('should throw error for fk_sizeList null while using sizes', async () => {
     expect(dbData).toBeNull();
 });
 it('should throw error for invalid fk_sizelist', async () => {
-    const { success, result } = await runServerActionTest(
+    const { success } = await runServerActionTest(
         create({
             ...defaultProps,
             fk_sizelist: ids.cadetIds[0],

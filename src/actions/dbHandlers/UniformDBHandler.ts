@@ -1,10 +1,37 @@
 import { prisma } from "@/lib/db";
+import { CadetUniformMap } from "@/types/globalCadetTypes";
 import { uniformArgs, uniformWithOwnerArgs } from "@/types/globalUniformTypes";
 import { Prisma, PrismaClient } from "@prisma/client";
 
 
 export class UniformDBHandler {
-      getListWithOwner = async (fk_uniformType: string, hiddenGenerations: string[], hiddenSizes: string[], sqlFilter: object, sortOrder: Prisma.UniformOrderByWithRelationInput[], orderByOwner: boolean, asc: boolean) => prisma.uniform.findMany({
+    getMap = async (cadetId: string, client?: PrismaClient) =>
+        (client ?? prisma).uniform.findMany({
+            ...uniformArgs,
+            where: {
+                issuedEntries: {
+                    some: {
+                        fk_cadet: cadetId,
+                        dateReturned: null
+                    }
+                },
+                recdelete: null,
+            },
+            orderBy: {
+                number: "asc",
+            }
+        }).then(list => list.reduce(
+            (map: CadetUniformMap, item) => {
+                if (!map[item.type.id]) {
+                    map[item.type.id] = [];
+                }
+
+                map[item.type.id].push(item);
+                return map;
+            }, {}
+        ));
+
+    getListWithOwner = async (fk_uniformType: string, hiddenGenerations: string[], hiddenSizes: string[], sqlFilter: Prisma.UniformFindManyArgs["where"], sortOrder: Prisma.UniformOrderByWithRelationInput[], orderByOwner: boolean, asc: boolean) => prisma.uniform.findMany({
         ...uniformWithOwnerArgs,
         where: {
             ...sqlFilter,

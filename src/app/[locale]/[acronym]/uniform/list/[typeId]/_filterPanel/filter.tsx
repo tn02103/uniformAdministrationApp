@@ -6,7 +6,7 @@ import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect } from "react";
 import { Accordion, Button, Col, Form, Row } from "react-bootstrap";
-import { FormProvider, useForm, useFormContext } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { useSessionStorage } from "usehooks-ts";
 import { FilterType } from ".";
 import FilterAccordionBody from "./filterAccordionBody";
@@ -57,7 +57,6 @@ export default function Filter({
             reset(options);
         }
     }, [uniformType, sizeList, reset, filter]);
-
 
     return (
         <>

@@ -12,6 +12,6 @@ const dbQuery = new PlannedInspectionDBQuery();
  * @scope **
  * @returns list of Inspections
  */
-export const getPlannedInspectionList = (): Promise<PlannedInspectionType[]> => genericSAValidatorV2(
+export const getPlannedInspectionList = async (): Promise<PlannedInspectionType[]> => genericSAValidatorV2(
     AuthRole.materialManager, true, {}
 ).then(async ({ assosiation }) => dbQuery.plannedInspectionListQuery(assosiation, prisma));

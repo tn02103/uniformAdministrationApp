@@ -1,11 +1,10 @@
 "use client";
 
 import { createSize } from "@/actions/controllers/UniformSizeController";
-import TooltipIconButton from "@/components/TooltipIconButton";
+import TooltipIconButton from "@/components/Buttons/TooltipIconButton";
 import { CardHeader } from "@/components/card";
 import { useModal } from "@/components/modals/modalProvider";
 import { useI18n } from "@/lib/locales/client";
-import { t } from "@/lib/test";
 import { nameValidationPattern } from "@/lib/validations";
 import { UniformSize } from "@/types/globalUniformTypes";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -35,11 +34,12 @@ export default function UniformsizeConfigurationHeader({ sizes }: { sizes: Unifo
                 },
                 validate: (value) => !sizes.find(s => s.name === value) || t('admin.uniform.size.createModal.nameDuplicationError'),
             },
-            save: async ({ input }) =>
-                createSize(input).catch(e => {
+            save: async ({ input }) => {
+                await createSize(input).catch(e => {
                     console.error(e);
                     toast.error(t('common.error.actions.save'));
-                }),
+                });
+            },
             abort: () => { }
         })
     }

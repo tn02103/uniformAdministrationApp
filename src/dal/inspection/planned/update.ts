@@ -1,13 +1,12 @@
 "use server";
 
 import { genericSAValidator } from "@/actions/validations";
+import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { plannedInspectionFormShema } from "@/zod/inspection";
 import { z } from "zod";
 import { PlannedInspectionDBQuery } from "./_dbQuerys";
-import SaveDataException from "@/errors/SaveDataException";
-import dayjs from "dayjs";
 
 const dbQuery = new PlannedInspectionDBQuery();
 
@@ -25,7 +24,7 @@ type propSchema = z.infer<typeof propSchema>;
  * @param props id & data of plannedInspectionFormSchema,
  * @returns 
  */
-export const updatePlannedInspection = (props: propSchema) => genericSAValidator(
+export const updatePlannedInspection = async (props: propSchema) => genericSAValidator(
     AuthRole.materialManager,
     props,
     propSchema,
@@ -40,7 +39,7 @@ export const updatePlannedInspection = (props: propSchema) => genericSAValidator
     if (inspList.find(i => i.name === data.name)) {
         throw new SaveDataException('Could not save Inspection. Name is duplicated');
     }
-    if (inspList.find(i => dayjs(i.date).isSame(data.date, "day"))) {
+    if (inspList.find(i => i.date === data.date)) {
         throw new SaveDataException('Could not save Inspection. Date is duplicated');
     }
 

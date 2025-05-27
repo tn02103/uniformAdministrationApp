@@ -19,11 +19,12 @@ const typeDescriptionArgs = Prisma.validator<Prisma.UniformTypeFindManyArgs>()({
         name: true,
     }
 });
-const cadetDescriptionArgs = Prisma.validator<Prisma.CadetFindManyArgs>()({
+const cadetDescriptionArgs = (config: {withDeleted: boolean}) => Prisma.validator<Prisma.CadetFindManyArgs>()({
     select: {
         id: true,
         firstname: true,
         lastname: true,
+        recdelete: config.withDeleted,
     }
 });
 
@@ -38,7 +39,7 @@ export const uniformWithOwnerArgs = Prisma.validator<Prisma.UniformFindManyArgs>
         size: sizeDescriptionArgs,
         issuedEntries: {
             select: {
-                cadet: cadetDescriptionArgs,
+                cadet: cadetDescriptionArgs({withDeleted: false}),
             },
             where: {
                 dateReturned: null,
@@ -57,6 +58,17 @@ export const uniformArgs = Prisma.validator<Prisma.UniformFindManyArgs>()({
         size: sizeDescriptionArgs,
     }
 })
+export const uniformHistoryArgs = Prisma.validator<Prisma.UniformIssuedFindManyArgs>()({
+    select: {
+        id: true,
+        dateIssued: true,
+        dateReturned: true,
+        cadet: cadetDescriptionArgs({withDeleted: true}),
+    },
+    orderBy: {
+        dateIssued: "desc",
+    }
+});
 
 export type UniformWithOwner = Prisma.UniformGetPayload<typeof uniformWithOwnerArgs>;
 export type Uniform = Prisma.UniformGetPayload<typeof uniformArgs>;
@@ -64,6 +76,8 @@ export type UniformLabel = {
     id: string,
     description: string,
 }
+export type UniformHistroyEntry = Prisma.UniformIssuedGetPayload<typeof uniformHistoryArgs>;
+
 // CONFIGURATION
 export const uniformGenerationArgs = Prisma.validator<Prisma.UniformGenerationFindManyArgs>()({
     select: {
@@ -72,8 +86,14 @@ export const uniformGenerationArgs = Prisma.validator<Prisma.UniformGenerationFi
         fk_sizelist: true,
         outdated: true,
         sortOrder: true,
+        sizelist: {
+            select: {
+                id: true,
+                name: true,
+            },
+        },
     },
-    orderBy: { sortOrder: "asc" }
+    orderBy: { sortOrder: "asc" },
 })
 export const uniformTypeArgs = Prisma.validator<Prisma.UniformTypeFindManyArgs>()({
     select: {
@@ -84,6 +104,12 @@ export const uniformTypeArgs = Prisma.validator<Prisma.UniformTypeFindManyArgs>(
         usingGenerations: true,
         usingSizes: true,
         fk_defaultSizelist: true,
+        defaultSizelist: {
+            select: {
+                id: true,
+                name: true,
+            }
+        },
         uniformGenerationList: {
             ...uniformGenerationArgs,
             where: {

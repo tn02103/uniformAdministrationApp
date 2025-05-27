@@ -11,7 +11,7 @@ const Footer = () => {
     const pathname = usePathname();
 
     return (
-        <div data-testid="div_layout_footer" className="fixed-bottom bg-navy d-flex flex-row justify-content-evenly align-items-middle text-white">
+        <div data-testid="div_layout_footer" className="fixed-bottom footer bg-navy d-flex flex-row justify-content-evenly align-items-middle text-white">
             <Link data-testid="lnk_home" href={"/app"} className={`align-items-center m-2 fs-1 ${pathname === "/" ? "text-primary" : ""}`}>
                 <FontAwesomeIcon icon={faHome} />
             </Link>

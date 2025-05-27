@@ -1,10 +1,10 @@
-import { AssosiationConfiguration, Deregistration, Inspection, Prisma, StorageUnit, Uniform } from "@prisma/client";
+import { AssosiationConfiguration, Deregistration, Inspection, Prisma, Redirect, StorageUnit, Uniform } from "@prisma/client";
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import utc from "dayjs/plugin/utc";
+import { v4 as uuid } from "uuid";
 dayjs.extend(utc);
 dayjs.extend(customParseFormat);
-import { v4 as uuid } from "uuid";
 
 const uuidArray = (i: number) => Array(i).fill("").map(() => uuid());
 
@@ -23,6 +23,7 @@ export type StaticDataIdType = {
     uniformIds: string[][];
     uniformTypeIds: string[];
     storageUnitIds: string[];
+    redirectIds: string[];
     dynamic: {
         firstInspection: {
             id: string;
@@ -46,9 +47,10 @@ export function getStaticDataIds(): StaticDataIdType {
         storageUnitIds: uuidArray(5),
         materialGroupIds: uuidArray(5),
         materialIds: uuidArray(12),
-        deficiencyTypeIds: uuidArray(7),
-        deficiencyIds: uuidArray(14),
+        deficiencyTypeIds: uuidArray(8),
+        deficiencyIds: uuidArray(16),
         inspectionIds: uuidArray(6),
+        redirectIds: uuidArray(4),
         dynamic: {
             firstInspection: {
                 id: uuid(),
@@ -402,7 +404,16 @@ export default class StaticDataGenerator {
             { fk_cadet: this.ids.cadetIds[9], fk_uniform: this.ids.uniformIds[0][70], dateIssued: new Date('2023-08-13T09:13:45.000Z'), dateReturned: null },
             { fk_cadet: this.ids.cadetIds[9], fk_uniform: this.ids.uniformIds[3][9], dateIssued: new Date('2023-08-13T09:06:44.000Z'), dateReturned: null },
             { fk_cadet: this.ids.cadetIds[9], fk_uniform: this.ids.uniformIds[2][61], dateIssued: new Date('2023-08-13T09:18:32.000Z'), dateReturned: null },
-        ]
+            { fk_cadet: this.ids.cadetIds[2], fk_uniform: this.ids.uniformIds[0][55], dateIssued: new Date('2023-08-20T09:00:00.000Z'), dateReturned: new Date('2023-08-25T09:00:00.000Z') },
+            { fk_cadet: this.ids.cadetIds[3], fk_uniform: this.ids.uniformIds[0][55], dateIssued: new Date('2023-08-26T09:00:00.000Z'), dateReturned: new Date('2023-08-30T09:00:00.000Z') },
+            { fk_cadet: this.ids.cadetIds[4], fk_uniform: this.ids.uniformIds[0][55], dateIssued: new Date('2023-09-01T09:00:00.000Z'), dateReturned: new Date('2023-09-05T09:00:00.000Z') },
+            { fk_cadet: this.ids.cadetIds[5], fk_uniform: this.ids.uniformIds[0][56], dateIssued: new Date('2023-08-20T10:00:00.000Z'), dateReturned: new Date('2023-08-24T10:00:00.000Z') },
+            { fk_cadet: this.ids.cadetIds[6], fk_uniform: this.ids.uniformIds[0][56], dateIssued: new Date('2023-08-25T10:00:00.000Z'), dateReturned: new Date('2023-08-29T10:00:00.000Z') },
+            { fk_cadet: this.ids.cadetIds[7], fk_uniform: this.ids.uniformIds[0][56], dateIssued: new Date('2023-09-01T10:00:00.000Z'), dateReturned: new Date('2023-09-04T10:00:00.000Z') },
+            { fk_cadet: this.ids.cadetIds[8], fk_uniform: this.ids.uniformIds[0][86], dateIssued: new Date('2023-08-01T09:00:00.000Z'), dateReturned: new Date('2023-08-05T09:00:00.000Z') },
+            { fk_cadet: this.ids.cadetIds[9], fk_uniform: this.ids.uniformIds[0][86], dateIssued: new Date('2023-08-06T09:00:00.000Z'), dateReturned: new Date('2023-08-10T09:00:00.000Z') },
+            { fk_cadet: this.ids.cadetIds[0], fk_uniform: this.ids.uniformIds[0][86], dateIssued: new Date('2023-08-11T09:00:00.000Z'), dateReturned: new Date('2023-08-15T09:00:00.000Z') },
+        ];
     }
 
     materialGroup() {
@@ -487,6 +498,7 @@ export default class StaticDataGenerator {
             { id: this.ids.deficiencyTypeIds[4], fk_assosiation: this.ids.fk_assosiation, name: 'inactive', dependent: 'cadet', relation: null, disabledDate: new Date('2023-08-13T09:58:00.000Z'), disabledUser: 'test4' },
             { id: this.ids.deficiencyTypeIds[5], fk_assosiation: this.ids.fk_assosiation, name: 'XX unused type', dependent: 'cadet', relation: 'material', disabledDate: null, disabledUser: null },
             { id: this.ids.deficiencyTypeIds[6], fk_assosiation: this.ids.fk_assosiation, name: 'inactive seccond', dependent: 'cadet', relation: 'material', disabledDate: new Date('2023-08-01T09:58:00.000Z'), disabledUser: 'test4' },
+            { id: this.ids.deficiencyTypeIds[7], fk_assosiation: this.ids.fk_assosiation, name: 'Uniform Broken', dependent: 'uniform', relation: null, disabledDate: null, disabledUser: null },
         ]
     }
     deficiency() {
@@ -501,7 +513,7 @@ export default class StaticDataGenerator {
                 id: this.ids.deficiencyIds[1], fk_deficiencyType: this.ids.deficiencyTypeIds[0], description: 'Typ1-1146', comment: 'Uniform Deficiency Sven Keller Unresolved',
                 fk_inspection_created: this.ids.inspectionIds[0], fk_inspection_resolved: null,
                 dateCreated: new Date('2023-06-17T00:00:00.000Z'), dateUpdated: new Date('2023-06-17T00:00:00.000Z'), dateResolved: null,
-                userCreated: 'test4', userUpdated: 'test4', userResolved: null
+                userCreated: 'test2', userUpdated: 'test3', userResolved: null
             },
             {
                 id: this.ids.deficiencyIds[2], fk_deficiencyType: this.ids.deficiencyTypeIds[0], description: 'Typ1-1146', comment: 'Uniform Deficiency Sven Keller Resolved',
@@ -575,6 +587,18 @@ export default class StaticDataGenerator {
                 dateCreated: new Date('2023-08-13T00:00:00.000Z'), dateUpdated: new Date('2023-08-13T00:00:00.000Z'), dateResolved: null,
                 userCreated: 'test4', userUpdated: 'test4', userResolved: null
             },
+            {
+                id: this.ids.deficiencyIds[14], fk_deficiencyType: this.ids.deficiencyTypeIds[7], description: 'Typ1-1146', comment: 'Broken Uniform Deficiency Resolved',
+                fk_inspection_created: null, fk_inspection_resolved: this.ids.inspectionIds[1],
+                dateCreated: new Date('2023-07-01T00:00:00.000Z'), dateUpdated: new Date('2023-07-01T00:00:00.000Z'), dateResolved: new Date('2023-08-13T00:00:00.000Z'),
+                userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4'
+            },
+            {
+                id: this.ids.deficiencyIds[15], fk_deficiencyType: this.ids.deficiencyTypeIds[7], description: 'Typ1-1146', comment: 'Broken Uniform Deficiency Unresolved',
+                fk_inspection_created: null, fk_inspection_resolved: null,
+                dateCreated: new Date('2023-07-15T00:00:00.000Z'), dateUpdated: new Date('2023-07-15T00:00:00.000Z'), dateResolved: null,
+                userCreated: 'test4', userUpdated: 'test4', userResolved: null
+            },
         ]
     }
 
@@ -598,15 +622,17 @@ export default class StaticDataGenerator {
             { deficiencyId: this.ids.deficiencyIds[1], fk_uniform: this.ids.uniformIds[0][46] },
             { deficiencyId: this.ids.deficiencyIds[2], fk_uniform: this.ids.uniformIds[0][46] },
             { deficiencyId: this.ids.deficiencyIds[3], fk_uniform: this.ids.uniformIds[0][68] },
+            { deficiencyId: this.ids.deficiencyIds[14], fk_uniform: this.ids.uniformIds[0][46] },
+            { deficiencyId: this.ids.deficiencyIds[15], fk_uniform: this.ids.uniformIds[0][46] },
         ];
     }
     inspection() {
         return [
-            { id: this.ids.inspectionIds[0], fk_assosiation: this.ids.fk_assosiation, name: "Quartal 1", date: new Date('2023-06-18T00:00:00.000Z'), timeStart: dayjs.utc("07:58:30", 'HH:mm:ss').toDate(), timeEnd: dayjs.utc("13:06:34", "HH:mm:ss").toDate() },
-            { id: this.ids.inspectionIds[1], fk_assosiation: this.ids.fk_assosiation, name: "Quartal 2", date: new Date('2023-08-13T00:00:00.000Z'), timeStart: dayjs.utc("07:58:30", 'HH:mm:ss').toDate(), timeEnd: dayjs.utc("13:06:34", "HH:mm:ss").toDate() },
-            { id: this.ids.inspectionIds[2], fk_assosiation: this.ids.fk_assosiation, name: "expired", date: new Date('2023-08-17T00:00:00.000Z'), timeStart: null, timeEnd: null },
-            { id: this.ids.inspectionIds[3], fk_assosiation: this.ids.fk_assosiation, name: "planned", date: dayjs().add(10, "day").toDate(), timeStart: null, timeEnd: null },
-            { id: this.ids.inspectionIds[4], fk_assosiation: this.ids.fk_assosiation, name: "today", date: dayjs.utc().toDate(), timeStart: null, timeEnd: null },
+            { id: this.ids.inspectionIds[0], fk_assosiation: this.ids.fk_assosiation, name: "Quartal 1", date: '2023-06-18', timeStart: "07:58", timeEnd: "13:06" },
+            { id: this.ids.inspectionIds[1], fk_assosiation: this.ids.fk_assosiation, name: "Quartal 2", date: '2023-08-13', timeStart: "07:58", timeEnd: "13:06" },
+            { id: this.ids.inspectionIds[2], fk_assosiation: this.ids.fk_assosiation, name: "expired", date: '2023-08-17', timeStart: null, timeEnd: null },
+            { id: this.ids.inspectionIds[3], fk_assosiation: this.ids.fk_assosiation, name: "planned", date: dayjs().add(10, "day").format("YYYY-MM-DD"), timeStart: null, timeEnd: null },
+            { id: this.ids.inspectionIds[4], fk_assosiation: this.ids.fk_assosiation, name: "today", date: dayjs().format("YYYY-MM-DD"), timeStart: null, timeEnd: null },
         ] satisfies Inspection[];
     }
     cadetInspection() {
@@ -633,5 +659,14 @@ export default class StaticDataGenerator {
             { fk_cadet: this.ids.cadetIds[7], fk_inspection: this.ids.inspectionIds[2], date: dayjs().subtract(5, "day").toDate() },
             { fk_cadet: this.ids.cadetIds[8], fk_inspection: this.ids.inspectionIds[2], date: dayjs().subtract(5, "day").toDate() },
         ] satisfies Deregistration[]
+    }
+
+    redirects(index: number | string) {
+        return [
+            { id: this.ids.redirectIds[0], assosiationId: this.ids.fk_assosiation, code: 'homepage' + index, target: 'https://example.com/homepage', active: true },
+            { id: this.ids.redirectIds[1], assosiationId: this.ids.fk_assosiation, code: 'ausbildung' + index, target: 'https://example.com/ausbildung', active: true },
+            { id: this.ids.redirectIds[2], assosiationId: this.ids.fk_assosiation, code: 'kontakt' + index, target: 'https://example.com/kontakt', active: true },
+            { id: this.ids.redirectIds[3], assosiationId: this.ids.fk_assosiation, code: 'impressum' + index, target: 'https://example.com/impressum', active: false },
+        ] satisfies Redirect[];
     }
 }

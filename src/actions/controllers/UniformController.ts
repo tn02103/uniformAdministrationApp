@@ -1,19 +1,16 @@
 "use server";
 
 import { FilterType } from "@/app/[locale]/[acronym]/uniform/list/[typeId]/_filterPanel";
-import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { uuidValidationPattern } from "@/lib/validations";
-import { IssuedEntryType, UniformFormData, UniformNumbersSizeMap, UniformWithOwner, uniformArgs } from "@/types/globalUniformTypes";
+import { IssuedEntryType, UniformFormData, UniformWithOwner } from "@/types/globalUniformTypes";
 import { Prisma } from "@prisma/client";
 import { notFound } from "next/navigation";
 import { UniformDBHandler } from "../dbHandlers/UniformDBHandler";
-import { UniformTypeDBHandler } from "../dbHandlers/UniformTypeDBHandler";
 import { genericSAValidatorV2 } from "../validations";
 
 const dbHandler = new UniformDBHandler();
-const typeHandler = new UniformTypeDBHandler();
 
 /**
  * Function counts the number Uniformitems there are for the given uniformType. 
@@ -21,7 +18,7 @@ const typeHandler = new UniformTypeDBHandler();
  * @param uniformTypeId 
  * @returns number 
  */
-export const getUniformCountByType = (uniformTypeId: string) => genericSAValidatorV2(
+export const getUniformCountByType = async (uniformTypeId: string) => genericSAValidatorV2(
     AuthRole.materialManager,
     (uuidValidationPattern.test(uniformTypeId)),
     { uniformTypeId }
@@ -58,7 +55,7 @@ export const getUniformListWithOwner = async (uniformTypeId: string, orderBy: st
         && (!filter || filterTypeValidator(filter))),
     { uniformTypeId }
 ).then(() => {
-    const sqlFilter: any = {};
+    const sqlFilter: Prisma.UniformFindManyArgs["where"] = {};
     const hiddenGenerations = filter ? Object.entries(filter.generations).filter(([, value]) => !value).map(([key,]) => key) : [];
     const hiddenSizes = filter ? Object.entries(filter.sizes).filter(([, value]) => !value).map(([key,]) => key) : [];
 
@@ -129,7 +126,7 @@ export const getUniformListWithOwner = async (uniformTypeId: string, orderBy: st
  * @param uniformId 
  * @returns UniformFormData
  */
-export const getUniformFormValues = (uniformId: string): Promise<UniformFormData> => genericSAValidatorV2(
+export const getUniformFormValues = async (uniformId: string): Promise<UniformFormData> => genericSAValidatorV2(
     AuthRole.user,
     (uuidValidationPattern.test(uniformId)),
     { uniformId }
@@ -148,7 +145,7 @@ export const getUniformFormValues = (uniformId: string): Promise<UniformFormData
  * @param uniformId 
  * @returns an array containing date off issue and return, description of cadet with boolean if deleted.
  */
-export const getUniformIssueHistory = (uniformId: string): Promise<IssuedEntryType[]> => genericSAValidatorV2(
+export const getUniformIssueHistory = async (uniformId: string): Promise<IssuedEntryType[]> => genericSAValidatorV2(
     AuthRole.inspector,
     uuidValidationPattern.test(uniformId),
     { uniformId }

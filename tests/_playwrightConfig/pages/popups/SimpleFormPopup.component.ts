@@ -1,5 +1,4 @@
 import { Locator, Page } from "playwright";
-import { PopupComponent } from "./Popup.component";
 
 export class SimpleFormPopupComponent {
 

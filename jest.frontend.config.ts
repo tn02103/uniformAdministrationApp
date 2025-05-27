@@ -4,29 +4,28 @@ import type { Config } from 'jest';
  * For a detailed explanation regarding each configuration property, visit:
  * https://jestjs.io/docs/configuration
  */
-const nextJest = require('next/jest');
+import nextJest from 'next/jest';
 
 const createJestConfig = nextJest({
     dir: './',
 });
 
 const customJestConfig: Config = {
-    displayName: "Component Tests",
+    displayName: "ComponentTests",
     setupFilesAfterEnv: [
-        '<rootDir>/jest.setup.ts',
-        `./tests/_jestConfig/mockI18n.ts`,
+        '<rootDir>/jest/jest.setup.tsx',
     ],
     testEnvironment: 'jest-environment-jsdom',
     moduleNameMapper: {
         '^uuid$': require.resolve('uuid'),
-        '^@/components/(.*)$': '<rootDir>/components/$1',
+        '^@/components/(.*)$': '<rootDir>/src/components/$1',
         '^@/(.*)$': '<rootDir>/src/$1',
-    },
-    transform: {
-        '^.+\\.(js|jsx|ts|tsx)$': '@swc/jest',
     },
     testMatch: [
         "**/tests/ct/**/*.[jt]s?(x)",
+        "**/src/components/**/*.test.[jt]s?(x)",
+        "**/src/app/**/*.test.[jt]s?(x)",
+        "**/src/lib/**/*.test.[jt]s?(x)",
     ],
 };
 

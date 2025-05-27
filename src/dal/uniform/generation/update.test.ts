@@ -112,7 +112,7 @@ it('should throw error when fk_sizelist is from different assosiation', async ()
     expect(success).toBeFalsy();
 });
 it('should throw error when fk_sizelist is invalid', async () => {
-    const { success, result } = await runServerActionTest(
+    const { success } = await runServerActionTest(
         update({
             id: ids.uniformGenerationIds[0],
             data: {

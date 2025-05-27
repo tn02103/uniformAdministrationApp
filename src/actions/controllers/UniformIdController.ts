@@ -16,7 +16,7 @@ import { genericSAValidatorV2 } from "../validations";
  * @param continuous if continuous all numbers for one size are continuous. Numbers of different sizes are not continuous
  * @returns object of UniformNumberSizeMap
  */
-export const generateUniformNumbers = (uniformTypeId: string, numberCount: { sizeId: string, value: number }[], continuous: boolean) => genericSAValidatorV2(
+export const generateUniformNumbers = async (uniformTypeId: string, numberCount: { sizeId: string, value: number }[], continuous: boolean) => genericSAValidatorV2(
     AuthRole.inspector,
     (uuidValidationPattern.test(uniformTypeId)),
     { uniformTypeId }
@@ -53,7 +53,7 @@ export const generateUniformNumbers = (uniformTypeId: string, numberCount: { siz
  * @param uniformNumbers array of numbers to be checked.
  * @returns for each number provided an object of type {value: number, used: boolean} is returned. 
  */
-export const validateUniformNumberAvaiability = (uniformTypeId: string, uniformNumbers: number[]) => genericSAValidatorV2(
+export const validateUniformNumberAvailability  = async (uniformTypeId: string, uniformNumbers: number[]) => genericSAValidatorV2(
     AuthRole.inspector,
     (uuidValidationPattern.test(uniformTypeId)
         && uniformNumbers.every(n => Number.isInteger(n))),

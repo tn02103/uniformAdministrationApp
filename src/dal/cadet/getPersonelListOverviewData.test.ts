@@ -92,14 +92,14 @@ describe('manager tests', () => {
         expect(result[4].lastname).toBe(data.cadets[2].lastname);
         expect(compareDates('2023-06-18', result[4].lastInspection!)).toBeTruthy();
         expect(result[4].uniformComplete).toBeFalsy();
-        expect(result[4].activeDeficiencyCount).toBe(5);
+        expect(result[4].activeDeficiencyCount).toBe(6);
     });
     runSortOrderTests();
     describe('filter tests', () => {
         beforeAll(async () => {
             await prisma.inspection.update({
                 where: { id: ids.inspectionIds[4] },
-                data: { timeStart: new Date() }
+                data: { timeStart: "10:00" }
             });
             await insertSvenKellerFirstInspection(0);
         });
@@ -119,7 +119,7 @@ describe('manager tests', () => {
             expect(ids).not.toContain(cadetIds[7]);
             expect(ids).not.toContain(cadetIds[9]);
         });
-        it('validate filter deregistration on active inspection ', async () => {
+        it('validate filter deregistration on active inspection', async () => {
             const { success, result } = await runServerActionTest<PersonnelListCadet[]>(
                 getPersonnelListOverviewData({ ...defaultProps, include: { deregistered: true, inspected: false } })
             );
@@ -194,7 +194,7 @@ describe('user tests', () => {
         beforeAll(async () => {
             await prisma.inspection.update({
                 where: { id: ids.inspectionIds[4] },
-                data: { timeStart: new Date() }
+                data: { timeStart: "10:00" }
             });
             await insertSvenKellerFirstInspection(0);
         });
@@ -204,7 +204,7 @@ describe('user tests', () => {
             expect(success).toBeTruthy();
             expect(result).toHaveLength(9);
         });
-        it('validate filter include all ', async () => {
+        it('validate filter include all', async () => {
             const { success, result } = await runServerActionTest<PersonnelListCadet[]>(
                 getPersonnelListOverviewData({ ...defaultProps, include: { deregistered: true, inspected: true } })
             );

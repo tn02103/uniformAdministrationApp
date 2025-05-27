@@ -4,8 +4,9 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { DeficiencyType, deficiencyTypeArgs } from "@/types/deficiencyTypes";
 import { genericSAValidatorV2 } from "../validations";
+import dayjs from "@/lib/dayjs";
 
-export const getDeficiencyTypeList = (): Promise<DeficiencyType[]> => genericSAValidatorV2(AuthRole.inspector, true, {})
+export const getDeficiencyTypeList = async (): Promise<DeficiencyType[]> => genericSAValidatorV2(AuthRole.inspector, true, {})
     .then(({ assosiation }) => prisma.deficiencyType.findMany({
         where: {
             fk_assosiation: assosiation,
@@ -17,7 +18,7 @@ export const getDeficiencyTypeList = (): Promise<DeficiencyType[]> => genericSAV
         },
     }));
 
-export const getInspectedCadetIdList = () => genericSAValidatorV2(AuthRole.inspector, true, {})
+export const getInspectedCadetIdList =async  () => genericSAValidatorV2(AuthRole.inspector, true, {})
     .then(async ({ assosiation }) =>
         prisma.cadetInspection.findMany({
             select: {
@@ -26,7 +27,7 @@ export const getInspectedCadetIdList = () => genericSAValidatorV2(AuthRole.inspe
             where: {
                 inspection: {
                     fk_assosiation: assosiation,
-                    date: new Date(),
+                    date: dayjs().format("YYYY-MM-DD"),
                     timeEnd: null,
                     timeStart: { not: null },
                 },

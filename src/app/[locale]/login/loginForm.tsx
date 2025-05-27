@@ -11,6 +11,7 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { mutate } from "swr";
+import { useLocalStorage } from "usehooks-ts";
 import { uuid } from "uuidv4";
 
 type PropType = {
@@ -30,18 +31,18 @@ const LoginForm = ({ assosiations }: PropType) => {
 
     const [failedLogin, setFailedLogin] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [authItem, setAuthItem] = useLocalStorage<AuthItem | null>(process.env.NEXT_PUBLIC_LOCAL_AUTH_KEY as string, null);
+
+    useEffect(() => {
+        if (authItem) {
+            setValue("assosiation", authItem.assosiationId);
+        }
+    }, [authItem, setValue])
 
     async function onSubmit(data: RegistrationFormType) {
         setIsSubmitting(true);
         data.username = data.username.trim();
-        let deviceId: string;
-        const storageString = localStorage.getItem(process.env.NEXT_PUBLIC_LOCAL_AUTH_KEY as string)
-        if (storageString) {
-            const authItem: AuthItem = JSON.parse(storageString);
-            deviceId = authItem.deviceId;
-        } else {
-            deviceId = uuid();
-        }
+        const deviceId = authItem?.deviceId ?? uuid();
 
         await fetch('/api/auth/login', { method: "POST", body: JSON.stringify({ ...data, deviceId }) }).then(async response => {
             if (response.status === 200) {
@@ -53,7 +54,7 @@ const LoginForm = ({ assosiations }: PropType) => {
                     lastLogin: new Date(),
                 }
 
-                localStorage.setItem(process.env.NEXT_PUBLIC_LOCAL_AUTH_KEY as string, JSON.stringify(authItem));
+                setAuthItem(authItem);
 
                 mutate(() => true, undefined, true);
                 if (searchParam.has('returnUrl')) {
@@ -73,23 +74,6 @@ const LoginForm = ({ assosiations }: PropType) => {
         })
     }
 
-    // onMount
-    useEffect(() => {
-        const storageString = localStorage.getItem(process.env.NEXT_PUBLIC_LOCAL_AUTH_KEY as string)
-        if (!storageString) {
-            return;
-        }
-
-        const authItem: AuthItem = JSON.parse(storageString);
-
-        // no refreshToken
-        if (!authItem.authToken) {
-            if (authItem.assosiationId) {
-                setValue("assosiation", authItem.assosiationId);
-            }
-            return;
-        }
-    });
     /*
         // Try to login with refreshToken
         /* setHideLogin(true);

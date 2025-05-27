@@ -13,7 +13,7 @@ const test = adminTest.extend<Fixture>({
 test.describe(() => {
     test.beforeEach(async ({ page, uniformListPage, staticData: { ids } }) => {
         await page.goto(`/de/app/uniform/list/${ids.uniformTypeIds[0]}`);
-        await expect(uniformListPage.div_nodata).not.toBeVisible();
+        await expect(uniformListPage.div_nodata).toBeHidden();
     });
 
     test('E2E0308: validate sortorder', async ({ page, uniformListPage, staticData: { ids } }) => {
@@ -128,7 +128,7 @@ test.describe(() => {
             await uniformListPage.txt_search_input.fill('1101');
             await uniformListPage.btn_search_submit.click();
 
-            await expect(uniformListPage.div_header_count).toContainText('1');// BUG: should be 1
+            await expect(uniformListPage.div_header_count).toContainText('1');
             await expect(uniformListPage.div_uitem_list).toHaveCount(1);
         });
     });
@@ -142,9 +142,9 @@ test.describe(() => {
             expect.soft(uniformListPage.div_uitem_number(ids.uniformIds[0][27])).toContainText('1127'),
             expect.soft(uniformListPage.div_uitem_generation(ids.uniformIds[0][27])).toContainText('Generation1-2'),
             expect.soft(uniformListPage.div_uitem_size(ids.uniformIds[0][27])).toContainText('3'),
-            expect.soft(uniformListPage.lnk_uitem_owner(ids.uniformIds[0][27])).not.toBeVisible(),
+            expect.soft(uniformListPage.lnk_uitem_owner(ids.uniformIds[0][27])).toBeHidden(),
             expect.soft(uniformListPage.div_uitem_comment(ids.uniformIds[0][27])).toContainText('Comment 2'),
-            expect.soft(uniformListPage.div_uitem_reserveLabel(ids.uniformIds[0][27])).not.toBeVisible(),
+            expect.soft(uniformListPage.div_uitem_reserveLabel(ids.uniformIds[0][27])).toBeHidden(),
             expect.soft(uniformListPage.div_uitem_number(ids.uniformIds[0][23])).toContainText('1123'),
             expect.soft(uniformListPage.div_uitem_generation(ids.uniformIds[0][23])).toContainText('Generation1-2'),
             expect.soft(uniformListPage.div_uitem_size(ids.uniformIds[0][23])).toContainText('1'),
@@ -163,21 +163,21 @@ inspectorTest('E2E0313: validate DisplaySizes inspector', async ({ page, staticD
     const uniformListPage = new UniformListPage(page);
     const testId = ids.uniformIds[0][0];
     await page.goto(`/de/app/uniform/list/${ids.uniformTypeIds[0]}`);
-    await expect(uniformListPage.div_nodata).not.toBeVisible();
+    await expect(uniformListPage.div_nodata).toBeHidden();
 
     await test.step('xs', async () => {
         await page.setViewportSize(viewports.xs);
         await Promise.all([
             expect.soft(uniformListPage.div_uitem_number(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_generation(testId)).not.toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_size(testId)).not.toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_comment(testId)).not.toBeVisible(),
+            expect.soft(uniformListPage.div_uitem_generation(testId)).toBeHidden(),
+            expect.soft(uniformListPage.div_uitem_size(testId)).toBeHidden(),
+            expect.soft(uniformListPage.div_uitem_comment(testId)).toBeHidden(),
             expect.soft(uniformListPage.lnk_uitem_owner(testId)).toBeVisible(),
             expect.soft(uniformListPage.btn_uitem_open(testId)).toBeVisible(),
             expect.soft(uniformListPage.div_header_number).toBeVisible(),
-            expect.soft(uniformListPage.div_header_generation).not.toBeVisible(),
-            expect.soft(uniformListPage.div_header_size).not.toBeVisible(),
-            expect.soft(uniformListPage.div_header_comment).not.toBeVisible(),
+            expect.soft(uniformListPage.div_header_generation).toBeHidden(),
+            expect.soft(uniformListPage.div_header_size).toBeHidden(),
+            expect.soft(uniformListPage.div_header_comment).toBeHidden(),
             expect.soft(uniformListPage.div_header_owner).toBeVisible(),
             expect.soft(uniformListPage.div_header_count).toBeVisible(),
         ]);
@@ -188,13 +188,13 @@ inspectorTest('E2E0313: validate DisplaySizes inspector', async ({ page, staticD
             expect.soft(uniformListPage.div_uitem_number(testId)).toBeVisible(),
             expect.soft(uniformListPage.div_uitem_generation(testId)).toBeVisible(),
             expect.soft(uniformListPage.div_uitem_size(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_comment(testId)).not.toBeVisible(),
+            expect.soft(uniformListPage.div_uitem_comment(testId)).toBeHidden(),
             expect.soft(uniformListPage.lnk_uitem_owner(testId)).toBeVisible(),
             expect.soft(uniformListPage.btn_uitem_open(testId)).toBeVisible(),
             expect.soft(uniformListPage.div_header_number).toBeVisible(),
             expect.soft(uniformListPage.div_header_generation).toBeVisible(),
             expect.soft(uniformListPage.div_header_size).toBeVisible(),
-            expect.soft(uniformListPage.div_header_comment).not.toBeVisible(),
+            expect.soft(uniformListPage.div_header_comment).toBeHidden(),
             expect.soft(uniformListPage.div_header_owner).toBeVisible(),
             expect.soft(uniformListPage.div_header_count).toBeVisible(),
         ]);
@@ -222,21 +222,21 @@ userTest('E2E0314: validate DisplaySizes user', async ({ page, staticData: { ids
     const uniformListPage = new UniformListPage(page);
     const testId = ids.uniformIds[0][0];
     await page.goto(`/de/app/uniform/list/${ids.uniformTypeIds[0]}`);
-    await expect(uniformListPage.div_nodata).not.toBeVisible();
+    await expect(uniformListPage.div_nodata).toBeHidden();
 
     await test.step('xs', async () => {
         await page.setViewportSize(viewports.xs);
         await Promise.all([
             expect.soft(uniformListPage.div_uitem_number(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_generation(testId)).not.toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_size(testId)).not.toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_comment(testId)).not.toBeVisible(),
+            expect.soft(uniformListPage.div_uitem_generation(testId)).toBeHidden(),
+            expect.soft(uniformListPage.div_uitem_size(testId)).toBeHidden(),
+            expect.soft(uniformListPage.div_uitem_comment(testId)).toBeHidden(),
             expect.soft(uniformListPage.lnk_uitem_owner(testId)).toBeVisible(),
             expect.soft(uniformListPage.btn_uitem_open(testId)).toBeVisible(),
             expect.soft(uniformListPage.div_header_number).toBeVisible(),
-            expect.soft(uniformListPage.div_header_generation).not.toBeVisible(),
-            expect.soft(uniformListPage.div_header_size).not.toBeVisible(),
-            expect.soft(uniformListPage.div_header_comment).not.toBeVisible(),
+            expect.soft(uniformListPage.div_header_generation).toBeHidden(),
+            expect.soft(uniformListPage.div_header_size).toBeHidden(),
+            expect.soft(uniformListPage.div_header_comment).toBeHidden(),
             expect.soft(uniformListPage.div_header_owner).toBeVisible(),
             expect.soft(uniformListPage.div_header_count).toBeVisible(),
         ]);
@@ -247,13 +247,13 @@ userTest('E2E0314: validate DisplaySizes user', async ({ page, staticData: { ids
             expect.soft(uniformListPage.div_uitem_number(testId)).toBeVisible(),
             expect.soft(uniformListPage.div_uitem_generation(testId)).toBeVisible(),
             expect.soft(uniformListPage.div_uitem_size(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_comment(testId)).not.toBeVisible(),
+            expect.soft(uniformListPage.div_uitem_comment(testId)).toBeHidden(),
             expect.soft(uniformListPage.lnk_uitem_owner(testId)).toBeVisible(),
             expect.soft(uniformListPage.btn_uitem_open(testId)).toBeVisible(),
             expect.soft(uniformListPage.div_header_number).toBeVisible(),
             expect.soft(uniformListPage.div_header_generation).toBeVisible(),
             expect.soft(uniformListPage.div_header_size).toBeVisible(),
-            expect.soft(uniformListPage.div_header_comment).not.toBeVisible(),
+            expect.soft(uniformListPage.div_header_comment).toBeHidden(),
             expect.soft(uniformListPage.div_header_owner).toBeVisible(),
             expect.soft(uniformListPage.div_header_count).toBeVisible(),
         ]);
@@ -266,7 +266,7 @@ userTest('E2E0314: validate DisplaySizes user', async ({ page, staticData: { ids
             expect.soft(uniformListPage.div_uitem_size(testId)).toBeVisible(),
             expect.soft(uniformListPage.div_uitem_comment(testId)).toBeVisible(),
             expect.soft(uniformListPage.lnk_uitem_owner(testId)).toBeVisible(),
-            expect.soft(uniformListPage.btn_uitem_open(testId)).not.toBeVisible(),
+            expect.soft(uniformListPage.btn_uitem_open(testId)).toBeHidden(),
             expect.soft(uniformListPage.div_header_number).toBeVisible(),
             expect.soft(uniformListPage.div_header_generation).toBeVisible(),
             expect.soft(uniformListPage.div_header_size).toBeVisible(),

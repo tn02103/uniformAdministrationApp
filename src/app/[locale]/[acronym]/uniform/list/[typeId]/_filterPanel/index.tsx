@@ -1,4 +1,5 @@
 "use client"
+
 import { useUniformTypeList } from "@/dataFetcher/uniformAdmin";
 import { useI18n } from "@/lib/locales/client";
 import { UniformSize, UniformType } from "@/types/globalUniformTypes";
@@ -37,15 +38,15 @@ export default function FilterPanel({
 
     const { typeList } = useUniformTypeList();
     const searchParams = useSearchParams();
-
-    const currentSearch = searchParams.get('search');
+    
+    const searchTerm = searchParams.get('search');
     useEffect(() => {
-        if (currentSearch) {
+        if (searchTerm) {
             searchForm.reset({
-                search: currentSearch
+                search: searchTerm,
             });
         }
-    }, [currentSearch, searchForm]);
+    }, [searchTerm, searchForm]);
 
     function changeUniformType(typeId: string) {
         router.replace(`/app/uniform/list/${typeId}`);

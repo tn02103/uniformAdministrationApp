@@ -22,17 +22,17 @@ export function generateStaticParams() {
     return getStaticParams();
 }
 
-export default function RootLayout({
+export default async function RootLayout({
     children, params
 }: {
     children: React.ReactNode,
-    params: { locale: string }
+    params: Promise<{ locale: string }>
 }) {
-
+    const { locale } = await params;
     return (
         <html lang="en">
             <body>
-                <I18nProviderClient locale={params.locale}>
+                <I18nProviderClient locale={locale}>
                     <ModalProvider>
                         {children}
                     </ModalProvider>

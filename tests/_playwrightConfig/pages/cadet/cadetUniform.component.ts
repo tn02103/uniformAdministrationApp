@@ -69,7 +69,7 @@ export class CadetUniformComponent {
         return this.div_uitem(uniformId).getByTestId("div_generation");
     }
     div_uitem_size(uniformId: string) {
-        return this.div_uitem(uniformId).getByTestId("div_size").locator('.d-none');
+        return this.div_uitem(uniformId).getByTestId("div_size");
     }
     div_uitem_comment(uniformId: string) {
         return this.div_uitem(uniformId).getByTestId("div_comment");

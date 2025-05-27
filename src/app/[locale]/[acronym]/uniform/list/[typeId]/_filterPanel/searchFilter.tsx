@@ -7,7 +7,7 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 
 export default function SearchFilter({ search }: { search: (data: { number: number | null, typeId?: string }) => void }) {
     const form = useFormContext();
@@ -19,8 +19,9 @@ export default function SearchFilter({ search }: { search: (data: { number: numb
         number: number | null,
     }>();
 
+    const searchTerm = useWatch({name: "search"});
     useEffect(() => {
-        const value = form?.watch('search')?.replaceAll(' ', '')?.replaceAll('-', '');
+        const value = searchTerm?.replaceAll(' ', '')?.replaceAll('-', '');
         if (!value || value === "") {
             setSearchedState({ valid: true, number: null, type: null });
             return;
@@ -47,7 +48,7 @@ export default function SearchFilter({ search }: { search: (data: { number: numb
                 setSearchedState({ valid: false, number: null, type: null });
             }
         }
-    }, [form?.watch('search')]);
+    }, [searchTerm, typeList]);
 
     const onSubmit = () => {
         if (searchedState?.valid) {

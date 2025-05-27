@@ -1,57 +1,72 @@
-import { runServerActionTest } from "@/dal/_helper/testHelper";
-import { prisma } from "@/lib/db";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
-import { markDeleted } from "./delete";
+import { deleteUniformItem } from "./_index";
 
-const { ids, cleanup, data } = new StaticData(0);
-
-it('catches if item is issued', async() => {
-    const {success, result} = await runServerActionTest(
-        markDeleted(ids.uniformIds[0][46])
-    );
-    expect(success).toBeFalsy();
-    expect(result.message).toEqual("Item can not be deleted while issued");
-});
+jest.mock('@/lib/db', () => ({
+    prisma: {
+        $transaction: jest.fn(async (x) => Promise.all(x)),
+        uniform: {
+            findUniqueOrThrow: jest.fn(),
+            update: jest.fn(),
+        },
+        uniformIssued: {
+            updateMany: jest.fn(),
+        },
+        deficiency: {
+            updateMany: jest.fn(),
+        },
+    },
+}));
 describe('successfull deletion', () => {
-    beforeAll(async () => {
-        await prisma.uniformIssued.updateMany({
+    const mockId = "9fccd605-6a8b-4e1a-98a6-9cc627d5186d";
+    const { prisma } = jest.requireMock('@/lib/db');
+    const mockDate = new Date();
+
+    beforeEach(() => {
+        jest.useFakeTimers();
+        jest.setSystemTime(mockDate);
+    });
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('marks uniformItem as deleted', async () => {
+        prisma.uniform.update.mockResolvedValueOnce([]);
+        await expect(deleteUniformItem(mockId)).resolves.toBeUndefined();
+
+        expect(prisma.uniform.update).toHaveBeenCalledWith({
+            where: { id: mockId },
+            data: {
+                recdelete: mockDate,
+                recdeleteUser: 'mana',
+            },
+        });
+    });
+    it('marks all uniformDeficiencies from item as deleted', async () => {
+        await expect(deleteUniformItem(mockId)).resolves.toBeUndefined();
+
+        expect(prisma.deficiency.updateMany).toHaveBeenCalledWith({
+            where: { 
+                dateResolved: null,
+                uniformDeficiency: {
+                    fk_uniform: mockId,
+                },
+             },
+            data: {
+                dateResolved: mockDate,
+                userResolved: 'mana',
+            },
+        });
+    });
+    it('returns item when issued', async () => {
+        await expect(deleteUniformItem(mockId)).resolves.toBeUndefined();
+
+        expect(prisma.uniformIssued.updateMany).toHaveBeenCalledWith({
             where: {
-                fk_uniform: ids.uniformIds[0][46],
+                fk_uniform: mockId,
                 dateReturned: null,
             },
             data: {
-                dateReturned: new Date(),
+                dateReturned: mockDate,
             }
         });
-        const fedback = await runServerActionTest(
-            markDeleted(ids.uniformIds[0][46])
-        );
-        expect(fedback.success).toBeTruthy();
-    })
-    afterAll(async () => cleanup.uniform());
-    it('marks uniformItem as deleted', async () => {
-        const dbItem = await prisma.uniform.findUnique({
-            where: {
-                id: ids.uniformIds[0][46],
-            }
-        });
-        expect(dbItem).not.toBeNull();
-        expect(dbItem!.recdelete).not.toBeNull();
-        expect(dbItem!.recdelete!.getTime() - new Date().getTime()).toBeLessThan(30000);
-        expect(dbItem!.recdeleteUser).toEqual('mana');
-    });
-    it('marks all uniformDeficiencies from item as deleted', async () => {
-        const deficiencies = await prisma.uniformDeficiency.findMany({
-            where: {
-                fk_uniform: ids.uniformIds[0][46],
-            },
-            include: { deficiency: true },
-            orderBy: { deficiency: { comment: "asc" } }
-        });
-        expect(deficiencies).toHaveLength(2);
-        expect(deficiencies[0].deficiency.dateResolved).toEqual(data.deficiencies[2].dateResolved);
-        expect(deficiencies[0].deficiency.userResolved).toEqual(data.deficiencies[2].userResolved);
-        expect(deficiencies[1].deficiency.dateResolved).not.toBeNull();
-        expect(deficiencies[1].deficiency.dateResolved!.getTime() - new Date().getTime()).toBeLessThan(3000)
     });
 });
