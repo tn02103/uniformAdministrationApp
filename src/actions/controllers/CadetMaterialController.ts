@@ -17,7 +17,7 @@ export const getCadetMaterialMap = async (cadetId: string): Promise<CadetMateria
     { cadetId }
 ).then(async ({ assosiation }) => dbHandler.getMaterialMap(cadetId, assosiation));
 
-export const getCadetMaterialList = async (cadetId: string): Promise<any[]> => genericSAValidatorV2(
+export const getCadetMaterialList = async (cadetId: string): Promise<UniformLabel[]> => genericSAValidatorV2(
     AuthRole.user,
     uuidValidationPattern.test(cadetId),
     { cadetId }
@@ -46,7 +46,7 @@ export const issueMaterial = async (cadetId: string, newMaterialId: string, quan
 ).then(async ({ assosiation }) => prisma.$transaction(async (prismaCl) => {
     if (oldMaterialId) {
         // IssuedMaterial 
-        var matIssued = await dbHandler.getMaterialIssued(cadetId, oldMaterialId, prismaCl as PrismaClient);
+        const matIssued = await dbHandler.getMaterialIssued(cadetId, oldMaterialId, prismaCl as PrismaClient);
         if (!matIssued) {
             throw new NullValueException("Could not find materialIssue entry for old MaterialId", "material", { id: oldMaterialId });
         }

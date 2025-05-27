@@ -21,7 +21,7 @@ managerTest('validate Manager not authorized', async ({ page }) => {
     await page.goto('/de/app/admin/user');
     await expect(page.getByTestId('div_403Page')).toBeVisible();
 });
-test('validate Data', async ({ page, userPage, users }) => {
+test('validate Data', async ({ userPage, users }) => {
     await Promise.all(
         users.map(async (user) =>
             test.step(user.username, async () => {
@@ -93,7 +93,7 @@ test('validate Displaysizes', async ({ page, userPage, users }) => {
             expect.soft(userPage.div_user(users[0].id)).toBeVisible(),
             expect.soft(userPage.txt_user_username(users[0].id)).toBeVisible(),
             expect.soft(userPage.txt_user_name(users[0].id)).toBeVisible(),
-            expect.soft(userPage.div_user_role(users[0].id)).not.toBeVisible(),
+            expect.soft(userPage.div_user_role(users[0].id)).toBeHidden(),
             expect.soft(userPage.div_user_active(users[0].id)).toBeVisible(),
             expect.soft(userPage.btn_user_menu(users[0].id)).toBeVisible(),
         ]);
@@ -105,8 +105,8 @@ test('validate Displaysizes', async ({ page, userPage, users }) => {
             expect.soft(userPage.div_user(users[0].id)).toBeVisible(),
             expect.soft(userPage.txt_user_username(users[0].id)).toBeVisible(),
             expect.soft(userPage.txt_user_name(users[0].id)).toBeVisible(),
-            expect.soft(userPage.div_user_role(users[0].id)).not.toBeVisible(),
-            expect.soft(userPage.div_user_active(users[0].id)).not.toBeVisible(),
+            expect.soft(userPage.div_user_role(users[0].id)).toBeHidden(),
+            expect.soft(userPage.div_user_active(users[0].id)).toBeHidden(),
             expect.soft(userPage.btn_user_menu(users[0].id)).toBeVisible(),
         ]);
     });

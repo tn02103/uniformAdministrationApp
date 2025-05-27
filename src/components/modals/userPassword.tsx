@@ -6,7 +6,7 @@ import { passwordValidationPattern } from "../../lib/validations";
 export type ChangeUserPasswordModalPropType = {
     nameOfUser?: string,
     onClose: () => void,
-    save: (password: string) => Promise<any>,
+    save: (password: string) => Promise<void>,
 }
 type FormType = {
     password: string;

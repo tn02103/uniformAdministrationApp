@@ -48,12 +48,12 @@ jest.mock("./UniformGenerationTable", () => {
 
 // ############## TESTS ##################
 describe('<UniformTypeOffcanvas />', () => {
-    const { createUniformType, deleteUniformType, updateUniformType } = require('@/dal/uniform/type/_index');
-    const mutate = require('@/dataFetcher/uniformAdmin').useUniformTypeList().mutate;;
-    const { getUniformItemCountByType } = require('@/dal/uniform/item/_index');
-    const { UniformGenerationTable } = require('./UniformGenerationTable');
-    const { useModal } = require('@/components/modals/modalProvider');
-    const { toast } = require('react-toastify');
+    const { createUniformType, deleteUniformType, updateUniformType } = jest.requireMock('@/dal/uniform/type/_index');
+    const mutate = jest.requireMock('@/dataFetcher/uniformAdmin').useUniformTypeList().mutate;;
+    const { getUniformItemCountByType } = jest.requireMock('@/dal/uniform/item/_index');
+    const { UniformGenerationTable } = jest.requireMock('./UniformGenerationTable');
+    const { useModal } = jest.requireMock('@/components/modals/modalProvider');
+    const { toast } = jest.requireMock('react-toastify');
 
     afterEach(() => jest.clearAllMocks());
 
@@ -220,14 +220,11 @@ describe('<UniformTypeOffcanvas />', () => {
     });
 
     describe('dal-Methods', () => {
+        const { dangerConfirmationModal } = useModal();
         describe('deleteUniformType', () => {
             it('deletes successfuly', async () => {
                 const user = userEvent.setup();
                 const setSelectedTypeId = jest.fn();
-
-                let dangerOption;
-                const { dangerConfirmationModal } = useModal();
-                dangerConfirmationModal.mockImplementation((option: any) => { dangerOption = option.dangerOption });
 
                 render(
                     <UniformTypeOffcanvas
@@ -256,8 +253,7 @@ describe('<UniformTypeOffcanvas />', () => {
                 });
 
                 // call delete function
-                expect(dangerOption).toBeDefined();
-                await dangerOption!.function();
+                await dangerConfirmationModal.mock.calls[0][0].dangerOption.function();
 
                 // validate success handling
                 expect(deleteUniformType).toHaveBeenCalledTimes(1);
@@ -271,10 +267,6 @@ describe('<UniformTypeOffcanvas />', () => {
                 const user = userEvent.setup();
                 const setSelectedTypeId = jest.fn();
                 deleteUniformType.mockImplementationOnce(async () => { throw new Error("custom.error") });
-
-                let dangerOption;
-                const { dangerConfirmationModal } = useModal();
-                dangerConfirmationModal.mockImplementation((option: any) => dangerOption = option.dangerOption);
 
                 render(
                     <UniformTypeOffcanvas
@@ -292,9 +284,9 @@ describe('<UniformTypeOffcanvas />', () => {
                 // validate modal
                 expect(getUniformItemCountByType).toHaveBeenCalledTimes(1);
                 expect(dangerConfirmationModal).toHaveBeenCalled();
+
                 // call delete function
-                expect(dangerOption).toBeDefined();
-                await dangerOption!.function();
+                await dangerConfirmationModal.mock.calls[0][0].dangerOption.function();
 
                 // validate exception handling
                 expect(deleteUniformType).toHaveBeenCalledTimes(1);
@@ -381,7 +373,7 @@ describe('<UniformTypeOffcanvas />', () => {
                 expect(setEditable).not.toHaveBeenCalled();
 
                 // validate error shown
-                let nameError = screen.queryByRole('alert', { name: 'error message name' });
+                const nameError = screen.queryByRole('alert', { name: 'error message name' });
                 expect(nameError).toBeInTheDocument();
                 expect(nameError).toHaveTextContent('custom.uniform.type.nameDuplication');
                 expect(nameInput).toHaveAttribute('aria-invalid', 'true');

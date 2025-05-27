@@ -2,7 +2,6 @@ import { prisma } from "@/lib/db";
 import { expect } from "playwright/test";
 import { PlannedInspectionTestComponent } from "../../_playwrightConfig/pages/inspection/plannedInspection.component";
 import { adminTest } from "../../_playwrightConfig/setup";
-
 import dayjs from "@/lib/dayjs";
 
 type Fixture = {
@@ -16,7 +15,7 @@ test.afterEach(async ({ staticData: { cleanup } }) => {
     await cleanup.inspection();
 });
 
-test.describe('Planned Inspection Overview', async () => {
+test.describe('Planned Inspection Overview', () => {
     test('sortOrder', async ({ plannedComponent, staticData: { ids } }) => {
         await expect(plannedComponent.div_row_list).toHaveCount(3);
         await expect(plannedComponent.div_row_list.nth(0)).toHaveAttribute('data-testid', `div_inspection_${ids.inspectionIds[2]}`);
@@ -25,7 +24,7 @@ test.describe('Planned Inspection Overview', async () => {
     });
 
     test('create Inspection', async ({ page, staticData: { fk_assosiation } }) => {
-        const testDate = dayjs.utc().add(30, "day").locale('de');
+        const testDate = dayjs().add(30, "day").locale('de');
         await test.step('create Inspection', async () => {
             const row = page.getByRole('row', { name: /newInspection/i });
             const dateField = row.getByRole('textbox', { name: /datum/i });
@@ -39,7 +38,7 @@ test.describe('Planned Inspection Overview', async () => {
             await nameField.fill("Test Inspection");
 
             await page.getByRole('button', { name: /save/i }).click();
-            await expect(row).not.toBeVisible();
+            await expect(row).toBeHidden();
         });
         await test.step('check ui', async () => {
             const rows = page.getByRole('row');
@@ -64,7 +63,7 @@ test.describe('Planned Inspection Overview', async () => {
                 fk_assosiation,
                 id: expect.any(String),
                 name: "Test Inspection",
-                date: testDate.startOf('day').toDate(),
+                date: testDate.format('YYYY-MM-DD'),
                 timeStart: null,
                 timeEnd: null,
             });
@@ -72,7 +71,7 @@ test.describe('Planned Inspection Overview', async () => {
     });
 
     test('edit Inspection', async ({ page, staticData: { ids, fk_assosiation } }) => {
-        const testDate = dayjs.utc().add(30, "day").locale('de');
+        const testDate = dayjs().add(30, "day").locale('de');
         await test.step('edit Inspection', async () => {
             const row = page.getByRole('row').nth(1);
             const dateField = row.getByRole('textbox', { name: /datum/i });
@@ -86,7 +85,7 @@ test.describe('Planned Inspection Overview', async () => {
             await nameField.fill("Test Inspection 2");
 
             await page.getByRole('button', { name: /save/i }).click();
-            await expect(dateField).not.toBeVisible();
+            await expect(dateField).toBeHidden();
         });
 
         await test.step('check ui', async () => {
@@ -113,7 +112,7 @@ test.describe('Planned Inspection Overview', async () => {
                 fk_assosiation,
                 id: ids.inspectionIds[2],
                 name: "Test Inspection 2",
-                date: testDate.startOf('day').toDate(),
+                date: testDate.format('YYYY-MM-DD'),
                 timeStart: null,
                 timeEnd: null,
             });
@@ -129,7 +128,7 @@ test.describe('Planned Inspection Overview', async () => {
             const dialog = page.getByRole('dialog');
             await expect(dialog).toBeVisible();
             await dialog.getByRole('button', { name: /Löschen/i }).click();
-            await expect(row).not.toBeVisible();
+            await expect(row).toBeHidden();
         });
         await test.step('check db', async () => {
             const inspection = await prisma.inspection.findFirst({
@@ -141,7 +140,7 @@ test.describe('Planned Inspection Overview', async () => {
         });
     });
 
-    test('start Inpsection', async ({ page, staticData: { ids } }) => {
+    test('start Inpsection', async ({ page, staticData: { ids, data } }) => {
         const row = page.getByRole('row').filter({ hasText: "today" }).nth(0);
         await test.step('start Inspection', async () => {
             await row.getByRole('button', { name: /start/i }).click();
@@ -160,14 +159,14 @@ test.describe('Planned Inspection Overview', async () => {
                 fk_assosiation: expect.any(String),
                 id: ids.inspectionIds[4],
                 name: "today",
-                date: expect.any(Date),
+                date: data.inspections[4].date,
                 timeStart: expect.stringMatching(/^\d\d:\d\d$/),
                 timeEnd: null,
             });
         });
     });
 
-    test('finish active Inspection', async ({ page, staticData: { ids } }) => {
+    test('finish active Inspection', async ({ page, staticData: { ids, data } }) => {
         await test.step('prepare data', async () => {
             await prisma.inspection.update({
                 where: {
@@ -198,7 +197,7 @@ test.describe('Planned Inspection Overview', async () => {
 
             await textbox.fill('12:00');
             await expect(textbox).not.toHaveClass(/is-invalid/);
-            await expect(dialog.getByTestId('err_input')).not.toBeVisible();
+            await expect(dialog.getByTestId('err_input')).toBeHidden();
 
             await dialog.getByRole('button', { name: /Speichern/i }).click();
             await expect(row).toBeVisible();
@@ -217,14 +216,14 @@ test.describe('Planned Inspection Overview', async () => {
                 fk_assosiation: expect.any(String),
                 id: ids.inspectionIds[4],
                 name: "today",
-                date: expect.any(Date),
+                date: data.inspections[4].date,
                 timeStart: '10:00',
                 timeEnd: '12:00',
             });
         });
     });
 
-    test('finish expired Inspection', async ({ page, staticData: { ids } }) => {
+    test('finish expired Inspection', async ({ page, staticData: { ids, data } }) => {
         await test.step('prepare data', async () => {
             await prisma.inspection.update({
                 where: {
@@ -254,10 +253,10 @@ test.describe('Planned Inspection Overview', async () => {
 
             await textbox.fill('12:00');
             await expect(textbox).not.toHaveClass(/is-invalid/);
-            await expect(dialog.getByTestId('err_input')).not.toBeVisible();
+            await expect(dialog.getByTestId('err_input')).toBeHidden();
 
             await dialog.getByRole('button', { name: /Speichern/i }).click();
-            await expect(row).not.toBeVisible();
+            await expect(row).toBeHidden();
         });
 
         await test.step('check db', async () => {
@@ -271,14 +270,14 @@ test.describe('Planned Inspection Overview', async () => {
                 fk_assosiation: expect.any(String),
                 id: ids.inspectionIds[2],
                 name: "expired",
-                date: expect.any(Date),
+                date: data.inspections[2].date,
                 timeStart: '10:00',
                 timeEnd: '12:00',
             });
         });
     });
 
-    test('restart todays Inspection', async ({ page, staticData: { ids } }) => {
+    test('restart todays Inspection', async ({ page, staticData: { ids, data } }) => {
         await test.step('prepare data', async () => {
             await prisma.inspection.update({
                 where: {
@@ -311,16 +310,16 @@ test.describe('Planned Inspection Overview', async () => {
                 fk_assosiation: expect.any(String),
                 id: ids.inspectionIds[4],
                 name: "today",
-                date: expect.any(Date),
+                date: data.inspections[4].date,
                 timeStart: "10:00",
                 timeEnd: null,
             });
         });
     });
 });
-test.describe('Planned Inspection deregistrations', async () => {
+test.describe('Planned Inspection deregistrations', () => {
 
-    test('opends Offcanvas with correct data', async ({ page, staticData: { ids, data } }) => {
+    test('opends Offcanvas with correct data', async ({ page, staticData: { data } }) => {
         const row = page.getByRole('row').filter({ hasText: data.inspections[4].name }).nth(0);
         const offcanvas = page.getByRole('dialog', { name: /Abmeldungen für /i });
         await test.step('open Ovcanvas', async () => {
@@ -341,7 +340,7 @@ test.describe('Planned Inspection deregistrations', async () => {
         });
         await test.step('close Ovcanvas', async () => {
             await offcanvas.getByRole('button', { name: /close/i }).click();
-            await expect(offcanvas).not.toBeVisible();
+            await expect(offcanvas).toBeHidden();
         });
     });
 
@@ -359,12 +358,12 @@ test.describe('Planned Inspection deregistrations', async () => {
             const buttonRemove = row.getByRole('button', { name: /entfernen/i });
 
             await expect(row).toBeVisible();
-            await expect(buttonRemove).not.toBeVisible();
+            await expect(buttonRemove).toBeHidden();
             await row.hover();
             await expect(buttonRemove).toBeVisible();
             await buttonRemove.click();
 
-            await expect(row).not.toBeVisible();
+            await expect(row).toBeHidden();
             await expect(tableBody.locator('tr')).toHaveCount(2);
         });
         await test.step('check db', async () => {
@@ -405,7 +404,7 @@ test.describe('Planned Inspection deregistrations', async () => {
 
             await expect(autocompleteGroup).toBeVisible();
             await expect(input).toBeVisible();
-            await expect(autocompleteGroup.getByRole('listbox')).not.toBeVisible();
+            await expect(autocompleteGroup.getByRole('listbox')).toBeHidden();
 
 
             await input.fill("a");
@@ -418,7 +417,7 @@ test.describe('Planned Inspection deregistrations', async () => {
             await expect(optionList).toContainText(data.cadets[0].lastname);
 
             await optionList.click();
-            await expect(autocompleteGroup.getByRole('listbox')).not.toBeVisible();
+            await expect(autocompleteGroup.getByRole('listbox')).toBeHidden();
             await expect(rows).toHaveCount(4);
         });
         await test.step('check db', async () => {

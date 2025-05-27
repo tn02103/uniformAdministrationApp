@@ -42,7 +42,7 @@ const LoginForm = ({ assosiations }: PropType) => {
     async function onSubmit(data: RegistrationFormType) {
         setIsSubmitting(true);
         data.username = data.username.trim();
-        let deviceId = authItem?.deviceId ?? uuid();
+        const deviceId = authItem?.deviceId ?? uuid();
 
         await fetch('/api/auth/login', { method: "POST", body: JSON.stringify({ ...data, deviceId }) }).then(async response => {
             if (response.status === 200) {

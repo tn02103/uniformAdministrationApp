@@ -58,7 +58,7 @@ export type InspectionStatus = {
     active: true,
     state: 'active',
     id: string,
-    date: Date,
+    date: string,
     inspectedCadets: number,
     activeCadets: number,
     deregistrations: number,
@@ -66,7 +66,7 @@ export type InspectionStatus = {
 
 export type InspectionInformation = {
     id: string,
-    date: Date,
+    date: string,
     cadetsInspected: number,
     newDeficiencies: number,
     activeDeficiencies: number,
@@ -75,9 +75,9 @@ export type InspectionInformation = {
 
 export type InspectionReview = InspectionInformation & {
     name: string;
-    date: Date,
-    timeStart: Date,
-    timeEnd: Date,
+    date: string,
+    timeStart: string,
+    timeEnd: string,
     deregisteredCadets: number;
     activeCadets: number;
     cadetList: InspectionReviewCadet[];
@@ -92,7 +92,7 @@ export type InspectionReviewCadet = {
     };
     lastInspection?: {
         id: string;
-        date: Date;
+        date: string;
         uniformComplete: boolean;
     };
     activeDeficiencyCount: number;

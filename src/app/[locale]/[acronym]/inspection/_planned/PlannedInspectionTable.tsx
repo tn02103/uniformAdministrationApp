@@ -17,10 +17,12 @@ export function PlannedInspectionTable({
     cadets: CadetLabel[]
 }) {
     const t = useScopedI18n('inspection.planned.label')
-    const [deregistrationOCInspectionId, setDeregistrationOCInspectionId] = useState<string | null>(null);
 
     const [showNewLine, setShowNewLine] = useState(false);
     const { inspectionList } = usePlannedInspectionList(props.inspections);
+
+    const [deregistrationOCInspectionId, setDeregistrationOCInspectionId] = useState<string | null>(null);
+    const deregistrationOCInspection = inspectionList?.find(i => i.id === deregistrationOCInspectionId);
 
     return (
         <div data-testid="div_plannedTable">
@@ -45,9 +47,9 @@ export function PlannedInspectionTable({
                     {t('noInspections')}
                 </Row>
             }
-            {deregistrationOCInspectionId && inspectionList?.find(i => i.id === deregistrationOCInspectionId) &&
+            {deregistrationOCInspection &&
                 <DeregistrationOffcanvas
-                    inspection={inspectionList?.find(i => i.id === deregistrationOCInspectionId)!}
+                    inspection={deregistrationOCInspection}
                     cadetList={props.cadets}
                     onClose={() => setDeregistrationOCInspectionId(null)} />
             }

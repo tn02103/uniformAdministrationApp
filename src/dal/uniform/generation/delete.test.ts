@@ -46,6 +46,4 @@ it('no Flag -> set generation of items to null', async () => {
     expect(dbData).toHaveLength(0);
 });
 // TODO implement this.
-/* it('delete Flag -> also deletes all of the items', async() => {
-    
-});*/
+

@@ -18,6 +18,7 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import UniformRow from "./uniformRow";
+import { NullValueException } from "@/errors/LoadDataException";
 
 type PropType = {
     uniformMap: CadetUniformMap,
@@ -39,7 +40,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
     const handleIssuedErrors = (error: SAErrorResponseType["error"], data: IssueUniformItemDataType, typename: string) => {
         switch (error.exceptionType) {
             case ExceptionType.UniformIssuedException:
-                const errorData: UniformIssuedExceptionData = error.data;
+                const errorData: UniformIssuedExceptionData = error.data as UniformIssuedExceptionData;
                 modal?.showMessageModal(
                     modalT('issuedException.header'),
                     `${modalT('issuedException.message', {
@@ -48,7 +49,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
                         firstname: errorData.owner?.firstname,
                         lastname: errorData.owner?.lastname,
                     })} 
-                        ${!error.data.owner.active ? modalT('issuedException.ownerInactive') : ""}`,
+                        ${!errorData.owner.active ? modalT('issuedException.ownerInactive') : ""}`,
                     [
                         {
                             type: "outline-secondary",
@@ -59,7 +60,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
                         {
                             type: "outline-primary",
                             option: modalT('issuedException.option.openCadet'),
-                            function: () => { window.open(`/${locale}/app/cadet/${error.data.owner.id}`, "_blank") },
+                            function: () => { window.open(`/${locale}/app/cadet/${errorData.owner.id}`, "_blank") },
                             closeOnAction: false,
                             testId: "btn_openCadet"
                         },
@@ -85,7 +86,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
                 modal?.simpleYesNoModal({
                     type: "error",
                     header: modalT('nullValueException.header'),
-                    message: modalT('nullValueException.message', { number: error.data.number, type: typename }),
+                    message: modalT('nullValueException.message', { number: (error.data as NullValueException["data"]).number, type: typename }),
                     primaryOption: modalT('nullValueException.createOption'),
                     primaryFunction: () => issueMutation({ ...data, options: { ...data.options, create: true } }, typename),
                 });

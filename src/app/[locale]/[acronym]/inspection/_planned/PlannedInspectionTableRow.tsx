@@ -1,6 +1,6 @@
 "use client"
 
-import DatePicker from "@/components/datePicker/datePicker";
+import { DatePicker } from "@/components/datePicker/DatePicker";
 import ErrorMessage from "@/components/errorMessage";
 import { useModal } from "@/components/modals/modalProvider";
 import { createInspection, deleteInspection, startInspection, stopInspection, updatePlannedInspection } from "@/dal/inspection";
@@ -50,14 +50,14 @@ export function PlannedInspectionTableRow({
 
     const form = useForm<PlannedInspectionFormShema>({
         resolver: zodResolver(refienedShema),
-        mode: "onChange",
+        mode: "onBlur",
     });
     const { handleSubmit, reset, register, formState, control } = form;
 
     function handleEdit() {
         reset({
             name: inspection?.name ?? "",
-            date: inspection?.date ?? new Date(),
+            date: inspection?.date ?? dayjs().format("YYYY-MM-DD"),
         });
         setEditable(true);
     }
@@ -167,12 +167,12 @@ export function PlannedInspectionTableRow({
                             : <Controller
                                 name="date"
                                 control={control}
-                                render={({ field: { onChange, value } }) =>
+                                render={({ field }) =>
                                     <DatePicker
-                                        onChange={onChange}
-                                        value={value}
+                                        {...field}
                                         error={formState.errors.date?.message}
                                         ariaLabel={t('label.date')}
+                                        minDate={new Date()}
                                     />
                                 }
                             />

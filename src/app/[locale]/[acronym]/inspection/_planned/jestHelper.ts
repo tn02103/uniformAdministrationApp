@@ -14,7 +14,7 @@ export const mockInspectionList: PlannedInspectionType[] = [
     {
         id: "1777e18f-f4fa-4ec4-90d8-58a9b1ce16ac",
         name: "Inspection 1",
-        date: dayjs().toDate(),
+        date: dayjs().format("YYYY-MM-DD"),
         timeStart: null,
         timeEnd: null,
         deregistrations: [
@@ -35,7 +35,7 @@ export const mockInspectionList: PlannedInspectionType[] = [
     {
         id: "1777e18f-f4fa-4ec4-90d8-58a9b1ce16ad",
         name: "Inspection 2",
-        date: dayjs().add(2, "day").toDate(),
+        date: dayjs().add(2, "day").format("YYYY-MM-DD"),
         timeStart: null,
         timeEnd: null,
         deregistrations: [
@@ -50,7 +50,7 @@ export const mockInspectionList: PlannedInspectionType[] = [
     {
         id: "1777e18f-f4fa-4ec4-90d8-58a9b1ce16ae",
         name: "Inspection 3",
-        date: new Date("2023-10-01"),
+        date: "2023-10-01",
         timeStart: null,
         timeEnd: null,
         deregistrations: []
@@ -69,10 +69,10 @@ jest.mock("@/dal/inspection", () => ({
 jest.mock("@/dataFetcher/inspection", () => ({
     usePlannedInspectionList: jest.fn().mockReturnValue({
         inspectionList: mockInspectionList,
-        mutate: jest.fn(async (promise: Promise<any>) => { await promise; return mockInspectionList; }),
+        mutate: jest.fn(async (promise: Promise<void>) => { await promise; return mockInspectionList; }),
     }),
     useInspectionState: jest.fn().mockReturnValue({
         inspectionState: { active: false },
-        mutate: jest.fn(async (promise: Promise<any>) => { await promise; return { active: false }; }),
+        mutate: jest.fn(async (promise: Promise<void>) => { await promise; return { active: false }; }),
     }),
 }));

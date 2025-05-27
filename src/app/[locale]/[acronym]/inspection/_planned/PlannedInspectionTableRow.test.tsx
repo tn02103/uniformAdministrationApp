@@ -79,7 +79,7 @@ describe('<PlannedInspectionTableRow />', () => {
                 id: mockInspectionList[0].id,
                 data: {
                     name: 'Updated Inspection',
-                    date: newDate.toDate(),
+                    date: newDate.format("YYYY-MM-DD"),
                 }
             });
             expect(mutate).toHaveBeenCalled();
@@ -137,6 +137,7 @@ describe('<PlannedInspectionTableRow />', () => {
 
             await user.clear(nameField);
             await user.type(nameField, mockInspectionList[1].name);
+            await user.tab();
 
             // validate edit
             expect(nameField).toHaveValue(mockInspectionList[1].name);
@@ -179,6 +180,7 @@ describe('<PlannedInspectionTableRow />', () => {
             await user.click(screen.getByTestId('btn_edit'));
             await user.clear(screen.getByRole('textbox', { name: /date/i }));
             await user.type(screen.getByRole('textbox', { name: /date/i }), format(mockInspectionList[1].date, "dd.MM.yyyy"));
+            await user.tab();
 
             // validate edit
             expect(screen.getByRole('textbox', { name: /date/i })).toHaveValue(format(mockInspectionList[1].date, "dd.MM.yyyy"));
@@ -218,6 +220,7 @@ describe('<PlannedInspectionTableRow />', () => {
             await user.click(screen.getByTestId('btn_edit'));
             await user.clear(screen.getByRole('textbox', { name: /date/i }));
             await user.type(screen.getByRole('textbox', { name: /date/i }), testDay);
+            await user.tab();
 
             expect(screen.getByRole('textbox', { name: /date/i })).toHaveValue(testDay);
             expect(screen.getByText(/date.minIncluded#today/i)).toBeInTheDocument();
@@ -244,7 +247,7 @@ describe('<PlannedInspectionTableRow />', () => {
             expect(updatePlannedInspection).toHaveBeenCalledTimes(1);
             expect(toast.error).toHaveBeenCalled();
             expect(mutate).toHaveBeenCalled();
-            expect(screen.queryByText(/actions.save/i)).toBeInTheDocument();
+            expect(screen.getByText(/actions.save/i)).toBeInTheDocument();
         });
     });
 
@@ -280,7 +283,7 @@ describe('<PlannedInspectionTableRow />', () => {
 
             expect(createInspection).toHaveBeenCalledWith({
                 name: 'New Inspection',
-                date: newDate.toDate(),
+                date: newDate.format("YYYY-MM-DD"),
             });
             expect(mutate).toHaveBeenCalled();
             expect(closeNewLine).toHaveBeenCalled();
@@ -324,6 +327,7 @@ describe('<PlannedInspectionTableRow />', () => {
 
             await user.clear(nameField);
             await user.type(nameField, mockInspectionList[1].name);
+            await user.tab();
             expect(nameField).toHaveValue(mockInspectionList[1].name);
             expect(screen.getByText(/custom.inspection.nameDuplication/i)).toBeInTheDocument();
 
@@ -351,6 +355,7 @@ describe('<PlannedInspectionTableRow />', () => {
             await user.clear(dateField);
             await user.type(nameField, 'New Inspection');
             await user.type(dateField, format(mockInspectionList[1].date, "dd.MM.yyyy"));
+            await user.tab();
             expect(dateField).toHaveValue(format(mockInspectionList[1].date, "dd.MM.yyyy"));
             expect(screen.getByText(/custom.inspection.dateDuplication/i)).toBeInTheDocument();
 

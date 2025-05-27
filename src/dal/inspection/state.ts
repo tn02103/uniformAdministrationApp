@@ -3,25 +3,27 @@ import { genericSAValidatorV2 } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { InspectionStatus } from "@/types/deficiencyTypes";
+import dayjs from "@/lib/dayjs";
 import { unstable_cache } from "next/cache";
 
 export const getInspectionState = async (): Promise<InspectionStatus | null> => genericSAValidatorV2(
     AuthRole.user, true, {}
 ).then(async ({ assosiation, role }) => unstable_cache(async (): Promise<InspectionStatus | null> => {
     if (role === AuthRole.user) return null;
+    const today = dayjs().format("YYYY-MM-DD");
 
     const [inspection, unfinished] = await prisma.$transaction([
         prisma.inspection.findFirst({
             where: {
                 fk_assosiation: assosiation,
-                date: new Date(),
+                date: today,
             }
         }),
         prisma.inspection.findFirst({
             where: {
                 timeStart: { not: null },
                 timeEnd: null,
-                date: { lt: new Date() },
+                date: { lt: today },
             },
         }),
     ]);

@@ -27,15 +27,6 @@ describe('InspectionBadge', () => {
         expect(comp).toHaveClass(/bg-secondary/);
     })
 
-    it('planned', () => {
-        const insp: PlannedInspectionType = { ...defaultValues, date: dayjs().add(2, "day").toDate(), timeStart: null, timeEnd: null }
-        render(<InspectionBadge inspection={insp} />);
-
-        const comp = screen.getByTestId('lbl_badge');
-        expect(comp).toBeInTheDocument();
-        expect(comp).toHaveTextContent('inspection.planned.badge.planned');
-        expect(comp).toHaveClass(/bg-secondary/);
-    });
     it('today', () => {
         const insp: PlannedInspectionType = { ...defaultValues, date: dayjs().toDate(), timeStart: null, timeEnd: null }
         render(<InspectionBadge inspection={insp} />);

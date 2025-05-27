@@ -1,3 +1,4 @@
+import dayjs from "@/lib/dayjs";
 import { resolve } from "./resolve";
 
 
@@ -29,7 +30,7 @@ describe('resolveDeficiency', () => {
     });
     afterAll(() => global.__ASSOSIATION__ = undefined)
 
-    it('it resolves the deficiency', async () => {
+    it('resolves the deficiency', async () => {
         prisma.inspection.findFirst.mockResolvedValueOnce(null);
         prisma.deficiency.findFirst.mockResolvedValueOnce(null);
 
@@ -77,7 +78,7 @@ describe('resolveDeficiency', () => {
         expect(prisma.inspection.findFirst).toHaveBeenCalledWith({
             where: {
                 fk_assosiation: 'fk_assoasiation',
-                date: date,
+                date: dayjs(date).format("YYYY-MM-DD"),
                 timeStart: { not: null },
                 timeEnd: null,
             }

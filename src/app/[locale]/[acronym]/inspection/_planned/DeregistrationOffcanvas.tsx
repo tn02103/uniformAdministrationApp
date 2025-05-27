@@ -2,7 +2,7 @@ import AutocompleteField from "@/components/fields/AutocompleteField";
 import { updateCadetRegistrationForInspection } from "@/dal/inspection";
 import { usePlannedInspectionList } from "@/dataFetcher/inspection";
 import { useScopedI18n } from "@/lib/locales/client";
-import { cadetArgs, CadetLabel } from "@/types/globalCadetTypes";
+import { CadetLabel } from "@/types/globalCadetTypes";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
 import { faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

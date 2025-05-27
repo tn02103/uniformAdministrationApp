@@ -42,10 +42,11 @@ jest.mock("@/dal/uniform/generation/_index", () => {
 
 // ################## TESTS ##################
 describe('<UniformgenerationOffcanvas>', () => {
-    const { updateUniformGeneration, createUniformGeneration, deleteUniformGeneration } = require('@/dal/uniform/generation/_index');
-    const mutate = require('@/dataFetcher/uniformAdmin').useUniformTypeList().mutate;
-    const { useModal } = require('@/components/modals/modalProvider');
-    const { toast } = require('react-toastify');
+    const { updateUniformGeneration, createUniformGeneration, deleteUniformGeneration } = jest.requireMock('@/dal/uniform/generation/_index');
+    const { mutate } = jest.requireMock('@/dataFetcher/uniformAdmin').useUniformTypeList();
+    const { useModal } = jest.requireMock('@/components/modals/modalProvider');
+    const { dangerConfirmationModal } = useModal();
+    const { toast } = jest.requireMock('react-toastify');
 
     afterEach(() => jest.clearAllMocks());
 
@@ -227,11 +228,9 @@ describe('<UniformgenerationOffcanvas>', () => {
     describe('dal methods', () => {
         describe('delete', () => {
             it('deletes generation', async () => {
-                let dangerOption;
                 const { dangerConfirmationModal } = useModal();
                 // change mocks
                 deleteUniformGeneration.mockReturnValue('uniform generation deleted');
-                dangerConfirmationModal.mockImplementation((option: any) => dangerOption = option.dangerOption);
                 const onHide = jest.fn();
 
                 // render component
@@ -250,7 +249,7 @@ describe('<UniformgenerationOffcanvas>', () => {
                 await user.click(deleteButton);
 
                 // validate parameters of dangerConfirmationModal
-                expect(dangerConfirmationModal).toHaveBeenCalled();
+                expect(dangerConfirmationModal).toHaveBeenCalledTimes(1);
                 expect(dangerConfirmationModal).toHaveBeenCalledWith({
                     header: 'admin.uniform.generationList.deleteModal.header',
                     message: expect.anything(),
@@ -260,10 +259,9 @@ describe('<UniformgenerationOffcanvas>', () => {
                         function: expect.any(Function),
                     },
                 });
-                expect(dangerOption).toBeDefined();
 
                 // call delete function and validate actions
-                await dangerOption!.function();
+                await dangerConfirmationModal.mock.calls[0][0].dangerOption.function();
                 expect(deleteUniformGeneration).toHaveBeenCalledTimes(1);
                 expect(deleteUniformGeneration).toHaveBeenCalledWith(testGeneration.id);
                 expect(mutate).toHaveBeenCalledTimes(1);
@@ -271,12 +269,9 @@ describe('<UniformgenerationOffcanvas>', () => {
                 expect(onHide).toHaveBeenCalledTimes(1);
             });
             it('catches DAL-Exceptions', async () => {
-                let dangerOption;
-                const { dangerConfirmationModal } = useModal();
 
                 // set mocks
                 deleteUniformGeneration.mockImplementationOnce(async () => { throw new Error("custom.error") });
-                dangerConfirmationModal.mockImplementation((option: any) => dangerOption = option.dangerOption);
                 const onHide = jest.fn();
 
                 // render component
@@ -295,11 +290,10 @@ describe('<UniformgenerationOffcanvas>', () => {
                 await user.click(deleteButton);
 
                 // validate parameters of dangerConfirmationModal
-                expect(dangerConfirmationModal).toHaveBeenCalled();
-                expect(dangerOption).toBeDefined();
+                expect(dangerConfirmationModal).toHaveBeenCalledTimes(1);
 
                 // call delete function and validate actions                
-                await dangerOption!.function();
+                await dangerConfirmationModal.mock.calls[0][0].dangerOption.function();
                 expect(deleteUniformGeneration).toHaveBeenCalledTimes(1);
                 expect(mutate).toHaveBeenCalledTimes(1);
                 expect(onHide).not.toHaveBeenCalled();

@@ -12,7 +12,7 @@ import { Uniform, UniformType } from "@/types/globalUniformTypes";
 import { faBars, faRightLeft, faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Col, Dropdown, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 
@@ -28,16 +28,17 @@ const UniformRow = ({ uniform, uniformType, replaceItem, openUniformId, setOpenU
     const modalT = useScopedI18n('modals.messageModal.uniform')
     const modal = useModal();
 
-    const { cadetId, locale }: { cadetId: string; locale: string } = useParams();
+    const { cadetId }: { cadetId: string; locale: string } = useParams();
     const { userRole } = useGlobalData();
     const { mutate } = useCadetUniformMap(cadetId);
 
     const [selected, setSelected] = useState<boolean>(false);
 
-    function onLineClick(event: any) {
-        if (event.target.tagName !== "BUTTON"
-            && event.target.parentNode?.tagName !== "BUTTON"
-            && event.target.parentNode?.parentNode?.tagName !== "BUTTON") {
+    function onLineClick(event: React.MouseEvent) {
+        const target = event.target as HTMLElement;
+        if (target.tagName !== "BUTTON"
+            && target.parentElement?.tagName !== "BUTTON"
+            && target.parentElement?.parentElement?.tagName !== "BUTTON") {
             setSelected(!selected);
         }
     }
@@ -173,7 +174,7 @@ const UniformRow = ({ uniform, uniformType, replaceItem, openUniformId, setOpenU
                     uniform={uniform}
                     uniformType={uniformType}
                     onClose={() => setOpenUniformId(null)}
-                    onSave={() => mutate()} />
+                    onSave={mutate} />
             }
         </div >
     )

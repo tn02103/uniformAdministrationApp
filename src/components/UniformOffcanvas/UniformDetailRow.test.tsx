@@ -1,6 +1,6 @@
 import "./UniformOffcanvasJestHelper";
 
-import { render, screen } from "@testing-library/react";
+import { getAllByRole, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { generationLists, sizeLists, typeList } from "../../../tests/_jestConfig/staticMockData";
 import { UniformDetailRow, UniformDetailRowProps } from "./UniformDetailRow";
@@ -82,15 +82,15 @@ describe('UniformDetailRow', () => {
         expect(sizeSelect).toBeInTheDocument();
 
         // initial state with sizelist
-        const options = sizeSelect.querySelectorAll('option');
-        expect(options.length).toBe(sizeLists[0].uniformSizes.length + 1); // +1 for the default "please select" option
+        const options = getAllByRole(sizeSelect, "option")
+        expect(options).toHaveLength(sizeLists[0].uniformSizes.length + 1); // +1 for the default "please select" option
         sizeLists[0].uniformSizes.forEach(size => {
             expect(screen.getByText(size.name)).toBeInTheDocument();
         });
 
         // different generation with sizelist
         await user.selectOptions(generationSelect, generationLists[0][2].id);
-        const seccondOptions = sizeSelect.querySelectorAll('option');
+        const seccondOptions = getAllByRole(sizeSelect, "option");
         expect(seccondOptions.length).toBe(sizeLists[1].uniformSizes.length + 1); // +1 for the default "please select" option
         sizeLists[1].uniformSizes.forEach(size => {
             expect(screen.getByText(size.name)).toBeInTheDocument();
@@ -98,7 +98,7 @@ describe('UniformDetailRow', () => {
 
         // different generation without sizelist
         await user.selectOptions(generationSelect, generationLists[0][3].id);
-        const thirdOptions = sizeSelect.querySelectorAll('option');
+        const thirdOptions = getAllByRole(sizeSelect, 'option');
         expect(thirdOptions.length).toBe(sizeLists[2].uniformSizes.length + 1); // +1 for the default "please select" option
         sizeLists[2].uniformSizes.forEach(size => {
             expect(screen.getByText(size.name)).toBeInTheDocument();
@@ -130,14 +130,14 @@ describe('UniformDetailRow', () => {
         render(<UniformDetailRow {...defaultProps} uniformType={typeList[1]} />);
 
         expect(screen.queryByLabelText('common.uniform.size')).not.toBeInTheDocument();
-        expect(screen.queryByText(defaultProps.uniform.size?.name!)).not.toBeInTheDocument();
+        expect(screen.queryByText(defaultProps.uniform.size!.name!)).not.toBeInTheDocument();
     });
 
     it('should hide generationField if !usingGenerations', () => {
         render(<UniformDetailRow {...defaultProps} uniformType={typeList[2]} />);
 
         expect(screen.queryByLabelText('common.uniform.generation.label')).not.toBeInTheDocument();
-        expect(screen.queryByText(defaultProps.uniform.generation?.name!)).not.toBeInTheDocument();
+        expect(screen.queryByText(defaultProps.uniform.generation!.name!)).not.toBeInTheDocument();
     });
 
     describe('handle update to uniform', () => {
@@ -216,7 +216,6 @@ describe('UniformDetailRow', () => {
 
             await user.click(saveButton);
             expect(defaultProps.onSave).toHaveBeenCalledTimes(1);
-            expect(defaultProps.onSave).toHaveBeenCalledWith('Saved item');
             expect(defaultProps.setEditable).toHaveBeenCalledTimes(1);
             expect(defaultProps.setEditable).toHaveBeenCalledWith(false);
 

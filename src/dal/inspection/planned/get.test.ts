@@ -16,7 +16,6 @@ describe('getPlannedInspectionList', () => {
     });
     it('correctData', async () => {
         const inspection = staticData.data.inspections[4];//Inspection:today
-        inspection.date.setUTCHours(0, 0, 0, 0);
         const result = await getPlannedInspectionList();
 
         expect(result[1].date).toEqual(inspection.date);
