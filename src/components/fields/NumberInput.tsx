@@ -11,6 +11,7 @@ export type NumberFieldProps = {
     isInvalid?: boolean;
     id?: string;
     errorId?: string;
+    disabled?: boolean;
 }
 
 export const NumberField = ({ allowDecimal, allowNegative, value, isInvalid, errorId, ...inputProps }: NumberFieldProps) => {
@@ -53,6 +54,7 @@ export const NumberField = ({ allowDecimal, allowNegative, value, isInvalid, err
             onChange={handleOnChange}
             aria-errormessage={isInvalid ? errorId : undefined}
             aria-invalid={!isInvalid}
-            aria-required={inputProps.required} />
+            aria-required={inputProps.required}
+             />
     )
 }

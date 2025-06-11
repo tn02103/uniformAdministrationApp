@@ -40,7 +40,7 @@ export default function ErrorMessage({ error, testId, ariaLabel, id }: { error?:
 
         // Den Text mit dem Translation-Wert initialisieren
         let text = getNestedValue(translationObj, translationKey) || '';
-        if (!text) return ('');
+        if (!text) return (error);
 
         // Key-Wert-Paare verarbeiten
         for (const pair of parts.slice(1)) {

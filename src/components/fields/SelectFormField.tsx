@@ -1,8 +1,8 @@
-import { Form } from "react-bootstrap";
-import { FieldValues, Path, useController } from "react-hook-form";
-import ErrorMessage from "../errorMessage";
 import { useI18n } from "@/lib/locales/client";
 import { useMemo } from "react";
+import { Form } from "react-bootstrap";
+import { FieldValues, Path, useController } from "react-hook-form";
+import { Field } from "./Field";
 
 export type SelectOptionType = { value: string | number, label: string };
 
@@ -19,7 +19,7 @@ export type SelectFormFieldProps<FormType extends FieldValues> = {
     selectClassName?: string,
 }
 
-export const SelectFormField = <FormType extends FieldValues>({ label, name, required, plaintext, options, labelClassName,formName, ...inputProps }: SelectFormFieldProps<FormType>) => {
+export const SelectFormField = <FormType extends FieldValues>({ label, name, required, plaintext, options, labelClassName, formName, ...inputProps }: SelectFormFieldProps<FormType>) => {
     const t = useI18n();
     const { field, fieldState } = useController({
         name,
@@ -32,10 +32,14 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
     }, [fieldState.error?.message]);
 
     return (
-        <Form.Group className="mb-3">
-            <Form.Label htmlFor={`${formName}_select-${name}`} className={"fw-bold m-0 " + labelClassName}>
-                {label}{required ? " *" : ""}
-            </Form.Label>
+        <Field
+            formName={formName}
+            name={name}
+            label={label}
+            required={required}
+            errorMessage={error}
+            labelClassName={labelClassName}
+        >
             {plaintext ?
                 <p aria-label={label} aria-readonly className="py-2 m-0">
                     {options.find(option => option.value === field.value)?.label || field.value}
@@ -57,13 +61,6 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
                     ))}
                 </Form.Select>
             }
-            <ErrorMessage
-                error={error}
-                testId={`err_${name}`}
-                id={`${formName}_err_${name}`}
-                ariaLabel={`error message ${name}`}
-            />
-        </Form.Group>
+        </Field>
     );
-
-}
+};
