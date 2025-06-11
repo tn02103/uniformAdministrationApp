@@ -3,7 +3,6 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
 import { __unsecuredGetUnitsWithUniformItems } from "./get";
-import { IncomingMessage } from "http";
 
 const propSchema = z.object({
     uniformIds: z.array(z.string().uuid()),

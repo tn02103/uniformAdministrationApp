@@ -1,5 +1,5 @@
 
-export const generationLists = [
+export const mockGenerationLists = [
     [
         {
             id: '8c0e873b-2b7d-4624-8a61-a192146f6587',
@@ -54,7 +54,7 @@ export const generationLists = [
     ],
 ]
 
-export const typeList = [
+export const mockTypeList = [
     {
         id: '81ff8e9b-a097-4879-a0b2-352e54d41e6c',
         name: 'Typ1',
@@ -64,7 +64,7 @@ export const typeList = [
         usingSizes: true,
         fk_defaultSizelist: 'cc0a225d-b3ec-4108-bd4b-451437d93fbf',
         defaultSizelist: { id: 'cc0a225d-b3ec-4108-bd4b-451437d93fbf', name: 'Liste2' },
-        uniformGenerationList: generationLists[0],
+        uniformGenerationList: mockGenerationLists[0],
         sortOrder: 0
     },
     {
@@ -76,7 +76,7 @@ export const typeList = [
         usingSizes: false,
         fk_defaultSizelist: null,
         defaultSizelist: null,
-        uniformGenerationList: generationLists[1],
+        uniformGenerationList: mockGenerationLists[1],
         sortOrder: 1
     },
     {
@@ -117,7 +117,7 @@ export const typeList = [
     },
 ]
 
-export const sizeLists = [
+export const mockSizeLists = [
     {
         id: '9feb9d1a-654a-4829-a01b-74d6ffbd5405',
         name: 'Liste0',
@@ -261,5 +261,56 @@ export const sizeLists = [
                 sortOrder: 5
             }
         ]
+    },
+]
+
+export const mockUniformList = [
+    {
+        id: 'c227ac23-93d4-42b5-be2e-956ea35c2db9',
+        number: 2501,
+        generation: mockGenerationLists[0][1],
+        size: mockSizeLists[0].uniformSizes[0],
+        comment: 'Test comment',
+        isReserve: false,
+        type: {
+            id: mockTypeList[0].id,
+            name: mockTypeList[0].name,
+        },
+    },
+    {
+        id: 'd8f3a5b6-4c7e-4f8a-bb3c-9f8e7d6c5b4a',
+        number: 2502,
+        generation: mockGenerationLists[0][2],
+        size: mockSizeLists[1].uniformSizes[1],
+        comment: 'Another test comment',
+        isReserve: false,
+        type: {
+            id: mockTypeList[1].id,
+            name: mockTypeList[1].name,
+        },
+    },
+    {
+        id: 'a1b2c3d4-e5f6-7g8h-9i0j-k1l2m3n4o5p6',
+        number: 2503,
+        generation: mockGenerationLists[1][0],
+        size: mockSizeLists[2].uniformSizes[2],
+        comment: 'Yet another test comment',
+        isReserve: true,
+        type: {
+            id: mockTypeList[2].id,
+            name: mockTypeList[2].name,
+        },
+    },
+    {
+        id: 'b7c8d9e0-f1g2-h3i4-j5k6-l7m8n9o0p1q2',
+        number: 2504,
+        generation: mockGenerationLists[1][1],
+        size: mockSizeLists[3].uniformSizes[3],
+        comment: 'Final test comment',
+        isReserve: false,
+        type: {
+            id: mockTypeList[3].id,
+            name: mockTypeList[3].name,
+        },
     },
 ]

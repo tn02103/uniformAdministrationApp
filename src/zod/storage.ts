@@ -1,10 +1,13 @@
 import { z } from 'zod';
+import { customErrorMap } from './customZod/customErrorMap';
+
+z.setErrorMap(customErrorMap);
 
 export const storageUnitFormSchema = z.object({
-    name: z.string().min(1, "string.required").max(20, "string.maxLength;value:20"),
-    description: z.string().max(50, "string.maxLength;value:50").nullable().optional(),
+    name: z.string().min(1).max(20),
+    description: z.string().max(100).nullable().optional(),
     isReserve: z.boolean(),
-    capacity: z.number().max(100,"number.max;value:100").nullable().optional(),
+    capacity: z.number().max(100).nullable().optional(),
 });
-;
+
 export type StorageUnitFormType = z.infer<typeof storageUnitFormSchema>;

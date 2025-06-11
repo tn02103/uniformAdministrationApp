@@ -1,19 +1,15 @@
 import { genericSAValidator } from "@/actions/validations";
-import { AuthRole } from "@/lib/AuthRoles";
-import { prisma } from "@/lib/db";
-import { optional, z } from "zod";
-import { __unsecuredGetUnitsWithUniformItems, StorageUnitWithUniformItems } from "./get";
 import CustomException, { ExceptionType } from "@/errors/CustomException";
 import { UniformIssuedException } from "@/errors/SaveDataException";
+import { AuthRole } from "@/lib/AuthRoles";
+import { prisma } from "@/lib/db";
 import { Prisma } from "@prisma/client";
-import { SAReturnType } from "../_helper/testHelper";
+import { z } from "zod";
+import { __unsecuredGetUnitsWithUniformItems, StorageUnitWithUniformItems } from "./get";
 
 const propSchema = z.object({
     storageUnitId: z.string().uuid(),
     uniformId: z.string().uuid(),
-    options: z.object({
-        ignoreFull: z.boolean().optional(),
-    }).optional(),
 });
 type PropType = z.infer<typeof propSchema>;
 
@@ -23,16 +19,9 @@ type PropType = z.infer<typeof propSchema>;
  * @param props {storageUnitId, uniformId}
  * @returns List of storage units with uniform items
  */
-export const addUniform = async (props: PropType): Promise<{
-    error: {
-        message: string,
-        formElement: string,
-    } | {
-        exceptionType: ExceptionType,
-        data: any,
-    }
-} | StorageUnitWithUniformItems[]
-> => genericSAValidator(
+export const addUniform = async (props: PropType): Promise<StorageUnitWithUniformItems[] | {
+    error: object;
+}> => genericSAValidator(
     AuthRole.materialManager,
     props,
     propSchema,
@@ -75,21 +64,6 @@ export const addUniform = async (props: PropType): Promise<{
     if (uniform.issuedEntries.length > 0) {
         throw new UniformIssuedException(uniform.id, uniform.number, uniform.issuedEntries[0].cadet);
     }
-    if (storageUnit.capacity && !props.options?.ignoreFull && storageUnit?.uniformList.length >= storageUnit.capacity) {
-        throw new CustomException(
-            "Storage unit is at or above capacity",
-            ExceptionType.OverCapacityException,
-            {
-                cpacity: storageUnit.capacity,
-                current: storageUnit.uniformList.length,
-                storageUnit: {
-                    id: storageUnit.id,
-                    name: storageUnit.name,
-                    description: storageUnit.description,
-                },
-            },
-        );
-    }
 
     const data: Prisma.UniformUpdateArgs["data"] = { storageUnitId };
     if (!uniform.isReserve && storageUnit?.isReserve) {
@@ -101,15 +75,4 @@ export const addUniform = async (props: PropType): Promise<{
         data
     });
     return __unsecuredGetUnitsWithUniformItems(assosiation, client);
-})).catch((error) => {
-    if (error instanceof CustomException && error.exceptionType !== ExceptionType.SaveDataException) {
-        return {
-            error: {
-                exceptionType: error.exceptionType,
-                data: error.data,
-            },
-        };
-    } else {
-        throw error;
-    }
-});
+}));

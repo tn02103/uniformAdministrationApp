@@ -37,6 +37,7 @@ export default {
             replace: "Replace",
             rename: "Rename",
             restart: "Restart",
+            remove: "Remove",
             finish: "Finish",
             changeIssued: "Change quantity & type",
             delete: "Delete",
@@ -288,6 +289,33 @@ export default {
             },
         },
     },
+    storageUnit: {
+        error: {
+            "addUT": "The uniform item could not be added. Please try again later.",
+            "removeUT": "The uniform item could not be removed. Please try again later.",
+            "nameDuplication": "The name is already used by another storage unit",
+        },
+        label: {
+            "addUT": "Add uniform item(s)",
+            "editName": "Rename storage unit",
+            "headerUT": "Uniform item(s)",
+            "headerCreate": "Create storage unit",
+            "details.name": "Name",
+            "details.capacity": "Capacity",
+            "details.description": "Description",
+            "details.forReserves": "For reserves",
+            "details.forReservesText": "Uniform items are marked as reserve",
+        },
+        warning: {
+            "full.header": "Storage unit full",
+            "full.message": "The unit is already full. Are you sure you want to add another uniform item?",
+        },
+        tooltips: {
+            "utOptions.owner": "Owner: ",
+            "utOptions.storageUnit": "Storage unit: ",
+            "utOptions.isReserve": "Reserve",
+        }
+    },
     uniformList: {
         filter: "Filter",
         other: "other filters",
@@ -384,6 +412,7 @@ export default {
         links: {
             cadetOverview: "Staff",
             uniformOverview: "Uniform",
+            storageUnit: "Storage units",
             create: {
                 group: "Create",
                 cadet: "Person",

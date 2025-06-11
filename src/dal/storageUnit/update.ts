@@ -1,5 +1,4 @@
 import { genericSAValidator } from "@/actions/validations";
-import { SAErrorResponse } from "@/errors/ServerActionExceptions";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { storageUnitFormSchema } from "@/zod/storage";
@@ -8,7 +7,7 @@ import { __unsecuredGetUnitsWithUniformItems } from "./get";
 
 const propShema = z.object({
     id: z.string().uuid(),
-    data: storageUnitFormSchema,
+    data: storageUnitFormSchema.partial(),
 });
 type PropType = z.infer<typeof propShema>;
 export const update = (props: PropType) => genericSAValidator(
@@ -17,14 +16,18 @@ export const update = (props: PropType) => genericSAValidator(
     propShema,
     { storageUnitId: props.id }
 ).then(async ([{ assosiation }, { id, data }]) => prisma.$transaction(async (client) => {
-    const unitList = await client.storageUnit.findMany({
-        where: { assosiationId: assosiation }
-    });
-    if (unitList.some(unit => unit.id !== id && unit.name === data.name)) {
-        return {
-            error: {
-                formElement: 'name',
-                message: 'custom.nameDuplication.storageUnit'
+
+    if (data.name) {
+        const unitList = await client.storageUnit.findMany({
+            where: { assosiationId: assosiation }
+        });
+
+        if (unitList.some(unit => unit.id !== id && unit.name === data.name)) {
+            return {
+                error: {
+                    formElement: 'name',
+                    message: 'custom.nameDuplication.storageUnit'
+                }
             }
         }
     }

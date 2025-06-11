@@ -5,12 +5,26 @@ import { Deficiency } from "@/types/deficiencyTypes";
 import { uniformHistoryArgs, UniformHistroyEntry } from "@/types/globalUniformTypes";
 import { z } from "zod";
 
+export type ItemLabel = {
+    id: string;
+    label: string;
+    isReserve: boolean;
+    owner: {
+        id: string;
+        firstname: string;
+        lastname: string;
+    } | null;
+    storageUnit: {
+        id: string;
+        name: string;
+    } | null;
+}
 /**
  * Get all uniform items for the assosiation
  * @requires AuthRole.user
  * @returns List of labels for uniform items
  */
-export const getItemLabels = async () => genericSANoDataValidator(
+export const getItemLabels = async (): Promise<ItemLabel[]> => genericSANoDataValidator(
     AuthRole.user,
 ).then(([{ assosiation }]) => prisma.uniform.findMany({
     where: {
@@ -21,10 +35,29 @@ export const getItemLabels = async () => genericSANoDataValidator(
     },
     include: {
         type: true,
-    }
-})).then(data => data.map(item => ({
+        storageUnit: true,
+        issuedEntries: {
+            where: {
+                dateReturned: null,
+            },
+            include: {
+                cadet: true,
+            },
+        },
+    },
+})).then(data => data.map((item): ItemLabel => ({
     id: item.id,
     label: `${item.type.name}-${item.number}`,
+    isReserve: item.isReserve,
+    owner: item.issuedEntries.length > 0 ? {
+        id: item.issuedEntries[0].cadet.id,
+        firstname: item.issuedEntries[0].cadet.firstname,
+        lastname: item.issuedEntries[0].cadet.lastname,
+    } : null,
+    storageUnit: item.storageUnit ? {
+        id: item.storageUnit.id,
+        name: item.storageUnit.name,
+    } : null,
 })));
 
 
@@ -63,7 +96,7 @@ export const getDeficiencies = async (props: GetDeficienciesProps): Promise<Defi
         uniformDeficiency: true,
     },
     orderBy: [
-       { dateCreated: 'asc' },  // Oldest to newest
+        { dateCreated: 'asc' },  // Oldest to newest
     ],
 })).then((deficiencies) =>
     deficiencies.map((deficiency): Deficiency => ({

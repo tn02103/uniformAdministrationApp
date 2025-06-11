@@ -1,5 +1,5 @@
 import { Deficiency } from "@/types/deficiencyTypes";
-import { generationLists, sizeLists, typeList } from "../../../tests/_jestConfig/staticMockData";
+import { mockGenerationLists, mockSizeLists, mockTypeList } from "../../../tests/_jestConfig/staticMockData";
 import { AuthRole } from "@/lib/AuthRoles";
 
 
@@ -25,10 +25,10 @@ jest.mock('@/dataFetcher/deficiency', () => ({
 
 jest.mock('@/dataFetcher/uniformAdmin', () => ({
     useUniformGenerationListByType: jest.fn(() => ({
-        generationList: generationLists[0]
+        generationList: mockGenerationLists[0]
     })),
     useUniformTypeList: jest.fn(() => ({
-        typeList
+        typeList: mockTypeList
     })),
 }));
 jest.mock("@/dal/uniform/item/_index", () => ({
@@ -40,7 +40,7 @@ jest.mock("@/dal/uniform/item/_index", () => ({
 }));
 jest.mock('../globalDataProvider', () => ({
     useGlobalData: jest.fn(() => ({
-        sizelists: sizeLists,
+        sizelists: mockSizeLists,
         userRole: global.__ROLE__ ?? AuthRole.admin,
     })),
 }));
@@ -114,13 +114,13 @@ export const mockDeficiencyList: Deficiency[] = [
 export const mockUniform = {
     id: "c227ac23-93d4-42b5-be2e-956ea35c2db9",
     number: 2501,
-    generation: generationLists[0][1],
-    size: sizeLists[0].uniformSizes[0],
+    generation: mockGenerationLists[0][1],
+    size: mockSizeLists[0].uniformSizes[0],
     comment: "Test comment",
-    active: true,
+    isReserve: true,
     type: {
-        id: typeList[0].id,
-        name: typeList[0].name,
+        id: mockTypeList[0].id,
+        name: mockTypeList[0].name,
     },
 };
 export const mockUniformHistory = [
