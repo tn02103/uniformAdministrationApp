@@ -17,7 +17,7 @@ ALTER TABLE "base"."uniform" DROP COLUMN "active";
 CREATE TABLE "base"."storage_unit" (
     "id" CHAR(36) NOT NULL DEFAULT gen_random_uuid(),
     "name" VARCHAR(20) NOT NULL,
-    "description" VARCHAR(50),
+    "description" VARCHAR(100),
     "is_reserve" BOOLEAN NOT NULL DEFAULT false,
     "assosiationId" CHAR(36) NOT NULL,
     "capacity" SMALLINT,

@@ -1,21 +1,21 @@
+import { LabelIconButton } from "@/components/Buttons/LabelIconButton";
+import { useModal } from "@/components/modals/modalProvider";
 import { deleteStorageUnit, StorageUnitWithUniformItems } from "@/dal/storageUnit/_index";
-import { useState } from "react";
-import { Col, Offcanvas, Row } from "react-bootstrap";
-import UnitsliderDetailForm from "./UnitsliderDetailForm";
-import UnitsliderUniformList from "./UnitsliderUniformList";
-import { TooltipActionButton } from "@/components/TooltipIconButton";
-import { toast } from "react-toastify";
 import { useStorageUnitsWithUniformItemList } from "@/dataFetcher/storage";
 import { useI18n } from "@/lib/locales/client";
-import { useModal } from "@/components/modals/modalProvider";
+import { useState } from "react";
+import { Offcanvas, Row } from "react-bootstrap";
+import { toast } from "react-toastify";
+import {StorageunitOCDetailForm} from "./StorageunitOCDetailForm";
+import { StorageunitOCHeader } from "./StorageunitOCHeader";
+import StorageunitOCUniformList from "./StorageunitOCUniformList";
 
 type Props = {
     storageUnit?: StorageUnitWithUniformItems;
     onHide: () => void;
     setSelectedStorageUnitId: (id: string | null) => void;
 }
-export default function Unitslider({ storageUnit, onHide, setSelectedStorageUnitId }: Props) {
-
+export default function StorageunitOC({ storageUnit, onHide, setSelectedStorageUnitId }: Props) {
     const [editable, setEditable] = useState(!storageUnit);
     const { mutate } = useStorageUnitsWithUniformItemList();
     const t = useI18n();
@@ -58,27 +58,36 @@ export default function Unitslider({ storageUnit, onHide, setSelectedStorageUnit
         );
     }
 
+
     return (
-        <Offcanvas show={true} onHide={handleOnHide} placement='end'>
-            <Offcanvas.Header closeButton>
-                <Offcanvas.Title>{storageUnit?.name ?? "Neu anlegen"}</Offcanvas.Title>
-            </Offcanvas.Header>
+        <Offcanvas show={true} onHide={handleOnHide} placement='end' style={{ width: '500px' }}>
+            <StorageunitOCHeader storageUnit={storageUnit} />
             <Offcanvas.Body>
-                {(editable || !storageUnit) ? <UnitsliderDetailForm storageUnit={storageUnit} setEditable={setEditable} setSelectedStorageUnitId={setSelectedStorageUnitId} />
-                    : <div>
-                        <Row>
-                            <Col xs={"auto"} className="fw-bold fs-5 ">{storageUnit.name}</Col>
-                            <Col xs={"auto"}>({storageUnit.uniformList.length}/{storageUnit.capacity})</Col>
-                            <Col xs={"auto"}>
-                                <TooltipActionButton variantKey="edit" onClick={() => setEditable(true)} />
-                                <TooltipActionButton variantKey="delete" onClick={handleDelete} />
-                            </Col>
-                            <Col xs={12}>{storageUnit.description}</Col>
-                        </Row>
-                    </div>
-                }
-                <hr />
-                {storageUnit && <UnitsliderUniformList storageUnit={storageUnit} />}
+                <hr className="mb-0" />
+                <Row className="mb-3 justify-content-evenly">
+                    <LabelIconButton
+                        variantKey="edit"
+                        disabled={editable || !storageUnit}
+                        onClick={() => setEditable(true)} />
+                    <LabelIconButton
+                        variantKey="delete"
+                        onClick={handleDelete}
+                        disabled={!storageUnit || editable}
+                    />
+                </Row>
+                <StorageunitOCDetailForm
+                    editable={editable}
+                    storageUnit={storageUnit}
+                    setEditable={setEditable}
+                    setSelectedStorageUnitId={setSelectedStorageUnitId}
+                    onHide={onHide}
+                />
+                {storageUnit && (
+                    <>
+                        <hr className="mb-0" />
+                        <StorageunitOCUniformList storageUnit={storageUnit} />
+                    </>
+                )}
             </Offcanvas.Body>
         </Offcanvas>
     );

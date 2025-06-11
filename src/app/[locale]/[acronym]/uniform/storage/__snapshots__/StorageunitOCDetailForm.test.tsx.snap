@@ -1,0 +1,165 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StorageunitOCDetailForm should render without crashing 1`] = `
+<div>
+  <form
+    autocomplete="off"
+    class="form"
+    novalidate=""
+  >
+    <div
+      class="row"
+    >
+      <div
+        class="mb-3 col-12"
+      >
+        <div>
+          <label
+            class="fw-bold m-0 undefined form-label"
+            for="undefined_input-name"
+          >
+            storageUnit.label.details.name
+             *
+          </label>
+          <input
+            aria-invalid="false"
+            aria-required="true"
+            class="form-control"
+            id="undefined_input-name"
+            name="name"
+            type="text"
+            value=""
+            width="auto"
+          />
+          <div
+            aria-label="error message name"
+            class="text-danger fs-7"
+            data-testid="err_name"
+            id="undefined_err_name"
+            role="alert"
+          />
+        </div>
+      </div>
+      <div
+        class="mb-3 col-12"
+      >
+        <div>
+          <label
+            class="fw-bold m-0 undefined form-label"
+            for="storageUnitForm_input-description"
+          >
+            storageUnit.label.details.description
+          </label>
+          <textarea
+            aria-invalid="false"
+            class="form-control"
+            id="storageUnitForm_input-description"
+            name="description"
+            rows="3"
+            width="auto"
+          />
+          <div
+            aria-label="error message description"
+            class="text-danger fs-7"
+            data-testid="err_description"
+            id="storageUnitForm_err_description"
+            role="alert"
+          />
+        </div>
+      </div>
+      <div
+        class="mb-3 col-4"
+      >
+        <div>
+          <label
+            class="fw-bold m-0 undefined form-label"
+            for="storageUnitForm_numberInput-capacity"
+          >
+            storageUnit.label.details.capacity
+          </label>
+          <input
+            aria-invalid="true"
+            class="form-control"
+            id="storageUnitForm_numberInput-capacity"
+            name="capacity"
+            type="number"
+            value=""
+          />
+          <div
+            aria-label="error message capacity"
+            class="text-danger fs-7"
+            data-testid="err_capacity"
+            id="storageUnitForm_err_capacity"
+            role="alert"
+          />
+        </div>
+      </div>
+      <div
+        class="mb-3 col-7"
+      >
+        <div>
+          <label
+            class="fw-bold m-0 undefined form-label"
+            for="storageUnitForm_toggle-isReserve"
+          >
+            storageUnit.label.details.forReserves
+          </label>
+          <div
+            class="form-check form-switch px-0 my-auto"
+          >
+            <input
+              aria-checked="false"
+              aria-describedby="storageUnitForm_isReserve_toggleText"
+              class="form-check-input ms-0 my-2"
+              id="storageUnitForm_toggle-isReserve"
+              name="isReserve"
+              role="switch"
+              style="cursor: pointer;"
+              tabindex="0"
+              type="checkbox"
+              value="false"
+            />
+            <label
+              class="form-check-label ms-2"
+              id="storageUnitForm_isReserve_toggleText"
+            >
+              storageUnit.label.details.forReservesText
+            </label>
+          </div>
+          <div
+            aria-label="error message isReserve"
+            class="text-danger fs-7"
+            data-testid="err_isReserve"
+            id="storageUnitForm_err_isReserve"
+            role="alert"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="row"
+    >
+      <div
+        class="col"
+      >
+        <button
+          class="m-1 btn btn-outline-secondary btn-sm"
+          type="button"
+        >
+          common.actions.cancel
+        </button>
+      </div>
+      <div
+        class="col"
+      >
+        <button
+          class="m-1 btn btn-outline-primary btn-sm"
+          type="submit"
+        >
+          common.actions.save
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+`;
