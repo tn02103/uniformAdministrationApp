@@ -105,7 +105,7 @@ const UniformRow = ({ uniform, uniformType, replaceItem, openUniformId, setOpenU
                                 <Row className="fs-8 fw-bold fst-italic">
                                     {t('common.uniform.number')}
                                 </Row>
-                                <Row data-testid={"div_number"} className={`fw-bold ${uniform.isReserve ? "text-danger " : ""} ${""}`}>
+                                <Row data-testid={"div_number"} className={`fw-bold ${uniform.active ? "" : "text-danger "} ${""}`}>
                                     {uniform.number}
                                 </Row>
                             </Col>

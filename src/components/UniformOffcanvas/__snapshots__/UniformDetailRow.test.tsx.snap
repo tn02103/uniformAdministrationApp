@@ -13,11 +13,9 @@ exports[`UniformDetailRow should render correctly 1`] = `
       <div
         class="col-sm-auto col-12"
       >
-        <div
-          class="mb-3"
-        >
+        <div>
           <label
-            class="fw-bold m-0 form-label"
+            class="fw-bold m-0  form-label"
             for="uniform_toggle-active"
           >
             common.status
@@ -27,11 +25,13 @@ exports[`UniformDetailRow should render correctly 1`] = `
             aria-readonly="true"
             class="mt-2"
           >
-            common.uniform.active.true
+            common.uniform.state.active
           </p>
           <div
+            aria-label="error message active"
             class="text-danger fs-7"
             data-testid="err_active"
+            id="uniform_err_active"
             role="alert"
           />
         </div>
@@ -39,11 +39,9 @@ exports[`UniformDetailRow should render correctly 1`] = `
       <div
         class="col-sm-auto col-7"
       >
-        <div
-          class="mb-3"
-        >
+        <div>
           <label
-            class="fw-bold m-0 undefined form-label"
+            class="fw-bold m-0  form-label"
             for="uniform_select-generation"
           >
             common.uniform.generation.label
@@ -68,11 +66,9 @@ exports[`UniformDetailRow should render correctly 1`] = `
         class="p-0 col-sm-auto col-5"
         style="min-width: 100px;"
       >
-        <div
-          class="mb-3"
-        >
+        <div>
           <label
-            class="fw-bold m-0 undefined form-label"
+            class="fw-bold m-0  form-label"
             for="uniform_select-size"
           >
             common.uniform.size
@@ -98,7 +94,7 @@ exports[`UniformDetailRow should render correctly 1`] = `
       >
         <div>
           <label
-            class="fw-bold m-0 form-label"
+            class="fw-bold m-0  form-label"
             for="uniform_input-comment"
           >
             common.comment
@@ -141,11 +137,9 @@ exports[`UniformDetailRow should render correctly when editable 1`] = `
       <div
         class="col-sm-auto col-12"
       >
-        <div
-          class="mb-3"
-        >
+        <div>
           <label
-            class="fw-bold m-0 form-label"
+            class="fw-bold m-0  form-label"
             for="uniform_toggle-active"
           >
             common.status
@@ -171,12 +165,14 @@ exports[`UniformDetailRow should render correctly when editable 1`] = `
               class="form-check-label ms-2"
               id="uniform_active_toggleText"
             >
-              common.uniform.active.true
+              common.uniform.state.active
             </label>
           </div>
           <div
+            aria-label="error message active"
             class="text-danger fs-7"
             data-testid="err_active"
+            id="uniform_err_active"
             role="alert"
           />
         </div>
@@ -184,18 +180,16 @@ exports[`UniformDetailRow should render correctly when editable 1`] = `
       <div
         class="col-sm-auto col-7"
       >
-        <div
-          class="mb-3"
-        >
+        <div>
           <label
-            class="fw-bold m-0 undefined form-label"
+            class="fw-bold m-0  form-label"
             for="uniform_select-generation"
           >
             common.uniform.generation.label
           </label>
           <select
             aria-invalid="false"
-            class="text-truncate form-select"
+            class="text-truncate  form-select"
             id="uniform_select-generation"
             name="generation"
           >
@@ -239,18 +233,16 @@ exports[`UniformDetailRow should render correctly when editable 1`] = `
         class="p-0 col-sm-auto col-5"
         style="min-width: 100px;"
       >
-        <div
-          class="mb-3"
-        >
+        <div>
           <label
-            class="fw-bold m-0 undefined form-label"
+            class="fw-bold m-0  form-label"
             for="uniform_select-size"
           >
             common.uniform.size
           </label>
           <select
             aria-invalid="false"
-            class="text-truncate form-select"
+            class="text-truncate  form-select"
             id="uniform_select-size"
             name="size"
           >
@@ -300,7 +292,7 @@ exports[`UniformDetailRow should render correctly when editable 1`] = `
       >
         <div>
           <label
-            class="fw-bold m-0 form-label"
+            class="fw-bold m-0  form-label"
             for="uniform_input-comment"
           >
             common.comment

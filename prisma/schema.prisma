@@ -170,7 +170,7 @@ model Uniform {
     fk_uniformType      String              @map("fk_uniform_type") @db.Char(36)
     fk_generation       String?             @db.Char(36)
     fk_size             String?             @db.Char(36)
-    isReserve           Boolean             @default(false) @map("is_reserve")
+    active              Boolean             @default(true)
     comment             String?
     recdelete           DateTime?           @db.Timestamp(6)
     recdeleteUser       String?             @map("recdelete_user") @db.VarChar(10)
@@ -209,7 +209,7 @@ model UniformIssued {
 model StorageUnit {
     id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
     name          String      @db.VarChar(20)
-    description   String?     @db.VarChar(50)
+    description   String?     @db.VarChar(100)
     isReserve     Boolean     @default(false) @map("is_reserve")
     capacity      Int?        @db.SmallInt
     uniformList   Uniform[]

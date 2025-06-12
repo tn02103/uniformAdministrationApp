@@ -1,6 +1,7 @@
 import { Form } from "react-bootstrap"
 import { FieldValues, Path, useController } from "react-hook-form"
 import { Field } from "./Field"
+import { useFormContext } from "./Form"
 
 type Props<FormType extends FieldValues> = {
     label: string,
@@ -13,10 +14,16 @@ type Props<FormType extends FieldValues> = {
     plaintext?: boolean,
 }
 
-export const InputFormField = <FormType extends FieldValues>({ label, name, required, formName, ...inputProps }: Props<FormType>) => {
+export const InputFormField = <FormType extends FieldValues>({ label, name, required, placeholder, className, ...inputProps }: Props<FormType>) => {
     const { field, fieldState } = useController({
         name,
-    })
+    });
+
+    const formContext = useFormContext();
+    const disabled = formContext?.disabled || inputProps.disabled;
+    const plaintext = formContext?.plaintext || inputProps.plaintext;
+    const formName = formContext?.formName || inputProps.formName || "unnamedForm";
+
     return (
         <Field
             formName={formName}
@@ -26,11 +33,14 @@ export const InputFormField = <FormType extends FieldValues>({ label, name, requ
             errorMessage={fieldState.error?.message}
         >
             <Form.Control
-                {...inputProps}
                 {...field}
+                className={className}
+                disabled={disabled}
+                plaintext={plaintext}
                 id={`${formName}_input-${name}`}
-                type="text"
                 isInvalid={!!fieldState.error}
+                placeholder={placeholder}
+                type="text"
                 width={"auto"}
                 value={field.value ?? ""}
                 aria-errormessage={fieldState.error ? `${formName}_err_${name}` : undefined}
@@ -38,5 +48,5 @@ export const InputFormField = <FormType extends FieldValues>({ label, name, requ
                 aria-required={required}
             />
         </Field>
-    )
+    );
 }

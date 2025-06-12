@@ -79,9 +79,9 @@ export default {
                 multiLabel: "Size lists",
             },
             owner: "Owner",
-            active: {
-                true: "Active",
-                false: "Reserve"
+            state: {
+                active: "Active",
+                reserve: "Reserve"
             },
             type: {
                 "type#one": "Uniform type",

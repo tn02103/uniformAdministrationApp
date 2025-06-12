@@ -11,7 +11,7 @@ type ConfiguratorData = {
     typeId: string,
     generationId?: string,
     sizeId?: string,
-    isReserve: boolean,
+    active: boolean,
     comment: string
 }
 export type AvaiabilityNumbers = {
@@ -45,7 +45,7 @@ const KnownIdsWorkflow = ({
                 uniformTypeId: uniformConfiguration.typeId,
                 generationId: uniformConfiguration.generationId,
                 comment: uniformConfiguration.comment,
-                isReserve: uniformConfiguration.isReserve,
+                active: uniformConfiguration.active,
             }
         }).then((result) => {
             toast.success(t('createUniform.create.success', { count: result }));

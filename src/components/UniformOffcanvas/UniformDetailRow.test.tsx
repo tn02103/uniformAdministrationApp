@@ -158,14 +158,14 @@ describe('UniformDetailRow', () => {
             expect(generationSelect).toHaveTextContent(mockUniform.generation.name);
             expect(sizeSelect).toHaveTextContent(mockUniform.size.name);
             expect(commentInput).toHaveTextContent(mockUniform.comment);
-            expect(activeCheckbox).toHaveTextContent('common.uniform.active.true');
+            expect(activeCheckbox).toHaveTextContent('common.uniform.state.active');
 
             rerender(<UniformDetailRow {...defaultProps} uniform={newUniform} />);
 
             expect(generationSelect).toHaveTextContent(newUniform.generation.name);
             expect(sizeSelect).toHaveTextContent(newUniform.size.name);
             expect(commentInput).toHaveTextContent(newUniform.comment);
-            expect(activeCheckbox).toHaveTextContent('common.uniform.active.false');
+            expect(activeCheckbox).toHaveTextContent('common.uniform.state.reserve');
         });
 
         it('should not reset if editable', () => {

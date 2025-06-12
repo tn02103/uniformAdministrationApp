@@ -28,11 +28,11 @@ export default function TableLine({
         <tr data-testid={`div_uitem_${uniform.id}`}>
             <td data-testid="div_number" className="col-3 col-sm-1 ">
                 <HighlightedText text={String(uniform.number)} highlight={String(searchString)} />
-                {uniform.isReserve &&
+                {!uniform.active &&
                     <>
                         <br />
                         <span className="badge rounded-pill text-bg-secondary">
-                            {t('common.uniform.active.false')}
+                            {t('common.uniform.state.reserve')}
                         </span>
                     </>
                 }

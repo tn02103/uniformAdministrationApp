@@ -66,8 +66,8 @@ export const addUniform = async (props: PropType): Promise<StorageUnitWithUnifor
     }
 
     const data: Prisma.UniformUpdateArgs["data"] = { storageUnitId };
-    if (!uniform.isReserve && storageUnit?.isReserve) {
-        data.isReserve = true;
+    if (uniform.active && storageUnit?.isReserve) {
+        data.active = false;
     }
 
     await client.uniform.update({

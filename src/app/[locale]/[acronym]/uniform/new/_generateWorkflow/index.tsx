@@ -14,7 +14,7 @@ type FormDataType = {
     configurator?: {
         typeId: string;
         generationId?: string;
-        isReserve: boolean;
+        active: boolean;
         comment: string;
     },
     step1Data: Step1FormType;
@@ -81,7 +81,7 @@ const GeneratedWorkflow = ({
                 uniformTypeId: formData.configurator.typeId,
                 generationId: formData.configurator.generationId,
                 comment: formData.configurator.comment,
-                isReserve: formData.configurator.isReserve,
+                active: formData.configurator.active,
             }
         }).then((result) => {
             toast.success(t('createUniform.create.success', { count: result }));

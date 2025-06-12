@@ -10,7 +10,7 @@ const defaultProps: UniformFormType = {
     number: data.uniformList[0].number,
     size: ids.sizeIds[16],
     generation: ids.uniformGenerationIds[3],
-    isReserve: true,
+    active: false,
     comment: 'jsut a new comment ;)',
 }
 const defaultReturnValue = {

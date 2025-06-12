@@ -60,7 +60,7 @@ export default function ErrorMessage({ error, testId, ariaLabel, id }: { error?:
         setMessage(text);
     }, [error, locale, setMessage, getTranslationText, getTranslation]);
 
-    if (!message)
+    if (!message || message.length === 0)
         return null;
 
     return (

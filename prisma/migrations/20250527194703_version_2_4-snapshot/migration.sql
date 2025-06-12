@@ -6,13 +6,11 @@
  */
 -- AlterTable
 ALTER TABLE "base"."uniform"
-ADD COLUMN "is_reserve" BOOLEAN NOT NULL DEFAULT false,
     ADD COLUMN "storageUnitId" CHAR(36);
--- MoveData
-UPDATE "base"."uniform"
-SET "is_reserve" = NOT "active";
--- DropColumn
-ALTER TABLE "base"."uniform" DROP COLUMN "active";
+    
+-- AlterTable
+ALTER TABLE "inspection"."inspection" ALTER COLUMN "date" DROP DEFAULT;
+
 -- CreateTable
 CREATE TABLE "base"."storage_unit" (
     "id" CHAR(36) NOT NULL DEFAULT gen_random_uuid(),

@@ -15,8 +15,8 @@ exports[`StorageunitOCDetailForm should render without crashing 1`] = `
       >
         <div>
           <label
-            class="fw-bold m-0 undefined form-label"
-            for="undefined_input-name"
+            class="fw-bold m-0  form-label"
+            for="storageUnitForm_input-name"
           >
             storageUnit.label.details.name
              *
@@ -25,7 +25,7 @@ exports[`StorageunitOCDetailForm should render without crashing 1`] = `
             aria-invalid="false"
             aria-required="true"
             class="form-control"
-            id="undefined_input-name"
+            id="storageUnitForm_input-name"
             name="name"
             type="text"
             value=""
@@ -35,7 +35,7 @@ exports[`StorageunitOCDetailForm should render without crashing 1`] = `
             aria-label="error message name"
             class="text-danger fs-7"
             data-testid="err_name"
-            id="undefined_err_name"
+            id="storageUnitForm_err_name"
             role="alert"
           />
         </div>
@@ -45,7 +45,7 @@ exports[`StorageunitOCDetailForm should render without crashing 1`] = `
       >
         <div>
           <label
-            class="fw-bold m-0 undefined form-label"
+            class="fw-bold m-0  form-label"
             for="storageUnitForm_input-description"
           >
             storageUnit.label.details.description
@@ -72,7 +72,7 @@ exports[`StorageunitOCDetailForm should render without crashing 1`] = `
       >
         <div>
           <label
-            class="fw-bold m-0 undefined form-label"
+            class="fw-bold m-0  form-label"
             for="storageUnitForm_numberInput-capacity"
           >
             storageUnit.label.details.capacity
@@ -99,7 +99,7 @@ exports[`StorageunitOCDetailForm should render without crashing 1`] = `
       >
         <div>
           <label
-            class="fw-bold m-0 undefined form-label"
+            class="fw-bold m-0  form-label"
             for="storageUnitForm_toggle-isReserve"
           >
             storageUnit.label.details.forReserves

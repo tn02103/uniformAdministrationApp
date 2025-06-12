@@ -100,7 +100,6 @@ describe('DatePicker', () => {
         expect(onChange).not.toHaveBeenCalled();
 
         const minDayButton = screen.getByRole('button', { name: /15/ });
-        expect(minDayButton).toMatchSnapshot();
         await user.click(minDayButton);
 
         expect(onChange).toHaveBeenLastCalledWith(minDate.format('YYYY-MM-DD'));

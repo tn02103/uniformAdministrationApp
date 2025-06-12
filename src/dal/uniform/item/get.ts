@@ -8,7 +8,7 @@ import { z } from "zod";
 export type ItemLabel = {
     id: string;
     label: string;
-    isReserve: boolean;
+    active: boolean;
     owner: {
         id: string;
         firstname: string;
@@ -48,7 +48,7 @@ export const getItemLabels = async (): Promise<ItemLabel[]> => genericSANoDataVa
 })).then(data => data.map((item): ItemLabel => ({
     id: item.id,
     label: `${item.type.name}-${item.number}`,
-    isReserve: item.isReserve,
+    active: item.active,
     owner: item.issuedEntries.length > 0 ? {
         id: item.issuedEntries[0].cadet.id,
         firstname: item.issuedEntries[0].cadet.firstname,

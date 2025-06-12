@@ -1,4 +1,4 @@
-import { Control, FieldValue, FieldValues, Path, RegisterOptions, useController } from "react-hook-form";
+import { Control, FieldValue, FieldValues, Path, useController } from "react-hook-form";
 import AutocompleteField, { AutocompleteFieldProps } from "./AutocompleteField";
 
 export type AutocompleteFormFieldProps<FormType extends FieldValues> = {
@@ -10,7 +10,7 @@ export type AutocompleteFormFieldProps<FormType extends FieldValues> = {
 export default function AutocompleteFormField<FormType extends FieldValues>(props: AutocompleteFormFieldProps<FormType>) {
     const { name, ...rest } = props;
 
-    const { field, fieldState } = useController({
+    const { field } = useController({
         name,
         defaultValue: null as FieldValue<FormType>,
         control: props.control,

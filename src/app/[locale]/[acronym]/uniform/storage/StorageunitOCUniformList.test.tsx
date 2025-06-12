@@ -1,6 +1,7 @@
+import "./StorageunitOC.jestHelper";
+
 import { act, getByRole, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import "./StorageunitOC.jestHelper";
 import { mockStorageUnitWithItems } from "./StorageunitOC.jestHelper";
 import StorageunitOCUniformList from "./StorageunitOCUniformList";
 
@@ -12,7 +13,9 @@ describe("StorageunitOCUniformList", () => {
     const { simpleWarningModal } = useModal();
     const { toast } = jest.requireMock("react-toastify");
 
-
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
 
     it("lists all uniform items in the storage unit", () => {
         render(<StorageunitOCUniformList storageUnit={baseStorageUnit} />);

@@ -54,7 +54,7 @@ export const update = (props: UniformFormType): Promise<Uniform> => genericSAVal
             id: data.id,
         },
         data: {
-            isReserve: data.isReserve,
+            active: data.active,
             comment: data.comment,
             fk_generation: type?.usingGenerations ? data.generation ?? null : undefined,
             fk_size: type?.usingSizes ? data.size ?? null : undefined,

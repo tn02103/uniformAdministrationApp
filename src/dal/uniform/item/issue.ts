@@ -78,7 +78,7 @@ export const issue = async (props: IssuePropType): Promise<CadetUniformMap | SAE
             data: {
                 number,
                 fk_uniformType: uniformTypeId,
-                isReserve: false,
+                active: true,
                 issuedEntries: {
                     create: {
                         fk_cadet: cadetId,
@@ -90,7 +90,7 @@ export const issue = async (props: IssuePropType): Promise<CadetUniformMap | SAE
     }
 
     // CHECK uniform active
-    if ((!options.ignoreInactive) && uniform.isReserve) {
+    if ((!options.ignoreInactive) && !uniform.active) {
         throw new UniformInactiveException();
     }
 

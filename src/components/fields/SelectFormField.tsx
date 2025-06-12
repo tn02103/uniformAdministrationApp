@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { Form } from "react-bootstrap";
 import { FieldValues, Path, useController } from "react-hook-form";
 import { Field } from "./Field";
+import { useFormContext } from "./Form";
 
 export type SelectOptionType = { value: string | number, label: string };
 
@@ -12,14 +13,13 @@ export type SelectFormFieldProps<FormType extends FieldValues> = {
     formName?: string,
     required?: boolean,
     disabled?: boolean,
-    className?: string,
     options: SelectOptionType[],
     plaintext?: boolean,
     labelClassName?: string,
     selectClassName?: string,
 }
 
-export const SelectFormField = <FormType extends FieldValues>({ label, name, required, plaintext, options, labelClassName, formName, ...inputProps }: SelectFormFieldProps<FormType>) => {
+export const SelectFormField = <FormType extends FieldValues>({ label, name, required, options, labelClassName, selectClassName, ...inputProps }: SelectFormFieldProps<FormType>) => {
     const t = useI18n();
     const { field, fieldState } = useController({
         name,
@@ -31,6 +31,12 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
         return fieldState.error?.message;
     }, [fieldState.error?.message]);
 
+    const formContext = useFormContext();
+    const disabled = formContext?.disabled || inputProps.disabled;
+    const plaintext = formContext?.plaintext || inputProps.plaintext;
+    const formName = inputProps.formName || formContext?.formName || "unnamedForm";
+
+
     return (
         <Field
             formName={formName}
@@ -39,6 +45,7 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
             required={required}
             errorMessage={error}
             labelClassName={labelClassName}
+            fieldName="select"
         >
             {plaintext ?
                 <p aria-label={label} aria-readonly className="py-2 m-0">
@@ -46,13 +53,13 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
                 </p>
                 :
                 <Form.Select
-                    {...inputProps}
                     {...field}
+                    disabled={disabled}
                     id={`${formName}_select-${name}`}
                     isInvalid={!!fieldState.error}
                     aria-errormessage={fieldState.error ? `${formName}_err_${name}` : undefined}
                     aria-invalid={!!fieldState.error}
-                    className="text-truncate"
+                    className={`text-truncate ${selectClassName || ""}`}
                     value={field.value || ""} // Set the value prop to manage the selected option
                 >
                     <option value="" disabled>{t('common.error.pleaseSelect')}</option>

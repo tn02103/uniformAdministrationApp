@@ -117,7 +117,7 @@ export const mockUniform = {
     generation: mockGenerationLists[0][1],
     size: mockSizeLists[0].uniformSizes[0],
     comment: "Test comment",
-    isReserve: true,
+    active: true,
     type: {
         id: mockTypeList[0].id,
         name: mockTypeList[0].name,

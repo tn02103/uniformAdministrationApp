@@ -14,12 +14,12 @@ export const removeUniform = (props: PropType) => genericSAValidator(
     props,
     propSchema,
     { uniformId: props.uniformIds, storageUnitId: props.storageUnitId },
-).then(async ([{ assosiation }, {uniformIds, storageUnitId}]) => prisma.$transaction(async (client) => {
+).then(async ([{ assosiation }, { uniformIds, storageUnitId }]) => prisma.$transaction(async (client) => {
     const updateItems = await client.uniform.updateMany({
-        where: { 
+        where: {
             id: { in: uniformIds },
             storageUnitId,
-         },
+        },
         data: {
             storageUnitId: null
         }

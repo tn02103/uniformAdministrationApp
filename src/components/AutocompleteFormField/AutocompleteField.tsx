@@ -106,7 +106,7 @@ export default function AutocompleteField(props: AutocompleteFieldProps) {
                 <Form.Control
                     type="text"
                     value={inputValue}
-                    onFocus={() => { console.log("test"); setOptionsVisible(true) }}
+                    onFocus={() => setOptionsVisible(true)}
                     onBlur={() => setOptionsVisible(false)}
                     onChange={(e) => handleInputChange(e.target.value)}
                     onKeyDown={handleKeyDown}
@@ -131,7 +131,7 @@ export default function AutocompleteField(props: AutocompleteFieldProps) {
                                         cursor: 'pointer',
                                         padding: '5px'
                                     }}
-                                    onMouseDown={() => { console.log("onclickTest"); handleOptionSelect(option) }}
+                                    onMouseDown={() => handleOptionSelect(option)}
                                 >
                                     {option.label}
                                 </div>

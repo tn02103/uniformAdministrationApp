@@ -93,11 +93,11 @@ export default function Filter({
                                     </Accordion.Button>
                                     <Accordion.Body>
                                         <Form.Check
-                                            label={t('common.uniform.active.true')}
+                                            label={t('common.uniform.state.active')}
                                             isInvalid={activPassivError}
                                             {...register(`active`)} />
                                         <Form.Check
-                                            label={t('common.uniform.active.false')}
+                                            label={t('common.uniform.state.reserve')}
                                             isInvalid={activPassivError}
                                             {...register(`isReserve`)} />
                                         <Form.Check

@@ -271,7 +271,7 @@ export const mockUniformList = [
         generation: mockGenerationLists[0][1],
         size: mockSizeLists[0].uniformSizes[0],
         comment: 'Test comment',
-        isReserve: false,
+        active: true,
         type: {
             id: mockTypeList[0].id,
             name: mockTypeList[0].name,
@@ -283,7 +283,7 @@ export const mockUniformList = [
         generation: mockGenerationLists[0][2],
         size: mockSizeLists[1].uniformSizes[1],
         comment: 'Another test comment',
-        isReserve: false,
+        active: true,
         type: {
             id: mockTypeList[1].id,
             name: mockTypeList[1].name,
@@ -295,7 +295,7 @@ export const mockUniformList = [
         generation: mockGenerationLists[1][0],
         size: mockSizeLists[2].uniformSizes[2],
         comment: 'Yet another test comment',
-        isReserve: true,
+        active: false,
         type: {
             id: mockTypeList[2].id,
             name: mockTypeList[2].name,
@@ -307,7 +307,7 @@ export const mockUniformList = [
         generation: mockGenerationLists[1][1],
         size: mockSizeLists[3].uniformSizes[3],
         comment: 'Final test comment',
-        isReserve: false,
+        active: true,
         type: {
             id: mockTypeList[3].id,
             name: mockTypeList[3].name,

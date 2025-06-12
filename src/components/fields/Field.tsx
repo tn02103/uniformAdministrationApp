@@ -16,7 +16,7 @@ export const Field = ({ formName = "", name, label, required, errorMessage, chil
     return (
         <FormGroup>
             {label &&
-                <FormLabel htmlFor={`${formName}_${fieldName}-${name}`} className={"fw-bold m-0 " + labelClassName}>
+                <FormLabel htmlFor={`${formName}_${fieldName}-${name}`} className={`fw-bold m-0 ${labelClassName ?? ""}`}>
                     {label}{required ? " *" : ""}
                 </FormLabel>
             }

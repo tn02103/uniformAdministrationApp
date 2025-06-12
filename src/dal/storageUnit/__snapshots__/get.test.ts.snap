@@ -9,12 +9,12 @@ exports[`returns correct data 1`] = `
     "name": "Kiste 01",
     "uniformList": [
       {
+        "active": false,
         "comment": "",
         "generation": {
           "name": "Generation1-1",
           "outdated": true,
         },
-        "isReserve": true,
         "number": 1108,
         "size": {
           "name": "3",
@@ -24,12 +24,12 @@ exports[`returns correct data 1`] = `
         },
       },
       {
+        "active": false,
         "comment": "",
         "generation": {
           "name": "Generation1-1",
           "outdated": true,
         },
-        "isReserve": true,
         "number": 1109,
         "size": {
           "name": "3",
@@ -47,12 +47,12 @@ exports[`returns correct data 1`] = `
     "name": "Kiste 02",
     "uniformList": [
       {
+        "active": false,
         "comment": "",
         "generation": {
           "name": "Generation1-1",
           "outdated": true,
         },
-        "isReserve": true,
         "number": 1115,
         "size": {
           "name": "4",
@@ -62,12 +62,12 @@ exports[`returns correct data 1`] = `
         },
       },
       {
+        "active": false,
         "comment": "",
         "generation": {
           "name": "Generation1-1",
           "outdated": true,
         },
-        "isReserve": true,
         "number": 1116,
         "size": {
           "name": "4",
@@ -77,12 +77,12 @@ exports[`returns correct data 1`] = `
         },
       },
       {
+        "active": false,
         "comment": "",
         "generation": {
           "name": "Generation1-1",
           "outdated": true,
         },
-        "isReserve": true,
         "number": 1117,
         "size": {
           "name": "5",
@@ -92,12 +92,12 @@ exports[`returns correct data 1`] = `
         },
       },
       {
+        "active": false,
         "comment": "",
         "generation": {
           "name": "Generation1-1",
           "outdated": true,
         },
-        "isReserve": true,
         "number": 1118,
         "size": {
           "name": "5",
@@ -107,12 +107,12 @@ exports[`returns correct data 1`] = `
         },
       },
       {
+        "active": false,
         "comment": "",
         "generation": {
           "name": "Generation1-1",
           "outdated": true,
         },
-        "isReserve": true,
         "number": 1119,
         "size": {
           "name": "0",
@@ -130,9 +130,9 @@ exports[`returns correct data 1`] = `
     "name": "Kiste 03",
     "uniformList": [
       {
+        "active": true,
         "comment": "",
         "generation": null,
-        "isReserve": false,
         "number": 1310,
         "size": {
           "name": "2",
@@ -142,9 +142,9 @@ exports[`returns correct data 1`] = `
         },
       },
       {
+        "active": true,
         "comment": "",
         "generation": null,
-        "isReserve": false,
         "number": 1311,
         "size": {
           "name": "2",
@@ -154,9 +154,9 @@ exports[`returns correct data 1`] = `
         },
       },
       {
+        "active": true,
         "comment": "",
         "generation": null,
-        "isReserve": false,
         "number": 1312,
         "size": {
           "name": "2",
@@ -166,9 +166,9 @@ exports[`returns correct data 1`] = `
         },
       },
       {
+        "active": true,
         "comment": "",
         "generation": null,
-        "isReserve": false,
         "number": 1313,
         "size": {
           "name": "3",
@@ -178,9 +178,9 @@ exports[`returns correct data 1`] = `
         },
       },
       {
+        "active": true,
         "comment": "",
         "generation": null,
-        "isReserve": false,
         "number": 1314,
         "size": {
           "name": "3",
@@ -190,9 +190,9 @@ exports[`returns correct data 1`] = `
         },
       },
       {
+        "active": true,
         "comment": "",
         "generation": null,
-        "isReserve": false,
         "number": 1315,
         "size": {
           "name": "3",
@@ -202,9 +202,9 @@ exports[`returns correct data 1`] = `
         },
       },
       {
+        "active": true,
         "comment": "",
         "generation": null,
-        "isReserve": false,
         "number": 1316,
         "size": {
           "name": "3",
@@ -222,9 +222,9 @@ exports[`returns correct data 1`] = `
     "name": "Kiste 04",
     "uniformList": [
       {
+        "active": false,
         "comment": "",
         "generation": null,
-        "isReserve": true,
         "number": 1320,
         "size": {
           "name": "4",
@@ -234,9 +234,9 @@ exports[`returns correct data 1`] = `
         },
       },
       {
+        "active": false,
         "comment": "",
         "generation": null,
-        "isReserve": true,
         "number": 1321,
         "size": {
           "name": "4",
@@ -246,9 +246,9 @@ exports[`returns correct data 1`] = `
         },
       },
       {
+        "active": false,
         "comment": "",
         "generation": null,
-        "isReserve": true,
         "number": 1322,
         "size": {
           "name": "4",
@@ -258,9 +258,9 @@ exports[`returns correct data 1`] = `
         },
       },
       {
+        "active": false,
         "comment": "",
         "generation": null,
-        "isReserve": true,
         "number": 1323,
         "size": {
           "name": "4",

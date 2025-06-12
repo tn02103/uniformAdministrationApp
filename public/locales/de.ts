@@ -79,9 +79,9 @@ export default {
                 "multiLabel": "Größenlisten",
             },
             owner: "Besitzer",
-            active: {
-                true: "Aktiv",
-                false: "Reserve"
+            state: {
+                active: "Aktiv",
+                reserve: "Reserve"
             },
             type: {
                 "type#one": "Uniformtyp",

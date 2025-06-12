@@ -1,8 +1,7 @@
-import { removeUniform } from "./removeUniform";
 import { prisma } from "@/lib/db";
-import { AuthRole } from "@/lib/AuthRoles";
-import { __unsecuredGetUnitsWithUniformItems } from "./get";
 import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { __unsecuredGetUnitsWithUniformItems } from "./get";
+import { removeUniform } from "./removeUniform";
 
 
 
@@ -14,6 +13,9 @@ jest.mock("./get", () => ({
 }));
 
 afterEach(() => cleanup.storageUnits());
+beforeEach(() => {
+    jest.clearAllMocks();
+});
 it("should remove the uniform from the storage unit and return updated units", async () => {
     (__unsecuredGetUnitsWithUniformItems as jest.Mock).mockResolvedValue(['TestReturnValue'])
     const result = await removeUniform({ uniformIds, storageUnitId });
@@ -48,7 +50,7 @@ it('should catch uniform not in storage unit', async () => {
         uniformIds: [...uniformIds, ids.uniformIds[2][9]],
         storageUnitId
     });
-    expect(result).rejects.toThrow();
+    await expect(result).rejects.toThrow();
     expect(__unsecuredGetUnitsWithUniformItems).not.toHaveBeenCalled();
 
 
@@ -56,6 +58,6 @@ it('should catch uniform not in storage unit', async () => {
         uniformIds: [...uniformIds, ids.uniformIds[0][15]],
         storageUnitId
     });
-    expect(result2).rejects.toThrow();
+    await expect(result2).rejects.toThrow();
     expect(__unsecuredGetUnitsWithUniformItems).not.toHaveBeenCalled();
 });

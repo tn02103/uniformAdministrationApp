@@ -140,7 +140,7 @@ const getRenderOptionFunction = (translations: { isReserve: string, owner: strin
                 {option.owner &&
                     <FontAwesomeIcon icon={faPerson} className="text-danger" />
                 }
-                {option.isReserve &&
+                {!option.active &&
                     <FontAwesomeIcon icon={faTriangleExclamation} className="text-warning" />
                 }
                 {option.storageUnit &&
@@ -149,7 +149,7 @@ const getRenderOptionFunction = (translations: { isReserve: string, owner: strin
             </div>
         )
 
-        if (!disabled && !option.isReserve)
+        if (!disabled && option.active)
             return optionElement;
 
         return (
@@ -159,7 +159,7 @@ const getRenderOptionFunction = (translations: { isReserve: string, owner: strin
                 overlay={
                     <Tooltip className="d-none d-lg-inline">
                         <ul className="m-0 p-1 ps-3 text-start">
-                            {option.isReserve && <li>{translations.isReserve}</li>}
+                            {option.active || <li>{translations.isReserve}</li>}
                             {option.owner && <li>{translations.owner}{option.owner.firstname} {option.owner.lastname}</li>}
                             {option.storageUnit && <li>{translations.storageUnit}<span style={{ "whiteSpace": "nowrap" }}>&quot;{option.storageUnit.name}&quot;</span></li>}
                         </ul>

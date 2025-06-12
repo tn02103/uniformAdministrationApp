@@ -60,12 +60,12 @@ export const getUniformListWithOwner = async (uniformTypeId: string, orderBy: st
     const hiddenSizes = filter ? Object.entries(filter.sizes).filter(([, value]) => !value).map(([key,]) => key) : [];
 
     if (!filter) {
-        sqlFilter["isReserve"] = false;
+        sqlFilter["active"] = true;
     } else {
         if (!filter.isReserve) {
-            sqlFilter["isReserve"] = false;
+            sqlFilter["active"] = true;
         } else if (!filter.active) {
-            sqlFilter["isReserve"] = true;
+            sqlFilter["active"] = false;
         }
 
         if (!filter.withOwner) {
@@ -136,7 +136,7 @@ export const getUniformFormValues = async (uniformId: string): Promise<UniformFo
     generation: data.generation?.id,
     size: data.size?.id,
     comment: data.comment ?? "",
-    isReserve: data.isReserve,
+    active: data.active,
 }));
 
 /**
