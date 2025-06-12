@@ -614,7 +614,7 @@ export default class StaticDataGenerator {
             { deficiencyId: this.ids.deficiencyIds[11], fk_cadet: this.ids.cadetIds[3], fk_uniform: null, fk_material: this.ids.materialIds[0] },
             { deficiencyId: this.ids.deficiencyIds[12], fk_cadet: this.ids.cadetIds[5], fk_uniform: null, fk_material: this.ids.materialIds[0] },
             { deficiencyId: this.ids.deficiencyIds[13], fk_cadet: this.ids.cadetIds[2], fk_uniform: null, fk_material: null },
-        ]
+        ];
     }
     uniformDeficiency() {
         return [

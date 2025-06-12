@@ -171,7 +171,7 @@ test.describe(() => {
             await uniformListPage.txt_search_input.fill('12');
             await uniformListPage.txt_search_input.press('Enter');
             await expect(uniformListPage.div_uitem(ids.uniformIds[0][12])).toBeVisible();
-            await expect(uniformListPage.div_uitem_list).toHaveCount(8);
+            await expect(uniformListPage.div_uitem_list).toHaveCount(7);
             await expect(page.getByTestId('div_hilight').nth(0)).toHaveText('12');
         });
     });

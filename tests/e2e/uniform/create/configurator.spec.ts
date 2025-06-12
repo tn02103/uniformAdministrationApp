@@ -45,7 +45,7 @@ test('formValidations', async ({ createPage, staticData: { ids } }) => {
             expect.soft(createPage.configurator.sel_type).toBeEnabled(),
             expect.soft(createPage.configurator.sel_generation).toBeDisabled(),
             expect.soft(createPage.configurator.sel_size).toBeDisabled(),
-            expect.soft(createPage.configurator.chk_isReserve).toBeEnabled(),
+            expect.soft(createPage.configurator.chk_active).toBeEnabled(),
             expect.soft(createPage.configurator.txt_comment).toBeEnabled(),
         ]);
     });

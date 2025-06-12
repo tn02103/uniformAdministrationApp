@@ -21,7 +21,7 @@ test('validate knownIds', async ({ page, createPage, staticData: { ids, fk_assos
         await createPage.configurator.sel_generation.selectOption(ids.uniformGenerationIds[2]);
         await createPage.configurator.sel_size.selectOption(ids.sizeIds[8]);
         await createPage.configurator.txt_comment.fill('test comment');
-        await createPage.configurator.chk_isReserve.setChecked(true);
+        await createPage.configurator.chk_active.setChecked(true);
         await createPage.configurator.btn_continue.click();
     });
     await test.step('add ids', async () => {
@@ -47,7 +47,7 @@ test('validate knownIds', async ({ page, createPage, staticData: { ids, fk_assos
 
         expect(uniformItems.length).toBe(10);
         expect.soft(uniformItems[0].comment).toBe('test comment');
-        expect.soft(uniformItems[0].isReserve).toBeTruthy();
+        expect.soft(uniformItems[0].active).toBeTruthy();
         expect.soft(uniformItems[0].fk_uniformType).toBe(ids.uniformTypeIds[0]);
         expect.soft(uniformItems[0].fk_generation).toBe(ids.uniformGenerationIds[2]);
         expect.soft(uniformItems[0].fk_size).toBe(ids.sizeIds[8]);
@@ -60,7 +60,7 @@ test('validate generate Ids', async ({ page, createPage, staticData: { ids, fk_a
         await createPage.configurator.sel_type.selectOption(ids.uniformTypeIds[0]);
         await createPage.configurator.sel_generation.selectOption(ids.uniformGenerationIds[3]);
         await createPage.configurator.txt_comment.fill('test comment2');
-        await createPage.configurator.chk_isReserve.setChecked(false);
+        await createPage.configurator.chk_active.setChecked(false);
         await createPage.configurator.btn_continue.click();
     });
 

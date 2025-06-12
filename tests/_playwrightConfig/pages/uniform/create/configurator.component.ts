@@ -9,7 +9,7 @@ export class CreateUniformConfiguratorComponent {
     readonly sel_type: Locator;
     readonly sel_generation: Locator;
     readonly sel_size: Locator;
-    readonly chk_isReserve: Locator;
+    readonly chk_active: Locator;
     readonly txt_comment: Locator
 
     sel_type_option(id: string) {
@@ -31,7 +31,7 @@ export class CreateUniformConfiguratorComponent {
         this.sel_type = this.div_configurator.locator('select[name="typeId"]');
         this.sel_generation = this.div_configurator.locator('select[name="generationId"]');
         this.sel_size = this.div_configurator.locator('select[name="sizeId"]');
-        this.chk_isReserve = this.div_configurator.locator('input[name="isReserve"]');
+        this.chk_active = this.div_configurator.locator('input[name="active"]');
         this.txt_comment = this.div_configurator.locator('textarea[name="comment"]');
     }
 }
