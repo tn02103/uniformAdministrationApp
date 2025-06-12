@@ -26,10 +26,10 @@ export const getUniformCountByType = async (uniformTypeId: string) => genericSAV
 
 const filterTypeValidator = (filter: FilterType) => (
     (typeof filter.active === "boolean")
-    && (typeof filter.passive === "boolean")
+    && (typeof filter.isReserve === "boolean")
     && (typeof filter.withOwner === "boolean")
     && (typeof filter.withoutOwner === "boolean")
-    && !(!filter.active && !filter.passive)
+    && !(!filter.active && !filter.isReserve)
     && !(!filter.withOwner && !filter.withoutOwner)
     && Object.entries(filter.generations).every(([key, value]) => (
         (key === "null" || uuidValidationPattern.test(key)) && (typeof value === "boolean")
@@ -62,7 +62,7 @@ export const getUniformListWithOwner = async (uniformTypeId: string, orderBy: st
     if (!filter) {
         sqlFilter["active"] = true;
     } else {
-        if (!filter.passive) {
+        if (!filter.isReserve) {
             sqlFilter["active"] = true;
         } else if (!filter.active) {
             sqlFilter["active"] = false;

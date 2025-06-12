@@ -46,7 +46,7 @@ type SAError = {
 
 export async function SAFormHandler<T, FormType extends FieldValues>(
     serverActionPromise: Promise<T | SAFormError | SAError>,
-    setError: UseFormSetError<FormType>,
+    setError: UseFormSetError<FormType>| null,
     successCallback: (data: T) => void,
     unhandledErrorCallback?: ((error: unknown) => void) | string
 ) {
@@ -59,7 +59,7 @@ export async function SAFormHandler<T, FormType extends FieldValues>(
 
         const saError = result as SAError;
         // if the error object has a formElement property, we can assume it is a form error
-        if ((saError.error).hasOwnProperty("formElement")) {
+        if (setError && (saError.error).hasOwnProperty("formElement")) {
             const SAFormError = result as SAFormError;
             const formElement = SAFormError.error.formElement as Path<FormType>;
             const message = SAFormError.error.message as string;

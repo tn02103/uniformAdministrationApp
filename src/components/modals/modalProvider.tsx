@@ -70,7 +70,7 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             onClose: () => { setMessageQueue(prevState => prevState.slice(1)) },
         }
         setMessageQueue(prevState => [...prevState, newModal]);
-    }, []);
+    }, [setMessageQueue]);
 
     const simpleYesNoModal = useCallback(({ header, message, primaryOption, cancelOption, primaryFunction, cancelFunction, type }: SimpleYesNoPropType) => {
         showMessageModal(
@@ -131,7 +131,7 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             props: modalProps,
         }
         setQueue(prevState => [...prevState, modal]);
-    }, []);
+    }, [setQueue]);
 
     const simpleFormModal = useCallback((props: SimpleFormModalProps) => {
         showModal("SimpleFormModal", {

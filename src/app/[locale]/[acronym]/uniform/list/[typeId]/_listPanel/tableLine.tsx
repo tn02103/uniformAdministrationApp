@@ -32,7 +32,7 @@ export default function TableLine({
                     <>
                         <br />
                         <span className="badge rounded-pill text-bg-secondary">
-                            {t('common.uniform.active.false')}
+                            {t('common.uniform.state.reserve')}
                         </span>
                     </>
                 }

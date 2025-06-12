@@ -8,7 +8,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import dayjs from "@/lib/dayjs";
 import { useI18n } from "@/lib/locales/client";
 import { AuthItem } from "@/lib/storageTypes";
-import { faAddressCard, faAngleLeft, faAngleRight, faClipboardCheck, faGear, faLink, faPlus, faShirt, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faAddressCard, faAngleLeft, faAngleRight, faBoxOpen, faClipboardCheck, faGear, faLink, faPlus, faShirt, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Assosiation } from "@prisma/client";
 import Link from "next/link";
@@ -129,6 +129,14 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                 requiredRole={AuthRole.user}
                                 isRoute={pathname.startsWith(`/${locale}/app/uniform/list`)}
                                 testId="lnk_uniformList" />
+                            <NavLink
+                                text={t('sidebar.links.storageUnit')}
+                                icon={faBoxOpen}
+                                href={"/app/uniform/storage"}
+                                collapsed={collapsed}
+                                requiredRole={AuthRole.user}
+                                isRoute={pathname.startsWith(`/${locale}/app/uniform/storage`)}
+                                testId="lnk_storageUnit" />
                             <NavGroup
                                 title={t('sidebar.links.create.group')}
                                 icon={faPlus}

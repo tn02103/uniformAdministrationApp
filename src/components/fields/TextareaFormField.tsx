@@ -1,6 +1,7 @@
 import { Form } from "react-bootstrap"
 import { FieldValues, Path, useController } from "react-hook-form"
-import ErrorMessage from "../errorMessage"
+import { Field } from "./Field"
+import { useFormContext } from "./Form"
 
 type Props<FormType extends FieldValues> = {
     label: string,
@@ -14,17 +15,30 @@ type Props<FormType extends FieldValues> = {
     plaintext?: boolean,
 }
 
-export const TextareaFormField = <FormType extends FieldValues>({ label, name, required, formName, rows, ...inputProps }: Props<FormType>) => {
+export const TextareaFormField = <FormType extends FieldValues>({ label, name, required, rows, className, placeholder, ...inputProps }: Props<FormType>) => {
     const { field, fieldState } = useController({
         name,
     });
 
+    const formContext = useFormContext();
+    const disabled = formContext?.disabled || inputProps.disabled;
+    const plaintext = formContext?.plaintext || inputProps.plaintext;
+    const formName = inputProps.formName || formContext?.formName || "unnamedForm";
+
     return (
-        <Form.Group>
-            <Form.Label htmlFor={`${formName}_input-${name}`} className="fw-bold m-0">{label}{required ? " *" : ""}</Form.Label>
+        <Field
+            formName={formName}
+            name={name}
+            label={label}
+            required={required}
+            errorMessage={fieldState.error?.message}
+        >
             <Form.Control
-                {...inputProps}
                 {...field}
+                disabled={disabled}
+                plaintext={plaintext}
+                className={className}
+                placeholder={placeholder}
                 as="textarea"
                 rows={rows ?? 3}
                 id={`${formName}_input-${name}`}
@@ -35,12 +49,6 @@ export const TextareaFormField = <FormType extends FieldValues>({ label, name, r
                 aria-invalid={!!fieldState.error}
                 aria-required={required}
             />
-            <ErrorMessage
-                error={fieldState.error?.message}
-                testId={`err_${name}`}
-                id={`${formName}_err_${name}`}
-                ariaLabel={`error message ${name}`}
-            />
-        </Form.Group>
+        </Field>
     )
 }

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { Assosiation, AssosiationConfiguration, Cadet, DeficiencyType, Inspection, Material, MaterialGroup, Prisma, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@prisma/client";
+import { Assosiation, AssosiationConfiguration, Cadet, DeficiencyType, Inspection, Material, MaterialGroup, Prisma, StorageUnit, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@prisma/client";
 import bcrypt from 'bcrypt';
 import StaticDataGenerator, { StaticDataIdType } from "./staticDataGenerator";
 import { getStaticDataIds } from "./staticDataIds"; 
@@ -55,6 +55,7 @@ class StaticDataGetter {
     readonly uniformTypes: UniformType[];
     readonly uniformGenerations: UniformGeneration[];
 
+    readonly storageUnits: StorageUnit[];
     readonly uniformList: Uniform[];
     readonly uniformIssedEntries: Prisma.UniformIssuedCreateManyInput[];
 
@@ -136,8 +137,11 @@ class StaticDataGetter {
         ]
         this.uniformTypes = generator.uniformType();
         this.uniformGenerations = generator.uniformGeneration();
+
+        this.storageUnits = generator.storageUnits();
         this.uniformList = generator.uniform();
         this.uniformIssedEntries = generator.uniformIssued();
+
         this.materialGroups = generator.materialGroup();
         this.materialTypes = generator.material();
         this.materialIssuedEntries = generator.materialIssued();
@@ -213,6 +217,16 @@ class StaticDataCleanup {
     async uniformIssued() {
         await this.deleteUniformIssued();
         await this.loader.uniformIssued();
+    }
+
+    async storageUnits(cleanup?: () => Promise<void>) {
+        await this.uniform(async () => {
+            await this.deleteStorage();
+            if (cleanup) {
+                await cleanup();
+            }
+            await this.loader.storageUnits();
+        });
     }
 
     async uniform(cleanup?: () => Promise<void>) {
@@ -300,6 +314,7 @@ class StaticDataCleanup {
         await this.deleteUniformType();
         await this.deleteUniformSize();
         await this.deleteUniformSizelist();
+        await this.deleteStorage();
 
         await this.deleteCadet();
         await this.deleteUsers();
@@ -353,11 +368,11 @@ class StaticDataCleanup {
     private deleteUsers = () => prisma.user.deleteMany({
         where: { fk_assosiation: this.fk_assosiation }
     });
-    private deleteAssosiationConfiguration = () => prisma.assosiationConfiguration.delete({
-        where: { assosiationId: this.fk_assosiation }
-    });
     private deleteAssosiation = () => prisma.assosiation.delete({
         where: { id: this.fk_assosiation }
+    });
+    private deleteStorage = () => prisma.storageUnit.deleteMany({
+        where: { assosiationId: this.fk_assosiation }
     });
     private deleteRedirects = () => prisma.redirect.deleteMany({
         where: { assosiationId: this.fk_assosiation }
@@ -375,6 +390,7 @@ class StaticDataLoader {
         await this.assosiationConfiguration();
         await this.users();
 
+        await this.storageUnits();
         await this.cadets();
         await this.uniformSize();
         await this.uniformSizelists();
@@ -447,6 +463,11 @@ class StaticDataLoader {
     async uniformGenerations() {
         await prisma.uniformGeneration.createMany({
             data: this.data.uniformGenerations,
+        });
+    }
+    async storageUnits() {
+        await prisma.storageUnit.createMany({
+            data: this.data.storageUnits,
         });
     }
     async uniform() {

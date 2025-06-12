@@ -62,6 +62,9 @@ async function main() {
         await prisma.uniformGeneration.createMany({
             data: generator.uniformGeneration()
         });
+        await prisma.storageUnit.createMany({
+            data: generator.storageUnits()
+        });
         await prisma.uniform.createMany({
             data: generator.uniform(),
         });

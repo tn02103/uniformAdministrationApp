@@ -23,15 +23,15 @@ test.describe(() => {
             ids.uniformIds[0][84],
         ];
         await test.step('normal sortorder', async () => await Promise.all(
-            [1, 3, 5, 17, 19, 40, 71].map(async (value, index) =>
+            [1, 3, 5, 11, 13, 34, 65].map(async (value, index) =>
                 expect.soft(uniformListPage.div_uitem_list.nth(value)).toHaveAttribute('data-testid', `div_uitem_${idArray[index]}`)
             )
-        ))
+        ));
 
         await test.step('asc=false', async () => {
             await page.goto(`/app/uniform/list/${ids.uniformTypeIds[0]}?asc=false`);
             await Promise.all(
-                [72, 70, 68, 56, 54, 33, 2].map(async (value, index) =>
+                [66, 64, 62, 56, 54, 33, 2].map(async (value, index) =>
                     expect.soft(uniformListPage.div_uitem_list.nth(value)).toHaveAttribute('data-testid', `div_uitem_${idArray[index]}`)
                 )
             );
@@ -40,7 +40,7 @@ test.describe(() => {
         await test.step('generation', async () => {
             await page.goto(`/app/uniform/list/${ids.uniformTypeIds[0]}?orderBy=generation`);
             await Promise.all(
-                [3, 5, 7, 20, 22, 71, 65].map(async (value, index) =>
+                [1, 3, 5, 14, 16, 65, 59].map(async (value, index) =>
                     expect.soft(uniformListPage.div_uitem_list.nth(value)).toHaveAttribute('data-testid', `div_uitem_${idArray[index]}`)
                 )
             );
@@ -49,7 +49,7 @@ test.describe(() => {
         await test.step('size', async () => {
             await page.goto(`/app/uniform/list/${ids.uniformTypeIds[0]}?orderBy=size`);
             await Promise.all(
-                [9, 11, 23, 17, 25, 71, 65].map(async (value, index) =>
+                [7, 9, 21, 15, 23, 65, 59].map(async (value, index) =>
                     expect.soft(uniformListPage.div_uitem_list.nth(value)).toHaveAttribute('data-testid', `div_uitem_${idArray[index]}`)
                 )
             );
@@ -58,7 +58,7 @@ test.describe(() => {
         await test.step('owner', async () => {
             await page.goto(`/app/uniform/list/${ids.uniformTypeIds[0]}?orderBy=owner`);
             await Promise.all(
-                [7, 24, 26, 38, 40, 55, 0].map(async (value, index) =>
+                [7, 24, 26, 32, 34, 49, 0].map(async (value, index) =>
                     expect.soft(uniformListPage.div_uitem_list.nth(value)).toHaveAttribute('data-testid', `div_uitem_${idArray[index]}`)
                 )
             );
@@ -67,7 +67,7 @@ test.describe(() => {
         await test.step('comment', async () => {
             await page.goto(`/app/uniform/list/${ids.uniformTypeIds[0]}?orderBy=comment`);
             await Promise.all(
-                [71, 2, 4, 16, 73, 38, 72].map(async (value, index) =>
+                [65, 2, 4, 10, 67, 32, 66].map(async (value, index) =>
                     expect.soft(uniformListPage.div_uitem_list.nth(value)).toHaveAttribute('data-testid', `div_uitem_${idArray[index]}`)
                 )
             );
@@ -100,8 +100,8 @@ test.describe(() => {
 
     test('E2E0310: validate filter', async ({ uniformListPage, staticData: { ids } }) => {
         await test.step('initial count', async () => {
-            await expect(uniformListPage.div_header_count).toContainText('74');
-            await expect(uniformListPage.div_uitem_list).toHaveCount(74);
+            await expect(uniformListPage.div_header_count).toContainText('68');
+            await expect(uniformListPage.div_uitem_list).toHaveCount(68);
         });
 
         await test.step('generation filter', async () => {
@@ -110,8 +110,8 @@ test.describe(() => {
             await uniformListPage.chk_genFilter(ids.uniformGenerationIds[0]).setChecked(true);
             await uniformListPage.btn_load.click();
 
-            await expect(uniformListPage.div_header_count).toContainText('16');
-            await expect(uniformListPage.div_uitem_list).toHaveCount(16);
+            await expect(uniformListPage.div_header_count).toContainText('10');
+            await expect(uniformListPage.div_uitem_list).toHaveCount(10);
         });
 
         await test.step('size filter', async () => {
@@ -135,7 +135,7 @@ test.describe(() => {
 
     test('E2E0311: validate uItem data', async ({ page, uniformListPage, staticData: { ids } }) => {
         await uniformListPage.btn_othersAccordion_header.click();
-        await uniformListPage.chk_passiveFilter.setChecked(true);
+        await uniformListPage.chk_isReserveFilter.setChecked(true);
         await uniformListPage.btn_load.click();
 
         await Promise.all([
@@ -144,13 +144,13 @@ test.describe(() => {
             expect.soft(uniformListPage.div_uitem_size(ids.uniformIds[0][27])).toContainText('3'),
             expect.soft(uniformListPage.lnk_uitem_owner(ids.uniformIds[0][27])).toBeHidden(),
             expect.soft(uniformListPage.div_uitem_comment(ids.uniformIds[0][27])).toContainText('Comment 2'),
-            expect.soft(uniformListPage.div_uitem_passivLabel(ids.uniformIds[0][27])).toBeHidden(),
+            expect.soft(uniformListPage.div_uitem_reserveLabel(ids.uniformIds[0][27])).toBeHidden(),
             expect.soft(uniformListPage.div_uitem_number(ids.uniformIds[0][23])).toContainText('1123'),
             expect.soft(uniformListPage.div_uitem_generation(ids.uniformIds[0][23])).toContainText('Generation1-2'),
             expect.soft(uniformListPage.div_uitem_size(ids.uniformIds[0][23])).toContainText('1'),
             expect.soft(uniformListPage.lnk_uitem_owner(ids.uniformIds[0][23])).toContainText('Luft Uwe'),
             expect.soft(uniformListPage.div_uitem_comment(ids.uniformIds[0][23])).toContainText(''),
-            expect.soft(uniformListPage.div_uitem_passivLabel(ids.uniformIds[0][23])).toBeVisible(),
+            expect.soft(uniformListPage.div_uitem_reserveLabel(ids.uniformIds[0][23])).toBeVisible(),
         ]);
 
         await uniformListPage.lnk_uitem_owner(ids.uniformIds[0][23]).click();
