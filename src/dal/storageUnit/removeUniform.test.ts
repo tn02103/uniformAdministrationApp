@@ -21,7 +21,7 @@ jest.mock("./get", () => ({
 const uniformIds = ['u1', 'u2', 'u3'];
 const storageUnitId = 's1';
 
-describe('<removeUniform>', () => {
+describe('<storageUnit> removeUniform', () => {
     afterEach(jest.clearAllMocks);
 
     const prismaUpdateMany = prisma.uniform.updateMany as jest.Mock;

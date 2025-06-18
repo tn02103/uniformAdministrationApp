@@ -8,7 +8,7 @@ jest.mock("@/lib/db", () => ({
     prisma: {
         $transaction: jest.fn(async (callback) => callback(prisma)),
         storageUnit: {
-            findMany: jest.fn(() => data.storageUnits),
+            findFirst: jest.fn(() => null),
             findUniqueOrThrow: jest.fn(() => data.storageUnits[0]),
             update: jest.fn(async () => { }),
         },
@@ -38,8 +38,12 @@ describe("update", () => {
     it("should update the storage unit successfully", async () => {
         const result = await update(mockProps);
 
-        expect(prisma.storageUnit.findMany).toHaveBeenCalledWith({
-            where: { assosiationId },
+        expect(prisma.storageUnit.findFirst).toHaveBeenCalledWith({
+            where: {
+                assosiationId,
+                name: mockProps.data.name,
+                id: { not: mockProps.id } // Exclude the current unit being updated
+            },
         });
         expect(prisma.storageUnit.update).toHaveBeenCalledWith({
             where: { id: mockProps.id },
@@ -50,13 +54,17 @@ describe("update", () => {
     });
 
     it("should return an error if the storage unit name is duplicated", async () => {
-        (prisma.storageUnit.findMany as jest.Mock).mockResolvedValue([
+        (prisma.storageUnit.findFirst as jest.Mock).mockResolvedValue([
             { id: "another-uuid", name: "New Storage Unit" },
         ]);
         const result = await update(mockProps);
 
-        expect(prisma.storageUnit.findMany).toHaveBeenCalledWith({
-            where: { assosiationId },
+        expect(prisma.storageUnit.findFirst).toHaveBeenCalledWith({
+            where: {
+                assosiationId,
+                name: mockProps.data.name,
+                id: { not: mockProps.id } // Exclude the current unit being updated
+            },
         });
         expect(result).toEqual({
             error: {
@@ -67,7 +75,7 @@ describe("update", () => {
     });
 
     it("should handle database errors gracefully", async () => {
-        (prisma.storageUnit.findMany as jest.Mock).mockRejectedValue(new Error("Database error"));
+        (prisma.storageUnit.findFirst as jest.Mock).mockRejectedValue(new Error("Database error"));
         (prisma.$transaction as jest.Mock).mockImplementation(async (callback) => callback(prisma));
 
         await expect(update(mockProps)).rejects.toThrow("Database error");

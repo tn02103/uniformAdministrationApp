@@ -21,12 +21,13 @@ export const create = (props: PropType): returnType => genericSAValidator(
     propSchema,
     {  }
 ).then(([{ assosiation }, data]) => prisma.$transaction(async (client) => {
-    const unitList = await client.storageUnit.findMany({
+    const nameDuplicate = await client.storageUnit.findFirst({
         where: {
             assosiationId: assosiation,
+            name: data.name,
         }
     });
-    if (unitList.find(u => u.name === data.name)) {
+    if (nameDuplicate) {
         return {
             error: {
                 message: "custom.nameDuplication.storageUnit",

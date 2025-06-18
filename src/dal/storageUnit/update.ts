@@ -18,11 +18,15 @@ export const update = (props: PropType) => genericSAValidator(
 ).then(async ([{ assosiation }, { id, data }]) => prisma.$transaction(async (client) => {
 
     if (data.name) {
-        const unitList = await client.storageUnit.findMany({
-            where: { assosiationId: assosiation }
+        const nameDuplicate = await client.storageUnit.findFirst({
+            where: { 
+                assosiationId: assosiation,
+                name: data.name,
+                id: { not: id } // Exclude the current unit being updated
+             }
         });
 
-        if (unitList.some(unit => unit.id !== id && unit.name === data.name)) {
+        if (nameDuplicate) {
             return {
                 error: {
                     formElement: 'name',

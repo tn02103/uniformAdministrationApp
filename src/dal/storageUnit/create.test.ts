@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 jest.mock('@/lib/db', () => ({
     prisma: {
         storageUnit: {
-            findMany: jest.fn(),
+            findFirst: jest.fn(),
             create: jest.fn(),
         },
         assosiation: {
@@ -36,12 +36,12 @@ const testUnit = {
 describe('<StorageUnit> create', () => {
     afterEach(jest.clearAllMocks);
 
-    const prismaFindMany = prisma.storageUnit.findMany as jest.Mock;
+    const prismafindFirst = prisma.storageUnit.findFirst as jest.Mock;
     const prismaCreate = prisma.storageUnit.create as jest.Mock;
     const getUnitsWithUniformItems = jest.requireMock("./get").__unsecuredGetUnitsWithUniformItems as jest.Mock;
 
     it('should create storage unit', async () => {
-        prismaFindMany.mockResolvedValueOnce([]);
+        prismafindFirst.mockResolvedValueOnce(null);
         prismaCreate.mockResolvedValueOnce({ ...testUnit });
         getUnitsWithUniformItems.mockResolvedValueOnce([
             { ...testUnit }
@@ -51,8 +51,8 @@ describe('<StorageUnit> create', () => {
         expect(result).toEqual([
             expect.objectContaining(testUnit)
         ]);
-        expect(prismaFindMany).toHaveBeenCalledWith({
-            where: { assosiationId: 'test-assosiation' }
+        expect(prismafindFirst).toHaveBeenCalledWith({
+            where: { assosiationId: 'test-assosiation', name: testUnit.name }
         });
         expect(prismaCreate).toHaveBeenCalledWith({
             data: {
@@ -64,9 +64,9 @@ describe('<StorageUnit> create', () => {
     });
 
     it('throws soft error if name is duplicated', async () => {
-        prismaFindMany.mockResolvedValueOnce([
+        prismafindFirst.mockResolvedValueOnce(
             { name: 'Kiste 01', description: '', capacity: 1, isReserve: false }
-        ]);
+        );
         const result = await create({
             ...testUnit,
             name: 'Kiste 01'
@@ -81,7 +81,7 @@ describe('<StorageUnit> create', () => {
     });
 
     it('should work with no previous units', async () => {
-        prismaFindMany.mockResolvedValueOnce([]);
+        prismafindFirst.mockResolvedValueOnce(null);
         prismaCreate.mockResolvedValueOnce({ ...testUnit });
         getUnitsWithUniformItems.mockResolvedValueOnce([
             { ...testUnit }

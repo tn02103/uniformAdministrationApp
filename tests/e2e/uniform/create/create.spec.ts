@@ -89,11 +89,11 @@ test('validate generate Ids', async ({ page, createPage, staticData: { ids, fk_a
 
         expect(uniformItems.length).toBe(11);
         expect.soft(uniformItems[0].comment).toBe('test comment2');
-        expect.soft(uniformItems[0].isReserve).toBeFalsy();
+        expect.soft(uniformItems[0].active).toBeFalsy();
         expect.soft(uniformItems[0].fk_uniformType).toBe(ids.uniformTypeIds[0]);
         expect.soft(uniformItems[0].fk_generation).toBe(ids.uniformGenerationIds[3]);
         expect.soft(uniformItems[6].comment).toBe('test comment2');
-        expect.soft(uniformItems[6].isReserve).toBeFalsy();
+        expect.soft(uniformItems[6].active).toBeFalsy();
         expect.soft(uniformItems[6].fk_uniformType).toBe(ids.uniformTypeIds[0]);
         expect.soft(uniformItems[6].fk_generation).toBe(ids.uniformGenerationIds[3]);
         expect.soft(uniformItems[0].fk_size).toBe(ids.sizeIds[16]);
