@@ -1,63 +1,56 @@
-import { prisma } from "@/lib/db";
-import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
-import { __unsecuredGetUnitsWithUniformItems } from "./get";
 import { removeUniform } from "./removeUniform";
+import { prisma } from "@/lib/db";
 
-
-
-const { fk_assosiation, ids, cleanup } = new StaticData(0);
-const uniformIds = [ids.uniformIds[2][10], ids.uniformIds[2][11], ids.uniformIds[2][12]];
-const storageUnitId = ids.storageUnitIds[2];
+jest.mock('@/lib/db', () => ({
+    prisma: {
+        uniform: {
+            updateMany: jest.fn(),
+        },
+        $transaction: jest.fn((fn) => fn(prisma)),
+    }
+}));
+jest.mock("@/actions/validations", () => ({
+    genericSAValidator: jest.fn((_, props) =>
+        Promise.resolve([{ assosiation: 'test-assosiation' }, props])
+    ),
+}));
 jest.mock("./get", () => ({
     __unsecuredGetUnitsWithUniformItems: jest.fn(),
 }));
 
-afterEach(() => cleanup.storageUnits());
-beforeEach(() => {
-    jest.clearAllMocks();
-});
-it("should remove the uniform from the storage unit and return updated units", async () => {
-    (__unsecuredGetUnitsWithUniformItems as jest.Mock).mockResolvedValue(['TestReturnValue'])
-    const result = await removeUniform({ uniformIds, storageUnitId });
+const uniformIds = ['u1', 'u2', 'u3'];
+const storageUnitId = 's1';
 
-    const [dbUniforms, dbUniformsInStorage] = await prisma.$transaction([
-        prisma.uniform.findMany({
+describe('<removeUniform>', () => {
+    afterEach(jest.clearAllMocks);
+
+    const prismaUpdateMany = prisma.uniform.updateMany as jest.Mock;
+    const getUnitsWithUniformItems = jest.requireMock("./get").__unsecuredGetUnitsWithUniformItems as jest.Mock;
+
+    it("should remove the uniform from the storage unit and return updated units", async () => {
+        prismaUpdateMany.mockResolvedValueOnce({ count: uniformIds.length });
+        getUnitsWithUniformItems.mockResolvedValueOnce(['TestReturnValue']);
+
+        const result = await removeUniform({ uniformIds, storageUnitId });
+
+        expect(prismaUpdateMany).toHaveBeenCalledWith({
             where: {
-                id: { in: uniformIds }
-            }
-        }), prisma.storageUnit.findUnique({
-            where: {
-                id: ids.storageUnitIds[2],
+                id: { in: uniformIds },
+                storageUnitId,
             },
-            include: {
-                uniformList: true
+            data: {
+                storageUnitId: null
             }
-        }),
-    ]);
-    expect(dbUniforms).toHaveLength(3);
-    expect(dbUniforms[0].storageUnitId).toBeNull();
-    expect(dbUniforms[1].storageUnitId).toBeNull();
-    expect(dbUniforms[2].storageUnitId).toBeNull();
-    expect(dbUniformsInStorage).not.toBeNull();
-    expect(dbUniformsInStorage!.uniformList).toHaveLength(4);
-
-    expect(__unsecuredGetUnitsWithUniformItems).toHaveBeenCalledWith(fk_assosiation);
-    expect(result).toEqual(['TestReturnValue']);
-});
-it('should catch uniform not in storage unit', async () => {
-    (__unsecuredGetUnitsWithUniformItems as jest.Mock).mockResolvedValue(['TestReturnValue'])
-    const result = removeUniform({
-        uniformIds: [...uniformIds, ids.uniformIds[2][9]],
-        storageUnitId
+        });
+        expect(getUnitsWithUniformItems).toHaveBeenCalledWith('test-assosiation');
+        expect(result).toEqual(['TestReturnValue']);
     });
-    await expect(result).rejects.toThrow();
-    expect(__unsecuredGetUnitsWithUniformItems).not.toHaveBeenCalled();
 
+    it('should throw if not all uniforms are updated', async () => {
+        prismaUpdateMany.mockResolvedValueOnce({ count: 2 }); // less than uniformIds.length
+        getUnitsWithUniformItems.mockResolvedValueOnce(['TestReturnValue']);
 
-    const result2 = removeUniform({
-        uniformIds: [...uniformIds, ids.uniformIds[0][15]],
-        storageUnitId
+        await expect(removeUniform({ uniformIds, storageUnitId })).rejects.toThrow("Failed to update uniforms");
+        expect(getUnitsWithUniformItems).not.toHaveBeenCalled();
     });
-    await expect(result2).rejects.toThrow();
-    expect(__unsecuredGetUnitsWithUniformItems).not.toHaveBeenCalled();
 });

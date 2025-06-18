@@ -20,7 +20,7 @@ test.describe("Storage Unit Admin Overview", () => {
         await Promise.all(
             data.storageUnits.sort((a, b) => a.name.localeCompare(b.name)).map(async (unit, index) => {
                 const row = storageUnitRows[index];
-                const cols = await row.getByRole('cell')
+                const cols = row.getByRole('cell')
                 const uniformCount = data.uniformList.filter(u => u.storageUnitId === unit.id).length;
 
                 await Promise.all([
@@ -58,8 +58,8 @@ test.describe("Storage Unit Admin Overview", () => {
             await test.step('check updated ui', async () => {
                 await expect(page.getByRole('heading', { name: 'XX Storage Unit' })).toBeVisible();
 
-                await expect(input).not.toBeVisible();
-                await expect(header).not.toBeVisible();
+                await expect(input).toBeHidden();
+                await expect(header).toBeHidden();
 
                 await expect(rows.nth(4).getByRole('cell').nth(0)).toHaveText('XX Storage Unit');
             });
@@ -154,14 +154,14 @@ test.describe("Storage Unit Admin Overview", () => {
                 await expect(dangerDialog).toBeVisible();
                 await expect(dangerDialog.getByRole('button', { name: /löschen/i })).toBeVisible();
                 await dangerDialog.getByRole('button', { name: /löschen/i }).click();
-                await expect(dangerDialog).not.toBeVisible();
-                await expect(offcanvas).not.toBeVisible();
+                await expect(dangerDialog).toBeHidden();
+                await expect(offcanvas).toBeHidden();
             });
 
             await test.step('check updated ui', async () => {
-                const storageUnitRows = await page.locator('tbody tr').all();
-                await expect(storageUnitRows).toHaveLength(data.storageUnits.length - 1);
-                await expect(page.getByText(data.storageUnits[0].name)).not.toBeVisible();
+                const storageUnitRows = page.locator('tbody tr')
+                await expect(storageUnitRows).toHaveCount(data.storageUnits.length - 1);
+                await expect(page.getByText(data.storageUnits[0].name)).toBeHidden();
             });
 
             await test.step('check db update', async () => {
@@ -213,7 +213,7 @@ test.describe("Storage Unit Admin Overview", () => {
                     expect(cells.nth(4)).toHaveText('0'),
 
                     expect(offcanvas.getByRole('heading', { name: 'XX Storage Unit' })).toBeVisible(),
-                    expect(nameInput).not.toBeVisible(),
+                    expect(nameInput).toBeHidden(),
                     expect(descriptionInput).toBeVisible(),
                     expect(capacityInput).toBeVisible(),
                     expect(reserveCheckbox).toBeVisible(),
@@ -254,7 +254,7 @@ test.describe("Storage Unit Admin Overview", () => {
 
             await test.step('cancel creation', async () => {
                 await cancelButton.click();
-                await expect(offcanvas).not.toBeVisible();
+                await expect(offcanvas).toBeHidden();
             });
         });
     });
@@ -279,7 +279,7 @@ test.describe("Storage Unit Admin Overview", () => {
                 await uniformRows.nth(0).hover();
                 await removeButton.click();
                 await expect(uniformRows).toHaveCount(1);
-                await expect(uniformRows.getByText(/1108/i)).not.toBeVisible();
+                await expect(uniformRows.getByText(/1108/i)).toBeHidden();
                 await expect(uniformRows.getByText(/1109/i)).toBeVisible();
                 await expect(rows.nth(0).getByRole('cell').nth(4)).toHaveText('1');
             });
@@ -307,7 +307,7 @@ test.describe("Storage Unit Admin Overview", () => {
 
             await test.step('add uniformitem', async () => {
                 await expect(uniformRows).toHaveCount(2);
-                await expect(uniformRows.getByText(/1110/i)).not.toBeVisible();
+                await expect(uniformRows.getByText(/1110/i)).toBeHidden();
 
                 await expect(addUniformInput).toBeVisible();
                 await addUniformInput.fill("1110");
@@ -344,7 +344,7 @@ test.describe("Storage Unit Admin Overview", () => {
 
             await test.step('try to add uniformitem', async () => {
                 await expect(uniformRows).toHaveCount(5);
-                await expect(uniformRows.getByText(/1110/i)).not.toBeVisible();
+                await expect(uniformRows.getByText(/1110/i)).toBeHidden();
 
                 await expect(addUniformInput).toBeVisible();
                 await addUniformInput.fill("1110");
@@ -354,7 +354,7 @@ test.describe("Storage Unit Admin Overview", () => {
                 await expect(warningMessage).toBeVisible();
                 await expect(warningMessage.getByText(/Lagereinheit voll/i)).toBeVisible();
                 await warningMessage.getByRole('button', { name: /speichern/i }).click();
-                await expect(warningMessage).not.toBeVisible();
+                await expect(warningMessage).toBeHidden();
             });
             await test.step('validate ui', async () => {
                 await expect(uniformRows).toHaveCount(6);

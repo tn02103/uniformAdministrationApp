@@ -13,7 +13,7 @@ test.describe('Offcanvas - CadetOverview', () => {
     const openOffcanvas = async (page: Page, uniformId: string, number: number): Promise<Locator> => {
         const cadetUniformRow = page.getByTestId(`div_uniform_typeList`).getByTestId(`div_uitem_${uniformId}`);
         await cadetUniformRow.getByRole('button', { name: /open/i }).click();
-        await page.waitForSelector('div[role="dialog"]', { state: 'visible' });
+        await expect(page.getByRole('dialog')).toBeVisible();
 
         return page.getByRole('dialog', { name: new RegExp(String(number)) })
     }
@@ -26,7 +26,7 @@ test.describe('Offcanvas - CadetOverview', () => {
         test('should open and close offcanvas', async ({ page, staticData: { ids } }) => {
             const cadetUniformRow = page.getByTestId(`div_uniform_typeList`).getByTestId(`div_uitem_${ids.uniformIds[0][84]}`)
             await cadetUniformRow.getByRole('button', { name: /open/i }).click();
-            await page.waitForSelector('div[role="dialog"]', { state: 'visible' });
+             await expect(page.getByRole('dialog')).toBeVisible();
 
             const offcanvas = page.getByRole('dialog');
             await expect(offcanvas).toBeVisible();

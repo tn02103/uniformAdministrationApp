@@ -4,26 +4,28 @@ import { TooltipActionButton } from '@/components/Buttons/TooltipIconButton';
 import { useStorageUnitsWithUniformItemList } from '@/dataFetcher/storage';
 import React, { useState } from 'react';
 import { Row, Table } from 'react-bootstrap';
-import StorageunitOC from './StorageunitOC';
+import { StorageunitOC } from './StorageunitOC';
+import { useI18n } from '@/lib/locales/client';
 
 const StoragePage: React.FC = () => {
+    const t = useI18n();
     const { storageUnits } = useStorageUnitsWithUniformItemList();
     const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
 
     return (
         <div className="container-xl bg-light rounded mt-4">
             <Row className="row pt-2 pb-2">
-                <h1 data-testid={"div_pageHeader"} className="text-center">Uniform Lagerverwaltung</h1>
+                <h1 data-testid={"div_pageHeader"} className="text-center">{t('storageUnit.label.header.page')}</h1>
             </Row>
             <Row className="row ps-md-4 pe-md-4">
                 <Table striped hover>
                     <thead className="topoffset-nav sticky-top bg-white">
                         <tr className=" ">
-                            <th>Name</th>
-                            <th>Beschreibung</th>
-                            <th>Kapazität</th>
-                            <th>Für Reserve</th>
-                            <th>Anzahl Uniformteile</th>
+                            <th>{t('storageUnit.label.details.name')}</th>
+                            <th>{t('storageUnit.label.details.description')}</th>
+                            <th>{t('storageUnit.label.details.capacity')}</th>
+                            <th>{t('storageUnit.label.details.forReserves')}</th>
+                            <th>{t('storageUnit.label.details.uniformCount')}</th>
                             <th>
                                 <TooltipActionButton
                                     variantKey='create'

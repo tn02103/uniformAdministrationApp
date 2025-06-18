@@ -65,7 +65,6 @@ const NewUniformConfigurator = ({
 
     // update selected Values
     useEffect(() => {
-        ;
         if (selectedTypeId !== selectedType?.id) {
             setValue("generationId", "null");
             setValue("sizeId", "null");

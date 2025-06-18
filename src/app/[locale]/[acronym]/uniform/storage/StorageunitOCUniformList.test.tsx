@@ -3,7 +3,7 @@ import "./StorageunitOC.jestHelper";
 import { act, getByRole, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { mockStorageUnitWithItems } from "./StorageunitOC.jestHelper";
-import StorageunitOCUniformList from "./StorageunitOCUniformList";
+import { StorageunitOCUniformList } from "./StorageunitOCUniformList";
 
 const baseStorageUnit = mockStorageUnitWithItems[0];
 
@@ -58,7 +58,7 @@ describe("StorageunitOCUniformList", () => {
             expect(option).toBeInTheDocument();
         });
 
-        it("idsables uniform items that are already in a storage unit", async () => {
+        it("disables uniform items that are already in a storage unit", async () => {
             const user = userEvent.setup();
             render(<StorageunitOCUniformList storageUnit={baseStorageUnit} />);
             await user.click(screen.getByRole("textbox"));

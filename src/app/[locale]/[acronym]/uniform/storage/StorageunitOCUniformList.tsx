@@ -15,7 +15,7 @@ type Props = {
 }
 
 type Option = UniformItemLabel & { value: string };
-export default function StorageunitOCUniformList({ storageUnit }: Props) {
+export function StorageunitOCUniformList({ storageUnit }: Props) {
     const t = useScopedI18n('storageUnit');
     const tCommon = useScopedI18n('common');
     const { mutate } = useStorageUnitsWithUniformItemList();
@@ -63,12 +63,12 @@ export default function StorageunitOCUniformList({ storageUnit }: Props) {
                 labelMutate();
             },
             t('error.removeUT'),
-        )
+        );
     }
 
     return (
         <div>
-            <h4 className="text-center">{t('label.headerUT')}</h4>
+            <h4 className="text-center">{t('label.header.uniformlist')}</h4>
             <div className="my-3">
                 <AutocompleteField<Option>
                     resetOnChange
@@ -82,10 +82,9 @@ export default function StorageunitOCUniformList({ storageUnit }: Props) {
                         owner: t('tooltips.utOptions.owner'),
                         storageUnit: t('tooltips.utOptions.storageUnit'),
                     })}
-                    optionDisabled={(option) => !!(option.owner || option.storageUnit)}
+                    isOptionDisabled={(option) => !!(option.owner || option.storageUnit)}
                 />
             </div>
-
             <Table hover aria-label="uniformlist">
                 <thead>
                     <tr className="border-bottom border-dark">

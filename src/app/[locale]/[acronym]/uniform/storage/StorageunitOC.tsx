@@ -6,16 +6,16 @@ import { useI18n } from "@/lib/locales/client";
 import { useState } from "react";
 import { Offcanvas, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
-import {StorageunitOCDetailForm} from "./StorageunitOCDetailForm";
+import { StorageunitOCDetailForm } from "./StorageunitOCDetailForm";
 import { StorageunitOCHeader } from "./StorageunitOCHeader";
-import StorageunitOCUniformList from "./StorageunitOCUniformList";
+import { StorageunitOCUniformList } from "./StorageunitOCUniformList";
 
 type Props = {
     storageUnit?: StorageUnitWithUniformItems;
     onHide: () => void;
     setSelectedStorageUnitId: (id: string | null) => void;
 }
-export default function StorageunitOC({ storageUnit, onHide, setSelectedStorageUnitId }: Props) {
+export function StorageunitOC({ storageUnit, onHide, setSelectedStorageUnitId }: Props) {
     const [editable, setEditable] = useState(!storageUnit);
     const { mutate } = useStorageUnitsWithUniformItemList();
     const t = useI18n();

@@ -12,7 +12,7 @@ export type AutocompleteFieldProps<TOption extends AutocompleteOptionType> = {
     resetOnChange?: boolean;
     name?: string;
     renderOption?: (props: RenderOptionProps<TOption>) => React.ReactNode;
-    optionDisabled?: (option: TOption) => boolean;
+    isOptionDisabled?: (option: TOption) => boolean;
 };
 export type AutocompleteOptionType = { value: string, label: string };
 export type RenderOptionProps<TOption extends AutocompleteOptionType> = {
@@ -29,7 +29,7 @@ function stopEvent(e: React.SyntheticEvent) {
 }
 
 export default function AutocompleteField<TOption extends AutocompleteOptionType = AutocompleteOptionType>(props: AutocompleteFieldProps<TOption>) {
-    const { options, onChange, label, optionDisabled, resetOnChange, } = props;
+    const { options, onChange, label, isOptionDisabled, resetOnChange, } = props;
 
     const [inputValue, setInputValue] = useState('');
     const [filteredOptions, setFilteredOptions] = useState<TOption[]>([]);
@@ -38,7 +38,7 @@ export default function AutocompleteField<TOption extends AutocompleteOptionType
 
     const changeHighlightedIndex = useCallback((mode: "up" | "down" | "first" | "last") => {
         if (!filteredOptions.length) return;
-        if (!optionDisabled) {
+        if (!isOptionDisabled) {
             setHighlightedIndex(idx => {
                 if (mode === "first") return 0;
                 if (mode === "last") return filteredOptions.length - 1;
@@ -51,31 +51,31 @@ export default function AutocompleteField<TOption extends AutocompleteOptionType
         setHighlightedIndex(idx => {
             if (mode === "first") {
                 for (let i = 0; i < filteredOptions.length; i++) {
-                    if (!optionDisabled(filteredOptions[i])) return i;
+                    if (!isOptionDisabled(filteredOptions[i])) return i;
                 }
                 return idx;
             }
             if (mode === "last") {
                 for (let i = filteredOptions.length - 1; i >= 0; i--) {
-                    if (!optionDisabled(filteredOptions[i])) return i;
+                    if (!isOptionDisabled(filteredOptions[i])) return i;
                 }
                 return idx;
             }
             if (mode === "up") {
                 for (let i = idx - 1; i >= 0; i--) {
-                    if (!optionDisabled(filteredOptions[i])) return i;
+                    if (!isOptionDisabled(filteredOptions[i])) return i;
                 }
                 return idx;
             }
             if (mode === "down") {
                 for (let i = idx + 1; i < filteredOptions.length; i++) {
-                    if (!optionDisabled(filteredOptions[i])) return i;
+                    if (!isOptionDisabled(filteredOptions[i])) return i;
                 }
                 return idx;
             }
             return idx;
         });
-    }, [filteredOptions, optionDisabled]);
+    }, [filteredOptions, isOptionDisabled]);
 
     const handleInputChange = useCallback((value: string) => {
         setInputValue(value);
@@ -92,7 +92,7 @@ export default function AutocompleteField<TOption extends AutocompleteOptionType
     }, [options, onChange, props.noImplicitChange, changeHighlightedIndex]);
 
     const handleOptionSelect = useCallback((option: TOption, e: React.MouseEvent | React.KeyboardEvent) => {
-        if (optionDisabled?.(option)) {
+        if (isOptionDisabled?.(option)) {
             stopEvent(e);
             return false;
         }
@@ -104,7 +104,7 @@ export default function AutocompleteField<TOption extends AutocompleteOptionType
         onChange(option.value);
         changeHighlightedIndex("first");
         return true;
-    }, [onChange, resetOnChange, optionDisabled, changeHighlightedIndex]);
+    }, [onChange, resetOnChange, isOptionDisabled, changeHighlightedIndex]);
 
     useEffect(() => {
         if (inputValue.length === 0) {

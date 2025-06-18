@@ -2,7 +2,7 @@ import "./StorageunitOC.jestHelper";
 
 import { act, render, screen } from "@testing-library/react";
 import { mockStorageUnitWithItems } from "./StorageunitOC.jestHelper";
-import StorageunitOC from "./StorageunitOC";
+import { StorageunitOC } from "./StorageunitOC";
 import userEvent from "@testing-library/user-event";
 
 
@@ -30,7 +30,7 @@ describe("StorageunitOC", () => {
         expect(screen.getByRole('spinbutton', { name: /capacity/i })).toBeDisabled();
         expect(screen.getByRole('switch', { name: /forReserves/i })).toHaveAttribute("aria-disabled", "true");
 
-        expect(screen.getByText('storageUnit.label.headerUT')).toBeInTheDocument();
+        expect(screen.getByText('storageUnit.label.header.uniformlist')).toBeInTheDocument();
         expect(screen.getByText(`${mockStorageUnit.uniformList[0].type.name}-${mockStorageUnit.uniformList[0].number}`)).toBeInTheDocument();
         expect(screen.getByText(`${mockStorageUnit.uniformList[1].type.name}-${mockStorageUnit.uniformList[1].number}`)).toBeInTheDocument();
     });
@@ -38,8 +38,8 @@ describe("StorageunitOC", () => {
     it('renders correctly without storage unit', () => {
         render(<StorageunitOC onHide={() => { }} setSelectedStorageUnitId={() => { }} />);
 
-        expect(screen.getByRole('heading', { name: /headerCreate/ })).toBeInTheDocument();
-        expect(screen.queryByText('storageUnit.label.headerUT')).not.toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: /header.create/ })).toBeInTheDocument();
+        expect(screen.queryByText('storageUnit.label.header.uniformlist')).not.toBeInTheDocument();
 
         expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();

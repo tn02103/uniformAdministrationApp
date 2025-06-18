@@ -55,6 +55,6 @@ export const NumberField = ({ allowDecimal, allowNegative, value, isInvalid, err
             aria-errormessage={isInvalid ? errorId : undefined}
             aria-invalid={!isInvalid}
             aria-required={inputProps.required}
-             />
+        />
     )
 }

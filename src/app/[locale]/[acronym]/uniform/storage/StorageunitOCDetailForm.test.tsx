@@ -1,11 +1,9 @@
 import "./StorageunitOC.jestHelper";
 
-import { getByRole, queryByRole, render } from "@testing-library/react";
+import { getByRole, queryByRole, render, screen } from "@testing-library/react";
 import { StorageunitOCDetailForm } from "./StorageunitOCDetailForm";
 import userEvent from "@testing-library/user-event";
 import { mockStorageUnitWithItems } from "./StorageunitOC.jestHelper";
-
-
 
 describe("StorageunitOCDetailForm", () => {
     const { toast } = jest.requireMock("react-toastify");
@@ -18,8 +16,8 @@ describe("StorageunitOCDetailForm", () => {
         jest.clearAllMocks();
     });
 
-    it("should render without crashing", () => {
-        const { container } = render(
+    it("should render without storageunit", () => {
+       render(
             <StorageunitOCDetailForm
                 editable={true}
                 storageUnit={undefined}
@@ -29,8 +27,55 @@ describe("StorageunitOCDetailForm", () => {
             />
         );
 
-        expect(container).toBeInTheDocument();
-        expect(container).toMatchSnapshot();
+        // Check that the form fields are rendered correctly
+        expect(screen.getByRole("textbox", { name: /name/i })).toBeInTheDocument();
+        expect(screen.getByRole("textbox", { name: /description/i })).toBeInTheDocument();
+        expect(screen.getByRole("spinbutton", { name: /capacity/i })).toBeInTheDocument();
+        expect(screen.getByRole("switch", { name: /reserve/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+
+        // Check that the form fields are disabled
+        expect(screen.getByRole("textbox", { name: /name/i })).toBeEnabled();
+        expect(screen.getByRole("textbox", { name: /description/i })).toBeEnabled();
+        expect(screen.getByRole("spinbutton", { name: /capacity/i })).toBeEnabled();
+        expect(screen.getByRole("switch", { name: /reserve/i })).not.toHaveAttribute("aria-disabled", null);
+
+        // Check values of the form fields
+        expect(screen.getByRole("textbox", { name: /name/i })).toHaveValue("");
+        expect(screen.getByRole("spinbutton", { name: /capacity/i })).toHaveValue(null);
+        expect(screen.getByRole("textbox", { name: /description/i })).toHaveValue("");
+        expect(screen.getByRole("switch", { name: /reserve/i })).toHaveAttribute("aria-checked", "false");
+    });
+
+    it("should render with storageunit", () => {
+        render(
+            <StorageunitOCDetailForm
+                editable={false}
+                storageUnit={mockStorageUnitWithItems[0]}
+                setEditable={jest.fn()}
+                setSelectedStorageUnitId={jest.fn()}
+                onHide={jest.fn()}
+            />
+        );
+
+        // Check that the form fields are rendered correctly
+        expect(screen.queryByRole("textbox", { name: /name/i })).toBeNull();
+        expect(screen.getByRole("textbox", { name: /description/i })).toBeInTheDocument();
+        expect(screen.getByRole("spinbutton", { name: /capacity/i })).toBeInTheDocument();
+        expect(screen.getByRole("switch", { name: /reserve/i })).toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: /save/i })).toBeNull();
+        expect(screen.queryByRole("button", { name: /cancel/i })).toBeNull();
+
+        // Check that the form fields are disabled
+        expect(screen.getByRole("textbox", { name: /description/i })).toBeDisabled();
+        expect(screen.getByRole("spinbutton", { name: /capacity/i })).toBeDisabled();
+        expect(screen.getByRole("switch", { name: /reserve/i })).toHaveAttribute("aria-disabled", "true");
+
+        // Check values of the form fields
+        expect(screen.getByRole("spinbutton", { name: /capacity/i })).toHaveValue(mockStorageUnitWithItems[0].capacity);
+        expect(screen.getByRole("textbox", { name: /description/i })).toHaveValue(mockStorageUnitWithItems[0].description);
+        expect(screen.getByRole("switch", { name: /reserve/i })).toHaveAttribute("aria-checked", mockStorageUnitWithItems[0].isReserve.toString());
     });
 
     describe("editable state", () => {

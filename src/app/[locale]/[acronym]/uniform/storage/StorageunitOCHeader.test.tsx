@@ -17,7 +17,7 @@ describe("StorageunitOCHeader", () => {
 
     it('shows create new title when no storage unit is provided', () => {
         render(<StorageunitOCHeader storageUnit={null} />);
-        expect(screen.getByText(/headerCreate/)).toBeInTheDocument();
+        expect(screen.getByText(/header.create/)).toBeInTheDocument();
     });
 
     it('shows storage unit name when provided', () => {

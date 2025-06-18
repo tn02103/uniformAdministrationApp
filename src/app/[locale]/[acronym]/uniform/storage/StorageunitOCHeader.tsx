@@ -50,7 +50,7 @@ export const StorageunitOCHeader = ({ storageUnit }: UnitsliderHeaderProps) => {
             ) : (
                 <Offcanvas.Title>
                     <h3>
-                        {t('storageUnit.label.headerCreate')}
+                        {t('storageUnit.label.header.create')}
                     </h3>
                 </Offcanvas.Title>
             )}

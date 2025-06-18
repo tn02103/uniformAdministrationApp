@@ -1,84 +1,97 @@
-import { runServerActionTest } from "@/dal/_helper/testHelper";
-import { prisma } from "@/lib/db";
-import { v4 as uuid } from "uuid";
 import { create } from "./create";
-import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { prisma } from "@/lib/db";
 
-const { ids, cleanup } = new StaticData(0);
-afterEach(async () => {
-    await cleanup.storageUnits();
-});
+jest.mock('@/lib/db', () => ({
+    prisma: {
+        storageUnit: {
+            findMany: jest.fn(),
+            create: jest.fn(),
+        },
+        assosiation: {
+            create: jest.fn(),
+            delete: jest.fn(),
+        },
+        uniformType: {
+            deleteMany: jest.fn(),
+        },
+        $transaction: jest.fn((fn) => fn(prisma)),
+    }
+}));
+jest.mock("@/actions/validations", () => ({
+    genericSAValidator: jest.fn((_, props) =>
+        Promise.resolve([{ assosiation: 'test-assosiation' }, props])
+    ),
+}));
+jest.mock("./get", () => ({
+    __unsecuredGetUnitsWithUniformItems: jest.fn(() => "unitsWithUniformItems"),
+}));
+
 const testUnit = {
     name: 'Unit1',
     description: 'For Broken uniformItems',
     capacity: 10,
     isReserve: true,
-}
+};
 
-it('should create storage unit', async () => {
-    const { success, result } = await runServerActionTest(create(testUnit));
-    expect(success).toBeTruthy();
-    expect(result).toEqual(
-        expect.arrayContaining([
+describe('<StorageUnit> create', () => {
+    afterEach(jest.clearAllMocks);
+
+    const prismaFindMany = prisma.storageUnit.findMany as jest.Mock;
+    const prismaCreate = prisma.storageUnit.create as jest.Mock;
+    const getUnitsWithUniformItems = jest.requireMock("./get").__unsecuredGetUnitsWithUniformItems as jest.Mock;
+
+    it('should create storage unit', async () => {
+        prismaFindMany.mockResolvedValueOnce([]);
+        prismaCreate.mockResolvedValueOnce({ ...testUnit });
+        getUnitsWithUniformItems.mockResolvedValueOnce([
+            { ...testUnit }
+        ]);
+
+        const result = await create(testUnit);
+        expect(result).toEqual([
             expect.objectContaining(testUnit)
-        ])
-    );
-
-    const dbList = await prisma.storageUnit.findMany({
-        where: {
-            assosiationId: ids.fk_assosiation,
-            name: testUnit.name,
-        }
-    });
-    expect(dbList.length).toBe(1);
-    expect(dbList).toEqual([
-        expect.objectContaining(
-            testUnit
-        ),
-    ]);
-});
-
-it('throws soft error if name is duplicated', async () => {
-    const{ success, result } = await runServerActionTest(create({
-        ...testUnit,
-        name: 'Kiste 01'
-    }));
-    expect(success).toBeFalsy();
-    expect(result.error).toBeDefined();
-    expect(result.error.formElement).toBe('name');
-    expect(result.error.message).toBe('custom.nameDuplication.storageUnit');
-});
-   
-describe('test empty assosiation', () => {
-    const fk_assosiation = uuid();
-    beforeEach(async () => {
-        global.__ASSOSIATION__ = fk_assosiation
-        await prisma.assosiation.create({
+        ]);
+        expect(prismaFindMany).toHaveBeenCalledWith({
+            where: { assosiationId: 'test-assosiation' }
+        });
+        expect(prismaCreate).toHaveBeenCalledWith({
             data: {
-                name: 'empty',
-                id: fk_assosiation,
-                acronym: 'XX'
+                assosiationId: 'test-assosiation',
+                ...testUnit,
             }
         });
+        expect(getUnitsWithUniformItems).toHaveBeenCalledWith('test-assosiation', prisma);
     });
-    afterEach(async () => {
-        delete global.__ASSOSIATION__;
-        await prisma.uniformType.deleteMany({
-            where: {
-                fk_assosiation
+
+    it('throws soft error if name is duplicated', async () => {
+        prismaFindMany.mockResolvedValueOnce([
+            { name: 'Kiste 01', description: '', capacity: 1, isReserve: false }
+        ]);
+        const result = await create({
+            ...testUnit,
+            name: 'Kiste 01'
+        });
+        expect(result).toEqual({
+            error: {
+                message: "custom.nameDuplication.storageUnit",
+                formElement: "name",
             }
         });
-        await prisma.assosiation.delete({
-            where: { id: fk_assosiation }
-        })
+        expect(prismaCreate).not.toHaveBeenCalled();
     });
+
     it('should work with no previous units', async () => {
-        const { success, result } = await runServerActionTest(create(testUnit));
-        expect(success).toBeTruthy();
+        prismaFindMany.mockResolvedValueOnce([]);
+        prismaCreate.mockResolvedValueOnce({ ...testUnit });
+        getUnitsWithUniformItems.mockResolvedValueOnce([
+            { ...testUnit }
+        ]);
+        const result = await create(testUnit);
         expect(result).toStrictEqual([
             expect.objectContaining(testUnit)
         ]);
+        expect(prismaCreate).toHaveBeenCalled();
     });
 });
 
-  
+

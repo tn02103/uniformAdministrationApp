@@ -22,7 +22,7 @@ export type InlineEditInputFormFieldProps = {
     onSave?: (value: string) => void;
     onValueChange?: (value: string, event: React.ChangeEvent<HTMLInputElement>) => void;
     zodSchema?: ZodSchema;
-} & FieldProps
+} & Omit<FieldProps, "label">
 
 export const InlineEditInputFormField = (props: InlineEditInputFormFieldProps) => {
     const [isEditable, setIsEditable] = useState(false);
@@ -82,6 +82,7 @@ const FormComponent = (props: FormComponentProps) => {
     const { field, fieldState } = useController({
         name,
         control,
+        rules: { required: required ? "string.required" : undefined }
     });
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,7 +99,6 @@ const FormComponent = (props: FormComponentProps) => {
         <form noValidate autoComplete="off" onSubmit={handleSubmit(handleSave)} >
             <Field
                 name={name}
-                required={required}
                 {...fieldProps}
                 errorMessage={fieldState.error?.message}
             >
@@ -114,7 +114,6 @@ const FormComponent = (props: FormComponentProps) => {
                         aria-label={ariaLabel}
                         isInvalid={!!fieldState.error}
                     />
-
                     <Button
                         variant="outline-primary"
                         type="submit"
