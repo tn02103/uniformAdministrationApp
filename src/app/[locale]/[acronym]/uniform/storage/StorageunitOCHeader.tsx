@@ -36,18 +36,22 @@ export const StorageunitOCHeader = ({ storageUnit }: UnitsliderHeaderProps) => {
     return (
         <Offcanvas.Header closeButton>
             {storageUnit ? (
-                <InlineEditInputFormField
-                    name="name"
-                    value={storageUnit?.name}
-                    onSave={handleSaveTitle}
-                    zodSchema={formSchema}
-                    textClassName="fw-bold fs-4"
-                    inputClassName="fs-5"
-                    ariaLabel={t('storageUnit.label.editName')}
-                />
+                <h3>
+                    <InlineEditInputFormField
+                        name="name"
+                        value={storageUnit?.name}
+                        onSave={handleSaveTitle}
+                        zodSchema={formSchema}
+                        textClassName="fw-bold fs-4"
+                        inputClassName="fs-5"
+                        ariaLabel={t('storageUnit.label.editName')}
+                    />
+                </h3>
             ) : (
                 <Offcanvas.Title>
-                    {t('storageUnit.label.headerCreate')}
+                    <h3>
+                        {t('storageUnit.label.headerCreate')}
+                    </h3>
                 </Offcanvas.Title>
             )}
         </Offcanvas.Header>

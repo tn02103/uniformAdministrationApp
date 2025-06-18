@@ -164,9 +164,10 @@ export default function AutocompleteField<TOption extends AutocompleteOptionType
     return (
         <div className="position-relative" style={{ maxWidth: '200px' }}>
             <Form.Group data-testid={`${props.name ?? "autocomplete"}-field-group`}>
-                <Form.Label>{label}</Form.Label>
+                <Form.Label htmlFor="autocomplete">{label}</Form.Label>
                 <Form.Control
                     type="text"
+                    id="autocomplete"
                     value={inputValue}
                     onFocus={() => setOptionsVisible(true)}
                     onBlur={() => setOptionsVisible(false)}

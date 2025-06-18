@@ -27,6 +27,7 @@ export default {
             open: "Öffnen",
             reactivate: "Reaktivieren",
             deactivate: "Deaktivieren",
+            discard: "Verwerfen",
             prevStep: "Zurück",
             nextStep: "Weiter",
             edit_item: "{item} Bearbeiten",
@@ -309,6 +310,10 @@ export default {
         warning: {
             "full.header": "Lagereinheit voll",
             "full.message": "Die Einheit ist bereits voll. Sind Sie sicher, dass sie ein weiteres Uniformteil hinzufügen wollen?",
+            "close.header": 'Änderungen verwerfen?',
+            "close.message": 'Möchten Sie die Änderungen verwerfen?',
+            "delete.header": "Lagereinheit löschen",
+            "delete.message": "Soll die Lagereinheit \"{name}\" wirklich gelöscht werden? Diese Aktion ist nicht wieder umkehrbar.",
         },
         tooltips: {
             "utOptions.owner": "Besitzer: ",

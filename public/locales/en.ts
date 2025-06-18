@@ -27,6 +27,7 @@ export default {
             open: "Open",
             reactivate: "Reactivate",
             deactivate: "Deactivate",
+            discard: "Discard",
             prevStep: "Back",
             nextStep: "Next",
             edit_item: "Edit {item}",
@@ -309,6 +310,10 @@ export default {
         warning: {
             "full.header": "Storage unit full",
             "full.message": "The unit is already full. Are you sure you want to add another uniform item?",
+            "close.header": 'Discard changes',
+            "close.message": 'Do you want to discard your changes?',
+            "delete.header": "Delete storage unit",
+            "delete.message": "Should the storage unit {name} really be deleted? This action cannot be undone.",
         },
         tooltips: {
             "utOptions.owner": "Owner: ",

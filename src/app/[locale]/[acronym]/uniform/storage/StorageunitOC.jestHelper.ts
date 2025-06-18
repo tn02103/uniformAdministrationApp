@@ -3,6 +3,7 @@ import { mockUniformList } from "../../../../../../tests/_jestConfig/staticMockD
 
 jest.mock("@/dal/storageUnit/_index", () => ({
     addUniformItemToStorageUnit: jest.fn().mockResolvedValue(mockStorageUnitWithItems),
+    deleteStorageUnit: jest.fn().mockResolvedValue(mockStorageUnitWithItems),
     removeUniformFromStorageUnit: jest.fn().mockResolvedValue(mockStorageUnitWithItems),
     createStorageUnit: jest.fn().mockResolvedValue(mockStorageUnitWithItems),
     updateStorageUnit: jest.fn().mockResolvedValue(mockStorageUnitWithItems),

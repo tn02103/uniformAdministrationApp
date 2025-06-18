@@ -86,7 +86,7 @@ export default function StorageunitOCUniformList({ storageUnit }: Props) {
                 />
             </div>
 
-            <Table hover>
+            <Table hover aria-label="uniformlist">
                 <thead>
                     <tr className="border-bottom border-dark">
                         <th></th>
@@ -98,10 +98,10 @@ export default function StorageunitOCUniformList({ storageUnit }: Props) {
                 <tbody>
                     {storageUnit.uniformList.map((uniform) => (
                         <tr key={uniform.id} className="hoverCol">
-                            <td>
+                            <td >
                                 <Button
                                     variant={"light"}
-                                    className="hoverColHidden"
+                                    className={(process.env.NEXT_PUBLIC_STAGE !== "TEST") ? "hoverColHidden" : ""}
                                     size="sm"
                                     onClick={() => handleRemove(uniform.id)}
                                     aria-label={tCommon('actions.remove')}

@@ -27,6 +27,7 @@ jest.mock("@/components/modals/modalProvider", () => {
         simpleWarningModal: jest.fn(),
         simpleErrorModal: jest.fn(),
         simpleFormModal: jest.fn(),
+        showMessageModal: jest.fn(),
     }
     return {
         useModal: jest.fn(() => modals)

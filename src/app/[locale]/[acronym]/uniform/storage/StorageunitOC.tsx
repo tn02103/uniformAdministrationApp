@@ -24,11 +24,11 @@ export default function StorageunitOC({ storageUnit, onHide, setSelectedStorageU
     const handleOnHide = () => {
         if (editable) {
             modal?.showMessageModal(
-                'Änderungen verwerfen?',
-                'Möchten Sie die Änderungen verwerfen?',
+                t('storageUnit.warning.close.header'),
+                t('storageUnit.warning.close.message'),
                 [
-                    { option: 'Abbrechen', function: () => { }, type: 'secondary', testId: 'btn_no' },
-                    { option: 'Verwerfen', function: onHide, type: 'danger', testId: 'btn_yes' },
+                    { option: t('common.actions.cancel'), function: () => { }, type: 'secondary', testId: 'btn_no' },
+                    { option: t('common.actions.discard'), function: onHide, type: 'danger', testId: 'btn_yes' },
                 ],
                 'warning',
             );
@@ -48,11 +48,11 @@ export default function StorageunitOC({ storageUnit, onHide, setSelectedStorageU
         });
 
         modal?.showMessageModal(
-            'Löschen',
-            'Möchten Sie den Eintrag wirklich löschen?',
+            t('storageUnit.warning.delete.header'),
+            t('storageUnit.warning.delete.message', { name: storageUnit.name }),
             [
-                { option: 'Abbrechen', function: () => { }, type: 'secondary', testId: 'btn_no' },
-                { option: 'Löschen', function: deleteMutation, type: 'danger', testId: 'btn_yes' },
+                { option: t('common.actions.cancel'), function: () => { }, type: 'secondary', testId: 'btn_no' },
+                { option: t('common.actions.delete'), function: deleteMutation, type: 'danger', testId: 'btn_yes' },
             ],
             'danger'
         );
