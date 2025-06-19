@@ -98,11 +98,9 @@ exports[`<UniformTypeOffcanvas /> handles editable state correctly 1`] = `
         <div
           class="col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 form-label"
+              class="fw-bold m-0  form-label"
               for="uniformTypeForm_input-name"
             >
               common.name
@@ -130,11 +128,9 @@ exports[`<UniformTypeOffcanvas /> handles editable state correctly 1`] = `
         <div
           class="col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 form-label"
+              class="fw-bold m-0  form-label"
               for="uniformTypeForm_input-acronym"
             >
               common.uniform.type.acronym
@@ -163,11 +159,9 @@ exports[`<UniformTypeOffcanvas /> handles editable state correctly 1`] = `
         <div
           class="col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 form-label"
+              class="fw-bold m-0  form-label"
               for="uniformTypeForm_numberInput-issuedDefault"
             >
               common.uniform.type.issuedDefault
@@ -181,6 +175,7 @@ exports[`<UniformTypeOffcanvas /> handles editable state correctly 1`] = `
               value="2"
             />
             <div
+              aria-label="error message issuedDefault"
               class="text-danger fs-7"
               data-testid="err_issuedDefault"
               id="uniformTypeForm_err_issuedDefault"
@@ -191,18 +186,16 @@ exports[`<UniformTypeOffcanvas /> handles editable state correctly 1`] = `
         <div
           class="col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 undefined form-label"
+              class="fw-bold m-0  form-label"
               for="uniformTypeForm_select-fk_defaultSizelist"
             >
               common.uniform.type.defaultSizelist
             </label>
             <select
               aria-invalid="false"
-              class="text-truncate form-select"
+              class="text-truncate  form-select"
               id="uniformTypeForm_select-fk_defaultSizelist"
               name="fk_defaultSizelist"
             >
@@ -240,11 +233,9 @@ exports[`<UniformTypeOffcanvas /> handles editable state correctly 1`] = `
         <div
           class="col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 form-label"
+              class="fw-bold m-0  form-label"
               for="uniformTypeForm_toggle-usingSizes"
             >
               common.uniform.type.usingSizes
@@ -267,8 +258,10 @@ exports[`<UniformTypeOffcanvas /> handles editable state correctly 1`] = `
               />
             </div>
             <div
+              aria-label="error message usingSizes"
               class="text-danger fs-7"
               data-testid="err_usingSizes"
+              id="uniformTypeForm_err_usingSizes"
               role="alert"
             />
           </div>
@@ -276,11 +269,9 @@ exports[`<UniformTypeOffcanvas /> handles editable state correctly 1`] = `
         <div
           class="col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 form-label"
+              class="fw-bold m-0  form-label"
               for="uniformTypeForm_toggle-usingGenerations"
             >
               common.uniform.type.usingGenerations
@@ -303,8 +294,10 @@ exports[`<UniformTypeOffcanvas /> handles editable state correctly 1`] = `
               />
             </div>
             <div
+              aria-label="error message usingGenerations"
               class="text-danger fs-7"
               data-testid="err_usingGenerations"
+              id="uniformTypeForm_err_usingGenerations"
               role="alert"
             />
           </div>
@@ -384,11 +377,9 @@ exports[`<UniformTypeOffcanvas /> renders correct layout when no uniformType is 
         <div
           class="col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 form-label"
+              class="fw-bold m-0  form-label"
               for="uniformTypeForm_input-name"
             >
               common.name
@@ -416,11 +407,9 @@ exports[`<UniformTypeOffcanvas /> renders correct layout when no uniformType is 
         <div
           class="col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 form-label"
+              class="fw-bold m-0  form-label"
               for="uniformTypeForm_input-acronym"
             >
               common.uniform.type.acronym
@@ -449,11 +438,9 @@ exports[`<UniformTypeOffcanvas /> renders correct layout when no uniformType is 
         <div
           class="col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 form-label"
+              class="fw-bold m-0  form-label"
               for="uniformTypeForm_numberInput-issuedDefault"
             >
               common.uniform.type.issuedDefault
@@ -467,6 +454,7 @@ exports[`<UniformTypeOffcanvas /> renders correct layout when no uniformType is 
               value=""
             />
             <div
+              aria-label="error message issuedDefault"
               class="text-danger fs-7"
               data-testid="err_issuedDefault"
               id="uniformTypeForm_err_issuedDefault"
@@ -480,11 +468,9 @@ exports[`<UniformTypeOffcanvas /> renders correct layout when no uniformType is 
         <div
           class="col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 form-label"
+              class="fw-bold m-0  form-label"
               for="uniformTypeForm_toggle-usingSizes"
             >
               common.uniform.type.usingSizes
@@ -506,8 +492,10 @@ exports[`<UniformTypeOffcanvas /> renders correct layout when no uniformType is 
               />
             </div>
             <div
+              aria-label="error message usingSizes"
               class="text-danger fs-7"
               data-testid="err_usingSizes"
+              id="uniformTypeForm_err_usingSizes"
               role="alert"
             />
           </div>
@@ -515,11 +503,9 @@ exports[`<UniformTypeOffcanvas /> renders correct layout when no uniformType is 
         <div
           class="col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 form-label"
+              class="fw-bold m-0  form-label"
               for="uniformTypeForm_toggle-usingGenerations"
             >
               common.uniform.type.usingGenerations
@@ -541,8 +527,10 @@ exports[`<UniformTypeOffcanvas /> renders correct layout when no uniformType is 
               />
             </div>
             <div
+              aria-label="error message usingGenerations"
               class="text-danger fs-7"
               data-testid="err_usingGenerations"
+              id="uniformTypeForm_err_usingGenerations"
               role="alert"
             />
           </div>
@@ -665,11 +653,9 @@ exports[`<UniformTypeOffcanvas /> renders the component and handles setEditable 
         <div
           class="col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 form-label"
+              class="fw-bold m-0  form-label"
               for="uniformTypeForm_input-name"
             >
               common.name
@@ -698,11 +684,9 @@ exports[`<UniformTypeOffcanvas /> renders the component and handles setEditable 
         <div
           class="col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 form-label"
+              class="fw-bold m-0  form-label"
               for="uniformTypeForm_input-acronym"
             >
               common.uniform.type.acronym
@@ -732,11 +716,9 @@ exports[`<UniformTypeOffcanvas /> renders the component and handles setEditable 
         <div
           class="col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 form-label"
+              class="fw-bold m-0  form-label"
               for="uniformTypeForm_numberInput-issuedDefault"
             >
               common.uniform.type.issuedDefault
@@ -751,6 +733,7 @@ exports[`<UniformTypeOffcanvas /> renders the component and handles setEditable 
               value="2"
             />
             <div
+              aria-label="error message issuedDefault"
               class="text-danger fs-7"
               data-testid="err_issuedDefault"
               id="uniformTypeForm_err_issuedDefault"
@@ -761,11 +744,9 @@ exports[`<UniformTypeOffcanvas /> renders the component and handles setEditable 
         <div
           class="col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 undefined form-label"
+              class="fw-bold m-0  form-label"
               for="uniformTypeForm_select-fk_defaultSizelist"
             >
               common.uniform.type.defaultSizelist
@@ -789,11 +770,9 @@ exports[`<UniformTypeOffcanvas /> renders the component and handles setEditable 
         <div
           class="col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 form-label"
+              class="fw-bold m-0  form-label"
               for="uniformTypeForm_toggle-usingSizes"
             >
               common.uniform.type.usingSizes
@@ -816,8 +795,10 @@ exports[`<UniformTypeOffcanvas /> renders the component and handles setEditable 
               />
             </div>
             <div
+              aria-label="error message usingSizes"
               class="text-danger fs-7"
               data-testid="err_usingSizes"
+              id="uniformTypeForm_err_usingSizes"
               role="alert"
             />
           </div>
@@ -825,11 +806,9 @@ exports[`<UniformTypeOffcanvas /> renders the component and handles setEditable 
         <div
           class="col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 form-label"
+              class="fw-bold m-0  form-label"
               for="uniformTypeForm_toggle-usingGenerations"
             >
               common.uniform.type.usingGenerations
@@ -852,8 +831,10 @@ exports[`<UniformTypeOffcanvas /> renders the component and handles setEditable 
               />
             </div>
             <div
+              aria-label="error message usingGenerations"
               class="text-danger fs-7"
               data-testid="err_usingGenerations"
+              id="uniformTypeForm_err_usingGenerations"
               role="alert"
             />
           </div>

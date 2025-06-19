@@ -88,11 +88,9 @@ exports[`<UniformgenerationOffcanvas> with generation renders the component 1`] 
         <div
           class="col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 form-label"
+              class="fw-bold m-0  form-label"
               for="uniformGenerationForm_input-name"
             >
               common.name
@@ -119,11 +117,9 @@ exports[`<UniformgenerationOffcanvas> with generation renders the component 1`] 
         <div
           class="align-bottom col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 form-label"
+              class="fw-bold m-0  form-label"
               for="uniformGenerationForm_toggle-outdated"
             >
               common.uniform.generation.outdated
@@ -145,8 +141,10 @@ exports[`<UniformgenerationOffcanvas> with generation renders the component 1`] 
               />
             </div>
             <div
+              aria-label="error message outdated"
               class="text-danger fs-7"
               data-testid="err_outdated"
+              id="uniformGenerationForm_err_outdated"
               role="alert"
             />
           </div>
@@ -154,9 +152,7 @@ exports[`<UniformgenerationOffcanvas> with generation renders the component 1`] 
         <div
           class="col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
               class="fw-bold m-0  form-label"
               for="uniformGenerationForm_select-fk_sizelist"
@@ -275,11 +271,9 @@ exports[`<UniformgenerationOffcanvas> without generation renders in editable sta
         <div
           class="col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 form-label"
+              class="fw-bold m-0  form-label"
               for="uniformGenerationForm_input-name"
             >
               common.name
@@ -305,11 +299,9 @@ exports[`<UniformgenerationOffcanvas> without generation renders in editable sta
         <div
           class="align-bottom col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 form-label"
+              class="fw-bold m-0  form-label"
               for="uniformGenerationForm_toggle-outdated"
             >
               common.uniform.generation.outdated
@@ -331,8 +323,10 @@ exports[`<UniformgenerationOffcanvas> without generation renders in editable sta
               />
             </div>
             <div
+              aria-label="error message outdated"
               class="text-danger fs-7"
               data-testid="err_outdated"
+              id="uniformGenerationForm_err_outdated"
               role="alert"
             />
           </div>
@@ -340,9 +334,7 @@ exports[`<UniformgenerationOffcanvas> without generation renders in editable sta
         <div
           class="col-6"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
               class="fw-bold m-0  form-label"
               for="uniformGenerationForm_select-fk_sizelist"
@@ -351,7 +343,7 @@ exports[`<UniformgenerationOffcanvas> without generation renders in editable sta
             </label>
             <select
               aria-invalid="false"
-              class="text-truncate form-select"
+              class="text-truncate  form-select"
               id="uniformGenerationForm_select-fk_sizelist"
               name="fk_sizelist"
             >

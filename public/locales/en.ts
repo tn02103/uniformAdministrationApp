@@ -27,6 +27,7 @@ export default {
             open: "Open",
             reactivate: "Reactivate",
             deactivate: "Deactivate",
+            discard: "Discard",
             prevStep: "Back",
             nextStep: "Next",
             edit_item: "Edit {item}",
@@ -37,6 +38,7 @@ export default {
             replace: "Replace",
             rename: "Rename",
             restart: "Restart",
+            remove: "Remove",
             finish: "Finish",
             changeIssued: "Change quantity & type",
             delete: "Delete",
@@ -78,9 +80,9 @@ export default {
                 multiLabel: "Size lists",
             },
             owner: "Owner",
-            active: {
-                true: "Active",
-                false: "Reserve"
+            state: {
+                active: "Active",
+                reserve: "Reserve"
             },
             type: {
                 "type#one": "Uniform type",
@@ -186,6 +188,9 @@ export default {
                 },
             },
             custom: {
+                nameDuplication: {
+                    storageUnit: "The Name is already used by another Storage Unit",
+                },
                 material: {
                     typename: {
                         duplication: "The Name is already used by another Material in this Group",
@@ -285,6 +290,39 @@ export default {
             },
         },
     },
+    storageUnit: {
+        error: {
+            "addUT": "The uniform item could not be added. Please try again later.",
+            "removeUT": "The uniform item could not be removed. Please try again later.",
+            "nameDuplication": "The name is already used by another storage unit",
+        },
+        label: {
+            "addUT": "Add uniform item(s)",
+            "details.name": "Name",
+            "details.capacity": "Capacity",
+            "details.description": "Description",
+            "details.forReserves": "For reserves",
+            "details.forReservesText": "Uniform items are marked as reserve",
+            "details.uniformCount": "Amount of uniform items",
+            "editName": "Rename storage unit",
+            "header.uniformlist": "Uniform item(s)",
+            "header.create": "Create storage unit",
+            "header.page": "Storate unit administration",
+        },
+        warning: {
+            "full.header": "Storage unit full",
+            "full.message": "The unit is already full. Are you sure you want to add another uniform item?",
+            "close.header": 'Discard changes',
+            "close.message": 'Do you want to discard your changes?',
+            "delete.header": "Delete storage unit",
+            "delete.message": "Should the storage unit {name} really be deleted? This action cannot be undone.",
+        },
+        tooltips: {
+            "utOptions.owner": "Owner: ",
+            "utOptions.storageUnit": "Storage unit: ",
+            "utOptions.isReserve": "Reserve",
+        }
+    },
     uniformList: {
         filter: "Filter",
         other: "other filters",
@@ -381,6 +419,7 @@ export default {
         links: {
             cadetOverview: "Staff",
             uniformOverview: "Uniform",
+            storageUnit: "Storage units",
             create: {
                 group: "Create",
                 cadet: "Person",

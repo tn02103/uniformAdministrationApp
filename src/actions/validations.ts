@@ -19,6 +19,7 @@ type AssosiationValidationDataType = {
     deficiencytypeId?: string | string[],
     deficiencyId?: string | string[],
     inspectionId?: string | string[],
+    storageUnitId?: string | string[],
 }
 
 function assosiationValidator(assosiationValidations: AssosiationValidationDataType, fk_assosiation: string) {
@@ -75,6 +76,9 @@ function assosiationValidator(assosiationValidations: AssosiationValidationDataT
     }
     if (assosiationValidations.inspectionId) {
         validate(assosiationValidations.inspectionId, validateInspectionAssosiation);
+    }
+    if (assosiationValidations.storageUnitId) {
+        validate(assosiationValidations.storageUnitId, validateStorageUnitAssosiation);
     }
     return Promise.all(validationPromises);
 }
@@ -214,4 +218,9 @@ const validateDeficiencyAssosiation = async (id: string, fk_assosiation: string)
 const validateInspectionAssosiation = async (id: string, fk_assosiation: string) =>
     prisma.inspection.findUniqueOrThrow({
         where: { id, fk_assosiation }
+    });
+
+const validateStorageUnitAssosiation = async (id: string, assosiationId: string) =>
+    prisma.storageUnit.findUniqueOrThrow({
+        where: { id, assosiationId }
     });

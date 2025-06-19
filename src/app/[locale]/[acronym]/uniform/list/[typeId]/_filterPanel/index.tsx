@@ -1,4 +1,5 @@
 "use client"
+
 import { useUniformTypeList } from "@/dataFetcher/uniformAdmin";
 import { useI18n } from "@/lib/locales/client";
 import { UniformSize, UniformType } from "@/types/globalUniformTypes";
@@ -14,7 +15,7 @@ export type FilterType = {
     generations: { [key in string]: boolean },
     sizes: { [key in string]: boolean },
     active: boolean,
-    passive: boolean,
+    isReserve: boolean,
     withOwner: boolean,
     withoutOwner: boolean,
     all?: {
@@ -37,8 +38,8 @@ export default function FilterPanel({
 
     const { typeList } = useUniformTypeList();
     const searchParams = useSearchParams();
+    
     const searchTerm = searchParams.get('search');
-
     useEffect(() => {
         if (searchTerm) {
             searchForm.reset({

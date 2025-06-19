@@ -27,6 +27,7 @@ export default {
             open: "Öffnen",
             reactivate: "Reaktivieren",
             deactivate: "Deaktivieren",
+            discard: "Verwerfen",
             prevStep: "Zurück",
             nextStep: "Weiter",
             edit_item: "{item} Bearbeiten",
@@ -37,6 +38,7 @@ export default {
             replace: "Austauschen",
             rename: "Umbenennen",
             restart: "Wieder starten",
+            remove: "Entfernen",
             finish: "Beenden",
             changeIssued: "Anzahl & Typ verändern",
             delete: "Löschen",
@@ -78,9 +80,9 @@ export default {
                 "multiLabel": "Größenlisten",
             },
             owner: "Besitzer",
-            active: {
-                true: "Aktiv",
-                false: "Reserve"
+            state: {
+                active: "Aktiv",
+                reserve: "Reserve"
             },
             type: {
                 "type#one": "Uniformtyp",
@@ -186,6 +188,9 @@ export default {
                 },
             },
             custom: {
+                nameDuplication: {
+                    storageUnit: "Der Name wird bereits von einer anderen Lagereinheit benutzt",
+                },
                 material: {
                     typename: {
                         duplication: "Der Name wird bereits von einem anderen Material der Gruppe verwendet",
@@ -285,6 +290,39 @@ export default {
             }
         }
     },
+    storageUnit: {
+        error: {
+            "addUT": "Das Uniformteil konnte nicht hinzugefügt werden. Bitte versuchen Sie es später erneut.",
+            "removeUT": "Das Uniformteil konnte nicht entfernt werden. Bitte versuchen Sie es später erneut.",
+            "nameDuplication": "Der Name wird bereits von einer anderen Lagereinheit benutzt",
+        },
+        label: {
+            "addUT": "Uniformteil(e) hinzufügen",
+            "details.name": "Name",
+            "details.capacity": "Kapazität",
+            "details.description": "Beschreibung",
+            "details.forReserves": "Für Reserven",
+            "details.forReservesText": "Uniformteile werden als Reserve markiert",
+            "details.uniformCount": "Anzahl Uniformteile",
+            "editName": "Lagereinheit umbenennen",
+            "header.uniformlist": "Uniformteil(e)",
+            "header.create": "Lagereinheit anlegen",
+            "header.page": "Uniform Lagerverwaltung",
+        },
+        warning: {
+            "full.header": "Lagereinheit voll",
+            "full.message": "Die Einheit ist bereits voll. Sind Sie sicher, dass sie ein weiteres Uniformteil hinzufügen wollen?",
+            "close.header": 'Änderungen verwerfen?',
+            "close.message": 'Möchten Sie die Änderungen verwerfen?',
+            "delete.header": "Lagereinheit löschen",
+            "delete.message": "Soll die Lagereinheit \"{name}\" wirklich gelöscht werden? Diese Aktion ist nicht wieder umkehrbar.",
+        },
+        tooltips: {
+            "utOptions.owner": "Besitzer: ",
+            "utOptions.storageUnit": "Lagereinheit: ",
+            "utOptions.isReserve": "Reserve",
+        }
+    },
     uniformList: {
         filter: "Filter",
         other: "weitere Filter",
@@ -381,6 +419,7 @@ export default {
         links: {
             cadetOverview: "Personal",
             uniformOverview: "Uniform",
+            storageUnit: "Lagereinheiten",
             create: {
                 group: "Anlegen",
                 cadet: "Person",

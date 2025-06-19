@@ -108,6 +108,7 @@ a {
 
 .hoverColHidden {
     visibility: hidden;
+    pointer-events: auto;
 }
 
 .hoverCol:hover .hoverColHidden {

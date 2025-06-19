@@ -8,6 +8,7 @@
     "scripts": {
         "dev": "next dev -p 3021",
         "build": "next build",
+        "build:test": "cross-env NEXT_PUBLIC_STAGE=TEST next build",
         "start": "next start -p 3021",
         "test:e2e": "playwright test",
         "test:jest": "npm run test:jest:components && npm run test:jest:dal",
@@ -76,6 +77,7 @@
         "@types/react": "19.1.6",
         "@types/react-dom": "19.1.5",
         "@typescript-eslint/eslint-plugin": "8.32.1",
+        "cross-env": "^7.0.3",
         "eslint": "9.27.0",
         "eslint-config-next": "15.3.2",
         "eslint-plugin-jest": "28.11.0",

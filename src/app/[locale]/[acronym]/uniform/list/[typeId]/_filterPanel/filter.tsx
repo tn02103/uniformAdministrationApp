@@ -22,7 +22,7 @@ export default function Filter({
     const { handleSubmit, register, watch, reset, formState: { isLoading } } = form;
     const [filter, setFilter] = useSessionStorage<FilterType | null>(`filter_${uniformType.id}`, null);
 
-    const activPassivError = (!watch("active") && !watch("passive"));
+    const activeReserveError = (!watch("active") && !watch("isReserve"));
     const ownerError = (!watch("withOwner") && !watch("withoutOwner"));
 
     function filterSubmit(data: FilterType) {
@@ -38,7 +38,7 @@ export default function Filter({
         } else {
             const options: FilterType = {
                 active: true,
-                passive: false,
+                isReserve: false,
                 withOwner: true,
                 withoutOwner: true,
                 all: {
@@ -93,13 +93,13 @@ export default function Filter({
                                     </Accordion.Button>
                                     <Accordion.Body>
                                         <Form.Check
-                                            label={t('common.uniform.active.true')}
-                                            isInvalid={activPassivError}
+                                            label={t('common.uniform.state.active')}
+                                            isInvalid={activeReserveError}
                                             {...register(`active`)} />
                                         <Form.Check
-                                            label={t('common.uniform.active.false')}
-                                            isInvalid={activPassivError}
-                                            {...register(`passive`)} />
+                                            label={t('common.uniform.state.reserve')}
+                                            isInvalid={activeReserveError}
+                                            {...register(`isReserve`)} />
                                         <Form.Check
                                             label={t('uniformList.withOwner')}
                                             isInvalid={ownerError}
@@ -109,7 +109,7 @@ export default function Filter({
                                             isInvalid={ownerError}
                                             {...register(`withoutOwner`)} />
                                         <div data-testid="err_filterError" className="fs-7 text-danger">
-                                            {activPassivError && t('uniformList.error.activ')}
+                                            {activeReserveError && t('uniformList.error.activ')}
                                             {ownerError && t('uniformList.error.owner')}
                                         </div>
                                     </Accordion.Body>
@@ -118,7 +118,7 @@ export default function Filter({
                         </Row>
                         <Row>
                             <Col className="pb-2 pt-2  pb-xl-4 pt-xl-3">
-                                <Button data-testid={"btn_load"} type="submit" disabled={activPassivError || ownerError}>
+                                <Button data-testid={"btn_load"} type="submit" disabled={activeReserveError || ownerError}>
                                     {t('common.actions.load')}
                                     {isLoading && <FontAwesomeIcon icon={faSpinner} className="fa-spin ms-2 " />}
                                 </Button>
