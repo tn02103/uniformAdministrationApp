@@ -12,7 +12,7 @@ import { UniformIssuedExceptionData } from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
 import { CadetUniformMap } from "@/types/globalCadetTypes";
-import { Uniform, UniformType } from "@/types/globalUniformTypes";
+import { UniformWithOwner, UniformType } from "@/types/globalUniformTypes";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -113,7 +113,7 @@ const CadetUniformTable = ({ ...props }: PropType) => {
             });
     }
 
-    const openIssueModal = (type: UniformType, itemToReplace?: Uniform) => modal?.simpleFormModal({
+    const openIssueModal = (type: UniformType, itemToReplace?: UniformWithOwner) => modal?.simpleFormModal({
         header: itemToReplace ? modalT('replace.header', { type: type.name, number: itemToReplace.number }) : modalT('issue.header', { type: type.name }),
         elementLabel: t('common.uniform.number'),
         elementValidation: {

@@ -8,7 +8,7 @@ import { returnUniformItem } from "@/dal/uniform/item/_index";
 import { useCadetUniformMap } from "@/dataFetcher/cadet";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
-import { Uniform, UniformType } from "@/types/globalUniformTypes";
+import { UniformType, UniformWithOwner } from "@/types/globalUniformTypes";
 import { faBars, faRightLeft, faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
@@ -17,7 +17,7 @@ import { Col, Dropdown, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 
 type PropType = {
-    uniform: Uniform;
+    uniform: UniformWithOwner;
     uniformType: UniformType;
     replaceItem: () => void;
     openUniformId: string | null;
@@ -44,7 +44,7 @@ const UniformRow = ({ uniform, uniformType, replaceItem, openUniformId, setOpenU
     }
 
 
-    function withdraw(uniform: Uniform) {
+    function withdraw(uniform: UniformWithOwner) {
         const returnItem = () => mutate(
             returnUniformItem({ uniformId: uniform.id, cadetId }),
         ).catch((e) => {

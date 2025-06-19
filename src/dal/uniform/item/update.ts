@@ -2,7 +2,7 @@ import { genericSAValidator } from "@/actions/validations";
 import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { Uniform, uniformArgs } from "@/types/globalUniformTypes";
+import { UniformWithOwner, uniformWithOwnerArgs } from "@/types/globalUniformTypes";
 import { getUniformFormSchema, UniformFormType } from "@/zod/uniform";
 
 /**
@@ -11,7 +11,7 @@ import { getUniformFormSchema, UniformFormType } from "@/zod/uniform";
  * @param data 
  * @returns FormData of the uniform
  */
-export const update = (props: UniformFormType): Promise<Uniform> => genericSAValidator(
+export const update = (props: UniformFormType): Promise<UniformWithOwner> => genericSAValidator(
     AuthRole.inspector,
     props,
     getUniformFormSchema(),
@@ -49,7 +49,7 @@ export const update = (props: UniformFormType): Promise<Uniform> => genericSAVal
     }
 
     return client.uniform.update({
-        ...uniformArgs,
+        ...uniformWithOwnerArgs,
         where: {
             id: data.id,
         },

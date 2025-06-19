@@ -10,6 +10,7 @@ import { __unsecuredGetUnitsWithUniformItems, StorageUnitWithUniformItems } from
 const propSchema = z.object({
     storageUnitId: z.string().uuid(),
     uniformId: z.string().uuid(),
+    replaceStorageUnit: z.boolean().optional(),
 });
 type PropType = z.infer<typeof propSchema>;
 
@@ -22,7 +23,7 @@ type PropType = z.infer<typeof propSchema>;
 export const addUniform = async (props: PropType): Promise<StorageUnitWithUniformItems[] | {
     error: object;
 }> => genericSAValidator(
-    AuthRole.materialManager,
+    AuthRole.inspector,
     props,
     propSchema,
     { storageUnitId: props.storageUnitId, uniformId: props.uniformId }
@@ -48,7 +49,7 @@ export const addUniform = async (props: PropType): Promise<StorageUnitWithUnifor
         }
     });
 
-    if (uniform.storageUnit) {
+    if (uniform.storageUnit && !props.replaceStorageUnit) {
         throw new CustomException(
             "uniform already is in a storage unit",
             ExceptionType.InUseException,

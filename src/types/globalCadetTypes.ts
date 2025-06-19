@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { CadetMaterial } from "./globalMaterialTypes";
-import { Uniform } from "./globalUniformTypes";
+import { UniformWithOwner } from "./globalUniformTypes";
 
 export const cadetArgs = Prisma.validator<Prisma.CadetFindManyArgs>()({
     select: {
@@ -20,7 +20,7 @@ export const cadetLableArgs = Prisma.validator<Prisma.CadetFindManyArgs>()({
     }
 })
 
-export type CadetUniformMap = { [key in string]: Uniform[] };
+export type CadetUniformMap = { [key in string]: UniformWithOwner[] };
 export type CadetMaterialMap = { [key in string]: CadetMaterial[] };
 export type CadetLabel = Prisma.CadetGetPayload<typeof cadetLableArgs>;
 

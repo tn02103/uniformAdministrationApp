@@ -164,7 +164,7 @@ export default function AutocompleteField<TOption extends AutocompleteOptionType
     return (
         <div className="position-relative" style={{ maxWidth: '200px' }}>
             <Form.Group data-testid={`${props.name ?? "autocomplete"}-field-group`}>
-                <Form.Label htmlFor="autocomplete">{label}</Form.Label>
+                <Form.Label htmlFor="autocomplete" className="fw-bold">{label}</Form.Label>
                 <Form.Control
                     type="text"
                     id="autocomplete"

@@ -1,7 +1,7 @@
 import { deleteUniformItem } from "@/dal/uniform/item/_index";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n } from "@/lib/locales/client";
-import { Uniform, UniformType } from "@/types/globalUniformTypes";
+import { UniformType, UniformWithOwner } from "@/types/globalUniformTypes";
 import { useState } from "react";
 import { Offcanvas, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
@@ -11,9 +11,11 @@ import { useModal } from "../modals/modalProvider";
 import { UniformDeficiencyRow } from "./UniformDeficiencyRow";
 import { UniformDetailRow } from "./UniformDetailRow";
 import { UniformHistoryRow } from "./UniformHistoryRow";
+import { UniformOCOwnerRow } from "./UniformOCOwnerRow";
+import { UniformOCStorageUnitRow } from "./UniformOCStorageUnitRow";
 
 export type UniformOffcanvasProps = {
-    uniform: Uniform;
+    uniform: UniformWithOwner;
     uniformType: UniformType;
     onClose: () => void;
     onSave: () => void;
@@ -89,6 +91,17 @@ export const UniformOffcanvas = ({ uniform, uniformType, onClose, onSave }: Unif
                     setEditable={() => setEditable(!editable)}
                     onSave={onSave}
                 />
+                {(uniform.issuedEntries.length > 0) && (
+                    <UniformOCOwnerRow
+                        uniform={uniform}
+                    />
+                )}
+                {(uniform.issuedEntries.length === 0) && (
+                    <UniformOCStorageUnitRow
+                        uniform={uniform}
+                        onSave={onSave}
+                    />
+                )}
                 {userRole > AuthRole.user && (
                     <>
                         <h4>{t('uniformOffcanvas.deficiency.header')}</h4>
