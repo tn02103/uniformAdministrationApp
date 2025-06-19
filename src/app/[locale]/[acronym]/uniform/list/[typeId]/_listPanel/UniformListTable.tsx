@@ -1,16 +1,16 @@
 "use client";
 
-import { getUniformListWithOwner } from "@/actions/controllers/UniformController";
 import { useI18n } from "@/lib/locales/client";
 import { UniformType, UniformWithOwner } from "@/types/globalUniformTypes";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Button, Table } from "react-bootstrap";
 import { useSessionStorage } from "usehooks-ts";
-import { FilterType } from "../_filterPanel";
-import TableLine from "./tableLine";
+import { FilterType } from "../_filterPanel/UniformListSidePanel";
+import { UniformListTableLine } from "./UniformListTableLine";
+import { getUniformListWithOwner } from "@/dal/uniform/item/_index";
 
-export default function ListPanel({
+export function UniformListTable({
     uniformType,
 }: {
     uniformType: UniformType | null;
@@ -29,7 +29,12 @@ export default function ListPanel({
 
         const orderBy = searchParams.get('orderBy') ?? "number";
         const asc = searchParams.get('asc') ?? "true";
-        await getUniformListWithOwner(uniformType.id, orderBy, (asc === "true"), filter).then((data) => {
+        await getUniformListWithOwner({
+            uniformTypeId: uniformType.id,
+            orderBy: orderBy as ("number" | "generation" | "size" | "comment" | "owner"),
+            asc: (asc === "true"),
+            filter
+        }).then((data) => {
             if (data) {
                 setUniformList(data);
             }
@@ -104,7 +109,7 @@ export default function ListPanel({
                 {(uniformType && filteredLines && filteredLines.length > 0)
                     ? filteredLines.map((uniform) => {
                         return (
-                            <TableLine
+                            <UniformListTableLine
                                 key={"tableLine" + uniform.id}
                                 uniform={uniform}
                                 uniformType={uniformType}

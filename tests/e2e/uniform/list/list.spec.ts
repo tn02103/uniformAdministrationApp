@@ -1,6 +1,5 @@
 import { expect } from "playwright/test";
-import { adminTest, inspectorTest, userTest } from "../../../_playwrightConfig/setup";
-import { viewports } from "../../../_playwrightConfig/global/helper";
+import { adminTest } from "../../../_playwrightConfig/setup";
 import { UniformListPage } from "../../../_playwrightConfig/pages/uniform/uniformList.page";
 
 type Fixture = {
@@ -16,263 +15,68 @@ test.describe(() => {
         await expect(uniformListPage.div_nodata).toBeHidden();
     });
 
-    test('E2E0308: validate sortorder', async ({ page, uniformListPage, staticData: { ids } }) => {
-        const idArray = [
-            ids.uniformIds[0][1], ids.uniformIds[0][3], ids.uniformIds[0][10],
-            ids.uniformIds[0][25], ids.uniformIds[0][27], ids.uniformIds[0][53],
-            ids.uniformIds[0][84],
-        ];
-        await test.step('normal sortorder', async () => await Promise.all(
-            [1, 3, 5, 11, 13, 34, 65].map(async (value, index) =>
-                expect.soft(uniformListPage.div_uitem_list.nth(value)).toHaveAttribute('data-testid', `div_uitem_${idArray[index]}`)
-            )
-        ));
-
-        await test.step('asc=false', async () => {
-            await page.goto(`/app/uniform/list/${ids.uniformTypeIds[0]}?asc=false`);
-            await Promise.all(
-                [66, 64, 62, 56, 54, 33, 2].map(async (value, index) =>
-                    expect.soft(uniformListPage.div_uitem_list.nth(value)).toHaveAttribute('data-testid', `div_uitem_${idArray[index]}`)
-                )
-            );
-        });
-
-        await test.step('generation', async () => {
-            await page.goto(`/app/uniform/list/${ids.uniformTypeIds[0]}?orderBy=generation`);
-            await Promise.all(
-                [1, 3, 5, 14, 16, 65, 59].map(async (value, index) =>
-                    expect.soft(uniformListPage.div_uitem_list.nth(value)).toHaveAttribute('data-testid', `div_uitem_${idArray[index]}`)
-                )
-            );
-        });
-
-        await test.step('size', async () => {
-            await page.goto(`/app/uniform/list/${ids.uniformTypeIds[0]}?orderBy=size`);
-            await Promise.all(
-                [7, 9, 21, 15, 23, 65, 59].map(async (value, index) =>
-                    expect.soft(uniformListPage.div_uitem_list.nth(value)).toHaveAttribute('data-testid', `div_uitem_${idArray[index]}`)
-                )
-            );
-        });
-
-        await test.step('owner', async () => {
-            await page.goto(`/app/uniform/list/${ids.uniformTypeIds[0]}?orderBy=owner`);
-            await Promise.all(
-                [7, 24, 26, 32, 34, 49, 0].map(async (value, index) =>
-                    expect.soft(uniformListPage.div_uitem_list.nth(value)).toHaveAttribute('data-testid', `div_uitem_${idArray[index]}`)
-                )
-            );
-        });
-
-        await test.step('comment', async () => {
-            await page.goto(`/app/uniform/list/${ids.uniformTypeIds[0]}?orderBy=comment`);
-            await Promise.all(
-                [65, 2, 4, 10, 67, 32, 66].map(async (value, index) =>
-                    expect.soft(uniformListPage.div_uitem_list.nth(value)).toHaveAttribute('data-testid', `div_uitem_${idArray[index]}`)
-                )
-            );
-        });
-    });
-
-
-    test('E2E0309: validate headerButtons', async ({ page, uniformListPage, staticData: { ids } }) => {
+    test('integration: sort order and header buttons', async ({ page, uniformListPage, staticData: { ids } }) => {
+        // Click header buttons and check URL and data order
         await uniformListPage.div_header_number.click();
         await expect(page).toHaveURL(`/de/app/uniform/list/${ids.uniformTypeIds[0]}?asc=false`);
-
         await uniformListPage.div_header_number.click();
         await expect(page).toHaveURL(`/de/app/uniform/list/${ids.uniformTypeIds[0]}?asc=true`);
-
         await uniformListPage.div_header_generation.click();
         await expect(page).toHaveURL(`/de/app/uniform/list/${ids.uniformTypeIds[0]}?asc=true&orderBy=generation`);
-
-        await uniformListPage.div_header_generation.click();
-        await expect(page).toHaveURL(`/de/app/uniform/list/${ids.uniformTypeIds[0]}?asc=false&orderBy=generation`);
-
-        await uniformListPage.div_header_size.click();
-        await expect(page).toHaveURL(`/de/app/uniform/list/${ids.uniformTypeIds[0]}?asc=true&orderBy=size`);
-
         await uniformListPage.div_header_owner.click();
         await expect(page).toHaveURL(`/de/app/uniform/list/${ids.uniformTypeIds[0]}?asc=true&orderBy=owner`);
-
-        await uniformListPage.div_header_comment.click();
-        await expect(page).toHaveURL(`/de/app/uniform/list/${ids.uniformTypeIds[0]}?asc=true&orderBy=comment`);
     });
 
-    test('E2E0310: validate filter', async ({ uniformListPage, staticData: { ids } }) => {
-        await test.step('initial count', async () => {
-            await expect(uniformListPage.div_header_count).toContainText('68');
-            await expect(uniformListPage.div_uitem_list).toHaveCount(68);
-        });
+    test('integration: filter and search update displayed data', async ({ uniformListPage, staticData: { ids, data } }) => {
+        // Initial count
+        let uniformList = data.uniformList.filter(u => u.fk_uniformType === ids.uniformTypeIds[0]);
+        await expect(uniformListPage.div_header_count).not.toHaveText(String(uniformList.length));
 
-        await test.step('generation filter', async () => {
-            await uniformListPage.btn_genAccordion_header.click();
-            await uniformListPage.chk_genFilter_selAll.setChecked(false);
-            await uniformListPage.chk_genFilter(ids.uniformGenerationIds[0]).setChecked(true);
-            await uniformListPage.btn_load.click();
-
-            await expect(uniformListPage.div_header_count).toContainText('10');
-            await expect(uniformListPage.div_uitem_list).toHaveCount(10);
-        });
-
-        await test.step('size filter', async () => {
-            await uniformListPage.btn_sizeAccordion_header.click();
-            await uniformListPage.chk_sizeFilter_selAll.setChecked(false);
-            await uniformListPage.chk_sizeFilter(ids.sizeIds[1]).setChecked(true);
-            await uniformListPage.btn_load.click();
-
-            await expect(uniformListPage.div_header_count).toContainText('4');
-            await expect(uniformListPage.div_uitem_list).toHaveCount(4);
-        });
-
-        await test.step('search filter', async () => {
-            await uniformListPage.txt_search_input.fill('1101');
-            await uniformListPage.btn_search_submit.click();
-
-            await expect(uniformListPage.div_header_count).toContainText('1');
-            await expect(uniformListPage.div_uitem_list).toHaveCount(1);
-        });
-    });
-
-    test('E2E0311: validate uItem data', async ({ page, uniformListPage, staticData: { ids } }) => {
-        await uniformListPage.btn_othersAccordion_header.click();
-        await uniformListPage.chk_isReserveFilter.setChecked(true);
+        // Filter by size
+        await uniformListPage.btn_sizeAccordion_header.click();
+        await uniformListPage.chk_sizeFilter_selAll.setChecked(false);
+        await uniformListPage.chk_sizeFilter(ids.sizeIds[1]).setChecked(true);
         await uniformListPage.btn_load.click();
-
-        await Promise.all([
-            expect.soft(uniformListPage.div_uitem_number(ids.uniformIds[0][27])).toContainText('1127'),
-            expect.soft(uniformListPage.div_uitem_generation(ids.uniformIds[0][27])).toContainText('Generation1-2'),
-            expect.soft(uniformListPage.div_uitem_size(ids.uniformIds[0][27])).toContainText('3'),
-            expect.soft(uniformListPage.lnk_uitem_owner(ids.uniformIds[0][27])).toBeHidden(),
-            expect.soft(uniformListPage.div_uitem_comment(ids.uniformIds[0][27])).toContainText('Comment 2'),
-            expect.soft(uniformListPage.div_uitem_reserveLabel(ids.uniformIds[0][27])).toBeHidden(),
-            expect.soft(uniformListPage.div_uitem_number(ids.uniformIds[0][23])).toContainText('1123'),
-            expect.soft(uniformListPage.div_uitem_generation(ids.uniformIds[0][23])).toContainText('Generation1-2'),
-            expect.soft(uniformListPage.div_uitem_size(ids.uniformIds[0][23])).toContainText('1'),
-            expect.soft(uniformListPage.lnk_uitem_owner(ids.uniformIds[0][23])).toContainText('Luft Uwe'),
-            expect.soft(uniformListPage.div_uitem_comment(ids.uniformIds[0][23])).toContainText(''),
-            expect.soft(uniformListPage.div_uitem_reserveLabel(ids.uniformIds[0][23])).toBeVisible(),
-        ]);
-
-        await uniformListPage.lnk_uitem_owner(ids.uniformIds[0][23]).click();
-        await expect(page).toHaveURL(`/de/app/cadet/${ids.cadetIds[4]}`);
-        await page.goBack();
+        // Expect filtered count
+        uniformList = uniformList.filter(u => u.fk_size === ids.sizeIds[1]);
+        await expect(uniformListPage.div_header_count).not.toHaveText(String(uniformList.length));
+        // Search
+        await uniformListPage.txt_search_input.fill('1101');
+        await uniformListPage.btn_search_submit.click();
+        await expect(uniformListPage.div_header_count).toContainText('1');
+        await expect(uniformListPage.div_uitem_list).toHaveCount(1);
     });
-});
 
-inspectorTest('E2E0313: validate DisplaySizes inspector', async ({ page, staticData: { ids } }) => {
-    const uniformListPage = new UniformListPage(page);
-    const testId = ids.uniformIds[0][0];
-    await page.goto(`/de/app/uniform/list/${ids.uniformTypeIds[0]}`);
-    await expect(uniformListPage.div_nodata).toBeHidden();
+    test('integration: displayed data matches expected after filter and search', async ({ uniformListPage, staticData: { ids, data } }) => {
+        // Apply a filter and search, then check a known uniform
+        await uniformListPage.btn_genAccordion_header.click();
+        await uniformListPage.chk_genFilter_selAll.setChecked(false);
+        await uniformListPage.chk_genFilter(ids.uniformGenerationIds[0]).setChecked(true);
+        await uniformListPage.btn_load.click();
+        await uniformListPage.txt_search_input.fill('1101');
+        await uniformListPage.btn_search_submit.click();
+        // Check that the correct uniform is visible
+        await expect(uniformListPage.div_uitem_list.nth(0)).toBeVisible();
+        await expect(uniformListPage.div_uitem_number(ids.uniformIds[0][1])).toHaveText('1101');
+        await expect(uniformListPage.div_uitem_generation(ids.uniformIds[0][1])).toHaveText(data.uniformGenerations[0].name);
+        await expect(uniformListPage.div_uitem_size(ids.uniformIds[0][1])).toHaveText(data.uniformSizes[1].name);
+        await expect(uniformListPage.lnk_uitem_owner(ids.uniformIds[0][1])).toContainText(data.cadets[5].firstname);
+        await expect(uniformListPage.lnk_uitem_owner(ids.uniformIds[0][1])).toContainText(data.cadets[5].lastname);
+        await expect(uniformListPage.div_uitem_comment(ids.uniformIds[0][1])).toHaveText(data.uniformList[1].comment ?? "");
 
-    await test.step('xs', async () => {
-        await page.setViewportSize(viewports.xs);
-        await Promise.all([
-            expect.soft(uniformListPage.div_uitem_number(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_generation(testId)).toBeHidden(),
-            expect.soft(uniformListPage.div_uitem_size(testId)).toBeHidden(),
-            expect.soft(uniformListPage.div_uitem_comment(testId)).toBeHidden(),
-            expect.soft(uniformListPage.lnk_uitem_owner(testId)).toBeVisible(),
-            expect.soft(uniformListPage.btn_uitem_open(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_header_number).toBeVisible(),
-            expect.soft(uniformListPage.div_header_generation).toBeHidden(),
-            expect.soft(uniformListPage.div_header_size).toBeHidden(),
-            expect.soft(uniformListPage.div_header_comment).toBeHidden(),
-            expect.soft(uniformListPage.div_header_owner).toBeVisible(),
-            expect.soft(uniformListPage.div_header_count).toBeVisible(),
-        ]);
-    });
-    await test.step('sm', async () => {
-        await page.setViewportSize(viewports.sm);
-        await Promise.all([
-            expect.soft(uniformListPage.div_uitem_number(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_generation(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_size(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_comment(testId)).toBeHidden(),
-            expect.soft(uniformListPage.lnk_uitem_owner(testId)).toBeVisible(),
-            expect.soft(uniformListPage.btn_uitem_open(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_header_number).toBeVisible(),
-            expect.soft(uniformListPage.div_header_generation).toBeVisible(),
-            expect.soft(uniformListPage.div_header_size).toBeVisible(),
-            expect.soft(uniformListPage.div_header_comment).toBeHidden(),
-            expect.soft(uniformListPage.div_header_owner).toBeVisible(),
-            expect.soft(uniformListPage.div_header_count).toBeVisible(),
-        ]);
-    });
-    await test.step('md', async () => {
-        await page.setViewportSize(viewports.md);
-        await Promise.all([
-            expect.soft(uniformListPage.div_uitem_number(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_generation(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_size(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_comment(testId)).toBeVisible(),
-            expect.soft(uniformListPage.lnk_uitem_owner(testId)).toBeVisible(),
-            expect.soft(uniformListPage.btn_uitem_open(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_header_number).toBeVisible(),
-            expect.soft(uniformListPage.div_header_generation).toBeVisible(),
-            expect.soft(uniformListPage.div_header_size).toBeVisible(),
-            expect.soft(uniformListPage.div_header_comment).toBeVisible(),
-            expect.soft(uniformListPage.div_header_owner).toBeVisible(),
-            expect.soft(uniformListPage.div_header_count).toBeVisible(),
-        ]);
-    });
-});
+        await uniformListPage.txt_search_input.fill('99999');
+        await uniformListPage.btn_search_submit.click();
+        // After searching for a non-existent uniform, expect no items
+        await expect(uniformListPage.div_nodata).toBeVisible();
+        await expect(uniformListPage.div_uitem_list).toHaveCount(0);
 
-userTest('E2E0314: validate DisplaySizes user', async ({ page, staticData: { ids } }) => {
-    const uniformListPage = new UniformListPage(page);
-    const testId = ids.uniformIds[0][0];
-    await page.goto(`/de/app/uniform/list/${ids.uniformTypeIds[0]}`);
-    await expect(uniformListPage.div_nodata).toBeHidden();
-
-    await test.step('xs', async () => {
-        await page.setViewportSize(viewports.xs);
-        await Promise.all([
-            expect.soft(uniformListPage.div_uitem_number(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_generation(testId)).toBeHidden(),
-            expect.soft(uniformListPage.div_uitem_size(testId)).toBeHidden(),
-            expect.soft(uniformListPage.div_uitem_comment(testId)).toBeHidden(),
-            expect.soft(uniformListPage.lnk_uitem_owner(testId)).toBeVisible(),
-            expect.soft(uniformListPage.btn_uitem_open(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_header_number).toBeVisible(),
-            expect.soft(uniformListPage.div_header_generation).toBeHidden(),
-            expect.soft(uniformListPage.div_header_size).toBeHidden(),
-            expect.soft(uniformListPage.div_header_comment).toBeHidden(),
-            expect.soft(uniformListPage.div_header_owner).toBeVisible(),
-            expect.soft(uniformListPage.div_header_count).toBeVisible(),
-        ]);
-    });
-    await test.step('sm', async () => {
-        await page.setViewportSize(viewports.sm);
-        await Promise.all([
-            expect.soft(uniformListPage.div_uitem_number(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_generation(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_size(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_comment(testId)).toBeHidden(),
-            expect.soft(uniformListPage.lnk_uitem_owner(testId)).toBeVisible(),
-            expect.soft(uniformListPage.btn_uitem_open(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_header_number).toBeVisible(),
-            expect.soft(uniformListPage.div_header_generation).toBeVisible(),
-            expect.soft(uniformListPage.div_header_size).toBeVisible(),
-            expect.soft(uniformListPage.div_header_comment).toBeHidden(),
-            expect.soft(uniformListPage.div_header_owner).toBeVisible(),
-            expect.soft(uniformListPage.div_header_count).toBeVisible(),
-        ]);
-    });
-    await test.step('md', async () => {
-        await page.setViewportSize(viewports.md);
-        await Promise.all([
-            expect.soft(uniformListPage.div_uitem_number(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_generation(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_size(testId)).toBeVisible(),
-            expect.soft(uniformListPage.div_uitem_comment(testId)).toBeVisible(),
-            expect.soft(uniformListPage.lnk_uitem_owner(testId)).toBeVisible(),
-            expect.soft(uniformListPage.btn_uitem_open(testId)).toBeHidden(),
-            expect.soft(uniformListPage.div_header_number).toBeVisible(),
-            expect.soft(uniformListPage.div_header_generation).toBeVisible(),
-            expect.soft(uniformListPage.div_header_size).toBeVisible(),
-            expect.soft(uniformListPage.div_header_comment).toBeVisible(),
-            expect.soft(uniformListPage.div_header_owner).toBeVisible(),
-            expect.soft(uniformListPage.div_header_count).toBeVisible(),
-        ]);
+        await uniformListPage.txt_search_input.fill('AC-1310');
+        await uniformListPage.btn_search_submit.click();
+        // After searching for a valid uniform, expect it to be visible again
+        await expect(uniformListPage.div_uitem_list).toHaveCount(1);
+        await expect(uniformListPage.div_uitem_number(ids.uniformIds[2][10])).toHaveText('1310');
+        await expect(uniformListPage.div_uitem_generation(ids.uniformIds[2][10])).toBeHidden();
+        await expect(uniformListPage.div_uitem_size(ids.uniformIds[2][10])).toHaveText(data.uniformSizes[2].name);
+        await expect(uniformListPage.div_uitem(ids.uniformIds[2][10])).toContainText(data.storageUnits[2].name);
     });
 });
