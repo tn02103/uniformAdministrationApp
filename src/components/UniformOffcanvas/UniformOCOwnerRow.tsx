@@ -18,7 +18,7 @@ export const UniformOCOwnerRow = ({ uniform }: UniformOCOwnerRowProps) => {
         <>
             <h4>{t('uniformOffcanvas.owner.label')}</h4>
             <hr className="mb-0 mt-4" />
-            <Row className="mt-2 mb-4">
+            <Row className="mt-2 mb-4" data-testid="div_owner_row">
                 <Col>
                     <div className="fw-bold">
                         {t('uniformOffcanvas.owner.issuedTo')}:

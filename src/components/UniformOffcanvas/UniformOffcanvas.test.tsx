@@ -98,6 +98,53 @@ describe('UniformOffcanvas', () => {
         expect(queryByRole('button', { name: /cancel/i })).toBeNull();
         expect(getByRole('textbox', { name: /comment/i })).toHaveAttribute('disabled');
     });
+    it('should render owner row if issued', () => {
+        render(
+            <UniformOffcanvas
+                uniform={mockUniform}
+                uniformType={mockTypeList[0]}
+                onClose={jest.fn()}
+                onSave={jest.fn()}
+            />
+        );
+
+        const ownerRow = screen.getByTestId('div_owner_row');
+        expect(ownerRow).toBeInTheDocument();
+        expect(getByText(ownerRow, 'John Doe')).toBeInTheDocument();
+        expect(getByText(ownerRow, '01.10.2023')).toBeInTheDocument();
+
+        expect(screen.queryByText(/common.storageUnit/i)).not.toBeInTheDocument();
+    });
+
+    it('should render storage unit row if in storage unit', () => {
+        render(
+            <UniformOffcanvas
+                uniform={{ ...mockUniform, storageUnit: { id: 'storage1', name: 'Storage 1', description: "desc1", isReserve: false }, issuedEntries: [] }}
+                uniformType={mockTypeList[0]}
+                onClose={jest.fn()}
+                onSave={jest.fn()}
+            />
+        );
+
+        expect(screen.getByText(/common.storageUnit/i)).toBeInTheDocument();
+        expect(screen.getByText('Storage 1')).toBeInTheDocument();
+        expect(screen.getByText('desc1')).toBeInTheDocument();
+        expect(screen.queryByTestId('div_owner_row')).not.toBeInTheDocument();
+    });
+
+    it('should render storage unit row if neither unit nor issued', () => {
+        render(
+            <UniformOffcanvas
+                uniform={{ ...mockUniform, storageUnit: null, issuedEntries: [] }}
+                uniformType={mockTypeList[0]}
+                onClose={jest.fn()}
+                onSave={jest.fn()}
+            />
+        );
+
+        expect(screen.getByText(/common.storageUnit/i)).toBeInTheDocument();
+        expect(screen.queryByTestId('div_owner_row')).not.toBeInTheDocument();
+    });
 
     describe('history', () => {
         it('should render history', () => {

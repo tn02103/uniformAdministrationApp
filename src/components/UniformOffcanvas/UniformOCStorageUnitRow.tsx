@@ -27,14 +27,13 @@ export const UniformOCStorageUnitRow = ({ uniform, onSave }: { uniform: UniformW
         label: su.name
     })) ?? [];
 
-    const handleSaveStorageUnit = (ignoreFull?: boolean) => {
+    const handleSaveStorageUnit = (ignoreFull: boolean = false) => {
         if (!value) return;
-
+        
         // If the uniform is already assigned to the selected storage unit do nothing
         if (uniform.storageUnit && uniform.storageUnit.id === value) {
             setEditable(false);
             setValue(null);
-            onSave();
             return;
         }
 
@@ -49,6 +48,7 @@ export const UniformOCStorageUnitRow = ({ uniform, onSave }: { uniform: UniformW
                     handleSaveStorageUnit(true);
                 }
             });
+            return;
         }
 
         SAFormHandler(
@@ -103,7 +103,7 @@ export const UniformOCStorageUnitRow = ({ uniform, onSave }: { uniform: UniformW
                         <TooltipActionButton
                             variantKey="save"
                             disabled={!value}
-                            onClick={handleSaveStorageUnit} />
+                            onClick={() => handleSaveStorageUnit()} />
                         <TooltipActionButton
                             variantKey="cancel"
                             onClick={() => setEditable(false)}
@@ -148,7 +148,7 @@ export const UniformOCStorageUnitRow = ({ uniform, onSave }: { uniform: UniformW
             {(userRole > AuthRole.user) &&
                 <Row className="justify-content-evenly">
                     <LabelIconButton
-                        label={uniform.storageUnit ? t('uniformOffcanvas.storageUnit.label.button.switch'): t('uniformOffcanvas.storageUnit.label.button.add')}
+                        label={uniform.storageUnit ? t('uniformOffcanvas.storageUnit.label.button.switch') : t('uniformOffcanvas.storageUnit.label.button.add')}
                         icon={uniform.storageUnit ? faRightLeft : faPlus}
                         buttonVariant="outline-secondary"
                         onClick={() => { setEditable(true); setValue(null); }}
