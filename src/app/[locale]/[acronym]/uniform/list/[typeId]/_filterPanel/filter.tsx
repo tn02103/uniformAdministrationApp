@@ -23,7 +23,7 @@ export default function Filter({
     const [filter, setFilter] = useSessionStorage<FilterType | null>(`filter_${uniformType.id}`, null);
 
     const activeReserveError = (!watch("active") && !watch("isReserve"));
-    const ownerError = (!watch("withOwner") && !watch("withoutOwner"));
+    const ownerError = (!watch("notIssued") && !watch("issued")) && !watch("inStorageUnit");
 
     function filterSubmit(data: FilterType) {
         setFilter(data);
@@ -39,8 +39,9 @@ export default function Filter({
             const options: FilterType = {
                 active: true,
                 isReserve: false,
-                withOwner: true,
-                withoutOwner: true,
+                issued: true,
+                notIssued: true,
+                inStorageUnit: true,
                 all: {
                     generations: true,
                     sizes: true,
@@ -100,14 +101,19 @@ export default function Filter({
                                             label={t('common.uniform.state.reserve')}
                                             isInvalid={activeReserveError}
                                             {...register(`isReserve`)} />
+                                        <hr />
                                         <Form.Check
-                                            label={t('uniformList.withOwner')}
+                                            label={t('uniformList.issued')}
                                             isInvalid={ownerError}
-                                            {...register(`withOwner`)} />
+                                            {...register(`issued`)} />
                                         <Form.Check
-                                            label={t('uniformList.withoutOwner')}
+                                            label={t('uniformList.notIssued')}
                                             isInvalid={ownerError}
-                                            {...register(`withoutOwner`)} />
+                                            {...register(`notIssued`)} />
+                                        <Form.Check
+                                            label={t('uniformList.inStorageUnit')}
+                                            isInvalid={ownerError}
+                                            {...register(`inStorageUnit`)} />
                                         <div data-testid="err_filterError" className="fs-7 text-danger">
                                             {activeReserveError && t('uniformList.error.activ')}
                                             {ownerError && t('uniformList.error.owner')}

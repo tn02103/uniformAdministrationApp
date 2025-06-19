@@ -5,7 +5,7 @@ import { UniformSize, UniformType } from "@/types/globalUniformTypes";
 import { Col, Row } from "react-bootstrap";
 import { z } from "zod";
 import FilterPanel from "./_filterPanel";
-import ListPanel from "./_listPanel";
+import ListPanel from "./_listPanel/UniformListTable";
 
 export async function generateMetadata({ params }: { params: Promise<{ typeId: string }> }) {
     const { typeId } = await params;

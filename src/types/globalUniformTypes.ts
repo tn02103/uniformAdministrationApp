@@ -44,7 +44,15 @@ export const uniformWithOwnerArgs = Prisma.validator<Prisma.UniformFindManyArgs>
             where: {
                 dateReturned: null,
             }
-        }
+        },
+        storageUnit: {
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                isReserve: true,
+            },
+        },
     }
 })
 export const uniformArgs = Prisma.validator<Prisma.UniformFindManyArgs>()({

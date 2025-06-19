@@ -16,11 +16,12 @@ export type FilterType = {
     sizes: { [key in string]: boolean },
     active: boolean,
     isReserve: boolean,
-    withOwner: boolean,
-    withoutOwner: boolean,
+    issued: boolean,
+    notIssued: boolean,
+    inStorageUnit: boolean,
     all?: {
-        generations: boolean | null,
-        sizes: boolean | null,
+        generations: boolean ,
+        sizes: boolean ,
     }
 }
 

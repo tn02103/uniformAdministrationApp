@@ -5,6 +5,8 @@ import { useGlobalData } from "@/components/globalDataProvider";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n } from "@/lib/locales/client";
 import { UniformType, UniformWithOwner } from "@/types/globalUniformTypes";
+import { faBoxOpen } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
@@ -55,6 +57,12 @@ export default function TableLine({
                         firstname={uniform.issuedEntries[0].cadet.firstname}
                         testId="lnk_owner"
                         tooltip={t('common.actions.open')} />
+                }
+                {uniform.storageUnit &&
+                    <span>
+                        <FontAwesomeIcon icon={faBoxOpen} className="me-1" />
+                        {uniform.storageUnit.name}
+                    </span>
                 }
             </td>
             <td data-testid="div_comment" className={`d-none d-md-table-cell col-3 `}>

@@ -326,8 +326,9 @@ export default {
     uniformList: {
         filter: "Filter",
         other: "other filters",
-        withOwner: "with owner",
-        withoutOwner: "without owner",
+        issued: "issued",
+        notIssued: "not issued",
+        inStorageUnit: "in a storage unit",
         selectAll: "Select all",
         error: {
             activ: "At least one option must be selected from Active and Passive!",
