@@ -4,8 +4,8 @@ import { getI18n, getScopedI18n } from "@/lib/locales/config";
 import { UniformSize, UniformType } from "@/types/globalUniformTypes";
 import { Col, Row } from "react-bootstrap";
 import { z } from "zod";
-import FilterPanel from "./_filterPanel";
-import ListPanel from "./_listPanel/UniformListTable";
+import { UniformListSidePanel } from "./_filterPanel/UniformListSidePanel";
+import { UniformListTable } from "./_listPanel/UniformListTable";
 
 export async function generateMetadata({ params }: { params: Promise<{ typeId: string }> }) {
     const { typeId } = await params;
@@ -50,10 +50,10 @@ export default async function UniformListPage({
             </Row>
             <Row className="row ps-md-4 pe-md-4">
                 <Col xs={12} className="col-xl-2 bg-white rounded border border-2 ms-0 ms-xl-4 h-auto">
-                    <FilterPanel uniformType={uniformType!} sizeList={sizeList} />
+                    <UniformListSidePanel uniformType={uniformType!} sizeList={sizeList} />
                 </Col>
                 <Col xs={12} className="col-xl-9 bg-white border rounded border-3 ms-xl-5 p-0">
-                    <ListPanel uniformType={uniformType} />
+                    <UniformListTable uniformType={uniformType} />
                 </Col>
             </Row>
         </div>

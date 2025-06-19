@@ -1,18 +1,21 @@
 "use client"
 
 import { useI18n } from "@/lib/locales/client";
+import React from "react";
 import { Accordion, Form } from "react-bootstrap";
 import { Path, useFormContext } from "react-hook-form";
-import { FilterType } from ".";
-import { UniformSize } from "@/types/globalUniformTypes";
-import React from "react";
+import { FilterType } from "./UniformListSidePanel";
 
-
+type Item =  {
+    id: string,
+    name: string,
+    sortOrder?: number,
+}
 type FilterAccordionBodyProps = {
-    itemList: UniformSize[],
+    itemList: Item[],
     name: "generations" | "sizes"
 }
-export default function FilterAccordionBody({ itemList, name }: FilterAccordionBodyProps) {
+export function UniformListFilterAccordionBody({ itemList, name }: FilterAccordionBodyProps) {
     const { register, getValues, setValue, watch } = useFormContext<FilterType>();
     const t = useI18n();
 
@@ -48,17 +51,19 @@ export default function FilterAccordionBody({ itemList, name }: FilterAccordionB
         <Accordion.Body>
             <Form.Check
                 label={t('uniformList.selectAll')}
+                id={`uniformListFilter-selectAll-${name}`}
                 onClick={(e) => selectAll((e.target as HTMLInputElement).checked)}
                 {...register(`all.${name}`)} />
             <Form.Check
                 label={"K.A."}
+                id={`uniformListFilter-ka-${name}`}
                 onClick={change}
                 {...register(`${name}.null`)} />
             <div className="overflow-y-auto text-truncate" style={{ maxHeight: "200px" }}>
-
                 {itemList.map((item) => (
                     <Form.Check
                         key={name + item.id}
+                        id={`uniformListFilter-${name}-${item.id}`}
                         label={item.name}
                         onClick={change}
                         className="text-truncate"
