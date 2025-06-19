@@ -208,6 +208,48 @@ exports[`UniformOffcanvas should render correctly 1`] = `
       </div>
     </form>
     <h4>
+      uniformOffcanvas.owner.label
+    </h4>
+    <hr
+      class="mb-0 mt-4"
+    />
+    <div
+      class="mt-2 mb-4 row"
+      data-testid="div_owner_row"
+    >
+      <div
+        class="col"
+      >
+        <div
+          class="fw-bold"
+        >
+          uniformOffcanvas.owner.issuedTo
+          :
+        </div>
+        <a
+          class="text-decoration-underline"
+          href="/app/cadet/cadet1"
+        >
+          John
+           
+          Doe
+        </a>
+      </div>
+      <div
+        class="col"
+      >
+        <div
+          class="fw-bold"
+        >
+          uniformOffcanvas.owner.issuedDate
+          :
+        </div>
+        <p>
+          01.10.2023
+        </p>
+      </div>
+    </div>
+    <h4>
       uniformOffcanvas.deficiency.header
     </h4>
     <hr
