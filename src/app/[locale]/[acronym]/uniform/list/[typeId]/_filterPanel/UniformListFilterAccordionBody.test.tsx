@@ -5,14 +5,6 @@ import { UniformListFilterAccordionBody } from "./UniformListFilterAccordionBody
 import { FormProvider, useForm } from "react-hook-form";
 import { FilterType } from "./UniformListSidePanel";
 
-// Mock i18n
-jest.mock("@/lib/locales/client", () => ({
-    useI18n: () => (key: string) => {
-        if (key === "uniformList.selectAll") return "Select All";
-        return key;
-    }
-}));
-
 const itemList = [
     { id: "1", name: "Item 1" },
     { id: "2", name: "Item 2" }
@@ -82,16 +74,19 @@ describe("UniformListFilterAccordionBody", () => {
                 <UniformListFilterAccordionBody itemList={itemList} name="generations" />
             </Wrapper>
         );
+        expect(screen.getByLabelText("Select All")).not.toBeChecked();
         const item1 = screen.getByLabelText("Item 1");
         await user.click(item1);
         expect(item1).toBeChecked();
-
-        // After only one is checked, 'Select All' should be indeterminate (null)
-        // Since react-hook-form doesn't set indeterminate, we check value
-        // Click second item to select all
+        expect(screen.getByLabelText("Select All")).not.toBeChecked();
+        
         const item2 = screen.getByLabelText("Item 2");
         await user.click(item2);
         expect(screen.getByLabelText("Select All")).toBeChecked();
+        
+        await user.click(item1);
+        expect(item1).not.toBeChecked();
+        expect(screen.getByLabelText("Select All")).not.toBeChecked();
     });
 
     it("toggles 'K.A.' checkbox", async () => {

@@ -4,12 +4,6 @@ import userEvent from "@testing-library/user-event";
 import { mockSizeLists, mockTypeList } from "../../../../../../../../tests/_jestConfig/staticMockData";
 import { UniformListFilter } from "./UniformListFilter";
 
-
-// Mock i18n
-jest.mock("@/lib/locales/client", () => ({
-    useI18n: () => (key: string) => key,
-}));
-
 // Mock useSessionStorage
 const setFilterMock = jest.fn();
 jest.mock("usehooks-ts", () => ({

@@ -5,11 +5,6 @@ import { mockTypeList, mockSizeLists } from "../../../../../../../../tests/_jest
 import { UniformListSidePanel } from "./UniformListSidePanel";
 import { UniformType } from "@/types/globalUniformTypes";
 
-// Mock i18n
-jest.mock("@/lib/locales/client", () => ({
-    useI18n: () => (key: string) => key,
-}));
-
 // Mock useUniformTypeList
 jest.mock("@/dataFetcher/uniformAdmin", () => ({
     useUniformTypeList: () => ({

@@ -4,11 +4,6 @@ import userEvent from "@testing-library/user-event";
 import { FormProvider, useForm } from "react-hook-form";
 import { UniformListSearchFilter } from "./UniformListSearchFilter";
 
-// Mock i18n
-jest.mock("@/lib/locales/client", () => ({
-    useI18n: () => (key: string) => key,
-}));
-
 // Mock useUniformTypeList
 const mockTypeList = [
     { id: "1", acronym: "AA", name: "Typ1" },
