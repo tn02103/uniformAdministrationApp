@@ -20,8 +20,8 @@ export type FilterType = {
     notIssued: boolean,
     inStorageUnit: boolean,
     all?: {
-        generations: boolean ,
-        sizes: boolean ,
+        generations: boolean | null,
+        sizes: boolean | null,
     }
 }
 
@@ -39,7 +39,7 @@ export default function FilterPanel({
 
     const { typeList } = useUniformTypeList();
     const searchParams = useSearchParams();
-    
+
     const searchTerm = searchParams.get('search');
     useEffect(() => {
         if (searchTerm) {
