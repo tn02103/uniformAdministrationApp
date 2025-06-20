@@ -151,10 +151,13 @@ export const getListWithOwner = async (props: getListWithOwnerProps): Promise<Un
     getListWithOwnerPropSchema,
     { uniformTypeId: props.uniformTypeId }
 ).then(async ([{ }, { uniformTypeId, orderBy, asc, filter }]) => {
+
     const sqlFilter: Prisma.UniformFindManyArgs["where"] = {};
     const generationFilter = filter?.generations ? Object.entries(filter.generations).filter(([, value]) => value).map(([key,]) => key) : [];
     const sizeFilter = filter?.sizes ? Object.entries(filter.sizes).filter(([, value]) => value).map(([key,]) => key) : [];
     const andConditions: Prisma.UniformWhereInput[] = [];
+    
+    // Collect all conditions that are not null
     if (!filter) {
         sqlFilter["active"] = true;
     } else {
@@ -213,6 +216,7 @@ export const getListWithOwner = async (props: getListWithOwnerProps): Promise<Un
         });
     }
 
+    // Get the sort order based on the orderBy parameter
     let sortOrder: Prisma.UniformOrderByWithRelationInput[];
     const ascString = asc ? "asc" : "desc";
     switch (orderBy) {
@@ -248,6 +252,7 @@ export const getListWithOwner = async (props: getListWithOwnerProps): Promise<Un
             break;
     }
 
+    // get data
     const data = await prisma.uniform.findMany({
         ...uniformWithOwnerArgs,
         where: {
@@ -263,6 +268,7 @@ export const getListWithOwner = async (props: getListWithOwnerProps): Promise<Un
         return data;
     }
 
+    // If sorting by owner, we need to sort the data manually
     return data.sort((a, b) => {
         const returnValue = (value: number) => asc ? value : -value;
 
@@ -301,5 +307,3 @@ export const getListWithOwner = async (props: getListWithOwnerProps): Promise<Un
         return returnValue(a.number - b.number);
     });
 });
-
-

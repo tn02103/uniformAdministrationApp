@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { useFormContext, useWatch } from "react-hook-form";
 
-export default function SearchFilter({ search }: { search: (data: { number: number | null, typeId?: string }) => void }) {
+export function UniformListSearchFilter({ search }: { search: (data: { number: number | null, typeId?: string }) => void }) {
     const form = useFormContext();
     const t = useI18n();
     const { typeList } = useUniformTypeList();
@@ -72,7 +72,7 @@ export default function SearchFilter({ search }: { search: (data: { number: numb
             }
             <Row>
                 <Col className="pe-0">
-                    <Form.Control {...form.register('search')} inputMode="search" />
+                    <Form.Control {...form.register('search')} inputMode="search" placeholder="123 | AA-123 | AA123" />
                 </Col>
                 <Col xs={"auto"} className="p-0 me-3">
                     <Button type="submit" variant="outline-seccondary" data-testid="btn_search_submit">

@@ -6,11 +6,11 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Button, Table } from "react-bootstrap";
 import { useSessionStorage } from "usehooks-ts";
-import { FilterType } from "../_filterPanel";
-import TableLine from "./UniformListTableLine";
+import { FilterType } from "../_filterPanel/UniformListSidePanel";
+import { UniformListTableLine } from "./UniformListTableLine";
 import { getUniformListWithOwner } from "@/dal/uniform/item/_index";
 
-export default function ListPanel({
+export function UniformListTable({
     uniformType,
 }: {
     uniformType: UniformType | null;
@@ -109,7 +109,7 @@ export default function ListPanel({
                 {(uniformType && filteredLines && filteredLines.length > 0)
                     ? filteredLines.map((uniform) => {
                         return (
-                            <TableLine
+                            <UniformListTableLine
                                 key={"tableLine" + uniform.id}
                                 uniform={uniform}
                                 uniformType={uniformType}

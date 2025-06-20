@@ -1,3 +1,4 @@
+import { UniformWithOwner } from "@/types/globalUniformTypes"
 
 export const mockGenerationLists = [
     [
@@ -264,7 +265,7 @@ export const mockSizeLists = [
     },
 ]
 
-export const mockUniformList = [
+export const mockUniformList: UniformWithOwner[] = [
     {
         id: 'c227ac23-93d4-42b5-be2e-956ea35c2db9',
         number: 2501,
