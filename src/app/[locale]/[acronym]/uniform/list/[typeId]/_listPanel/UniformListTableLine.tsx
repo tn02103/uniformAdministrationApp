@@ -11,7 +11,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
-export default function TableLine({
+export function UniformListTableLine({
     uniform,
     uniformType,
     searchString,

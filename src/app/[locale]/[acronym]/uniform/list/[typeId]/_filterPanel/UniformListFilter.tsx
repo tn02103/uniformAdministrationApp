@@ -8,10 +8,10 @@ import { useEffect } from "react";
 import { Accordion, Button, Col, Form, Row } from "react-bootstrap";
 import { FormProvider, useForm } from "react-hook-form";
 import { useSessionStorage } from "usehooks-ts";
-import { FilterType } from ".";
-import FilterAccordionBody from "./filterAccordionBody";
+import { FilterType } from "./UniformListSidePanel";
+import { UniformListFilterAccordionBody } from "./UniformListFilterAccordionBody";
 
-export default function Filter({
+export function UniformListFilter({
     uniformType, sizeList
 }: {
     uniformType: UniformType;
@@ -74,7 +74,7 @@ export default function Filter({
                                 {uniformType.usingGenerations &&
                                     <Accordion.Item data-testid={"div_genAccordion"} eventKey="0" >
                                         <Accordion.Button className="p-2">{t('common.uniform.generation.label', { count: 2 })}</Accordion.Button>
-                                        <FilterAccordionBody
+                                        <UniformListFilterAccordionBody
                                             itemList={uniformType.uniformGenerationList}
                                             name={"generations"}
                                         />
@@ -82,7 +82,7 @@ export default function Filter({
                                 } {uniformType.usingSizes &&
                                     <Accordion.Item data-testid={"div_sizeAccordion"} eventKey="1" >
                                         <Accordion.Button className="p-2">{t('common.uniform.size_other')}</Accordion.Button>
-                                        <FilterAccordionBody
+                                        <UniformListFilterAccordionBody
                                             itemList={sizeList}
                                             name={"sizes"}
                                         />
@@ -95,23 +95,28 @@ export default function Filter({
                                     <Accordion.Body>
                                         <Form.Check
                                             label={t('common.uniform.state.active')}
+                                            id="uniformListFilter-active"
                                             isInvalid={activeReserveError}
                                             {...register(`active`)} />
                                         <Form.Check
                                             label={t('common.uniform.state.reserve')}
+                                            id="uniformListFilter-reserve"
                                             isInvalid={activeReserveError}
                                             {...register(`isReserve`)} />
                                         <hr />
                                         <Form.Check
                                             label={t('uniformList.issued')}
+                                            id="uniformListFilter-issued"
                                             isInvalid={ownerError}
                                             {...register(`issued`)} />
                                         <Form.Check
                                             label={t('uniformList.notIssued')}
+                                            id="uniformListFilter-notIssued"
                                             isInvalid={ownerError}
                                             {...register(`notIssued`)} />
                                         <Form.Check
                                             label={t('uniformList.inStorageUnit')}
+                                            id="uniformListFilter-inStorageUnit"
                                             isInvalid={ownerError}
                                             {...register(`inStorageUnit`)} />
                                         <div data-testid="err_filterError" className="fs-7 text-danger">
@@ -134,5 +139,5 @@ export default function Filter({
                 </Form>
             </Col >
         </>
-    )
+    );
 }
