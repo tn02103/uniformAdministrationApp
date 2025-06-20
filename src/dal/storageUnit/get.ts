@@ -11,6 +11,9 @@ const StorageUnitWithUniformItemsArgs = Prisma.validator<Prisma.StorageUnitFindM
             orderBy: {
                 number: 'asc',
             },
+            where: {
+                recdelete: null
+            }
         },
     },
 });
