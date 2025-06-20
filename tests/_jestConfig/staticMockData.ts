@@ -1,3 +1,4 @@
+import { UniformWithOwner } from "@/types/globalUniformTypes"
 
 export const mockGenerationLists = [
     [
@@ -264,7 +265,7 @@ export const mockSizeLists = [
     },
 ]
 
-export const mockUniformList = [
+export const mockUniformList: UniformWithOwner[] = [
     {
         id: 'c227ac23-93d4-42b5-be2e-956ea35c2db9',
         number: 2501,
@@ -276,6 +277,8 @@ export const mockUniformList = [
             id: mockTypeList[0].id,
             name: mockTypeList[0].name,
         },
+        storageUnit: null,
+        issuedEntries: []
     },
     {
         id: 'd8f3a5b6-4c7e-4f8a-bb3c-9f8e7d6c5b4a',
@@ -288,6 +291,8 @@ export const mockUniformList = [
             id: mockTypeList[1].id,
             name: mockTypeList[1].name,
         },
+        storageUnit: null,
+        issuedEntries: []
     },
     {
         id: 'a1b2c3d4-e5f6-7g8h-9i0j-k1l2m3n4o5p6',
@@ -300,6 +305,8 @@ export const mockUniformList = [
             id: mockTypeList[2].id,
             name: mockTypeList[2].name,
         },
+        storageUnit: null,
+        issuedEntries: []
     },
     {
         id: 'b7c8d9e0-f1g2-h3i4-j5k6-l7m8n9o0p1q2',
@@ -312,5 +319,7 @@ export const mockUniformList = [
             id: mockTypeList[3].id,
             name: mockTypeList[3].name,
         },
+        storageUnit: null,
+        issuedEntries: []
     },
 ]

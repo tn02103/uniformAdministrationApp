@@ -4,7 +4,7 @@ import { useI18n } from "@/lib/locales/client";
 import { SAFormHandler } from "@/lib/SAFormHandler";
 import { getUniformSizelist } from "@/lib/uniformHelper";
 import { useBreakpoint } from "@/lib/useBreakpoint";
-import { Uniform, UniformType } from "@/types/globalUniformTypes";
+import { UniformType, UniformWithOwner } from "@/types/globalUniformTypes";
 import { getUniformFormSchema, UniformFormType } from "@/zod/uniform";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useMemo } from "react";
@@ -16,13 +16,13 @@ import { ToggleFormField } from "../fields/ToggleFormField";
 import { useGlobalData } from "../globalDataProvider";
 
 export type UniformDetailRowProps = {
-    uniform: Uniform;
+    uniform: UniformWithOwner;
     uniformType: UniformType;
     editable: boolean;
     setEditable: (editable: boolean) => void;
     onSave: () => void;
 }
-const getUniformFormData = (uniform: Uniform): UniformFormType => {
+const getUniformFormData = (uniform: UniformWithOwner): UniformFormType => {
     return {
         id: uniform.id,
         number: uniform.number,
@@ -91,7 +91,7 @@ export const UniformDetailRow = ({ uniform, uniformType, editable, setEditable, 
 
     // DATA HANDLERS
     const handleSave = async (data: UniformFormType) => {
-        await SAFormHandler<Uniform, UniformFormType>(
+        await SAFormHandler<UniformWithOwner, UniformFormType>(
             updateUniformItem(data),
             setError,
             (result) => {

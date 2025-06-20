@@ -4,6 +4,7 @@ export default {
         comment: "Kommentar",
         description: "Beschreibung",
         details: "Details",
+        storageUnit: "Lagereinheit",
         name: "Name",
         type: "Typ",
         loading: "Lädt",
@@ -310,8 +311,8 @@ export default {
             "header.page": "Uniform Lagerverwaltung",
         },
         warning: {
-            "full.header": "Lagereinheit voll",
-            "full.message": "Die Einheit ist bereits voll. Sind Sie sicher, dass sie ein weiteres Uniformteil hinzufügen wollen?",
+            "capacity.header": "Lagereinheit voll",
+            "capacity.message": "Die Einheit ist bereits voll. Sind Sie sicher, dass sie ein weiteres Uniformteil hinzufügen wollen?",
             "close.header": 'Änderungen verwerfen?',
             "close.message": 'Möchten Sie die Änderungen verwerfen?',
             "delete.header": "Lagereinheit löschen",
@@ -375,6 +376,21 @@ export default {
             "label.cadet": "Person",
             "title.deleted": "Person gelöscht",
             "noEntries": "Keine Einträge vorhanden",
+        },
+        storageUnit: {
+            "label.button.remove": "Aus Lagereinheit entfernen",
+            "label.button.add": "In Lagereinheit verschieben",
+            "label.button.switch": "Lagereinheit wechseln",
+            "label.notAssigned": "Nicht zugeteilt",
+            "label.add": "Zu Lagereinheit zuweisen",
+            "placeholder.add": "Lagereinheit auswählen",
+            "error.add": "Das Uniformteil konnte nicht in die Lagereinheit verschoben werden. Bitte versuchen Sie es später erneut.",
+            "error.remove": "Das Uniformteil konnte nicht aus der Lagereinheit entfernt werden. Bitte versuchen Sie es später erneut.",
+        },
+        owner: {
+            label: "Besitzer",
+            issuedTo: "Ausgegeben an",
+            issuedDate: "Ausgegeben seid",
         }
     },
     createUniform: {

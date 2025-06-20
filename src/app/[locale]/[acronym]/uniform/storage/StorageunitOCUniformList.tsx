@@ -30,8 +30,8 @@ export function StorageunitOCUniformList({ storageUnit }: Props) {
 
         if (!options?.ignoreFull && storageUnit.capacity && storageUnit.uniformList.length >= storageUnit.capacity) {
             modal?.simpleWarningModal({
-                header: t('warning.full.header'),
-                message: t('warning.full.message'),
+                header: t('warning.capacity.header'),
+                message: t('warning.capacity.message'),
                 primaryFunction: () => handleAdd(uniformId, { ignoreFull: true }),
             });
             return;

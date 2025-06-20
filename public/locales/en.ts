@@ -4,6 +4,7 @@ export default {
         comment: "Comment",
         description: "Description",
         details: "Details",
+        storageUnit: "Storage unit",
         name: "Name",
         type: "Type",
         loading: "Loading",
@@ -310,8 +311,8 @@ export default {
             "header.page": "Storate unit administration",
         },
         warning: {
-            "full.header": "Storage unit full",
-            "full.message": "The unit is already full. Are you sure you want to add another uniform item?",
+            "capacity.header": "Storage unit full",
+            "capacity.message": "The unit is already full. Are you sure you want to add another uniform item?",
             "close.header": 'Discard changes',
             "close.message": 'Do you want to discard your changes?',
             "delete.header": "Delete storage unit",
@@ -375,6 +376,21 @@ export default {
             "label.cadet": "Person",
             "title.deleted": "Person deleted",
             "noEntries": "No entries",
+        },
+        storageUnit: {
+            "label.button.remove": "Remove from storage unit",
+            "label.button.add": "Add to storage unit",
+            "label.button.switch": "Switch storage unit",
+            "label.notAssigned": "not assigned",
+            "label.add": "Add to storage unit",
+            "placeholder.add": "Select storage unit",
+            "error.add": "The uniform item could not be added to the storage unit. Please try again later.",
+            "error.remove": "The uniform item could not be removed from the storage unit. Please try again later.",
+        },
+        owner: {
+            label: "Owner",
+            issuedTo: "Issued to",
+            issuedDate: "Issued since",
         }
     },
     createUniform: {
