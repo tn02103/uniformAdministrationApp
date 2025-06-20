@@ -71,7 +71,7 @@ describe("CadetUniformTableIssueModal", () => {
 
     it("shows error for invalid input", async () => {
         setup();
-        const input = screen.getByLabelText(/Uniformteil auswählen/i);
+        const input = screen.getByLabelText(/input.label/i);
         await userEvent.type(input, "abc");
         expect(await screen.findByText(/cadetDetailPage.issueModal.error.invalidNumber/)).toBeInTheDocument();
     });
@@ -85,7 +85,7 @@ describe("CadetUniformTableIssueModal", () => {
 
     it("calls mutate and onClose on successful issue", async () => {
         setup();
-        const input = screen.getByLabelText(/Uniformteil auswählen/i);
+        const input = screen.getByLabelText(/input.label/i);
         await userEvent.clear(input);
         await userEvent.type(input, "104");
         const issueBtn = screen.getByRole("button", { name: /issue|create|replace|changeOwner/i });
@@ -99,7 +99,7 @@ describe("CadetUniformTableIssueModal", () => {
         it("calls issueUniformItem with correct values for issuing a new item (not in options)", async () => {
             const { issueUniformItem } = jest.requireMock("@/dal/uniform/item/_index");
             setup();
-            const input = screen.getByLabelText(/Uniformteil auswählen/i);
+            const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
             await userEvent.type(input, "999");
             const issueBtn = screen.getByRole("button", { name: /create/i });
@@ -121,7 +121,7 @@ describe("CadetUniformTableIssueModal", () => {
         it("calls issueUniformItem with correct values for issuing an available item", async () => {
             const { issueUniformItem } = jest.requireMock("@/dal/uniform/item/_index");
             setup();
-            const input = screen.getByLabelText(/Uniformteil auswählen/i);
+            const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
             await userEvent.type(input, "104");
             const issueBtn = screen.getByRole("button", { name: /issue/i });
@@ -143,7 +143,7 @@ describe("CadetUniformTableIssueModal", () => {
         it("calls issueUniformItem with correct values for replacing an item", async () => {
             const { issueUniformItem } = jest.requireMock("@/dal/uniform/item/_index");
             setup({ itemToReplace: { id: "item-2", number: 102 } });
-            const input = screen.getByLabelText(/Uniformteil auswählen/i);
+            const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
             await userEvent.type(input, "104");
             const issueBtn = screen.getByRole("button", { name: /replace/i });
@@ -165,7 +165,7 @@ describe("CadetUniformTableIssueModal", () => {
         it("calls issueUniformItem with correct values for issuing an inactive (reserve) item", async () => {
             const { issueUniformItem } = jest.requireMock("@/dal/uniform/item/_index");
             setup();
-            const input = screen.getByLabelText(/Uniformteil auswählen/i);
+            const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
             await userEvent.type(input, "102");
             const issueBtn = screen.getByRole("button", { name: /issue/i });
@@ -187,7 +187,7 @@ describe("CadetUniformTableIssueModal", () => {
         it("calls issueUniformItem with correct values for changing owner (item owned by another cadet)", async () => {
             const { issueUniformItem } = jest.requireMock("@/dal/uniform/item/_index");
             setup();
-            const input = screen.getByLabelText(/Uniformteil auswählen/i);
+            const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
             await userEvent.type(input, "103");
             const issueBtn = screen.getByRole("button", { name: /changeOwner/i });
@@ -209,7 +209,7 @@ describe("CadetUniformTableIssueModal", () => {
         it("calls issueUniformItem with correct values for issuing a reserve item with owner", async () => {
             const { issueUniformItem } = jest.requireMock("@/dal/uniform/item/_index");
             setup();
-            const input = screen.getByLabelText(/Uniformteil auswählen/i);
+            const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
             await userEvent.type(input, "105");
             const issueBtn = screen.getByRole("button", { name: /changeOwner/i });
@@ -234,7 +234,7 @@ describe("CadetUniformTableIssueModal", () => {
             issueUniformItem.mockRejectedValue(new Error("Issue failed"));
 
             setup();
-            const input = screen.getByLabelText(/Uniformteil auswählen/i);
+            const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
             await userEvent.type(input, "104");
             const issueBtn = screen.getByRole("button", { name: /issue/i });
@@ -247,21 +247,21 @@ describe("CadetUniformTableIssueModal", () => {
     describe("alerts", () => {
         it("shows warning if item is already owned by cadet", async () => {
             setup();
-            const input = screen.getByLabelText(/Uniformteil auswählen/i);
+            const input = screen.getByLabelText(/input.label/i);
             await userEvent.type(input, "101");
             expect(await screen.findByText(/cadetDetailPage.issueModal.alert.itemAlreadyOwned/)).toBeInTheDocument();
         });
 
         it("shows warning if item does not exist", async () => {
             setup();
-            const input = screen.getByLabelText(/Uniformteil auswählen/i);
+            const input = screen.getByLabelText(/input.label/i);
             await userEvent.type(input, "999");
             expect(await screen.findByText(/cadetDetailPage.issueModal.alert.noItemFound/)).toBeInTheDocument();
         });
 
         it("shows danger alert if item is owned by another cadet", async () => {
             setup();
-            const input = screen.getByLabelText(/Uniformteil auswählen/i);
+            const input = screen.getByLabelText(/input.label/i);
             // Select item-3 (owned by another cadet)
             await userEvent.clear(input);
             await userEvent.type(input, "103");
@@ -277,7 +277,7 @@ describe("CadetUniformTableIssueModal", () => {
 
         it("shows warning if item is inactive (reserve)", async () => {
             setup();
-            const input = screen.getByLabelText(/Uniformteil auswählen/i);
+            const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
             await userEvent.type(input, "102");
             expect(await screen.findByText(/Uniformteil ist als Reserve markiert/)).toBeInTheDocument();
@@ -286,7 +286,7 @@ describe("CadetUniformTableIssueModal", () => {
     describe("options", () => {
         it("shows storage unit icon for storage item", async () => {
             setup();
-            const input = screen.getByLabelText(/Uniformteil auswählen/i);
+            const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
             await userEvent.type(input, "104");
 
@@ -298,7 +298,7 @@ describe("CadetUniformTableIssueModal", () => {
 
         it("shows warning icon for inactive (reserve) item in option", async () => {
             setup();
-            const input = screen.getByLabelText(/Uniformteil auswählen/i);
+            const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
             await userEvent.type(input, "102");
 
@@ -313,7 +313,7 @@ describe("CadetUniformTableIssueModal", () => {
 
         it("shows person icon for item owned by another cadet in option", async () => {
             setup();
-            const input = screen.getByLabelText(/Uniformteil auswählen/i);
+            const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
             await userEvent.type(input, "103");
 
@@ -329,7 +329,7 @@ describe("CadetUniformTableIssueModal", () => {
         it("shows both person and warning icons for a reserve item with an owner", async () => {
             // Use item-5: reserve (inactive) and has an owner
             setup();
-            const input = screen.getByLabelText(/Uniformteil auswählen/i);
+            const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
             await userEvent.type(input, "105");
 
@@ -351,7 +351,7 @@ describe("CadetUniformTableIssueModal", () => {
 
         it("renders the option for an already issued item as disabled and with not-allowed cursor", async () => {
             setup();
-            const input = screen.getByLabelText(/Uniformteil auswählen/i);
+            const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
             await userEvent.type(input, "101");
 
@@ -366,7 +366,7 @@ describe("CadetUniformTableIssueModal", () => {
     describe("issue button", () => {
         it("disables issue button if item is already owned", async () => {
             setup();
-            const input = screen.getByLabelText(/Uniformteil auswählen/i);
+            const input = screen.getByLabelText(/input.label/i);
             await userEvent.type(input, "101");
             const issueBtn = screen.getByRole("button", { name: /issue|create|replace|changeOwner/i });
             expect(issueBtn).toBeDisabled();
@@ -374,7 +374,7 @@ describe("CadetUniformTableIssueModal", () => {
 
         it("shows 'changeOwner' text and danger variant if item is owned by another cadet", async () => {
             setup();
-            const input = screen.getByLabelText(/Uniformteil auswählen/i);
+            const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
             await userEvent.type(input, "103");
             const issueBtn = screen.getByRole("button", { name: /changeOwner/i });
@@ -385,7 +385,7 @@ describe("CadetUniformTableIssueModal", () => {
 
         it("shows 'create' text and primary variant if input is a valid number not in options and not owned", async () => {
             setup();
-            const input = screen.getByLabelText(/Uniformteil auswählen/i);
+            const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
             await userEvent.type(input, "999");
             const issueBtn = screen.getByRole("button", { name: /create/i });
@@ -396,7 +396,7 @@ describe("CadetUniformTableIssueModal", () => {
 
         it("shows 'replace' text if itemToReplace is set and valid item selected", async () => {
             setup({ itemToReplace: { id: "item-2", number: 102 } });
-            const input = screen.getByLabelText(/Uniformteil auswählen/i);
+            const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
             await userEvent.type(input, "104");
             const issueBtn = screen.getByRole("button", { name: /replace/i });
@@ -406,7 +406,7 @@ describe("CadetUniformTableIssueModal", () => {
 
         it("shows 'issue' text and primary variant for a normal available item", async () => {
             setup();
-            const input = screen.getByLabelText(/Uniformteil auswählen/i);
+            const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
             await userEvent.type(input, "104");
             const issueBtn = screen.getByRole("button", { name: /issue/i });
