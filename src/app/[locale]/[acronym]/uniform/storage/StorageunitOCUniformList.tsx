@@ -1,4 +1,4 @@
-import AutocompleteField, { RenderOptionProps } from "@/components/fields/AutocompleteField";
+import { RenderOptionProps, AutocompleteField } from "@/components/fields/AutocompleteField";
 import { useModal } from "@/components/modals/modalProvider";
 import { addUniformItemToStorageUnit, removeUniformFromStorageUnit, StorageUnitWithUniformItems } from "@/dal/storageUnit/_index";
 import { UniformItemLabel } from "@/dal/uniform/item/_index";

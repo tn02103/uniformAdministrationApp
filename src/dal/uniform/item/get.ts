@@ -10,6 +10,8 @@ export type ItemLabel = {
     id: string;
     label: string;
     active: boolean;
+    typeId: string;
+    number: number;
     owner: {
         id: string;
         firstname: string;
@@ -48,8 +50,10 @@ export const getItemLabels = async (): Promise<ItemLabel[]> => genericSANoDataVa
     },
 })).then(data => data.map((item): ItemLabel => ({
     id: item.id,
+    number: item.number,
     label: `${item.type.name}-${item.number}`,
     active: item.active,
+    typeId: item.type.id,
     owner: item.issuedEntries.length > 0 ? {
         id: item.issuedEntries[0].cadet.id,
         firstname: item.issuedEntries[0].cadet.firstname,

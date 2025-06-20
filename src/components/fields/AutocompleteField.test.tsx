@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import AutocompleteField, { AutocompleteOptionType } from "./AutocompleteField";
+import {AutocompleteField, AutocompleteOptionType} from "./AutocompleteField";
 
 const options: AutocompleteOptionType[] = [
     { value: "1", label: "Apple" },

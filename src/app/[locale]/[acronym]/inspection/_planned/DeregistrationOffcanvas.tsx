@@ -1,4 +1,4 @@
-import AutocompleteField from "@/components/fields/AutocompleteField";
+import { AutocompleteField } from "@/components/fields/AutocompleteField";
 import { updateCadetRegistrationForInspection } from "@/dal/inspection";
 import { usePlannedInspectionList } from "@/dataFetcher/inspection";
 import { useScopedI18n } from "@/lib/locales/client";
@@ -31,7 +31,7 @@ export const DeregistrationOffcanvas = ({ inspection, cadetList, onClose }: Dere
     const handleAdd = (value: string | null) => {
         if (value) {
             const cadet = cadetList.find(c => c.id === value);
-            if(!cadet) return;
+            if (!cadet) return;
 
             updateCadetRegistrationForInspection({
                 cadetId: value,

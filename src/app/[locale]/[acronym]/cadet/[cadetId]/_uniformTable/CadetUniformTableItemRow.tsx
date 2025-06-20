@@ -16,14 +16,14 @@ import React, { useState } from "react";
 import { Col, Dropdown, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 
-type PropType = {
+export type CadetUniformTableItemRowProps = {
     uniform: UniformWithOwner;
     uniformType: UniformType;
     replaceItem: () => void;
     openUniformId: string | null;
     setOpenUniformId: (id: string | null) => void;
 }
-const UniformRow = ({ uniform, uniformType, replaceItem, openUniformId, setOpenUniformId }: PropType) => {
+export const CadetUniformTableItemRow = ({ uniform, uniformType, replaceItem, openUniformId, setOpenUniformId }: CadetUniformTableItemRowProps) => {
     const t = useI18n();
     const modalT = useScopedI18n('modals.messageModal.uniform')
     const modal = useModal();
@@ -73,9 +73,9 @@ const UniformRow = ({ uniform, uniformType, replaceItem, openUniformId, setOpenU
     }
 
     return (
-        <div data-testid={`div_uitem_${uniform.id}`} className={`row border-top border-1 white m-0`}>
+        <div className={`row border-top border-1 white m-0`}>
             <div className="col-12 p-0">
-                <div className={`row pb-2 pt-1 m-0  justify-content-between ${selected ? "bg-primary-subtle" : "bg-white"}`} onClick={onLineClick}>
+                <div data-testid={`div_uitem_${uniform.id}`} className={`row pb-2 pt-1 m-0  justify-content-between ${selected ? "bg-primary-subtle" : "bg-white"}`} onClick={onLineClick}>
                     {(userRole >= AuthRole.inspector) &&
                         <div className={`d-none d-sm-block col-auto pt-1`}>
                             <TooltipIconButton
@@ -179,5 +179,3 @@ const UniformRow = ({ uniform, uniformType, replaceItem, openUniformId, setOpenU
         </div >
     )
 }
-
-export default UniformRow;
