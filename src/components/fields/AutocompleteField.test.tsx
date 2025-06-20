@@ -217,7 +217,7 @@ describe("AutocompleteField", () => {
         );
         const input = screen.getByLabelText("Fruit");
         await user.type(input, "ZZZZZZ");
-        expect(screen.getByRole("alert")).toHaveTextContent("No results found");
+        expect(screen.getByRole("alert", { name: "no results" })).toHaveTextContent("No results found");
     });
 
     it("limits filtered options to 7", async () => {

@@ -215,7 +215,7 @@ export function Autocomplete<TOption extends AutocompleteOptionType = Autocomple
                                 </div>
                             ))}
                             {filteredOptions.length === 0 &&
-                                <div style={{ padding: '5px' }} role="alert">
+                                <div style={{ padding: '5px' }} role="alert" aria-label="no results">
                                     No results found
                                 </div>
                             }

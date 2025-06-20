@@ -16,6 +16,7 @@ export const AutocompleteField = <TOption extends AutocompleteOptionType>(props:
             required={required}
             errorMessage={errorMessage}
             labelClassName={labelClassName}
+            fieldGroupTestId="autocomplete-field-group"
         >
             <Autocomplete<TOption>
                 {...autocompleteProps}

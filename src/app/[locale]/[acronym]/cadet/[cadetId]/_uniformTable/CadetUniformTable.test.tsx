@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { getByTestId, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CadetUniformTable } from "./CadetUniformTable";
 import { mockTypeList, mockUniformList } from "../../../../../../../tests/_jestConfig/staticMockData";
@@ -93,10 +93,12 @@ describe("CadetUniformTable", () => {
         mockTypeList.forEach(type => {
             expect(screen.getByTestId(`div_utype_${type.id}`)).toBeInTheDocument();
         });
-        expect(screen.getByTestId("div_itemList")).toBeInTheDocument();
-        expect(screen.getByTestId("itemrow_u-1")).toBeInTheDocument();
-        expect(screen.getByTestId("itemrow_u-2")).toBeInTheDocument();
-        expect(screen.getByTestId("itemrow_u-3")).toBeInTheDocument();
+        const type1Div = screen.getByTestId(`div_utype_${mockTypeList[0].id}`);
+        const type2Div = screen.getByTestId(`div_utype_${mockTypeList[1].id}`);
+
+        expect(getByTestId(type1Div, "itemrow_u-1")).toBeInTheDocument();
+        expect(getByTestId(type1Div, "itemrow_u-2")).toBeInTheDocument();
+        expect(getByTestId(type2Div, "itemrow_u-3")).toBeInTheDocument();
     });
 
     it("shows the correct issued count and default for each type", () => {

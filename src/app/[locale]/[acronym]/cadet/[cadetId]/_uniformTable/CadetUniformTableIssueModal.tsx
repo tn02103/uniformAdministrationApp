@@ -84,7 +84,7 @@ export const CadetUniformTableIssueModal = ({ cadetId, type, itemToReplace, onCl
     return (
         <Modal show onHide={onClose}>
             <Modal.Header closeButton>
-                <Modal.Title>
+                <Modal.Title role="heading">
                     {itemToReplace
                         ? t('cadetDetailPage.issueModal.header.replace', { type: type.name, number: itemToReplace.number })
                         : t("cadetDetailPage.issueModal.header.add", { type: type.name })
@@ -95,7 +95,7 @@ export const CadetUniformTableIssueModal = ({ cadetId, type, itemToReplace, onCl
                 <Row>
                     <Col>
                         <AutocompleteField<AutocompleteOption>
-                            label="Uniformteil auswählen"
+                            label={t('cadetDetailPage.issueModal.input.label')}
                             value={selectedItem?.value ?? null}
                             options={options}
                             renderOption={getRenderOptionFunction({

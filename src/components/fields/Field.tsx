@@ -11,11 +11,12 @@ export type FieldProps = {
     labelClassName?: string,
     fieldName?: string,
     fieldId?: string,
+    fieldGroupTestId?: string,
 }
 
-export const Field = ({ formName = "", fieldId, name, label, required, errorMessage, children, labelClassName, fieldName = "input" }: FieldProps) => {
+export const Field = ({ formName = "", fieldId, name, label, required, errorMessage, children, labelClassName, fieldName = "input", fieldGroupTestId }: FieldProps) => {
     return (
-        <FormGroup>
+        <FormGroup data-testId={fieldGroupTestId}>
             {label &&
                 <FormLabel htmlFor={fieldId ?? `${formName}_${fieldName}-${name}`} className={`fw-bold m-0 ${labelClassName ?? ""}`}>
                     {label}{required ? " *" : ""}

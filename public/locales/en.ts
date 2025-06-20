@@ -291,6 +291,7 @@ export default {
             },
         },
         "issueModal": {
+            "input.label": "select uniform item",
             "alert.owner.1": "Already issued to the cadet ",
             "alert.owner.2": ". Do you want to change the owner?",
             "alert.noItemFound": "There is no uniform part with the number {number}. Do you want to create it?",
