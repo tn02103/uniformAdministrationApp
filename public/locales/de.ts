@@ -288,8 +288,25 @@ export default {
             inspection: {
                 inspected: "Kadetten kontrolliert:\nInspektion des Kadetten aktualisieren",
                 notInspected: "Kadetten unkontrolliert:\nInspektion des Kadetten starten"
-            }
-        }
+            },
+        },
+        "issueModal": {
+            "alert.owner.1": "Bereits an den Kadetten ",
+            "alert.owner.2": " ausgegeben. Möchten Sie den Besitzer ändern?",
+            "alert.noItemFound": "Es existiert kein Uniformteil mit der Nummer {number}. Möchten Sie es anlegen?",
+            "alert.itemAlreadyOwned": "Das ausgewählte Uniformteil ist bereits an diese Person ausgegeben.",
+            "button.changeOwner": "Besitzer ändern",
+            "button.replace": "Austauschen",
+            "button.issue": "Ausgeben",
+            "button.create": "Uniformteil anlegen",
+            "error.invalidNumber": "Die eingegebene Nummer ist ungültig",
+            "error.issueFailed": "Das Uniformteil konnte nicht ausgegeben werden. Bitte versuchen Sie es später erneut.",
+            "header.add": "{type} ausgeben",
+            "header.replace": "{type}-{number} ersetzen",
+            "option.isReserve": "Reserve",
+            "option.owner": "Besitzer: ",
+            "option.storageUnit": "Lagereinheit: ",
+        },
     },
     storageUnit: {
         error: {
