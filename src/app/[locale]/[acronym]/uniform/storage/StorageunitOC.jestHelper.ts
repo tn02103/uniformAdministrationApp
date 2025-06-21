@@ -30,7 +30,7 @@ const getUniformLabel = (data: Partial<UniformItemLabel>): UniformItemLabel => (
 });
 
 export const mockUniformLabels = [
-    getUniformLabel({ id: "1", label: "Uniform-1", number: 1 }),
+    getUniformLabel({ id: "1", label: "Uniform 1", number: 1 }),
     getUniformLabel({ id: "2", label: "Uniform 2", number: 2, owner: { id: "c1", firstname: "John", lastname: "Doe" } }),
     getUniformLabel({ id: "3", label: "Uniform 3", number: 3, active: false }),
     getUniformLabel({ id: "4", label: "Uniform 4", storageUnit: { id: "s1", name: "Other Unit" } }),

@@ -14,8 +14,6 @@ const options: AutocompleteOptionType[] = [
 ];
 
 describe("AutocompleteField", () => {
-    window.HTMLElement.prototype.scrollIntoView = function () { };
-
     it("renders with label and placeholder", () => {
         render(
             <AutocompleteField
