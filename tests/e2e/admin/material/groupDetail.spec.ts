@@ -29,7 +29,7 @@ test.describe('formValidation', () => {
         const testSets = newDescriptionValidationTests({ minLength: 0, maxLength: 20 });
 
         for (const set of testSets) {
-            await test.step(set.testValue, async () => {
+            await test.step(String(set.testValue), async () => {
                 await groupDetailComponent.txt_name.fill(String(set.testValue));
                 await page.keyboard.press('Tab');
                 if (set.valid) {
@@ -45,7 +45,7 @@ test.describe('formValidation', () => {
         const testSets = numberValidationTests({ min: 0, max: 200, testEmpty: true, strict: false, emptyValid: true });
 
         for (const set of testSets) {
-            await test.step(set.testValue, async () => {
+            await test.step(String(set.testValue), async () => {
                 await groupDetailComponent.txt_issuedDefault.fill(String(set.testValue));
                 await page.keyboard.press('Tab');
                 if (set.valid) {
@@ -146,53 +146,50 @@ test('validate delete', async ({ page, groupDetailComponent, groupListComponent,
         await expect(groupListComponent.div_mGroup(group.id)).toBeHidden();
         await expect(groupDetailComponent.div_mGroup).toBeHidden();
     });
-    await test.step('validate db', async () => {
-        const [dbIssued, dbTypes, dbGroup, dbGroup3] = await prisma.$transaction([
-            prisma.materialIssued.findFirst({
-                where: {
-                    fk_cadet: ids.cadetIds[0],
-                    fk_material: ids.materialIds[5],
-                }
-            }),
-            prisma.material.findMany({
-                where: { fk_materialGroup: group.id },
-                orderBy: { recdelete: "asc" }
-            }),
-            prisma.materialGroup.findUniqueOrThrow({
-                where: { id: group.id }
-            }),
-            prisma.materialGroup.findUniqueOrThrow({
-                where: { id: ids.materialGroupIds[2] }
-            }),
-        ])
+    const [dbIssued, dbTypes, dbGroup, dbGroup3] = await prisma.$transaction([
+        prisma.materialIssued.findFirst({
+            where: {
+                fk_cadet: ids.cadetIds[0],
+                fk_material: ids.materialIds[5],
+            }
+        }),
+        prisma.material.findMany({
+            where: { fk_materialGroup: group.id },
+            orderBy: { recdelete: "asc" }
+        }),
+        prisma.materialGroup.findUniqueOrThrow({
+            where: { id: group.id }
+        }),
+        prisma.materialGroup.findUniqueOrThrow({
+            where: { id: ids.materialGroupIds[2] }
+        }),
+    ]);
+    await test.step('validate DB: material returned', async () => {
+        expect(dbIssued).not.toBeNull();
+        expect(dbIssued?.dateReturned).not.toBeNull();
+    });
 
-        await test.step('validate material returned', async () => {
-            expect(dbIssued).not.toBeNull();
-            expect(dbIssued?.dateReturned).not.toBeNull();
-        });
+    await test.step('validate DB: material deleted', async () => {
+        expect(dbTypes).toHaveLength(4);
+        expect(dbTypes[0].recdelete).not.toBeNull();
+        expect(dbTypes[0].recdeleteUser).toEqual('admin');
+        expect(isToday(dbTypes[0].recdelete!)).toBeFalsy();
+        expect(dbTypes[1].recdelete).not.toBeNull();
+        expect(dbTypes[1].recdeleteUser).toEqual('test4');
+        expect(isToday(dbTypes[1].recdelete!)).toBeTruthy();
+        expect(dbTypes[2].recdelete).not.toBeNull();
+        expect(dbTypes[2].recdeleteUser).toEqual('test4');
+        expect(isToday(dbTypes[2].recdelete!)).toBeTruthy();
+        expect(dbTypes[3].recdelete).not.toBeNull();
+        expect(dbTypes[3].recdeleteUser).toEqual('test4');
+        expect(isToday(dbTypes[2].recdelete!)).toBeTruthy();
+    });
 
-        await test.step('validate material deleted', async () => {
-            expect(dbTypes).toHaveLength(4);
-            expect(dbTypes[0].recdelete).not.toBeNull();
-            expect(dbTypes[0].recdeleteUser).toEqual('admin');
-            expect(isToday(dbTypes[0].recdelete!)).toBeFalsy();
-            expect(dbTypes[1].recdelete).not.toBeNull();
-            expect(dbTypes[1].recdeleteUser).toEqual('test4');
-            expect(isToday(dbTypes[1].recdelete!)).toBeTruthy();
-            expect(dbTypes[2].recdelete).not.toBeNull();
-            expect(dbTypes[2].recdeleteUser).toEqual('test4');
-            expect(isToday(dbTypes[2].recdelete!)).toBeTruthy();
-            expect(dbTypes[3].recdelete).not.toBeNull();
-            expect(dbTypes[3].recdeleteUser).toEqual('test4');
-            expect(isToday(dbTypes[2].recdelete!)).toBeTruthy();
-        });
-
-        await test.step('validate materialGroup deleted', async () => {
-            expect(dbGroup.recdelete).not.toBeNull();
-            expect(dbGroup.recdeleteUser).toEqual('test4');
-        });
-        await test.step('validate sortorder adapted', async () => {
-            expect(dbGroup3.sortOrder).toBe(1);
-        });
+    await test.step('validate DB: materialGroup deleted', async () => {
+        expect(dbGroup.recdelete).not.toBeNull();
+        expect(dbGroup.recdeleteUser).toEqual('test4');
+    });
+    await test.step('validate DB: sortorder adapted', async () => {
+        expect(dbGroup3.sortOrder).toBe(1);
     });
 });

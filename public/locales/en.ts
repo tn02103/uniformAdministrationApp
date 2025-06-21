@@ -4,6 +4,7 @@ export default {
         comment: "Comment",
         description: "Description",
         details: "Details",
+        storageUnit: "Storage unit",
         name: "Name",
         type: "Type",
         loading: "Loading",
@@ -27,6 +28,7 @@ export default {
             open: "Open",
             reactivate: "Reactivate",
             deactivate: "Deactivate",
+            discard: "Discard",
             prevStep: "Back",
             nextStep: "Next",
             edit_item: "Edit {item}",
@@ -37,6 +39,7 @@ export default {
             replace: "Replace",
             rename: "Rename",
             restart: "Restart",
+            remove: "Remove",
             finish: "Finish",
             changeIssued: "Change quantity & type",
             delete: "Delete",
@@ -78,9 +81,9 @@ export default {
                 multiLabel: "Size lists",
             },
             owner: "Owner",
-            active: {
-                true: "Active",
-                false: "Reserve"
+            state: {
+                active: "Active",
+                reserve: "Reserve"
             },
             type: {
                 "type#one": "Uniform type",
@@ -186,6 +189,9 @@ export default {
                 },
             },
             custom: {
+                nameDuplication: {
+                    storageUnit: "The Name is already used by another Storage Unit",
+                },
                 material: {
                     typename: {
                         duplication: "The Name is already used by another Material in this Group",
@@ -284,12 +290,66 @@ export default {
                 notInspected: "Cadets uninspected:\nStart cadet inspection"
             },
         },
+        "issueModal": {
+            "input.label": "select uniform item",
+            "alert.owner.1": "Already issued to the cadet ",
+            "alert.owner.2": ". Do you want to change the owner?",
+            "alert.noItemFound": "There is no uniform part with the number {number}. Do you want to create it?",
+            "alert.itemAlreadyOwned": "The selected uniform part is already issued to this person.",
+            "alert.storageUnit": "The selected uniform part is assigned to the storage unit {unit}.",
+            "alert.reserve": "The selected uniform part is marked as reserve.",
+            "button.changeOwner": "Change owner",
+            "button.replace": "Replace",
+            "button.issue": "Issue",
+            "button.create": "Create uniform part",
+            "error.invalidNumber": "The entered number is invalid",
+            "error.issueFailed": "The uniform part could not be issued. Please try again later.",
+            "header.add": "Issue {type}",
+            "header.replace": "Replace {type}-{number}",
+            "option.isReserve": "Reserve",
+            "option.owner": "Owner: ",
+            "option.storageUnit": "Storage unit: ",
+        },
+    },
+    storageUnit: {
+        error: {
+            "addUT": "The uniform item could not be added. Please try again later.",
+            "removeUT": "The uniform item could not be removed. Please try again later.",
+            "nameDuplication": "The name is already used by another storage unit",
+        },
+        label: {
+            "addUT": "Add uniform item(s)",
+            "details.name": "Name",
+            "details.capacity": "Capacity",
+            "details.description": "Description",
+            "details.forReserves": "For reserves",
+            "details.forReservesText": "Uniform items are marked as reserve",
+            "details.uniformCount": "Amount of uniform items",
+            "editName": "Rename storage unit",
+            "header.uniformlist": "Uniform item(s)",
+            "header.create": "Create storage unit",
+            "header.page": "Storate unit administration",
+        },
+        warning: {
+            "capacity.header": "Storage unit full",
+            "capacity.message": "The unit is already full. Are you sure you want to add another uniform item?",
+            "close.header": 'Discard changes',
+            "close.message": 'Do you want to discard your changes?',
+            "delete.header": "Delete storage unit",
+            "delete.message": "Should the storage unit {name} really be deleted? This action cannot be undone.",
+        },
+        tooltips: {
+            "utOptions.owner": "Owner: ",
+            "utOptions.storageUnit": "Storage unit: ",
+            "utOptions.isReserve": "Reserve",
+        }
     },
     uniformList: {
         filter: "Filter",
         other: "other filters",
-        withOwner: "with owner",
-        withoutOwner: "without owner",
+        issued: "issued",
+        notIssued: "not issued",
+        inStorageUnit: "in a storage unit",
         selectAll: "Select all",
         error: {
             activ: "At least one option must be selected from Active and Passive!",
@@ -336,6 +396,21 @@ export default {
             "label.cadet": "Person",
             "title.deleted": "Person deleted",
             "noEntries": "No entries",
+        },
+        storageUnit: {
+            "label.button.remove": "Remove from storage unit",
+            "label.button.add": "Add to storage unit",
+            "label.button.switch": "Switch storage unit",
+            "label.notAssigned": "not assigned",
+            "label.add": "Add to storage unit",
+            "placeholder.add": "Select storage unit",
+            "error.add": "The uniform item could not be added to the storage unit. Please try again later.",
+            "error.remove": "The uniform item could not be removed from the storage unit. Please try again later.",
+        },
+        owner: {
+            label: "Owner",
+            issuedTo: "Issued to",
+            issuedDate: "Issued since",
         }
     },
     createUniform: {
@@ -381,6 +456,7 @@ export default {
         links: {
             cadetOverview: "Staff",
             uniformOverview: "Uniform",
+            storageUnit: "Storage units",
             create: {
                 group: "Create",
                 cadet: "Person",

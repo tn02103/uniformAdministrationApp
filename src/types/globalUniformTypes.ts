@@ -19,6 +19,14 @@ const typeDescriptionArgs = Prisma.validator<Prisma.UniformTypeFindManyArgs>()({
         name: true,
     }
 });
+const storageUnitDescriptionArgs = Prisma.validator<Prisma.StorageUnitFindManyArgs>()({
+    select: {
+        id: true,
+        name: true,
+        description: true,
+        isReserve: true,
+    }
+});
 const cadetDescriptionArgs = (config: {withDeleted: boolean}) => Prisma.validator<Prisma.CadetFindManyArgs>()({
     select: {
         id: true,
@@ -40,11 +48,13 @@ export const uniformWithOwnerArgs = Prisma.validator<Prisma.UniformFindManyArgs>
         issuedEntries: {
             select: {
                 cadet: cadetDescriptionArgs({withDeleted: false}),
+                dateIssued: true,
             },
             where: {
                 dateReturned: null,
             }
-        }
+        },
+        storageUnit: storageUnitDescriptionArgs,
     }
 })
 export const uniformArgs = Prisma.validator<Prisma.UniformFindManyArgs>()({
@@ -56,8 +66,9 @@ export const uniformArgs = Prisma.validator<Prisma.UniformFindManyArgs>()({
         type: typeDescriptionArgs,
         generation: generationDescriptionArgs,
         size: sizeDescriptionArgs,
+        storageUnit: storageUnitDescriptionArgs,
     }
-})
+});
 export const uniformHistoryArgs = Prisma.validator<Prisma.UniformIssuedFindManyArgs>()({
     select: {
         id: true,
@@ -71,7 +82,6 @@ export const uniformHistoryArgs = Prisma.validator<Prisma.UniformIssuedFindManyA
 });
 
 export type UniformWithOwner = Prisma.UniformGetPayload<typeof uniformWithOwnerArgs>;
-export type Uniform = Prisma.UniformGetPayload<typeof uniformArgs>;
 export type UniformLabel = {
     id: string,
     description: string,

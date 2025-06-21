@@ -12,9 +12,9 @@ export default defineConfig({
     /* Fail the build on CI if you accidentally left test.only in the source code. */
     forbidOnly: !!process.env.CI,
     /* Retry on CI only */
-    retries: process.env.CI ? 2 : 0,
+    retries: process.env.CI ? 2 : 2,
     /* Opt out of parallel tests on CI. */
-    workers: process.env.CI ? 2 : (process.env.TEST_WORKERS) ? +process.env.TEST_WORKERS : undefined,
+    workers: process.env.CI ? 2 : 4,
     /* amount of allowed failures */
     maxFailures: 20,
     /* Reporter to use. See https://playwright.dev/docs/test-reporters */

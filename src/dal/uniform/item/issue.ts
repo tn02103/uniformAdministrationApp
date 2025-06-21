@@ -68,7 +68,7 @@ export const issue = async (props: IssuePropType): Promise<CadetUniformMap | SAE
         await __unsecuredReturnUniformitem(issuedEntry.id, issuedEntry.dateIssued, client as PrismaClient);
     }
 
-    // CREATE or throw erorr if not existing
+    // CREATE or throw error if not existing
     if (!uniform) {
         if (!options.create) {
             throw new NullValueException('Could not find Uniformitem', "uniform", { number, type: uniformTypeId });
@@ -120,6 +120,16 @@ export const issue = async (props: IssuePropType): Promise<CadetUniformMap | SAE
 
         // return uniformItem from other cadet
         await __unsecuredReturnUniformitem(uniform.issuedEntries[0].id, uniform.issuedEntries[0].dateIssued, client);
+    }
+
+    // Check if item is assigned to storage unit
+    if (uniform.storageUnitId) {
+        await client.uniform.update({
+            where: { id: uniform.id },
+            data: {
+                storageUnitId: null,
+            }
+        });
     }
 
     // ISSUE uniform item

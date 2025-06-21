@@ -1,6 +1,6 @@
 import { useScopedI18n } from "@/lib/locales/client";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faArrowUpRightFromSquare, faCircleDown, faCirclePlay, faCircleUp, faEdit, faEye, faEyeSlash, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faArrowUpRightFromSquare, faCheck, faCircleDown, faCirclePlay, faCircleUp, faEdit, faEye, faEyeSlash, faPlus, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode } from "react";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
@@ -60,7 +60,7 @@ const Variants: {
     [key in string]: {
         icon: IconProp,
         variant: string,
-        tooltipKey: "edit" | "create" | "moveUp" | "moveDown" | "open" | "delete" | "reactivate" | "deactivate" | "startInspection",
+        tooltipKey: "edit" | "create" | "moveUp" | "moveDown" | "open" | "delete" | "reactivate" | "deactivate" | "startInspection" | "save" | "cancel",
         testId: string,
         ariaLabel: string,
     }
@@ -71,6 +71,13 @@ const Variants: {
         tooltipKey: "create",
         testId: "btn_create",
         ariaLabel: "create",
+    },
+    cancel: {
+        icon: faX,
+        variant: "outline-secondary",
+        tooltipKey: "cancel",
+        testId: "btn_cancel",
+        ariaLabel: "cancel",
     },
     edit: {
         icon: faEdit,
@@ -120,6 +127,13 @@ const Variants: {
         tooltipKey: "deactivate",
         testId: "btn_deactivate",
         ariaLabel: "deactivate",
+    },
+    save: {
+        icon: faCheck,
+        variant: "outline-success",
+        tooltipKey: "save",
+        testId: "btn_save",
+        ariaLabel: "save",
     },
     startInspection: {
         icon: faCirclePlay,

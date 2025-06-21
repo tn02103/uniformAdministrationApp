@@ -24,6 +24,7 @@ model Assosiation {
     deficiencyType           DeficiencyType[]
     inspection               Inspection[]
     AssosiationConfiguration AssosiationConfiguration[]
+    StorageUnit              StorageUnit[]
     Redirect                 Redirect[]
 
     @@map("assosiation")
@@ -179,6 +180,8 @@ model Uniform {
     issuedEntries       UniformIssued[]
     cadetDeficiencies   CadetDeficiency[]
     uniformDeficiencies UniformDeficiency[]
+    storageUnit         StorageUnit?        @relation(fields: [storageUnitId], references: [id])
+    storageUnitId       String?             @db.Char(36)
 
     @@index([fk_generation])
     @@index([fk_size])
@@ -200,6 +203,21 @@ model UniformIssued {
     @@index([fk_cadet])
     @@index([fk_uniform])
     @@map("uniform_issued")
+    @@schema("base")
+}
+
+model StorageUnit {
+    id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    name          String      @db.VarChar(20)
+    description   String?     @db.VarChar(100)
+    isReserve     Boolean     @default(false) @map("is_reserve")
+    capacity      Int?        @db.SmallInt
+    uniformList   Uniform[]
+    assosiationId String      @db.Char(36)
+    assosiacion   Assosiation @relation(fields: [assosiationId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+    @@unique([name, assosiationId])
+    @@map("storage_unit")
     @@schema("base")
 }
 

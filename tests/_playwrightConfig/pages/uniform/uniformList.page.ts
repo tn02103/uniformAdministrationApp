@@ -32,9 +32,10 @@ export class UniformListPage {
     readonly div_othersAccordion: Locator;
     readonly btn_othersAccordion_header: Locator;
     readonly chk_activeFilter: Locator;
-    readonly chk_passiveFilter: Locator;
-    readonly chk_withOwnerFilter: Locator;
-    readonly chk_withoutOwnerFilter: Locator;
+    readonly chk_isReserveFilter: Locator;
+    readonly chk_issuedFilter: Locator;
+    readonly chk_notIssuedFilter: Locator;
+    readonly chk_inStorageUnitFilter: Locator;
     readonly err_filter: Locator;
 
     readonly div_header_number: Locator;
@@ -52,7 +53,7 @@ export class UniformListPage {
     div_uitem_number(uniformId: string) {
         return this.div_uitem(uniformId).getByTestId("div_number");
     }
-    div_uitem_passivLabel(uniformId: string) {
+    div_uitem_reserveLabel(uniformId: string) {
         return this.div_uitem_number(uniformId).locator('span[class^="badge"]');
     }
     div_uitem_generation(uniformId: string) {
@@ -95,9 +96,10 @@ export class UniformListPage {
         this.div_othersAccordion = page.getByTestId("div_othersAccordion");
         this.btn_othersAccordion_header = this.div_othersAccordion.getByRole('button');
         this.chk_activeFilter = page.locator('input[name="active"]');
-        this.chk_passiveFilter = page.locator('input[name="passive"]');
-        this.chk_withOwnerFilter = page.locator('input[name="withOwner"]');
-        this.chk_withoutOwnerFilter = page.locator('input[name="withoutOwner"]');
+        this.chk_isReserveFilter = page.locator('input[name="isReserve"]');
+        this.chk_issuedFilter = page.locator('input[name="issued"]');
+        this.chk_notIssuedFilter = page.locator('input[name="notIssued"]');
+        this.chk_inStorageUnitFilter = page.locator('input[name="inStorageUnit"]');
         this.err_filter = page.getByTestId('err_filterError');
 
         this.div_header_number = page.getByTestId("btn_header_number");

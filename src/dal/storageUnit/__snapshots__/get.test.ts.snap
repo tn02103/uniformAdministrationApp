@@ -1,0 +1,461 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`returns correct data 1`] = `
+[
+  {
+    "assosiationId": "bf2ef8-3894-47d4-ada4-e8b5cda5095c",
+    "capacity": 5,
+    "description": "Für Typ1 Uniformteile in Reserve",
+    "id": "3984d9-17ac-423d-b5d9-8f9473c225d5",
+    "isReserve": true,
+    "name": "Kiste 01",
+    "uniformList": [
+      {
+        "active": false,
+        "comment": "",
+        "generation": {
+          "id": "5a8f39-6e54-46f7-978b-cf23c52c042c",
+          "name": "Generation1-1",
+          "outdated": true,
+        },
+        "id": "9a453c-607e-4950-ad8b-12d8b61688fd",
+        "number": 1108,
+        "size": {
+          "id": "81f13b-8200-48e8-8ace-b55a6732d261",
+          "name": "3",
+        },
+        "storageUnit": {
+          "description": "Für Typ1 Uniformteile in Reserve",
+          "id": "3984d9-17ac-423d-b5d9-8f9473c225d5",
+          "isReserve": true,
+          "name": "Kiste 01",
+        },
+        "type": {
+          "id": "659ad7-7b45-4c31-8ee0-8f8c2d385886",
+          "name": "Typ1",
+        },
+      },
+      {
+        "active": false,
+        "comment": "",
+        "generation": {
+          "id": "5a8f39-6e54-46f7-978b-cf23c52c042c",
+          "name": "Generation1-1",
+          "outdated": true,
+        },
+        "id": "534ca4-b5bd-4538-bdfa-7413c8b9ca36",
+        "number": 1109,
+        "size": {
+          "id": "81f13b-8200-48e8-8ace-b55a6732d261",
+          "name": "3",
+        },
+        "storageUnit": {
+          "description": "Für Typ1 Uniformteile in Reserve",
+          "id": "3984d9-17ac-423d-b5d9-8f9473c225d5",
+          "isReserve": true,
+          "name": "Kiste 01",
+        },
+        "type": {
+          "id": "659ad7-7b45-4c31-8ee0-8f8c2d385886",
+          "name": "Typ1",
+        },
+      },
+    ],
+  },
+  {
+    "assosiationId": "bf2ef8-3894-47d4-ada4-e8b5cda5095c",
+    "capacity": 5,
+    "description": "Für Typ1 Uniformteile in Reserve",
+    "id": "c8f0d2-1e4a-4f5c-9b6d-7f0c1e8a2b3c",
+    "isReserve": true,
+    "name": "Kiste 02",
+    "uniformList": [
+      {
+        "active": false,
+        "comment": "",
+        "generation": {
+          "id": "5a8f39-6e54-46f7-978b-cf23c52c042c",
+          "name": "Generation1-1",
+          "outdated": true,
+        },
+        "id": "53a5c7-4153-4b73-8f01-f399434b398b",
+        "number": 1115,
+        "size": {
+          "id": "e8cd60-4633-45d8-bf2d-c76a6282e455",
+          "name": "4",
+        },
+        "storageUnit": {
+          "description": "Für Typ1 Uniformteile in Reserve",
+          "id": "c8f0d2-1e4a-4f5c-9b6d-7f0c1e8a2b3c",
+          "isReserve": true,
+          "name": "Kiste 02",
+        },
+        "type": {
+          "id": "659ad7-7b45-4c31-8ee0-8f8c2d385886",
+          "name": "Typ1",
+        },
+      },
+      {
+        "active": false,
+        "comment": "",
+        "generation": {
+          "id": "5a8f39-6e54-46f7-978b-cf23c52c042c",
+          "name": "Generation1-1",
+          "outdated": true,
+        },
+        "id": "ed9f3b-0e77-49e4-b52d-114e0227b200",
+        "number": 1116,
+        "size": {
+          "id": "e8cd60-4633-45d8-bf2d-c76a6282e455",
+          "name": "4",
+        },
+        "storageUnit": {
+          "description": "Für Typ1 Uniformteile in Reserve",
+          "id": "c8f0d2-1e4a-4f5c-9b6d-7f0c1e8a2b3c",
+          "isReserve": true,
+          "name": "Kiste 02",
+        },
+        "type": {
+          "id": "659ad7-7b45-4c31-8ee0-8f8c2d385886",
+          "name": "Typ1",
+        },
+      },
+      {
+        "active": false,
+        "comment": "",
+        "generation": {
+          "id": "5a8f39-6e54-46f7-978b-cf23c52c042c",
+          "name": "Generation1-1",
+          "outdated": true,
+        },
+        "id": "a1490c-c035-4918-b649-3c74bdc317c4",
+        "number": 1117,
+        "size": {
+          "id": "c5441c-799c-4511-95db-f7674bcb89cd",
+          "name": "5",
+        },
+        "storageUnit": {
+          "description": "Für Typ1 Uniformteile in Reserve",
+          "id": "c8f0d2-1e4a-4f5c-9b6d-7f0c1e8a2b3c",
+          "isReserve": true,
+          "name": "Kiste 02",
+        },
+        "type": {
+          "id": "659ad7-7b45-4c31-8ee0-8f8c2d385886",
+          "name": "Typ1",
+        },
+      },
+      {
+        "active": false,
+        "comment": "",
+        "generation": {
+          "id": "5a8f39-6e54-46f7-978b-cf23c52c042c",
+          "name": "Generation1-1",
+          "outdated": true,
+        },
+        "id": "f86b45-d43c-4f80-a264-1cebab8f7ff2",
+        "number": 1118,
+        "size": {
+          "id": "c5441c-799c-4511-95db-f7674bcb89cd",
+          "name": "5",
+        },
+        "storageUnit": {
+          "description": "Für Typ1 Uniformteile in Reserve",
+          "id": "c8f0d2-1e4a-4f5c-9b6d-7f0c1e8a2b3c",
+          "isReserve": true,
+          "name": "Kiste 02",
+        },
+        "type": {
+          "id": "659ad7-7b45-4c31-8ee0-8f8c2d385886",
+          "name": "Typ1",
+        },
+      },
+      {
+        "active": false,
+        "comment": "",
+        "generation": {
+          "id": "5a8f39-6e54-46f7-978b-cf23c52c042c",
+          "name": "Generation1-1",
+          "outdated": true,
+        },
+        "id": "c3945d-83f1-42ea-9b2b-dce2d9c36ac0",
+        "number": 1119,
+        "size": {
+          "id": "3c9e63-d49a-4152-976d-3ba34eafd7a6",
+          "name": "0",
+        },
+        "storageUnit": {
+          "description": "Für Typ1 Uniformteile in Reserve",
+          "id": "c8f0d2-1e4a-4f5c-9b6d-7f0c1e8a2b3c",
+          "isReserve": true,
+          "name": "Kiste 02",
+        },
+        "type": {
+          "id": "659ad7-7b45-4c31-8ee0-8f8c2d385886",
+          "name": "Typ1",
+        },
+      },
+    ],
+  },
+  {
+    "assosiationId": "bf2ef8-3894-47d4-ada4-e8b5cda5095c",
+    "capacity": 10,
+    "description": "Für Typ3 Uniformteile in Reserve",
+    "id": "c2e3d4-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
+    "isReserve": true,
+    "name": "Kiste 03",
+    "uniformList": [
+      {
+        "active": true,
+        "comment": "",
+        "generation": null,
+        "id": "ce0d2b-077a-4cbb-b924-63079e749bab",
+        "number": 1310,
+        "size": {
+          "id": "fbbfe5-d485-48a0-b139-7493e3b4dbfa",
+          "name": "2",
+        },
+        "storageUnit": {
+          "description": "Für Typ3 Uniformteile in Reserve",
+          "id": "c2e3d4-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
+          "isReserve": true,
+          "name": "Kiste 03",
+        },
+        "type": {
+          "id": "136e0b-3a30-4552-9296-dd1d51b814d2",
+          "name": "Typ3",
+        },
+      },
+      {
+        "active": true,
+        "comment": "",
+        "generation": null,
+        "id": "6a0ca2-05fb-4e81-b129-25f840c6d9b3",
+        "number": 1311,
+        "size": {
+          "id": "fbbfe5-d485-48a0-b139-7493e3b4dbfa",
+          "name": "2",
+        },
+        "storageUnit": {
+          "description": "Für Typ3 Uniformteile in Reserve",
+          "id": "c2e3d4-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
+          "isReserve": true,
+          "name": "Kiste 03",
+        },
+        "type": {
+          "id": "136e0b-3a30-4552-9296-dd1d51b814d2",
+          "name": "Typ3",
+        },
+      },
+      {
+        "active": true,
+        "comment": "",
+        "generation": null,
+        "id": "5c66e8-aa09-429d-a8d9-8481dcbe9d90",
+        "number": 1312,
+        "size": {
+          "id": "fbbfe5-d485-48a0-b139-7493e3b4dbfa",
+          "name": "2",
+        },
+        "storageUnit": {
+          "description": "Für Typ3 Uniformteile in Reserve",
+          "id": "c2e3d4-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
+          "isReserve": true,
+          "name": "Kiste 03",
+        },
+        "type": {
+          "id": "136e0b-3a30-4552-9296-dd1d51b814d2",
+          "name": "Typ3",
+        },
+      },
+      {
+        "active": true,
+        "comment": "",
+        "generation": null,
+        "id": "b70c27-f13c-4290-9a63-a2272d27ea45",
+        "number": 1313,
+        "size": {
+          "id": "81f13b-8200-48e8-8ace-b55a6732d261",
+          "name": "3",
+        },
+        "storageUnit": {
+          "description": "Für Typ3 Uniformteile in Reserve",
+          "id": "c2e3d4-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
+          "isReserve": true,
+          "name": "Kiste 03",
+        },
+        "type": {
+          "id": "136e0b-3a30-4552-9296-dd1d51b814d2",
+          "name": "Typ3",
+        },
+      },
+      {
+        "active": true,
+        "comment": "",
+        "generation": null,
+        "id": "cadb9a-3827-4582-a503-ede29f2cca1d",
+        "number": 1314,
+        "size": {
+          "id": "81f13b-8200-48e8-8ace-b55a6732d261",
+          "name": "3",
+        },
+        "storageUnit": {
+          "description": "Für Typ3 Uniformteile in Reserve",
+          "id": "c2e3d4-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
+          "isReserve": true,
+          "name": "Kiste 03",
+        },
+        "type": {
+          "id": "136e0b-3a30-4552-9296-dd1d51b814d2",
+          "name": "Typ3",
+        },
+      },
+      {
+        "active": true,
+        "comment": "",
+        "generation": null,
+        "id": "6edd94-942c-4ece-be85-1ba47682cb61",
+        "number": 1315,
+        "size": {
+          "id": "81f13b-8200-48e8-8ace-b55a6732d261",
+          "name": "3",
+        },
+        "storageUnit": {
+          "description": "Für Typ3 Uniformteile in Reserve",
+          "id": "c2e3d4-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
+          "isReserve": true,
+          "name": "Kiste 03",
+        },
+        "type": {
+          "id": "136e0b-3a30-4552-9296-dd1d51b814d2",
+          "name": "Typ3",
+        },
+      },
+      {
+        "active": true,
+        "comment": "",
+        "generation": null,
+        "id": "5777d3-c175-42a1-a9a9-744c42c3faee",
+        "number": 1316,
+        "size": {
+          "id": "81f13b-8200-48e8-8ace-b55a6732d261",
+          "name": "3",
+        },
+        "storageUnit": {
+          "description": "Für Typ3 Uniformteile in Reserve",
+          "id": "c2e3d4-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
+          "isReserve": true,
+          "name": "Kiste 03",
+        },
+        "type": {
+          "id": "136e0b-3a30-4552-9296-dd1d51b814d2",
+          "name": "Typ3",
+        },
+      },
+    ],
+  },
+  {
+    "assosiationId": "bf2ef8-3894-47d4-ada4-e8b5cda5095c",
+    "capacity": 10,
+    "description": "Für Typ3 aktive Uniformteile",
+    "id": "345678-90ab-cdef-1234-567890abcdef",
+    "isReserve": false,
+    "name": "Kiste 04",
+    "uniformList": [
+      {
+        "active": false,
+        "comment": "",
+        "generation": null,
+        "id": "0be1e5-888f-4dd2-9c68-8ed81e81f0f7",
+        "number": 1320,
+        "size": {
+          "id": "e8cd60-4633-45d8-bf2d-c76a6282e455",
+          "name": "4",
+        },
+        "storageUnit": {
+          "description": "Für Typ3 aktive Uniformteile",
+          "id": "345678-90ab-cdef-1234-567890abcdef",
+          "isReserve": false,
+          "name": "Kiste 04",
+        },
+        "type": {
+          "id": "136e0b-3a30-4552-9296-dd1d51b814d2",
+          "name": "Typ3",
+        },
+      },
+      {
+        "active": false,
+        "comment": "",
+        "generation": null,
+        "id": "55f8c2-b79c-4cb1-b41a-b5e820238295",
+        "number": 1321,
+        "size": {
+          "id": "e8cd60-4633-45d8-bf2d-c76a6282e455",
+          "name": "4",
+        },
+        "storageUnit": {
+          "description": "Für Typ3 aktive Uniformteile",
+          "id": "345678-90ab-cdef-1234-567890abcdef",
+          "isReserve": false,
+          "name": "Kiste 04",
+        },
+        "type": {
+          "id": "136e0b-3a30-4552-9296-dd1d51b814d2",
+          "name": "Typ3",
+        },
+      },
+      {
+        "active": false,
+        "comment": "",
+        "generation": null,
+        "id": "f7cf77-09bc-4ffb-8650-10f771f27871",
+        "number": 1322,
+        "size": {
+          "id": "e8cd60-4633-45d8-bf2d-c76a6282e455",
+          "name": "4",
+        },
+        "storageUnit": {
+          "description": "Für Typ3 aktive Uniformteile",
+          "id": "345678-90ab-cdef-1234-567890abcdef",
+          "isReserve": false,
+          "name": "Kiste 04",
+        },
+        "type": {
+          "id": "136e0b-3a30-4552-9296-dd1d51b814d2",
+          "name": "Typ3",
+        },
+      },
+      {
+        "active": false,
+        "comment": "",
+        "generation": null,
+        "id": "2dc108-f6e1-40fd-8344-e0dad803c1dc",
+        "number": 1323,
+        "size": {
+          "id": "e8cd60-4633-45d8-bf2d-c76a6282e455",
+          "name": "4",
+        },
+        "storageUnit": {
+          "description": "Für Typ3 aktive Uniformteile",
+          "id": "345678-90ab-cdef-1234-567890abcdef",
+          "isReserve": false,
+          "name": "Kiste 04",
+        },
+        "type": {
+          "id": "136e0b-3a30-4552-9296-dd1d51b814d2",
+          "name": "Typ3",
+        },
+      },
+    ],
+  },
+  {
+    "assosiationId": "bf2ef8-3894-47d4-ada4-e8b5cda5095c",
+    "capacity": null,
+    "description": "Für Typ2 aktive Uniformteile",
+    "id": "cdef12-3456-7890-abcd-ef1234567890",
+    "isReserve": false,
+    "name": "Kiste 05",
+    "uniformList": [],
+  },
+]
+`;

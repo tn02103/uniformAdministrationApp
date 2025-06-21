@@ -3,15 +3,14 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
 
-
 /**
  * Marks uniformitem as deleted. May only work if item is not issued.
- * @requires AuthRole.materialManager
+ * @requires AuthRole.inspector
  * @param uniformId 
  * @returns 
  */
 export const markDeleted = (props: string): Promise<void> => genericSAValidator(
-    AuthRole.materialManager,
+    AuthRole.inspector,
     props,
     z.string().uuid(),
     { uniformId: props }

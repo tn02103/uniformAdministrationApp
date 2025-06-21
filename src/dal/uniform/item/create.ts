@@ -117,7 +117,7 @@ export const create = (props: PropType): Promise<number> => genericSAValidator(
                 fk_size: (map.sizeId !== "amount") ? map.sizeId : null,
                 comment: data.comment,
                 active: data.active,
-            }))
-        ], [])
+            })),
+        ], []),
     }).then(d => d.count);
 }));

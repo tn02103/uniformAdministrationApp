@@ -57,7 +57,7 @@ inspectorTest('Authrole: inspector', async ({ page, staticData: { ids } }) => {
             expect.soft(dataComponent.txt_comment).toBeVisible(),
             expect.soft(dataComponent.div_lastInspection).toBeVisible(),
             expect.soft(dataComponent.btn_edit).toBeVisible(),
-            expect.soft(detailPage.btn_menu).toBeHidden(),
+            expect.soft(detailPage.btn_menu).toBeVisible(),
         ]);
     });
 });

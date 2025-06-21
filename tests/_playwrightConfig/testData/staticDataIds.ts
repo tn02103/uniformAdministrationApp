@@ -265,6 +265,13 @@ export function getStaticDataIds(index: number) {
                 `${prefix}db50b8-cbd2-4bf0-be76-2eece3c67556`
             ]
         ],
+        storageUnitIds: [
+            `${prefix}3984d9-17ac-423d-b5d9-8f9473c225d5`,
+            `${prefix}c8f0d2-1e4a-4f5c-9b6d-7f0c1e8a2b3c`,
+            `${prefix}c2e3d4-5a6b-7c8d-9e0f-1a2b3c4d5e6f`,
+            `${prefix}345678-90ab-cdef-1234-567890abcdef`,
+            `${prefix}cdef12-3456-7890-abcd-ef1234567890`
+        ],
         materialGroupIds: [
             `${prefix}b83306-91bb-46eb-98b2-eddc756f66e8`,
             `${prefix}b3e939-439f-426c-b0c8-c67b976c29c1`,

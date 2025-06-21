@@ -1,14 +1,16 @@
+import { AuthRole } from '@/lib/AuthRoles';
 import '@testing-library/jest-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+const useI18nFn = jest.fn((key) => key);
 jest.mock('@/lib/locales/client', () => {
     return {
         useScopedI18n: jest.fn((scope: string) => {
-            return function (key: string, values?: any) {
+            return function (key: string) {
                 return `${scope}.${key}`;
             };
         }),
-        useI18n: jest.fn().mockImplementation(() => jest.fn((key) => key)),
+        useI18n: jest.fn().mockImplementation(() => useI18nFn),
         useCurrentLocale: jest.fn(() => ({
             locale: 'de',
             setLocale: jest.fn(),
@@ -27,9 +29,18 @@ jest.mock("@/components/modals/modalProvider", () => {
         simpleWarningModal: jest.fn(),
         simpleErrorModal: jest.fn(),
         simpleFormModal: jest.fn(),
+        showMessageModal: jest.fn(),
     }
     return {
         useModal: jest.fn(() => modals)
+    };
+});
+
+jest.mock("@/components/globalDataProvider", () => {
+    return {
+        useGlobalData: jest.fn(() => ({
+            userRole: global.__ROLE__ ?? AuthRole.admin,
+        })),
     };
 });
 

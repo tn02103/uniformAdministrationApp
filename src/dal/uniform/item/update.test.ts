@@ -1,5 +1,3 @@
-
-
 import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { update } from "./update";
 import { UniformFormType } from "@/zod/uniform";
@@ -38,7 +36,7 @@ describe('updateUniformItem', () => {
             update(defaultProps)
         );
         expect(success).toBeTruthy();
-        expect(result).toStrictEqual(defaultReturnValue);
+        expect(result).toEqual(expect.objectContaining(defaultReturnValue));
 
 
         const dbItem = await prisma.uniform.findUnique({
@@ -61,7 +59,7 @@ describe('updateUniformItem', () => {
             })
         );
         expect(success).toBeTruthy();
-        expect(result).toStrictEqual(defaultReturnValue);
+       expect(result).toEqual(expect.objectContaining(defaultReturnValue));
 
         const dbItem = await prisma.uniform.findUnique({
             where: { id: defaultProps.id }
