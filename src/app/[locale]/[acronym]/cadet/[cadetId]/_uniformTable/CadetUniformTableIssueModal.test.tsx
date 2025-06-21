@@ -63,7 +63,7 @@ describe("CadetUniformTableIssueModal", () => {
         expect(screen.getByText(/cadetDetailPage.issueModal.header.replace/)).toBeInTheDocument();
     });
 
-    it("shows error when input is empty and tries to submit", async () => {
+    it("disables issueBtn when input is empty", async () => {
         setup();
         const issueBtn = screen.getByRole("button", { name: /issue/i });
         expect(issueBtn).toBeDisabled();

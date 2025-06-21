@@ -47,8 +47,7 @@ export const CadetUniformTableItemRow = ({ uniform, uniformType, replaceItem, op
     function withdraw(uniform: UniformWithOwner) {
         const returnItem = () => mutate(
             returnUniformItem({ uniformId: uniform.id, cadetId }),
-        ).catch((e) => {
-            console.error(e);
+        ).catch(() => {
             toast.error(t('cadetDetailPage.returnUniform.error'))
         });
 

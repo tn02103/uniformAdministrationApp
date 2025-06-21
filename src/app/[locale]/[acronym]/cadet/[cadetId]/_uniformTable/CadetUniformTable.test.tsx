@@ -8,9 +8,6 @@ import { CadetUniformTableItemRowProps } from "./CadetUniformTableItemRow";
 import { CadetUniformTableIssueModalProps } from "./CadetUniformTableIssueModal";
 
 // Mocks
-jest.mock("@/components/globalDataProvider", () => ({
-    useGlobalData: () => ({ userRole: 2 }), // inspector
-}));
 jest.mock("@/dataFetcher/uniformAdmin", () => ({
     useUniformTypeList: () => ({
         typeList: mockTypeList,
@@ -82,6 +79,10 @@ function setup(props = {}) {
 }
 
 describe("CadetUniformTable", () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
     it("renders the table header", () => {
         setup();
         expect(screen.getByText(/cadetDetailPage.header.uniformTable/)).toBeInTheDocument();
@@ -89,13 +90,14 @@ describe("CadetUniformTable", () => {
 
     it("renders all uniform types and their items", () => {
         setup();
+
         expect(screen.getByTestId("div_uniform_typeList")).toBeInTheDocument();
         mockTypeList.forEach(type => {
             expect(screen.getByTestId(`div_utype_${type.id}`)).toBeInTheDocument();
         });
+        
         const type1Div = screen.getByTestId(`div_utype_${mockTypeList[0].id}`);
         const type2Div = screen.getByTestId(`div_utype_${mockTypeList[1].id}`);
-
         expect(getByTestId(type1Div, "itemrow_u-1")).toBeInTheDocument();
         expect(getByTestId(type1Div, "itemrow_u-2")).toBeInTheDocument();
         expect(getByTestId(type2Div, "itemrow_u-3")).toBeInTheDocument();
@@ -103,6 +105,7 @@ describe("CadetUniformTable", () => {
 
     it("shows the correct issued count and default for each type", () => {
         setup();
+
         const amounts = screen.getAllByTestId("div_uitems_amount");
         expect(amounts[0]).toHaveTextContent("(2 common.of 3)");
         expect(amounts[1]).toHaveTextContent("(1 common.of 1)");
@@ -113,6 +116,7 @@ describe("CadetUniformTable", () => {
 
     it("marks the issued count yellow if issued < required", () => {
         setup();
+
         const amounts = screen.getAllByTestId("div_uitems_amount");
         expect(amounts[0]).toHaveClass("text-orange-500");
         expect(amounts[1]).not.toHaveClass("text-orange-500");
@@ -120,26 +124,36 @@ describe("CadetUniformTable", () => {
 
     it("shows the issue button for each type", () => {
         setup();
+
         expect(screen.getAllByTestId("btn_issue")).toHaveLength(mockTypeList.length);
     });
 
     it("opens the issue modal when issue button is clicked", async () => {
-        const { CadetUniformTableIssueModal } = jest.requireMock("./CadetUniformTableIssueModal");
         setup();
+        const { CadetUniformTableIssueModal } = jest.requireMock("./CadetUniformTableIssueModal");
+        
         const btns = screen.getAllByTestId("btn_issue");
         await userEvent.click(btns[0]);
-        expect(screen.getByTestId("issue-modal")).toBeInTheDocument();
-        // Modal should show the correct type name
-        expect(screen.getByText(/Modal: Typ1/)).toBeInTheDocument();
 
+        expect(screen.getByTestId("issue-modal")).toBeInTheDocument();
+        expect(screen.getByText(/Modal: Typ1/)).toBeInTheDocument();
+        expect(CadetUniformTableIssueModal).toHaveBeenCalledTimes(1);
+        expect(CadetUniformTableIssueModal).toHaveBeenLastCalledWith({
+            cadetId: "cadet-1",
+            type: mockTypeList[0],
+            itemToReplace: undefined,
+            onClose: expect.any(Function),
+        }, undefined);
+        
         // Open for another type
         await userEvent.click(btns[1]);
         expect(screen.getByTestId("issue-modal")).toBeInTheDocument();
         expect(screen.getByText(/Modal: Typ2/)).toBeInTheDocument();
-
-        expect(CadetUniformTableIssueModal).toHaveBeenCalledWith({
+        
+        expect(CadetUniformTableIssueModal).toHaveBeenCalledTimes(2);
+        expect(CadetUniformTableIssueModal).toHaveBeenLastCalledWith({
             cadetId: "cadet-1",
-            type: mockTypeList[0],
+            type: mockTypeList[1],
             itemToReplace: undefined,
             onClose: expect.any(Function),
         }, undefined);
@@ -147,20 +161,21 @@ describe("CadetUniformTable", () => {
 
     it("closes the issue modal when close is clicked", async () => {
         setup();
-        const btns = screen.getAllByTestId("btn_issue");
-        await userEvent.click(btns[0]);
+
+        await userEvent.click(screen.getAllByTestId("btn_issue")[0]);
         expect(screen.getByTestId("issue-modal")).toBeInTheDocument();
+        
         await userEvent.click(screen.getByText("close"));
         expect(screen.queryByTestId("issue-modal")).not.toBeInTheDocument();
     });
 
     it("opens the issue modal for replace when replaceItem is called", async () => {
-        const { CadetUniformTableIssueModal } = jest.requireMock("./CadetUniformTableIssueModal");
         setup();
+        const { CadetUniformTableIssueModal } = jest.requireMock("./CadetUniformTableIssueModal");
+
         const replaceBtn = screen.getByTestId("replace_u-1");
         await userEvent.click(replaceBtn);
         expect(screen.getByTestId("issue-modal")).toBeInTheDocument();
-        // Modal should show the correct type name and item number
         expect(screen.getByText(/Modal: Typ1/)).toBeInTheDocument();
 
         expect(CadetUniformTableIssueModal).toHaveBeenCalledWith({
