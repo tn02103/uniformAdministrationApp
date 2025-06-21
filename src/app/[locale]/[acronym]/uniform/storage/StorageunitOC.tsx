@@ -9,6 +9,8 @@ import { toast } from "react-toastify";
 import { StorageunitOCDetailForm } from "./StorageunitOCDetailForm";
 import { StorageunitOCHeader } from "./StorageunitOCHeader";
 import { StorageunitOCUniformList } from "./StorageunitOCUniformList";
+import { useGlobalData } from "@/components/globalDataProvider";
+import { AuthRole } from "@/lib/AuthRoles";
 
 type Props = {
     storageUnit?: StorageUnitWithUniformItems;
@@ -18,6 +20,7 @@ type Props = {
 export function StorageunitOC({ storageUnit, onHide, setSelectedStorageUnitId }: Props) {
     const [editable, setEditable] = useState(!storageUnit);
     const { mutate } = useStorageUnitsWithUniformItemList();
+    const { userRole } = useGlobalData();
     const t = useI18n();
     const modal = useModal();
 
@@ -64,17 +67,19 @@ export function StorageunitOC({ storageUnit, onHide, setSelectedStorageUnitId }:
             <StorageunitOCHeader storageUnit={storageUnit} />
             <Offcanvas.Body>
                 <hr className="mb-0" />
-                <Row className="mb-3 justify-content-evenly">
-                    <LabelIconButton
-                        variantKey="edit"
-                        disabled={editable || !storageUnit}
-                        onClick={() => setEditable(true)} />
-                    <LabelIconButton
-                        variantKey="delete"
-                        onClick={handleDelete}
-                        disabled={!storageUnit || editable}
-                    />
-                </Row>
+                {userRole >= AuthRole.inspector &&
+                    <Row className="mb-3 justify-content-evenly">
+                        <LabelIconButton
+                            variantKey="edit"
+                            disabled={editable || !storageUnit}
+                            onClick={() => setEditable(true)} />
+                        <LabelIconButton
+                            variantKey="delete"
+                            onClick={handleDelete}
+                            disabled={!storageUnit || editable}
+                        />
+                    </Row>
+                }
                 <StorageunitOCDetailForm
                     editable={editable}
                     storageUnit={storageUnit}
@@ -88,6 +93,9 @@ export function StorageunitOC({ storageUnit, onHide, setSelectedStorageUnitId }:
                         <StorageunitOCUniformList storageUnit={storageUnit} />
                     </>
                 )}
+                <div className="h-50">
+
+                </div>
             </Offcanvas.Body>
         </Offcanvas>
     );

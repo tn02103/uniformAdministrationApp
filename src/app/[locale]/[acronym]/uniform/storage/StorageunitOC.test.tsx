@@ -4,6 +4,7 @@ import { act, render, screen } from "@testing-library/react";
 import { mockStorageUnitWithItems } from "./StorageunitOC.jestHelper";
 import { StorageunitOC } from "./StorageunitOC";
 import userEvent from "@testing-library/user-event";
+import { AuthRole } from "@/lib/AuthRoles";
 
 
 describe("StorageunitOC", () => {
@@ -136,5 +137,23 @@ describe("StorageunitOC", () => {
 
         expect(deleteStorageUnit).toHaveBeenCalledWith(mockStorageUnit.id);
         expect(onHideMock).toHaveBeenCalled();
+    });
+
+    describe("role-based access", () => {
+        afterEach(() => delete global.__ROLE__);
+
+        it("shows edit button for inspector role and above", () => {
+            global.__ROLE__ = AuthRole.inspector; // Mocking global role for test
+            render(<StorageunitOC storageUnit={mockStorageUnit} onHide={() => { }} setSelectedStorageUnitId={() => { }} />);
+            expect(screen.getByRole('button', { name: /actions.edit/i })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
+        });
+
+        it("does not show edit button for roles below inspector", () => {
+            global.__ROLE__ = AuthRole.user; // Mocking global role for test
+            render(<StorageunitOC storageUnit={mockStorageUnit} onHide={() => { }} setSelectedStorageUnitId={() => { }} />);
+            expect(screen.queryByRole('button', { name: /actions.edit/i })).not.toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: /delete/i })).not.toBeInTheDocument();
+        });
     });
 });

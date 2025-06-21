@@ -282,6 +282,14 @@ describe("CadetUniformTableIssueModal", () => {
             await userEvent.type(input, "102");
             expect(await screen.findByText(/Uniformteil ist als Reserve markiert/)).toBeInTheDocument();
         });
+
+        it("shows alert if item is assigned to a storage unit", async () => {
+            setup();
+            const input = screen.getByLabelText(/input.label/i);
+            await userEvent.clear(input);
+            await userEvent.type(input, "104");
+            expect(await screen.findByText(/cadetDetailPage.issueModal.alert.storageUnit/)).toBeInTheDocument();
+        });
     });
     describe("options", () => {
         it("shows storage unit icon for storage item", async () => {

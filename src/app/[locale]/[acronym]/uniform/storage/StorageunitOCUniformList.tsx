@@ -1,9 +1,11 @@
-import { RenderOptionProps, AutocompleteField } from "@/components/fields/AutocompleteField";
+import { AutocompleteField, RenderOptionProps } from "@/components/fields/AutocompleteField";
+import { useGlobalData } from "@/components/globalDataProvider";
 import { useModal } from "@/components/modals/modalProvider";
 import { addUniformItemToStorageUnit, removeUniformFromStorageUnit, StorageUnitWithUniformItems } from "@/dal/storageUnit/_index";
 import { UniformItemLabel } from "@/dal/uniform/item/_index";
 import { useStorageUnitsWithUniformItemList } from "@/dataFetcher/storage";
 import { useUniformLabels } from "@/dataFetcher/uniform";
+import { AuthRole } from "@/lib/AuthRoles";
 import { useScopedI18n } from "@/lib/locales/client";
 import { SAFormHandler } from "@/lib/SAFormHandler";
 import { faBoxOpen, faPerson, faTriangleExclamation, faX } from "@fortawesome/free-solid-svg-icons";
@@ -18,8 +20,11 @@ type Option = UniformItemLabel & { value: string };
 export function StorageunitOCUniformList({ storageUnit }: Props) {
     const t = useScopedI18n('storageUnit');
     const tCommon = useScopedI18n('common');
+
     const { mutate } = useStorageUnitsWithUniformItemList();
     const { uniformLabels, mutate: labelMutate } = useUniformLabels();
+    const { userRole } = useGlobalData();
+
     const uniformOptions = uniformLabels
         ?.filter(l => !storageUnit.uniformList.some(u => u.id === l.id))
         .map(d => ({ value: d.id, ...d })) ?? [];
@@ -69,22 +74,24 @@ export function StorageunitOCUniformList({ storageUnit }: Props) {
     return (
         <div>
             <h4 className="text-center">{t('label.header.uniformlist')}</h4>
-            <div className="my-3">
-                <AutocompleteField<Option>
-                    resetOnChange
-                    label={t('label.addUT')}
-                    options={uniformOptions}
-                    value={null}
-                    noImplicitChange={true}
-                    onChange={handleAdd}
-                    renderOption={getRenderOptionFunction({
-                        isReserve: t('tooltips.utOptions.isReserve'),
-                        owner: t('tooltips.utOptions.owner'),
-                        storageUnit: t('tooltips.utOptions.storageUnit'),
-                    })}
-                    isOptionDisabled={(option) => !!(option.owner || option.storageUnit)}
-                />
-            </div>
+            {(userRole >= AuthRole.inspector) &&
+                <div className="my-3">
+                    <AutocompleteField<Option>
+                        resetOnChange
+                        label={t('label.addUT')}
+                        options={uniformOptions}
+                        value={null}
+                        noImplicitChange={true}
+                        onChange={handleAdd}
+                        renderOption={getRenderOptionFunction({
+                            isReserve: t('tooltips.utOptions.isReserve'),
+                            owner: t('tooltips.utOptions.owner'),
+                            storageUnit: t('tooltips.utOptions.storageUnit'),
+                        })}
+                        isOptionDisabled={(option) => !!(option.owner || option.storageUnit)}
+                    />
+                </div>
+            }
             <Table hover aria-label="uniformlist">
                 <thead>
                     <tr className="border-bottom border-dark">
@@ -97,16 +104,18 @@ export function StorageunitOCUniformList({ storageUnit }: Props) {
                 <tbody>
                     {storageUnit.uniformList.map((uniform) => (
                         <tr key={uniform.id} className="hoverCol">
-                            <td >
-                                <Button
-                                    variant={"light"}
-                                    className={(process.env.NEXT_PUBLIC_STAGE !== "TEST") ? "hoverColHidden" : ""}
-                                    size="sm"
-                                    onClick={() => handleRemove(uniform.id)}
-                                    aria-label={tCommon('actions.remove')}
-                                >
-                                    <FontAwesomeIcon icon={faX} className="text-danger" />
-                                </Button>
+                            <td>
+                                {(userRole >= AuthRole.inspector) &&
+                                    <Button
+                                        variant={"light"}
+                                        className={(process.env.NEXT_PUBLIC_STAGE !== "TEST") ? "hoverColHidden" : ""}
+                                        size="sm"
+                                        onClick={() => handleRemove(uniform.id)}
+                                        aria-label={tCommon('actions.remove')}
+                                    >
+                                        <FontAwesomeIcon icon={faX} className="text-danger" />
+                                    </Button>
+                                }
                             </td>
                             <td>{uniform.type.name}-{uniform.number}</td>
                             <td>{uniform.size?.name}</td>
@@ -115,7 +124,7 @@ export function StorageunitOCUniformList({ storageUnit }: Props) {
                     ))}
                 </tbody>
             </Table>
-        </div >
+        </div>
     );
 }
 

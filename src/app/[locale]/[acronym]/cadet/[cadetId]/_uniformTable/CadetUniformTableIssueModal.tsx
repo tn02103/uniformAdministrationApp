@@ -159,6 +159,14 @@ export const CadetUniformTableIssueModal = ({ cadetId, type, itemToReplace, onCl
                         </div>
                     </Alert>
                 )}
+                {(selectedItem  && selectedItem.storageUnit) && (
+                    <Alert variant="secondary" className="my-3 d-flex align-items-center p-2">
+                        <FontAwesomeIcon icon={faBoxOpen} className="me-2 text-secondary" />
+                        <div>
+                            {t('cadetDetailPage.issueModal.alert.storageUnit', { unit: selectedItem.storageUnit.name })}
+                        </div>
+                    </Alert>
+                )}
             </Modal.Body>
             <Modal.Footer>
                 <Button
