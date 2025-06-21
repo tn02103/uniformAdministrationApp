@@ -1,19 +1,35 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
+import style from "./Autocomplete.module.css";
+import { useScopedI18n } from "@/lib/locales/client";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 export type AutocompleteProps<TOption extends AutocompleteOptionType> = {
+    /** List of options to choose from */
     options: TOption[];
+    /** The value of the selected option */
     value?: string | null;
+    /** If true, the input will be marked as invalid */
     invalid?: boolean;
+    /** If true loading icon will be shown */
+    isLoading?: boolean;
+    /** Callback function when an option is selected */
     onChange: (value: string | null) => void;
     /** Optional callback for searchterm changes*/
     onInputChange?: (value: string) => void;
-    // call onChange as soon as userimput equals a option
+    /** If true, the input will not call onChange when the user types a value that is not in the options */
     noImplicitChange?: boolean;
+    /** Placeholder text for the input */
     placeholder?: string;
+    /** If true, the input will reset when an option is selected */
     resetOnChange?: boolean;
+    /** If true, the options will not be shown when the input is focused */
     renderOption?: (props: RenderOptionProps<TOption>) => React.ReactNode;
+    /** Function to determine if an option is disabled */
     isOptionDisabled?: (option: TOption) => boolean;
+    /** Custom filter function to filter options based on input value */
+    customFilter?: (options: TOption[], inputValue: string) => TOption[];
 };
 export type AutocompleteOptionType = { value: string, label: string };
 export type RenderOptionProps<TOption extends AutocompleteOptionType> = {
@@ -30,12 +46,15 @@ function stopEvent(e: React.SyntheticEvent) {
 }
 
 export function Autocomplete<TOption extends AutocompleteOptionType = AutocompleteOptionType>(props: AutocompleteProps<TOption>) {
-    const { options, onChange, isOptionDisabled, resetOnChange, onInputChange } = props;
-
+    const { options, onChange, isOptionDisabled, resetOnChange, onInputChange, customFilter, isLoading, value: propValue } = props;
+    const maxOptions = 50;
+    const t = useScopedI18n("autocomplete");
+ 
     const [inputValue, setInputValue] = useState('');
     const [filteredOptions, setFilteredOptions] = useState<TOption[]>([]);
     const [highlightedIndex, setHighlightedIndex] = useState<number>(0);
     const [optionsVisible, setOptionsVisible] = useState(false);
+    const optionListRef = React.useRef<HTMLDivElement>(null);
 
     const changeHighlightedIndex = useCallback((mode: "up" | "down" | "first" | "last") => {
         if (!filteredOptions.length) return;
@@ -113,11 +132,16 @@ export function Autocomplete<TOption extends AutocompleteOptionType = Autocomple
 
     useEffect(() => {
         if (inputValue.length === 0) {
-            setFilteredOptions([...options].splice(0, 7));
+            setFilteredOptions([...options].splice(0, maxOptions));
+        } else if (customFilter) {
+            setFilteredOptions(customFilter(options, inputValue).splice(0, maxOptions));
         } else {
-            setFilteredOptions(options.filter((option) => option.label.toLocaleLowerCase().includes(inputValue.toLocaleLowerCase())).splice(0, 7));
+            setFilteredOptions(options
+                .filter((option) => option.label.toLocaleLowerCase().includes(inputValue.toLocaleLowerCase()))
+                .splice(0, maxOptions)
+            );
         }
-    }, [setFilteredOptions, inputValue, options]);
+    }, [setFilteredOptions, inputValue, options, customFilter]);
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
         switch (e.key) {
@@ -166,11 +190,33 @@ export function Autocomplete<TOption extends AutocompleteOptionType = Autocomple
         }
     }, [filteredOptions, highlightedIndex, handleOptionSelect, optionsVisible, changeHighlightedIndex]);
 
+    useEffect(() => {
+        if (!optionsVisible) return;
+        const optionList = optionListRef.current;
+        if (!optionList) return;
+        const optionNodes = optionList.querySelectorAll('[role="option"]');
+        if (highlightedIndex != null && optionNodes[highlightedIndex]) {
+            (optionNodes[highlightedIndex] as HTMLElement).scrollIntoView({ block: 'nearest' });
+        }
+    }, [highlightedIndex, optionsVisible]);
+
+    useEffect(() => {
+        if (propValue) {
+            const selectedOption = options.find(option => option.value === propValue);
+            if (selectedOption) {
+                setInputValue(selectedOption.label);
+            } else {
+                setInputValue('');
+            }
+        }
+    }, [propValue, options]);
+
     return (
         <div className="position-relative" style={{ maxWidth: '200px' }}>
             <Form.Control
                 type="text"
                 id="autocomplete"
+                className={isLoading ? style.loadingInput : ''}
                 value={inputValue}
                 isInvalid={props.invalid}
                 onFocus={() => setOptionsVisible(true)}
@@ -180,18 +226,12 @@ export function Autocomplete<TOption extends AutocompleteOptionType = Autocomple
                 placeholder={props.placeholder}
                 aria-expanded={optionsVisible}
                 aria-controls="autocomplete-options"
+                aria-invalid={props.invalid}
             />
-            {optionsVisible &&
+            {(optionsVisible || false) &&
                 <div style={{ display: "contents" }}>
-                    <div className="position-absolute " style={{
-                        zIndex: '100',
-                        overflow: 'visible',
-                        maxHeight: '200px',
-                        backgroundColor: 'white',
-                        width: '100%',
-                        maxWidth: '200px',
-                    }} >
-                        <div style={{ border: '1px solid black' }} role="listbox" id="autocomplete-options">
+                    <div className={style.optionListWrapper}>
+                        <div className={style.optionList} role="listbox" id="autocomplete-options" ref={optionListRef}>
                             {props.renderOption && filteredOptions.map((option) =>
                                 props.renderOption!({
                                     option,
@@ -202,11 +242,7 @@ export function Autocomplete<TOption extends AutocompleteOptionType = Autocomple
                             )}
                             {!props.renderOption && filteredOptions.map((option, index) => (
                                 <div key={option.value}
-                                    style={{
-                                        backgroundColor: (index === highlightedIndex) ? 'LightGrey' : 'white',
-                                        cursor: 'pointer',
-                                        padding: '5px'
-                                    }}
+                                    className={(index === highlightedIndex) ? style.selectedOptionItem : style.optionItem}
                                     role="option"
                                     aria-selected={props.value === option.value}
                                     onMouseDown={(e) => handleOptionSelect(option, e)}
@@ -214,9 +250,20 @@ export function Autocomplete<TOption extends AutocompleteOptionType = Autocomple
                                     {option.label}
                                 </div>
                             ))}
-                            {filteredOptions.length === 0 &&
+                            {filteredOptions.length === maxOptions &&
+                                <div className="p-2 bg-white fst-italic">
+                                    {t('optionLimit', { count: maxOptions })}
+                                </div>
+                            }
+                            {(!isLoading && filteredOptions.length === 0) &&
                                 <div style={{ padding: '5px' }} role="alert" aria-label="no results">
-                                    No results found
+                                    {t('noOptions')}
+                                </div>
+                            }
+                            {isLoading &&
+                                <div style={{ padding: '5px' }} role="status" aria-label="loading results">
+                                    <FontAwesomeIcon icon={faSpinner} spin className="text-secondary me-2" />
+                                    {t('loading')}
                                 </div>
                             }
                         </div>

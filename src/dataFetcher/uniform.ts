@@ -2,9 +2,10 @@ import { getUniformItemHistory, getUniformItemLabels } from "@/dal/uniform/item/
 import useSWR from "swr";
 
 export function useUniformLabels() {
-    const { data, mutate } = useSWR('uniformItemLabels', getUniformItemLabels);
+    const { data, mutate, isLoading } = useSWR('uniformItemLabels', getUniformItemLabels);
     return {
         uniformLabels: data,
+        isLoading,
         mutate
     }
 }

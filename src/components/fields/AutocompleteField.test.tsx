@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import {AutocompleteField, AutocompleteOptionType} from "./AutocompleteField";
+import { AutocompleteField, AutocompleteOptionType } from "./AutocompleteField";
 
 const options: AutocompleteOptionType[] = [
     { value: "1", label: "Apple" },
@@ -14,6 +14,8 @@ const options: AutocompleteOptionType[] = [
 ];
 
 describe("AutocompleteField", () => {
+    window.HTMLElement.prototype.scrollIntoView = function () { };
+
     it("renders with label and placeholder", () => {
         render(
             <AutocompleteField
@@ -41,9 +43,10 @@ describe("AutocompleteField", () => {
         const input = screen.getByLabelText("Fruit");
         await user.click(input);
         expect(screen.getByRole("listbox")).toBeInTheDocument();
-        expect(screen.getAllByRole("option").length).toBeLessThanOrEqual(7);
+        expect(screen.getAllByRole("option")).toHaveLength(8);
 
         await user.type(input, "ap");
+        expect(screen.getAllByRole("option")).toHaveLength(2);
         expect(screen.getByText("Apple")).toBeInTheDocument();
         expect(screen.queryByText("Banana")).not.toBeInTheDocument();
     });
@@ -194,6 +197,7 @@ describe("AutocompleteField", () => {
                         onMouseDown={onMouseDown}
                         role="option"
                         aria-selected={highlighted}
+                        key={option.value}
                     >
                         {option.label}!
                     </div>
@@ -217,7 +221,7 @@ describe("AutocompleteField", () => {
         );
         const input = screen.getByLabelText("Fruit");
         await user.type(input, "ZZZZZZ");
-        expect(screen.getByRole("alert", { name: "no results" })).toHaveTextContent("No results found");
+        expect(screen.getByRole("alert", { name: "no results" })).toHaveTextContent("autocomplete.noOptions");
     });
 
     it("limits filtered options to 7", async () => {
@@ -232,7 +236,7 @@ describe("AutocompleteField", () => {
         );
         const input = screen.getByLabelText("Fruit");
         await user.click(input);
-        expect(screen.getAllByRole("option").length).toBe(7);
+        expect(screen.getAllByRole("option").length).toBe(8);
     });
 
     it("highlights first option on input change", async () => {
@@ -249,7 +253,7 @@ describe("AutocompleteField", () => {
         await user.type(input, "a");
         const optionsEls = screen.getAllByRole("option");
         // The first option should have a different background (LightGrey)
-        expect(optionsEls[0]).toHaveStyle({ backgroundColor: "LightGrey" });
+        expect(optionsEls[0]).toHaveClass(/selectedOptionItem/);
     });
 
     it("sets aria attributes correctly", async () => {
@@ -288,7 +292,7 @@ describe("AutocompleteField", () => {
             const input = screen.getByLabelText("Fruit");
             await user.click(input);
             const optionsEls = screen.getAllByRole("option");
-            expect(optionsEls[0]).toHaveStyle({ backgroundColor: "LightGrey" });
+            expect(optionsEls[0]).toHaveClass(/selectedOptionItem/);
         });
 
         it("navigates with arrow keys and highlights correct option", async () => {
@@ -305,11 +309,11 @@ describe("AutocompleteField", () => {
             await user.click(input);
             await user.keyboard("{arrowdown}");
             const optionsEls = screen.getAllByRole("option");
-            expect(optionsEls[1]).toHaveStyle({ backgroundColor: "LightGrey" });
+            expect(optionsEls[1]).toHaveClass(/selectedOptionItem/);
             await user.keyboard("{arrowdown}");
-            expect(optionsEls[2]).toHaveStyle({ backgroundColor: "LightGrey" });
+            expect(optionsEls[2]).toHaveClass(/selectedOptionItem/);
             await user.keyboard("{arrowup}");
-            expect(optionsEls[1]).toHaveStyle({ backgroundColor: "LightGrey" });
+            expect(optionsEls[1]).toHaveClass(/selectedOptionItem/);
         });
 
         it("skips disabled options when navigating", async () => {
@@ -328,7 +332,7 @@ describe("AutocompleteField", () => {
             // Arrow down from first (Apple) should skip Banana (disabled) and highlight Cherry (also disabled), so next is Date
             await user.keyboard("{arrowdown}");
             const optionsEls = screen.getAllByRole("option");
-            expect(optionsEls[3]).toHaveStyle({ backgroundColor: "LightGrey" });
+            expect(optionsEls[3]).toHaveClass(/selectedOptionItem/);
         });
 
         it("stops at the last option when navigating down", async () => {
@@ -348,7 +352,7 @@ describe("AutocompleteField", () => {
                 await user.keyboard("{arrowdown}");
             }
             const optionsEls = screen.getAllByRole("option");
-            expect(optionsEls[6]).toHaveStyle({ backgroundColor: "LightGrey" });
+            expect(optionsEls[options.length - 1]).toHaveClass(/selectedOptionItem/);
         });
 
         it("stops at the first option when navigating up", async () => {
@@ -367,7 +371,91 @@ describe("AutocompleteField", () => {
             await user.keyboard("{arrowdown}{arrowdown}");
             await user.keyboard("{arrowup}{arrowup}{arrowup}");
             const optionsEls = screen.getAllByRole("option");
-            expect(optionsEls[0]).toHaveStyle({ backgroundColor: "LightGrey" });
+            expect(optionsEls[0]).toHaveClass(/selectedOptionItem/);
         });
     });
+
+    it("shows loading spinner and text when isLoading is true", async () => {
+        const user = userEvent.setup();
+            render(
+            <AutocompleteField
+                label="Fruit"
+                options={[]}
+                value={null}
+                onChange={() => { }}
+                isLoading
+            />
+        );
+        const input = screen.getByLabelText("Fruit");
+        await user.click(input);
+        expect(screen.getByRole("status", { name: "loading results" })).toBeInTheDocument();
+        expect(screen.getByText(/loading/i)).toBeInTheDocument();
+        expect(screen.getByRole("status")).toContainElement(screen.getByText(/loading/i));
+    });
+
+    it("filters options using customFilter prop", async () => {
+        const user = userEvent.setup();
+        const customFilter = (opts: AutocompleteOptionType[], inputValue: string) => opts.filter(o => o.label.startsWith(inputValue));
+        render(
+            <AutocompleteField
+                label="Fruit"
+                options={options}
+                value={null}
+                onChange={() => { }}
+                customFilter={customFilter}
+            />
+        );
+        const input = screen.getByLabelText("Fruit");
+        await user.type(input, "B");
+        const filtered = screen.getAllByRole("option");
+        expect(filtered.length).toBe(1);
+        expect(filtered[0]).toHaveTextContent("Banana");
+    });
+
+    it("calls onInputChange as user types", async () => {
+        const onInputChange = jest.fn();
+        const user = userEvent.setup();
+        render(
+            <AutocompleteField
+                label="Fruit"
+                options={options}
+                value={null}
+                onChange={() => { }}
+                onInputChange={onInputChange}
+            />
+        );
+        const input = screen.getByLabelText("Fruit");
+        await user.type(input, "Banana");
+        expect(onInputChange).toHaveBeenCalled();
+        expect(onInputChange).toHaveBeenLastCalledWith("Banana");
+    });
+
+    it("sets input as invalid when errorMessage prop is true", () => {
+        render(
+            <AutocompleteField
+                label="Fruit"
+                options={options}
+                value={null}
+                onChange={() => { }}
+                errorMessage={"Invalid selection"}
+            />
+        );
+        const input = screen.getByLabelText("Fruit");
+        expect(input).toHaveClass("is-invalid");
+        expect(input).toHaveAttribute("aria-invalid", "true");
+    });
+
+    it("shows the value prop as the input value (controlled input)", () => {
+        render(
+            <AutocompleteField
+                label="Fruit"
+                options={options}
+                value={"2"}
+                onChange={() => { }}
+            />
+        );
+        const input = screen.getByLabelText("Fruit");
+        expect(input).toHaveValue("Banana");
+    });
+
 });

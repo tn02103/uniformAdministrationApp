@@ -29,16 +29,19 @@ export const CadetUniformTableIssueModal = ({ cadetId, type, itemToReplace, onCl
     const t = useI18n();
 
     const { map, mutate } = useCadetUniformMap(cadetId);
-    const { uniformLabels } = useUniformLabels();
+    const { uniformLabels, isLoading: labelsLoading } = useUniformLabels();
 
     const [selectedItem, setSelectedItem] = useState<AutocompleteOption | null>(null);
     const [inputValue, setInputValue] = useState<number | null>(null);
     const [invalidInput, setInvalidInput] = useState(false);
 
-    const issuedItemList: UniformWithOwner[] = map?.[type.id] ?? [];
+    const issuedItemList: UniformWithOwner[] = useMemo(
+        () => map?.[type.id] ?? [],
+        [map, type.id]
+    );
     const options = useMemo(
         () => uniformLabels
-            ?.filter(label => (label.typeId === type.id))
+            ?.filter(label => (label.type.id === type.id))
             .map(label => ({
                 ...label,
                 value: label.id,
@@ -71,6 +74,36 @@ export const CadetUniformTableIssueModal = ({ cadetId, type, itemToReplace, onCl
         );
     }
 
+    const handleInputChange = (value: string) => {
+        if (!value || value.trim() === "") {
+            setInputValue(null);
+            setInvalidInput(false);
+            setSelectedItem(null);
+            return;
+        }
+
+        const zodValue = uniformNumberSchema.safeParse(+value);
+        if (zodValue.success) {
+            setInputValue(zodValue.data);
+            setInvalidInput(false);
+        }
+        else {
+            setInputValue(null);
+            setInvalidInput(true);
+        }
+    }
+
+    const handleValueChange = (value: string | null) => {
+        const selected = options.find(option => option.value === value);
+        setSelectedItem(selected ?? null);
+    }
+
+    const renderOption = useMemo(() => getRenderOptionFunction({
+        isReserve: t('cadetDetailPage.issueModal.option.isReserve'),
+        owner: t('cadetDetailPage.issueModal.option.owner'),
+        storageUnit: t('cadetDetailPage.issueModal.option.storageUnit'),
+    }, issuedItemList), [t, issuedItemList]);
+
     return (
         <Modal show onHide={onClose}>
             <Modal.Header closeButton>
@@ -85,30 +118,14 @@ export const CadetUniformTableIssueModal = ({ cadetId, type, itemToReplace, onCl
                 <Row>
                     <Col>
                         <AutocompleteField<AutocompleteOption>
+                            isLoading={!uniformLabels && labelsLoading}
                             label={t('cadetDetailPage.issueModal.input.label')}
                             value={selectedItem?.value ?? null}
                             options={options}
-                            renderOption={getRenderOptionFunction({
-                                isReserve: t('cadetDetailPage.issueModal.option.isReserve'),
-                                owner: t('cadetDetailPage.issueModal.option.owner'),
-                                storageUnit: t('cadetDetailPage.issueModal.option.storageUnit'),
-                            }, issuedItemList)}
+                            renderOption={renderOption}
                             isOptionDisabled={(option) => issuedItemList.some(item => item.number === option.number)}
-                            onChange={(value) => {
-                                const selected = options.find(option => option.value === value);
-                                setSelectedItem(selected ?? null);
-                            }}
-                            onInputChange={(value) => {
-                                const zodValue = uniformNumberSchema.safeParse(+value);
-                                if (zodValue.success) {
-                                    setInputValue(zodValue.data);
-                                    setInvalidInput(false);
-                                }
-                                else {
-                                    setInputValue(null);
-                                    setInvalidInput(true);
-                                }
-                            }}
+                            onChange={handleValueChange}
+                            onInputChange={handleInputChange}
                             errorMessage={invalidInput ? t('cadetDetailPage.issueModal.error.invalidNumber') : undefined}
                         />
                     </Col>
@@ -186,10 +203,10 @@ export const CadetUniformTableIssueModal = ({ cadetId, type, itemToReplace, onCl
     )
 }
 
-const CustomAlert = ({ variant, children, icon }: { variant: string, children: React.ReactNode | string, icon: IconProp}) => (
+const CustomAlert = ({ variant, children, icon }: { variant: string, children: React.ReactNode | string, icon: IconProp }) => (
     <Alert variant={variant} className="my-3 d-flex align-items-center p-2">
         <div className={`px-2`}>
-            <FontAwesomeIcon icon={icon} size="lg"/>
+            <FontAwesomeIcon icon={icon} size="lg" />
         </div>
         <div className={`px-2 border-start border-2 border-${variant}-subtle`}>
             {children}
@@ -212,7 +229,7 @@ const getRenderOptionFunction = (translations: { isReserve: string, owner: strin
 
         const optionElement = (
             <div key={option.value}
-                className={`d-flex align-items-center gap-1 p-2 ${highlighted ? 'bg-secondary-subtle' : 'bg-white'} ${textColor}`}
+                className={`d-flex align-items-center gap-1 p-2 ps-3 border-bottom border-1 border-gray ${highlighted ? 'bg-secondary-subtle' : 'bg-white'} ${textColor}`}
                 style={{
                     cursor: disabled ? 'not-allowed' : 'pointer',
                 }}
