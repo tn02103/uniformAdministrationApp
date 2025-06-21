@@ -20,7 +20,6 @@ type FormProps<TFieldValue extends FieldValues> = {
     disabled?: boolean;
     plaintext?: boolean;
     formName?: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     zodSchema?: ZodTypeAny;
 } & UseFormProps<TFieldValue>;
 

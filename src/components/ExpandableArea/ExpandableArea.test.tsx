@@ -13,7 +13,7 @@ describe('ExpandableArea', () => {
 
         const button = screen.getByRole('button');
         expect(button).toHaveTextContent('expandableArea.showMore');
-        expect(button.getElementsByTagName('svg')[0]).not.toHaveClass(/open/);
+        expect(screen.getByRole('img', { hidden: true })).not.toHaveClass(/open/);
 
         expect(screen.queryByText('Test')).toBeNull();
         expect(container).toMatchSnapshot();
@@ -30,7 +30,7 @@ describe('ExpandableArea', () => {
 
         await user.click(button);
         expect(button).toHaveTextContent('expandableArea.showLess');
-        expect(button.getElementsByTagName('svg')[0]).toHaveClass(/open/);
+        expect(screen.getByRole('img', { hidden: true })).toHaveClass(/open/);
 
         expect(screen.getByText('Test')).toBeInTheDocument();
         expect(container).toMatchSnapshot();

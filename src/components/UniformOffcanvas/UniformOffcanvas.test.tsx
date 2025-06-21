@@ -32,7 +32,7 @@ describe('UniformOffcanvas', () => {
         expect(screen.getByRole('dialog')).toMatchSnapshot();
     });
 
-    it('should call onClose when close button is clicked', () => {
+    it('should call onClose when close button is clicked', async () => {
         const onCloseMock = jest.fn();
         const { getByLabelText } = render(
             <UniformOffcanvas
@@ -44,7 +44,7 @@ describe('UniformOffcanvas', () => {
         );
 
         const closeButton = getByLabelText('Close');
-        closeButton.click();
+        await userEvent.click(closeButton);
 
         expect(onCloseMock).toHaveBeenCalledTimes(1);
     });
