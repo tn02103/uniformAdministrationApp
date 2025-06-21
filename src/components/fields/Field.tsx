@@ -10,13 +10,15 @@ export type FieldProps = {
     children?: React.ReactNode,
     labelClassName?: string,
     fieldName?: string,
+    fieldId?: string,
+    fieldGroupTestId?: string,
 }
 
-export const Field = ({ formName = "", name, label, required, errorMessage, children, labelClassName, fieldName = "input" }: FieldProps) => {
+export const Field = ({ formName = "", fieldId, name, label, required, errorMessage, children, labelClassName, fieldName = "input", fieldGroupTestId }: FieldProps) => {
     return (
-        <FormGroup>
+        <FormGroup data-testid={fieldGroupTestId}>
             {label &&
-                <FormLabel htmlFor={`${formName}_${fieldName}-${name}`} className={`fw-bold m-0 ${labelClassName ?? ""}`}>
+                <FormLabel htmlFor={fieldId ?? `${formName}_${fieldName}-${name}`} className={`fw-bold m-0 ${labelClassName ?? ""}`}>
                     {label}{required ? " *" : ""}
                 </FormLabel>
             }

@@ -14,7 +14,7 @@ type PropType = {
     handleEdit: () => void;
     handleReturn: () => void;
 }
-const MaterialTableLine = ({ material, group, handleEdit, handleReturn }: PropType) => {
+export const CadetMaterialTableLine = ({ material, group, handleEdit, handleReturn }: PropType) => {
     const t = useI18n();
     const [selected, setSelected] = useState<boolean>(false);
     const { userRole } = useGlobalData();
@@ -71,5 +71,3 @@ const MaterialTableLine = ({ material, group, handleEdit, handleReturn }: PropTy
         </div>
     )
 }
-
-export default MaterialTableLine;

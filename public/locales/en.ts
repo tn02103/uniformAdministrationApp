@@ -290,6 +290,25 @@ export default {
                 notInspected: "Cadets uninspected:\nStart cadet inspection"
             },
         },
+        "issueModal": {
+            "input.label": "select uniform item",
+            "alert.owner.1": "Already issued to the cadet ",
+            "alert.owner.2": ". Do you want to change the owner?",
+            "alert.noItemFound": "There is no uniform part with the number {number}. Do you want to create it?",
+            "alert.itemAlreadyOwned": "The selected uniform part is already issued to this person.",
+            "alert.storageUnit": "The selected uniform part is assigned to the storage unit {unit}.",
+            "button.changeOwner": "Change owner",
+            "button.replace": "Replace",
+            "button.issue": "Issue",
+            "button.create": "Create uniform part",
+            "error.invalidNumber": "The entered number is invalid",
+            "error.issueFailed": "The uniform part could not be issued. Please try again later.",
+            "header.add": "Issue {type}",
+            "header.replace": "Replace {type}-{number}",
+            "option.isReserve": "Reserve",
+            "option.owner": "Owner: ",
+            "option.storageUnit": "Storage unit: ",
+        },
     },
     storageUnit: {
         error: {

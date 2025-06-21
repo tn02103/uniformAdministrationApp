@@ -4,6 +4,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { mockStorageUnitWithItems } from "./StorageunitOC.jestHelper";
 import { StorageunitOCHeader } from "./StorageunitOCHeader";
+import { AuthRole } from "@/lib/AuthRoles";
 
 
 describe("StorageunitOCHeader", () => {
@@ -118,5 +119,21 @@ describe("StorageunitOCHeader", () => {
         expect(screen.queryByRole("alert", { name: /name/i })).not.toBeInTheDocument();
         expect(updateStorageUnit).toHaveBeenCalled();
     });
-});
 
+    describe("role-based access", () => {
+
+        afterEach(() => delete global.__ROLE__);
+
+        it("shows edit button for inspector role and above", () => {
+            global.__ROLE__ = AuthRole.inspector; // Mocking global role for test
+            render(<StorageunitOCHeader storageUnit={mockStorageUnit} />);
+            expect(screen.getByRole("button", { name: /edit/i })).toBeInTheDocument();
+        });
+
+        it("does not show edit button for roles below inspector", () => {
+            global.__ROLE__ = AuthRole.user; // Mocking global role for test
+            render(<StorageunitOCHeader storageUnit={mockStorageUnit} />);
+            expect(screen.queryByRole("button", { name: /edit/i })).not.toBeInTheDocument();
+        });
+    });
+});

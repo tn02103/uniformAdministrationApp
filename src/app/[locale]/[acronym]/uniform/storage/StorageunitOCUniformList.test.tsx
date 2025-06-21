@@ -1,9 +1,10 @@
 import "./StorageunitOC.jestHelper";
 
-import { act, getByRole, render, screen } from "@testing-library/react";
+import { act, getByRole, queryByRole, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { mockStorageUnitWithItems } from "./StorageunitOC.jestHelper";
 import { StorageunitOCUniformList } from "./StorageunitOCUniformList";
+import { AuthRole } from "@/lib/AuthRoles";
 
 const baseStorageUnit = mockStorageUnitWithItems[0];
 
@@ -155,6 +156,38 @@ describe("StorageunitOCUniformList", () => {
                 uniformIds: [baseStorageUnit.uniformList[0].id],
             });
             expect(toast.error).toHaveBeenCalled();
+        });
+    });
+    describe("role-based access", () => {
+        afterEach(() => delete global.__ROLE__);
+        it("shows add button for inspector role and above", async () => {
+            global.__ROLE__ = AuthRole.inspector; // Mocking global role for test
+
+            const user = userEvent.setup();
+            render(<StorageunitOCUniformList storageUnit={baseStorageUnit} />);
+
+            const autocomplete = screen.getByRole("textbox");
+            expect(autocomplete).toBeInTheDocument();
+
+            const firstRow = screen.getAllByRole('row')[1]; // First row after header
+            await user.hover(firstRow);
+            const removeButton = getByRole(firstRow, "button", { name: /remove/i });
+            expect(removeButton).toBeInTheDocument();
+        });
+
+        it("does not show add button for roles below inspector", async () => {
+            global.__ROLE__ = AuthRole.user; // Mocking global role for test
+
+            const user = userEvent.setup();
+            render(<StorageunitOCUniformList storageUnit={baseStorageUnit} />);
+
+            const autocomplete = screen.queryByRole("textbox");
+            expect(autocomplete).not.toBeInTheDocument();
+
+            const firstRow = screen.getAllByRole('row')[1]; // First row after header
+            await user.hover(firstRow);
+            const removeButton = queryByRole(firstRow, "button", { name: /remove/i });
+            expect(removeButton).not.toBeInTheDocument();
         });
     });
 });

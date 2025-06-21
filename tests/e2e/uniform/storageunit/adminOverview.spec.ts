@@ -26,7 +26,7 @@ test.describe("Storage Unit Admin Overview", () => {
                 await Promise.all([
                     expect(cols.nth(0)).toHaveText(unit.name),
                     expect(cols.nth(1)).toHaveText(unit.description!),
-                    expect(cols.nth(2)).toHaveText(unit.capacity?.toString() ?? ""),
+                    expect(cols.nth(2)).toHaveText(unit.capacity?.toString() ?? "--"),
                     expect(cols.nth(3)).toHaveText(unit.isReserve ? 'Ja' : 'Nein'),
                     expect(cols.nth(4)).toHaveText(uniformCount.toString()),
                 ]);

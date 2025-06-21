@@ -288,8 +288,27 @@ export default {
             inspection: {
                 inspected: "Kadetten kontrolliert:\nInspektion des Kadetten aktualisieren",
                 notInspected: "Kadetten unkontrolliert:\nInspektion des Kadetten starten"
-            }
-        }
+            },
+        },
+        "issueModal": {
+            "input.label": "Uniformteil auswählen",
+            "alert.owner.1": "Bereits an den Kadetten ",
+            "alert.owner.2": " ausgegeben. Möchten Sie den Besitzer ändern?",
+            "alert.noItemFound": "Es existiert kein Uniformteil mit der Nummer {number}. Möchten Sie es anlegen?",
+            "alert.itemAlreadyOwned": "Das ausgewählte Uniformteil ist bereits an diese Person ausgegeben.",
+            "alert.storageUnit": "Das ausgewählte Uniformteil ist der Lagereinheit \"{unit}\" zugeordnet.",
+            "button.changeOwner": "Besitzer ändern",
+            "button.replace": "Ersetzen",
+            "button.issue": "Ausgeben",
+            "button.create": "Uniformteil anlegen",
+            "error.invalidNumber": "Die eingegebene Nummer ist ungültig",
+            "error.issueFailed": "Das Uniformteil konnte nicht ausgegeben werden. Bitte versuchen Sie es später erneut.",
+            "header.add": "{type} ausgeben",
+            "header.replace": "{type}-{number} ersetzen",
+            "option.isReserve": "Reserve",
+            "option.owner": "Besitzer: ",
+            "option.storageUnit": "Lagereinheit: ",
+        },
     },
     storageUnit: {
         error: {
@@ -304,7 +323,7 @@ export default {
             "details.description": "Beschreibung",
             "details.forReserves": "Für Reserven",
             "details.forReservesText": "Uniformteile werden als Reserve markiert",
-            "details.uniformCount": "Anzahl Uniformteile",
+            "details.uniformCount": "# Uniformteile",
             "editName": "Lagereinheit umbenennen",
             "header.uniformlist": "Uniformteil(e)",
             "header.create": "Lagereinheit anlegen",

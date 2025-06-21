@@ -9,7 +9,7 @@ import { useState } from "react";
 import { Row, Col } from "react-bootstrap";
 import { LabelIconButton } from "../Buttons/LabelIconButton";
 import { TooltipActionButton } from "../Buttons/TooltipIconButton";
-import AutocompleteField from "../fields/AutocompleteField";
+import { AutocompleteField } from "../fields/AutocompleteField";
 import { useGlobalData } from "../globalDataProvider";
 import { useModal } from "../modals/modalProvider";
 
@@ -29,7 +29,7 @@ export const UniformOCStorageUnitRow = ({ uniform, onSave }: { uniform: UniformW
 
     const handleSaveStorageUnit = (ignoreFull: boolean = false) => {
         if (!value) return;
-        
+
         // If the uniform is already assigned to the selected storage unit do nothing
         if (uniform.storageUnit && uniform.storageUnit.id === value) {
             setEditable(false);
