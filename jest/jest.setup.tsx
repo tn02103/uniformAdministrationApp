@@ -3,6 +3,7 @@ import '@testing-library/jest-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const useI18nFn = jest.fn((key) => key);
+window.HTMLElement.prototype.scrollIntoView = function () { };
 jest.mock('@/lib/locales/client', () => {
     return {
         useScopedI18n: jest.fn((scope: string) => {

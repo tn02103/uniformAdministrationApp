@@ -10,7 +10,11 @@ export type ItemLabel = {
     id: string;
     label: string;
     active: boolean;
-    typeId: string;
+    type: {
+        id: string;
+        name: string;
+        acronym: string;
+    };
     number: number;
     owner: {
         id: string;
@@ -48,12 +52,20 @@ export const getItemLabels = async (): Promise<ItemLabel[]> => genericSANoDataVa
             },
         },
     },
+    orderBy: [
+        { type: { name: 'asc' } },
+        { number: 'asc' },
+    ]
 })).then(data => data.map((item): ItemLabel => ({
     id: item.id,
     number: item.number,
     label: `${item.type.name}-${item.number}`,
     active: item.active,
-    typeId: item.type.id,
+    type: {
+        id: item.type.id,
+        name: item.type.name,
+        acronym: item.type.acronym,
+    },
     owner: item.issuedEntries.length > 0 ? {
         id: item.issuedEntries[0].cadet.id,
         firstname: item.issuedEntries[0].cadet.firstname,
@@ -156,7 +168,7 @@ export const getListWithOwner = async (props: getListWithOwnerProps): Promise<Un
     const generationFilter = filter?.generations ? Object.entries(filter.generations).filter(([, value]) => value).map(([key,]) => key) : [];
     const sizeFilter = filter?.sizes ? Object.entries(filter.sizes).filter(([, value]) => value).map(([key,]) => key) : [];
     const andConditions: Prisma.UniformWhereInput[] = [];
-    
+
     // Collect all conditions that are not null
     if (!filter) {
         sqlFilter["active"] = true;
