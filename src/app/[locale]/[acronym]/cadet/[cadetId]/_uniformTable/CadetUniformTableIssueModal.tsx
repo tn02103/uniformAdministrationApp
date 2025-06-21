@@ -229,7 +229,7 @@ const getRenderOptionFunction = (translations: { isReserve: string, owner: strin
 
         const optionElement = (
             <div key={option.value}
-                className={`d-flex align-items-center gap-1 p-2 ps-3 border-bottom border-1 border-gray ${highlighted ? 'bg-secondary-subtle' : 'bg-white'} ${textColor}`}
+                className={`d-flex align-items-center gap-1 p-2 ps-3 border-bottom border-1 ${highlighted ? 'bg-secondary-subtle' : 'bg-white'} ${textColor}`}
                 style={{
                     cursor: disabled ? 'not-allowed' : 'pointer',
                 }}

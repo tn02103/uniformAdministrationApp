@@ -132,13 +132,13 @@ export function Autocomplete<TOption extends AutocompleteOptionType = Autocomple
 
     useEffect(() => {
         if (inputValue.length === 0) {
-            setFilteredOptions([...options].splice(0, maxOptions));
+            setFilteredOptions([...options].slice(0, maxOptions));
         } else if (customFilter) {
-            setFilteredOptions(customFilter(options, inputValue).splice(0, maxOptions));
+            setFilteredOptions(customFilter(options, inputValue).slice(0, maxOptions));
         } else {
             setFilteredOptions(options
                 .filter((option) => option.label.toLocaleLowerCase().includes(inputValue.toLocaleLowerCase()))
-                .splice(0, maxOptions)
+                .slice(0, maxOptions)
             );
         }
     }, [setFilteredOptions, inputValue, options, customFilter]);
@@ -228,7 +228,7 @@ export function Autocomplete<TOption extends AutocompleteOptionType = Autocomple
                 aria-controls="autocomplete-options"
                 aria-invalid={props.invalid}
             />
-            {(optionsVisible || false) &&
+            {(optionsVisible) &&
                 <div style={{ display: "contents" }}>
                     <div className={style.optionListWrapper}>
                         <div className={style.optionList} role="listbox" id="autocomplete-options" ref={optionListRef}>
