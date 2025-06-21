@@ -17,7 +17,7 @@ import { CadetUniformTableItemRow } from "./CadetUniformTableItemRow";
 type PropType = {
     uniformMap: CadetUniformMap,
 }
-export const CadetUniformTable = ({ ...props }: PropType) => {
+export const CadetUniformTable = (props: PropType) => {
     const t = useI18n();
     const { cadetId }: { cadetId: string, locale: string } = useParams();
 

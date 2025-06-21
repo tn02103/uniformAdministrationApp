@@ -11,7 +11,7 @@ import { uniformNumberSchema } from "@/zod/uniform";
 import { faBoxOpen, faCircleInfo, faPerson, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Alert, Button, Col, Modal, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
 
 export type CadetUniformTableIssueModalProps = {
@@ -35,13 +35,15 @@ export const CadetUniformTableIssueModal = ({ cadetId, type, itemToReplace, onCl
     const [invalidInput, setInvalidInput] = useState(false);
 
     const issuedItemList: UniformWithOwner[] = map?.[type.id] ?? [];
-    const options = uniformLabels
-        ?.filter(label => (label.typeId === type.id))
-        .map(label => ({
-            ...label,
-            value: label.id,
-            label: label.number.toString(),
-        })) ?? [];
+    const options = useMemo(
+        () => uniformLabels
+            ?.filter(label => (label.typeId === type.id))
+            .map(label => ({
+                ...label,
+                value: label.id,
+                label: label.number.toString(),
+            })) ?? [],
+        [uniformLabels, type.id]);
     const isOwnedByCadet = !!inputValue && !!issuedItemList.some(item => item.number === inputValue);
 
     const handleIssue = () => {
@@ -66,19 +68,6 @@ export const CadetUniformTableIssueModal = ({ cadetId, type, itemToReplace, onCl
             },
             t('cadetDetailPage.issueModal.error.issueFailed'),
         );
-    }
-
-    const getErrorMessage = () => {
-        if (selectedItem) {
-            return undefined;
-        }
-        if (invalidInput) {
-            return t('cadetDetailPage.issueModal.error.invalidNumber');
-        }
-        if (inputValue === null) {
-            return t('common.error.string.required');
-        }
-        return undefined
     }
 
     return (
@@ -119,7 +108,7 @@ export const CadetUniformTableIssueModal = ({ cadetId, type, itemToReplace, onCl
                                     setInvalidInput(true);
                                 }
                             }}
-                            errorMessage={getErrorMessage()}
+                            errorMessage={invalidInput ? t('cadetDetailPage.issueModal.error.invalidNumber') : undefined}
                         />
                     </Col>
                 </Row>
@@ -159,7 +148,7 @@ export const CadetUniformTableIssueModal = ({ cadetId, type, itemToReplace, onCl
                         </div>
                     </Alert>
                 )}
-                {(selectedItem  && selectedItem.storageUnit) && (
+                {(selectedItem && selectedItem.storageUnit) && (
                     <Alert variant="secondary" className="my-3 d-flex align-items-center p-2">
                         <FontAwesomeIcon icon={faBoxOpen} className="me-2 text-secondary" />
                         <div>

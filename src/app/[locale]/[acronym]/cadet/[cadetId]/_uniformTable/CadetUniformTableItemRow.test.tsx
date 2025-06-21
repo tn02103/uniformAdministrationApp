@@ -5,15 +5,14 @@ import { CadetUniformTableItemRow } from "./CadetUniformTableItemRow";
 import type { UniformWithOwner, UniformType } from "@/types/globalUniformTypes";
 
 // Mocks
-jest.mock("@/components/globalDataProvider", () => ({
-    useGlobalData: () => ({ userRole: 2 }), // inspector
-}));
 jest.mock("@/components/UniformOffcanvas/UniformOffcanvas", () => ({
     __esModule: true,
-    UniformOffcanvas: (props: { onClose: () => void }) => (
-        <div data-testid="offcanvas">
-            <button onClick={props.onClose}>Close</button>
-        </div>
+    UniformOffcanvas: jest.fn().mockImplementation(
+        (props: { onClose: () => void }) => (
+            <div data-testid="offcanvas">
+                <button onClick={props.onClose}>Close</button>
+            </div>
+        )
     ),
 }));
 jest.mock("@/dal/uniform/item/_index", () => ({
@@ -69,6 +68,11 @@ function setup(props = {}) {
 }
 
 describe("CadetUniformTableItemRow", () => {
+    const { simpleWarningModal } = jest.requireMock("@/components/modals/modalProvider").useModal();
+    const { returnUniformItem } = jest.requireMock("@/dal/uniform/item/_index");
+    const { UniformOffcanvas } = jest.requireMock("@/components/UniformOffcanvas/UniformOffcanvas");
+    const { toast } = jest.requireMock("react-toastify");
+
     beforeEach(() => {
         jest.clearAllMocks();
     });
@@ -96,8 +100,6 @@ describe("CadetUniformTableItemRow", () => {
     });
 
     it("calls sa and opens modal when withdraw button is clicked", async () => {
-        const { simpleWarningModal } = jest.requireMock("@/components/modals/modalProvider").useModal();
-        const { returnUniformItem } = jest.requireMock("@/dal/uniform/item/_index");
         setup();
         const btn = screen.getByTestId("btn_withdraw");
         await userEvent.click(btn);
@@ -111,11 +113,8 @@ describe("CadetUniformTableItemRow", () => {
     });
 
     it("catches errors when returnUniformItem fails", async () => {
-        const { simpleWarningModal } = jest.requireMock("@/components/modals/modalProvider").useModal();
-        const { returnUniformItem } = jest.requireMock("@/dal/uniform/item/_index");
-        returnUniformItem.mockRejectedValue(new Error("Test error"));
-        const { toast } = jest.requireMock("react-toastify");
         setup();
+        returnUniformItem.mockRejectedValue(new Error("Test error"));
 
         const btn = screen.getByTestId("btn_withdraw");
         await userEvent.click(btn);
@@ -128,7 +127,17 @@ describe("CadetUniformTableItemRow", () => {
 
     it("shows UniformOffcanvas when openUniformId matches", () => {
         setup({ openUniformId: "u-1" });
+
         expect(screen.getByTestId("offcanvas")).toBeInTheDocument();
+        expect(UniformOffcanvas).toHaveBeenCalledWith(
+            {
+                uniform: mockUniform,
+                uniformType: mockUniformType,
+                onSave: expect.any(Function),
+                onClose: expect.any(Function),
+            },
+            undefined
+        );
     });
 
     it("calls setOpenUniformId(null) when UniformOffcanvas is closed", async () => {
