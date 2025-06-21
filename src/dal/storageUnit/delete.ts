@@ -6,12 +6,12 @@ import { __unsecuredGetUnitsWithUniformItems, StorageUnitWithUniformItems } from
 
 /**
  * Marks storageUnit as deleted. May only work if no uniform items are stored in it.
- * @requires AuthRole.materialManager
+ * @requires AuthRole.inspector
  * @param storageUnitId 
  * @returns 
  */
 export const deleteUnit = (props: string): Promise<StorageUnitWithUniformItems[]> => genericSAValidator(
-    AuthRole.materialManager,
+    AuthRole.inspector,
     props,
     z.string().uuid(),
     { storageUnitId: props }

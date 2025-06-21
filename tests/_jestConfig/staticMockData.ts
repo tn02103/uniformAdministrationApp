@@ -265,7 +265,7 @@ export const mockSizeLists = [
     },
 ]
 
-export const mockUniformList: UniformWithOwner[] = [
+export const mockUniformList = [
     {
         id: 'c227ac23-93d4-42b5-be2e-956ea35c2db9',
         number: 2501,
@@ -322,4 +322,4 @@ export const mockUniformList: UniformWithOwner[] = [
         storageUnit: null,
         issuedEntries: []
     },
-]
+] satisfies UniformWithOwner[];

@@ -8,7 +8,8 @@ import { SAFormHandler } from "@/lib/SAFormHandler";
 import { CadetUniformMap } from "@/types/globalCadetTypes";
 import { UniformType, UniformWithOwner } from "@/types/globalUniformTypes";
 import { uniformNumberSchema } from "@/zod/uniform";
-import { faBoxOpen, faCircleInfo, faPerson, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { faBoxOpen, faCircleInfo, faRegistered, faTriangleExclamation, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -113,32 +114,32 @@ export const CadetUniformTableIssueModal = ({ cadetId, type, itemToReplace, onCl
                     </Col>
                 </Row>
                 {isOwnedByCadet && (
-                    <Alert variant="info" className="my-3 d-flex align-items-center p-2">
-                        <FontAwesomeIcon icon={faCircleInfo} className="me-2 text-info" />
-                        <div>
-                            {t('cadetDetailPage.issueModal.alert.itemAlreadyOwned')}
-                        </div>
-                    </Alert>
+                    <CustomAlert
+                        variant="info"
+                        icon={faCircleInfo}
+                    >
+                        {t('cadetDetailPage.issueModal.alert.itemAlreadyOwned')}
+                    </CustomAlert>
                 )}
                 {(selectedItem?.owner && !isOwnedByCadet) && (
-                    <Alert variant="danger" className="my-3 d-flex align-items-center p-2">
-                        <FontAwesomeIcon icon={faTriangleExclamation} className="me-2 " />
-                        <div>
-                            {t('cadetDetailPage.issueModal.alert.owner.1')}&nbsp;
-                            <Link className="alert-link text-decoration-underline" href={`/app/cadet/${selectedItem.owner.id}`} target="_blank">
-                                {selectedItem.owner.firstname} {selectedItem.owner.lastname}
-                            </Link>
-                            &nbsp;{t('cadetDetailPage.issueModal.alert.owner.2')}
-                        </div>
-                    </Alert>
+                    <CustomAlert
+                        variant="danger"
+                        icon={faUser}
+                    >
+                        {t('cadetDetailPage.issueModal.alert.owner.1')}&nbsp;
+                        <Link className="alert-link text-decoration-underline" href={`/app/cadet/${selectedItem.owner.id}`} target="_blank">
+                            {selectedItem.owner.firstname} {selectedItem.owner.lastname}
+                        </Link>
+                        &nbsp;{t('cadetDetailPage.issueModal.alert.owner.2')}
+                    </CustomAlert>
                 )}
                 {(selectedItem && !selectedItem?.active) && (
-                    <Alert variant="warning" className="my-3 d-flex align-items-center p-2">
-                        <FontAwesomeIcon icon={faTriangleExclamation} className="me-2 " />
-                        <div>
-                            Uniformteil ist als Reserve markiert
-                        </div>
-                    </Alert>
+                    <CustomAlert
+                        variant="warning"
+                        icon={faRegistered}
+                    >
+                        {t('cadetDetailPage.issueModal.alert.reserve')}
+                    </CustomAlert>
                 )}
                 {(!selectedItem && inputValue && !isOwnedByCadet) && (
                     <Alert variant="warning" className="my-3 d-flex align-items-center p-2">
@@ -149,12 +150,12 @@ export const CadetUniformTableIssueModal = ({ cadetId, type, itemToReplace, onCl
                     </Alert>
                 )}
                 {(selectedItem && selectedItem.storageUnit) && (
-                    <Alert variant="secondary" className="my-3 d-flex align-items-center p-2">
-                        <FontAwesomeIcon icon={faBoxOpen} className="me-2 text-secondary" />
-                        <div>
-                            {t('cadetDetailPage.issueModal.alert.storageUnit', { unit: selectedItem.storageUnit.name })}
-                        </div>
-                    </Alert>
+                    <CustomAlert
+                        variant="secondary"
+                        icon={faBoxOpen}
+                    >
+                        {t('cadetDetailPage.issueModal.alert.storageUnit', { unit: selectedItem.storageUnit.name })}
+                    </CustomAlert>
                 )}
             </Modal.Body>
             <Modal.Footer>
@@ -185,6 +186,16 @@ export const CadetUniformTableIssueModal = ({ cadetId, type, itemToReplace, onCl
     )
 }
 
+const CustomAlert = ({ variant, children, icon }: { variant: string, children: React.ReactNode | string, icon: IconProp}) => (
+    <Alert variant={variant} className="my-3 d-flex align-items-center p-2">
+        <div className={`px-2`}>
+            <FontAwesomeIcon icon={icon} size="lg"/>
+        </div>
+        <div className={`px-2 border-start border-2 border-${variant}-subtle`}>
+            {children}
+        </div>
+    </Alert>
+);
 
 const getRenderOptionFunction = (translations: { isReserve: string, owner: string, storageUnit: string }, issuedItemList: UniformWithOwner[]) => {
     const render = ({ option, onMouseDown, highlighted, selected }: RenderOptionProps<AutocompleteOption>) => {
@@ -212,10 +223,10 @@ const getRenderOptionFunction = (translations: { isReserve: string, owner: strin
             >
                 <span>{option.number}</span>
                 {option.owner &&
-                    <FontAwesomeIcon icon={faPerson} className="text-danger" />
+                    <FontAwesomeIcon icon={faUser} className="text-danger" />
                 }
                 {!option.active &&
-                    <FontAwesomeIcon icon={faTriangleExclamation} className="text-warning" />
+                    <FontAwesomeIcon icon={faRegistered} className="text-warning" />
                 }
                 {option.storageUnit &&
                     <FontAwesomeIcon icon={faBoxOpen} className="text-secondary" />

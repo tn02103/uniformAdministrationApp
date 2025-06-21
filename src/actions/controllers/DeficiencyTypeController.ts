@@ -80,12 +80,12 @@ export const createDeficiencyType = async (props: AdminDeficiencytypeFormSchema)
 /**
  * DAL-Methode: Used to deactivate a deficiencyType. No new Deficiencies can of a deactivated type, but already existing deficiencies stay active.
  * revalidates path ../admin/deficiency
- * @requires AuthRole.inspector
+ * @requires AuthRole.materialManager
  * @param props id of the deficiencyType
  * @returns void
  */
 export const deactivateDeficiencyType = async (props: string) => genericSAValidator(
-    AuthRole.inspector,
+    AuthRole.materialManager,
     props,
     z.string().uuid(),
     { deficiencytypeId: props }
@@ -109,12 +109,12 @@ export const deactivateDeficiencyType = async (props: string) => genericSAValida
 /**
  * DAL-Method: used to reactivate a deficiencyType. After this action new deficiencies can be of this type.
  * revalidates path ../admin/deficiency
- * @requires AuthRole.inspector
+ * @requires AuthRole.materialManager
  * @param props id of type
  * @returns void
  */
 export const reactivateDeficiencyType = async (props: string) => genericSAValidator(
-    AuthRole.inspector,
+    AuthRole.materialManager,
     props,
     z.string().uuid(),
     { deficiencytypeId: props }

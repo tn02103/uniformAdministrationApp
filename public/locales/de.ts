@@ -297,6 +297,7 @@ export default {
             "alert.noItemFound": "Es existiert kein Uniformteil mit der Nummer {number}. Möchten Sie es anlegen?",
             "alert.itemAlreadyOwned": "Das ausgewählte Uniformteil ist bereits an diese Person ausgegeben.",
             "alert.storageUnit": "Das ausgewählte Uniformteil ist der Lagereinheit \"{unit}\" zugeordnet.",
+            "alert.reserve": "Das ausgewählte Uniformteil ist als Reserve markiert.",
             "button.changeOwner": "Besitzer ändern",
             "button.replace": "Ersetzen",
             "button.issue": "Ausgeben",

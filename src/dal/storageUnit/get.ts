@@ -20,7 +20,7 @@ const StorageUnitWithUniformItemsArgs = Prisma.validator<Prisma.StorageUnitFindM
 
 export type StorageUnitWithUniformItems = Prisma.StorageUnitGetPayload<typeof StorageUnitWithUniformItemsArgs>;
 
-export const getUnitsWithUniformItems = (): Promise<StorageUnitWithUniformItems[]> => genericSANoDataValidator(AuthRole.inspector).then(
+export const getUnitsWithUniformItems = (): Promise<StorageUnitWithUniformItems[]> => genericSANoDataValidator(AuthRole.user).then(
     ([{ assosiation }]) => __unsecuredGetUnitsWithUniformItems(assosiation),
 );
 

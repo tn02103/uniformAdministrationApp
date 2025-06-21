@@ -11,7 +11,7 @@ const propShema = z.object({
 });
 type PropType = z.infer<typeof propShema>;
 export const update = (props: PropType) => genericSAValidator(
-    AuthRole.materialManager,
+    AuthRole.inspector,
     props,
     propShema,
     { storageUnitId: props.id }

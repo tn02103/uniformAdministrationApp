@@ -26,7 +26,7 @@ test.describe('Offcanvas - CadetOverview', () => {
         test('should open and close offcanvas', async ({ page, staticData: { ids } }) => {
             const cadetUniformRow = page.getByTestId(`div_uniform_typeList`).getByTestId(`div_uitem_${ids.uniformIds[0][84]}`)
             await cadetUniformRow.getByRole('button', { name: /open/i }).click();
-             await expect(page.getByRole('dialog')).toBeVisible();
+            await expect(page.getByRole('dialog')).toBeVisible();
 
             const offcanvas = page.getByRole('dialog');
             await expect(offcanvas).toBeVisible();
@@ -207,7 +207,7 @@ test.describe('Offcanvas - CadetOverview', () => {
     test.describe('deficiencies', () => {
         test.beforeEach(async ({ page, staticData: { ids } }) => {
             await page.goto(`/de/app/cadet/${ids.cadetIds[2]}`);
-            await page.waitForTimeout(1000); // wait for the page to load
+            await expect(page.getByTestId(`div_uitem_${ids.uniformIds[0][46]}`)).toBeVisible();
         });
 
         const today = new Date();

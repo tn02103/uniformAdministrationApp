@@ -10,7 +10,7 @@ const propSchema = z.object({
 });
 type PropType = z.infer<typeof propSchema>;
 export const removeUniform = (props: PropType) => genericSAValidator(
-    AuthRole.materialManager,
+    AuthRole.inspector,
     props,
     propSchema,
     { uniformId: props.uniformIds, storageUnitId: props.storageUnitId },

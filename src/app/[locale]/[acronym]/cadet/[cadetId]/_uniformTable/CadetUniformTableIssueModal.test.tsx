@@ -280,7 +280,7 @@ describe("CadetUniformTableIssueModal", () => {
             const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
             await userEvent.type(input, "102");
-            expect(await screen.findByText(/Uniformteil ist als Reserve markiert/)).toBeInTheDocument();
+            expect(await screen.findByText(/cadetDetailPage.issueModal.alert.reserve/)).toBeInTheDocument();
         });
 
         it("shows alert if item is assigned to a storage unit", async () => {
@@ -304,7 +304,7 @@ describe("CadetUniformTableIssueModal", () => {
             expect(getByRole(option, "img", { hidden: true })).toHaveAttribute("class", expect.stringContaining("fa-box-open"));
         });
 
-        it("shows warning icon for inactive (reserve) item in option", async () => {
+        it("shows 'R' icon for inactive (reserve) item in option", async () => {
             setup();
             const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
@@ -312,9 +312,9 @@ describe("CadetUniformTableIssueModal", () => {
 
             const option = screen.getByRole("option", { name: /102/i });
             expect(option).toBeVisible();
-            // faTriangleExclamation is the warning icon for inactive
+            // faRegistered is the warning icon for inactive
             const warningIcon = getByRole(option, "img", { hidden: true });
-            expect(warningIcon).toHaveAttribute("class", expect.stringContaining("fa-triangle-exclamation"));
+            expect(warningIcon).toHaveAttribute("class", expect.stringContaining("fa-registered"));
             // The text color is set on the option, not the icon
             expect(option).toHaveClass("text-warning");
         });
@@ -329,7 +329,7 @@ describe("CadetUniformTableIssueModal", () => {
             expect(option).toBeVisible();
             // faPerson is the icon for items owned by another cadet
             const personIcon = getByRole(option, "img", { hidden: true });
-            expect(personIcon).toHaveAttribute("class", expect.stringContaining("fa-person"));
+            expect(personIcon).toHaveAttribute("class", expect.stringContaining("fa-user"));
             // The text color is set on the option, not the icon
             expect(option).toHaveClass("text-danger");
         });
@@ -344,14 +344,14 @@ describe("CadetUniformTableIssueModal", () => {
             const option = screen.getByRole("option", { name: /105/i });
             expect(option).toBeVisible();
             const icons = getAllByRole(option, "img", { hidden: true });
-            // Should have fa-person and fa-triangle-exclamation (reserve warning)
-            const personIcon = Array.from(icons).find(icon =>
-                icon.classList.contains("fa-person")
+            // Should have fa-user and fa-registered (reserve warning)
+            const userIcon = Array.from(icons).find(icon =>
+                icon.classList.contains("fa-user")
             );
             const warningIcon = Array.from(icons).find(icon =>
-                icon.classList.contains("fa-triangle-exclamation")
+                icon.classList.contains("fa-registered")
             );
-            expect(personIcon).toBeTruthy();
+            expect(userIcon).toBeTruthy();
             expect(warningIcon).toBeTruthy();
             // The text color is set on the option, not the icon
             expect(option).toHaveClass("text-danger");

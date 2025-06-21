@@ -67,7 +67,7 @@ const CadetDetailPage = async (props: PropType) => {
     return (
         <div className="container-xl content-center bg-light rounded pb-xl-3 p-md-4">
             <Row className="position-relative">
-                {(user!.role >= AuthRole.materialManager) &&
+                {(user!.role >= AuthRole.inspector) &&
                     <div className="position-absolute w-auto top-0 end-0">
                         <CadetDropDown firstname={cadet.firstname} lastname={cadet.lastname} />
                     </div>

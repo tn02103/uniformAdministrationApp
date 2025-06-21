@@ -16,7 +16,7 @@ const propSchema = storageUnitFormSchema;
 type PropType = z.infer<typeof propSchema>;
 
 export const create = (props: PropType): returnType => genericSAValidator(
-    AuthRole.materialManager,
+    AuthRole.inspector,
     props,
     propSchema,
     {  }

@@ -6,9 +6,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Dropdown, DropdownMenu, DropdownToggle } from "react-bootstrap";
 import "./footer.css";
+import { useGlobalData } from "../globalDataProvider";
+import { AuthRole } from "@/lib/AuthRoles";
 
 const Footer = () => {
     const pathname = usePathname();
+    const { userRole } = useGlobalData();
 
     return (
         <div data-testid="div_layout_footer" className="fixed-bottom footer bg-navy d-flex flex-row justify-content-evenly align-items-middle text-white">
@@ -21,17 +24,19 @@ const Footer = () => {
             <Link data-testid="lnk_uniform" href={"/app/uniform/list"} className={`align-items-center m-2 fs-1 ${pathname.includes("/app/uniform") ? "text-primary" : ""}`}>
                 <FontAwesomeIcon icon={faShirt} />
             </Link>
-            <Dropdown drop="up-centered">
-                <DropdownToggle className="bg-transparent border-0 align-items-center fs-1" >
-                    <FontAwesomeIcon icon={faGear} className={pathname.includes("/app/admin") ? "text-primary" : ""} />
-                </DropdownToggle>
-                <DropdownMenu className="fs-4 p-0">
-                    <Link className="dropdown-item border-1 border-bottom" href="/app/admin/user">Nutzer</Link>
-                    <Link className="dropdown-item border-1 border-bottom" href="/app/admin/uniform">Uniform</Link>
-                    <Link className="dropdown-item border-1 border-bottom" href="/app/admin/uniform/sizes">Größen</Link>
-                    <Link className="dropdown-item " href="/app/admin/material">Material</Link>
-                </DropdownMenu>
-            </Dropdown>
+            {userRole >= AuthRole.materialManager &&
+                <Dropdown drop="up-centered">
+                    <DropdownToggle className="bg-transparent border-0 align-items-center fs-1" >
+                        <FontAwesomeIcon icon={faGear} className={pathname.includes("/app/admin") ? "text-primary" : ""} />
+                    </DropdownToggle>
+                    <DropdownMenu className="fs-4 p-0">
+                        <Link className="dropdown-item border-1 border-bottom" href="/app/admin/user">Nutzer</Link>
+                        <Link className="dropdown-item border-1 border-bottom" href="/app/admin/uniform">Uniform</Link>
+                        <Link className="dropdown-item border-1 border-bottom" href="/app/admin/uniform/sizes">Größen</Link>
+                        <Link className="dropdown-item " href="/app/admin/material">Material</Link>
+                    </DropdownMenu>
+                </Dropdown>
+            }
         </div>
     );
 }

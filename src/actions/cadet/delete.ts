@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 import { genericSAValidatorV2 } from "../validations";
 
 export const deleteCadet = async (cadetId: string) => genericSAValidatorV2(
-    AuthRole.materialManager,
+    AuthRole.inspector,
     uuidValidationPattern.test(cadetId),
     { cadetId }
 ).then(({ username }) => prisma.$transaction([
