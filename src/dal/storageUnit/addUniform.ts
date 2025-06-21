@@ -16,7 +16,7 @@ type PropType = z.infer<typeof propSchema>;
 
 /**
  * Adds uniform to storage unit
- * @requires AuthRole.materialManager
+ * @requires AuthRole.inspector
  * @param props {storageUnitId, uniformId}
  * @returns List of storage units with uniform items
  */

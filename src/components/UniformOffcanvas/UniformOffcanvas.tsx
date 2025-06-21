@@ -112,6 +112,7 @@ export const UniformOffcanvas = ({ uniform, uniformType, onClose, onSave }: Unif
                         <UniformHistoryRow uniformId={uniform.id} />
                     </>
                 )}
+                <div className="h-50"></div>
             </Offcanvas.Body>
         </Offcanvas>
     );
