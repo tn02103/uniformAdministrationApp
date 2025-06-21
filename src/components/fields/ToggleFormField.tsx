@@ -1,6 +1,6 @@
-import { Form } from "react-bootstrap";
 import { FieldValue, FieldValues, Path, useController } from "react-hook-form";
-import ErrorMessage from "../errorMessage";
+import { Field } from "./Field";
+import { useFormContext } from "./Form";
 
 export type ToggleFormFieldProps<FormType extends FieldValues> = {
     label: string;
@@ -12,17 +12,25 @@ export type ToggleFormFieldProps<FormType extends FieldValues> = {
     toggleText?: string;
 }
 
-export const ToggleFormField = <FormType extends FieldValues>({ label, name, disabled, formName, hideToggle, toggleText, ...inputProps }: ToggleFormFieldProps<FormType>) => {
-
+export const ToggleFormField = <FormType extends FieldValues>(props: ToggleFormFieldProps<FormType>) => {
+    const { label, name, disabled: disabledProp, formName: formNameProp, hideToggle, toggleText, ...inputProps } = props;
     const { field, fieldState } = useController({
         name,
         defaultValue: false as FieldValue<FormType>,
     });
 
-    return (
-        <Form.Group className="mb-3">
-            <Form.Label className="fw-bold m-0" htmlFor={`${formName}_toggle-${name}`}>{label}</Form.Label>
+    const formContext = useFormContext();
+    const disabled = formContext?.disabled || disabledProp;
+    const formName = formContext?.formName || formNameProp || "unnamedForm";
 
+    return (
+        <Field
+            label={label}
+            formName={formName}
+            name={name}
+            errorMessage={fieldState.error?.message}
+            fieldName="toggle"
+        >
             {(hideToggle && toggleText)
                 ? <p className="mt-2" aria-label={label} aria-readonly>{toggleText}</p>
                 : (
@@ -48,7 +56,6 @@ export const ToggleFormField = <FormType extends FieldValues>({ label, name, dis
                     </div>
                 )
             }
-            <ErrorMessage error={fieldState.error?.message} testId={`err_${name}`} />
-        </Form.Group>
+        </Field>
     );
 }

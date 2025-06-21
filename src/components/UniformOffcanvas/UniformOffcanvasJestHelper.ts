@@ -1,6 +1,7 @@
 import { Deficiency } from "@/types/deficiencyTypes";
-import { generationLists, sizeLists, typeList } from "../../../tests/_jestConfig/staticMockData";
+import { mockGenerationLists, mockSizeLists, mockTypeList } from "../../../tests/_jestConfig/staticMockData";
 import { AuthRole } from "@/lib/AuthRoles";
+import { UniformHistroyEntry, UniformWithOwner } from "@/types/globalUniformTypes";
 
 
 // ------------- MOCKS FOR DEFICIENCY -------------
@@ -25,10 +26,10 @@ jest.mock('@/dataFetcher/deficiency', () => ({
 
 jest.mock('@/dataFetcher/uniformAdmin', () => ({
     useUniformGenerationListByType: jest.fn(() => ({
-        generationList: generationLists[0]
+        generationList: mockGenerationLists[0]
     })),
     useUniformTypeList: jest.fn(() => ({
-        typeList
+        typeList: mockTypeList
     })),
 }));
 jest.mock("@/dal/uniform/item/_index", () => ({
@@ -40,7 +41,7 @@ jest.mock("@/dal/uniform/item/_index", () => ({
 }));
 jest.mock('../globalDataProvider', () => ({
     useGlobalData: jest.fn(() => ({
-        sizelists: sizeLists,
+        sizelists: mockSizeLists,
         userRole: global.__ROLE__ ?? AuthRole.admin,
     })),
 }));
@@ -48,6 +49,18 @@ jest.mock('@/dataFetcher/uniform', () => ({
     useUniformItemHistory: jest.fn(() => ({
         history: mockUniformHistory,
     })),
+}));
+
+// ------------- STORAGE UNIT MOCKS -------------
+jest.mock("@/dataFetcher/storage", () => ({
+    useStorageUnitsWithUniformItemList: () => ({
+        storageUnits: mockStorageUnits,
+    }),
+}));
+
+jest.mock("@/dal/storageUnit/_index", () => ({
+    addUniformItemToStorageUnit: jest.fn(() => Promise.resolve()),
+    removeUniformFromStorageUnit: jest.fn(() => Promise.resolve()),
 }));
 
 // ------------- OTHER MOCKS -------------
@@ -61,7 +74,14 @@ jest.mock('react-toastify', () => ({
         success: jest.fn(),
     },
 }));
+jest.mock("next/navigation", () => ({
+    usePathname: () => "/de/app/uniform/list/81ff8e9b-a097-4879-a0b2-352e54d41e6c",
+}));
 
+export const mockStorageUnits = [
+    { id: "su1", name: "Kiste 01", description: "Desc 1", capacity: 2, uniformList: [], isReserve: false },
+    { id: "su2", name: "Kiste 02", description: "Desc 2", capacity: 1, uniformList: [{ id: "u1" }], isReserve: true },
+];
 export const mockDeficiencyTypeList = [
     {
         id: 'de3860d4-c88e-4a7c-be4c-7e832eda31d4',
@@ -114,32 +134,48 @@ export const mockDeficiencyList: Deficiency[] = [
 export const mockUniform = {
     id: "c227ac23-93d4-42b5-be2e-956ea35c2db9",
     number: 2501,
-    generation: generationLists[0][1],
-    size: sizeLists[0].uniformSizes[0],
+    generation: mockGenerationLists[0][1],
+    size: mockSizeLists[0].uniformSizes[0],
     comment: "Test comment",
     active: true,
     type: {
-        id: typeList[0].id,
-        name: typeList[0].name,
+        id: mockTypeList[0].id,
+        name: mockTypeList[0].name,
     },
-};
-export const mockUniformHistory = [
+    issuedEntries: [
+        {
+            dateIssued: new Date('2023-10-01T12:00:00Z'),
+            cadet: {
+                id: 'cadet1',
+                firstname: 'John',
+                lastname: 'Doe',
+                recdelete: null,
+            },
+        },
+    ],
+    storageUnit: null
+} satisfies UniformWithOwner;
+export const mockUniformHistory: UniformHistroyEntry[] = [
     {
+        id: "0a24df36-c4c7-41ee-b236-db3666a1bb67",
         dateIssued: new Date('2023-10-01T12:00:00Z'),
         dateReturned: null,
         cadet: {
+            id: 'cadet1',
             firstname: 'John',
             lastname: 'Doe',
-            recdelete: false,
+            recdelete: null,
         },
     },
     {
+        id: "35f1957d-8cea-4091-b7c2-1299d0515e64",
         dateIssued: new Date('2023-10-02T12:00:00Z'),
         dateReturned: new Date('2023-10-03T12:00:00Z'),
         cadet: {
+            id: 'cadet2',
             firstname: 'Jane',
             lastname: 'Smith',
-            recdelete: true,
+            recdelete: new Date('2023-10-03T12:00:00Z'),
         },
     },
 ];

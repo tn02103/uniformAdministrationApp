@@ -3,7 +3,7 @@ import "./UniformOffcanvasJestHelper";
 import { AuthRole } from "@/lib/AuthRoles";
 import { getAllByRole, getByLabelText, getByText, queryAllByRole, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { typeList } from "../../../tests/_jestConfig/staticMockData";
+import { mockTypeList } from "../../../tests/_jestConfig/staticMockData";
 import { UniformOffcanvas } from "./UniformOffcanvas";
 import { mockUniform } from "./UniformOffcanvasJestHelper";
 
@@ -22,7 +22,7 @@ describe('UniformOffcanvas', () => {
             <div>
                 <UniformOffcanvas
                     uniform={mockUniform}
-                    uniformType={typeList[0]}
+                    uniformType={mockTypeList[0]}
                     onClose={jest.fn()}
                     onSave={jest.fn()}
                 />
@@ -32,19 +32,19 @@ describe('UniformOffcanvas', () => {
         expect(screen.getByRole('dialog')).toMatchSnapshot();
     });
 
-    it('should call onClose when close button is clicked', () => {
+    it('should call onClose when close button is clicked', async () => {
         const onCloseMock = jest.fn();
         const { getByLabelText } = render(
             <UniformOffcanvas
                 uniform={mockUniform}
-                uniformType={typeList[0]}
+                uniformType={mockTypeList[0]}
                 onClose={onCloseMock}
                 onSave={jest.fn()}
             />
         );
 
         const closeButton = getByLabelText('Close');
-        closeButton.click();
+        await userEvent.click(closeButton);
 
         expect(onCloseMock).toHaveBeenCalledTimes(1);
     });
@@ -54,7 +54,7 @@ describe('UniformOffcanvas', () => {
         const { getByRole } = render(
             <UniformOffcanvas
                 uniform={mockUniform}
-                uniformType={typeList[0]}
+                uniformType={mockTypeList[0]}
                 onClose={jest.fn()}
                 onSave={jest.fn()}
             />
@@ -79,7 +79,7 @@ describe('UniformOffcanvas', () => {
         const { getByRole, queryByRole } = render(
             <UniformOffcanvas
                 uniform={mockUniform}
-                uniformType={typeList[0]}
+                uniformType={mockTypeList[0]}
                 onClose={jest.fn()}
                 onSave={jest.fn()}
             />
@@ -98,13 +98,60 @@ describe('UniformOffcanvas', () => {
         expect(queryByRole('button', { name: /cancel/i })).toBeNull();
         expect(getByRole('textbox', { name: /comment/i })).toHaveAttribute('disabled');
     });
+    it('should render owner row if issued', () => {
+        render(
+            <UniformOffcanvas
+                uniform={mockUniform}
+                uniformType={mockTypeList[0]}
+                onClose={jest.fn()}
+                onSave={jest.fn()}
+            />
+        );
+
+        const ownerRow = screen.getByTestId('div_owner_row');
+        expect(ownerRow).toBeInTheDocument();
+        expect(getByText(ownerRow, 'John Doe')).toBeInTheDocument();
+        expect(getByText(ownerRow, '01.10.2023')).toBeInTheDocument();
+
+        expect(screen.queryByText(/common.storageUnit/i)).not.toBeInTheDocument();
+    });
+
+    it('should render storage unit row if in storage unit', () => {
+        render(
+            <UniformOffcanvas
+                uniform={{ ...mockUniform, storageUnit: { id: 'storage1', name: 'Storage 1', description: "desc1", isReserve: false }, issuedEntries: [] }}
+                uniformType={mockTypeList[0]}
+                onClose={jest.fn()}
+                onSave={jest.fn()}
+            />
+        );
+
+        expect(screen.getByText(/common.storageUnit/i)).toBeInTheDocument();
+        expect(screen.getByText('Storage 1')).toBeInTheDocument();
+        expect(screen.getByText('desc1')).toBeInTheDocument();
+        expect(screen.queryByTestId('div_owner_row')).not.toBeInTheDocument();
+    });
+
+    it('should render storage unit row if neither unit nor issued', () => {
+        render(
+            <UniformOffcanvas
+                uniform={{ ...mockUniform, storageUnit: null, issuedEntries: [] }}
+                uniformType={mockTypeList[0]}
+                onClose={jest.fn()}
+                onSave={jest.fn()}
+            />
+        );
+
+        expect(screen.getByText(/common.storageUnit/i)).toBeInTheDocument();
+        expect(screen.queryByTestId('div_owner_row')).not.toBeInTheDocument();
+    });
 
     describe('history', () => {
         it('should render history', () => {
             render(
                 <UniformOffcanvas
                     uniform={mockUniform}
-                    uniformType={typeList[0]}
+                    uniformType={mockTypeList[0]}
                     onClose={jest.fn()}
                     onSave={jest.fn()}
                 />
@@ -135,7 +182,7 @@ describe('UniformOffcanvas', () => {
             render(
                 <UniformOffcanvas
                     uniform={mockUniform}
-                    uniformType={typeList[0]}
+                    uniformType={mockTypeList[0]}
                     onClose={jest.fn()}
                     onSave={jest.fn()}
                 />
@@ -155,7 +202,7 @@ describe('UniformOffcanvas', () => {
                 const { getByRole } = render(
                     <UniformOffcanvas
                         uniform={mockUniform}
-                        uniformType={typeList[0]}
+                        uniformType={mockTypeList[0]}
                         onClose={jest.fn()}
                         onSave={onSaveMock}
                     />
@@ -190,7 +237,7 @@ describe('UniformOffcanvas', () => {
                 const { getByRole } = render(
                     <UniformOffcanvas
                         uniform={mockUniform}
-                        uniformType={typeList[0]}
+                        uniformType={mockTypeList[0]}
                         onClose={jest.fn()}
                         onSave={onSaveMock}
                     />
@@ -222,7 +269,7 @@ describe('UniformOffcanvas', () => {
                 const { getByRole } = render(
                     <UniformOffcanvas
                         uniform={mockUniform}
-                        uniformType={typeList[0]}
+                        uniformType={mockTypeList[0]}
                         onClose={onCloseMock}
                         onSave={onSaveMock}
                     />
@@ -262,7 +309,7 @@ describe('UniformOffcanvas', () => {
                 const { getByRole } = render(
                     <UniformOffcanvas
                         uniform={mockUniform}
-                        uniformType={typeList[0]}
+                        uniformType={mockTypeList[0]}
                         onClose={onCloseMock}
                         onSave={onSaveMock}
                     />
@@ -290,7 +337,7 @@ describe('UniformOffcanvas', () => {
             const { queryByRole } = render(
                 <UniformOffcanvas
                     uniform={mockUniform}
-                    uniformType={typeList[0]}
+                    uniformType={mockTypeList[0]}
                     onClose={jest.fn()}
                     onSave={jest.fn()}
                 />
@@ -304,7 +351,7 @@ describe('UniformOffcanvas', () => {
             const { getByRole } = render(
                 <UniformOffcanvas
                     uniform={mockUniform}
-                    uniformType={typeList[0]}
+                    uniformType={mockTypeList[0]}
                     onClose={jest.fn()}
                     onSave={jest.fn()}
                 />
@@ -319,7 +366,7 @@ describe('UniformOffcanvas', () => {
             const { queryByRole } = render(
                 <UniformOffcanvas
                     uniform={mockUniform}
-                    uniformType={typeList[0]}
+                    uniformType={mockTypeList[0]}
                     onClose={jest.fn()}
                     onSave={jest.fn()}
                 />
@@ -333,7 +380,7 @@ describe('UniformOffcanvas', () => {
             const { getByRole } = render(
                 <UniformOffcanvas
                     uniform={mockUniform}
-                    uniformType={typeList[0]}
+                    uniformType={mockTypeList[0]}
                     onClose={jest.fn()}
                     onSave={jest.fn()}
                 />

@@ -2,14 +2,14 @@ import "./UniformOffcanvasJestHelper";
 
 import { getAllByRole, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { generationLists, sizeLists, typeList } from "../../../tests/_jestConfig/staticMockData";
+import { mockGenerationLists, mockSizeLists, mockTypeList } from "../../../tests/_jestConfig/staticMockData";
 import { UniformDetailRow, UniformDetailRowProps } from "./UniformDetailRow";
 import { mockUniform } from "./UniformOffcanvasJestHelper";
 
 describe('UniformDetailRow', () => {
     const defaultProps: UniformDetailRowProps = {
         uniform: mockUniform,
-        uniformType: typeList[0],
+        uniformType: mockTypeList[0],
         editable: false,
         setEditable: jest.fn(),
         onSave: jest.fn(),
@@ -83,24 +83,24 @@ describe('UniformDetailRow', () => {
 
         // initial state with sizelist
         const options = getAllByRole(sizeSelect, "option")
-        expect(options).toHaveLength(sizeLists[0].uniformSizes.length + 1); // +1 for the default "please select" option
-        sizeLists[0].uniformSizes.forEach(size => {
+        expect(options).toHaveLength(mockSizeLists[0].uniformSizes.length + 1); // +1 for the default "please select" option
+        mockSizeLists[0].uniformSizes.forEach(size => {
             expect(screen.getByText(size.name)).toBeInTheDocument();
         });
 
         // different generation with sizelist
-        await user.selectOptions(generationSelect, generationLists[0][2].id);
+        await user.selectOptions(generationSelect, mockGenerationLists[0][2].id);
         const seccondOptions = getAllByRole(sizeSelect, "option");
-        expect(seccondOptions.length).toBe(sizeLists[1].uniformSizes.length + 1); // +1 for the default "please select" option
-        sizeLists[1].uniformSizes.forEach(size => {
+        expect(seccondOptions.length).toBe(mockSizeLists[1].uniformSizes.length + 1); // +1 for the default "please select" option
+        mockSizeLists[1].uniformSizes.forEach(size => {
             expect(screen.getByText(size.name)).toBeInTheDocument();
         });
 
         // different generation without sizelist
-        await user.selectOptions(generationSelect, generationLists[0][3].id);
+        await user.selectOptions(generationSelect, mockGenerationLists[0][3].id);
         const thirdOptions = getAllByRole(sizeSelect, 'option');
-        expect(thirdOptions.length).toBe(sizeLists[2].uniformSizes.length + 1); // +1 for the default "please select" option
-        sizeLists[2].uniformSizes.forEach(size => {
+        expect(thirdOptions.length).toBe(mockSizeLists[2].uniformSizes.length + 1); // +1 for the default "please select" option
+        mockSizeLists[2].uniformSizes.forEach(size => {
             expect(screen.getByText(size.name)).toBeInTheDocument();
         });
     });
@@ -117,24 +117,24 @@ describe('UniformDetailRow', () => {
         expect(sizeSelect).toHaveValue(mockUniform.size.id);
 
         // different generation with sizelist
-        await user.selectOptions(generationSelect, generationLists[0][2].id);
+        await user.selectOptions(generationSelect, mockGenerationLists[0][2].id);
         expect(sizeSelect).toHaveValue(mockUniform.size.id);
 
         // different generation without sizelist
-        await user.selectOptions(generationSelect, generationLists[0][3].id);
+        await user.selectOptions(generationSelect, mockGenerationLists[0][3].id);
         expect(sizeSelect).toHaveValue('');
         expect(sizeSelect).toHaveTextContent('common.error.pleaseSelect');
     });
 
     it('should hide sizeField if !usingSizes', () => {
-        render(<UniformDetailRow {...defaultProps} uniformType={typeList[1]} />);
+        render(<UniformDetailRow {...defaultProps} uniformType={mockTypeList[1]} />);
 
         expect(screen.queryByLabelText('common.uniform.size')).not.toBeInTheDocument();
         expect(screen.queryByText(defaultProps.uniform.size!.name!)).not.toBeInTheDocument();
     });
 
     it('should hide generationField if !usingGenerations', () => {
-        render(<UniformDetailRow {...defaultProps} uniformType={typeList[2]} />);
+        render(<UniformDetailRow {...defaultProps} uniformType={mockTypeList[2]} />);
 
         expect(screen.queryByLabelText('common.uniform.generation.label')).not.toBeInTheDocument();
         expect(screen.queryByText(defaultProps.uniform.generation!.name!)).not.toBeInTheDocument();
@@ -143,8 +143,8 @@ describe('UniformDetailRow', () => {
     describe('handle update to uniform', () => {
         const newUniform = {
             ...mockUniform,
-            generation: generationLists[0][0],
-            size: sizeLists[0].uniformSizes[1],
+            generation: mockGenerationLists[0][0],
+            size: mockSizeLists[0].uniformSizes[1],
             comment: 'New comment',
             active: false,
         };
@@ -158,14 +158,14 @@ describe('UniformDetailRow', () => {
             expect(generationSelect).toHaveTextContent(mockUniform.generation.name);
             expect(sizeSelect).toHaveTextContent(mockUniform.size.name);
             expect(commentInput).toHaveTextContent(mockUniform.comment);
-            expect(activeCheckbox).toHaveTextContent('common.uniform.active.true');
+            expect(activeCheckbox).toHaveTextContent('common.uniform.state.active');
 
             rerender(<UniformDetailRow {...defaultProps} uniform={newUniform} />);
 
             expect(generationSelect).toHaveTextContent(newUniform.generation.name);
             expect(sizeSelect).toHaveTextContent(newUniform.size.name);
             expect(commentInput).toHaveTextContent(newUniform.comment);
-            expect(activeCheckbox).toHaveTextContent('common.uniform.active.false');
+            expect(activeCheckbox).toHaveTextContent('common.uniform.state.reserve');
         });
 
         it('should not reset if editable', () => {
@@ -203,14 +203,14 @@ describe('UniformDetailRow', () => {
             const activeCheckbox = screen.getByRole('switch', { name: /status/i });
             const saveButton = screen.getByRole('button', { name: /save/i });
 
-            await user.selectOptions(generationSelect, generationLists[0][0].id);
-            await user.selectOptions(sizeSelect, sizeLists[0].uniformSizes[1].id);
+            await user.selectOptions(generationSelect, mockGenerationLists[0][0].id);
+            await user.selectOptions(sizeSelect, mockSizeLists[0].uniformSizes[1].id);
             await user.clear(commentInput);
             await user.type(commentInput, 'New comment');
             await user.click(activeCheckbox);
 
-            expect(generationSelect).toHaveValue(generationLists[0][0].id);
-            expect(sizeSelect).toHaveValue(sizeLists[0].uniformSizes[1].id);
+            expect(generationSelect).toHaveValue(mockGenerationLists[0][0].id);
+            expect(sizeSelect).toHaveValue(mockSizeLists[0].uniformSizes[1].id);
             expect(commentInput).toHaveValue('New comment');
             expect(activeCheckbox).not.toBeChecked();
 
@@ -223,8 +223,8 @@ describe('UniformDetailRow', () => {
             expect(updateUniformItem).toHaveBeenCalledWith({
                 number: mockUniform.number,
                 id: mockUniform.id,
-                generation: generationLists[0][0].id,
-                size: sizeLists[0].uniformSizes[1].id,
+                generation: mockGenerationLists[0][0].id,
+                size: mockSizeLists[0].uniformSizes[1].id,
                 comment: 'New comment',
                 active: false,
             });
@@ -242,14 +242,14 @@ describe('UniformDetailRow', () => {
             const activeCheckbox = screen.getByRole('switch', { name: /status/i });
             const cancelButton = screen.getByRole('button', { name: /cancel/i });
 
-            await user.selectOptions(generationSelect, generationLists[0][0].id);
-            await user.selectOptions(sizeSelect, sizeLists[0].uniformSizes[1].id);
+            await user.selectOptions(generationSelect, mockGenerationLists[0][0].id);
+            await user.selectOptions(sizeSelect, mockSizeLists[0].uniformSizes[1].id);
             await user.clear(commentInput);
             await user.type(commentInput, 'New comment');
             await user.click(activeCheckbox);
 
-            expect(generationSelect).toHaveValue(generationLists[0][0].id);
-            expect(sizeSelect).toHaveValue(sizeLists[0].uniformSizes[1].id);
+            expect(generationSelect).toHaveValue(mockGenerationLists[0][0].id);
+            expect(sizeSelect).toHaveValue(mockSizeLists[0].uniformSizes[1].id);
             expect(commentInput).toHaveValue('New comment');
             expect(activeCheckbox).not.toBeChecked();
 
@@ -311,7 +311,7 @@ describe('UniformDetailRow', () => {
         it('should allow null values if not using sizes or generations', async () => {
             const props = {
                 ...defaultProps,
-                uniformType: typeList[3],
+                uniformType: mockTypeList[3],
                 uniform: {
                     ...mockUniform,
                     generation: null,

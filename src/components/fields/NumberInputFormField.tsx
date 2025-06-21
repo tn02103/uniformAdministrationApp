@@ -1,7 +1,7 @@
 import { FieldValues, Path, useController } from "react-hook-form"
-import { NumberField, NumberFieldProps } from "./NumberField"
-import { Form } from "react-bootstrap"
-import ErrorMessage from "../errorMessage"
+import { Field } from "./Field"
+import { useFormContext } from "./Form"
+import { NumberField, NumberFieldProps } from "./NumberInput"
 
 export type NumberInputFormFieldProps<FormType extends FieldValues> = NumberFieldProps & {
     label: string,
@@ -14,24 +14,35 @@ export type NumberInputFormFieldProps<FormType extends FieldValues> = NumberFiel
     plaintext?: boolean,
 }
 
-export const NumberInputFormField = <FormType extends FieldValues>({ label, name, required, formName, ...inputProps }: NumberInputFormFieldProps<FormType>) => {
-
+export const NumberInputFormField = <FormType extends FieldValues>(props: NumberInputFormFieldProps<FormType>) => {
+    const { label, name, required, formName: formNameProp, disabled: disabledProp, plaintext: plaintextProp, ...inputProps } = props;
     const { field, fieldState } = useController({
         name,
     });
+
+    const formContext = useFormContext();
+    const disabled = formContext?.disabled || disabledProp;
+    const plaintext = formContext?.plaintext || plaintextProp;
+    const formName = formContext?.formName || formNameProp || "unnamedForm";
+
     return (
-        <Form.Group className="mb-3">
-            <Form.Label htmlFor={`${formName}_numberInput-${name}`} className="fw-bold m-0">
-                {label}{required ? " *" : ""}
-            </Form.Label>
+        <Field
+            formName={formName}
+            name={name}
+            label={label}
+            required={required}
+            errorMessage={fieldState.error?.message}
+            fieldName="numberInput"
+        >
             <NumberField
                 {...inputProps}
                 {...field}
+                disabled={disabled}
+                plaintext={plaintext}
                 isInvalid={!!fieldState.error}
-                id={`${formName}_numberInput-${name}`}
                 errorId={`${formName}_err_${name}`}
+                id={`${formName}_numberInput-${name}`}
             />
-            <ErrorMessage error={fieldState.error?.message} testId={`err_${name}`} id={`${formName}_err_${name}`} />
-        </Form.Group>
+        </Field>
     )
 }

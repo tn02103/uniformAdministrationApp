@@ -99,11 +99,9 @@ exports[`UniformOffcanvas should render correctly 1`] = `
         <div
           class="col-sm-auto col-12"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 form-label"
+              class="fw-bold m-0  form-label"
               for="uniform_toggle-active"
             >
               common.status
@@ -113,11 +111,13 @@ exports[`UniformOffcanvas should render correctly 1`] = `
               aria-readonly="true"
               class="mt-2"
             >
-              common.uniform.active.true
+              common.uniform.state.active
             </p>
             <div
+              aria-label="error message active"
               class="text-danger fs-7"
               data-testid="err_active"
+              id="uniform_err_active"
               role="alert"
             />
           </div>
@@ -125,11 +125,9 @@ exports[`UniformOffcanvas should render correctly 1`] = `
         <div
           class="col-sm-auto col-7"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 undefined form-label"
+              class="fw-bold m-0  form-label"
               for="uniform_select-generation"
             >
               common.uniform.generation.label
@@ -154,11 +152,9 @@ exports[`UniformOffcanvas should render correctly 1`] = `
           class="p-0 col-sm-auto col-5"
           style="min-width: 100px;"
         >
-          <div
-            class="mb-3"
-          >
+          <div>
             <label
-              class="fw-bold m-0 undefined form-label"
+              class="fw-bold m-0  form-label"
               for="uniform_select-size"
             >
               common.uniform.size
@@ -184,7 +180,7 @@ exports[`UniformOffcanvas should render correctly 1`] = `
         >
           <div>
             <label
-              class="fw-bold m-0 form-label"
+              class="fw-bold m-0  form-label"
               for="uniform_input-comment"
             >
               common.comment
@@ -211,6 +207,48 @@ exports[`UniformOffcanvas should render correctly 1`] = `
         </div>
       </div>
     </form>
+    <h4>
+      uniformOffcanvas.owner.label
+    </h4>
+    <hr
+      class="mb-0 mt-4"
+    />
+    <div
+      class="mt-2 mb-4 row"
+      data-testid="div_owner_row"
+    >
+      <div
+        class="col"
+      >
+        <div
+          class="fw-bold"
+        >
+          uniformOffcanvas.owner.issuedTo
+          :
+        </div>
+        <a
+          class="text-decoration-underline"
+          href="/app/cadet/cadet1"
+        >
+          John
+           
+          Doe
+        </a>
+      </div>
+      <div
+        class="col"
+      >
+        <div
+          class="fw-bold"
+        >
+          uniformOffcanvas.owner.issuedDate
+          :
+        </div>
+        <p>
+          01.10.2023
+        </p>
+      </div>
+    </div>
     <h4>
       uniformOffcanvas.deficiency.header
     </h4>
@@ -557,6 +595,9 @@ exports[`UniformOffcanvas should render correctly 1`] = `
         </div>
       </div>
     </div>
+    <div
+      class="h-50"
+    />
   </div>
 </div>
 `;

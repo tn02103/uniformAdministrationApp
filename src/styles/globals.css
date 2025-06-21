@@ -16,6 +16,7 @@ body {
 .drag-handler {
     cursor: pointer;
 }
+
 .drag-handler:active {
     cursor: move;
 }
@@ -34,10 +35,12 @@ nav {
     .topoffset-nav {
         top: 45px;
     }
+
     .offcanvas {
         margin-top: 45px;
         margin-bottom: 60px;
     }
+
     .footer {
         height: 60px;
     }
@@ -106,8 +109,11 @@ a {
     background-color: lightgray;
 }
 
-.hoverColHidden {
-    visibility: hidden;
+@media (min-width: 992px) {
+    .hoverColHidden {
+        visibility: hidden;
+        pointer-events: auto;
+    }
 }
 
 .hoverCol:hover .hoverColHidden {

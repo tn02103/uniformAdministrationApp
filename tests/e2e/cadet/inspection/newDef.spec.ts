@@ -1,10 +1,10 @@
 import { prisma } from "@/lib/db";
 import { expect } from "playwright/test";
+import t from "../../../../public/locales/de";
 import { viewports } from "../../../_playwrightConfig/global/helper";
 import { CommentValidationTests, newNameValidationTests } from "../../../_playwrightConfig/global/testSets";
 import { CadetInspectionComponent } from "../../../_playwrightConfig/pages/cadet/cadetInspection.component";
 import { CadetUniformComponent } from "../../../_playwrightConfig/pages/cadet/cadetUniform.component";
-import { SimpleFormPopupComponent } from "../../../_playwrightConfig/pages/popups/SimpleFormPopup.component";
 import { adminTest } from "../../../_playwrightConfig/setup";
 import { startInspection } from "../../../_playwrightConfig/testData/dynamicData";
 
@@ -153,15 +153,25 @@ test('E2E0272: validate uniformSelect', async ({ inspectionComponent, staticData
 
 test('E2E0273: validate update of uniformSelect Content', async ({ page, inspectionComponent, staticData: { ids, cleanup } }) => {
     const uniformComponent = new CadetUniformComponent(page);
-    const formComponent = new SimpleFormPopupComponent(page);
+    const div_popup = page.getByRole("dialog");
+    const txt_autocomplete = div_popup.getByRole('textbox', { name: t.cadetDetailPage.issueModal["input.label"] });
+    const btn_save = div_popup.getByRole("button", { name: t.cadetDetailPage.issueModal["button.issue"] });
+
     await test.step('setup', async () => {
         await inspectionComponent.btn_step2_newDef.click();
         await inspectionComponent.sel_newDef_type(0).selectOption(ids.deficiencyTypeIds[0]);
     });
     await test.step('issue', async () => {
         await uniformComponent.btn_utype_issue(ids.uniformTypeIds[0]).click();
-        await formComponent.txt_input.fill('1111');
-        await formComponent.btn_save.click();
+        await expect(txt_autocomplete).toBeVisible();
+        await txt_autocomplete.click();
+        await expect(div_popup.getByRole("option").nth(0)).toBeVisible(); // waiting till options are loaded
+
+        await txt_autocomplete.fill('1111');
+        await expect(txt_autocomplete).toHaveValue('1111');
+        await expect(btn_save).toBeEnabled();
+        await btn_save.click();
+
         await expect(uniformComponent.div_uitem(ids.uniformIds[0][11])).toBeVisible();
     });
     await test.step('validate change', async () => {

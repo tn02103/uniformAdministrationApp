@@ -26,6 +26,7 @@ test.afterEach(async ({ staticData: { cleanup } }) => {
 test.describe('UniformGeneration Configuration', () => {
 
     test('change sort order up', async ({ page, types, staticData: { data }, browserName }) => {
+        // eslint-disable-next-line playwright/no-skipped-test
         test.skip(browserName !== 'chromium', 'This test only runs on Chrome');
 
         const generationList = data.uniformGenerations.filter(g => g.recdelete === null && g.fk_uniformType === types[0].id);
@@ -83,6 +84,7 @@ test.describe('UniformGeneration Configuration', () => {
     });
 
     test('change sort order down', async ({ page, types, staticData: { data }, browserName }) => {
+        // eslint-disable-next-line playwright/no-skipped-test
         test.skip(browserName !== 'chromium', 'This test only runs on Chrome');
 
         const generationList = data.uniformGenerations.filter(g => g.recdelete === null && g.fk_uniformType === types[0].id);

@@ -4,6 +4,7 @@ export default {
         comment: "Kommentar",
         description: "Beschreibung",
         details: "Details",
+        storageUnit: "Lagereinheit",
         name: "Name",
         type: "Typ",
         loading: "Lädt",
@@ -27,6 +28,7 @@ export default {
             open: "Öffnen",
             reactivate: "Reaktivieren",
             deactivate: "Deaktivieren",
+            discard: "Verwerfen",
             prevStep: "Zurück",
             nextStep: "Weiter",
             edit_item: "{item} Bearbeiten",
@@ -37,6 +39,7 @@ export default {
             replace: "Austauschen",
             rename: "Umbenennen",
             restart: "Wieder starten",
+            remove: "Entfernen",
             finish: "Beenden",
             changeIssued: "Anzahl & Typ verändern",
             delete: "Löschen",
@@ -78,9 +81,9 @@ export default {
                 "multiLabel": "Größenlisten",
             },
             owner: "Besitzer",
-            active: {
-                true: "Aktiv",
-                false: "Reserve"
+            state: {
+                active: "Aktiv",
+                reserve: "Reserve"
             },
             type: {
                 "type#one": "Uniformtyp",
@@ -186,6 +189,9 @@ export default {
                 },
             },
             custom: {
+                nameDuplication: {
+                    storageUnit: "Der Name wird bereits von einer anderen Lagereinheit benutzt",
+                },
                 material: {
                     typename: {
                         duplication: "Der Name wird bereits von einem anderen Material der Gruppe verwendet",
@@ -217,6 +223,11 @@ export default {
         success: {
             changeSortorder: "Reihenfolge erfolgreich geändert",
         },
+    },
+    autocomplete: {
+        noOptions: "Keine Optionen gefunden",
+        loading: "Lädt...",
+        optionLimit: "Es werden nur die ersten {count} Ergebnisse angezeigt",
     },
     expandableArea: {
         showMore: "Mehr anzeigen",
@@ -282,14 +293,68 @@ export default {
             inspection: {
                 inspected: "Kadetten kontrolliert:\nInspektion des Kadetten aktualisieren",
                 notInspected: "Kadetten unkontrolliert:\nInspektion des Kadetten starten"
-            }
+            },
+        },
+        "issueModal": {
+            "input.label": "Uniformteil auswählen",
+            "alert.owner.1": "Bereits an den Kadetten ",
+            "alert.owner.2": " ausgegeben. Möchten Sie den Besitzer ändern?",
+            "alert.noItemFound": "Es existiert kein Uniformteil mit der Nummer {number}. Möchten Sie es anlegen?",
+            "alert.itemAlreadyOwned": "Das ausgewählte Uniformteil ist bereits an diese Person ausgegeben.",
+            "alert.storageUnit": "Das ausgewählte Uniformteil ist der Lagereinheit \"{unit}\" zugeordnet.",
+            "alert.reserve": "Das ausgewählte Uniformteil ist als Reserve markiert.",
+            "button.changeOwner": "Besitzer ändern",
+            "button.replace": "Ersetzen",
+            "button.issue": "Ausgeben",
+            "button.create": "Uniformteil anlegen",
+            "error.invalidNumber": "Die eingegebene Nummer ist ungültig",
+            "error.issueFailed": "Das Uniformteil konnte nicht ausgegeben werden. Bitte versuchen Sie es später erneut.",
+            "header.add": "{type} ausgeben",
+            "header.replace": "{type}-{number} ersetzen",
+            "option.isReserve": "Reserve",
+            "option.owner": "Besitzer: ",
+            "option.storageUnit": "Lagereinheit: ",
+        },
+    },
+    storageUnit: {
+        error: {
+            "addUT": "Das Uniformteil konnte nicht hinzugefügt werden. Bitte versuchen Sie es später erneut.",
+            "removeUT": "Das Uniformteil konnte nicht entfernt werden. Bitte versuchen Sie es später erneut.",
+            "nameDuplication": "Der Name wird bereits von einer anderen Lagereinheit benutzt",
+        },
+        label: {
+            "addUT": "Uniformteil(e) hinzufügen",
+            "details.name": "Name",
+            "details.capacity": "Kapazität",
+            "details.description": "Beschreibung",
+            "details.forReserves": "Für Reserven",
+            "details.forReservesText": "Uniformteile werden als Reserve markiert",
+            "details.uniformCount": "# Uniformteile",
+            "editName": "Lagereinheit umbenennen",
+            "header.uniformlist": "Uniformteil(e)",
+            "header.create": "Lagereinheit anlegen",
+            "header.page": "Uniform Lagerverwaltung",
+        },
+        warning: {
+            "capacity.header": "Lagereinheit voll",
+            "capacity.message": "Die Einheit ist bereits voll. Sind Sie sicher, dass sie ein weiteres Uniformteil hinzufügen wollen?",
+            "close.header": 'Änderungen verwerfen?',
+            "close.message": 'Möchten Sie die Änderungen verwerfen?',
+            "delete.header": "Lagereinheit löschen",
+            "delete.message": "Soll die Lagereinheit \"{name}\" wirklich gelöscht werden? Diese Aktion ist nicht wieder umkehrbar.",
+        },
+        tooltips: {
+            "utOptions.owner": "Besitzer: ",
+            "utOptions.storageUnit": "Lagereinheit: ",
+            "utOptions.isReserve": "Reserve",
         }
     },
     uniformList: {
         filter: "Filter",
         other: "weitere Filter",
-        withOwner: "mit Besitzer",
-        withoutOwner: "ohne Besitzer",
+        issued: "ausgegeben",
+        notIssued: "nicht ausgegeben",
+        inStorageUnit: "in Lagereinheit",
         selectAll: "Alle auswählen",
         error: {
             activ: "Von Aktiv und Passiv muss mindestens ein Option ausgewählt sein!",
@@ -336,6 +401,21 @@ export default {
             "label.cadet": "Person",
             "title.deleted": "Person gelöscht",
             "noEntries": "Keine Einträge vorhanden",
+        },
+        storageUnit: {
+            "label.button.remove": "Aus Lagereinheit entfernen",
+            "label.button.add": "In Lagereinheit verschieben",
+            "label.button.switch": "Lagereinheit wechseln",
+            "label.notAssigned": "Nicht zugeteilt",
+            "label.add": "Zu Lagereinheit zuweisen",
+            "placeholder.add": "Lagereinheit auswählen",
+            "error.add": "Das Uniformteil konnte nicht in die Lagereinheit verschoben werden. Bitte versuchen Sie es später erneut.",
+            "error.remove": "Das Uniformteil konnte nicht aus der Lagereinheit entfernt werden. Bitte versuchen Sie es später erneut.",
+        },
+        owner: {
+            label: "Besitzer",
+            issuedTo: "Ausgegeben an",
+            issuedDate: "Ausgegeben seid",
         }
     },
     createUniform: {
@@ -381,6 +461,7 @@ export default {
         links: {
             cadetOverview: "Personal",
             uniformOverview: "Uniform",
+            storageUnit: "Lagereinheiten",
             create: {
                 group: "Anlegen",
                 cadet: "Person",

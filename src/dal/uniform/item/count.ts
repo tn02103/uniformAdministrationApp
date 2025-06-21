@@ -5,7 +5,7 @@ import { z } from "zod";
 
 
 export const getCountByType = async (props: string) => genericSAValidator(
-    AuthRole.materialManager,
+    AuthRole.user,
     props,
     z.string().uuid(),
     { uniformTypeId: props }
