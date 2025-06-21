@@ -595,6 +595,9 @@ exports[`UniformOffcanvas should render correctly 1`] = `
         </div>
       </div>
     </div>
+    <div
+      class="h-50"
+    />
   </div>
 </div>
 `;

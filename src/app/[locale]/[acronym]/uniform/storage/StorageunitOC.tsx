@@ -63,7 +63,7 @@ export function StorageunitOC({ storageUnit, onHide, setSelectedStorageUnitId }:
 
 
     return (
-        <Offcanvas show={true} onHide={handleOnHide} placement='end' style={{ width: '500px' }}>
+        <Offcanvas show={true} onHide={handleOnHide} placement='end' style={{ width: '575px' }}>
             <StorageunitOCHeader storageUnit={storageUnit} />
             <Offcanvas.Body>
                 <hr className="mb-0" />

@@ -211,43 +211,40 @@ test('validate delete', async ({ page, materialListComponent, staticData: { data
 
         await expect(materialListComponent.div_material(material.id)).toBeHidden();
     });
-    await test.step('validate db', async () => {
-        const [dbIssued, dbMaterial] = await prisma.$transaction([
-            prisma.materialIssued.findFirst({
-                where: {
-                    fk_cadet: ids.cadetIds[0],
-                    fk_material: material.id,
-                }
-            }),
-            prisma.material.findUnique({
-                where: { id: material.id }
-            }),
-        ]);
+    const [dbIssued, dbMaterial] = await prisma.$transaction([
+        prisma.materialIssued.findFirst({
+            where: {
+                fk_cadet: ids.cadetIds[0],
+                fk_material: material.id,
+            }
+        }),
+        prisma.material.findUnique({
+            where: { id: material.id }
+        }),
+    ]);
+    await test.step('validate DB: material returned', async () => {
+        expect(dbIssued).not.toBeNull();
+        expect(dbIssued?.dateReturned).not.toBeNull();
+    });
 
-        await test.step('validate material returned', async () => {
-            expect(dbIssued).not.toBeNull();
-            expect(dbIssued?.dateReturned).not.toBeNull();
-        });
+    await test.step('validate DB: material deleted', async () => {
+        expect(dbMaterial).not.toBeNull();
+        expect(dbMaterial!.recdelete).not.toBeNull();
+        expect(dbMaterial!.recdeleteUser).toEqual('test4');
+    });
 
-        await test.step('validate material deleted', async () => {
-            expect(dbMaterial).not.toBeNull();
-            expect(dbMaterial!.recdelete).not.toBeNull();
-            expect(dbMaterial!.recdeleteUser).toEqual('test4');
-        });
-    })
 });
 test.describe('validate formValidation', () => {
     test.beforeEach(async ({ materialListComponent, staticData: { ids } }) => {
         await materialListComponent.btn_material_edit(ids.materialIds[0]).click();
     });
     test('name', async ({ page, editMaterialPopup }) => {
-        await page.pause();
         const tests: ValidationTestType[] = newDescriptionValidationTests({
             minLength: 1,
             maxLength: 20
         });
         for (const testSet of tests) {
-            await test.step(testSet.testValue, async () => {
+            await test.step(String(testSet.testValue), async () => {
                 await editMaterialPopup.txt_name.fill(String(testSet.testValue));
                 await page.keyboard.press('Tab');
                 if (testSet.valid) {
@@ -274,7 +271,7 @@ test.describe('validate formValidation', () => {
             min: 0,
         });
         for (const testSet of tests) {
-            await test.step(testSet.testValue, async () => {
+            await test.step(String(testSet.testValue), async () => {
                 await editMaterialPopup.txt_actualQuantity.fill(String(testSet.testValue));
                 await page.keyboard.press('Tab');
 
@@ -291,7 +288,7 @@ test.describe('validate formValidation', () => {
             min: 0,
         });
         for (const testSet of tests) {
-            await test.step(testSet.testValue, async () => {
+            await test.step(String(testSet.testValue), async () => {
                 await editMaterialPopup.txt_targetQuantity.fill(String(testSet.testValue));
                 await page.keyboard.press('Tab');
 

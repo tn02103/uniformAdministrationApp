@@ -219,6 +219,7 @@ test.describe('UniformType Configuration', () => {
     });
 
     test('change sortOrder down', async ({ page, types, browserName }) => {
+        // eslint-disable-next-line playwright/no-skipped-test
         test.skip(browserName !== 'chromium', 'This test only runs on Chrome');
 
         await test.step('change sortOrder', async () => {
@@ -266,6 +267,7 @@ test.describe('UniformType Configuration', () => {
     });
 
     test('change sortOrder up', async ({ page, types, browserName }) => {
+        // eslint-disable-next-line playwright/no-skipped-test
         test.skip(browserName !== 'chromium', 'This test only runs on Chrome');
         
         await test.step('change sortOrder', async () => {
@@ -281,7 +283,6 @@ test.describe('UniformType Configuration', () => {
 
             await thirdRowMove.locator('span[draggable]').dragTo(secondRowMove, {
                 targetPosition: { x: 10, y: 5 }, // Adjust the `y` value to drag further up
-                force: true,
             });
 
             await expect(page.getByText(german.common.success.changeSortorder)).toBeVisible();

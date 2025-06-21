@@ -1,6 +1,7 @@
 import { AutocompleteField, RenderOptionProps } from "@/components/fields/AutocompleteField";
 import { useGlobalData } from "@/components/globalDataProvider";
 import { useModal } from "@/components/modals/modalProvider";
+import { TooltipIcon } from "@/components/TooltipIcon";
 import { addUniformItemToStorageUnit, removeUniformFromStorageUnit, StorageUnitWithUniformItems } from "@/dal/storageUnit/_index";
 import { UniformItemLabel } from "@/dal/uniform/item/_index";
 import { useStorageUnitsWithUniformItemList } from "@/dataFetcher/storage";
@@ -8,7 +9,7 @@ import { useUniformLabels } from "@/dataFetcher/uniform";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useScopedI18n } from "@/lib/locales/client";
 import { SAFormHandler } from "@/lib/SAFormHandler";
-import { faBoxOpen, faPerson, faTriangleExclamation, faX } from "@fortawesome/free-solid-svg-icons";
+import { faBoxOpen, faRegistered, faUser, faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
 
@@ -77,11 +78,10 @@ export function StorageunitOCUniformList({ storageUnit }: Props) {
             {(userRole >= AuthRole.inspector) &&
                 <div className="my-3">
                     <AutocompleteField<Option>
+                        noImplicitChange
                         resetOnChange
                         label={t('label.addUT')}
                         options={uniformOptions}
-                        value={null}
-                        noImplicitChange={true}
                         onChange={handleAdd}
                         renderOption={getRenderOptionFunction({
                             isReserve: t('tooltips.utOptions.isReserve'),
@@ -103,7 +103,7 @@ export function StorageunitOCUniformList({ storageUnit }: Props) {
                 </thead>
                 <tbody>
                     {storageUnit.uniformList.map((uniform) => (
-                        <tr key={uniform.id} className="hoverCol">
+                        <tr key={uniform.id} className={"hoverCol align-middle"}>
                             <td>
                                 {(userRole >= AuthRole.inspector) &&
                                     <Button
@@ -117,9 +117,14 @@ export function StorageunitOCUniformList({ storageUnit }: Props) {
                                     </Button>
                                 }
                             </td>
-                            <td>{uniform.type.name}-{uniform.number}</td>
-                            <td>{uniform.size?.name}</td>
-                            <td>{uniform.generation?.name}</td>
+                            <td className={!uniform.active ? " text-secondary" : ""}>
+                                <div className="d-flex align-items-left gap-2">
+                                    {uniform.type.name}-{uniform.number}
+                                    {!uniform.active && <TooltipIcon icon={faRegistered} tooltipText={tCommon('uniform.state.reserve')} className="text-secondary my-auto" />}
+                                </div>
+                            </td>
+                            <td className={!uniform.active ? " text-secondary" : ""}>{uniform.size?.name}</td>
+                            <td className={uniform.generation?.outdated ? "text-orange-500" : !uniform.active ? " text-secondary" : ""}>{uniform.generation?.name ?? "--"}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -146,10 +151,10 @@ const getRenderOptionFunction = (translations: { isReserve: string, owner: strin
             >
                 <span>{option.label}</span>
                 {option.owner &&
-                    <FontAwesomeIcon icon={faPerson} className="text-danger" />
+                    <FontAwesomeIcon icon={faUser} className="text-danger" />
                 }
                 {!option.active &&
-                    <FontAwesomeIcon icon={faTriangleExclamation} className="text-warning" />
+                    <FontAwesomeIcon icon={faRegistered} className="text-warning" />
                 }
                 {option.storageUnit &&
                     <FontAwesomeIcon icon={faBoxOpen} className="text-danger" />
