@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createContext, useContext, useMemo } from "react";
-import { FieldErrors, FieldValues, FormProvider, useForm, UseFormProps } from "react-hook-form"
-import { z } from "zod";
+import { FieldErrors, FieldValues, FormProvider, useForm, UseFormProps } from "react-hook-form";
+import { ZodTypeAny } from "zod";
 
 
 type FormContextType = {
@@ -20,7 +20,8 @@ type FormProps<TFieldValue extends FieldValues> = {
     disabled?: boolean;
     plaintext?: boolean;
     formName?: string;
-    zodSchema?: z.Schema;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    zodSchema?: ZodTypeAny;
 } & UseFormProps<TFieldValue>;
 
 export const Form = <TFieldValue extends FieldValues>({
