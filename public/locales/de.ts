@@ -224,6 +224,11 @@ export default {
             changeSortorder: "Reihenfolge erfolgreich geändert",
         },
     },
+    autocomplete: {
+        noOptions: "Keine Optionen gefunden",
+        loading: "Lädt...",
+        optionLimit: "Es werden nur die ersten {count} Ergebnisse angezeigt",
+    },
     expandableArea: {
         showMore: "Mehr anzeigen",
         showLess: "Weniger anzeigen",

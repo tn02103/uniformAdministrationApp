@@ -1,0 +1,38 @@
+.optionListWrapper {
+    position: absolute;
+    z-index: 100;
+    background-color: white;
+    width: 100%;
+    max-height: 300px;
+    border-radius: 0px 0px 10px 10px;
+}
+
+.optionList {
+    overflow-y: auto;
+    scrollbar-width: none;
+    max-height: 300px;
+    border: lightgray 1px solid;
+    border-radius: 0px 0px 10px 10px;
+}
+
+.optionListWrapper ::-webkit-scrollbar-button {
+    display: none;
+}
+
+.optionItem {
+    background-color: white;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.selectedOptionItem {
+    background-color: LightGrey;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.loadingInput {
+    background-color: whitesmoke;
+    cursor: wait;
+    padding: 5px;
+}

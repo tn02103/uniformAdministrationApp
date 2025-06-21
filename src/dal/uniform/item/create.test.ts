@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { create } from "./create";
 
-const { ids, cleanup } = new StaticData(0);
+const { ids, cleanup, fk_assosiation } = new StaticData(0);
 const defaultWithSizes = {
     numberMap: [
         { sizeId: ids.sizeIds[0], numbers: [3000, 3003] },
@@ -30,7 +30,7 @@ const defaultWithoutSizes = {
 afterEach(async () => cleanup.uniform());
 
 describe('createUniformItem', () => {
-    
+
     describe('successfull in all allowed combinations', () => {
         it('creates with size and generation', async () => {
             const { success, result } = await runServerActionTest(
@@ -39,7 +39,10 @@ describe('createUniformItem', () => {
             expect(success).toBeTruthy();
             expect(result).toBe(4);
             const dbData = await prisma.uniform.findMany({
-                where: { number: { gte: 3000 } },
+                where: {
+                    number: { gte: 3000 },
+                    type: { fk_assosiation },
+                },
                 orderBy: { number: "asc" }
             });
             expect(dbData).toHaveLength(4);
@@ -75,7 +78,10 @@ describe('createUniformItem', () => {
             expect(success).toBeTruthy();
             expect(result).toBe(2);
             const dbData = await prisma.uniform.findMany({
-                where: { number: { gte: 3000 } }
+                where: {
+                    number: { gte: 3000 },
+                    type: { fk_assosiation },
+                },
             });
             expect(dbData).toHaveLength(2);
             for (const item of dbData) {

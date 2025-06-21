@@ -2,7 +2,8 @@ import { Autocomplete, AutocompleteOptionType, AutocompleteProps } from "./Autoc
 import { Field, FieldProps } from "./Field"
 
 type AutocompleteFieldProps<TOption extends AutocompleteOptionType> =
-    AutocompleteProps<TOption> & Omit<FieldProps, "fieldName" | "formName" | "name">
+    Omit<AutocompleteProps<TOption>, "invalid"> &
+    Omit<FieldProps, "fieldName" | "formName" | "name">
 
 export type { AutocompleteOptionType, RenderOptionProps } from "./Autocomplete";
 export const AutocompleteField = <TOption extends AutocompleteOptionType>(props: AutocompleteFieldProps<TOption>) => {

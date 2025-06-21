@@ -224,6 +224,11 @@ export default {
             changeSortorder: "The order was changed successfully",
         },
     },
+    autocomplete: {
+        noOptions: "No options found",
+        loading: "Loading options",
+        optionLimit: "Only the first {count} options are displayed",
+    },
     expandableArea: {
         showMore: "Show more",
         showLess: "Show less",

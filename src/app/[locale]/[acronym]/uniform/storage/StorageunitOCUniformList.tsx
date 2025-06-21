@@ -72,6 +72,28 @@ export function StorageunitOCUniformList({ storageUnit }: Props) {
         );
     }
 
+    const customFilter = (options: Option[], searchTerm: string) => {
+        if (!searchTerm) return options;
+
+
+        const parts = searchTerm.split(/[-\s]+/).filter(Boolean);
+        const isNumber = parts.map(part => !isNaN(Number(part)));
+        return options.filter(option => {
+            return parts.every((part, index) => {
+                if (isNumber[index]) {
+                    return String(option.number).includes(part);
+                } else {
+                    const lowerPart = part.toLowerCase();
+                    
+                    return (
+                        option.type.name.toLocaleLowerCase().includes(lowerPart) 
+                        || option.type.acronym.toLocaleLowerCase().includes(lowerPart)
+                    );
+                }
+            });
+        });
+    };
+
     return (
         <div>
             <h4 className="text-center">{t('label.header.uniformlist')}</h4>
@@ -89,6 +111,7 @@ export function StorageunitOCUniformList({ storageUnit }: Props) {
                             storageUnit: t('tooltips.utOptions.storageUnit'),
                         })}
                         isOptionDisabled={(option) => !!(option.owner || option.storageUnit)}
+                        customFilter={customFilter}
                     />
                 </div>
             }

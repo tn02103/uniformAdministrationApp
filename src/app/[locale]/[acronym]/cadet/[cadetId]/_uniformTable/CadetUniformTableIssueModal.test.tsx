@@ -2,6 +2,7 @@ import { getAllByRole, getByRole, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event";
 import { mockTypeList } from "../../../../../../../tests/_jestConfig/staticMockData";
 import { CadetUniformTableIssueModal, CadetUniformTableIssueModalProps } from "./CadetUniformTableIssueModal";
+import { UniformItemLabel } from "@/dal/uniform/item/_index";
 
 // Mocks
 jest.mock("@/dataFetcher/cadet", () => ({
@@ -24,13 +25,24 @@ const defaultProps: CadetUniformTableIssueModalProps = {
     onClose: mockOnClose,
 };
 
+const getUniformLabel = (data: Partial<UniformItemLabel>): UniformItemLabel => ({
+    id: "item-1",
+    label: "Uniform-1",
+    number: 1,
+    owner: null,
+    active: true,
+    storageUnit: null,
+    type: { id: defaultProps.type.id, name: defaultProps.type.name, acronym: defaultProps.type.acronym },
+    ...data,
+});
 const uniformLabels = [
-    { id: "item-1", number: 101, typeId: defaultProps.type.id, active: true, owner: { id: "cadet-1", firstname: "Lucas", lastname: "Mustermann" }, storageUnit: null },
-    { id: "item-2", number: 102, typeId: defaultProps.type.id, active: false, owner: null, storageUnit: null },
-    { id: "item-3", number: 103, typeId: defaultProps.type.id, active: true, owner: { id: "cadet-2", firstname: "Max", lastname: "Mustermann" }, storageUnit: null },
-    { id: "item-4", number: 104, typeId: defaultProps.type.id, active: true, owner: null, storageUnit: { name: "Lager 1" } },
-    { id: "item-5", number: 105, typeId: defaultProps.type.id, active: false, owner: { id: "cadet-3", firstname: "Anna", lastname: "Musterfrau" }, storageUnit: null },
-];
+    getUniformLabel({ id: "item-1", number: 101, owner: { id: "cadet-1", firstname: "Lucas", lastname: "Mustermann" } }),
+    getUniformLabel({ id: "item-2", number: 102, active: false }),
+    getUniformLabel({ id: "item-3", number: 103, owner: { id: "cadet-2", firstname: "Max", lastname: "Mustermann" } }),
+    getUniformLabel({ id: "item-4", number: 104, storageUnit: { id: "s1", name: "Lager 1" } }),
+    getUniformLabel({ id: "item-5", number: 105, active: false, owner: { id: "cadet-3", firstname: "Anna", lastname: "Musterfrau" } }),
+] satisfies UniformItemLabel[];
+
 
 const issuedItemList = [
     { id: "item-1", number: 101, owner: null, active: true, storageUnit: null, typeId: defaultProps.type.id },
