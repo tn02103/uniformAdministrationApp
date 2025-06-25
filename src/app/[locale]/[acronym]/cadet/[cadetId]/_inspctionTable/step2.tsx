@@ -1,42 +1,41 @@
 import TooltipIconButton from "@/components/Buttons/TooltipIconButton";
 import { useCadetUniformComplete } from "@/dataFetcher/cadet";
-import { useCadetInspection } from "@/dataFetcher/cadetInspection";
 import { useI18n } from "@/lib/locales/client";
+import { CadetInspectionFormSchema, NewCadetDeficiencyFormSchema, OldDeficiencyFormSchema } from "@/zod/deficiency";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "next/navigation";
 import { Button, Col, Row } from "react-bootstrap";
-import { useFieldArray, useFormContext } from "react-hook-form";
+import { useFieldArray, useWatch } from "react-hook-form";
 import { ParamType } from "../page";
-import { FormType, NewDeficiencyFormType } from "./card";
 import NewDeficiencyRow from "./newDeficiencyRow";
 import OldDeficiencyRow from "./oldDeficiencyRow";
 
 
-const initDeficiency: NewDeficiencyFormType = {
+const initDeficiency: NewCadetDeficiencyFormSchema = {
     typeId: "",
-    typeName: "",
     description: "",
     comment: "",
-    fk_uniform: "",
-    materialId: "",
+    uniformId: null,
+    materialId: null,
+    otherMaterialGroupId: null,
+    otherMaterialId: null,
 }
 
 export default function CadetInspectionStep2({
-    prevStep
+    setStep
 }: {
-    prevStep: () => void
+    setStep: (step: number) => void
 }) {
     const t = useI18n();
-    const { watch, control } = useFormContext<FormType>();
-    const { fields, append, remove } = useFieldArray<FormType>({ control: control, name: "newDeficiencyList" });
+    const { fields, append, remove } = useFieldArray<CadetInspectionFormSchema>({ name: "newDeficiencyList" });
 
     const { cadetId }: ParamType = useParams();
-    const { cadetInspection } = useCadetInspection(cadetId);
     const uniformComplete = useCadetUniformComplete(cadetId);
 
-    const { oldCadetDeficiencies } = cadetInspection!;
-    const numberUnresolvedDeficiencies = Object.values(watch('oldDeficiencyList')).filter(v => v == false).length
-
+    const oldDeficiencyList = useWatch<CadetInspectionFormSchema>({
+        name: "oldDeficiencyList"
+    }) as OldDeficiencyFormSchema[] | undefined;
+    const numberUnresolvedDeficiencies = oldDeficiencyList?.filter(def => !def.resolved).length || 0;
 
     return (
         <>
@@ -49,11 +48,9 @@ export default function CadetInspectionStep2({
                         {t('cadetDetailPage.header.amountUnresolved', { count: numberUnresolvedDeficiencies })}
                     </Col>
                 </Row>
-                {oldCadetDeficiencies?.map(def => {
-                    if (!watch(`oldDeficiencyList.${def.id}`)) {
-                        return <OldDeficiencyRow deficiency={def} step={2} key={def.id} />;
-                    }
-                })}
+                {(oldDeficiencyList)?.map((def, index) =>
+                    <OldDeficiencyRow deficiency={def} step={2} key={def.id} index={index} />
+                )}
                 <Row className="border-bottom p-1 bg-body-secondary m-0">
                     <Col xs="auto">
                         {t('cadetDetailPage.header.newDeficiencies')}
@@ -83,10 +80,10 @@ export default function CadetInspectionStep2({
                     <Button
                         variant="outline-secondary"
                         className="border-0"
-                        onClick={prevStep}
+                        onClick={() => (oldDeficiencyList && oldDeficiencyList.length > 0) ? setStep(1) : setStep(0)}
                         data-testid="btn_step2_back"
                     >
-                        {(oldCadetDeficiencies && oldCadetDeficiencies[0])
+                        {(oldDeficiencyList && oldDeficiencyList?.length > 0)
                             ? t('common.actions.prevStep')
                             : t('common.actions.cancel')}
                     </Button>

@@ -2,6 +2,7 @@ import { Form } from "react-bootstrap"
 import { FieldValues, Path, useController } from "react-hook-form"
 import { Field } from "./Field"
 import { useFormContext } from "./Form"
+import { useScopedI18n } from "@/lib/locales/client"
 
 type Props<FormType extends FieldValues> = {
     label: string,
@@ -13,11 +14,20 @@ type Props<FormType extends FieldValues> = {
     className?: string,
     placeholder?: string,
     plaintext?: boolean,
+    hookFormValidation?: boolean,
+    maxLength?: number,
 }
 
-export const TextareaFormField = <FormType extends FieldValues>({ label, name, required, rows, className, placeholder, ...inputProps }: Props<FormType>) => {
+export const TextareaFormField = <FormType extends FieldValues>(props: Props<FormType>) => {
+    const { label, name, rows, required, placeholder, className, hookFormValidation, maxLength, ...inputProps } = props;
+
+    const t = useScopedI18n('common.error');
     const { field, fieldState } = useController({
         name,
+        rules: hookFormValidation ? {
+            required: required ? t('string.required') : false,
+            maxLength: maxLength ? { value: maxLength, message: t('string.maxLength', { value: maxLength }) } : undefined,
+        } : {},
     });
 
     const formContext = useFormContext();

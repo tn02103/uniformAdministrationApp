@@ -1,5 +1,3 @@
-"use client";
-
 import TooltipIconButton from "@/components/Buttons/TooltipIconButton";
 import { useCadetInspection } from "@/dataFetcher/cadetInspection";
 import { useInspectionState } from "@/dataFetcher/inspection";
@@ -10,27 +8,17 @@ import { Row } from "react-bootstrap";
 
 
 export default function CadetInspectionCardHeader({
-    stepState: [step, setStep],
-    disabled,
+    step,
+    startInspecting,
 }: {
-    stepState: [number, (n: number) => void];
-    disabled: boolean;
+    step: number;
+    startInspecting: () => void;
 }) {
     const t = useScopedI18n('cadetDetailPage');
     const { inspectionState } = useInspectionState();
     const { cadetId } = useParams();
     const { cadetInspection } = useCadetInspection(cadetId as string);
     const inspected = (!!cadetInspection && !!cadetInspection.id)
-
-    function startInspectingCadet() {
-        if (step !== 0) return;
-
-        if (cadetInspection && cadetInspection.oldCadetDeficiencies.length == 0) {
-            setStep(2);
-        } else {
-            setStep(1);
-        }
-    }
 
     return (
         <Row className="fs-5 fw-bold p-0">
@@ -39,13 +27,13 @@ export default function CadetInspectionCardHeader({
                     {(step == 0) ? t('header.inspection') : t('header.inspecting')}
                     <TooltipIconButton
                         variant={inspected ? "outline-success" : "outline-warning"}
-                        disabled={step !== 0 || disabled}
+                        disabled={step !== 0}
                         tooltipText={inspected
                             ? t('tooltips.inspection.inspected')
                             : t('tooltips.inspection.notInspected')}
                         icon={inspected ? faClipboardCheck : faClipboardQuestion}
                         iconClass="fa-xl"
-                        onClick={startInspectingCadet}
+                        onClick={startInspecting}
                         testId="btn_inspect"
                     />
                 </div>

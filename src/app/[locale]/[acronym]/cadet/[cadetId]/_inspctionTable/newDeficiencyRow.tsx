@@ -1,19 +1,19 @@
-"use client";
-
 import TooltipIconButton from "@/components/Buttons/TooltipIconButton";
+import { InputFormField } from "@/components/fields/InputFormField";
+import { SelectFormField } from "@/components/fields/SelectFormField";
+import { TextareaFormField } from "@/components/fields/TextareaFormField";
 import { useCadetMaterialDescriptionList, useCadetUniformDescriptList } from "@/dataFetcher/cadet";
 import { useDeficiencyTypes } from "@/dataFetcher/deficiency";
 import { useMaterialConfiguration, useMaterialTypeList } from "@/dataFetcher/material";
 import { useI18n } from "@/lib/locales/client";
-import { commentValidationPattern, nameValidationPattern } from "@/lib/validations";
 import { DeficiencyType } from "@/types/deficiencyTypes";
+import { CadetInspectionFormSchema } from "@/zod/deficiency";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Col, Form, Row } from "react-bootstrap";
-import { useFormContext } from "react-hook-form";
+import { Col, Row } from "react-bootstrap";
+import { useFormContext, useWatch } from "react-hook-form";
 import { ParamType } from "../page";
-import { FormType } from "./card";
 
 
 export default function NewDeficiencyRow({
@@ -24,33 +24,46 @@ export default function NewDeficiencyRow({
     remove: () => void;
 }) {
     const t = useI18n();
-    const { watch, setValue, getValues } = useFormContext<FormType>();
+    const { watch, setValue, getValues } = useFormContext<CadetInspectionFormSchema>();
     const [selectedDefType, setSelectedDefType] = useState<DeficiencyType>();
 
+    const { cadetId }: ParamType = useParams();
     const { deficiencyTypeList } = useDeficiencyTypes();
+    const { uniformLabels } = useCadetUniformDescriptList(cadetId);
+    const [typeId, dateCreated] = useWatch<CadetInspectionFormSchema>({
+        name: [`newDeficiencyList.${index}.typeId`, `newDeficiencyList.${index}.dateCreated`]
+    });
+
+    const deficiencyTypeOptions = deficiencyTypeList?.map((type) => ({ value: type.id, label: type.name })) ?? [];
+    const uniformOptions = uniformLabels?.map((item) => ({ value: item.id, label: item.description })) ?? [];
 
     useEffect(() => {
-        const id = watch(`newDeficiencyList.${index}.typeId`);
-        if (!deficiencyTypeList || !id) {
+        if (!deficiencyTypeList || !typeId) {
             setSelectedDefType(undefined);
             return;
         }
-        const type = deficiencyTypeList?.find(t => t.id === id);
+        const type = deficiencyTypeList?.find(t => t.id === typeId);
         if (selectedDefType && !getValues(`newDeficiencyList.${index}.dateCreated`)) {
-            setValue(`newDeficiencyList.${index}.fk_uniform`, "");
-            setValue(`newDeficiencyList.${index}.fk_material`, "");
+            setValue(`newDeficiencyList.${index}.uniformId`, "");
             setValue(`newDeficiencyList.${index}.materialId`, "");
-            setValue(`newDeficiencyList.${index}.materialGroup`, "");
-            setValue(`newDeficiencyList.${index}.materialType`, "");
+            setValue(`newDeficiencyList.${index}.otherMaterialGroupId`, "");
+            setValue(`newDeficiencyList.${index}.otherMaterialId`, "");
         }
 
         setSelectedDefType(type);
-    }, [watch(`newDeficiencyList.${index}.typeId`)])
+    }, [typeId, deficiencyTypeList, index, getValues, setValue, selectedDefType]);
 
     return (
         <Row data-testid={`div_newDef_${index}`} className="p-2 m-0 border-top border-1 border-dark">
             <Col xs={"10"} sm={"5"}>
-                <DeficiencyTypeSelect index={index} />
+                <SelectFormField
+                    required
+                    name={`newDeficiencyList.${index}.typeId`}
+                    label={t('common.type')}
+                    options={deficiencyTypeOptions}
+                    disabled={!!dateCreated}
+                    hookFormValidation
+                />
             </Col>
             <Col xs={1} className="align-self-center p-0 pt-3 d-sm-none" align="right">
                 <TooltipIconButton
@@ -62,12 +75,22 @@ export default function NewDeficiencyRow({
             </Col>
             {(selectedDefType && (selectedDefType.dependent === "cadet") && (selectedDefType.relation === null)) &&
                 <Col xs={"12"} sm={6}>
-                    <DescriptionControl index={index} />
+                    <InputFormField<CadetInspectionFormSchema>
+                        name={`newDeficiencyList.${index}.description`}
+                        label={t('common.description')}
+                        hookFormValidation
+                        maxLength={30} />
                 </Col>
             }
             {(selectedDefType && ((selectedDefType.dependent === "uniform") || (selectedDefType.relation === "uniform"))) &&
                 <Col xs={"10"} sm={5}>
-                    <UniformSelect index={index} />
+                    <SelectFormField
+                        required
+                        name={`newDeficiencyList.${index}.fk_uniform`}
+                        label={t('common.uniform.item', { count: 1 })}
+                        options={uniformOptions}
+                        hookFormValidation
+                    />
                 </Col>
             }
             {(selectedDefType && ((selectedDefType.dependent === "cadet") && (selectedDefType.relation === "material"))) &&
@@ -96,307 +119,84 @@ export default function NewDeficiencyRow({
                 </Col>
             }
             <Col xs={11} className="pe-0 pt-1">
-                <CommentControl index={index} />
+                <TextareaFormField
+                    name={`newDeficiencyList.${index}.comment`}
+                    label={t('common.comment')}
+                    rows={2}
+                    maxLength={300}
+                    hookFormValidation
+                />
             </Col>
         </Row>
-    )
-}
-const DeficiencyTypeSelect = ({ index }: { index: number }) => {
-    const t = useI18n();
-    const { register, watch, formState: { errors } } = useFormContext<FormType>();
-
-    const created = !!watch(`newDeficiencyList.${index}.dateCreated`);
-    const { deficiencyTypeList } = useDeficiencyTypes();
-    if (!deficiencyTypeList) return <></>
-    return (
-        <>
-            <Row className="fs-8 fw-bold fst-italic">
-                <Col xs={12}>
-                    {t('common.type')}*
-                </Col>
-            </Row>
-            <Row className="fw-bold">
-                <Col xs={12}>
-                    {deficiencyTypeList
-                        ? <Form.Select
-                            disabled={created}
-                            isInvalid={!!(errors?.newDeficiencyList && errors?.newDeficiencyList[index]?.typeId)}
-                            {...register(
-                                `newDeficiencyList.${index}.typeId`,
-                                {
-                                    required: {
-                                        value: true,
-                                        message: t('common.error.pleaseSelect')
-                                    }
-                                }
-                            )}
-                        >
-                            {deficiencyTypeList.map(type => (
-                                <option key={type.id} value={type.id}>
-                                    {type.name}
-                                </option>
-                            ))}
-                        </Form.Select>
-                        : <div className="fs-7">
-                            ...{t('common.loading')}
-                        </div>
-                    }
-                </Col>
-                <Col data-testid={`err_type`} className="fs-7 text-danger">
-                    {errors?.newDeficiencyList
-                        && errors.newDeficiencyList[index]?.typeId?.message}
-                </Col>
-            </Row >
-        </>
-    )
-}
-
-const DescriptionControl = ({ index }: { index: number }) => {
-    const t = useI18n();
-    const { register, formState: { errors } } = useFormContext<FormType>();
-
-    return (
-        <>
-            <Row className="fs-8 fw-bold fst-italic">
-                <Col xs={12}>
-                    {t('common.description')}*
-                </Col>
-            </Row>
-            <Row className="fw-bold">
-                <Col xs={12}>
-                    <Form.Control
-                        type="text"
-                        isInvalid={!!(errors?.newDeficiencyList && errors?.newDeficiencyList[index]?.description)}
-                        {...register(`newDeficiencyList.${index}.description`, {
-                            required: {
-                                value: true,
-                                message: t('common.error.string.required'),
-                            },
-                            pattern: {
-                                value: nameValidationPattern,
-                                message: t('common.error.string.noSpecialChars'),
-                            },
-                            maxLength: {
-                                value: 30,
-                                message: t('common.error.string.maxLength', { value: 30 }),
-                            }
-                        })} />
-                </Col>
-                <Col data-testid="err_description" className="fs-7 text-danger">
-                    {errors?.newDeficiencyList?.[index]?.description?.message}
-                </Col>
-            </Row>
-        </>
-    )
-}
-
-const UniformSelect = ({ index }: { index: number }) => {
-    const t = useI18n();
-    const { register, formState: { errors } } = useFormContext<FormType>();
-    const { cadetId }: ParamType = useParams();
-    const uniformList = useCadetUniformDescriptList(cadetId);
-
-    if (!uniformList) return <></>
-    return (
-        <>
-            <Row className="fs-8 fw-bold fst-italic">
-                <Col xs={12}>
-                    {t('common.uniform.item', { count: 1 })}*
-                </Col>
-            </Row>
-            <Row className="fw-bold">
-                <Col xs={12}>
-                    <Form.Select
-                        isInvalid={!!(errors?.newDeficiencyList && errors.newDeficiencyList[index]?.fk_uniform)}
-                        {...register(
-                            `newDeficiencyList.${index}.fk_uniform`,
-                            {
-                                required: {
-                                    value: true,
-                                    message: t('common.error.pleaseSelect')
-                                }
-                            })}>
-                        <option value={""} disabled>{t('common.error.pleaseSelect')}</option>
-                        {uniformList?.map((item) => (
-                            <option key={item.id} value={item.id}>{item.description}</option>
-                        ))}
-                    </Form.Select>
-                </Col>
-                <Col data-testid="err_uItem" className="fs-7 text-danger">
-                    {errors?.newDeficiencyList?.[index]?.fk_uniform?.message}
-                </Col>
-            </Row>
-        </>
-    )
+    );
 }
 
 const MaterialSelect = ({ index }: { index: number }) => {
     const t = useI18n();
-    const { register, setValue, formState: { errors } } = useFormContext<FormType>();
+    const { setValue } = useFormContext<CadetInspectionFormSchema>();
     const { cadetId }: ParamType = useParams();
     const { materialList } = useCadetMaterialDescriptionList(cadetId);
+    const options = [
+        ...(materialList?.map((item) => ({ value: item.id, label: item.description })) ?? []),
+        { value: "others", label: t('cadetDetailPage.inspection.otherMaterials') }
+    ]
 
-    if (!materialList) return <></>
+    if (!materialList) return <></>;
+
     return (
-        <>
-            <Row className="fs-8 fw-bold fst-italic">
-                <Col xs={12}>
-                    {t('common.material.material')}*
-                </Col>
-            </Row>
-            <Row className="fw-bold">
-                <Col xs={12}>
-                    <Form.Select
-                        isInvalid={!!(errors?.newDeficiencyList && errors.newDeficiencyList[index]?.materialId)}
-                        {...register(
-                            `newDeficiencyList.${index}.materialId`,
-                            {
-                                required: {
-                                    value: true,
-                                    message: t('common.error.pleaseSelect')
-                                },
-                                onChange: () => {
-                                    setValue(`newDeficiencyList.${index}.materialGroup`, "")
-                                    setValue(`newDeficiencyList.${index}.materialType`, "")
-                                }
-                            })}>
-                        <option value={""} disabled>{t('common.error.pleaseSelect')}</option>
-                        {materialList?.map((item) => (
-                            <option key={item.id} value={item.id}>{item.description}</option>
-                        ))}
-                        <option value={"others"}>{t('cadetDetailPage.inspection.otherMaterials')}</option>
-                    </Form.Select>
-                </Col>
-                <Col data-testid="err_matId" className="fs-7 text-danger">
-                    {errors?.newDeficiencyList?.[index]?.materialId?.message}
-                </Col>
-            </Row>
-        </>
-    )
+        <SelectFormField
+            name={`newDeficiencyList.${index}.materialId`}
+            label={t('common.material.material')}
+            options={options}
+            required
+            onValueChange={() => {
+                setValue(`newDeficiencyList.${index}.otherMaterialGroupId`, null);
+                setValue(`newDeficiencyList.${index}.otherMaterialId`, null);
+            }}
+            hookFormValidation
+        />
+    );
 }
-
 
 const MaterialGroupSelect = ({ index }: { index: number }) => {
     const t = useI18n();
-    const { register, setValue, formState: { errors } } = useFormContext<FormType>();
+    const { setValue, } = useFormContext<CadetInspectionFormSchema>();
     const { config } = useMaterialConfiguration();
+    if (!config) return null;
 
-    if (!config) return <></>
+    const options = config.map((group) => ({ value: group.id, label: group.description }));
+
     return (
-        <>
-            <Row className="fs-8 fw-bold fst-italic">
-                <Col xs={12}>
-                    {t('common.material.group_one')}*
-                </Col>
-            </Row>
-            <Row className="fw-bold">
-                <Col xs={12}>
-                    <Form.Select
-                        isInvalid={!!(errors?.newDeficiencyList && errors.newDeficiencyList[index]?.materialGroup)}
-                        {...register(
-                            `newDeficiencyList.${index}.materialGroup`,
-                            {
-                                required: {
-                                    value: true,
-                                    message: t('common.error.pleaseSelect')
-                                },
-                                onChange: () => { setValue(`newDeficiencyList.${index}.materialType`, "") }
-                            })}>
-                        <option value={""} disabled>{t('common.error.pleaseSelect')}</option>
-                        {config?.map((group) => (
-                            <option key={group.id} value={group.id}>{group.description}</option>
-                        ))}
-                    </Form.Select>
-                </Col>
-                <Col data-testid="err_matGroup" className="fs-7 text-danger">
-                    {errors?.newDeficiencyList?.[index]?.materialGroup?.message}
-                </Col>
-            </Row>
-        </>
-    )
+        <SelectFormField
+            name={`newDeficiencyList.${index}.otherMaterialGroupId`}
+            label={t('common.material.group_one')}
+            options={options}
+            required
+            onValueChange={() => {
+                setValue(`newDeficiencyList.${index}.otherMaterialId`, null);
+            }}
+            hookFormValidation
+        />
+    );
 }
 
 const MaterialTypeSelect = ({ index }: { index: number }) => {
     const t = useI18n();
-    const { register, watch, getValues, setValue, formState: { errors } } = useFormContext<FormType>();
-    const groupId = watch(`newDeficiencyList.${index}.materialGroup`);
-    const list = useMaterialTypeList(groupId);
-
-    // needed to updated SelectOption
-    useEffect(() => {
-        const x = getValues(`newDeficiencyList.${index}.materialType`);
-        setValue(`newDeficiencyList.${index}.materialType`, x);
-    }, [list])
+    const groupId = useWatch<CadetInspectionFormSchema>({
+        name: `newDeficiencyList.${index}.otherMaterialGroupId`
+    }) as string | null;
+    const list = useMaterialTypeList(groupId ?? undefined);
 
     if (!list) return <></>
-    return (
-        <>
-            <Row className="fs-8 fw-bold fst-italic">
-                <Col xs={12}>
-                    {t('common.material.type_one')}*
-                </Col>
-            </Row>
-            <Row className="fw-bold">
-                <Col xs={12}>
-                    <Form.Select
-                        isInvalid={!!(errors?.newDeficiencyList && errors.newDeficiencyList[index]?.materialType)}
-                        {...register(
-                            `newDeficiencyList.${index}.materialType`,
-                            {
-                                required: {
-                                    value: true,
-                                    message: t('common.error.pleaseSelect')
-                                }
-                            })}>
-                        <option value={""} disabled>{t('common.error.pleaseSelect')}</option>
-                        {list.map((mat) => (
-                            <option key={mat.id} value={mat.id}>{mat.typename}</option>
-                        ))}
-                    </Form.Select>
-                </Col>
-                <Col data-testid="err_matType" className="fs-7 text-danger">
-                    {errors?.newDeficiencyList?.[index]?.materialType?.message}
-                </Col>
-            </Row>
-        </>
-    )
-}
-
-const CommentControl = ({ index }: { index: number }) => {
-    const t = useI18n();
-    const { register, getValues, formState: { errors } } = useFormContext<FormType>();
+    const options = list.map((item) => ({ value: item.id, label: item.typename }));
 
     return (
-        <>
-            <Row className="fs-8 fw-bold fst-italic">
-                <Col xs={12}>
-                    {t('common.comment')}
-                </Col>
-            </Row>
-            <Row className="fw-bold">
-                <Col xs={12}>
-                    <Form.Control
-                        rows={(getValues(`newDeficiencyList.${index}.comment`).length / 35) - 1}
-                        as="textarea"
-                        {...register(
-                            `newDeficiencyList.${index}.comment`,
-                            {
-                                pattern: {
-                                    value: commentValidationPattern,
-                                    message: t('common.error.string.commentValidation'),
-                                },
-                                maxLength: {
-                                    value: 300,
-                                    message: t('common.error.string.maxLength', { value: 300 }),
-                                }
-                            })
-                        }
-                    />
-                </Col>
-                <Col data-testid="err_comment" className="fs-7 text-danger">
-                    {errors?.newDeficiencyList && errors.newDeficiencyList[index]?.comment?.message}
-                </Col>
-            </Row>
-        </>
-    )
+        <SelectFormField<CadetInspectionFormSchema>
+            required
+            name={`newDeficiencyList.${index}.otherMaterialId`}
+            label={t('common.material.type_one')}
+            options={options}
+            hookFormValidation
+        />
+    );
 }

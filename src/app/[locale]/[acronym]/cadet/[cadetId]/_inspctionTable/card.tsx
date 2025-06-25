@@ -3,11 +3,13 @@
 import { saveCadetInspection } from "@/actions/controllers/CadetInspectionController";
 import { getCadetMaterialList } from "@/actions/controllers/CadetMaterialController";
 import { getDeficiencyTypeList } from "@/actions/controllers/InspectionController";
+import { getMaterialGroupIdByTypeId } from "@/actions/controllers/MaterialController";
 import { useCadetMaterialDescriptionList, useCadetUniformComplete } from "@/dataFetcher/cadet";
 import { useCadetInspection, useUnresolvedDeficienciesByCadet } from "@/dataFetcher/cadetInspection";
 import { useDeficiencyTypes } from "@/dataFetcher/deficiency";
 import { useInspectionState } from "@/dataFetcher/inspection";
-import { Deficiency, UniformDeficiency, CadetDeficiency } from "@/types/deficiencyTypes";
+import { useI18n } from "@/lib/locales/client";
+import { CadetDeficiency, Deficiency, UniformDeficiency } from "@/types/deficiencyTypes";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
@@ -15,12 +17,8 @@ import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { mutate } from "swr";
-import CadetInspectionCardHeader from "./header";
-import OldDeficiencyRow from "./oldDeficiencyRow";
 import CadetInspectionStep1 from "./step1";
 import CadetInspectionStep2 from "./step2";
-import { useI18n } from "@/lib/locales/client";
-import { getMaterialGroupIdByTypeId } from "@/actions/controllers/MaterialController";
 
 export type NewDeficiencyFormType = Deficiency & {
     fk_uniform?: string;
@@ -29,7 +27,7 @@ export type NewDeficiencyFormType = Deficiency & {
     materialGroup?: string;
     materialType?: string;
 }
-export type FormType = {
+type FormType = {
     newDeficiencyList: NewDeficiencyFormType[],
     oldDeficiencyList: {
         [key in string]: boolean
@@ -139,10 +137,7 @@ export default function CadetInspectionCard() {
 
     return (
         <div data-testid="div_cadetInspection" className="container border border-2 rounded">
-            <CadetInspectionCardHeader
-                stepState={stepState}
-                disabled={!form.getValues('newDeficiencyList')}
-            />
+            
             <FormProvider {...form}>
                 <form onSubmit={form.handleSubmit(submit)}>
                     {((step === 0) || !inspectionState?.active) &&
@@ -152,9 +147,6 @@ export default function CadetInspectionCard() {
                                     <FontAwesomeIcon icon={faSpinner} size="lg" className="mx-5 fa-spin-pulse" />
                                 </div>
                             }
-                            {unresolvedDeficiencies?.map((def: Deficiency) =>
-                                <OldDeficiencyRow deficiency={def} step={step} key={def.id} />
-                            )}
                             {(unresolvedDeficiencies?.length === 0) &&
                                 <div data-testid="div_step0_noDeficiencies" className="fw-bold p-2">{t('cadetDetailPage.inspection.noDeficiencies')}</div>
                             }

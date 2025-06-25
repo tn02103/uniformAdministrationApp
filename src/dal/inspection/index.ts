@@ -1,9 +1,21 @@
+"use server";
 
-export { createInspection } from "./planned/create";
-export { deleteInspection } from "./planned/delete";
-export { getPlannedInspectionList } from "./planned/get";
-export { updatePlannedInspection } from "./planned/update";
-export { updateCadetRegistrationForInspection } from "./planned/updateDeregistration";
-export { startInspection } from "./start";
-export { getInspectionState } from "./state";
-export { stopInspection } from "./stop";
+import { createInspection as ci } from "./planned/create";
+import { deleteInspection as di } from "./planned/delete";
+import { getPlannedInspectionList as gpil } from "./planned/get";
+import { updatePlannedInspection as upi } from "./planned/update";
+import { updateCadetRegistrationForInspection as ucri } from "./planned/updateDeregistration";
+import { startInspection as si } from "./start";
+import { getInspectionState as gis } from "./state";
+import { stopInspection as soi } from "./stop";
+import { getCadetInspectionFormData as gcifd } from "./cadet/get";
+
+export const createInspection = ci;
+export const deleteInspection = di;
+export const getPlannedInspectionList = gpil;
+export const updatePlannedInspection = upi;
+export const updateCadetRegistrationForInspection = ucri;
+export const startInspection = si;
+export const getInspectionState = gis;
+export const stopInspection = soi;
+export const getCadetInspectionFormData = gcifd;

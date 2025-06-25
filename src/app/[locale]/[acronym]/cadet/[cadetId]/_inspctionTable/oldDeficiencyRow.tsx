@@ -1,20 +1,22 @@
+import dayjs from "@/lib/dayjs";
 import { useScopedI18n } from "@/lib/locales/client";
 import { Deficiency } from "@/types/deficiencyTypes";
-import { format } from "date-fns";
+import { CadetInspectionFormSchema } from "@/zod/deficiency";
 import { Col, Form, Row } from "react-bootstrap";
 import { useFormContext } from "react-hook-form";
-import { FormType } from "./card";
 
 export default function OldDeficiencyRow({
+    index,
     step,
     deficiency,
 }: {
+    index: number;
     step: number;
-    deficiency: Deficiency,
+    deficiency: Deficiency;
 }) {
     const tDef = useScopedI18n('common.deficiency');
     const tCom = useScopedI18n('common')
-    const { register, watch } = useFormContext<FormType>();
+    const { register, watch } = useFormContext<CadetInspectionFormSchema>();
     return (
         <Row
             className={`p-1 m-0 border-bottom border-1 ${(step == 2) ? "py-1" : "py-3"}`}
@@ -24,14 +26,14 @@ export default function OldDeficiencyRow({
             {(step == 1) &&
                 <Col xs={12}
                     xl={12}
-                    className={" justify-content-center " + (watch(`oldDeficiencyList.${deficiency.id}`) ? "text-success" : "text-danger")}
+                    className={" justify-content-center " + (watch(`oldDeficiencyList.${index}.resolved`) ? "text-success" : "text-danger")}
                 >
                     <Form.Check
                         type="switch"
-                        label={watch(`oldDeficiencyList.${deficiency.id}`)
+                        label={watch(`oldDeficiencyList.${index}.resolved`)
                             ? tDef('resolved.true')
                             : tDef('resolved.false')}
-                        {...register(`oldDeficiencyList.${deficiency.id}`)}
+                        {...register(`oldDeficiencyList.${index}.resolved`)}
                         data-testid={`chk_resolved`}
                     />
                 </Col>
@@ -69,7 +71,7 @@ export default function OldDeficiencyRow({
                     </Row>
                     <Row>
                         <Col data-testid={`div_created`}>
-                            {format(new Date(deficiency.dateCreated!), "dd.MM.yyyy")}
+                            {dayjs(deficiency.dateCreated).format('DD.MM.YYYY')}
                         </Col>
                     </Row>
                 </Col>

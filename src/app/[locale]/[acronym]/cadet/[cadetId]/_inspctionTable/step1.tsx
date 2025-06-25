@@ -1,11 +1,8 @@
-"use client"
-
 import { useI18n } from "@/lib/locales/client"
-import { Row, Col, Button } from "react-bootstrap"
+import { CadetInspectionFormSchema, OldDeficiencyFormSchema } from "@/zod/deficiency"
+import { Button, Col, Row } from "react-bootstrap"
+import { useWatch } from "react-hook-form"
 import OldDeficiencyRow from "./oldDeficiencyRow"
-import { useCadetInspection } from "@/dataFetcher/cadetInspection"
-import { useParams } from "next/navigation"
-import { ParamType } from "../page"
 
 
 export default function CadetInspectionStep1({
@@ -16,12 +13,10 @@ export default function CadetInspectionStep1({
     stepState: [number, (n: number) => void];
 }) {
     const t = useI18n()
-    const { cadetId }: ParamType = useParams();
-    const { cadetInspection } = useCadetInspection(cadetId);
-    if (!cadetInspection) {
-        return (<div>no Inspection</div>);
-    }
-    const { oldCadetDeficiencies } = cadetInspection!
+    
+    const oldDeficiencyList = useWatch<CadetInspectionFormSchema>({
+        name: "oldDeficiencyList"
+    }) as OldDeficiencyFormSchema[] | undefined;
 
     return (
         <>
@@ -31,8 +26,8 @@ export default function CadetInspectionStep1({
                         {t('cadetDetailPage.header.oldDeficiencies')}
                     </Col>
                 </Row>
-                {oldCadetDeficiencies?.map(def =>
-                    <OldDeficiencyRow deficiency={def} step={step} key={def.id} />
+                {oldDeficiencyList?.map((def, index) =>
+                    <OldDeficiencyRow deficiency={def} step={step} key={def.id} index={index} />
                 )}
             </div>
             <Row className="p-0">
