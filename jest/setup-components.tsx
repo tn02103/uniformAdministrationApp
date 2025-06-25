@@ -2,8 +2,10 @@ import { AuthRole } from '@/lib/AuthRoles';
 import '@testing-library/jest-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+// Mock i18n for component tests
 const useI18nFn = jest.fn((key) => key);
 window.HTMLElement.prototype.scrollIntoView = function () { };
+
 jest.mock('@/lib/locales/client', () => {
     return {
         useScopedI18n: jest.fn((scope: string) => {
@@ -18,6 +20,8 @@ jest.mock('@/lib/locales/client', () => {
         })),
     };
 });
+
+// Mock common components to avoid complex rendering
 jest.mock("@/components/errorMessage", () => {
     return function ErrorMessage({ error, ariaLabel, testId, ...divProps }: { error: string, testId: string, ariaLabel: string }) {
         return <div className="text-danger fs-7" role="alert" aria-label={ariaLabel} data-testid={testId} {...divProps}>{error}</div>;
@@ -45,6 +49,7 @@ jest.mock("@/components/globalDataProvider", () => {
     };
 });
 
+// Mock browser APIs that are not available in jsdom
 Object.defineProperty(window, 'matchMedia', {
     writable: true,
     value: jest.fn().mockImplementation(query => ({
@@ -59,13 +64,13 @@ Object.defineProperty(window, 'matchMedia', {
     })),
 });
 
+// Mock toast notifications for component tests
 jest.mock("react-toastify", () => {
     const toast = {
         success: jest.fn(),
         error: jest.fn(),
         info: jest.fn(),
-        warn: jest.fn(),
-    };
+        warn: jest.fn(),    };
     return {
         toast
     };

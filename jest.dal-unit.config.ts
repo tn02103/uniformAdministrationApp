@@ -1,23 +1,25 @@
 import { Config } from "jest";
 
-const customJestConfig: Config = { // CONFIGURATION FOR DATA-ACCESS-LAYER
-    displayName: "DataAccessLayer",
+const customJestConfig: Config = { // CONFIGURATION FOR DAL UNIT TESTS (MOCKED)
+    displayName: "DAL-Unit",
     setupFilesAfterEnv: [
-        './tests/_jestConfig/data.setup.ts',
+        './jest/setup-dal-unit.ts',
     ],
     testEnvironment: 'node',
     moduleNameMapper: {
         '^uuid$': require.resolve('uuid'),
-        '^@/components/(.*)$': '<rootDir>/components/$1',
+        '^@/components/(.*)$': '<rootDir>/src/components/$1',
         '^@/(.*)$': '<rootDir>/src/$1',
     },
     transform: {
         '^.+\\.(js|jsx|ts|tsx)$': '@swc/jest',
     },
     testMatch: [
-        "**/src/dal/**/*.test.[jt]s?(x)",
+        "**/src/dal/**/*.unit.test.[jt]s?(x)",
     ],
-    maxWorkers: 1,
+    // Fast execution for unit tests
+    maxWorkers: "50%",
+    testTimeout: 5000,
 }
 
 export default customJestConfig;
