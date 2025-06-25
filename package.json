@@ -4,37 +4,26 @@
     "private": true,
     "engines": {
         "node": "22.14.0"
-    },    "scripts": {
+    },
+    "scripts": {
         "dev": "next dev -p 3021",
         "build": "next build",
         "build:test": "cross-env NEXT_PUBLIC_STAGE=TEST next build",
         "start": "next start -p 3021",
-        
         "test:e2e": "playwright test",
-        
-        "test": "npm run test:unit",
         "test:all": "npm run test:unit && npm run test:integration",
-        
         "test:unit": "npm run test:unit:components && npm run test:unit:dal",
         "test:unit:components": "jest --config jest.frontend.config.ts",
         "test:unit:dal": "jest --config jest.dal-unit.config.ts",
-        
         "test:integration": "jest --config jest.dal-integration.config.ts",
         "test:integration:dal": "jest --config jest.dal-integration.config.ts",
-        
         "test:watch": "jest --config jest.frontend.config.ts --watch",
         "test:watch:components": "jest --config jest.frontend.config.ts --watch",
         "test:watch:dal": "jest --config jest.dal-unit.config.ts --watch",
         "test:watch:integration": "jest --config jest.dal-integration.config.ts --watch",
-        
         "test:coverage": "npm run test:unit -- --coverage",
         "test:coverage:components": "jest --config jest.frontend.config.ts --coverage",
         "test:coverage:dal": "jest --config jest.dal-unit.config.ts --coverage",
-        
-        "test:jest": "npm run test:jest:components && npm run test:jest:dal",
-        "test:jest:components": "jest --config jest.frontend.config.ts",
-        "test:jest:dal": "jest --config jest.dal-integration.config.ts",
-        
         "lint": "eslint src tests"
     },
     "prisma": {

@@ -15,11 +15,11 @@ const customJestConfig: Config = { // CONFIGURATION FOR DAL UNIT TESTS (MOCKED)
         '^.+\\.(js|jsx|ts|tsx)$': '@swc/jest',
     },
     testMatch: [
+        "**/src/dal/**/*.test.[jt]s?(x)",
         "**/src/dal/**/*.unit.test.[jt]s?(x)",
     ],
     // Fast execution for unit tests
     maxWorkers: "50%",
-    testTimeout: 5000,
 }
 
 export default customJestConfig;
