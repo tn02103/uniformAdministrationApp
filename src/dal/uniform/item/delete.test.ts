@@ -36,7 +36,7 @@ describe('successfull deletion', () => {
             where: { id: mockId },
             data: {
                 recdelete: mockDate,
-                recdeleteUser: 'mana',
+                recdeleteUser: 'testuser',
             },
         });
     });
@@ -52,7 +52,7 @@ describe('successfull deletion', () => {
              },
             data: {
                 dateResolved: mockDate,
-                userResolved: 'mana',
+                userResolved: 'testuser',
             },
         });
     });

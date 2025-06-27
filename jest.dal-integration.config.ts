@@ -19,7 +19,6 @@ const customJestConfig: Config = { // CONFIGURATION FOR DAL INTEGRATION TESTS (W
     ],
     maxWorkers: 1, // Important for database tests
     // Add these for better database testing
-    forceExit: true, // Ensure clean shutdown
     detectOpenHandles: true, // Help identify connection leaks
 }
 

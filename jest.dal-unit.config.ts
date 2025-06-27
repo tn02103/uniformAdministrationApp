@@ -18,6 +18,9 @@ const customJestConfig: Config = { // CONFIGURATION FOR DAL UNIT TESTS (MOCKED)
         "**/src/dal/**/*.test.[jt]s?(x)",
         "**/src/dal/**/*.unit.test.[jt]s?(x)",
     ],
+    testPathIgnorePatterns: [
+        ".*\\.integration\\.test\\.(js|jsx|ts|tsx)$",
+    ],
     // Fast execution for unit tests
     maxWorkers: "50%",
 }
