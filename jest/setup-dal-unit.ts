@@ -36,11 +36,21 @@ const prismaMock = {
     },
     uniform: {
         findUnique: jest.fn(),
+        findFirst: jest.fn(),
         findMany: jest.fn(),
         findUniqueOrThrow: jest.fn(),
         update: jest.fn(),
         create: jest.fn(),
         createMany: jest.fn(),
+    },
+    uniformIssued: {
+        findFirst: jest.fn(),
+        findMany: jest.fn(),
+        findUnique: jest.fn(),
+        create: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+        deleteMany: jest.fn(),
     },
     material: {
         findUnique: jest.fn(),
@@ -53,6 +63,7 @@ const prismaMock = {
     },
     cadet: {
         findUnique: jest.fn(),
+        findUniqueOrThrow: jest.fn(),
         findMany: jest.fn(),
         create: jest.fn(),
     },
@@ -65,12 +76,31 @@ const prismaMock = {
     uniformType: {
         findUnique: jest.fn(),
         findUniqueOrThrow: jest.fn(),
+        findFirstOrThrow: jest.fn(),
         findMany: jest.fn(),
         findFirst: jest.fn(),
         count: jest.fn(),
         create: jest.fn(),
         update: jest.fn(),
     },
+    uniformGeneration: {
+        findUnique: jest.fn(),
+        findUniqueOrThrow: jest.fn(),
+        findMany: jest.fn(),
+        findFirst: jest.fn(),
+        create: jest.fn(),
+        update: jest.fn(),
+    },
+    uniformSizelist: {
+        findUnique: jest.fn(),
+        findUniqueOrThrow: jest.fn(),
+        findMany: jest.fn(),
+        findFirst: jest.fn(),
+        create: jest.fn(),
+        update: jest.fn(),
+    },
+    // Add mock for raw SQL execution
+    $executeRaw: jest.fn(),
 };
 // Mock Prisma completely for unit tests - no real database connections
 jest.mock('@/lib/db', () => ({
@@ -84,7 +114,8 @@ jest.mock('@/lib/db', () => ({
             }
             // For callback function, call it with the prisma mock
             return fnArrOrCallback(prismaMock);
-        })
+        }),
+
     },
 }));
 

@@ -33,7 +33,7 @@ export const compareDates = (stringDate: string, date: Date) => {
 }
 
 export const isToday = (date: string | Date) => {
-    return dayjs.utc().isSame(date, "day");
+    return dayjs().isSame(date, "day");
 }
 
 export function cleanData(dataObject: any, attributesToRemove: string[]) {
