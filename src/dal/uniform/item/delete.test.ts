@@ -1,20 +1,5 @@
 import { deleteUniformItem } from "./_index";
 
-jest.mock('@/lib/db', () => ({
-    prisma: {
-        $transaction: jest.fn(async (x) => Promise.all(x)),
-        uniform: {
-            findUniqueOrThrow: jest.fn(),
-            update: jest.fn(),
-        },
-        uniformIssued: {
-            updateMany: jest.fn(),
-        },
-        deficiency: {
-            updateMany: jest.fn(),
-        },
-    },
-}));
 describe('successfull deletion', () => {
     const mockId = "9fccd605-6a8b-4e1a-98a6-9cc627d5186d";
     const { prisma } = jest.requireMock('@/lib/db');

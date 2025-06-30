@@ -1,22 +1,6 @@
-import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { getType, getList, __unsecuredGetUniformTypeList } from "./get";
 import { uniformTypeArgs } from "@/types/globalUniformTypes";
-
-beforeAll(() => {
-    global.__ASSOSIATION__ = '1';
-    global.__ROLE__ = AuthRole.user;
-});
-
-afterAll(() => {
-    global.__ASSOSIATION__ = undefined;
-    global.__ROLE__ = undefined;
-});
-
-jest.mock("@/actions/validations", () => ({
-    genericSAValidator: jest.fn((_, props) => Promise.resolve([{ assosiation: '1' }, props])),
-    genericSANoDataValidator: jest.fn(() => Promise.resolve([{ assosiation: '1' }])),
-}));
+import { __unsecuredGetUniformTypeList, getList, getType } from "./get";
 
 describe('<UniformType> get', () => {
     afterEach(() => {
@@ -32,7 +16,7 @@ describe('<UniformType> get', () => {
                 id: 'test-id-123',
                 name: 'Test Uniform Type',
                 acronym: 'TUT',
-                fk_assosiation: '1',
+                fk_assosiation: 'test-assosiation-id',
             };
 
             mockFindUnique.mockResolvedValue(mockUniformType);
@@ -43,7 +27,7 @@ describe('<UniformType> get', () => {
             expect(mockFindUnique).toHaveBeenCalledWith({
                 where: {
                     id: 'test-id-123',
-                    fk_assosiation: '1',
+                    fk_assosiation: 'test-assosiation-id',
                     recdelete: null
                 },
                 select: expect.any(Object)
@@ -59,7 +43,7 @@ describe('<UniformType> get', () => {
             expect(mockFindUnique).toHaveBeenCalledWith({
                 where: {
                     id: 'non-existent-id',
-                    fk_assosiation: '1',
+                    fk_assosiation: 'test-assosiation-id',
                     recdelete: null
                 },
                 select: expect.any(Object)
@@ -80,7 +64,7 @@ describe('<UniformType> get', () => {
 
             expect(result).toEqual(mockUniformTypes);
             expect(mockFindMany).toHaveBeenCalledWith({
-                where: { fk_assosiation: '1', recdelete: null },
+                where: { fk_assosiation: 'test-assosiation-id', recdelete: null },
                 orderBy: { sortOrder: "asc" },
                 select: expect.any(Object)
             });

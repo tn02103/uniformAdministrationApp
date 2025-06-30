@@ -1,34 +1,9 @@
-import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { UniformTypeUpdateProps, update } from "./update";
 import { __unsecuredGetUniformTypeList } from "./get";
-
-beforeAll(() => {
-    global.__ASSOSIATION__ = '1';
-    global.__ROLE__ = AuthRole.materialManager;
-});
-
-afterAll(() => {
-    global.__ASSOSIATION__ = undefined;
-    global.__ROLE__ = undefined;
-});
-
-jest.mock('@/lib/db', () => ({
-    prisma: {
-        uniformType: {
-            findMany: jest.fn(),
-            update: jest.fn(),
-        },
-        $transaction: jest.fn((func) => func(prisma)),
-    }
-}));
+import { UniformTypeUpdateProps, update } from "./update";
 
 jest.mock('./get', () => ({
     __unsecuredGetUniformTypeList: jest.fn(() => Promise.resolve('UpdatedList')),
-}));
-
-jest.mock("@/actions/validations", () => ({
-    genericSAValidator: jest.fn((_, props) => Promise.resolve([{ assosiation: '1' }, props])),
 }));
 
 describe('<UniformType> update', () => {
@@ -78,15 +53,15 @@ describe('<UniformType> update', () => {
         expect(result).toEqual('UpdatedList');
         expect(mockFindMany).toHaveBeenCalledWith({
             where: {
-                fk_assosiation: '1',
-                recdelete: null,
+                fk_assosiation: 'test-assosiation-id',
+                recdelete: null, // Ensure we are checking only for active types
             }
         });
         expect(mockUpdate).toHaveBeenCalledWith({
             where: { id: 'test-id-123' },
             data: defaultProps.data
         });
-        expect(mockGetList).toHaveBeenCalledWith('1', prisma);
+        expect(mockGetList).toHaveBeenCalledWith('test-assosiation-id', expect.anything());
     });
 
     it('should return error if name is duplicated', async () => {

@@ -49,6 +49,7 @@ const prismaMock = {
         findUnique: jest.fn(),
         create: jest.fn(),
         update: jest.fn(),
+        updateMany: jest.fn(),
         delete: jest.fn(),
         deleteMany: jest.fn(),
     },
@@ -82,6 +83,7 @@ const prismaMock = {
         count: jest.fn(),
         create: jest.fn(),
         update: jest.fn(),
+        updateMany: jest.fn(),
     },
     uniformGeneration: {
         findUnique: jest.fn(),
@@ -98,6 +100,13 @@ const prismaMock = {
         findFirst: jest.fn(),
         create: jest.fn(),
         update: jest.fn(),
+    },
+    redirect: {
+        findUnique: jest.fn(),
+        findFirst: jest.fn(),
+        update: jest.fn(),
+        create: jest.fn(),
+        delete: jest.fn(),
     },
     // Add mock for raw SQL execution
     $executeRaw: jest.fn(),
@@ -139,18 +148,15 @@ jest.mock('next/cache', () => ({
     revalidatePath: jest.fn(),
 }));
 
-// Mock validation helper for unit tests
-jest.mock('@/actions/validations', () => ({
-    genericSAValidator: jest.fn((_role, props) => {
-        // Simple mock that returns the props and mock session data
-        return Promise.resolve([
-            {
-                assosiation: global.__ASSOSIATION__ ?? 'test-assosiation-id',
-                username: global.__USERNAME__ ?? 'testuser',
-            },
-            props
-        ]);
-    }),
+jest.mock("@/actions/validations", () => ({
+    genericSAValidator: jest.fn((_, props) => Promise.resolve([{
+        assosiation: global.__ASSOSIATION__ ?? 'test-assosiation-id',
+        username: global.__USERNAME__ ?? 'testuser',
+    }, props])),
+    genericSANoDataValidator: jest.fn(() => Promise.resolve([{
+        assosiation: global.__ASSOSIATION__ ?? 'test-assosiation-id',
+        username: global.__USERNAME__ ?? 'testuser'
+    }])),
 }));
 
 beforeEach(() => {

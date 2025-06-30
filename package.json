@@ -11,7 +11,7 @@
         "build:test": "cross-env NEXT_PUBLIC_STAGE=TEST next build",
         "start": "next start -p 3021",
         "test:e2e": "playwright test",
-        "test:all": "npm run test:dal && npm run test:components",
+        "test:jest": "npm run test:dal && npm run test:components",
         "test:components": "jest --config jest.frontend.config.ts",
         "test:dal": "npm run test:dal:unit && npm run test:dal:integration",
         "test:dal:unit": "jest --config jest.dal-unit.config.ts",

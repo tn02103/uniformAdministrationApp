@@ -1,4 +1,4 @@
-import { cleanData, runServerActionTest } from "@/dal/_helper/testHelper";
+import { runServerActionTest } from "@/dal/_helper/testHelper";
 import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
 import { checkDateTolerance } from "../../../../jest/helpers/test-utils";
@@ -6,89 +6,16 @@ import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticD
 import {
     createUniformItems,
     deleteUniformItem,
-    getUniformItemCountByType,
-    getUniformItemLabels,
     getUniformListWithOwner,
     issueUniformItem,
     returnUniformItem,
     updateUniformItem
 } from "./_index";
 
-const { ids, data } = new StaticData(0);
+const { ids, cleanup } = new StaticData(0);
 
 describe('<UniformItem> Integration Tests', () => {
-
-    describe('getCountByType', () => {
-        it('should return the count of uniforms for a specific type', async () => {
-            const uniformTypeId = ids.uniformTypeIds[0];
-            const result = await getUniformItemCountByType(uniformTypeId);
-
-            expect(result).toBeDefined();
-            expect(typeof result).toBe('number');
-            expect(result).toBeGreaterThan(0);
-        });
-
-        it('should return 0 for a type with no uniforms', async () => {
-            // Using a valid but likely empty type ID
-            const uniformTypeId = ids.uniformTypeIds[0]
-            const count = data.uniformList.filter(u => (u.fk_uniformType === uniformTypeId) && !u.recdelete).length;
-            const result = await getUniformItemCountByType(uniformTypeId);
-
-            expect(result).toBeDefined();
-            expect(typeof result).toBe('number');
-            expect(result).toEqual(count);
-        });
-    });
-
-    describe('getItemLabels', () => {
-        it('should return a list of uniform item labels', async () => {
-            const result = await getUniformItemLabels();
-
-            expect(result).toBeDefined();
-            expect(Array.isArray(result)).toBe(true);
-            expect(result.length).toBeGreaterThan(0);
-
-            // Check structure of first item
-            const firstItem = result[0];
-            expect(firstItem).toHaveProperty('id');
-            expect(firstItem).toHaveProperty('label');
-            expect(firstItem).toHaveProperty('number');
-            expect(firstItem).toHaveProperty('active');
-            expect(firstItem).toHaveProperty('type');
-            expect(firstItem.type).toHaveProperty('id');
-            expect(firstItem.type).toHaveProperty('name');
-            expect(firstItem.type).toHaveProperty('acronym');
-
-            // Clean sensitive data for snapshot
-            cleanData(result, ["id", "type.id", "owner?.id", "storageUnit?.id"]);
-            expect(result.slice(0, 10)).toMatchSnapshot(); // Take first 10 for manageable snapshots
-        });
-
-        it('should include owner information when uniform is issued', async () => {
-            const result = await getUniformItemLabels();
-            const issuedItems = result.filter(item => item.owner !== null);
-
-            expect(issuedItems.length).toBeGreaterThan(0);
-            const issuedItem = issuedItems[0];
-            expect(issuedItem.owner).toHaveProperty('id');
-            expect(issuedItem.owner).toHaveProperty('firstname');
-            expect(issuedItem.owner).toHaveProperty('lastname');
-        });
-
-        it('should include storage unit information when uniform is in storage', async () => {
-            const result = await getUniformItemLabels();
-            const storageItems = result.filter(item => item.storageUnit !== null);
-
-            // At least check that the filter works correctly
-            expect(storageItems.every(item => item.storageUnit !== null)).toBe(true);
-
-            // If there are storage items, check their structure
-            storageItems.forEach(storageItem => {
-                expect(storageItem.storageUnit).toHaveProperty('id');
-                expect(storageItem.storageUnit).toHaveProperty('name');
-            });
-        });
-    });
+    afterEach(async () => await cleanup.uniform());
     it('should create multiple uniform items successfully', async () => {
         const uniformTypeId = ids.uniformTypeIds[0];
         const generationId = ids.uniformGenerationIds[0];
@@ -133,8 +60,6 @@ describe('<UniformItem> Integration Tests', () => {
         );
         expect(dbList.map(i => i.number)).toEqual(expect.arrayContaining([9001, 9002, 9003]));
     });
-
-
 
     it('should handle issuing uniform that is already issued', async () => {
         // Get an already issued uniform

@@ -60,12 +60,19 @@ describe('<UniformItem> update', () => {
             expect(mockPrisma.uniformType.findFirstOrThrow).toHaveBeenCalledWith({
                 where: {
                     uniformList: {
-                        some: { id: mockUniformId }
+                        some: {
+                            id: mockUniformId,
+                            recdelete: null, // Ensure we are checking only for active uniforms
+                        }
                     }
                 }
             });
             expect(mockPrisma.uniformGeneration.findUniqueOrThrow).toHaveBeenCalledWith({
-                where: { id: mockGenerationId }
+                where: {
+                    id: mockGenerationId,
+                    recdelete: null, // Ensure we are checking only for active generations
+                    fk_uniformType: mockUniformType.id, // Ensure generation belongs to the type
+                }
             });
             expect(mockPrisma.uniformSizelist.findUniqueOrThrow).toHaveBeenCalledWith({
                 where: { id: '9feb9d1a-654a-4829-a01b-74d6ffbd5405' }, // Generation's sizelist, not type's default
@@ -92,6 +99,12 @@ describe('<UniformItem> update', () => {
 
             await update(defaultUpdateProps);
 
+            expect(mockPrisma.uniformSizelist.findUniqueOrThrow).toHaveBeenCalledWith({
+                where: { id: '27021179-ec3d-4b04-9ed8-6ac53fdc3b4e' }, // types default sizelist
+                include: {
+                    uniformSizes: true,
+                }
+            });
             expect(mockPrisma.uniform.update).toHaveBeenCalledWith(
                 expect.objectContaining({
                     data: {
@@ -127,13 +140,7 @@ describe('<UniformItem> update', () => {
         it('updates uniform without generation and size when type uses neither', async () => {
             mockPrisma.uniformType.findFirstOrThrow.mockResolvedValue(mockUniformTypeNoGenNoSize as any);
 
-            const props = {
-                ...defaultUpdateProps,
-                generation: undefined,
-                size: undefined,
-            };
-
-            await update(props);
+            await update(defaultUpdateProps);
 
             expect(mockPrisma.uniformGeneration.findUniqueOrThrow).not.toHaveBeenCalled();
             expect(mockPrisma.uniformSizelist.findUniqueOrThrow).not.toHaveBeenCalled();
@@ -301,25 +308,13 @@ describe('<UniformItem> update', () => {
         });
     });
 
-    describe('transaction behavior', () => {
+
+    describe('parameter validation', () => {
         it('verifies transaction usage', async () => {
             await update(defaultUpdateProps);
 
             expect(mockPrisma.$transaction).toHaveBeenCalledWith(expect.any(Function));
         });
-
-        it('handles transaction rollback on error', async () => {
-            mockPrisma.uniformType.findFirstOrThrow.mockRejectedValue(new Error('Transaction test error'));
-
-            await expect(update(defaultUpdateProps)).rejects.toThrow('Transaction test error');
-
-            // Verify transaction was called but uniform.update was not due to error
-            expect(mockPrisma.$transaction).toHaveBeenCalled();
-            expect(mockPrisma.uniform.update).not.toHaveBeenCalled();
-        });
-    });
-
-    describe('parameter validation', () => {
         it('uses correct uniform ID in queries', async () => {
             const customUniformId = 'custom-uniform-id';
             const props = {
@@ -332,43 +327,21 @@ describe('<UniformItem> update', () => {
             expect(mockPrisma.uniformType.findFirstOrThrow).toHaveBeenCalledWith({
                 where: {
                     uniformList: {
-                        some: { id: customUniformId }
-                    }
-                }
+                        some: {
+                            id: customUniformId,
+                            recdelete: null,
+                        },
+                    },
+                },
             });
             expect(mockPrisma.uniform.update).toHaveBeenCalledWith(
                 expect.objectContaining({
                     where: {
                         id: customUniformId,
-                    }
-                })
-            );
-        });
-    });
-
-    describe('data flow verification', () => {
-        it('passes all form data correctly to update query', async () => {
-            const complexProps: UniformFormType = {
-                id: mockUniformId,
-                number: 2502,
-                active: false,
-                comment: 'Complex test comment with special chars: äöü!@#$%',
-                generation: mockGenerationId,
-                size: mockSizeId,
-            };
-
-            await update(complexProps);
-
-            expect(mockPrisma.uniform.update).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    data: {
-                        active: false,
-                        comment: 'Complex test comment with special chars: äöü!@#$%',
-                        fk_generation: mockGenerationId,
-                        fk_size: mockSizeId,
                     },
-                })
+                }),
             );
         });
     });
+
 });

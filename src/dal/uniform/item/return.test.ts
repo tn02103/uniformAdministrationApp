@@ -317,11 +317,18 @@ describe('<UniformItem> __unsecuredReturnUniformitem', () => {
         });
 
         it('uses provided transaction client', async () => {
-            const customClient = mockPrisma; // In this case it's the same, but verifies the pattern
+            const customClient = {
+                uniformIssued: {
+                    delete: jest.fn(),
+                    update: jest.fn(),
+                },
+            } as unknown as PrismaClient;
 
             await __unsecuredReturnUniformitem(mockIssuedEntryId, MOCK_TODAY, customClient);
+            await __unsecuredReturnUniformitem(mockIssuedEntryId, MOCK_PAST_DATE, customClient);
 
             expect(customClient.uniformIssued.delete).toHaveBeenCalled();
+            expect(customClient.uniformIssued.update).toHaveBeenCalled();
         });
     });
 });

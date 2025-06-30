@@ -36,14 +36,14 @@ describe('<UniformType> create', () => {
         expect(mockPrisma.uniformType.findFirst).toHaveBeenCalledWith({
             where: {
                 fk_assosiation: global.__ASSOSIATION__,
-                recdelete: null,
+                recdelete: null, // Ensure we are checking only for active types
                 name: defaultProps.name,
             }
         });
         expect(mockPrisma.uniformType.findFirst).toHaveBeenCalledWith({
             where: {
                 fk_assosiation: global.__ASSOSIATION__,
-                recdelete: null,
+                recdelete: null, // Ensure we are checking only for active types
                 acronym: defaultProps.acronym,
             }
         });
@@ -149,7 +149,6 @@ describe('<UniformType> create', () => {
         mockPrisma.uniformType.create.mockResolvedValue('Created' as unknown as UniformType);
 
         const result = await create(defaultProps);
-        
         expect(result).toEqual('Created');
         expect(mockPrisma.uniformType.create).toHaveBeenCalledWith({
             data: {

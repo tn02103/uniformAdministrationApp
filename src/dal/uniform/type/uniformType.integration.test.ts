@@ -8,12 +8,26 @@ import { create } from "./create";
 import { markDeleted } from "./delete";
 import { getList, getType } from "./get";
 import { update } from "./update";
+import { changeSortOrder } from "./sortOrder";
 
 const { ids, cleanup, fk_assosiation, data } = new StaticData(0);
 
 describe('<UniformType> Integration Tests', () => {
     afterEach(async () => {
         await cleanup.uniformTypeConfiguration();
+    });
+
+    it('should get list with correct data structure', async () => {
+        const { result, success } = await runServerActionTest(getList());
+        expect(success).toBeTruthy();
+
+        expect(cleanDataV2(result)).toMatchSnapshot();
+    });
+
+    it('should get single type with correct data structure', async () => {
+        const { result, success } = await runServerActionTest(getType(ids.uniformTypeIds[0]));
+        expect(success).toBeTruthy();
+        expect(cleanDataV2(result)).toMatchSnapshot();
     });
 
     it('should create, read, update uniform type end-to-end', async () => {
@@ -64,18 +78,6 @@ describe('<UniformType> Integration Tests', () => {
         });
     });
 
-    it('should get list with correct data structure', async () => {
-        const { result, success } = await runServerActionTest(getList());
-        expect(success).toBeTruthy();
-
-        expect(cleanDataV2(result)).toMatchSnapshot();
-    });
-
-    it('should get single type with correct data structure', async () => {
-        const { result, success } = await runServerActionTest(getType(ids.uniformTypeIds[0]));
-        expect(success).toBeTruthy();
-        expect(cleanDataV2(result)).toMatchSnapshot();
-    });
 
     it('should handle delete with cascading operations', async () => {
         // This tests the complex delete operation that involves multiple database operations
@@ -143,6 +145,128 @@ describe('<UniformType> Integration Tests', () => {
         });
         otherUniformItems.forEach((item) => {
             expect(item.recdelete === null || checkDateTolerance(item.recdelete) > 5000).toBeTruthy();
+        });
+    });
+
+    it('should change sortOrder', async () => {
+        const result = await changeSortOrder({ typeId: ids.uniformTypeIds[2], newPosition: 0 });
+        expect(result).toHaveLength(4);
+
+        expect(result[0].id).toEqual(ids.uniformTypeIds[2]);
+        expect(result[0].sortOrder).toEqual(0);
+        expect(result[1].id).toEqual(ids.uniformTypeIds[0]);
+        expect(result[1].sortOrder).toEqual(1);
+        expect(result[2].id).toEqual(ids.uniformTypeIds[1]);
+        expect(result[2].sortOrder).toEqual(2);
+        expect(result[3].id).toEqual(ids.uniformTypeIds[3]);
+        expect(result[3].sortOrder).toEqual(3);
+
+        const dbTypes = await prisma.uniformType.findMany({
+            where: {
+                fk_assosiation,
+            },
+            orderBy: [
+                { sortOrder: 'asc' },
+                { name: 'asc' }
+            ],
+        });
+        expect(dbTypes[0].id).toEqual(ids.uniformTypeIds[2]);
+        expect(dbTypes[0].sortOrder).toEqual(0);
+        expect(dbTypes[1].id).toEqual(ids.uniformTypeIds[0]);
+        expect(dbTypes[1].sortOrder).toEqual(1);
+        expect(dbTypes[2].id).toEqual(ids.uniformTypeIds[1]);
+        expect(dbTypes[2].sortOrder).toEqual(2);
+        expect(dbTypes[3].id).toEqual(ids.uniformTypeIds[4]);
+        expect(dbTypes[3].sortOrder).toEqual(2);
+        expect(dbTypes[4].id).toEqual(ids.uniformTypeIds[3]);
+        expect(dbTypes[4].sortOrder).toEqual(3);
+    });
+
+    describe('Error handling', () => {
+        it('should catch name duplication error on create', async () => {
+            const createProps = {
+                name: data.uniformTypes[0].name,
+                acronym: 'TT',
+                issuedDefault: 1,
+                usingSizes: false,
+                usingGenerations: true,
+                fk_defaultSizelist: null,
+            };
+
+            const { result, success } = await runServerActionTest(create(createProps));
+            expect(success).toBeFalsy();
+            expect(result).toEqual({
+                error: {
+                    message: "custom.uniform.type.nameDuplication",
+                    formElement: "name",
+                }
+            });
+        });
+
+        it('should catch acronym duplication error on create', async () => {
+            const createProps = {
+                name: 'Unique',
+                acronym: data.uniformTypes[0].acronym,
+                issuedDefault: 1,
+                usingSizes: false,
+                usingGenerations: true,
+                fk_defaultSizelist: null,
+            };
+
+            const { result, success } = await runServerActionTest(create(createProps));
+            expect(success).toBeFalsy();
+            expect(result).toEqual({
+                error: {
+                    message: "custom.uniform.type.acronymDuplication;name:" + data.uniformTypes[0].name,
+                    formElement: "acronym",
+                }
+            });
+        });
+
+        it('should catch name duplication error on update', async () => {
+            const updateProps = {
+                id: ids.uniformTypeIds[0],
+                data: {
+                    name: data.uniformTypes[1].name, // This name is already taken
+                    acronym: 'TT',
+                    issuedDefault: 1,
+                    usingSizes: false,
+                    usingGenerations: true,
+                    fk_defaultSizelist: null,
+                }
+            };
+
+            const { result, success } = await runServerActionTest(update(updateProps));
+            expect(success).toBeFalsy();
+            expect(result).toEqual({
+                error: {
+                    message: "custom.uniform.type.nameDuplication",
+                    formElement: "name",
+                }
+            });
+        });
+
+        it('should catch acronym duplication error on update', async () => {
+            const updateProps = {
+                id: ids.uniformTypeIds[0],
+                data: {
+                    name: 'Unique',
+                    acronym: data.uniformTypes[1].acronym, // This acronym is already taken
+                    issuedDefault: 1,
+                    usingSizes: false,
+                    usingGenerations: true,
+                    fk_defaultSizelist: null,
+                }
+            };
+
+            const { result, success } = await runServerActionTest(update(updateProps));
+            expect(success).toBeFalsy();
+            expect(result).toEqual({
+                error: {
+                    message: "custom.uniform.type.acronymDuplication;name:" + data.uniformTypes[1].name,
+                    formElement: "acronym",
+                }
+            });
         });
     });
 });
