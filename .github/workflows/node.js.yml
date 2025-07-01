@@ -133,18 +133,27 @@ jobs:
         run: npx prisma migrate deploy && npx prisma db seed
       - name: Build application
         run: npm run build
+      - name: List build output
+        run: |
+          echo "Current directory contents:"
+          ls -la
+          echo "Checking for .next directory:"
+          ls -la .next/ || echo ".next directory not found"
+          echo "Checking for build output:"
+          find . -name "*.js" -path "./.next/*" | head -10 || echo "No .next JS files found"
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-files
           path: |
-            .next/
-            node_modules/
+            .next/**/*
             package.json
             package-lock.json
-            prisma/
-            public/
+            prisma/**/*
+            next.config.js
+            tsconfig.json
           retention-days: 1
+          if-no-files-found: warn
 
   # Stage 3: E2E Tests
   e2e:
@@ -182,6 +191,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-files
+      - name: Verify downloaded artifacts
+        run: |
+          echo "Downloaded artifacts contents:"
+          ls -la
+          echo "Checking for .next directory:"
+          ls -la .next/ || echo ".next directory not found in downloaded artifacts"
+      - name: Install dependencies
+        run: npm ci
       - name: Setup database
         run: npx prisma migrate deploy && npx prisma db seed
       - name: Install Playwright browsers
