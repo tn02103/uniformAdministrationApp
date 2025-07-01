@@ -10,7 +10,7 @@ on:
 
 jobs:
   # Stage 1: Testing and Linting
-  jest-unit:
+  jest-dal-unit:
     name: Jest Unit Tests
     runs-on: ubuntu-latest
     steps:
@@ -26,7 +26,7 @@ jobs:
       - name: Run unit tests
         run: npm run test:dal:unit
 
-  jest-frontend:
+  jest-components:
     name: Jest Frontend Tests
     runs-on: ubuntu-latest
     steps:
@@ -39,10 +39,10 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
-      - name: Run frontend tests
-        run: npm run test:frontend
+      - name: Run components tests
+        run: npm run test:components
 
-  jest-integration:
+  jest-dal-integration:
     name: Jest Integration Tests
     runs-on: ubuntu-latest
     env:
