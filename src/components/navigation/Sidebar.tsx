@@ -17,6 +17,7 @@ import Footer from "./Footer";
 import Header from "./Header";
 import style from "./Sidebar.module.css";
 import { SidebarLinks } from "./SidebarLinks";
+import { useBreakpoint } from "@/lib/useBreakpoint";
 
 
 type SidebarPropType = {
@@ -29,6 +30,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
     const modal = useModal();
     const [collapsed, setCollapsed] = useState(false);
     const [showSidebar, setShowSidebar] = useState(false);
+    const { match: isMobile } = useBreakpoint("lg", "lt")
     const { inspectionState } = useInspectionState();
     const pathname = usePathname();
     const router = useRouter();
@@ -37,6 +39,13 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
     useEffect(() => {
         setShowSidebar(false);
     }, [pathname]);
+
+    useEffect(() => {
+        if (isMobile) {
+            setShowSidebar(false);
+            setCollapsed(false);
+        }
+    }, [isMobile]);
 
     function handleLogout() {
         logout().then(() => {
@@ -56,7 +65,8 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
         <div className={`${style.sidebarContainer} ${showSidebar ? style.noScroll : ''}`}>
             {/* Safe area top fill - always present to cover notch area */}
             <div className={`${style.safeAreaTop} ${collapsed ? style.safeAreaTopCollapsed : ''
-                } ${showSidebar ? style.safeAreaTopVisible : ''}`}></div>
+                } ${showSidebar ? style.safeAreaTopVisible : ''}`}>
+            </div>
 
             {/* Backdrop for mobile/tablet when sidebar is open */}
             {showSidebar && (
@@ -70,7 +80,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                 <Footer />
                 <Header showSidebar={() => setShowSidebar(true)} />
             </div>
-            <div className={`${collapsed ? style.contentCollapsed : style.content} ${showSidebar ? style.contentOverlay : ''}`} >
+            <div className={`${style.content} ${collapsed ? style.contentCollapsed : ""} ${showSidebar ? style.contentOverlay : ''}`} >
                 <div className={`container-sm px-3 px-lg-4 py-3 m-auto`}>
                     {children}
                 </div>
@@ -85,31 +95,24 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                 <div data-testid="div_sidebar" className="d-flex flex-column text-white h-100 bg-navy text-decoration-none">
                     {/* Header section - always visible */}
                     <div className="flex-shrink-0">
-                        {/* Close button for mobile */}
-                        <div className="d-lg-none w-100 d-flex justify-content-between align-items-center p-2 pb-1">
-                            <Link href={"/"} className="text-decoration-none">
-                                <p data-testid="lnk_header" className={`${style.sidebarHeaderTitleMobile} text-white m-0`}>
-                                    {assosiation.name}
-                                </p>
-                            </Link>
-                            <button
-                                className="btn btn-link text-decoration-none text-white fs-5 p-1  lh-1 me-3"
-                                onClick={() => setShowSidebar(false)}
-                                aria-label="Close sidebar"
-                            >
-                                <FontAwesomeIcon icon={faX}/>
-                            </button>
-                        </div>
-
                         {/* Header for desktop */}
-                        <div className={`${style.sidebarHeader} d-none d-lg-block`}>
-                            <Link href={"/"} className="text-decoration-none">
-                                <p data-testid="lnk_header" className={`${style.sidebarHeaderTitle} ${collapsed ? style.sidebarHeaderTitleCollapsed : ''}`}>
-                                    {collapsed ? assosiation.acronym : assosiation.name}
-                                </p>
-                            </Link>
-                            <hr className={style.sidebarDivider} />
+                        <div className={`${style.sidebarHeader}`}>
+                            <div className="d-lg-none w-100 position-relative align-items-center p-2 pb-1">
+                                <Link href={"/"} className="text-decoration-none">
+                                    <p data-testid="lnk_header" className={`${style.sidebarHeaderTitle} ${collapsed ? style.sidebarHeaderTitleCollapsed : ''}`}>
+                                        {collapsed ? assosiation.acronym : assosiation.name}
+                                    </p>
+                                </Link>
+                                <button
+                                    className="d-sm-none btn btn-link text-decoration-none text-white fs-5 position-absolute end-0 top-50 translate-middle-y"
+                                    onClick={() => setShowSidebar(false)}
+                                    aria-label="Close sidebar"
+                                >
+                                    <FontAwesomeIcon icon={faX} />
+                                </button>
+                            </div>
                         </div>
+                        <hr className={style.sidebarDivider} />
                         {inspectionState?.active &&
                             <div data-testid="div_inspection" className="text-center d-none d-lg-block text-white-50 small">
                                 {collapsed ? "" : 'Kontrolle: '}
