@@ -4,7 +4,7 @@ import { logout } from "@/actions/auth";
 import { useInspectionState } from "@/dataFetcher/inspection";
 import { useI18n } from "@/lib/locales/client";
 import { AuthItem } from "@/lib/storageTypes";
-import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import { faAngleLeft, faAngleRight, faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Assosiation } from "@prisma/client";
 import Link from "next/link";
@@ -93,11 +93,11 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                 </p>
                             </Link>
                             <button
-                                className="btn btn-link text-decoration-none text-white fs-4 p-1 btn-lg lh-1"
+                                className="btn btn-link text-decoration-none text-white fs-5 p-1  lh-1 me-3"
                                 onClick={() => setShowSidebar(false)}
                                 aria-label="Close sidebar"
                             >
-                                ×
+                                <FontAwesomeIcon icon={faX}/>
                             </button>
                         </div>
 
