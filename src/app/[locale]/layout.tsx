@@ -16,6 +16,16 @@ export const metadata: Metadata = {
     title: 'Uniformverwaltung',
     description: 'App zum Verwalen von Uniformteilen',
     applicationName: 'Uniformadmin',
+    viewport: {
+        width: 'device-width',
+        initialScale: 1,
+        viewportFit: 'cover', // This enables safe area support
+    },
+    appleWebApp: {
+        capable: true,
+        statusBarStyle: 'default',
+    },
+    themeColor: '#01153e', // Navy color for status bar
 }
 
 export function generateStaticParams() {
