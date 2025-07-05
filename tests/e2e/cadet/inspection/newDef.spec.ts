@@ -102,29 +102,27 @@ test('E2E0274: validate material selects', async ({ inspectionComponent, staticD
 
     await expect(inspectionComponent.sel_newDef_materialType(0).getByRole('option')).toHaveCount(1);
 
-    const groups = [data.materialGroups[0], data.materialGroups[1]];
-    await Promise.all(
-        groups.map(async (group) =>
-            test.step(`content of materialRows for group: ${group.description}`, async () => {
-                const materialTypes = await prisma.material.findMany({
-                    where: { fk_materialGroup: group.id, recdelete: null },
-                    orderBy: { sortOrder: "asc" }
-                });
+    const testMaterialOptions = (groupId: string) => async () => {
+        const materialTypes = await prisma.material.findMany({
+            where: { fk_materialGroup: groupId, recdelete: null },
+            orderBy: { sortOrder: "asc" }
+        });
 
-                await inspectionComponent.sel_newDef_materialGroup(0).selectOption(group.id);
+        await inspectionComponent.sel_newDef_materialGroup(0).selectOption(groupId);
 
-                const options = await inspectionComponent.sel_newDef_materialType(0).locator('option:not(:disabled)').all();
-                expect(options).toHaveLength(materialTypes.length);
+        const options = inspectionComponent.sel_newDef_materialType(0).locator('option:not(:disabled)');
+        await expect(options).toHaveCount(materialTypes.length);
 
-                await Promise.all(
-                    options.map(async (option, index) => {
-                        await expect(option).toHaveAttribute("value", materialTypes[index].id);
-                        await expect(option).toHaveText(materialTypes[index].typename);
-                    })
-                );
+        await Promise.all(
+            (await options.all()).map(async (option, index) => {
+                await expect(option).toHaveAttribute("value", materialTypes[index].id);
+                await expect(option).toHaveText(materialTypes[index].typename);
             })
-        )
-    );
+        );
+    }
+
+    await test.step(`materialOptions for group: ${data.materialGroups[0].description}`, testMaterialOptions(data.materialGroups[0].id));
+    await test.step(`materialOptions for group: ${data.materialGroups[1].description}`, testMaterialOptions(data.materialGroups[1].id));
 });
 
 test('E2E0272: validate uniformSelect', async ({ inspectionComponent, staticData: { ids } }) => {
@@ -267,7 +265,7 @@ test.describe('E2E0280: validate formValidations', () => {
     test('txt_comment', async ({ inspectionComponent }) => {
         await inspectionComponent.btn_step2_newDef.click();
         await inspectionComponent.btn_step2_submit.click();
-        
+
         const testSets = CommentValidationTests({ maxLength: 300 });
         for (const set of testSets) {
             await test.step(String(set.testValue), async () => {
