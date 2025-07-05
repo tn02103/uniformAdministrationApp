@@ -14,9 +14,9 @@ export default defineConfig({
     /* Retry on CI only */
     retries: process.env.CI ? 2 : 2,
     /* Opt out of parallel tests on CI. */
-    workers: process.env.CI ? 1 : 4,
+    workers: process.env.CI ? 1 : undefined,
     /* amount of allowed failures */
-    maxFailures: 20,
+    maxFailures: 5,
     /* Reporter to use. See https://playwright.dev/docs/test-reporters */
     reporter: [
         ['dot'],
@@ -38,14 +38,14 @@ export default defineConfig({
             name: 'chromium',
             use: {
                 ...devices['Desktop Chrome'],
-                viewport: viewports.xxl
+                viewport: viewports.xl
             },
         },
         {
             name: 'firefox',
             use: {
                 ...devices['Desktop Firefox'],
-                viewport: viewports.xxl
+                viewport: viewports.xl
             },
         },
         /*  {

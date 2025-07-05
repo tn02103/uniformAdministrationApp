@@ -139,13 +139,15 @@ test('E2E060402: edit unused type', async ({ typeComponent, staticData }) => {
         ]);
     });
     await test.step('validate db', async () => {
-        const dbData = await prisma.deficiencyType.findUnique({
-            where: { id: type.id }
-        });
-        expect(dbData).not.toBeNull();
-        expect(dbData!.name).toBe('NewName');
-        expect(dbData!.dependent).toBe('uniform');
-        expect(dbData!.relation).toBeNull();
+        await expect(async () => {
+            const dbData = await prisma.deficiencyType.findUnique({
+                where: { id: type.id }
+            });
+            expect(dbData).not.toBeNull();
+            expect(dbData!.name).toBe('NewName');
+            expect(dbData!.dependent).toBe('uniform');
+            expect(dbData!.relation).toBeNull();
+        }).toPass();
     });
 });
 test('E2E060403: edit used type', async ({ typeComponent, staticData }) => {
