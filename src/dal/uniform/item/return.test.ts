@@ -50,6 +50,20 @@ describe('<UniformItem> return', () => {
         mockGetCadetUniformMap.mockResolvedValue([mockUniformList[0]] as any);
     });
 
+    beforeEach(() => {
+        // Setup default transaction mock
+        mockPrisma.$transaction.mockImplementation((callback: any) => callback(mockPrisma));
+
+        // Default mock responses
+        mockPrisma.uniformIssued.findFirst.mockResolvedValue(mockIssuedEntry as any);
+        mockPrisma.uniformIssued.update.mockResolvedValue(mockIssuedEntry as any);
+        mockPrisma.uniformIssued.delete.mockResolvedValue(mockIssuedEntry as any);
+
+        // Mock system time to MOCK_TODAY
+        jest.useFakeTimers();
+        jest.setSystemTime(MOCK_TODAY);
+    });
+
     afterEach(() => {
         jest.clearAllMocks();
         // Reset all mock implementations to their default state
@@ -65,28 +79,13 @@ describe('<UniformItem> return', () => {
         jest.useRealTimers();
     });
 
-    beforeEach(() => {
-        // Setup default transaction mock
-        mockPrisma.$transaction.mockImplementation((callback: any) => callback(mockPrisma));
-        
-        // Default mock responses
-        mockPrisma.uniformIssued.findFirst.mockResolvedValue(mockIssuedEntry as any);
-        mockPrisma.uniformIssued.update.mockResolvedValue(mockIssuedEntry as any);
-        mockPrisma.uniformIssued.delete.mockResolvedValue(mockIssuedEntry as any);
-        
-        // Mock system time to MOCK_TODAY
-        jest.useFakeTimers();
-        jest.setSystemTime(MOCK_TODAY);
-    });
-
     describe('successful return scenarios', () => {
         it('returns uniform item successfully when not issued today', async () => {
             // Set the issued entry to a past date (not today)
             mockPrisma.uniformIssued.findFirst.mockResolvedValue(mockIssuedEntry as any);
 
-            const result = await returnItem(defaultReturnProps);
+            await expect(returnItem(defaultReturnProps)).resolves.toEqual([mockUniformList[0]]);
 
-            expect(result).toEqual([mockUniformList[0]]);
             expect(mockPrisma.uniformIssued.findFirst).toHaveBeenCalledWith({
                 where: {
                     uniform: {
@@ -114,9 +113,8 @@ describe('<UniformItem> return', () => {
             // Set the issued entry to today's date
             mockPrisma.uniformIssued.findFirst.mockResolvedValue(mockIssuedEntryToday as any);
 
-            const result = await returnItem(defaultReturnProps);
+            await expect(returnItem(defaultReturnProps)).resolves.toEqual([mockUniformList[0]]);
 
-            expect(result).toEqual([mockUniformList[0]]);
             expect(mockPrisma.uniformIssued.delete).toHaveBeenCalledWith({
                 where: { id: mockIssuedEntryId }
             });
@@ -125,7 +123,7 @@ describe('<UniformItem> return', () => {
         });
 
         it('verifies correct transaction usage', async () => {
-            await returnItem(defaultReturnProps);
+            await expect(returnItem(defaultReturnProps)).resolves.toEqual([mockUniformList[0]]);
 
             // Transaction should be called with the callback function
             expect(mockPrisma.$transaction).toHaveBeenCalledWith(expect.any(Function));
@@ -136,7 +134,9 @@ describe('<UniformItem> return', () => {
         it('throws error when issued entry is not found', async () => {
             mockPrisma.uniformIssued.findFirst.mockResolvedValue(null);
 
-            await expect(returnItem(defaultReturnProps)).rejects.toThrow('Could not return Uniform. Issued Entry not found: uniform-456');
+            await expect(returnItem(defaultReturnProps))
+                .rejects
+                .toThrow('Could not return Uniform. Issued Entry not found: uniform-456');
 
             expect(mockPrisma.uniformIssued.update).not.toHaveBeenCalled();
             expect(mockPrisma.uniformIssued.delete).not.toHaveBeenCalled();
@@ -144,20 +144,9 @@ describe('<UniformItem> return', () => {
         });
     });
 
-    describe('validation scenarios', () => {
-        it('calls genericSAValidator with correct parameters', async () => {
-            // In unit tests, the genericSAValidator is mocked and doesn't actually validate
-            // This test just ensures the function flow works
-            const result = await returnItem(defaultReturnProps);
-
-            expect(result).toEqual([mockUniformList[0]]);
-            expect(mockPrisma.uniformIssued.findFirst).toHaveBeenCalled();
-        });
-    });
-
     describe('database interaction verification', () => {
         it('verifies correct uniform issued entry lookup parameters', async () => {
-            await returnItem(defaultReturnProps);
+            await expect(returnItem(defaultReturnProps)).resolves.toEqual([mockUniformList[0]]);
 
             // Ensures that only entries are found that are:
             // - not returned
@@ -180,7 +169,7 @@ describe('<UniformItem> return', () => {
         });
 
         it('verifies cadet uniform map is retrieved with correct parameters', async () => {
-            await returnItem(defaultReturnProps);
+            await expect(returnItem(defaultReturnProps)).resolves.toEqual([mockUniformList[0]]);
 
             expect(mockGetCadetUniformMap).toHaveBeenCalledWith(mockCadetId, mockPrisma);
         });
@@ -188,7 +177,7 @@ describe('<UniformItem> return', () => {
 });
 
 describe('<UniformItem> __unsecuredReturnUniformitem', () => {
-    
+
     afterEach(() => {
         jest.clearAllMocks();
         if (mockPrisma.uniformIssued?.update?.mockReset) {
@@ -202,7 +191,7 @@ describe('<UniformItem> __unsecuredReturnUniformitem', () => {
     beforeEach(() => {
         mockPrisma.uniformIssued.update.mockResolvedValue(mockIssuedEntry as any);
         mockPrisma.uniformIssued.delete.mockResolvedValue(mockIssuedEntry as any);
-        
+
         // Mock system time to MOCK_TODAY
         jest.useFakeTimers();
         jest.setSystemTime(MOCK_TODAY);
@@ -240,7 +229,7 @@ describe('<UniformItem> __unsecuredReturnUniformitem', () => {
 
             // Issue date is also the same day in German timezone
             const issueDateGermanTime = new Date('2025-06-26T23:30:00.000Z'); // UTC equivalent of 01:30 German time
-            
+
             await __unsecuredReturnUniformitem(mockIssuedEntryId, issueDateGermanTime, mockPrisma);
 
             expect(mockPrisma.uniformIssued.delete).toHaveBeenCalled();
@@ -255,7 +244,7 @@ describe('<UniformItem> __unsecuredReturnUniformitem', () => {
             // Issue date is 23:00 UTC on June 26 (01:00 German time on June 27)
             // This is the same day in German timezone but different day in UTC
             const issueDatePreviousDayUTC = new Date('2025-06-26T23:00:00.000Z');
-            
+
             await __unsecuredReturnUniformitem(mockIssuedEntryId, issueDatePreviousDayUTC, mockPrisma);
 
             expect(mockPrisma.uniformIssued.delete).toHaveBeenCalled();
@@ -269,7 +258,7 @@ describe('<UniformItem> __unsecuredReturnUniformitem', () => {
 
             // Issue date is earlier the same UTC day but different German day (20:00 UTC June 27 = 22:00 German time June 27)
             const earlierSameUTCDay = new Date('2025-06-27T20:00:00.000Z');
-            
+
             // These are different days in German timezone: June 27 vs June 28
             await __unsecuredReturnUniformitem(mockIssuedEntryId, earlierSameUTCDay, mockPrisma);
 
@@ -289,7 +278,7 @@ describe('<UniformItem> __unsecuredReturnUniformitem', () => {
 
             // Issue date is previous day in German timezone
             const previousGermanDay = new Date('2025-06-26T12:00:00.000Z'); // 14:00 German time previous day
-            
+
             await __unsecuredReturnUniformitem(mockIssuedEntryId, previousGermanDay, mockPrisma);
 
             expect(mockPrisma.uniformIssued.update).toHaveBeenCalledWith({

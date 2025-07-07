@@ -48,20 +48,18 @@ const getParamsWithoutSize = (data?: any, numberMap?: any) => ({
 
 describe('<UniformItem> create', () => {
 
+
+    beforeEach(() => {
+        mockPrisma.uniform.findMany.mockResolvedValue([]);
+        mockPrisma.uniform.createMany.mockResolvedValue({ count: 4 });
+    });
+
     afterEach(() => {
         jest.clearAllMocks();
         // Reset all mock implementations to their default state
         mockPrisma.uniform.findMany.mockReset();
         mockPrisma.uniform.createMany.mockReset();
         mockPrisma.uniformType.findUniqueOrThrow.mockReset();
-    });
-
-    beforeEach(() => {
-        // Default mock for uniform.findMany (no existing uniforms)
-        mockPrisma.uniform.findMany.mockResolvedValue([]);
-
-        // Default mock for createMany
-        mockPrisma.uniform.createMany.mockResolvedValue({ count: 4 });
     });
 
     describe('successful in all allowed combinations', () => {
@@ -89,8 +87,7 @@ describe('<UniformItem> create', () => {
 
             mockPrisma.uniform.createMany.mockResolvedValue({ count: 4 });
 
-            const result = await create(defaultWithSizes);
-            expect(result).toBe(4);
+            await expect(create(defaultWithSizes)).resolves.toBe(4);
 
             // Verify the correct data was passed to createMany
             expect(mockPrisma.uniform.createMany).toHaveBeenCalledWith({
@@ -127,8 +124,7 @@ describe('<UniformItem> create', () => {
             mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue(mockTypeList[1] as any);
             mockPrisma.uniform.createMany.mockResolvedValue({ count: 2 });
 
-            const result = await create(defaultWithoutSizes);
-            expect(result).toBe(2);
+            await expect(create(defaultWithoutSizes)).resolves.toBe(2);
 
             expect(mockPrisma.uniform.createMany).toHaveBeenCalledWith({
                 data: expect.arrayContaining([
@@ -158,12 +154,11 @@ describe('<UniformItem> create', () => {
 
             mockPrisma.uniform.createMany.mockResolvedValue({ count: 4 });
 
-            const result = await create(getParamsWithSize({
+            const params = getParamsWithSize({
                 uniformTypeId: mockTypeList[2].id,
                 generationId: null,
-            }));
-
-            expect(result).toBe(4);
+            });
+            await expect(create(params)).resolves.toBe(4);
 
             expect(mockPrisma.uniform.createMany).toHaveBeenCalledWith({
                 data: expect.arrayContaining([
@@ -180,14 +175,11 @@ describe('<UniformItem> create', () => {
             mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue(mockTypeList[3] as any);
             mockPrisma.uniform.createMany.mockResolvedValue({ count: 2 });
 
-            const result = await create(
-                getParamsWithoutSize({
-                    uniformTypeId: mockTypeList[3].id,
-                    generationId: null,
-                })
-            );
-
-            expect(result).toBe(2);
+            const params = getParamsWithoutSize({
+                uniformTypeId: mockTypeList[3].id,
+                generationId: null,
+            });
+            await expect(create(params)).resolves.toBe(2);
 
             expect(mockPrisma.uniform.createMany).toHaveBeenCalledWith({
                 data: expect.arrayContaining([
@@ -207,14 +199,11 @@ describe('<UniformItem> create', () => {
                 new Error('Uniform type not found')
             );
 
-            await expect(
-                create(
-                    getParamsWithSize({
-                        uniformTypeId: 'deleted-type-id',
-                        generationId: null,
-                    })
-                )
-            ).rejects.toThrow('Uniform type not found');
+            const params = getParamsWithSize({
+                uniformTypeId: 'deleted-type-id',
+                generationId: null,
+            });
+            await expect(create(params)).rejects.toThrow('Uniform type not found');
 
             // Ensure it filters out deleted types
             expect(mockPrisma.uniformType.findUniqueOrThrow).toHaveBeenCalledWith(
@@ -233,11 +222,10 @@ describe('<UniformItem> create', () => {
         it('catches generations from different type', async () => {
             mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue(mockTypeList[1] as any);
 
-            await expect(create(
-                getParamsWithoutSize({
-                    generationId: mockGenerationLists[0][0].id // Generation from different type
-                })
-            )).rejects.toThrow('Not a valid genertion from the uniformType');
+            const params = getParamsWithoutSize({
+                generationId: mockGenerationLists[0][0].id // Generation from different type
+            });
+            await expect(create(params)).rejects.toThrow('Not a valid genertion from the uniformType');
 
             expect(mockPrisma.uniform.createMany).not.toHaveBeenCalled();
         });
@@ -245,11 +233,11 @@ describe('<UniformItem> create', () => {
         it('catches deleted generations', async () => {
             mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue(mockTypeList[1] as any);
 
-            await expect(create(
-                getParamsWithoutSize({
-                    generationId: 'deleted-generation-id'
-                })
-            )).rejects.toThrow('Not a valid genertion from the uniformType');
+            const params = getParamsWithoutSize({
+                generationId: 'deleted-generation-id'
+            });
+
+            await expect(create(params)).rejects.toThrow('Not a valid genertion from the uniformType');
 
             expect(mockPrisma.uniformType.findUniqueOrThrow).toHaveBeenCalledWith(
                 expect.objectContaining({
@@ -268,11 +256,10 @@ describe('<UniformItem> create', () => {
         it('catches missing generation', async () => {
             mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue(mockTypeList[1] as any);
 
-            await expect(create(
-                getParamsWithoutSize({
-                    generationId: null
-                })
-            )).rejects.toThrow('A genertion is required for this type');
+            const params = getParamsWithoutSize({
+                generationId: null
+            });
+            await expect(create(params)).rejects.toThrow('A genertion is required for this type');
 
             expect(mockPrisma.uniform.createMany).not.toHaveBeenCalled();
         });
@@ -283,7 +270,7 @@ describe('<UniformItem> create', () => {
                 usingGenerations: false,
             } as any);
 
-            await expect(create({
+            const params = {
                 numberMap: [{ sizeId: 'amount', numbers: [3000, 3001] }],
                 data: {
                     uniformTypeId: mockTypeList[1].id,
@@ -291,7 +278,8 @@ describe('<UniformItem> create', () => {
                     active: true,
                     comment: 'just new'
                 }
-            })).rejects.toThrow('Type does not suport generations');
+            }
+            await expect(create(params)).rejects.toThrow('Type does not suport generations');
 
             expect(mockPrisma.uniform.createMany).not.toHaveBeenCalled();
         });
@@ -314,13 +302,10 @@ describe('<UniformItem> create', () => {
                 }]
             } as any);
 
-            await expect(
-                create(
-                    getParamsWithSize(undefined, [
-                        { sizeId: mockSizeLists[2].uniformSizes[0].id, numbers: [3000, 3001] } // Size from different sizelist
-                    ]),
-                ),
-            ).rejects.toThrow('Not allowed size used');
+            const params = getParamsWithSize(undefined, [
+                { sizeId: mockSizeLists[2].uniformSizes[0].id, numbers: [3000, 3001] } // Size from different sizelist
+            ]);
+            await expect(create(params)).rejects.toThrow('Not allowed size used');
 
             expect(mockPrisma.uniform.createMany).not.toHaveBeenCalled();
         });
@@ -341,15 +326,14 @@ describe('<UniformItem> create', () => {
                 }]
             } as any);
 
-            await expect(create(
-                getParamsWithSize(
-                    {
-                        uniformTypeId: mockTypeList[2].id,
-                        generationId: null,
-                    }, [
-                    { sizeId: mockSizeLists[2].uniformSizes[0].id, numbers: [3000, 3001] } // Size from different sizelist
-                ],)
-            )).rejects.toThrow('Not allowed size used');
+            const params = getParamsWithSize(
+                {
+                    uniformTypeId: mockTypeList[2].id,
+                    generationId: null,
+                }, [
+                { sizeId: mockSizeLists[2].uniformSizes[0].id, numbers: [3000, 3001] } // Size from different sizelist
+            ],);
+            await expect(create(params)).rejects.toThrow('Not allowed size used');
 
             expect(mockPrisma.uniform.createMany).not.toHaveBeenCalled();
         });
@@ -362,14 +346,15 @@ describe('<UniformItem> create', () => {
                 },
             } as any);
 
-            await expect(create({
+            const params = {
                 ...defaultWithoutSizes,
                 data: {
                     ...defaultWithSizes.data,
                     uniformTypeId: mockTypeList[2].id,
                     generationId: null,
                 },
-            })).rejects.toThrow('Not allowed size used');
+            };
+            await expect(create(params)).rejects.toThrow('Not allowed size used');
 
             expect(mockPrisma.uniform.createMany).not.toHaveBeenCalled();
         });
@@ -377,11 +362,10 @@ describe('<UniformItem> create', () => {
         it('catches with size when not allowed', async () => {
             mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue(mockTypeList[3] as any);
 
-            await expect(create(
-                getParamsWithSize({
-                    generationId: null,
-                })
-            )).rejects.toThrow('Not allowed size used');
+            const params = getParamsWithSize({
+                generationId: null,
+            });
+            await expect(create(params)).rejects.toThrow('Not allowed size used');
 
             expect(mockPrisma.uniform.createMany).not.toHaveBeenCalled();
         });
@@ -427,12 +411,11 @@ describe('<UniformItem> create', () => {
                 }]
             } as any);
 
-            await expect(create(
-                getParamsWithSize(undefined, [
-                    { sizeId: mockSizeLists[0].uniformSizes[0].id, numbers: [3000, 3001] },
-                    { sizeId: mockSizeLists[0].uniformSizes[1].id, numbers: [3002, 3001] } // 3001 is duplicated
-                ])
-            )).rejects.toThrow('some number is entered multiple times');
+            const params = getParamsWithSize(undefined, [
+                { sizeId: mockSizeLists[0].uniformSizes[0].id, numbers: [3000, 3001] },
+                { sizeId: mockSizeLists[0].uniformSizes[1].id, numbers: [3002, 3001] } // 3001 is duplicated
+            ]);
+            await expect(create(params)).rejects.toThrow('some number is entered multiple times');
 
             expect(mockPrisma.uniform.createMany).not.toHaveBeenCalled();
         });

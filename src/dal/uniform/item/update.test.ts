@@ -54,9 +54,8 @@ describe('<UniformItem> update', () => {
 
     describe('successful update scenarios', () => {
         it('updates uniform with both generation and size', async () => {
-            const result = await update(defaultUpdateProps);
+            await expect(update(defaultUpdateProps)).resolves.toEqual(mockUniformList[0]);
 
-            expect(result).toEqual(mockUniformList[0]);
             expect(mockPrisma.uniformType.findFirstOrThrow).toHaveBeenCalledWith({
                 where: {
                     uniformList: {
@@ -97,7 +96,7 @@ describe('<UniformItem> update', () => {
         it('updates uniform without generation when type does not use generations', async () => {
             mockPrisma.uniformType.findFirstOrThrow.mockResolvedValue(mockUniformTypeNoGenerations as any);
 
-            await update(defaultUpdateProps);
+            await expect(update(defaultUpdateProps)).resolves.toEqual(mockUniformList[0]);
 
             expect(mockPrisma.uniformSizelist.findUniqueOrThrow).toHaveBeenCalledWith({
                 where: { id: '27021179-ec3d-4b04-9ed8-6ac53fdc3b4e' }, // types default sizelist
@@ -120,7 +119,7 @@ describe('<UniformItem> update', () => {
         it('updates uniform without size when type does not use sizes', async () => {
             mockPrisma.uniformType.findFirstOrThrow.mockResolvedValue(mockUniformTypeNoSizes as any);
 
-            await update(defaultUpdateProps);
+            await expect(update(defaultUpdateProps)).resolves.toEqual(mockUniformList[0]);
 
             // Generation lookup should NOT happen because type doesn't use sizes and no size is provided
             expect(mockPrisma.uniformGeneration.findUniqueOrThrow).not.toHaveBeenCalled();
@@ -140,7 +139,7 @@ describe('<UniformItem> update', () => {
         it('updates uniform without generation and size when type uses neither', async () => {
             mockPrisma.uniformType.findFirstOrThrow.mockResolvedValue(mockUniformTypeNoGenNoSize as any);
 
-            await update(defaultUpdateProps);
+            await expect(update(defaultUpdateProps)).resolves.toEqual(mockUniformList[0]);
 
             expect(mockPrisma.uniformGeneration.findUniqueOrThrow).not.toHaveBeenCalled();
             expect(mockPrisma.uniformSizelist.findUniqueOrThrow).not.toHaveBeenCalled();
@@ -163,7 +162,7 @@ describe('<UniformItem> update', () => {
                 size: null,
             };
 
-            await update(props);
+            await expect(update(props)).resolves.toEqual(mockUniformList[0]);
 
             expect(mockPrisma.uniform.update).toHaveBeenCalledWith(
                 expect.objectContaining({
@@ -185,7 +184,7 @@ describe('<UniformItem> update', () => {
             mockPrisma.uniformGeneration.findUniqueOrThrow.mockResolvedValue(generationWithSizelist as any);
             mockPrisma.uniformSizelist.findUniqueOrThrow.mockResolvedValue(mockSizeLists[1] as any);
 
-            await update(defaultUpdateProps);
+            await expect(update(defaultUpdateProps)).resolves.toEqual(mockUniformList[0]);
 
             expect(mockPrisma.uniformSizelist.findUniqueOrThrow).toHaveBeenCalledWith({
                 where: { id: '27021179-ec3d-4b04-9ed8-6ac53fdc3b4e' }, // Generation's sizelist, not type's default
@@ -212,7 +211,7 @@ describe('<UniformItem> update', () => {
                 size: validSizeId,
             };
 
-            await update(props);
+            await expect(update(props)).resolves.toEqual(mockUniformList[0]);
 
             expect(mockPrisma.uniformSizelist.findUniqueOrThrow).toHaveBeenCalledWith({
                 where: { id: mockUniformType.fk_defaultSizelist },
@@ -248,7 +247,7 @@ describe('<UniformItem> update', () => {
                 size: validSizeInGenerationSizelist,
             };
 
-            await update(props);
+            await expect(update(props)).resolves.toEqual(mockUniformList[0]);
 
             expect(mockPrisma.uniformSizelist.findUniqueOrThrow).toHaveBeenCalledWith({
                 where: { id: '27021179-ec3d-4b04-9ed8-6ac53fdc3b4e' },
@@ -311,7 +310,7 @@ describe('<UniformItem> update', () => {
 
     describe('parameter validation', () => {
         it('verifies transaction usage', async () => {
-            await update(defaultUpdateProps);
+            await expect(update(defaultUpdateProps)).resolves.toEqual(mockUniformList[0]);
 
             expect(mockPrisma.$transaction).toHaveBeenCalledWith(expect.any(Function));
         });
@@ -322,7 +321,7 @@ describe('<UniformItem> update', () => {
                 id: customUniformId,
             };
 
-            await update(props);
+            await expect(update(props)).resolves.toEqual(mockUniformList[0]);
 
             expect(mockPrisma.uniformType.findFirstOrThrow).toHaveBeenCalledWith({
                 where: {

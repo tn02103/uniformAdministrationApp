@@ -4,6 +4,7 @@ import { DeepMockProxy } from "jest-mock-extended";
 import { mockTypeList, mockUniformList } from "../../../../tests/_jestConfig/staticMockData";
 import { issue } from "./issue";
 import { AuthRole } from "@/lib/AuthRoles";
+import { ExceptionType } from "@/errors/CustomException";
 
 // Mock the dependencies
 jest.mock("./return");
@@ -79,6 +80,16 @@ describe('<UniformItem> issue', () => {
         mockUnsecuredGetCadetUniformMap.mockResolvedValue([mockUniformList[0]]);
     });
 
+    beforeEach(() => {
+        // Default mock responses
+        mockPrisma.uniform.findFirst.mockResolvedValue(mockUniform as any);
+        mockPrisma.uniform.create.mockResolvedValue(mockUniform as any);
+        mockPrisma.uniform.update.mockResolvedValue(mockUniform as any);
+        mockPrisma.uniformIssued.create.mockResolvedValue({ id: 'new-issued-entry' } as any);
+        mockPrisma.cadet.findUniqueOrThrow.mockResolvedValue(mockCadet as any);
+        mockPrisma.$executeRaw.mockResolvedValue(1);
+    });
+
     afterEach(() => {
         jest.clearAllMocks();
         mockPrisma.uniform.findFirst.mockReset();
@@ -91,21 +102,11 @@ describe('<UniformItem> issue', () => {
         mockUnsecuredReturnUniformitem.mockReset();
     });
 
-    beforeEach(() => {
-        // Default mock responses
-        mockPrisma.uniform.findFirst.mockResolvedValue(mockUniform as any);
-        mockPrisma.uniform.create.mockResolvedValue(mockUniform as any);
-        mockPrisma.uniform.update.mockResolvedValue(mockUniform as any);
-        mockPrisma.uniformIssued.create.mockResolvedValue({ id: 'new-issued-entry' } as any);
-        mockPrisma.cadet.findUniqueOrThrow.mockResolvedValue(mockCadet as any);
-        mockPrisma.$executeRaw.mockResolvedValue(1);
-    });
 
     describe('successful issue scenarios', () => {
         it('issues uniform to cadet successfully', async () => {
-            const result = await issue(defaultIssueProps);
+            await expect(issue(defaultIssueProps)).resolves.toEqual([mockUniformList[0]]);
 
-            expect(result).toEqual([mockUniformList[0]]);
             expect(mockPrisma.uniform.findFirst).toHaveBeenCalledWith({
                 where: {
                     number: 2001,
@@ -133,12 +134,13 @@ describe('<UniformItem> issue', () => {
         it('creates and issues uniform when uniform does not exist and create option is true', async () => {
             mockPrisma.uniform.findFirst.mockResolvedValue(null);
 
-            const result = await issue({
-                ...defaultIssueProps,
-                options: { create: true }
-            });
+            await expect(
+                issue({
+                    ...defaultIssueProps,
+                    options: { create: true }
+                })
+            ).resolves.toEqual([mockUniformList[0]]);
 
-            expect(result).toEqual([mockUniformList[0]]);
             expect(mockPrisma.uniform.create).toHaveBeenCalledWith({
                 data: {
                     number: 2001,
@@ -157,24 +159,25 @@ describe('<UniformItem> issue', () => {
         it('issues inactive uniform when ignoreInactive option is true', async () => {
             mockPrisma.uniform.findFirst.mockResolvedValue(mockInactiveUniform as any);
 
-            const result = await issue({
-                ...defaultIssueProps,
-                options: { ignoreInactive: true }
-            });
+            await expect(
+                issue({
+                    ...defaultIssueProps,
+                    options: { ignoreInactive: true }
+                })
+            ).resolves.toEqual([mockUniformList[0]]);
 
-            expect(result).toEqual([mockUniformList[0]]);
             expect(mockPrisma.uniformIssued.create).toHaveBeenCalled();
         });
 
         it('forcefully issues already issued uniform', async () => {
             mockPrisma.uniform.findFirst.mockResolvedValue(mockIssuedUniform as any);
 
-            const result = await issue({
-                ...defaultIssueProps,
-                options: { force: true }
-            });
-
-            expect(result).toEqual([mockUniformList[0]]);
+            await expect(
+                issue({
+                    ...defaultIssueProps,
+                    options: { force: true }
+                })
+            ).resolves.toEqual([mockUniformList[0]]);
 
             // Should add comment to previous owner
             expect(mockPrisma.$executeRaw).toHaveBeenCalledWith(
@@ -200,9 +203,8 @@ describe('<UniformItem> issue', () => {
             };
             mockPrisma.uniform.findFirst.mockResolvedValue(uniformInStorage as any);
 
-            const result = await issue(defaultIssueProps);
+            await expect(issue(defaultIssueProps)).resolves.toEqual([mockUniformList[0]]);
 
-            expect(result).toEqual([mockUniformList[0]]);
             expect(mockPrisma.uniform.update).toHaveBeenCalledWith({
                 where: { id: mockUniformId },
                 data: {
@@ -215,12 +217,12 @@ describe('<UniformItem> issue', () => {
         it('returns previous uniform when replacing', async () => {
             mockPrisma.uniformIssued.findFirst.mockResolvedValue(mockIssuedEntry as any);
 
-            const result = await issue({
-                ...defaultIssueProps,
-                idToReplace: mockUniformToReplaceId
-            });
-
-            expect(result).toEqual([mockUniformList[0]]);
+            await expect(
+                issue({
+                    ...defaultIssueProps,
+                    idToReplace: mockUniformToReplaceId
+                })
+            ).resolves.toEqual([mockUniformList[0]]);
 
             // Should find the issued entry to replace
             expect(mockPrisma.uniformIssued.findFirst).toHaveBeenCalledWith({
@@ -250,10 +252,12 @@ describe('<UniformItem> issue', () => {
         it('throws error when uniform not found and create option is false', async () => {
             mockPrisma.uniform.findFirst.mockResolvedValue(null);
 
-            const result = await issue(defaultIssueProps);
+            await expect(issue(defaultIssueProps)).resolves.toMatchObject({
+                error: {
+                    exceptionType: ExceptionType.NullValueException,
+                }
+            });
 
-            expect(result).toHaveProperty('error');
-            expect((result as any).error.exceptionType).toBe(2); // NullValueException type
             expect(mockPrisma.uniform.create).not.toHaveBeenCalled();
             expect(mockPrisma.uniformIssued.create).not.toHaveBeenCalled();
         });
@@ -261,20 +265,24 @@ describe('<UniformItem> issue', () => {
         it('throws error when uniform is inactive and ignoreInactive is false', async () => {
             mockPrisma.uniform.findFirst.mockResolvedValue(mockInactiveUniform as any);
 
-            const result = await issue(defaultIssueProps);
+            await expect(issue(defaultIssueProps)).resolves.toMatchObject({
+                error: {
+                    exceptionType: ExceptionType.InactiveException,
+                }
+            })
 
-            expect(result).toHaveProperty('error');
-            expect((result as any).error.exceptionType).toBe(6); // UniformInactiveException type
             expect(mockPrisma.uniformIssued.create).not.toHaveBeenCalled();
         });
 
         it('throws error when uniform is already issued and force is false', async () => {
             mockPrisma.uniform.findFirst.mockResolvedValue(mockIssuedUniform as any);
 
-            const result = await issue(defaultIssueProps);
+            await expect(issue(defaultIssueProps)).resolves.toMatchObject({
+                error: {
+                    exceptionType: ExceptionType.UniformIssuedException,
+                }
+            });
 
-            expect(result).toHaveProperty('error');
-            expect((result as any).error.exceptionType).toBe(3); // UniformIssuedException type
             expect(mockPrisma.uniformIssued.create).not.toHaveBeenCalled();
         });
 
@@ -305,16 +313,15 @@ describe('<UniformItem> issue', () => {
     describe('validation scenarios', () => {
         it('calls genericSAValidator with correct parameters', async () => {
             const { genericSAValidator } = jest.requireMock("@/actions/validations");
-            const result = await issue(defaultIssueProps);
+            await expect(issue(defaultIssueProps)).resolves.toEqual([mockUniformList[0]]);
 
-            expect(result).toEqual([mockUniformList[0]]);
             expect(mockPrisma.uniformIssued.create).toHaveBeenCalled();
             expect(genericSAValidator).toHaveBeenCalledWith(
                 AuthRole.inspector,
                 defaultIssueProps,
                 expect.anything(),
-                { 
-                    cadetId: mockCadetId, 
+                {
+                    cadetId: mockCadetId,
                     uniformId: undefined,
                     uniformTypeId: defaultIssueProps.uniformTypeId,
                 }

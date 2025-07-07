@@ -62,9 +62,7 @@ describe('<UniformGeneration> markDeleted', () => {
 
     describe('successful deletion scenarios', () => {
         it('marks generation as deleted and updates related data', async () => {
-            const result = await markDeleted(mockGenerationId);
-
-            expect(result).toEqual(mockUniformTypeList);
+            await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
             // Verify generation lookup
             expect(prisma.uniformGeneration.findUniqueOrThrow).toHaveBeenCalledWith({
@@ -114,7 +112,7 @@ describe('<UniformGeneration> markDeleted', () => {
             };
             prisma.uniformGeneration.findUniqueOrThrow.mockResolvedValue(generationWithSortOrder0 as any);
 
-            await markDeleted(mockGenerationId);
+            await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
             // Should still update generations with sortOrder > 0
             expect(prisma.uniformGeneration.updateMany).toHaveBeenCalledWith({
@@ -136,7 +134,7 @@ describe('<UniformGeneration> markDeleted', () => {
             };
             prisma.uniformGeneration.findUniqueOrThrow.mockResolvedValue(generationWithHighSortOrder as any);
 
-            await markDeleted(mockGenerationId);
+            await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
             // Should look for generations with sortOrder > 5
             expect(prisma.uniformGeneration.updateMany).toHaveBeenCalledWith({
@@ -197,7 +195,7 @@ describe('<UniformGeneration> markDeleted', () => {
 
     describe('database interaction verification', () => {
         it('verifies transaction usage', async () => {
-            await markDeleted(mockGenerationId);
+            await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
             expect(mockPrisma.$transaction).toHaveBeenCalledWith(expect.any(Function));
         });
@@ -205,7 +203,7 @@ describe('<UniformGeneration> markDeleted', () => {
         it('uses correct generation ID in all operations', async () => {
             const customGenerationId = 'custom-generation-id';
 
-            await markDeleted(customGenerationId);
+            await expect(markDeleted(customGenerationId)).resolves.toEqual(mockUniformTypeList);
 
             expect(prisma.uniformGeneration.findUniqueOrThrow).toHaveBeenCalledWith({
                 where: { id: customGenerationId }
@@ -235,9 +233,8 @@ describe('<UniformGeneration> markDeleted', () => {
         it('handles generation with no associated uniform items', async () => {
             prisma.uniform.updateMany.mockResolvedValue({ count: 0 } as any);
 
-            const result = await markDeleted(mockGenerationId);
+            await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
-            expect(result).toEqual(mockUniformTypeList);
             expect(prisma.uniform.updateMany).toHaveBeenCalled();
             expect(prisma.uniformGeneration.update).toHaveBeenCalled();
         });
@@ -245,14 +242,13 @@ describe('<UniformGeneration> markDeleted', () => {
         it('handles generation with no higher sortOrder generations', async () => {
             prisma.uniformGeneration.updateMany.mockResolvedValue({ count: 0 } as any);
 
-            const result = await markDeleted(mockGenerationId);
+            await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
-            expect(result).toEqual(mockUniformTypeList);
             expect(prisma.uniformGeneration.updateMany).toHaveBeenCalled();
         });
 
         it('correctly passes session data to unsecured function', async () => {
-            await markDeleted(mockGenerationId);
+            await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
             expect(mockGetUniformTypeList).toHaveBeenCalledWith(
                 mockSession.assosiation,
@@ -263,7 +259,7 @@ describe('<UniformGeneration> markDeleted', () => {
 
     describe('uniform items nullification logic', () => {
         it('only affects uniform items that are not deleted', async () => {
-            await markDeleted(mockGenerationId);
+            await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
             expect(prisma.uniform.updateMany).toHaveBeenCalledWith({
                 where: {
@@ -279,16 +275,15 @@ describe('<UniformGeneration> markDeleted', () => {
         it('handles multiple uniform items correctly', async () => {
             prisma.uniform.updateMany.mockResolvedValue({ count: 10 } as any);
 
-            const result = await markDeleted(mockGenerationId);
+            await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
-            expect(result).toEqual(mockUniformTypeList);
             expect(prisma.uniform.updateMany).toHaveBeenCalledTimes(1);
         });
     });
 
     describe('sort order management', () => {
         it('only updates generations from same type that are not deleted', async () => {
-            await markDeleted(mockGenerationId);
+            await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
             expect(prisma.uniformGeneration.updateMany).toHaveBeenCalledWith({
                 where: {
@@ -309,7 +304,7 @@ describe('<UniformGeneration> markDeleted', () => {
             };
             prisma.uniformGeneration.findUniqueOrThrow.mockResolvedValue(differentTypeGeneration as any);
 
-            await markDeleted(mockGenerationId);
+            await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
             expect(prisma.uniformGeneration.updateMany).toHaveBeenCalledWith({
                 where: {
