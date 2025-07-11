@@ -17,7 +17,7 @@ const test = adminTest.extend<Fixture>({
 });
 
 test.beforeEach(async ({ page }) => {
-    await page.goto(`/de/app/inspection/deficiencyTypes`);
+    await page.goto(`/de/app/inspection/deficiencyType`);
 });
 test.afterEach(async ({ staticData }) => {
     await staticData.cleanup.inspection()
