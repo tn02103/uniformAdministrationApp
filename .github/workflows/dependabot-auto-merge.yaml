@@ -1,0 +1,122 @@
+name: Dependabot Auto-Merge
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  dependabot-auto-merge:
+    runs-on: ubuntu-latest
+    # Only run on Dependabot PRs
+    if: github.actor == 'dependabot[bot]'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Fetch full history to analyze version changes
+          fetch-depth: 0
+          
+      - name: Check if update is major version
+        id: version-check
+        run: |
+          # Get the PR title which contains version info
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          echo "PR Title: $PR_TITLE"
+          
+          # Extract version information from PR title
+          # Dependabot PR titles typically follow pattern: "Bump package from x.y.z to a.b.c"
+          if [[ $PR_TITLE =~ from\ ([0-9]+)\.([0-9]+)\.([0-9]+).*to\ ([0-9]+)\.([0-9]+)\.([0-9]+) ]]; then
+            OLD_MAJOR=${BASH_REMATCH[1]}
+            OLD_MINOR=${BASH_REMATCH[2]}
+            OLD_PATCH=${BASH_REMATCH[3]}
+            NEW_MAJOR=${BASH_REMATCH[4]}
+            NEW_MINOR=${BASH_REMATCH[5]}
+            NEW_PATCH=${BASH_REMATCH[6]}
+            
+            echo "Old version: $OLD_MAJOR.$OLD_MINOR.$OLD_PATCH"
+            echo "New version: $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH"
+            
+            if [ "$OLD_MAJOR" != "$NEW_MAJOR" ]; then
+              echo "is_major_update=true" >> $GITHUB_OUTPUT
+              echo "Major version update detected - will not auto-merge"
+            else
+              echo "is_major_update=false" >> $GITHUB_OUTPUT
+              echo "Non-major version update - eligible for auto-merge"
+            fi
+          else
+            echo "Could not parse version from PR title, treating as major update for safety"
+            echo "is_major_update=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Wait for all required checks
+        if: steps.version-check.outputs.is_major_update == 'false'
+        run: |
+          echo "Waiting for all required checks to complete..."
+          
+          # List of required check names from the Validate PR workflow
+          REQUIRED_CHECKS=(
+            "Jest Unit Tests"
+            "Jest Frontend Tests" 
+            "Jest Integration Tests"
+            "Lint Code"
+            "Build Application"
+            "E2E Tests"
+          )
+          
+          # Wait for all checks to complete
+          for check in "${REQUIRED_CHECKS[@]}"; do
+            echo "Waiting for check: $check"
+            
+            # Wait up to 30 minutes for each check
+            timeout=1800
+            interval=30
+            elapsed=0
+            
+            while [ $elapsed -lt $timeout ]; do
+              # Get check status using GitHub API
+              status=$(gh api repos/${{ github.repository }}/commits/${{ github.event.pull_request.head.sha }}/check-runs \
+                --jq ".check_runs[] | select(.name == \"$check\") | .status")
+              
+              conclusion=$(gh api repos/${{ github.repository }}/commits/${{ github.event.pull_request.head.sha }}/check-runs \
+                --jq ".check_runs[] | select(.name == \"$check\") | .conclusion")
+              
+              if [ "$status" = "completed" ]; then
+                if [ "$conclusion" = "success" ]; then
+                  echo "✅ $check completed successfully"
+                  break
+                else
+                  echo "❌ $check failed with conclusion: $conclusion"
+                  exit 1
+                fi
+              fi
+              
+              echo "⏳ $check is still running (status: $status)..."
+              sleep $interval
+              elapsed=$((elapsed + interval))
+            done
+            
+            if [ $elapsed -ge $timeout ]; then
+              echo "❌ Timeout waiting for $check"
+              exit 1
+            fi
+          done
+          
+          echo "🎉 All required checks completed successfully!"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable auto-merge
+        if: steps.version-check.outputs.is_major_update == 'false'
+        run: |
+          echo "All checks passed, enabling auto-merge for non-major update"
+          gh pr merge --auto --squash "${{ github.event.pull_request.number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on major version update
+        if: steps.version-check.outputs.is_major_update == 'true'
+        run: |
+          gh pr comment "${{ github.event.pull_request.number }}" --body "🚫 **Auto-merge blocked**: This is a major version update that requires manual review."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
