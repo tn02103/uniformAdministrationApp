@@ -4,9 +4,7 @@
 name: Validate PR
 on:
   pull_request:
-    branches: [ "develop" ]
-  push:
-    branches: [ "develop" ]
+    branches: [ "develop", "release", "main" ]
 
 jobs:
   # Stage 1: Testing and Linting
