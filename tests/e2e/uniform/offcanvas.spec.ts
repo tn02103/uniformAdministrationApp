@@ -76,8 +76,9 @@ test.describe('Offcanvas - CadetOverview', () => {
                             id: ids.uniformIds[0][84],
                         },
                     });
+
                     expect(cadetUniform).toBeDefined();
-                    expect(cadetUniform).toEqual(expect.objectContaining({
+                    expect(cadetUniform).toMatchObject({
                         id: ids.uniformIds[0][84],
                         number: 1184,
                         fk_size: ids.sizeIds[1],
@@ -86,7 +87,7 @@ test.describe('Offcanvas - CadetOverview', () => {
                         active: false,
                         recdelete: null,
                         recdeleteUser: null
-                    }));
+                    });
                 }),
             ]);
         });
@@ -132,8 +133,9 @@ test.describe('Offcanvas - CadetOverview', () => {
                             id: uniformId,
                         },
                     });
+
                     expect(cadetUniform).toBeDefined();
-                    expect(cadetUniform).toEqual(expect.objectContaining({
+                    expect(cadetUniform).toMatchObject({
                         id: uniformId,
                         number: 1403,
                         fk_size: null,
@@ -142,7 +144,7 @@ test.describe('Offcanvas - CadetOverview', () => {
                         active: false,
                         recdelete: null,
                         recdeleteUser: null
-                    }));
+                    });
                 }),
             ]);
         });
@@ -170,11 +172,12 @@ test.describe('Offcanvas - CadetOverview', () => {
                         id: ids.uniformIds[0][84],
                     },
                 });
+
                 expect(cadetUniform).toBeDefined();
-                expect(cadetUniform).toEqual(expect.objectContaining({
+                expect(cadetUniform).toMatchObject({
                     recdelete: expect.any(Date),
                     recdeleteUser: 'test4'
-                }));
+                });
             });
         });
 
@@ -307,8 +310,9 @@ test.describe('Offcanvas - CadetOverview', () => {
                         id: deficiency.id,
                     },
                 });
+
                 expect(dbDeficiency).toBeDefined();
-                expect(dbDeficiency).toEqual(expect.objectContaining({
+                expect(dbDeficiency).toMatchObject({
                     id: deficiency.id,
                     comment: 'Test comment',
                     fk_deficiencyType: ids.deficiencyTypeIds[7],
@@ -318,7 +322,7 @@ test.describe('Offcanvas - CadetOverview', () => {
                     userResolved: null,
                     userCreated: 'test2',
                     userUpdated: 'test4',
-                }));
+                });
                 expect(dbDeficiency?.dateUpdated.getTime()).toEqual(today.getTime());
                 expect(dbDeficiency?.dateCreated.getTime()).toBeLessThan(today.getTime());
             });
@@ -355,8 +359,9 @@ test.describe('Offcanvas - CadetOverview', () => {
                         id: ids.deficiencyIds[1],
                     },
                 });
+
                 expect(dbDeficiency).toBeDefined();
-                expect(dbDeficiency).toEqual(expect.objectContaining({
+                expect(dbDeficiency).toMatchObject({
                     id: ids.deficiencyIds[1],
                     dateCreated: expect.any(Date),
                     dateUpdated: expect.any(Date),
@@ -364,7 +369,7 @@ test.describe('Offcanvas - CadetOverview', () => {
                     userCreated: 'test2',
                     userUpdated: 'test3',
                     userResolved: 'test4',
-                }));
+                });
 
                 expect(dbDeficiency!.dateCreated.getTime()).toBeLessThan(today.getTime());
                 expect(dbDeficiency!.dateUpdated.getTime()).toBeLessThan(today.getTime());
@@ -411,8 +416,9 @@ test.describe('Offcanvas - CadetOverview', () => {
                         comment: 'Test new comment',
                     },
                 });
+
                 expect(dbDeficiency).toBeDefined();
-                expect(dbDeficiency).toEqual(expect.objectContaining({
+                expect(dbDeficiency).toMatchObject({
                     id: expect.any(String),
                     comment: 'Test new comment',
                     fk_deficiencyType: ids.deficiencyTypeIds[0],
@@ -422,7 +428,7 @@ test.describe('Offcanvas - CadetOverview', () => {
                     userCreated: 'test4',
                     userUpdated: 'test4',
                     userResolved: null,
-                }));
+                });
                 expect(dbDeficiency?.dateCreated.getTime()).toEqual(today.getTime());
                 expect(dbDeficiency?.dateUpdated.getTime()).toEqual(today.getTime());
             });

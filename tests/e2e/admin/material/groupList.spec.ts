@@ -97,12 +97,12 @@ test('validate create', async ({ page, groupListComponent, groupDetailComponent,
         });
 
         expect(dbGroup).not.toBeNull();
-        expect(dbGroup).toEqual(expect.objectContaining({
+        expect(dbGroup).toMatchObject({
             description: "Gruppe-1",
             sortOrder: 4,
             recdelete: null,
             recdeleteUser: null
-        }));
+        });
     });
 });
 test('validate open', async ({groupListComponent, groupDetailComponent, staticData: {data: {materialGroups}}}) => {

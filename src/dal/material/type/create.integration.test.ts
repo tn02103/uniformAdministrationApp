@@ -27,14 +27,14 @@ it('should work', async () => {
         }
     });
     expect(dbData).not.toBeNull();
-    expect(dbData).toEqual(expect.objectContaining({
+    expect(dbData).toMatchObject({
         ...defaultProps.data,
         id: expect.stringMatching(uuidValidationPattern),
         fk_materialGroup: defaultProps.groupId,
         recdelete: null,
         recdeleteUser: null,
         sortOrder: 3
-    }));
+    });
 });
 it('should prevent name duplication', async () => {
     const props = { ...defaultProps, data: { ...defaultProps.data, typename: "Typ2-2" } };

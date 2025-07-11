@@ -85,13 +85,13 @@ test('E2E0284: validate initialState and save', async ({ page, dataComponent, pa
         });
 
         expect(dbCadet).not.toBeNull();
-        expect(dbCadet).toEqual(expect.objectContaining({
+        expect(dbCadet).toMatchObject({
             firstname: 'Bob',
             lastname: 'Beispiel',
             active: true,
             recdelete: null,
             recdeleteUser: null,
-        }));
+        });
     });
 });
 

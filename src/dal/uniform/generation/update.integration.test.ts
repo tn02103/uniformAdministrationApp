@@ -18,7 +18,7 @@ it('should update the generation', async () => {
         update({ id: ids.uniformGenerationIds[0], data: defaultData })
     );
     expect(success).toBeTruthy();
-    expect(result[0].uniformGenerationList[0]).toEqual(expect.objectContaining(defaultData));
+    expect(result[0].uniformGenerationList[0]).toMatchObject(defaultData);
 
     const dbData = await prisma.uniformGeneration.findUnique({
         where: {
@@ -26,7 +26,7 @@ it('should update the generation', async () => {
         }
     });
     expect(dbData).not.toBeNull();
-    expect(dbData).toEqual(expect.objectContaining(defaultData));
+    expect(dbData).toMatchObject(defaultData);
 });
 it('should return soft nameDuplication error', async () => {
     const { success, result } = await runServerActionTest(

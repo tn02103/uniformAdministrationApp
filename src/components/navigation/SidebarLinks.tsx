@@ -22,10 +22,13 @@ export const SidebarLinks = ({ collapsed, setCollapsed }: { collapsed: boolean, 
     const { inspectionState } = useInspectionState();
 
     function startStopInspection() {
+        const inspectionMutation = () => mutate((key: object | string) => ((typeof key === "string") && /^(\/api\/inspection\/status)|(\/api\/cadet\/[\w\d-]+\/inspection)$/));
+
         if (inspectionState?.active || inspectionState?.state === "unfinished") {
             modal?.simpleFormModal({
-                header: 'Uniformkontrolle Beenden',
-                elementLabel: 'Endzeit:',
+                header: t("sidebar.labels.stopInspection.header"),
+                elementLabel: t("sidebar.labels.stopInspection.elementLabel"),
+                inputPlaceholder: "13:05",
                 elementValidation: {},
                 defaultValue: {
                     input: inspectionState.active ? dayjs().format('HH:mm') : "",
@@ -36,9 +39,10 @@ export const SidebarLinks = ({ collapsed, setCollapsed }: { collapsed: boolean, 
                         time: input,
                         id: inspectionState.id,
                     }).then(() => {
-                        toast.success('');
-                    }).catch((e) => {
-                        console.error(e);
+                        toast.success(t('sidebar.message.inspection.stop'));
+                        inspectionMutation();
+                    }).catch(() => {
+                        toast.error(t('sidebar.message.inspection.stopError'));
                     });
                 },
                 abort() { },
@@ -46,8 +50,10 @@ export const SidebarLinks = ({ collapsed, setCollapsed }: { collapsed: boolean, 
         } else {
             if (inspectionState?.state === "planned") {
                 startInspection().then(() => {
-                    toast.success("Uniformkontrolle erfolgreich gestartet");
-                    mutate((key: object | string) => ((typeof key === "string") && /^(\/api\/inspection\/status)|(\/api\/cadet\/[\w\d-]+\/inspection)$/));
+                    toast.success(t("sidebar.message.inspection.start"));
+                    inspectionMutation();
+                }).catch(() => {
+                    toast.error(t("sidebar.message.inspection.startError"));
                 });
             }
         }
@@ -109,7 +115,7 @@ export const SidebarLinks = ({ collapsed, setCollapsed }: { collapsed: boolean, 
             <NavGroup
                 title={t('sidebar.links.inspection.group')}
                 icon={faClipboardCheck}
-                childSelected={false}
+                childSelected={pathname.startsWith(`/${locale}/app/inspection`)}
                 collapsed={collapsed}
                 requiredRole={AuthRole.materialManager}
                 setCollapsed={setCollapsed}
@@ -123,6 +129,15 @@ export const SidebarLinks = ({ collapsed, setCollapsed }: { collapsed: boolean, 
                         collapsed={collapsed}
                         requiredRole={AuthRole.inspector}
                         testId="lnk_inspection" />
+                     <NavLink
+                        text={t('sidebar.links.inspection.deficiencyType')}
+                        href="/app/inspection/deficiencyType"
+                        isRoute={pathname.endsWith("/app/inspection/deficiencyType")}
+                        level={2}
+                        requiredRole={AuthRole.materialManager}
+                        collapsed={collapsed}
+                        testId="lnk_adminDeficiency"
+                    />
                     {(inspectionState?.active || inspectionState?.state === "unfinished" || inspectionState?.state === "planned") &&
                         <NavButton
                             text={inspectionState?.active
@@ -173,15 +188,6 @@ export const SidebarLinks = ({ collapsed, setCollapsed }: { collapsed: boolean, 
                         requiredRole={AuthRole.materialManager}
                         collapsed={collapsed}
                         testId="lnk_adminMaterial"
-                    />
-                    <NavLink
-                        text={t('sidebar.links.administration.deficiency')}
-                        href="/app/admin/deficiency"
-                        isRoute={pathname.endsWith("/app/admin/deficiency")}
-                        level={2}
-                        requiredRole={AuthRole.materialManager}
-                        collapsed={collapsed}
-                        testId="lnk_adminDeficiency"
                     />
                 </ul>
             </NavGroup>

@@ -1,7 +1,7 @@
 import { cleanData, cleanDataV2 } from "@/dal/_helper/testHelper";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader"
-import { getDeficiencies, getHistory } from "./get";
+import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { getUniformItemCountByType, getUniformItemLabels, getUniformListWithOwner } from "./_index";
+import { getDeficiencies, getHistory } from "./get";
 
 const { ids, data } = new StaticData(0);
 
@@ -39,22 +39,13 @@ it('should return a list of defficiencies with resolved', async () => {
 describe('getCountByType', () => {
     it('should return the count of uniforms for a specific type', async () => {
         const uniformTypeId = ids.uniformTypeIds[0];
-        const result = await getUniformItemCountByType(uniformTypeId);
-
-        expect(result).toBeDefined();
-        expect(typeof result).toBe('number');
-        expect(result).toBeGreaterThan(0);
-    });
-
-    it('should return 0 for a type with no uniforms', async () => {
-        // Using a valid but likely empty type ID
-        const uniformTypeId = ids.uniformTypeIds[0]
         const count = data.uniformList.filter(u => (u.fk_uniformType === uniformTypeId) && !u.recdelete).length;
+
         const result = await getUniformItemCountByType(uniformTypeId);
 
         expect(result).toBeDefined();
         expect(typeof result).toBe('number');
-        expect(result).toEqual(count);
+        expect(result).toBe(count);
     });
 });
 
