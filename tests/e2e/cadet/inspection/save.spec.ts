@@ -166,11 +166,11 @@ test('E2E0275: initalInspection', async ({ page, inspectionComponent, testData: 
             expect(resolved).toHaveLength(2);
             expect(resolved.map(r => r.id)).toStrictEqual(expect.arrayContaining(unresolvedIds.slice(0, 2)));
             resolved.map((res) => {
-                expect(res).toEqual(expect.objectContaining({
+                expect(res).toMatchObject({
                     fk_inspection_resolved: inspectionId,
                     userResolved: 'test4',
                     dateResolved: date,
-                }))
+                });
             });
         }),
         test.step('validate newDef', async () => {
@@ -188,9 +188,9 @@ test('E2E0275: initalInspection', async ({ page, inspectionComponent, testData: 
 
             await test.step('0: Cadet', async () => {
                 const def = defList.find(d => d.fk_deficiencyType === newDefs.cadet.type);
-
+                
                 expect(def).toBeDefined();
-                expect.soft(def).toEqual(expect.objectContaining({
+                expect.soft(def).toMatchObject({
                     id: expect.any(String),
                     description: newDefs.cadet.description,
                     comment: newDefs.cadet.comment,
@@ -207,13 +207,13 @@ test('E2E0275: initalInspection', async ({ page, inspectionComponent, testData: 
                         fk_material: null,
                     }),
                     uniformDeficiency: null,
-                }));
+                });
             });
             await test.step('1: cadetUniform', async () => {
                 const def = defList.find(d => d.fk_deficiencyType === newDefs.cadetUniform.type);
-
+                
                 expect(def).toBeDefined();
-                expect.soft(def).toEqual(expect.objectContaining({
+                expect.soft(def).toMatchObject({
                     description: newDefs.cadetUniform.description,
                     id: expect.any(String),
                     uniformDeficiency: null,
@@ -222,13 +222,13 @@ test('E2E0275: initalInspection', async ({ page, inspectionComponent, testData: 
                         fk_uniform: newDefs.cadetUniform.uniform,
                         fk_material: null,
                     }),
-                }));
+                });
             });
             await test.step('2: cadetMaterial issued', async () => {
                 const def = defList.find(d => d.comment === newDefs.cadetMaterialIssued.comment);
 
                 expect(def).toBeDefined();
-                expect.soft(def).toEqual(expect.objectContaining({
+                expect.soft(def).toMatchObject({
                     description: newDefs.cadetMaterialIssued.description,
                     id: expect.any(String),
                     fk_deficiencyType: newDefs.cadetMaterialIssued.type,
@@ -238,13 +238,13 @@ test('E2E0275: initalInspection', async ({ page, inspectionComponent, testData: 
                         fk_uniform: null,
                         fk_material: newDefs.cadetMaterialIssued.material
                     }),
-                }));
+                });
             });
             await test.step('3: cadetMaterial other', async () => {
                 const def = defList.find(d => d.comment === newDefs.cadetMaterialOther.comment);
 
                 expect(def).toBeDefined();
-                expect.soft(def).toEqual(expect.objectContaining({
+                expect.soft(def).toMatchObject({
                     id: expect.any(String),
                     fk_deficiencyType: newDefs.cadetMaterialOther.type,
                     description: newDefs.cadetMaterialOther.description,
@@ -254,20 +254,20 @@ test('E2E0275: initalInspection', async ({ page, inspectionComponent, testData: 
                         fk_uniform: null,
                         fk_material: newDefs.cadetMaterialOther.materialType
                     }),
-                }));
+                });
             });
             await test.step('4: uniform', async () => {
                 const def = defList.find(d => d.fk_deficiencyType === newDefs.uniform.type);
 
                 expect(def).toBeDefined();
-                expect.soft(def).toEqual(expect.objectContaining({
+                expect.soft(def).toMatchObject({
                     id: expect.any(String),
                     description: newDefs.uniform.description,
                     uniformDeficiency: expect.objectContaining({
                         fk_uniform: newDefs.uniform.uniform,
                     }),
                     cadetDeficiency: null,
-                }));
+                });
             });
         }),
     ]);
@@ -348,11 +348,11 @@ test('E2E0281: validate updated inspection', async ({ page, inspectionComponent,
                     where: { id: svenKellerSecondInspectionData(index).oldDefIdToUnsolve }
                 });
 
-                expect.soft(def).toEqual(expect.objectContaining({
+                expect.soft(def).toMatchObject({
                     fk_inspection_resolved: null,
                     dateResolved: null,
                     userResolved: null,
-                }));
+                });
             }),
             test.step('newDef update', async () => {
                 const compare = svenKellerSecondInspectionData(index).newDefUpdated;
@@ -367,7 +367,7 @@ test('E2E0281: validate updated inspection', async ({ page, inspectionComponent,
                 });
 
                 expect(def).toBeDefined();
-                expect.soft(def).toEqual(expect.objectContaining({
+                expect.soft(def).toMatchObject({
                     description: compare.description,
                     comment: compare.newComment,
                     userCreated: 'test3',
@@ -382,7 +382,7 @@ test('E2E0281: validate updated inspection', async ({ page, inspectionComponent,
                         fk_uniform: compare.fk_uniform,
                     }),
                     cadetDeficiency: null,
-                }));
+                });
             }),
             test.step('newDef created', async () => {
                 const compare = svenKellerSecondInspectionData(index).newDefAdded;
@@ -398,7 +398,7 @@ test('E2E0281: validate updated inspection', async ({ page, inspectionComponent,
                 });
 
                 expect(def).toBeDefined();
-                expect.soft(def).toEqual(expect.objectContaining({
+                expect.soft(def).toMatchObject({
                     id: expect.any(String),
                     description: compare.description,
                     comment: compare.comment,
@@ -417,7 +417,7 @@ test('E2E0281: validate updated inspection', async ({ page, inspectionComponent,
                         fk_uniform: compare.fk_uniform,
                         fk_material: null,
                     }),
-                }));
+                });
             }),
             test.step('newDef deleted', async () => {
                 const def = await prisma.deficiency.findUnique({

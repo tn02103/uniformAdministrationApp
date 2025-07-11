@@ -1,0 +1,64 @@
+import { runServerActionTest } from "@/dal/_helper/testHelper";
+import { prisma } from "@/lib/db";
+import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { markDeleted } from "./delete";
+import { checkDateTolerance } from "../../../../jest/helpers/test-utils";
+
+const { ids, cleanup } = new StaticData(0);
+
+// Integration tests for delete function - focus on database effects only
+// Business logic, error handling, and edge cases are covered by unit tests
+describe("<UniformGeneration> delete", () => {
+    afterEach(async () => await cleanup.uniformTypeConfiguration());
+    it('should mark the generation as deleted in database', async () => {
+        const { success } = await runServerActionTest(
+            markDeleted(ids.uniformGenerationIds[1])
+        );
+        expect(success).toBeTruthy();
+
+        const dbData = await prisma.uniformGeneration.findUnique({
+            where: { id: ids.uniformGenerationIds[1] },
+        });
+        expect(dbData).not.toBeNull();
+        expect(dbData?.recdelete).not.toBeNull();
+        expect(dbData?.recdeleteUser).not.toBeNull();
+        // within 5 seconds is considered to be set now
+        expect(checkDateTolerance(dbData!.recdelete!)).toBeLessThan(5000);
+        expect(dbData?.recdeleteUser).toBe('mana');
+    });
+
+    it('should update sortOrder of all generations with higher sortOrder in database', async () => {
+        const { success } = await runServerActionTest(
+            markDeleted(ids.uniformGenerationIds[1])
+        );
+        
+        expect(success).toBeTruthy(); const dbData = await prisma.uniformGeneration.findMany({
+            where: {
+                fk_uniformType: ids.uniformTypeIds[0],
+                recdelete: null
+            },
+            orderBy: { sortOrder: 'asc' }
+        });
+        expect(dbData).toHaveLength(3);
+        expect(dbData[0].id).toBe(ids.uniformGenerationIds[0]);
+        expect(dbData[1].id).toBe(ids.uniformGenerationIds[2]);
+        expect(dbData[2].id).toBe(ids.uniformGenerationIds[3]);
+        expect(dbData[0].sortOrder).toBe(0);
+        expect(dbData[1].sortOrder).toBe(1);
+        expect(dbData[2].sortOrder).toBe(2);
+    });
+
+    it('should nullify generation reference in uniform items in database', async () => {
+        const { success } = await runServerActionTest(
+            markDeleted(ids.uniformGenerationIds[1])
+        );
+
+        expect(success).toBeTruthy(); const dbData = await prisma.uniform.findMany({
+            where: {
+                fk_generation: ids.uniformGenerationIds[1],
+                recdelete: null,
+            }
+        });
+        expect(dbData).toHaveLength(0);
+    });
+});

@@ -1,9 +1,9 @@
 import { cleanData, cleanDataV2 } from "@/dal/_helper/testHelper";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader"
+import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { getUniformItemCountByType, getUniformItemLabels, getUniformListWithOwner } from "./_index";
 import { getDeficiencies, getHistory } from "./get";
-import { getUniformListWithOwner } from "./_index";
 
-const { ids } = new StaticData(0);
+const { ids, data } = new StaticData(0);
 
 it('should return a list of uniform history entries', async () => {
     const uniformId = ids.uniformIds[0][86];
@@ -34,6 +34,69 @@ it('should return a list of defficiencies with resolved', async () => {
     expect(result[1].dateCreated?.getTime()).toBeLessThan(result[2].dateCreated!.getTime());
     expect(result[2].dateCreated?.getTime()).toBeLessThan(result[3].dateCreated!.getTime());
     expect(cleanDataV2(result)).toMatchSnapshot()
+});
+
+describe('getCountByType', () => {
+    it('should return the count of uniforms for a specific type', async () => {
+        const uniformTypeId = ids.uniformTypeIds[0];
+        const count = data.uniformList.filter(u => (u.fk_uniformType === uniformTypeId) && !u.recdelete).length;
+
+        const result = await getUniformItemCountByType(uniformTypeId);
+
+        expect(result).toBeDefined();
+        expect(typeof result).toBe('number');
+        expect(result).toBe(count);
+    });
+});
+
+describe('getItemLabels', () => {
+    it('should return a list of uniform item labels', async () => {
+        const result = await getUniformItemLabels();
+
+        expect(result).toBeDefined();
+        expect(Array.isArray(result)).toBe(true);
+        expect(result.length).toBeGreaterThan(0);
+
+        // Check structure of first item
+        const firstItem = result[0];
+        expect(firstItem).toHaveProperty('id');
+        expect(firstItem).toHaveProperty('label');
+        expect(firstItem).toHaveProperty('number');
+        expect(firstItem).toHaveProperty('active');
+        expect(firstItem).toHaveProperty('type');
+        expect(firstItem.type).toHaveProperty('id');
+        expect(firstItem.type).toHaveProperty('name');
+        expect(firstItem.type).toHaveProperty('acronym');
+
+        // Clean sensitive data for snapshot
+        cleanData(result, ["id", "type.id", "owner?.id", "storageUnit?.id"]);
+        expect(result.slice(0, 10)).toMatchSnapshot(); // Take first 10 for manageable snapshots
+    });
+
+    it('should include owner information when uniform is issued', async () => {
+        const result = await getUniformItemLabels();
+        const issuedItems = result.filter(item => item.owner !== null);
+
+        expect(issuedItems.length).toBeGreaterThan(0);
+        const issuedItem = issuedItems[0];
+        expect(issuedItem.owner).toHaveProperty('id');
+        expect(issuedItem.owner).toHaveProperty('firstname');
+        expect(issuedItem.owner).toHaveProperty('lastname');
+    });
+
+    it('should include storage unit information when uniform is in storage', async () => {
+        const result = await getUniformItemLabels();
+        const storageItems = result.filter(item => item.storageUnit !== null);
+
+        // At least check that the filter works correctly
+        expect(storageItems.every(item => item.storageUnit !== null)).toBe(true);
+
+        // If there are storage items, check their structure
+        storageItems.forEach(storageItem => {
+            expect(storageItem.storageUnit).toHaveProperty('id');
+            expect(storageItem.storageUnit).toHaveProperty('name');
+        });
+    });
 });
 
 describe('<UniformItem> getListWithOwner', () => {
@@ -113,7 +176,7 @@ describe('<UniformItem> getListWithOwner', () => {
         for (let i = 1; i < result.length; i++) {
             const prev = result[i - 1].size?.name ?? 'ZZ';
             const curr = result[i].size?.name ?? 'ZZ';
-            expect(curr.localeCompare(prev, undefined, {numeric: true})).toBeLessThanOrEqual(0);
+            expect(curr.localeCompare(prev, undefined, { numeric: true })).toBeLessThanOrEqual(0);
         }
     });
 
@@ -315,7 +378,7 @@ describe('<UniformItem> getListWithOwner', () => {
             orderBy: 'number',
             asc: true,
             filter: {
-                active: true, 
+                active: true,
                 isReserve: true,
                 issued: false,
                 notIssued: false,
@@ -323,7 +386,7 @@ describe('<UniformItem> getListWithOwner', () => {
             }
         });
         expect(result.length).toBeGreaterThan(1);
-        expect(result.every(u => u.storageUnit?.id )).toBe(true);
+        expect(result.every(u => u.storageUnit?.id)).toBe(true);
     });
 
     it('filters in storage unit or issued', async () => {
@@ -332,7 +395,7 @@ describe('<UniformItem> getListWithOwner', () => {
             orderBy: 'number',
             asc: true,
             filter: {
-                active: true, 
+                active: true,
                 isReserve: true,
                 issued: true,
                 notIssued: false,

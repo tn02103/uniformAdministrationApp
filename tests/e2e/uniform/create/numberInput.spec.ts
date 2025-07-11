@@ -21,7 +21,7 @@ test('formValidation', async ({ page, createPage: { numberInput } }) => {
     await test.step('numberStart', async () => {
         const tests = numberValidationTests({ max: 99999999, min: 1, strict: false, testEmpty: true });
         for (const { testValue, valid } of tests) {
-            await test.step(testValue, async () => {
+            await test.step(String(testValue), async () => {
                 await numberInput.txt_numStart.fill(String(testValue));
                 await numberInput.btn_numAdd.click();
 
@@ -36,7 +36,7 @@ test('formValidation', async ({ page, createPage: { numberInput } }) => {
     await test.step('numberEnd', async () => {
         const tests = numberValidationTests({ max: 99999999, min: 1, strict: false });
         for (const { testValue, valid } of tests) {
-            await test.step(testValue, async () => {
+            await test.step(String(testValue), async () => {
                 await numberInput.txt_numEnd.fill(String(testValue));
                 await page.waitForTimeout(20);
                 await numberInput.btn_numAdd.click();
@@ -90,6 +90,7 @@ test('validate special validations', async ({ page, createPage: { numberInput, c
         await numberInput.txt_numStart.fill("1");
         await numberInput.txt_numEnd.fill("50");
         await numberInput.btn_numAdd.click();
+        await expect(numberInput.div_number(24)).toBeVisible();
 
         await numberInput.txt_numStart.fill("100");
         await numberInput.txt_numEnd.fill("180");

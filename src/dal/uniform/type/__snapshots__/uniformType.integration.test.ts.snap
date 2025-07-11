@@ -1,0 +1,185 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<UniformType> Integration Tests should get list with correct data structure 1`] = `
+[
+  {
+    "acronym": "AA",
+    "defaultSizelist": {
+      "id": "242541-baa0-4303-be44-6c54898ca869",
+      "name": "Liste1",
+    },
+    "fk_defaultSizelist": "242541-baa0-4303-be44-6c54898ca869",
+    "id": "659ad7-7b45-4c31-8ee0-8f8c2d385886",
+    "issuedDefault": 3,
+    "name": "Typ1",
+    "sortOrder": 0,
+    "uniformGenerationList": [
+      {
+        "fk_sizelist": "242541-baa0-4303-be44-6c54898ca869",
+        "id": "5a8f39-6e54-46f7-978b-cf23c52c042c",
+        "name": "Generation1-1",
+        "outdated": true,
+        "sizelist": {
+          "id": "242541-baa0-4303-be44-6c54898ca869",
+          "name": "Liste1",
+        },
+        "sortOrder": 0,
+      },
+      {
+        "fk_sizelist": "242541-baa0-4303-be44-6c54898ca869",
+        "id": "1e05b1-740f-4f66-beea-aa39b37a3fe8",
+        "name": "Generation1-2",
+        "outdated": false,
+        "sizelist": {
+          "id": "242541-baa0-4303-be44-6c54898ca869",
+          "name": "Liste1",
+        },
+        "sortOrder": 1,
+      },
+      {
+        "fk_sizelist": "598ef5-1820-4a08-992c-2c3b91e8f093",
+        "id": "4095a7-ff83-4a0f-91e5-75d3dfa28079",
+        "name": "Generation1-3",
+        "outdated": false,
+        "sizelist": {
+          "id": "598ef5-1820-4a08-992c-2c3b91e8f093",
+          "name": "Liste2",
+        },
+        "sortOrder": 2,
+      },
+      {
+        "fk_sizelist": "41b4a1-2f60-468e-9eba-8355cb7970fb",
+        "id": "2f0541-7c4c-46c1-a03f-72ac6f4246d7",
+        "name": "Generation1-4",
+        "outdated": false,
+        "sizelist": {
+          "id": "41b4a1-2f60-468e-9eba-8355cb7970fb",
+          "name": "Liste3",
+        },
+        "sortOrder": 3,
+      },
+    ],
+    "usingGenerations": true,
+    "usingSizes": true,
+  },
+  {
+    "acronym": "AB",
+    "defaultSizelist": null,
+    "fk_defaultSizelist": null,
+    "id": "eb645e-1bb4-4046-825a-16388265a803",
+    "issuedDefault": 1,
+    "name": "Typ2",
+    "sortOrder": 1,
+    "uniformGenerationList": [
+      {
+        "fk_sizelist": null,
+        "id": "782ba5-f4ff-4829-97e8-b8923f870827",
+        "name": "Generation2-1",
+        "outdated": true,
+        "sizelist": null,
+        "sortOrder": 0,
+      },
+      {
+        "fk_sizelist": null,
+        "id": "892f4b-631e-4e01-aee8-0b1030810114",
+        "name": "Generation2-2",
+        "outdated": false,
+        "sizelist": null,
+        "sortOrder": 1,
+      },
+    ],
+    "usingGenerations": true,
+    "usingSizes": false,
+  },
+  {
+    "acronym": "AC",
+    "defaultSizelist": {
+      "id": "598ef5-1820-4a08-992c-2c3b91e8f093",
+      "name": "Liste2",
+    },
+    "fk_defaultSizelist": "598ef5-1820-4a08-992c-2c3b91e8f093",
+    "id": "136e0b-3a30-4552-9296-dd1d51b814d2",
+    "issuedDefault": 1,
+    "name": "Typ3",
+    "sortOrder": 2,
+    "uniformGenerationList": [],
+    "usingGenerations": false,
+    "usingSizes": true,
+  },
+  {
+    "acronym": "AD",
+    "defaultSizelist": null,
+    "fk_defaultSizelist": null,
+    "id": "f93bf3-4aea-4d1a-b38f-a1a2f6b8970f",
+    "issuedDefault": 1,
+    "name": "Typ4",
+    "sortOrder": 3,
+    "uniformGenerationList": [],
+    "usingGenerations": false,
+    "usingSizes": false,
+  },
+]
+`;
+
+exports[`<UniformType> Integration Tests should get single type with correct data structure 1`] = `
+{
+  "acronym": "AA",
+  "defaultSizelist": {
+    "id": "242541-baa0-4303-be44-6c54898ca869",
+    "name": "Liste1",
+  },
+  "fk_defaultSizelist": "242541-baa0-4303-be44-6c54898ca869",
+  "id": "659ad7-7b45-4c31-8ee0-8f8c2d385886",
+  "issuedDefault": 3,
+  "name": "Typ1",
+  "sortOrder": 0,
+  "uniformGenerationList": [
+    {
+      "fk_sizelist": "242541-baa0-4303-be44-6c54898ca869",
+      "id": "5a8f39-6e54-46f7-978b-cf23c52c042c",
+      "name": "Generation1-1",
+      "outdated": true,
+      "sizelist": {
+        "id": "242541-baa0-4303-be44-6c54898ca869",
+        "name": "Liste1",
+      },
+      "sortOrder": 0,
+    },
+    {
+      "fk_sizelist": "242541-baa0-4303-be44-6c54898ca869",
+      "id": "1e05b1-740f-4f66-beea-aa39b37a3fe8",
+      "name": "Generation1-2",
+      "outdated": false,
+      "sizelist": {
+        "id": "242541-baa0-4303-be44-6c54898ca869",
+        "name": "Liste1",
+      },
+      "sortOrder": 1,
+    },
+    {
+      "fk_sizelist": "598ef5-1820-4a08-992c-2c3b91e8f093",
+      "id": "4095a7-ff83-4a0f-91e5-75d3dfa28079",
+      "name": "Generation1-3",
+      "outdated": false,
+      "sizelist": {
+        "id": "598ef5-1820-4a08-992c-2c3b91e8f093",
+        "name": "Liste2",
+      },
+      "sortOrder": 2,
+    },
+    {
+      "fk_sizelist": "41b4a1-2f60-468e-9eba-8355cb7970fb",
+      "id": "2f0541-7c4c-46c1-a03f-72ac6f4246d7",
+      "name": "Generation1-4",
+      "outdated": false,
+      "sizelist": {
+        "id": "41b4a1-2f60-468e-9eba-8355cb7970fb",
+        "name": "Liste3",
+      },
+      "sortOrder": 3,
+    },
+  ],
+  "usingGenerations": true,
+  "usingSizes": true,
+}
+`;

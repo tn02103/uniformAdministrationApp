@@ -1,5 +1,138 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`getItemLabels should return a list of uniform item labels 1`] = `
+[
+  {
+    "active": true,
+    "label": "Typ1-1100",
+    "number": 1100,
+    "owner": {
+      "firstname": "Maik",
+      "id": "0081c5d0-713b-4c4f-a2c3-81ec497acb29",
+      "lastname": "Finkel",
+    },
+    "storageUnit": null,
+    "type": {
+      "acronym": "AA",
+      "name": "Typ1",
+    },
+  },
+  {
+    "active": true,
+    "label": "Typ1-1101",
+    "number": 1101,
+    "owner": {
+      "firstname": "Maik",
+      "id": "0081c5d0-713b-4c4f-a2c3-81ec497acb29",
+      "lastname": "Finkel",
+    },
+    "storageUnit": null,
+    "type": {
+      "acronym": "AA",
+      "name": "Typ1",
+    },
+  },
+  {
+    "active": true,
+    "label": "Typ1-1102",
+    "number": 1102,
+    "owner": {
+      "firstname": "Maik",
+      "id": "0081c5d0-713b-4c4f-a2c3-81ec497acb29",
+      "lastname": "Finkel",
+    },
+    "storageUnit": null,
+    "type": {
+      "acronym": "AA",
+      "name": "Typ1",
+    },
+  },
+  {
+    "active": true,
+    "label": "Typ1-1103",
+    "number": 1103,
+    "owner": null,
+    "storageUnit": null,
+    "type": {
+      "acronym": "AA",
+      "name": "Typ1",
+    },
+  },
+  {
+    "active": true,
+    "label": "Typ1-1104",
+    "number": 1104,
+    "owner": null,
+    "storageUnit": null,
+    "type": {
+      "acronym": "AA",
+      "name": "Typ1",
+    },
+  },
+  {
+    "active": false,
+    "label": "Typ1-1105",
+    "number": 1105,
+    "owner": null,
+    "storageUnit": null,
+    "type": {
+      "acronym": "AA",
+      "name": "Typ1",
+    },
+  },
+  {
+    "active": false,
+    "label": "Typ1-1106",
+    "number": 1106,
+    "owner": null,
+    "storageUnit": null,
+    "type": {
+      "acronym": "AA",
+      "name": "Typ1",
+    },
+  },
+  {
+    "active": false,
+    "label": "Typ1-1107",
+    "number": 1107,
+    "owner": null,
+    "storageUnit": null,
+    "type": {
+      "acronym": "AA",
+      "name": "Typ1",
+    },
+  },
+  {
+    "active": false,
+    "label": "Typ1-1108",
+    "number": 1108,
+    "owner": null,
+    "storageUnit": {
+      "id": "003984d9-17ac-423d-b5d9-8f9473c225d5",
+      "name": "Kiste 01",
+    },
+    "type": {
+      "acronym": "AA",
+      "name": "Typ1",
+    },
+  },
+  {
+    "active": false,
+    "label": "Typ1-1109",
+    "number": 1109,
+    "owner": null,
+    "storageUnit": {
+      "id": "003984d9-17ac-423d-b5d9-8f9473c225d5",
+      "name": "Kiste 01",
+    },
+    "type": {
+      "acronym": "AA",
+      "name": "Typ1",
+    },
+  },
+]
+`;
+
 exports[`should return a list of defficiencies 1`] = `
 [
   {

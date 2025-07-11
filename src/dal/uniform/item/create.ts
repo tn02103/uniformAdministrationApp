@@ -13,7 +13,7 @@ const propSchema = z.object({
     })),
     data: z.object({
         uniformTypeId: z.string().uuid(),
-        generationId: z.string().uuid().optional(),
+        generationId: z.string().uuid().optional().nullable(),
         comment: z.string(),
         active: z.boolean(),
     }),
@@ -34,7 +34,7 @@ export const create = (props: PropType): Promise<number> => genericSAValidator(
     propSchema,
     {
         uniformTypeId: props.data.uniformTypeId,
-        uniformGenerationId: props.data.generationId,
+        uniformGenerationId: props.data.generationId ?? undefined,
         uniformSizeId: props.numberMap.filter(n => n.sizeId !== "amount").map(n => n.sizeId)
     }
 ).then(([, { numberMap, data }]) => prisma.$transaction(async (client) => {
@@ -59,7 +59,10 @@ export const create = (props: PropType): Promise<number> => genericSAValidator(
     };
 
     const type = await prisma.uniformType.findUniqueOrThrow({
-        where: { id: data.uniformTypeId },
+        where: {
+            id: data.uniformTypeId,
+            recdelete: null,
+        },
         include: {
             defaultSizelist: {
                 include: { uniformSizes: true }
