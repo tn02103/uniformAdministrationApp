@@ -17,10 +17,38 @@ body {
     min-height: -webkit-fill-available;
 }
 
-/* CSS custom properties for colors */
+/* CSS custom properties for colors and viewport height handling */
 :root {
     --bs-navy: #01153e;
     --bs-navy-secondary: #2d3748;
+    
+    /* 
+     * Viewport height handling for mobile browser compatibility
+     * 
+     * This solves the mobile browser viewport height issue where the browser UI
+     * (address bar, navigation) can show/hide dynamically, causing 100vh to be
+     * either too tall or too short.
+     */
+    
+    /* Default fallback */
+    --app-height: 100vh;
+    --vh: 1vh;
+}
+
+/* For all mobile browsers, prefer JavaScript-calculated height */
+@media (max-width: 991px) {
+    :root {
+        --app-height: calc(var(--vh, 1vh) * 100);
+    }
+}
+
+/* Modern browsers on desktop can use dvh */
+@media (min-width: 992px) {
+    @supports (height: 100dvh) {
+        :root {
+            --app-height: 100dvh;
+        }
+    }
 }
 
 .body {

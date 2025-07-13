@@ -1,6 +1,7 @@
 "use client"
 
 import { useBreakpoint } from "@/lib/useBreakpoint";
+import { initViewportHeight } from "@/lib/viewportUtils";
 import { Assosiation } from "@prisma/client";
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
@@ -53,6 +54,12 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
     useEffect(() => {
         setShowSidebar(false);
     }, [pathname]);
+
+    // Initialize viewport height handling for mobile browser compatibility
+    useEffect(() => {
+        const cleanup = initViewportHeight();
+        return cleanup;
+    }, []);
 
     useEffect(() => {
         if (isMobile) {
@@ -151,7 +158,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                 </div>
 
                 {/* Backdrop for mobile/tablet when sidebar is open */}
-                {showSidebar && (
+                {(showSidebar && isMobile) && (
                     <div
                         className={`${style.backdrop} d-lg-none`}
                         onClick={() => setShowSidebar(false)}

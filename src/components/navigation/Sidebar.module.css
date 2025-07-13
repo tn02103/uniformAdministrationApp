@@ -3,9 +3,12 @@
     position: fixed;
     top: 0;
     left: 0;
-    height: 100vh;
+    /* Always use the JavaScript-calculated height on mobile */
+    height: var(--app-height);
+    /* Ensure it never gets smaller */
+    min-height: var(--app-height);
     z-index: 1050;
-    transition: 0.6s ease-in-out;
+    transition: 0.3s ease-in-out;
     /* Prevent scrolling on the sidebar container itself */
     overflow: hidden;
     /* Ensure consistent background with fallback */
@@ -14,9 +17,6 @@
     /* Handle safe area for devices with notches/camera cutouts */
     padding-top: env(safe-area-inset-top, 0px);
     padding-left: env(safe-area-inset-left, 0px);
-
-    /* Adjust height to account for safe area */
-    height: calc(100vh - env(safe-area-inset-bottom, 0px));
 
     /* Small screens default - full width, hidden by default */
     width: 100%;
@@ -31,15 +31,11 @@
 .sidebarContainer {
     padding: 0;
     margin: 0;
+    /* Use CSS custom property for dynamic height */
+    min-height: var(--app-height);
+    /* Ensure it covers the full viewport on mobile */
     min-height: 100vh;
-}
-
-.sidebarContainer.noScroll {
-    overflow: hidden;
-    height: 100vh;
-    /* Small screens - full lock */
-    position: fixed;
-    width: 100%;
+    min-height: var(--app-height);
 }
 
 .sidebarDivider {
@@ -63,7 +59,7 @@
     display: block;
     /* Allow touches to pass through */
     pointer-events: none;
-    transition: width 0.6s ease-in-out, opacity 0.6s ease-in-out;
+    transition: width 0.3s ease-in-out, opacity 0.3s ease-in-out;
     /* Only show if there's actually a safe area */
     min-height: 0;
 
@@ -82,7 +78,8 @@
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    /* Use CSS custom property for dynamic height */
+    height: var(--app-height);
     background-color: rgba(0, 0, 0, 0.3);
     z-index: 1040;
     cursor: pointer;
@@ -94,7 +91,8 @@
     padding-top: 70px;
     /* Space for fixed footer */
     padding-bottom: 70px;
-    min-height: calc(100vh - 140px);
+    /* Use CSS custom property for dynamic height */
+    min-height: calc(var(--app-height) - 140px);
 }
 
 .contentOverlay {
@@ -102,6 +100,20 @@
 }
 
 /* ###################### Medium screens and up ###################### */
+@media (max-width: 991px) {
+    .sidebarContainer.noScroll {
+        overflow: hidden;
+        /* Use CSS custom property for dynamic height */
+        height: var(--app-height) !important;
+        /* Backup heights for mobile */
+        height: 100vh;
+        height: var(--app-height) !important;
+        /* Small screens - full lock */
+        position: fixed;
+        width: 100%;
+    }
+}
+
 @media (min-width: 576px) {
     .sidebar {
         /* Partial width, not full screen on medium screens */
@@ -141,8 +153,9 @@
 
     .content {
         margin-left: 280px;
-        transition: margin-left 0.6s ease-in-out;
-        min-height: 100vh;
+        transition: margin-left 0.3s ease-in-out;
+        /* Use CSS custom property for dynamic height */
+        min-height: var(--app-height);
         /* Remove mobile padding */
         padding-top: 0;
         padding-bottom: 0;
