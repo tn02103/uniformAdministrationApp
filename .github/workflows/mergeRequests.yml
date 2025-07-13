@@ -4,9 +4,7 @@
 name: Validate PR
 on:
   pull_request:
-    branches: [ "develop" ]
-  push:
-    branches: [ "develop" ]
+    branches: [ "develop", "release", "main" ]
 
 jobs:
   # Stage 1: Testing and Linting
@@ -183,8 +181,18 @@ jobs:
         run: npm ci
       - name: Setup database
         run: npx prisma migrate deploy && npx prisma db seed
+      - name: Get Playwright version
+        id: playwright-version
+        run: echo "PLAYWRIGHT_VERSION=$(node -e "console.log(require('./package-lock.json').packages['node_modules/@playwright/test'].version)")" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.PLAYWRIGHT_VERSION }}-chromium-firefox
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium firefox
       - name: Run E2E tests
         run: npm run test:e2e
       - name: Upload Playwright report

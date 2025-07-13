@@ -2,6 +2,7 @@ import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { prisma } from "@/lib/db";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { markDeleted } from "./delete";
+import { checkDateTolerance } from "../../../../jest/helpers/test-utils";
 
 const { ids, cleanup } = new StaticData(0);
 
@@ -21,8 +22,8 @@ describe("<UniformGeneration> delete", () => {
         expect(dbData).not.toBeNull();
         expect(dbData?.recdelete).not.toBeNull();
         expect(dbData?.recdeleteUser).not.toBeNull();
-        // within 30 seconds is considered to be set now
-        expect(new Date().getTime() - dbData!.recdelete!.getTime()).toBeLessThan(30000);
+        // within 5 seconds is considered to be set now
+        expect(checkDateTolerance(dbData!.recdelete!)).toBeLessThan(5000);
         expect(dbData?.recdeleteUser).toBe('mana');
     });
 

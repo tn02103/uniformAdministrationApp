@@ -121,9 +121,6 @@ describe('<UniformItem> Integration Tests', () => {
         expect(newIssuedEntry?.dateReturned).toBeNull();
     });
 
-
-
-
     it('should handle deleting non-existent uniform', async () => {
         const nonExistentId = '00000000-0000-0000-0000-000000000000';
 

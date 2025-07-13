@@ -32,13 +32,14 @@ test.describe(() => {
         const ui = await prisma.uniformIssued.findMany({
             where: { fk_uniform, fk_cadet },
         });
+
         expect(ui).toHaveLength(1);
-        expect.soft(ui[0]).toEqual(expect.objectContaining({
+        expect.soft(ui[0]).toMatchObject({
             id: expect.stringMatching(uuidValidationPattern),
             dateIssued: date,
             dateReturned: null,
             fk_cadet,
-        }));
+        });
     }
     const dbIssuedAmountCheck = async (fk_cadet: string, amount: number) => {
         const uiList = await prisma.uniformIssued.findMany({
@@ -55,13 +56,14 @@ test.describe(() => {
         const ui = await prisma.uniformIssued.findMany({
             where: { fk_uniform, fk_cadet },
         });
+
         expect(ui).toHaveLength(1);
-        expect.soft(ui[0]).toEqual(expect.objectContaining({
+        expect.soft(ui[0]).toMatchObject({
             id: expect.stringMatching(uuidValidationPattern),
             dateIssued,
             dateReturned: date,
             fk_cadet,
-        }));
+        });
     }
     const dbCommentCheck = async (cadetId: string, uniformNumber: string) => {
         const cadet = await prisma.cadet.findUniqueOrThrow({ where: { id: cadetId } });

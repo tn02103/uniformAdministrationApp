@@ -90,6 +90,7 @@ describe('<UniformItem> create', () => {
             await expect(create(defaultWithSizes)).resolves.toBe(4);
 
             // Verify the correct data was passed to createMany
+            expect(mockPrisma.uniform.createMany.mock.calls[0][0]?.data).toHaveLength(4);
             expect(mockPrisma.uniform.createMany).toHaveBeenCalledWith({
                 data: expect.arrayContaining([
                     expect.objectContaining({
@@ -126,6 +127,8 @@ describe('<UniformItem> create', () => {
 
             await expect(create(defaultWithoutSizes)).resolves.toBe(2);
 
+            
+            expect(mockPrisma.uniform.createMany.mock.calls[0][0]?.data).toHaveLength(2);
             expect(mockPrisma.uniform.createMany).toHaveBeenCalledWith({
                 data: expect.arrayContaining([
                     expect.objectContaining({
@@ -160,6 +163,8 @@ describe('<UniformItem> create', () => {
             });
             await expect(create(params)).resolves.toBe(4);
 
+            
+            expect(mockPrisma.uniform.createMany.mock.calls[0][0]?.data).toHaveLength(4);
             expect(mockPrisma.uniform.createMany).toHaveBeenCalledWith({
                 data: expect.arrayContaining([
                     expect.objectContaining({
@@ -181,6 +186,7 @@ describe('<UniformItem> create', () => {
             });
             await expect(create(params)).resolves.toBe(2);
 
+            expect(mockPrisma.uniform.createMany.mock.calls[0][0]?.data).toHaveLength(2);
             expect(mockPrisma.uniform.createMany).toHaveBeenCalledWith({
                 data: expect.arrayContaining([
                     expect.objectContaining({

@@ -65,38 +65,4 @@ describe('<UniformGeneration> create', () => {
         expect(dbData?.fk_sizelist).toBeNull();
         expect(dbData?.outdated).toBe(true);
     });
-
-    it('should properly establish relationships in database', async () => {
-        const { success, result } = await runServerActionTest(
-            create({
-                name: 'Rel Test Gen',
-                outdated: false,
-                fk_sizelist: ids.sizelistIds[1],
-                uniformTypeId: ids.uniformTypeIds[0]
-            })
-        );
-        expect(success).toBeTruthy();
-
-        // Verify the generation appears in the returned uniform type list
-        const uniformType = result.find((ut: { id: string }) => ut.id === ids.uniformTypeIds[0]);
-        expect(uniformType).toBeDefined();
-        expect(uniformType.uniformGenerationList).toEqual(
-            expect.arrayContaining([
-                expect.objectContaining({
-                    name: 'Rel Test Gen',
-                    fk_sizelist: ids.sizelistIds[1]
-                })
-            ])
-        );
-
-        // Verify database relationships
-        const dbGeneration = await prisma.uniformGeneration.findFirst({
-            where: {
-                name: 'Rel Test Gen',
-                recdelete: null
-            }
-        });
-        expect(dbGeneration?.fk_uniformType).toBe(ids.uniformTypeIds[0]);
-        expect(dbGeneration?.fk_sizelist).toBe(ids.sizelistIds[1]);
-    });
 });

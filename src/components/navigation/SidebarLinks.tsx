@@ -1,33 +1,34 @@
-import { AuthRole } from "@/lib/AuthRoles";
-import { faUser, faShirt, faBoxOpen, faPlus, faClipboardCheck, faGear, faAddressCard, faLink } from "@fortawesome/free-solid-svg-icons";
-import { useParams, usePathname } from "next/navigation";
-import NavButton from "./NavButton";
-import NavGroup from "./NavGroup";
-import { useI18n } from "@/lib/locales/client";
-import NavLink from "./NavLink";
-import { useInspectionState } from "@/dataFetcher/inspection";
 import { startInspection, stopInspection } from "@/dal/inspection";
+import { useInspectionState } from "@/dataFetcher/inspection";
+import { AuthRole } from "@/lib/AuthRoles";
+import dayjs from "@/lib/dayjs";
+import { useI18n } from "@/lib/locales/client";
+import { faAddressCard, faBoxOpen, faClipboardCheck, faGear, faLink, faPlus, faShirt, faUser } from "@fortawesome/free-solid-svg-icons";
+import { useParams, usePathname } from "next/navigation";
 import { toast } from "react-toastify";
 import { mutate } from "swr";
-import dayjs from "@/lib/dayjs";
 import { useModal } from "../modals/modalProvider";
-import { useSidebarContext } from "./Sidebar";
+import NavButton from "./NavButton";
+import NavGroup from "./NavGroup";
+import NavLink from "./NavLink";
 import styles from "./SidebarLinks.module.css";
 
 export const SidebarLinks = () => {
     const t = useI18n();
     const modal = useModal();
-    const { collapsed } = useSidebarContext();
 
     const pathname = usePathname();
     const { locale } = useParams();
     const { inspectionState } = useInspectionState();
 
     function startStopInspection() {
+        const inspectionMutation = () => mutate((key: object | string) => ((typeof key === "string") && /^(\/api\/inspection\/status)|(\/api\/cadet\/[\w\d-]+\/inspection)$/));
+
         if (inspectionState?.active || inspectionState?.state === "unfinished") {
             modal?.simpleFormModal({
-                header: 'Uniformkontrolle Beenden',
-                elementLabel: 'Endzeit:',
+                header: t("sidebar.labels.stopInspection.header"),
+                elementLabel: t("sidebar.labels.stopInspection.elementLabel"),
+                inputPlaceholder: "13:05",
                 elementValidation: {},
                 defaultValue: {
                     input: inspectionState.active ? dayjs().format('HH:mm') : "",
@@ -38,9 +39,10 @@ export const SidebarLinks = () => {
                         time: input,
                         id: inspectionState.id,
                     }).then(() => {
-                        toast.success('');
-                    }).catch((e) => {
-                        console.error(e);
+                        toast.success(t('sidebar.message.inspection.stop'));
+                        inspectionMutation();
+                    }).catch(() => {
+                        toast.error(t('sidebar.message.inspection.stopError'));
                     });
                 },
                 abort() { },
@@ -48,8 +50,10 @@ export const SidebarLinks = () => {
         } else {
             if (inspectionState?.state === "planned") {
                 startInspection().then(() => {
-                    toast.success("Uniformkontrolle erfolgreich gestartet");
-                    mutate((key: object | string) => ((typeof key === "string") && /^(\/api\/inspection\/status)|(\/api\/cadet\/[\w\d-]+\/inspection)$/));
+                    toast.success(t("sidebar.message.inspection.start"));
+                    inspectionMutation();
+                }).catch(() => {
+                    toast.error(t("sidebar.message.inspection.startError"));
                 });
             }
         }
@@ -84,7 +88,8 @@ export const SidebarLinks = () => {
                     icon={faPlus}
                     childSelected={(pathname.endsWith("/cadet/new") || pathname.endsWith("/uniform/new"))}
                     requiredRole={AuthRole.inspector}
-                    testId="btn_createGroup">
+                    testId="btn_createGroup"
+                >
                     <ul>
                         <NavLink
                             text={t('sidebar.links.create.cadet')}
@@ -105,9 +110,10 @@ export const SidebarLinks = () => {
                 <NavGroup
                     title={t('sidebar.links.inspection.group')}
                     icon={faClipboardCheck}
-                    childSelected={false}
+                    childSelected={pathname.startsWith(`/${locale}/app/inspection`)}
                     requiredRole={AuthRole.materialManager}
-                    testId="btn_inspectionGroup">
+                    testId="btn_inspectionGroup"
+                    >
                     <ul>
                         <NavLink
                             text={t('sidebar.links.inspection.inspection')}
@@ -116,6 +122,14 @@ export const SidebarLinks = () => {
                             level={2}
                             requiredRole={AuthRole.inspector}
                             testId="lnk_inspection" />
+                        <NavLink
+                            text={t('sidebar.links.inspection.deficiencyType')}
+                            href="/app/inspection/deficiencyType"
+                            isRoute={pathname.endsWith("/app/inspection/deficiencyType")}
+                            level={2}
+                            requiredRole={AuthRole.materialManager}
+                            testId="lnk_adminDeficiency"
+                        />
                         {(inspectionState?.active || inspectionState?.state === "unfinished" || inspectionState?.state === "planned") &&
                             <NavButton
                                 text={inspectionState?.active
@@ -126,7 +140,6 @@ export const SidebarLinks = () => {
                                 onClick={startStopInspection}
                                 isRoute={false}
                                 level={2}
-                                collapsed={collapsed}
                                 testId="btn_inspection" />
                         }
                     </ul>
@@ -134,7 +147,7 @@ export const SidebarLinks = () => {
                 <NavGroup
                     title={t('sidebar.links.administration.group')}
                     icon={faGear}
-                    childSelected={/^\/\w{2}\/app\/admin\//.test(pathname)}
+                    childSelected={/^\/\w{2}\/admin\//.test(pathname)}
                     requiredRole={AuthRole.materialManager}
                     testId="btn_adminGroup">
                     <ul>
@@ -144,28 +157,24 @@ export const SidebarLinks = () => {
                             isRoute={pathname.endsWith("/app/admin/uniform")}
                             level={2}
                             requiredRole={AuthRole.materialManager}
-                            testId="lnk_adminUniform" />
+                            testId="lnk_adminUniform"
+                        />
                         <NavLink
                             text={t('sidebar.links.administration.size')}
                             href="/app/admin/uniform/sizes"
                             isRoute={pathname.endsWith("/app/admin/uniform/sizes")}
                             level={2}
                             requiredRole={AuthRole.materialManager}
-                            testId="lnk_adminUniformSize" />
+                            testId="lnk_adminUniformSize"
+                        />
                         <NavLink
                             text={t('sidebar.links.administration.material')}
                             href="/app/admin/material"
                             isRoute={pathname.endsWith("/app/admin/material")}
                             level={2}
                             requiredRole={AuthRole.materialManager}
-                            testId="lnk_adminMaterial" />
-                        <NavLink
-                            text={t('sidebar.links.administration.deficiency')}
-                            href="/app/admin/deficiency"
-                            isRoute={pathname.endsWith("/app/admin/deficiency")}
-                            level={2}
-                            requiredRole={AuthRole.materialManager}
-                            testId="lnk_adminDeficiency" />
+                            testId="lnk_adminMaterial"
+                        />
                     </ul>
                 </NavGroup>
                 <NavLink
@@ -173,14 +182,14 @@ export const SidebarLinks = () => {
                     icon={faAddressCard}
                     href={"/app/admin/user"}
                     requiredRole={AuthRole.admin}
-                    isRoute={pathname.endsWith("/user")}
+                    isRoute={pathname.startsWith("/users")}
                     testId="lnk_users" />
                 <NavLink
                     text={t('sidebar.links.redirects')}
                     icon={faLink}
                     href={"/app/redirects"}
                     requiredRole={AuthRole.admin}
-                    isRoute={pathname.endsWith("/redirects")}
+                    isRoute={pathname.startsWith("/redirects")}
                     testId="lnk_redirects" />
             </ul>
         </div>

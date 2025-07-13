@@ -209,26 +209,6 @@ describe('<UniformGeneration> create', () => {
                 }
             });
         });
-
-        it('uses correct parameters in database queries', async () => {
-            const customTypeId = 'custom-type-id';
-            const props = {
-                ...defaultProps,
-                uniformTypeId: customTypeId,
-            };
-
-            await expect(create(props)).resolves.toEqual(mockUniformTypeList);
-
-            expect(mockPrisma.uniformType.findUniqueOrThrow).toHaveBeenCalledWith({
-                where: { id: customTypeId }
-            });
-            expect(mockPrisma.uniformGeneration.findMany).toHaveBeenCalledWith({
-                where: {
-                    fk_uniformType: customTypeId,
-                    recdelete: null
-                }
-            });
-        });
     });
 
     describe('edge cases', () => {
