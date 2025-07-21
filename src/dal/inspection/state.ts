@@ -21,6 +21,7 @@ export const getInspectionState = async (): Promise<InspectionStatus | null> => 
         }),
         prisma.inspection.findFirst({
             where: {
+                fk_assosiation: assosiation,
                 timeStart: { not: null },
                 timeEnd: null,
                 date: { lt: today },

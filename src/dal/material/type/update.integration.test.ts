@@ -23,14 +23,14 @@ it('should save data', async () => {
         where: { id: materialId },
     });
     expect(dbData).not.toBeNull();
-    expect(dbData).toEqual(expect.objectContaining({
+    expect(dbData).toMatchObject({
         ...defaultProps.data,
         id: materialId,
         fk_materialGroup: ids.materialGroupIds[1],
         sortOrder: 1,
         recdelete: null,
         recdeleteUser: null,
-    }));
+    });
 });
 
 it('should prevent duplicated names', async () => {

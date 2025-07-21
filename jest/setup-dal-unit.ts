@@ -1,103 +1,134 @@
 import { AuthRole } from "@/lib/AuthRoles";
 
+const prismaMock = {
+    // Mock all Prisma models with common methods
+    cadetInspection: {
+        upsert: jest.fn(),
+        findFirst: jest.fn(),
+        findMany: jest.fn(),
+        create: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+        deleteMany: jest.fn(),
+    },
+    deficiency: {
+        updateMany: jest.fn(),
+        create: jest.fn(),
+        upsert: jest.fn(),
+        findFirst: jest.fn(),
+        findMany: jest.fn(),
+        findUnique: jest.fn(),
+        findUniqueOrThrow: jest.fn(),
+        delete: jest.fn(),
+        deleteMany: jest.fn(),
+    },
+    deficiencyType: {
+        findUniqueOrThrow: jest.fn(),
+        findMany: jest.fn(),
+        findFirst: jest.fn(),
+        findUnique: jest.fn(),
+    },
+    deregistration: {
+        deleteMany: jest.fn(),
+        createMany: jest.fn(),
+        findMany: jest.fn(),
+        create: jest.fn(),
+    },
+    uniform: {
+        findUnique: jest.fn(),
+        findFirst: jest.fn(),
+        findMany: jest.fn(),
+        findUniqueOrThrow: jest.fn(),
+        update: jest.fn(),
+        updateMany: jest.fn(),
+        create: jest.fn(),
+        createMany: jest.fn(),
+    },
+    uniformIssued: {
+        findFirst: jest.fn(),
+        findMany: jest.fn(),
+        findUnique: jest.fn(),
+        create: jest.fn(),
+        update: jest.fn(),
+        updateMany: jest.fn(),
+        delete: jest.fn(),
+        deleteMany: jest.fn(),
+    },
+    material: {
+        findUnique: jest.fn(),
+        findMany: jest.fn(),
+        create: jest.fn(),
+    },
+    materialGroup: {
+        findUnique: jest.fn(),
+        findMany: jest.fn(),
+    },
+    cadet: {
+        findUnique: jest.fn(),
+        findUniqueOrThrow: jest.fn(),
+        findMany: jest.fn(),
+        create: jest.fn(),
+    },
+    inspection: {
+        findFirst: jest.fn(),
+        findMany: jest.fn(),
+        update: jest.fn(),
+        create: jest.fn(),
+    },
+    uniformType: {
+        findUnique: jest.fn(),
+        findUniqueOrThrow: jest.fn(),
+        findFirstOrThrow: jest.fn(),
+        findMany: jest.fn(),
+        findFirst: jest.fn(),
+        count: jest.fn(),
+        create: jest.fn(),
+        update: jest.fn(),
+        updateMany: jest.fn(),
+    },
+    uniformGeneration: {
+        findUnique: jest.fn(),
+        findUniqueOrThrow: jest.fn(),
+        findMany: jest.fn(),
+        findFirst: jest.fn(),
+        create: jest.fn(),
+        count: jest.fn(),
+        update: jest.fn(),
+        updateMany: jest.fn(),
+    },
+    uniformSizelist: {
+        findUnique: jest.fn(),
+        findUniqueOrThrow: jest.fn(),
+        findMany: jest.fn(),
+        findFirst: jest.fn(),
+        create: jest.fn(),
+        update: jest.fn(),
+    },
+    redirect: {
+        findUnique: jest.fn(),
+        findFirst: jest.fn(),
+        update: jest.fn(),
+        create: jest.fn(),
+        delete: jest.fn(),
+    },
+    // Add mock for raw SQL execution
+    $executeRaw: jest.fn(),
+};
 // Mock Prisma completely for unit tests - no real database connections
 jest.mock('@/lib/db', () => ({
     prisma: {
-        // Mock all Prisma models with common methods
-        cadetInspection: {
-            upsert: jest.fn(),
-            findFirst: jest.fn(),
-            findMany: jest.fn(),
-            create: jest.fn(),
-            update: jest.fn(),
-            delete: jest.fn(),
-            deleteMany: jest.fn(),
-        },
-        deficiency: {
-            updateMany: jest.fn(),
-            create: jest.fn(),
-            upsert: jest.fn(),
-            findFirst: jest.fn(),
-            findMany: jest.fn(),
-            findUnique: jest.fn(),
-            findUniqueOrThrow: jest.fn(),
-            delete: jest.fn(),
-            deleteMany: jest.fn(),
-        },
-        deficiencyType: {
-            findUniqueOrThrow: jest.fn(),
-            findMany: jest.fn(),
-            findFirst: jest.fn(),
-            findUnique: jest.fn(),
-        },
-        deregistration: {
-            deleteMany: jest.fn(),
-            createMany: jest.fn(),
-            findMany: jest.fn(),
-            create: jest.fn(),
-        },
-        uniform: {
-            findUnique: jest.fn(),
-            findMany: jest.fn(),
-            update: jest.fn(),
-            create: jest.fn(),
-        },
-        material: {
-            findUnique: jest.fn(),
-            findMany: jest.fn(),
-            create: jest.fn(),
-        },
-        materialGroup: {
-            findUnique: jest.fn(),
-            findMany: jest.fn(),
-        },
-        cadet: {
-            findUnique: jest.fn(),
-            findMany: jest.fn(),
-            create: jest.fn(),
-        },
-        inspection: {
-            findFirst: jest.fn(),
-            findMany: jest.fn(),
-            update: jest.fn(),
-            create: jest.fn(),
-        },
-        uniformType: {
-            findUnique: jest.fn(),
-            findMany: jest.fn(),
-        },
-        // Add transaction mock
-        $transaction: jest.fn((callback) => {
-            // Execute the callback with the mocked client
-            return callback({
-                cadetInspection: {
-                    upsert: jest.fn(),
-                    findFirst: jest.fn(),
-                    findMany: jest.fn(),
-                    create: jest.fn(),
-                    update: jest.fn(),
-                    delete: jest.fn(),
-                    deleteMany: jest.fn(),
-                },
-                deficiency: {
-                    updateMany: jest.fn(),
-                    create: jest.fn(),
-                    upsert: jest.fn(),
-                    findFirst: jest.fn(),
-                    findMany: jest.fn(),
-                    findUnique: jest.fn(),
-                    findUniqueOrThrow: jest.fn(),
-                    delete: jest.fn(),
-                    deleteMany: jest.fn(),
-                },
-                deregistration: {
-                    deleteMany: jest.fn(),
-                    createMany: jest.fn(),
-                    findMany: jest.fn(),
-                },
-            });
+        ...prismaMock,
+        // Add transaction mock that handles both arrays and callback functions
+        $transaction: jest.fn().mockImplementation((fnArrOrCallback) => {
+            if (Array.isArray(fnArrOrCallback)) {
+                // For array of promises, just await all of them
+                return Promise.all(fnArrOrCallback);
+            }
+            // For callback function, call it with the prisma mock
+            return fnArrOrCallback(prismaMock);
         }),
-    }
+
+    },
 }));
 
 // Mock iron session for authentication in unit tests
@@ -120,30 +151,21 @@ jest.mock('next/cache', () => ({
     revalidatePath: jest.fn(),
 }));
 
-// Mock validation helper for unit tests
-jest.mock('@/actions/validations', () => ({
-    genericSAValidator: jest.fn((_role, props) => {
-        // Simple mock that returns the props and mock session data
-        return Promise.resolve([
-            {
-                assosiation: global.__ASSOSIATION__ ?? 'test-assosiation-id',
-                username: global.__USERNAME__ ?? 'testuser',
-            },
-            props
-        ]);
-    }),
-}));
-
-// Mock inspection helper functions for unit tests
-jest.mock('@/dal/inspection/cadet/get', () => ({
-    unsecuredGetActiveInspection: jest.fn(),
-    unsecuredGetPreviouslyUnresolvedDeficiencies: jest.fn(() => []),
+jest.mock("@/actions/validations", () => ({
+    genericSAValidator: jest.fn((_, props) => Promise.resolve([{
+        assosiation: global.__ASSOSIATION__ ?? 'test-assosiation-id',
+        username: global.__USERNAME__ ?? 'testuser',
+    }, props])),
+    genericSANoDataValidator: jest.fn(() => Promise.resolve([{
+        assosiation: global.__ASSOSIATION__ ?? 'test-assosiation-id',
+        username: global.__USERNAME__ ?? 'testuser'
+    }])),
 }));
 
 beforeEach(() => {
     // Reset all mocks before each test
     jest.clearAllMocks();
-    
+
     // Set default global values for unit tests
     global.__ROLE__ = AuthRole.materialManager;
     global.__USERNAME__ = 'testuser';

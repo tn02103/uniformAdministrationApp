@@ -1,28 +1,23 @@
 "use client"
 
 import { logout } from "@/actions/auth";
-import { startInspection } from "@/dal/inspection/start";
-import { stopInspection } from "@/dal/inspection/stop";
 import { useInspectionState } from "@/dataFetcher/inspection";
-import { AuthRole } from "@/lib/AuthRoles";
-import dayjs from "@/lib/dayjs";
 import { useI18n } from "@/lib/locales/client";
 import { AuthItem } from "@/lib/storageTypes";
-import { faAddressCard, faAngleLeft, faAngleRight, faBoxOpen, faClipboardCheck, faGear, faLink, faPlus, faShirt, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faAngleLeft, faAngleRight, faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Assosiation } from "@prisma/client";
 import Link from "next/link";
-import { useParams, usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
-import { Col, Dropdown } from "react-bootstrap";
-import { toast } from "react-toastify";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Dropdown } from "react-bootstrap";
 import { mutate } from "swr";
 import { useModal } from "../modals/modalProvider";
 import Footer from "./Footer";
 import Header from "./Header";
-import NavButton from "./NavButton";
-import NavGroup from "./NavGroup";
-import NavLink from "./NavLink";
+import style from "./Sidebar.module.css";
+import { SidebarLinks } from "./SidebarLinks";
+import { useBreakpoint } from "@/lib/useBreakpoint";
 
 
 type SidebarPropType = {
@@ -35,10 +30,22 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
     const modal = useModal();
     const [collapsed, setCollapsed] = useState(false);
     const [showSidebar, setShowSidebar] = useState(false);
+    const { match: isMobile } = useBreakpoint("lg", "lt")
     const { inspectionState } = useInspectionState();
     const pathname = usePathname();
-    const { locale } = useParams();
     const router = useRouter();
+
+    // Close sidebar on navigation change (when links are clicked on mobile/tablet)
+    useEffect(() => {
+        setShowSidebar(false);
+    }, [pathname]);
+
+    useEffect(() => {
+        if (isMobile) {
+            setShowSidebar(false);
+            setCollapsed(false);
+        }
+    }, [isMobile]);
 
     function handleLogout() {
         logout().then(() => {
@@ -53,219 +60,83 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
             mutate(() => true, undefined);
         });
     }
-    function startStopInspection() {
-        if (inspectionState?.active || inspectionState?.state === "unfinished") {
-            modal?.simpleFormModal({
-                header: 'Uniformkontrolle Beenden',
-                elementLabel: 'Endzeit:',
-                elementValidation: {},
-                defaultValue: {
-                    input: inspectionState.active ? dayjs().format('HH:mm') : "",
-                },
-                type: "time",
-                async save({ input }) {
-                    stopInspection({
-                        time: input,
-                        id: inspectionState.id,
-                    }).then(() => {
-                        toast.success('');
-                    }).catch((e) => {
-                        console.error(e);
-                    });
-                },
-                abort() { },
-            });
-        } else {
-            if (inspectionState?.state === "planned") {
-                startInspection().then(() => {
-                    toast.success("Uniformkontrolle erfolgreich gestartet");
-                    mutate((key: object | string) => ((typeof key === "string") && /^(\/api\/inspection\/status)|(\/api\/cadet\/[\w\d-]+\/inspection)$/));
-                });
-            }
-        }
-    }
-
 
     return (
-        <div className="row p-0 m-0">
-            <div className="p-0 w-auto navbar">
-                <div className='d-lg-none'>
-                    <Footer />
-                    <Header showSidebar={() => setShowSidebar(true)} />
+        <div className={`${style.sidebarContainer} ${showSidebar ? style.noScroll : ''}`}>
+            {/* Safe area top fill - always present to cover notch area */}
+            <div className={`${style.safeAreaTop} ${collapsed ? style.safeAreaTopCollapsed : ''
+                } ${showSidebar ? style.safeAreaTopVisible : ''}`}>
+            </div>
+
+            {/* Backdrop for mobile/tablet when sidebar is open */}
+            {showSidebar && (
+                <div
+                    className={`${style.backdrop} d-lg-none`}
+                    onClick={() => setShowSidebar(false)}
+                />
+            )}
+
+            <div className='d-lg-none'>
+                <Footer />
+                <Header showSidebar={() => setShowSidebar(true)} />
+            </div>
+            <div className={`${style.content} ${collapsed ? style.contentCollapsed : ""} ${showSidebar ? style.contentOverlay : ''}`} >
+                <div className={`container-sm px-3 px-lg-4 py-3 m-auto`}>
+                    {children}
                 </div>
-                <div className={`navbar-small ${showSidebar ? "show2" : ""}`}>
-                    <div data-testid="div_sidebar" className="d-flex flex-column align-items-start pt-2 text-white min-vh-100 bg-navy text-decoration-none sticky-top z-3">
-                        <div className="p-0 m-0 align-self-center d-none d-md-block">
-                            <Link href={"/"}>
-                                <p data-testid="lnk_header" className={`fw-bold ${collapsed ? "fs-5" : "fs-4"}`}>
-                                    {collapsed ? assosiation.acronym : assosiation.name}
-                                </p>
-                            </Link>
-                            <hr className="text-white fw-bold" />
+            </div>
+            <div
+                className={`bg-navy-secondary ${style.sidebar} ${collapsed
+                    ? style.sidebarCollapsed
+                    : style.sidebarExpanded
+                    } ${showSidebar ? style.sidebarVisible : ''}`}
+                role="navigation"
+            >
+                <div data-testid="div_sidebar" className="d-flex flex-column text-white h-100 bg-navy text-decoration-none">
+                    {/* Header section - always visible */}
+                    <div className="flex-shrink-0">
+                        {/* Header for desktop */}
+                        <div className={`${style.sidebarHeader}`}>
+                            <div className="d-lg-none w-100 position-relative align-items-center p-2 pb-1">
+                                <Link href={"/"} className="text-decoration-none">
+                                    <p data-testid="lnk_header" className={`${style.sidebarHeaderTitle} ${collapsed ? style.sidebarHeaderTitleCollapsed : ''}`}>
+                                        {collapsed ? assosiation.acronym : assosiation.name}
+                                    </p>
+                                </Link>
+                                <button
+                                    className="d-sm-none btn btn-link text-decoration-none text-white fs-5 position-absolute end-0 top-50 translate-middle-y"
+                                    onClick={() => setShowSidebar(false)}
+                                    aria-label="Close sidebar"
+                                >
+                                    <FontAwesomeIcon icon={faX} />
+                                </button>
+                            </div>
                         </div>
+                        <hr className={style.sidebarDivider} />
                         {inspectionState?.active &&
-                            <div data-testid="div_inspection" className=" align-self-center d-none d-lg-inline">
+                            <div data-testid="div_inspection" className="text-center d-none d-lg-block text-white-50 small">
                                 {collapsed ? "" : 'Kontrolle: '}
                                 {inspectionState.inspectedCadets}/{inspectionState.activeCadets - inspectionState.deregistrations}
                             </div>
                         }
+                    </div>
 
-                        <div className="d-md-none" style={{ height: "20px" }}>
-                        </div>
-                        <ul className="flex-column mb-auto w-100 mt-5 px-2  overflow-y-auto">
-                            <NavLink
-                                text={t('sidebar.links.cadetOverview')}
-                                icon={faUser}
-                                href={"/app/cadet"}
-                                collapsed={collapsed}
-                                requiredRole={AuthRole.user}
-                                isRoute={(!pathname.endsWith("cadet/new") && pathname.startsWith(`/${locale}/app/cadet`))}
-                                testId="lnk_cadet" />
-                            <NavLink
-                                text={t('sidebar.links.uniformOverview')}
-                                icon={faShirt}
-                                href={"/app/uniform/list"}
-                                collapsed={collapsed}
-                                requiredRole={AuthRole.user}
-                                isRoute={pathname.startsWith(`/${locale}/app/uniform/list`)}
-                                testId="lnk_uniformList" />
-                            <NavLink
-                                text={t('sidebar.links.storageUnit')}
-                                icon={faBoxOpen}
-                                href={"/app/uniform/storage"}
-                                collapsed={collapsed}
-                                requiredRole={AuthRole.user}
-                                isRoute={pathname.startsWith(`/${locale}/app/uniform/storage`)}
-                                testId="lnk_storageUnit" />
-                            <NavGroup
-                                title={t('sidebar.links.create.group')}
-                                icon={faPlus}
-                                childSelected={(pathname.endsWith("/cadet/new") || pathname.endsWith("/uniform/new"))}
-                                collapsed={collapsed}
-                                requiredRole={AuthRole.inspector}
-                                setCollapsed={setCollapsed}
-                                testId="btn_createGroup">
-                                <ul>
-                                    <NavLink
-                                        text={t('sidebar.links.create.cadet')}
-                                        href="/app/cadet/new"
-                                        isRoute={pathname.endsWith("/cadet/new")}
-                                        level={2}
-                                        collapsed={collapsed}
-                                        requiredRole={AuthRole.inspector}
-                                        testId="lnk_createCadet" />
-                                    <NavLink
-                                        text={t('sidebar.links.create.uniform')}
-                                        href="/app/uniform/new"
-                                        isRoute={pathname.endsWith("/uniform/new")}
-                                        level={2}
-                                        collapsed={collapsed}
-                                        requiredRole={AuthRole.inspector}
-                                        testId="lnk_createUniform" />
-                                </ul>
-                            </NavGroup>
-                            <NavGroup
-                                title={t('sidebar.links.inspection.group')}
-                                icon={faClipboardCheck}
-                                childSelected={false}
-                                collapsed={collapsed}
-                                requiredRole={AuthRole.materialManager}
-                                setCollapsed={setCollapsed}
-                                testId="btn_inspectionGroup">
-                                <ul>
-                                    <NavLink
-                                        text={t('sidebar.links.inspection.inspection')}
-                                        href="/app/inspection"
-                                        isRoute={pathname.endsWith("/app/inspection")}
-                                        level={2}
-                                        collapsed={collapsed}
-                                        requiredRole={AuthRole.inspector}
-                                        testId="lnk_inspection" />
-                                    {(inspectionState?.active || inspectionState?.state === "unfinished" || inspectionState?.state === "planned") &&
-                                        <NavButton
-                                            text={inspectionState?.active
-                                                ? t('sidebar.links.inspection.stop')
-                                                : (inspectionState?.state === "planned")
-                                                    ? t('sidebar.links.inspection.start')
-                                                    : t('sidebar.links.inspection.unfinished')}
-                                            onClick={startStopInspection}
-                                            isRoute={false}
-                                            level={2}
-                                            collapsed={collapsed}
-                                            testId="btn_inspection" />
-                                    }
-                                </ul>
-                            </NavGroup>
-                            <NavGroup
-                                title={t('sidebar.links.administration.group')}
-                                icon={faGear}
-                                childSelected={/^\/\w{2}\/admin\//.test(pathname)}
-                                collapsed={collapsed}
-                                requiredRole={AuthRole.materialManager}
-                                setCollapsed={setCollapsed}
-                                testId="btn_adminGroup">
-                                <ul>
-                                    <NavLink
-                                        text={t('sidebar.links.administration.uniform')}
-                                        href="/app/admin/uniform"
-                                        isRoute={pathname.endsWith("/app/admin/uniform")}
-                                        level={2}
-                                        collapsed={collapsed}
-                                        requiredRole={AuthRole.materialManager}
-                                        testId="lnk_adminUniform"
-                                    />
-                                    <NavLink
-                                        text={t('sidebar.links.administration.size')}
-                                        href="/app/admin/uniform/sizes"
-                                        isRoute={pathname.endsWith("/app/admin/uniform/sizes")}
-                                        level={2}
-                                        requiredRole={AuthRole.materialManager}
-                                        collapsed={collapsed}
-                                        testId="lnk_adminUniformSize"
-                                    />
-                                    <NavLink
-                                        text={t('sidebar.links.administration.material')}
-                                        href="/app/admin/material"
-                                        isRoute={pathname.endsWith("/app/admin/material")}
-                                        level={2}
-                                        requiredRole={AuthRole.materialManager}
-                                        collapsed={collapsed}
-                                        testId="lnk_adminMaterial"
-                                    />
-                                    <NavLink
-                                        text={t('sidebar.links.administration.deficiency')}
-                                        href="/app/admin/deficiency"
-                                        isRoute={pathname.endsWith("/app/admin/deficiency")}
-                                        level={2}
-                                        requiredRole={AuthRole.materialManager}
-                                        collapsed={collapsed}
-                                        testId="lnk_adminDeficiency"
-                                    />
-                                </ul>
-                            </NavGroup>
-                            <NavLink
-                                text={t('sidebar.links.userOverview')}
-                                icon={faAddressCard}
-                                href={"/app/admin/user"}
-                                collapsed={collapsed}
-                                requiredRole={AuthRole.admin}
-                                isRoute={pathname.startsWith("/users")}
-                                testId="lnk_users" />
-                            <NavLink
-                                text={t('sidebar.links.redirects')}
-                                icon={faLink}
-                                href={"/app/redirects"}
-                                collapsed={collapsed}
-                                requiredRole={AuthRole.admin}
-                                isRoute={pathname.startsWith("/redirects")}
-                                testId="lnk_redirects" />
-                        </ul>
+                    {/* Scrollable navigation section */}
+                    <div className={`${style.sidebarNavigation}`}>
+                        <SidebarLinks
+                            collapsed={collapsed}
+                            setCollapsed={setCollapsed}
+                        />
+                    </div>
+
+                    {/* Footer section - always visible */}
+                    <div className="flex-shrink-0">
                         <div className="w-100">
-                            <hr className={`my-0 ${collapsed ? "mx-1" : "mx-3"}`} />
+                            <hr className={`my-1 ${collapsed ? "mx-1" : "mx-3"}`} />
                         </div>
-                        <div className={`d-flex flex-row  w-100 mb-2 ${collapsed ? "justify-content-center" : "justify-content-between"}`}>
+                        <div className={`d-flex flex-row w-100 mb-2 ${collapsed ? "justify-content-center" : "justify-content-between"}`}>
                             {!collapsed &&
-                                <div className={"p-2 ms-3 fw-bold"}>
+                                <div className="p-2 ms-3 fw-bold">
                                     <Dropdown drop="up">
                                         <Dropdown.Toggle variant="primary" className="border-0 text-white bg-navy fw-bold" data-testid={"btn_user_dropdown"}>
                                             {username}
@@ -281,21 +152,16 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                                     </Dropdown>
                                 </div>
                             }
-                            <button data-testid="btn_collapse" className="btn text-white btn-lg" onClick={() => setCollapsed(!collapsed)}>
+                            <button data-testid="btn_collapse" className="btn text-white btn-lg d-none d-lg-block" onClick={() => setCollapsed(!collapsed)}>
                                 <FontAwesomeIcon icon={collapsed ? faAngleRight : faAngleLeft} />
+                            </button>
+                            <button data-testid="btn_collapse" className="btn text-white btn-lg d-lg-none" onClick={() => setShowSidebar(false)}>
+                                <FontAwesomeIcon icon={faAngleLeft} />
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-            <Col lg={collapsed ? 11 : 9} xl={collapsed ? 11 : 10} className=' min-vh-100' onClick={() => ((window.innerWidth < 992) && showSidebar && setShowSidebar(false))}>
-                <div className='row m-0'>
-                    <div className={`container-fluid pt-6 pt-lg-4 pb-3 px-0`}>
-                        {children}
-                    </div>
-                </div>
-                <div className='row m-0' style={{ height: "400px" }}></div>
-            </Col>
         </div>
     );
 }

@@ -209,13 +209,13 @@ test.describe(() => {
         await test.step('validate db', async () => {
             const dbCadet = await prisma.cadet.findUniqueOrThrow({
                 where: { id: cadet.id }
-            });
-
-            expect(dbCadet).toEqual(expect.objectContaining({
+            });  
+            
+            expect(dbCadet).toMatchObject({
                 ...testData,
                 recdelete: null,
                 recdeleteUser: null,
-            }));
+            });
         });
     });
 });

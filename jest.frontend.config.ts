@@ -1,4 +1,3 @@
-import type { Config } from 'jest';
 
 /**
  * For a detailed explanation regarding each configuration property, visit:
@@ -10,7 +9,7 @@ const createJestConfig = nextJest({
     dir: './',
 });
 
-const customJestConfig: Config = {
+const customJestConfig = {
     displayName: "ComponentTests",
     setupFilesAfterEnv: [
         '<rootDir>/jest/setup-components.tsx',

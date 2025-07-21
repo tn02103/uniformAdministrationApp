@@ -6,7 +6,7 @@ import timezone from "dayjs/plugin/timezone";
 dayjs.extend(utc);
 dayjs.extend(customParseFormat);
 dayjs.extend(timezone);
-dayjs.tz.setDefault("Germany/Berlin");
+dayjs.tz.setDefault("Europe/Berlin");
 
 import "dayjs/locale/de";
 import "dayjs/locale/en";

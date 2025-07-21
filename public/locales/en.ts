@@ -458,6 +458,14 @@ export default {
     sidebar: {
         logout: "Logout",
         changeLanguage: "Change language",
+        "message.inspection.start": "The inspection was successfully started",
+        "message.inspection.startError": "The inspection could not be started. Please try again later.",
+        "message.inspection.stop": "The inspection was successfully stopped",
+        "message.inspection.stopError": "The inspection could not be stopped. Please try again later.",
+        labels: {
+            "stopInspection.header": "stop inspection",
+            "stopInspection.elementLabel": "Enter finishing time",
+        },
         links: {
             cadetOverview: "Staff",
             uniformOverview: "Uniform",
@@ -473,13 +481,13 @@ export default {
                 stop: "Stop",
                 unfinished: "Finish old inspection",
                 inspection: "Administration",
+                deficiencyType: "Deficiency types",
             },
             administration: {
                 group: "Administration",
                 uniform: "Uniform",
                 size: "Sizes",
                 material: "Materials",
-                deficiency: "Deficiency",
             },
             userOverview: "Accesses",
             redirects: "Redirects",

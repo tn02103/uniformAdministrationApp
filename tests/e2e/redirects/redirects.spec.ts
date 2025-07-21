@@ -34,20 +34,24 @@ test.describe('Redirects Configuration', () => {
                 await expect(row.getByText(german.redirects["activeLabel.false"])).toBeHidden();
             }),
             test.step('validate db', async () => {
-                const redirect = await prisma.redirect.findFirst({
-                    where: {
-                        code: 'test-e2e-create',
-                    },
-                });
-                expect(redirect).toBeDefined();
-                expect(redirect?.code).toBe('test-e2e-create');
-                expect(redirect?.target).toBe('https://example.com/e2e/create-redirect');
-                expect(redirect?.active).toBe(true);
+                await expect(async () => {
+                    const redirect = await prisma.redirect.findFirst({
+                        where: {
+                            code: 'test-e2e-create',
+                        },
+                    });
+                    expect(redirect).toBeDefined();
+                    expect(redirect?.code).toBe('test-e2e-create');
+                    expect(redirect?.target).toBe('https://example.com/e2e/create-redirect');
+                    expect(redirect?.active).toBe(true);
+                }).toPass();
             }),
             test.step('validate api', async () => {
-                const response = await page.request.get(getSourceURL('test-e2e-create', baseURL), { maxRedirects: 0 });
-                expect(response.status()).toBe(302);
-                expect(response.headers()['location']).toBe('https://example.com/e2e/create-redirect');
+                await expect(async () => {
+                    const response = await page.request.get(getSourceURL('test-e2e-create', baseURL), { maxRedirects: 0 });
+                    expect(response.status()).toBe(302);
+                    expect(response.headers()['location']).toBe('https://example.com/e2e/create-redirect');
+                }).toPass();
             }),
         ]);
     });
@@ -78,24 +82,36 @@ test.describe('Redirects Configuration', () => {
                 await expect(row.getByText(german.redirects["activeLabel.false"])).toBeHidden();
             }),
             test.step('validate db', async () => {
-                const redirect = await prisma.redirect.findUnique({
-                    where: {
-                        id: ids.redirectIds[0],
-                    },
-                });
-                expect(redirect).toBeDefined();
-                expect(redirect?.code).toBe('test-e2e-edit');
-                expect(redirect?.target).toBe('https://example.com/e2e/edit-redirect');
-                expect(redirect?.active).toBe(true);
+                await expect(async () => {
+                    const redirect = await prisma.redirect.findUnique({
+                        where: {
+                            id: ids.redirectIds[0],
+                        },
+                    });
+                    expect(redirect).toBeDefined();
+                    expect(redirect?.code).toBe('test-e2e-edit');
+                    expect(redirect?.target).toBe('https://example.com/e2e/edit-redirect');
+                    expect(redirect?.active).toBe(true);
+                }).toPass();
             }),
             test.step('validate api', async () => {
-                const response = await page.request.get(getSourceURL('test-e2e-edit', baseURL), { maxRedirects: 0 });
-                expect(response.status()).toBe(302);
-                expect(response.headers()['location']).toBe('https://example.com/e2e/edit-redirect');
+                await expect(async () => {
+                    const response = await page.request.get(getSourceURL('test-e2e-edit', baseURL), { maxRedirects: 0 });
+                    expect(response.status()).toBe(302);
+                    expect(response.headers()['location']).toBe('https://example.com/e2e/edit-redirect');
+                }).toPass();
 
-                const response2 = await page.request.get('http://localhost:3021/api/redirects?code=' + data.redirects[0].code, { maxRedirects: 0 });
-                expect(response2.status()).toBe(302);
-                expect(response2.headers()['location']).toBe(process.env.DEFAULT_REDIRECT_URL);
+                await expect(async () => {
+                    const response2 = await page.request.get('http://localhost:3021/api/redirects?code=' + data.redirects[0].code, { maxRedirects: 0 });
+                    if (process.env.DEFAULT_REDIRECT_URL) {
+                        expect(response2.status()).toBe(302);
+                        expect(response2.headers()['location']).toBe(new URL(process.env.DEFAULT_REDIRECT_URL).toString());
+                    } else {
+                        expect(response2.status()).toBe(404);
+                        const data = await response2.json();
+                        expect(data).toStrictEqual({ "message": "No redirect found" });
+                    }
+                }).toPass();
             }),
         ]);
     });
@@ -116,19 +132,29 @@ test.describe('Redirects Configuration', () => {
                 // Its not possible to check if activelabel.true is not visible, because the translations overlap
             }),
             test.step('validate db', async () => {
-                const redirect = await prisma.redirect.findUnique({
-                    where: {
-                        id: ids.redirectIds[0],
-                    },
-                });
-                expect(redirect).toBeDefined();
-                expect(redirect?.active).toBe(false);
-                expect(redirect?.code).toBe(data.redirects[0].code);
+                await expect(async () => {
+                    const redirect = await prisma.redirect.findUnique({
+                        where: {
+                            id: ids.redirectIds[0],
+                        },
+                    });
+                    expect(redirect).toBeDefined();
+                    expect(redirect?.active).toBe(false);
+                    expect(redirect?.code).toBe(data.redirects[0].code);
+                }).toPass();
             }),
             test.step('validate api', async () => {
-                const response = await page.request.get(getSourceURL(data.redirects[0].code, baseURL), { maxRedirects: 0 });
-                expect(response.status()).toBe(302);
-                expect(response.headers()['location']).toBe(process.env.DEFAULT_REDIRECT_URL);
+                await expect(async () => {
+                    const response = await page.request.get(getSourceURL(data.redirects[0].code, baseURL), { maxRedirects: 0 });
+                    if (process.env.DEFAULT_REDIRECT_URL) {
+                        expect(response.status()).toBe(302);
+                        expect(response.headers()['location']).toBe(new URL(process.env.DEFAULT_REDIRECT_URL).toString());
+                    } else {
+                        expect(response.status()).toBe(404);
+                        const data = await response.json();
+                        expect(data).toStrictEqual({ "message": "No redirect found" });
+                    }
+                }).toPass();
             }),
         ]);
     });
@@ -141,17 +167,27 @@ test.describe('Redirects Configuration', () => {
         });
         await Promise.all([
             test.step('validate db', async () => {
-                const redirect = await prisma.redirect.findUnique({
-                    where: {
-                        id: ids.redirectIds[0],
-                    },
-                });
-                expect(redirect).toBeNull();
+                await expect(async () => {
+                    const redirect = await prisma.redirect.findUnique({
+                        where: {
+                            id: ids.redirectIds[0],
+                        },
+                    });
+                    expect(redirect).toBeNull();
+                }).toPass();
             }),
             test.step('validate api', async () => {
-                const response = await page.request.get(getSourceURL(data.redirects[0].code, baseURL), { maxRedirects: 0 });
-                expect(response.status()).toBe(302);
-                expect(response.headers()['location']).toBe(process.env.DEFAULT_REDIRECT_URL);
+                await expect(async () => {
+                    const response = await page.request.get(getSourceURL(data.redirects[0].code, baseURL), { maxRedirects: 0 });
+                    if (process.env.DEFAULT_REDIRECT_URL) {
+                        expect(response.status()).toBe(302);
+                        expect(response.headers()['location']).toBe(new URL(process.env.DEFAULT_REDIRECT_URL).toString());
+                    } else {
+                        expect(response.status()).toBe(404);
+                        const data = await response.json();
+                        expect(data).toStrictEqual({ "message": "No redirect found" });
+                    }
+                }).toPass();
             }),
         ]);
     });

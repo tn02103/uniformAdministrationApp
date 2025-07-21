@@ -458,6 +458,14 @@ export default {
     sidebar: {
         logout: "Abmelden",
         changeLanguage: "Sprache wechseln",
+        "message.inspection.start": "Die Kontrolle wurde erfolgreich gestartet",
+        "message.inspection.startError": "Die Kontrolle konnte nicht gestartet werden. Bitte versuchen Sie es später erneut.",
+        "message.inspection.stop": "Die Kontrolle wurder erfolgreich beendet",
+        "message.inspection.stopError": "Die Kontrolle konnte nicht beendet werden. Bitte versuchen Sie es später erneut.",
+        labels: {
+            "stopInspection.header": "Kontrolle Beenden",
+            "stopInspection.elementLabel": "Endzeit:",
+        },
         links: {
             cadetOverview: "Personal",
             uniformOverview: "Uniform",
@@ -473,13 +481,13 @@ export default {
                 unfinished: "Alte Kontrolle Beenden",
                 stop: "Stoppen",
                 inspection: "Verwaltung",
+                deficiencyType: "Mangeltypen",
             },
             administration: {
                 group: "Administration",
                 uniform: "Uniform",
                 size: "Größen",
                 material: "Materialien",
-                deficiency: "Mängel",
             },
             userOverview: "Zugänge",
             redirects: "Weiterleitungen",

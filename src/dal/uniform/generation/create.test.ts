@@ -1,193 +1,227 @@
-import { runServerActionTest } from "@/dal/_helper/testHelper";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { PrismaClient } from "@prisma/client";
+import { DeepMockProxy } from "jest-mock-extended";
 import { create } from "./create";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
-import { ExceptionType } from "@/errors/CustomException";
-import { prisma } from "@/lib/db";
+import { __unsecuredGetUniformTypeList } from "../type/get";
+import { mockTypeList, mockSizeLists } from "../../../../tests/_jestConfig/staticMockData";
 
-const { ids, cleanup } = new StaticData(0);
-const wrongStaticData = new StaticData(1);
+// Mock dependencies
+jest.mock("../type/get", () => ({
+    __unsecuredGetUniformTypeList: jest.fn(),
+}));
+
+// Get mocked functions
+const mockGetUniformTypeList = __unsecuredGetUniformTypeList as jest.MockedFunction<typeof __unsecuredGetUniformTypeList>;
+
+// Get the mocked prisma client
+const mockPrisma = jest.requireMock("@/lib/db").prisma as DeepMockProxy<PrismaClient>;
+
+// Mock data
+const mockUniformType = mockTypeList[0]; // Type with sizes and generations
+const mockUniformTypeNoSizes = mockTypeList[1]; // Type with generations but no sizes
+const mockUniformTypeNoGenerations = mockTypeList[2]; // Type without generations
+
 const defaultProps = {
-    name: "New Gen",
+    name: "New Generation",
     outdated: true,
-    fk_sizelist: ids.sizelistIds[0],
-    uniformTypeId: ids.uniformTypeIds[0],
-}
+    fk_sizelist: mockSizeLists[0].id,
+    uniformTypeId: mockUniformType.id,
+};
 
-afterEach(async () => cleanup.uniformTypeConfiguration());
+const mockExistingGenerations = [
+    {
+        id: 'existing-gen-1',
+        name: 'Generation1-1',
+        sortOrder: 0,
+        fk_uniformType: mockUniformType.id,
+        recdelete: null,
+    },
+    {
+        id: 'existing-gen-2',
+        name: 'Generation1-2',
+        sortOrder: 1,
+        fk_uniformType: mockUniformType.id,
+        recdelete: null,
+    }
+];
 
-it('should create the generation', async () => {
-    const { success, result } = await runServerActionTest(
-        create(defaultProps)
-    );
-    expect(success).toBeTruthy();
-    expect(result[0].uniformGenerationList).toHaveLength(5);
-    expect(result[0].uniformGenerationList[4]).toEqual(
-        expect.objectContaining({
+const mockUniformTypeList = [mockUniformType];
+const mockSession = { assosiation: 'test-assosiation-id', username: 'testuser' };
+
+describe('<UniformGeneration> create', () => {
+
+    beforeEach(() => {
+        // Setup default successful mocks
+        mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue(mockUniformType as any);
+        mockPrisma.uniformGeneration.findMany.mockResolvedValue(mockExistingGenerations as any);
+        mockPrisma.uniformGeneration.create.mockResolvedValue({
+            id: 'new-generation-id',
+            name: defaultProps.name,
+            outdated: defaultProps.outdated,
             fk_sizelist: defaultProps.fk_sizelist,
-            name: defaultProps.name,
-            outdated: true,
-            sortOrder: 4,
-        }),
-    );
-    const dbData = await prisma.uniformGeneration.findFirst({
-        where: {
-            name: defaultProps.name,
-        }
+            fk_uniformType: defaultProps.uniformTypeId,
+            sortOrder: 2,
+        } as any);
+        mockGetUniformTypeList.mockResolvedValue(mockUniformTypeList as any);
     });
-    expect(dbData).not.toBeNull();
-    expect(dbData).toEqual(
-        expect.objectContaining({
-            fk_sizelist: defaultProps.fk_sizelist,
-            name: defaultProps.name,
-            outdated: true,
-            sortOrder: 4,
-        }),
-    );
-});
-it('should throw error for fk_sizeList null while using sizes', async () => {
-    const { success, result } = await runServerActionTest(
-        create({
-            ...defaultProps,
-            fk_sizelist: null
-        }),
-    );
-    expect(success).toBeFalsy();
-    expect(result.exceptionType).toEqual(ExceptionType.SaveDataException);
-    expect(result.message).toMatch(/fk_sizelist is required for this uniformType/);
 
-    const dbData = await prisma.uniformGeneration.findFirst({
-        where: {
-            name: defaultProps.name
-        }
+    afterEach(() => {
+        jest.clearAllMocks();
+        mockPrisma.uniformType.findUniqueOrThrow.mockReset();
+        mockPrisma.uniformGeneration.findMany.mockReset();
+        mockPrisma.uniformGeneration.create.mockReset();
     });
-    expect(dbData).toBeNull();
-});
-it('should throw error for invalid fk_sizelist', async () => {
-    const { success } = await runServerActionTest(
-        create({
-            ...defaultProps,
-            fk_sizelist: ids.cadetIds[0],
-        }),
-    );
-    expect(success).toBeFalsy();
-    const dbData = await prisma.uniformGeneration.findFirst({
-        where: {
-            name: defaultProps.name
-        }
-    });
-    expect(dbData).toBeNull();
-});
-it('should throw error for wrong assosiation of fk_sizelist', async () => {
-    const { success } = await runServerActionTest(
-        create({
-            ...defaultProps,
-            fk_sizelist: wrongStaticData.ids.sizelistIds[0],
-        }),
-    );
-    expect(success).toBeFalsy();
 
-    const dbData = await prisma.uniformGeneration.findFirst({
-        where: {
-            name: defaultProps.name
-        }
-    });
-    expect(dbData).toBeNull();
-});
-it('should succeed with fk_sizelist null when not using sizes', async () => {
-    const { success } = await runServerActionTest(
-        create({
-            ...defaultProps,
-            fk_sizelist: null,
-            uniformTypeId: ids.uniformTypeIds[1],
-        }),
-    );
-    expect(success).toBeTruthy();
+    describe('successful creation scenarios', () => {
+        it('creates generation successfully with all required fields', async () => {
+            // Create the generation
+            await expect(create(defaultProps)).resolves.toEqual(mockUniformTypeList);
 
-    const dbData = await prisma.uniformGeneration.findFirst({
-        where: {
-            name: defaultProps.name
-        }
-    });
-    expect(dbData).not.toBeNull();
-});
-it('should set fk_sizelist null when not using sizes', async () => {
-    const { success, result } = await runServerActionTest(
-        create({
-            ...defaultProps,
-            uniformTypeId: ids.uniformTypeIds[1],
-        }),
-    );
-    expect(success).toBeTruthy();
-    expect(result[1].uniformGenerationList[2].fk_sizelist).toBeNull();
+            // Verify database interactions
+            expect(mockPrisma.uniformType.findUniqueOrThrow).toHaveBeenCalledWith({
+                where: { id: defaultProps.uniformTypeId }
+            });
+            expect(mockPrisma.uniformGeneration.findMany).toHaveBeenCalledWith({
+                where: {
+                    fk_uniformType: defaultProps.uniformTypeId,
+                    recdelete: null
+                }
+            });
+            expect(mockPrisma.uniformGeneration.create).toHaveBeenCalledWith({
+                data: {
+                    name: defaultProps.name,
+                    outdated: defaultProps.outdated,
+                    fk_sizelist: defaultProps.fk_sizelist,
+                    fk_uniformType: defaultProps.uniformTypeId,
+                    sortOrder: 2, // Length of existing generations
+                }
+            });
+            expect(mockGetUniformTypeList).toHaveBeenCalledWith(mockSession.assosiation, expect.anything());
+        });
 
-    const dbData = await prisma.uniformGeneration.findFirst({
-        where: {
-            name: defaultProps.name
-        }
-    });
-    expect(dbData).not.toBeNull();
-    expect(dbData!.fk_sizelist).toBeNull();
-});
-it('should throw error if uniformType is from different Assosiation', async () => {
-    const { success } = await runServerActionTest(
-        create({
-            ...defaultProps,
-            uniformTypeId: wrongStaticData.ids.uniformTypeIds[0],
-        }),
-    );
-    expect(success).toBeFalsy();
+        it('creates generation with null sizelist when type does not use sizes', async () => {
+            mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue(mockUniformTypeNoSizes as any);
 
-    const dbData = await prisma.uniformGeneration.findFirst({
-        where: {
-            name: defaultProps.name
-        }
-    });
-    expect(dbData).toBeNull();
-});
+            // create the generation with a type that does not use sizes
+            const props = {
+                ...defaultProps,
+                uniformTypeId: mockUniformTypeNoSizes.id,
+                fk_sizelist: mockSizeLists[0].id, // Provided but should be nullified
+            };
+            await expect(create(props)).resolves.toEqual(mockUniformTypeList);
 
-it('should throw error if uniformType is not using generations', async () => {
-    const { success, result } = await runServerActionTest(
-        create({
-            ...defaultProps,
-            uniformTypeId: ids.uniformTypeIds[2],
-        }),
-    );
-    expect(success).toBeFalsy();
-    expect(result.exceptionType).toEqual(ExceptionType.SaveDataException);
-    expect(result.message).toMatch(/generations are not activated for uniformType/);
+            // Verify database interactions
+            expect(mockPrisma.uniformGeneration.create).toHaveBeenCalledWith({
+                data: {
+                    name: props.name,
+                    outdated: props.outdated,
+                    fk_sizelist: null, // Should be null for types not using sizes
+                    fk_uniformType: props.uniformTypeId,
+                    sortOrder: 2,
+                }
+            });
+        });
 
-    const dbData = await prisma.uniformGeneration.findFirst({
-        where: {
-            name: defaultProps.name
-        }
-    });
-    expect(dbData).toBeNull();
-});
-it('should return soft error for nameDuplication', async () => {
-    const { success, result } = await runServerActionTest(
-        create({
-            ...defaultProps,
-            name: 'Generation1-1',
-        }),
-    );
-    expect(success).toBeFalsy();
-    expect(result.error).toBeDefined();
-    expect(result.error.formElement).toEqual('name');
-    expect(result.error.message).toEqual('custom.uniform.generation.nameDuplication');
+        it('sets correct sortOrder based on existing generations count', async () => {
+            const moreGenerations = [...mockExistingGenerations,
+            { id: 'gen-3', name: 'Gen3', sortOrder: 2, fk_uniformType: mockUniformType.id, recdelete: null },
+            { id: 'gen-4', name: 'Gen4', sortOrder: 3, fk_uniformType: mockUniformType.id, recdelete: null }
+            ];
+            mockPrisma.uniformGeneration.findMany.mockResolvedValue(moreGenerations as any);
 
-    const dbData = await prisma.uniformGeneration.findFirst({
-        where: {
-            name: defaultProps.name
-        }
+            // Create the generation with more existing generations
+            await expect(create(defaultProps)).resolves.toEqual(mockUniformTypeList);
+
+            // Verify sortOrder is set correctly
+            expect(mockPrisma.uniformGeneration.create).toHaveBeenCalledWith({
+                data: expect.objectContaining({
+                    sortOrder: 4,
+                })
+            });
+        });
     });
-    expect(dbData).toBeNull();
-});
-it('should succed with name of deleted generation', async () => {
-    const { success } = await runServerActionTest(
-        create({
-            ...defaultProps,
-            name: 'Generation1-5'
-        }),
-    );
-    expect(success).toBeTruthy();
+
+    describe('validation error scenarios', () => {
+        it('throws error when type does not use generations', async () => {
+            mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue(mockUniformTypeNoGenerations as any);
+
+            await expect(create({
+                ...defaultProps,
+                uniformTypeId: mockUniformTypeNoGenerations.id
+            })).rejects.toThrow('generations are not activated for uniformType');
+
+            expect(mockPrisma.uniformGeneration.findMany).not.toHaveBeenCalled();
+            expect(mockPrisma.uniformGeneration.create).not.toHaveBeenCalled();
+        });
+
+        it('throws error when type uses sizes but no sizelist provided', async () => {
+            const props = {
+                ...defaultProps,
+                fk_sizelist: null,
+            };
+
+            await expect(create(props)).rejects.toThrow('fk_sizelist is required for this uniformType');
+
+            expect(mockPrisma.uniformGeneration.create).not.toHaveBeenCalled();
+        });
+
+        it('returns soft error for name duplication', async () => {
+            const props = {
+                ...defaultProps,
+                name: 'Generation1-1', // Name that already exists
+            };
+            const expectedResult = {
+                error: {
+                    message: "custom.uniform.generation.nameDuplication",
+                    formElement: "name",
+                }
+            };
+
+            await expect(create(props)).resolves.toEqual(expectedResult);
+            expect(mockPrisma.uniformGeneration.create).not.toHaveBeenCalled();
+            expect(mockGetUniformTypeList).not.toHaveBeenCalled();
+        });
+
+        it('throws error when uniform type is not found', async () => {
+            mockPrisma.uniformType.findUniqueOrThrow.mockRejectedValue(new Error('Type not found'));
+
+            await expect(create(defaultProps)).rejects.toThrow('Type not found');
+
+            expect(mockPrisma.uniformGeneration.findMany).not.toHaveBeenCalled();
+            expect(mockPrisma.uniformGeneration.create).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('database interaction verification', () => {
+        it('verifies transaction usage', async () => {
+            await expect(create(defaultProps)).resolves.toEqual(mockUniformTypeList);
+
+            expect(mockPrisma.$transaction).toHaveBeenCalledWith(expect.any(Function));
+        });
+
+        it('queries for existing generations with correct parameters', async () => {
+            await expect(create(defaultProps)).resolves.toEqual(mockUniformTypeList);
+
+            expect(mockPrisma.uniformGeneration.findMany).toHaveBeenCalledWith({
+                where: {
+                    fk_uniformType: defaultProps.uniformTypeId,
+                    recdelete: null // Only non-deleted generations
+                }
+            });
+        });
+    });
+
+    describe('edge cases', () => {
+        it('handles empty existing generations list', async () => {
+            mockPrisma.uniformGeneration.findMany.mockResolvedValue([]);
+
+            await expect(create(defaultProps)).resolves.toEqual(mockUniformTypeList);
+
+            expect(mockPrisma.uniformGeneration.create).toHaveBeenCalledWith({
+                data: expect.objectContaining({
+                    sortOrder: 0, // First generation gets sortOrder 0
+                })
+            });
+        });
+    });
 });

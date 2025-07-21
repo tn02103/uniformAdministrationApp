@@ -1,3 +1,5 @@
+"use client";
+
 import debounce from 'debounce';
 import { useEffect, useState } from "react";
 
@@ -48,8 +50,8 @@ const isMatchingRule = (size: number, breakpoint: Breakpoint, mode: UseBreakpoin
 }
 
 export const useBreakpoint = (breakpoint: keyof typeof BreakpointMap, mode: UseBreakpointModes = "gte") => {
-    const [size, setSize] = useState<Breakpoint>(getCurrentBreakpoint(window.innerWidth));
-    const [matchingBreakpoint, setMatchingBreakpoint] = useState<boolean>(isMatchingRule(window.innerWidth, breakpoint, mode));
+    const [size, setSize] = useState<Breakpoint | undefined>();
+    const [matchingBreakpoint, setMatchingBreakpoint] = useState<boolean|undefined>();
 
     useEffect(() => {
         const calcInnerWidth = debounce(function () {
@@ -57,9 +59,10 @@ export const useBreakpoint = (breakpoint: keyof typeof BreakpointMap, mode: UseB
             setMatchingBreakpoint(isMatchingRule(window.innerWidth, breakpoint, mode));
         }, 100);
 
+        calcInnerWidth(); // Initial calculation
         window.addEventListener('resize', calcInnerWidth);
         return () => window.removeEventListener('resize', calcInnerWidth);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return { size, match: matchingBreakpoint };

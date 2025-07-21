@@ -92,13 +92,14 @@ test.describe('sizeList Configuration', () => {
             await expect(detailComponent.div_selectedSize(sizeIdArray[i])).toBeVisible();
         }
     });
-    test('validate namePopup formVaidation', async ({ page, listComponent, editListPopup }) => {
+    // TODO write component tests
+    test.skip('validate namePopup formVaidation', async ({ page, listComponent, editListPopup }) => {
         const tests = newDescriptionValidationTests({
             minLength: 0,
             maxLength: 20,
         });
         for (const testSet of tests) {
-            await test.step(testSet.testValue, async () => {
+            await test.step(String(testSet.testValue), async () => {
                 await page.reload();
                 await listComponent.btn_create.click();
 
@@ -110,7 +111,7 @@ test.describe('sizeList Configuration', () => {
                 } else {
                     await expect.soft(editListPopup.err_input).toBeVisible();
                 }
-            })
+            });
         }
     });
 

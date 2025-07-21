@@ -1,253 +1,370 @@
-import { runServerActionTest } from "@/dal/_helper/testHelper";
-import { ExceptionType } from "@/errors/CustomException";
-import { prisma } from "@/lib/db";
-import dayjs from "@/lib/dayjs";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { PrismaClient } from "@prisma/client";
+import { DeepMockProxy } from "jest-mock-extended";
+import { mockTypeList, mockUniformList } from "../../../../tests/_jestConfig/staticMockData";
 import { issue } from "./issue";
+import { AuthRole } from "@/lib/AuthRoles";
+import { ExceptionType } from "@/errors/CustomException";
 
+// Mock the dependencies
+jest.mock("./return");
+jest.mock("@/dal/cadet/uniformMap");
 
-const { ids, cleanup } = new StaticData(0);
-const defaultProps = {
-    number: 1110,
-    cadetId: ids.cadetIds[0],
-    uniformTypeId: ids.uniformTypeIds[0],
+// Get the mocked prisma client
+const mockPrisma = jest.requireMock("@/lib/db").prisma as DeepMockProxy<PrismaClient>;
+
+const mockCadetId = 'cadet-123';
+const mockUniformId = 'uniform-456';
+const mockUniformToReplaceId = 'uniform-to-replace-789';
+
+const defaultIssueProps = {
+    number: 2001,
+    uniformTypeId: mockTypeList[0].id,
+    cadetId: mockCadetId,
     options: {}
-}
-const today = new Date()
-today.setUTCHours(0, 0, 0, 0);
+};
 
-afterEach(async () => cleanup.uniform());
+// Mock uniform data
+const mockUniform = {
+    id: mockUniformId,
+    number: 2001,
+    fk_uniformType: mockTypeList[0].id,
+    active: true,
+    storageUnitId: null,
+    type: {
+        id: mockTypeList[0].id,
+        name: mockTypeList[0].name,
+    },
+    issuedEntries: []
+};
+
+const mockInactiveUniform = {
+    ...mockUniform,
+    active: false
+};
+
+const mockIssuedUniform = {
+    ...mockUniform,
+    issuedEntries: [{
+        id: 'issued-entry-1',
+        fk_cadet: 'other-cadet-123',
+        dateIssued: new Date('2025-01-01'),
+        cadet: {
+            id: 'other-cadet-123',
+            firstname: 'John',
+            lastname: 'Doe'
+        }
+    }]
+};
+
+const mockCadet = {
+    id: mockCadetId,
+    firstname: 'Jane',
+    lastname: 'Smith'
+};
+
+const mockIssuedEntry = {
+    id: 'issued-entry-replace',
+    fk_cadet: mockCadetId,
+    dateIssued: new Date('2025-01-01')
+};
 
 describe('<UniformItem> issue', () => {
-    it('issues item if all is well', async () => {
-        const { success, result } = await runServerActionTest(
-            issue(defaultProps)
-        );
-        expect(success).toBeTruthy();
-        expect(result[ids.uniformTypeIds[0]]).toHaveLength(5);
 
-        const dbIssuedEntry = await prisma.uniformIssued.findFirst({
-            where: {
-                uniform: {
-                    number: 1110
-                },
-                fk_cadet: ids.cadetIds[0],
-            }
-        });
-        expect(dbIssuedEntry).not.toBeNull();
-        expect(dbIssuedEntry!.dateIssued).toEqual(today);
-    });
-    it('returns soft NullValueException when item doesnt exist', async () => {
-        const { success, result } = await runServerActionTest(
-            issue({
-                ...defaultProps,
-                number: 99999
-            })
-        );
-        expect(success).toBeFalsy();
-        expect(result.error.exceptionType).toEqual(ExceptionType.NullValueException);
-        expect(result.error.data).toStrictEqual({
-            number: 99999,
-            type: ids.uniformTypeIds[0],
-            element: 'uniform',
-            id: undefined
-        });
-    });
-    it('creates new item if none exists and option.create is true', async () => {
-        const { success, result } = await runServerActionTest(
-            issue({
-                ...defaultProps,
-                number: 99999,
-                options: { create: true }
-            })
-        );
+    // Get the mocked functions from the modules mocked above
+    const mockUnsecuredReturnUniformitem = jest.requireMock("./return").__unsecuredReturnUniformitem;
+    const mockUnsecuredGetCadetUniformMap = jest.requireMock("@/dal/cadet/uniformMap").__unsecuredGetCadetUniformMap;
 
-        expect(success).toBeTruthy();
-        expect(result[ids.uniformTypeIds[0]]).toHaveLength(5);
+    beforeAll(() => {
+        // Set up mock return values that depend on imported data
+        mockUnsecuredGetCadetUniformMap.mockResolvedValue([mockUniformList[0]]);
+    });
 
-        const dbItem = await prisma.uniform.findFirst({
-            where: {
-                number: 99999,
-                fk_uniformType: ids.uniformTypeIds[0],
-            },
-            include: { issuedEntries: true }
-        });
-        expect(dbItem).not.toBeNull();
-        expect(dbItem!.issuedEntries).toHaveLength(1);
-        expect(dbItem!.issuedEntries[0].fk_cadet).toEqual(ids.cadetIds[0])
-        expect(dayjs().isSame(dbItem!.issuedEntries[0].dateIssued, "day")).toBeTruthy();
+    beforeEach(() => {
+        // Default mock responses
+        mockPrisma.uniform.findFirst.mockResolvedValue(mockUniform as any);
+        mockPrisma.uniform.create.mockResolvedValue(mockUniform as any);
+        mockPrisma.uniform.update.mockResolvedValue(mockUniform as any);
+        mockPrisma.uniformIssued.create.mockResolvedValue({ id: 'new-issued-entry' } as any);
+        mockPrisma.cadet.findUniqueOrThrow.mockResolvedValue(mockCadet as any);
+        mockPrisma.$executeRaw.mockResolvedValue(1);
     });
-    it('returns soft UniformInactiveException if item is a reserve', async () => {
-        const { success, result } = await runServerActionTest(
-            issue({
-                ...defaultProps,
-                number: 1109
-            })
-        );
-        expect(success).toBeFalsy();
-        expect(result.error.exceptionType).toEqual(ExceptionType.InactiveException);
-    });
-    it('ignores item as reserve if option.ignoreInactive is true', async () => {
-        const { success, result } = await runServerActionTest(
-            issue({
-                ...defaultProps,
-                number: 1109,
-                options: { ignoreInactive: true }
-            })
-        );
-        expect(success).toBeTruthy();
-        expect(result[ids.uniformTypeIds[0]]).toHaveLength(5);
-    });
-    it('returns soft UniformIssuedException if item is issued', async () => {
-        const { success, result } = await runServerActionTest(
-            issue({
-                ...defaultProps,
-                number: 1100
-            })
-        );
-        expect(success).toBeFalsy();
-        expect(result.error.exceptionType).toEqual(ExceptionType.UniformIssuedException);
-        expect(result.error.data).toStrictEqual({
-            uniform: {
-                id: ids.uniformIds[0][0],
-                number: 1100,
-            },
-            owner: {
-                active: true,
-                comment: "initial-comment",
-                firstname: "Maik",
-                id: ids.cadetIds[5],
-                lastname: "Finkel",
-            },
-        });
-    });
-    it('does not return UniformIssuedException if item has been returned', async () => {
-        const { success, result } = await runServerActionTest(
-            issue({
-                ...defaultProps,
-                number: 1155,
-            })
-        );
-        expect(success).toBeTruthy();
-        expect(result[ids.uniformTypeIds[0]]).toHaveLength(5);
-    });
-    it('returns item to previous owner if option.force is true', async () => {
-        const { success, result } = await runServerActionTest(
-            issue({
-                ...defaultProps,
-                number: 1100,
-                options: { force: true }
-            })
-        );
-        expect(success).toBeTruthy();
-        expect(result[ids.uniformTypeIds[0]]).toHaveLength(5);
 
-        const [dbMaik, issuedEntries] = await prisma.$transaction([
-            prisma.cadet.findUnique({
+    afterEach(() => {
+        jest.clearAllMocks();
+        mockPrisma.uniform.findFirst.mockReset();
+        mockPrisma.uniform.create.mockReset();
+        mockPrisma.uniform.update.mockReset();
+        mockPrisma.uniformIssued.create.mockReset();
+        mockPrisma.uniformIssued.findFirst.mockReset();
+        mockPrisma.cadet.findUniqueOrThrow.mockReset();
+        mockPrisma.$executeRaw.mockReset();
+        mockUnsecuredReturnUniformitem.mockReset();
+    });
+
+
+    describe('successful issue scenarios', () => {
+        it('issues uniform to cadet successfully', async () => {
+            await expect(issue(defaultIssueProps)).resolves.toEqual([mockUniformList[0]]);
+
+            expect(mockPrisma.uniform.findFirst).toHaveBeenCalledWith({
                 where: {
-                    id: ids.cadetIds[5],
+                    number: 2001,
+                    fk_uniformType: mockTypeList[0].id,
+                    recdelete: null,
+                },
+                include: {
+                    type: true,
+                    issuedEntries: {
+                        where: {
+                            dateReturned: null,
+                        },
+                        include: { cadet: expect.any(Object) }
+                    },
                 }
-            }),
-            prisma.uniformIssued.findMany({
-                where: {
-                    fk_uniform: ids.uniformIds[0][0],
-                },
-                orderBy: { dateIssued: "asc" }
-            }),
-        ]);
-        expect(dbMaik).not.toBeUndefined();
-        expect(dbMaik?.comment).toEqual('initial-comment<<Das Uniformteil Typ1 1100 wurde Antje Fried Überschrieben>>');
+            });
+            expect(mockPrisma.uniformIssued.create).toHaveBeenCalledWith({
+                data: {
+                    fk_uniform: mockUniformId,
+                    fk_cadet: mockCadetId,
+                }
+            });
+        });
 
-        expect(issuedEntries).toHaveLength(2);
-        const today = new Date();
-        today.setUTCHours(0, 0, 0, 0);
+        it('creates and issues uniform when uniform does not exist and create option is true', async () => {
+            mockPrisma.uniform.findFirst.mockResolvedValue(null);
 
-        expect(issuedEntries[0]).toEqual(
-            expect.objectContaining({
-                dateReturned: today,
-            }),
-        );
-        expect(issuedEntries[1]).toEqual(
-            expect.objectContaining({
-                dateIssued: today,
-                dateReturned: null,
-            }),
-        );
-    });
-    it('returns item of idToReplace', async () => {
-        const { success, result } = await runServerActionTest(
-            issue({
-                ...defaultProps,
-                idToReplace: ids.uniformIds[0][42]
-            })
-        );
-        expect(success).toBeTruthy();
-        expect(result[ids.uniformTypeIds[0]]).toHaveLength(4);
-        expect(result[ids.uniformTypeIds[0]]).toEqual(
-            expect.arrayContaining([
-                expect.objectContaining({
-                    id: ids.uniformIds[0][10],
+            await expect(
+                issue({
+                    ...defaultIssueProps,
+                    options: { create: true }
                 })
-            ])
-        );
-        expect(result[ids.uniformTypeIds[0]]).not.toEqual(
-            expect.arrayContaining([
-                expect.objectContaining({
-                    id: ids.uniformIds[0][42]
+            ).resolves.toEqual([mockUniformList[0]]);
+
+            expect(mockPrisma.uniform.create).toHaveBeenCalledWith({
+                data: {
+                    number: 2001,
+                    fk_uniformType: mockTypeList[0].id,
+                    active: true,
+                    issuedEntries: {
+                        create: {
+                            fk_cadet: mockCadetId,
+                        }
+                    }
+                }
+            });
+            expect(mockPrisma.uniformIssued.create).not.toHaveBeenCalled(); // uniform.create handles this
+        });
+
+        it('issues inactive uniform when ignoreInactive option is true', async () => {
+            mockPrisma.uniform.findFirst.mockResolvedValue(mockInactiveUniform as any);
+
+            await expect(
+                issue({
+                    ...defaultIssueProps,
+                    options: { ignoreInactive: true }
                 })
-            ])
-        );
+            ).resolves.toEqual([mockUniformList[0]]);
 
-        const [dbIssued, dbReturnd] = await prisma.$transaction([
-            prisma.uniformIssued.findFirst({
-                where: {
-                    fk_uniform: ids.uniformIds[0][10],
-                    fk_cadet: ids.cadetIds[0],
-                },
-            }),
-            prisma.uniformIssued.findFirst({
-                where: {
-                    fk_uniform: ids.uniformIds[0][42],
-                    fk_cadet: ids.cadetIds[0],
-                },
-            }),
-        ]);
+            expect(mockPrisma.uniformIssued.create).toHaveBeenCalled();
+        });
 
-        expect(dbIssued).not.toBeNull();
-        expect(dbIssued!.dateIssued).toEqual(today);
-        expect(dbIssued!.dateReturned).toBeNull();
-        expect(dbReturnd).not.toBeNull();
-        expect(dbReturnd!.dateIssued).toStrictEqual(new Date('2023-08-13T00:00:00.000Z'));
-        expect(dbReturnd!.dateReturned).toEqual(today);
+        it('forcefully issues already issued uniform', async () => {
+            mockPrisma.uniform.findFirst.mockResolvedValue(mockIssuedUniform as any);
+
+            await expect(
+                issue({
+                    ...defaultIssueProps,
+                    options: { force: true }
+                })
+            ).resolves.toEqual([mockUniformList[0]]);
+
+            // Should add comment to previous owner
+            expect(mockPrisma.$executeRaw).toHaveBeenCalledWith(
+                expect.any(Array), // Template literal parts
+                expect.stringContaining(`<<Das Uniformteil ${mockTypeList[0].name} 2001 wurde Jane Smith Überschrieben>>`),
+                'other-cadet-123'
+            );
+
+            // Should return the uniform from previous owner
+            expect(mockUnsecuredReturnUniformitem).toHaveBeenCalledWith(
+                'issued-entry-1',
+                new Date('2025-01-01'),
+                expect.anything(),
+            );
+
+            expect(mockPrisma.uniformIssued.create).toHaveBeenCalled();
+        });
+
+        it('removes uniform from storage unit when issuing', async () => {
+            const uniformInStorage = {
+                ...mockUniform,
+                storageUnitId: 'storage-unit-123'
+            };
+            mockPrisma.uniform.findFirst.mockResolvedValue(uniformInStorage as any);
+
+            await expect(issue(defaultIssueProps)).resolves.toEqual([mockUniformList[0]]);
+
+            expect(mockPrisma.uniform.update).toHaveBeenCalledWith({
+                where: { id: mockUniformId },
+                data: {
+                    storageUnitId: null,
+                }
+            });
+            expect(mockPrisma.uniformIssued.create).toHaveBeenCalled();
+        });
+
+        it('returns previous uniform when replacing', async () => {
+            mockPrisma.uniformIssued.findFirst.mockResolvedValue(mockIssuedEntry as any);
+
+            await expect(
+                issue({
+                    ...defaultIssueProps,
+                    idToReplace: mockUniformToReplaceId
+                })
+            ).resolves.toEqual([mockUniformList[0]]);
+
+            // Should find the issued entry to replace
+            expect(mockPrisma.uniformIssued.findFirst).toHaveBeenCalledWith({
+                where: {
+                    dateReturned: null,
+                    fk_cadet: mockCadetId,
+                    uniform: {
+                        id: mockUniformToReplaceId,
+                        fk_uniformType: mockTypeList[0].id,
+                        recdelete: null,
+                    }
+                }
+            });
+
+            // Should return the previous uniform
+            expect(mockUnsecuredReturnUniformitem).toHaveBeenCalledWith(
+                'issued-entry-replace',
+                new Date('2025-01-01'),
+                expect.anything(),
+            );
+
+            expect(mockPrisma.uniformIssued.create).toHaveBeenCalled();
+        });
     });
-    it('fails if idToReplace of different Type', async () => {
-        const { success, result } = await runServerActionTest(
-            issue({
-                ...defaultProps,
-                idToReplace: ids.uniformIds[3][10]
+
+    describe('error scenarios', () => {
+        it('throws error when uniform not found and create option is false', async () => {
+            mockPrisma.uniform.findFirst.mockResolvedValue(null);
+
+            await expect(issue(defaultIssueProps)).resolves.toMatchObject({
+                error: {
+                    exceptionType: ExceptionType.NullValueException,
+                }
+            });
+
+            expect(mockPrisma.uniform.create).not.toHaveBeenCalled();
+            expect(mockPrisma.uniformIssued.create).not.toHaveBeenCalled();
+        });
+
+        it('throws error when uniform is inactive and ignoreInactive is false', async () => {
+            mockPrisma.uniform.findFirst.mockResolvedValue(mockInactiveUniform as any);
+
+            await expect(issue(defaultIssueProps)).resolves.toMatchObject({
+                error: {
+                    exceptionType: ExceptionType.InactiveException,
+                }
             })
-        );
-        expect(success).toBeFalsy();
-        expect(result.exceptionType).toBe(ExceptionType.SaveDataException);
+
+            expect(mockPrisma.uniformIssued.create).not.toHaveBeenCalled();
+        });
+
+        it('throws error when uniform is already issued and force is false', async () => {
+            mockPrisma.uniform.findFirst.mockResolvedValue(mockIssuedUniform as any);
+
+            await expect(issue(defaultIssueProps)).resolves.toMatchObject({
+                error: {
+                    exceptionType: ExceptionType.UniformIssuedException,
+                }
+            });
+
+            expect(mockPrisma.uniformIssued.create).not.toHaveBeenCalled();
+        });
+
+        it('throws error when uniform to replace is not found', async () => {
+            mockPrisma.uniformIssued.findFirst.mockResolvedValue(null);
+
+            await expect(issue({
+                ...defaultIssueProps,
+                idToReplace: mockUniformToReplaceId
+            })).rejects.toThrow('Could not return UniformToReplace. Issued Entry not found: ' + mockUniformToReplaceId);
+
+            expect(mockPrisma.uniformIssued.create).not.toHaveBeenCalled();
+        });
+
+        it('throws error when comment cannot be added to previous owner', async () => {
+            mockPrisma.uniform.findFirst.mockResolvedValue(mockIssuedUniform as any);
+            mockPrisma.$executeRaw.mockResolvedValue(0); // Simulate failure
+
+            await expect(issue({
+                ...defaultIssueProps,
+                options: { force: true }
+            })).rejects.toThrow('Could not add comment to previous owner');
+
+            expect(mockPrisma.uniformIssued.create).not.toHaveBeenCalled();
+        });
     });
-    it('fails if idToReplace issued to different Person', async () => {
-        const { success, result } = await runServerActionTest(
-            issue({
-                ...defaultProps,
-                idToReplace: ids.uniformIds[0][86]
-            })
-        );
-        expect(success).toBeFalsy();
-        expect(result.exceptionType).toBe(ExceptionType.SaveDataException);
+
+    describe('validation scenarios', () => {
+        it('calls genericSAValidator with correct parameters', async () => {
+            const { genericSAValidator } = jest.requireMock("@/actions/validations");
+            await expect(issue(defaultIssueProps)).resolves.toEqual([mockUniformList[0]]);
+
+            expect(mockPrisma.uniformIssued.create).toHaveBeenCalled();
+            expect(genericSAValidator).toHaveBeenCalledWith(
+                AuthRole.inspector,
+                defaultIssueProps,
+                expect.anything(),
+                {
+                    cadetId: mockCadetId,
+                    uniformId: undefined,
+                    uniformTypeId: defaultIssueProps.uniformTypeId,
+                }
+            );
+        });
     });
-    it('fails if idToReplace is not issued', async () => {
-        const { success, result } = await runServerActionTest(
-            issue({
-                ...defaultProps,
-                idToReplace: ids.uniformIds[0][11]
-            })
-        );
-        expect(success).toBeFalsy();
-        expect(result.exceptionType).toBe(ExceptionType.SaveDataException);
+
+    describe('database interaction verification', () => {
+        it('verifies cadet lookup when forcing issue', async () => {
+            mockPrisma.uniform.findFirst.mockResolvedValue(mockIssuedUniform as any);
+
+            await issue({
+                ...defaultIssueProps,
+                options: { force: true }
+            });
+
+            expect(mockPrisma.cadet.findUniqueOrThrow).toHaveBeenCalledWith({
+                where: {
+                    id: mockCadetId,
+                    recdelete: null,
+                }
+            });
+        });
+
+        it('verifies correct uniform lookup parameters', async () => {
+            await issue(defaultIssueProps);
+
+            expect(mockPrisma.uniform.findFirst).toHaveBeenCalledWith({
+                where: {
+                    number: 2001,
+                    fk_uniformType: mockTypeList[0].id,
+                    recdelete: null,
+                },
+                include: {
+                    type: true,
+                    issuedEntries: {
+                        where: {
+                            dateReturned: null,
+                        },
+                        include: { cadet: expect.any(Object) }
+                    },
+                }
+            });
+        });
     });
 });

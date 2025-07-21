@@ -20,7 +20,10 @@ export const update = (props: UniformFormType): Promise<UniformWithOwner> => gen
     const type = await client.uniformType.findFirstOrThrow({
         where: {
             uniformList: {
-                some: { id: data.id }
+                some: {
+                    id: data.id,
+                    recdelete: null,
+                }
             }
         }
     });
@@ -28,7 +31,11 @@ export const update = (props: UniformFormType): Promise<UniformWithOwner> => gen
         let sizelistId = type.fk_defaultSizelist;
         if (type.usingGenerations && data.generation) {
             const generation = await client.uniformGeneration.findUniqueOrThrow({
-                where: { id: data.generation }
+                where: { 
+                    id: data.generation,
+                    fk_uniformType: type.id,
+                    recdelete: null,
+                }
             });
             if (generation.fk_sizelist) {
                 sizelistId = generation.fk_sizelist;
