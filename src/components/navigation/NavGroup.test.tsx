@@ -75,7 +75,7 @@ describe('NavGroup', () => {
             render(<NavGroup {...defaultProps} />);
 
             expect(screen.getByText('Test Group')).toBeInTheDocument();
-            expect(screen.getAllByTestId('font-awesome-icon')[0]).toHaveAttribute('data-icon', 'gear');
+            expect(screen.getAllByRole('img', { hidden: true })[0]).toHaveAttribute('data-icon', 'gear');
         });
 
         test('Renders children when expanded', async () => {
@@ -297,13 +297,13 @@ describe('NavGroup', () => {
             render(<NavGroup {...defaultProps} />);
 
             expect(screen.queryByText('Child Item')).not.toBeInTheDocument();
-            expect(screen.getAllByTestId('font-awesome-icon')).toHaveLength(2);
-            expect(screen.getAllByTestId('font-awesome-icon')[1]).toHaveAttribute('data-icon', 'angle-down');
+            expect(screen.getAllByRole('img', { hidden: true })).toHaveLength(2);
+            expect(screen.getAllByRole('img', { hidden: true })[1]).toHaveAttribute('data-icon', 'angle-down');
             // Initially should show down arrow (collapsed state)
             await user.click(screen.getByTestId('test-nav-group'));
 
             expect(screen.getByText('Child Item')).toBeInTheDocument();
-            expect(screen.getAllByTestId('font-awesome-icon')[1]).toHaveAttribute('data-icon', 'angle-up');
+            expect(screen.getAllByRole('img', { hidden: true })[1]).toHaveAttribute('data-icon', 'angle-up');
         });
 
         test('Highlights when child is selected', () => {
