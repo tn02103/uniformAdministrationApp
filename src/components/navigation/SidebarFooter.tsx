@@ -25,8 +25,6 @@ export const SidebarFooter = ({ username, collapseButtonRef, handleCollapseButto
     const { collapsed, setCollapsed, isSidebarFixed, setShowSidebar } = useSidebarContext();
     const [, setSidebarFixed] = useSessionStorage("sidebarFixed", true);
 
-    const isCollapsed = collapsed && !isSidebarFixed;
-
     function handleLogout() {
         logout().then(() => {
             const authItemString = localStorage.getItem(process.env.NEXT_PUBLIC_LOCAL_AUTH_KEY as string);
@@ -44,10 +42,10 @@ export const SidebarFooter = ({ username, collapseButtonRef, handleCollapseButto
     return (
         <div className="flex-shrink-0">
             <div className="w-100">
-                <hr className={`my-1 ${isCollapsed ? "mx-1" : "mx-3"}`} />
+                <hr className={`my-1 ${collapsed ? "mx-1" : "mx-3"}`} />
             </div>
-            <div className={`d-flex flex-row w-100 mb-2 ${isCollapsed ? "justify-content-center" : "justify-content-between"}`}>
-                {!isCollapsed &&
+            <div className={`d-flex flex-row w-100 mb-2 ${collapsed ? "justify-content-center" : "justify-content-between"}`}>
+                {!collapsed &&
                     <div className="p-2 ms-3 fw-bold">
                         <Dropdown drop="up">
                             <Dropdown.Toggle variant="primary" className="border-0 text-white bg-navy fw-bold" data-testid={"btn_user_dropdown"}>
@@ -65,7 +63,7 @@ export const SidebarFooter = ({ username, collapseButtonRef, handleCollapseButto
                     </div>
                 }
                 <button
-                    data-testid="btn_collapse"
+                    data-testid="btn_fix_sidebar"
                     className="btn text-white btn-lg d-none d-lg-block"
                     onClick={() => {
                         if (isSidebarFixed) {
@@ -78,7 +76,7 @@ export const SidebarFooter = ({ username, collapseButtonRef, handleCollapseButto
                 >
                     <FontAwesomeIcon icon={isSidebarFixed ? faAngleLeft : faAngleRight} />
                 </button>
-                <button data-testid="btn_collapse" className="btn text-white btn-lg d-lg-none" onClick={() => setShowSidebar(false)}>
+                <button data-testid="btn_collapse_mobile" className="btn text-white btn-lg d-lg-none" onClick={() => setShowSidebar(false)}>
                     <FontAwesomeIcon icon={faAngleLeft} />
                 </button>
             </div>

@@ -15,13 +15,6 @@ jest.mock('../globalDataProvider', () => ({
     useGlobalData: jest.fn(),
 }));
 
-// Mock FontAwesome icons
-jest.mock('@fortawesome/react-fontawesome', () => ({
-    FontAwesomeIcon: ({ icon, className, size }: { icon: { iconName: string }, className?: string, size?: string }) => (
-        <span data-testid="font-awesome-icon" className={className} data-icon={icon.iconName} data-size={size} />
-    ),
-}));
-
 // Mock Bootstrap components
 jest.mock('react-bootstrap', () => ({
     OverlayTrigger: ({ children, show, overlay }: { children: React.ReactNode, show?: boolean, overlay?: React.ReactNode }) => (
