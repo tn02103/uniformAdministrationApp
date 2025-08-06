@@ -68,7 +68,7 @@
         "timers": "0.1.1",
         "usehooks-ts": "3.1.1",
         "uuidv4": "6.2.13",
-        "zod": "3.25.67"
+        "zod": "4.0.15"
     },
     "devDependencies": {
         "@babel/core": "7.28.0",
