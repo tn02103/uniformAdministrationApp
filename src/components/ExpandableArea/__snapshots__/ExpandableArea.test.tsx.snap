@@ -24,10 +24,8 @@ exports[`ExpandableArea renders area closed 1`] = `
             class="svg-inline--fa fa-chevron-down text-dark me-2 false"
             data-icon="chevron-down"
             data-prefix="fas"
-            focusable="false"
             role="img"
             viewBox="0 0 448 512"
-            xmlns="http://www.w3.org/2000/svg"
           >
             <path
               d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
@@ -66,10 +64,8 @@ exports[`ExpandableArea renders area open 1`] = `
             class="svg-inline--fa fa-chevron-down text-dark me-2 open"
             data-icon="chevron-down"
             data-prefix="fas"
-            focusable="false"
             role="img"
             viewBox="0 0 448 512"
-            xmlns="http://www.w3.org/2000/svg"
           >
             <path
               d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
