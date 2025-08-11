@@ -352,8 +352,8 @@ describe('UniformDeficiencyRow', () => {
 
             // check that formValues are reset when editing again
             await setEditable(firstCard, user);
-            expect(commentInput).toHaveValue(mockDeficiencyList[0].comment);
-            expect(typeSelect).toHaveValue(mockDeficiencyList[0].typeId);
+            expect(getByRole(firstCard, 'textbox', { name: /comment/i })).toHaveValue(mockDeficiencyList[0].comment);
+            expect(getByRole(firstCard, 'combobox', { name: /deficiencyType/i })).toHaveValue(mockDeficiencyList[0].typeId);
         });
         it('should call updateDeficiency on save', async () => {
             const user = userEvent.setup();
