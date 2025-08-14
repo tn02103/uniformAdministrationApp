@@ -4,14 +4,14 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Mock i18n for component tests
 const useI18nFn = jest.fn((key) => key);
+const useScopedI18nFn = jest.fn();
 window.HTMLElement.prototype.scrollIntoView = function () { };
 
 jest.mock('@/lib/locales/client', () => {
     return {
         useScopedI18n: jest.fn((scope: string) => {
-            return function (key: string) {
-                return `${scope}.${key}`;
-            };
+            useScopedI18nFn.mockImplementation((key: string) => `${scope}.${key}`);
+            return useScopedI18nFn;
         }),
         useI18n: jest.fn().mockImplementation(() => useI18nFn),
         useCurrentLocale: jest.fn(() => ({
@@ -76,3 +76,11 @@ jest.mock("react-toastify", () => {
         toast
     };
 });
+
+jest.mock('next/navigation', () => ({
+    useRouter: jest.fn(),
+}));
+
+jest.mock('usehooks-ts', () => ({
+    useSessionStorage: jest.fn(),
+}));

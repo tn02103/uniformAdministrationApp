@@ -17,14 +17,6 @@ jest.mock('@/actions/auth', () => ({
     logout: jest.fn(),
 }));
 
-jest.mock('next/navigation', () => ({
-    useRouter: jest.fn(),
-}));
-
-jest.mock('usehooks-ts', () => ({
-    useSessionStorage: jest.fn(),
-}));
-
 jest.mock('swr', () => ({
     mutate: jest.fn(),
     useSWR: jest.fn(),

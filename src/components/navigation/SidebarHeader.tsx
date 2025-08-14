@@ -5,21 +5,31 @@ import style from './SidebarHeader.module.css';
 import { Assosiation } from "@prisma/client";
 import { useSidebarContext } from './Sidebar';
 import { useInspectionState } from '@/dataFetcher/inspection';
+import { useScopedI18n } from '@/lib/locales/client';
 
 export type SidebarHeaderProps = {
     assosiation: Assosiation;
 }
 
 export const SidebarHeader = ({ assosiation }: SidebarHeaderProps) => {
-    const { collapsed, isSidebarFixed, setShowSidebar } = useSidebarContext();
+    const t = useScopedI18n('sidebar.labels')
+    const { collapsed, isSidebarFixed, setShowSidebar, isMobile, setCollapsed } = useSidebarContext();
     const { inspectionState } = useInspectionState();
     const isCollapsed = collapsed && !isSidebarFixed;
-    
+
+    const handleClick = (e: React.MouseEvent) => {
+        if (!isMobile && collapsed && !isSidebarFixed) {
+            e.preventDefault();
+            e.stopPropagation();
+            setCollapsed(false);
+        }
+    };
+
     return (
         <div className="flex-shrink-0">
             <div className={`${style.sidebarHeader}`}>
                 <div className="w-100 position-relative align-items-center p-2 pb-1">
-                    <Link href={"/"} className="text-decoration-none">
+                    <Link href={"/"} aria-label='Homepage' className="text-decoration-none" onClick={handleClick}>
                         <p data-testid="lnk_header" className={`${style.sidebarHeaderTitle} ${isCollapsed ? style.sidebarHeaderTitleCollapsed : ''}`}>
                             {assosiation.name}
                         </p>
@@ -36,8 +46,10 @@ export const SidebarHeader = ({ assosiation }: SidebarHeaderProps) => {
             <hr className={style.sidebarDivider} />
             {inspectionState?.active &&
                 <div data-testid="div_inspection" className="text-center d-none d-lg-block text-white-50 small">
-                    {isCollapsed ? "" : 'Kontrolle: '}
-                    {inspectionState.inspectedCadets}/{inspectionState.activeCadets - inspectionState.deregistrations}
+                    {t(isCollapsed ? 'activeInspection.collapsed' : 'activeInspection.open', {
+                        controlled: inspectionState.inspectedCadets,
+                        total: inspectionState.activeCadets - inspectionState.deregistrations
+                    })}
                 </div>
             }
         </div>

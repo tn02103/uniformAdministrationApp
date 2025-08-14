@@ -464,7 +464,10 @@ export default {
         "message.inspection.stopError": "The inspection could not be stopped. Please try again later.",
         labels: {
             "stopInspection.header": "stop inspection",
-            "stopInspection.elementLabel": "Enter finishing time",
+            "stopInspection.elementLabel": "Enter finishing time", 
+            "activeInspection.open": "Inspected: {controlled} / {total}",
+            "activeInspection.collapsed": "{controlled} / {total}"
+     
         },
         links: {
             cadetOverview: "Staff",
