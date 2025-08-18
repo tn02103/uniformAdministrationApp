@@ -1,623 +1,1335 @@
-import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { CadetInspectionFormSchema } from "@/zod/deficiency";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { saveCadetInspection } from "./save";
 
-const { ids, data, cleanup } = new StaticData(0);
+// Mock the get module
+jest.mock("./get", () => ({
+    unsecuredGetActiveInspection: jest.fn(),
+}));
 
-describe('saveCadetInspection', () => {
-    beforeAll(async () => {
+// Global test data sets
+const TEST_IDS = {
+    cadetId: "cadet-123",
+    inspectionId: "inspection-456",
+    assosiation: "test-assosiation-id",
+    deficiency1: "def-001",
+    deficiency2: "def-002",
+    deficiency3: "def-003",
+    typeId1: "type-001",
+    typeId2: "type-002",
+    typeId3: "type-003",
+    uniformId: "uniform-001",
+    materialId: "material-001",
+};
+
+const TEST_USER = {
+    username: "testuser",
+    assosiation: "test-assosiation-id",
+};
+
+const MOCK_INSPECTION = {
+    id: TEST_IDS.inspectionId,
+    deficiencyCreated: [],
+};
+
+const BASE_CADET_INSPECTION_PROPS: CadetInspectionFormSchema = {
+    cadetId: TEST_IDS.cadetId,
+    uniformComplete: true,
+    oldDeficiencyList: [],
+    newDeficiencyList: [],
+};
+
+const SAMPLE_OLD_DEFICIENCIES = [
+    {
+        id: TEST_IDS.deficiency1,
+        resolved: true,
+        typeId: TEST_IDS.typeId1,
+        typeName: "Test Type 1",
+        description: "Test deficiency 1",
+        comment: "Test comment 1",
+        dateCreated: new Date("2024-01-01"),
+    },
+    {
+        id: TEST_IDS.deficiency2,
+        resolved: false,
+        typeId: TEST_IDS.typeId2,
+        typeName: "Test Type 2",
+        description: "Test deficiency 2",
+        comment: "Test comment 2",
+        dateCreated: new Date("2024-01-02"),
+    },
+    {
+        id: TEST_IDS.deficiency3,
+        resolved: true,
+        typeId: TEST_IDS.typeId3,
+        typeName: "Test Type 3",
+        description: "Test deficiency 3",
+        comment: "Test comment 3",
+        dateCreated: new Date("2024-01-03"),
+    },
+];
+
+// Mock deficiency types for different test scenarios
+const MOCK_DEFICIENCY_TYPES = {
+    uniform: {
+        id: TEST_IDS.typeId1,
+        dependent: "uniform",
+        relation: null,
+    },
+    cadetWithUniformRelation: {
+        id: TEST_IDS.typeId1,
+        dependent: "cadet",
+        relation: "uniform",
+    },
+    cadetWithMaterialRelation: {
+        id: TEST_IDS.typeId1,
+        dependent: "cadet",
+        relation: "material",
+    },
+    cadetWithoutRelation: {
+        id: TEST_IDS.typeId1,
+        dependent: "cadet",
+        relation: null,
+    },
+};
+
+// Mock uniform object for tests
+const MOCK_UNIFORM = {
+    id: TEST_IDS.uniformId,
+    number: 12345,
+    type: {
+        name: "TestUniform"
+    }
+};
+
+// Mock material object for tests  
+const MOCK_MATERIAL = {
+    id: TEST_IDS.materialId,
+    typename: "TestMaterial",
+    materialGroup: {
+        description: "TestGroup"
+    }
+};
+
+// Mock other material for "other" selection tests
+const MOCK_OTHER_MATERIAL = {
+    id: "other-material-id",
+    typename: "Other Material",
+    materialGroup: {
+        description: "Other Group"
+    }
+};
+
+// Base template for new deficiencies
+const BASE_NEW_DEFICIENCY = {
+    typeId: TEST_IDS.typeId1,
+    description: "",
+    comment: "Test comment",
+    uniformId: null,
+    materialId: null,
+    otherMaterialId: null,
+    otherMaterialGroupId: null,
+};
+
+// Common mock database return values
+const MOCK_DB_RETURNS = {
+    deficiency: { id: "created-def-id" },
+    existingDeficiency: { id: "existing-def-id" },
+};
+
+// Mock inspection with orphaned deficiencies for cleanup tests
+const MOCK_INSPECTION_WITH_ORPHANS = {
+    ...MOCK_INSPECTION,
+    deficiencyCreated: [
+        { id: "orphaned-def-1" },
+        { id: "orphaned-def-2" }
+    ]
+};
+
+describe("saveCadetInspection", () => {
+    const mockUnsecuredGetActiveInspection = jest.requireMock("./get").unsecuredGetActiveInspection;
+    beforeEach(() => {
+        // Setup default successful mocks
+        mockUnsecuredGetActiveInspection.mockResolvedValue(MOCK_INSPECTION);
+
+        // Setup global test values
         global.__ROLE__ = AuthRole.inspector;
-        global.__ASSOSIATION__ = data.assosiation.id;
+        global.__USERNAME__ = TEST_USER.username;
+        global.__ASSOSIATION__ = TEST_USER.assosiation;
     });
 
+    describe("Group 1: Pre-condition Validation", () => {
+        it("should throw error when no active inspection exists", async () => {
+            // Arrange
+            mockUnsecuredGetActiveInspection.mockResolvedValue(null);
 
-    afterEach(async () => {
-        const { cleanup } = new StaticData(0);
-        await cleanup.inspection();
+            const props = { ...BASE_CADET_INSPECTION_PROPS };
+
+            // Act & Assert
+            await expect(saveCadetInspection(props)).rejects.toThrow(
+                "Could not save CadetInspection since no inspection is active"
+            );
+
+            // Verify mocks were called correctly
+            expect(mockUnsecuredGetActiveInspection).toHaveBeenCalledWith(
+                TEST_IDS.cadetId,
+                TEST_USER.assosiation
+            );
+
+            // Verify no database transaction was started
+            expect(prisma.$transaction).not.toHaveBeenCalled();
+        });
     });
 
-    describe('Basic functionality', () => {
-        it('should successfully save a cadet inspection with uniform complete', async () => {
-            const cadetId = ids.cadetIds[0];
-            const props: CadetInspectionFormSchema = {
-                cadetId,
-                uniformComplete: true,
-                oldDeficiencyList: [],
-                newDeficiencyList: []
+    describe("Group 2: Old Deficiency Resolution Logic", () => {
+        it("should resolve selected old deficiencies", async () => {
+            // Arrange
+            const propsWithOldDeficiencies = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                oldDeficiencyList: SAMPLE_OLD_DEFICIENCIES,
             };
-            const result = saveCadetInspection(props)
-            await expect(result).resolves.toBe(undefined);
 
-            // Verify cadet inspection was created/updated
-            const cadetInspection = await prisma.cadetInspection.findFirst({
+            // Act
+            await saveCadetInspection(propsWithOldDeficiencies);
+
+            // Assert
+            expect(prisma.deficiency.updateMany).toHaveBeenCalledWith({
                 where: {
-                    fk_cadet: cadetId,
-                    inspection: {
-                        fk_assosiation: data.assosiation.id
+                    id: { in: [TEST_IDS.deficiency1, TEST_IDS.deficiency3] }, // Only resolved deficiencies
+                    type: { fk_assosiation: TEST_USER.assosiation },
+                    dateResolved: null,
+                },
+                data: {
+                    dateResolved: expect.any(Date),
+                    userResolved: TEST_USER.username,
+                    fk_inspection_resolved: TEST_IDS.inspectionId,
+                },
+            });
+        });
+
+        it("should unresolve previously resolved deficiencies", async () => {
+            // Arrange
+            const propsWithOldDeficiencies = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                oldDeficiencyList: SAMPLE_OLD_DEFICIENCIES,
+            };
+
+            // Act
+            await saveCadetInspection(propsWithOldDeficiencies);
+
+            // Assert
+            expect(prisma.deficiency.updateMany).toHaveBeenCalledWith({
+                where: {
+                    id: { in: [TEST_IDS.deficiency2] }, // Only unresolved deficiencies
+                    type: { fk_assosiation: TEST_USER.assosiation },
+                    dateResolved: { not: null },
+                },
+                data: {
+                    dateResolved: null,
+                    userResolved: null,
+                    fk_inspection_resolved: null,
+                },
+            });
+        });
+
+        it("should handle empty oldDeficiencyList", async () => {
+            // Arrange
+            const propsWithEmptyOldDeficiencies = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                oldDeficiencyList: [],
+            };
+
+            // Act
+            await saveCadetInspection(propsWithEmptyOldDeficiencies);
+
+            // Assert
+            // Verify that deficiency.updateMany is NOT called for resolution/unresolution
+            expect(prisma.deficiency.updateMany).toHaveBeenCalledTimes(0);
+
+            // But other operations should still proceed normally
+            expect(prisma.cadetInspection.upsert).toHaveBeenCalled();
+            expect(prisma.deregistration.deleteMany).toHaveBeenCalled();
+        });
+
+        it("should handle mixed resolved/unresolved old deficiencies", async () => {
+            // Arrange
+            const propsWithMixedDeficiencies = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                oldDeficiencyList: SAMPLE_OLD_DEFICIENCIES,
+            };
+
+            // Act
+            await saveCadetInspection(propsWithMixedDeficiencies);
+
+            // Assert
+            // Verify TWO separate updateMany calls are made for deficiency resolution
+            const updateManyCalls = (prisma.deficiency.updateMany as jest.Mock).mock.calls;
+            const resolutionCalls = updateManyCalls.filter(call =>
+                call[0].where.dateResolved !== undefined
+            );
+            expect(resolutionCalls).toHaveLength(2);
+
+            // First call for resolving (dateResolved: null in where clause)
+            const resolvingCall = resolutionCalls.find(call =>
+                call[0].where.dateResolved === null
+            );
+            expect(resolvingCall).toBeDefined();
+            expect(resolvingCall[0]).toMatchObject({
+                where: {
+                    id: { in: [TEST_IDS.deficiency1, TEST_IDS.deficiency3] },
+                    type: { fk_assosiation: TEST_USER.assosiation },
+                    dateResolved: null,
+                },
+                data: {
+                    dateResolved: expect.any(Date),
+                    userResolved: TEST_USER.username,
+                    fk_inspection_resolved: TEST_IDS.inspectionId,
+                },
+            });
+
+            // Second call for unresolving (dateResolved: { not: null } in where clause)
+            const unresolvingCall = resolutionCalls.find(call =>
+                call[0].where.dateResolved && typeof call[0].where.dateResolved === 'object' && call[0].where.dateResolved.not === null
+            );
+            expect(unresolvingCall).toBeDefined();
+            expect(unresolvingCall[0]).toMatchObject({
+                where: {
+                    id: { in: [TEST_IDS.deficiency2] },
+                    type: { fk_assosiation: TEST_USER.assosiation },
+                    dateResolved: { not: null },
+                },
+                data: {
+                    dateResolved: null,
+                    userResolved: null,
+                    fk_inspection_resolved: null,
+                },
+            });
+        });
+
+        it("should filter deficiencies by association", async () => {
+            // Arrange
+            const propsWithOldDeficiencies = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                oldDeficiencyList: [SAMPLE_OLD_DEFICIENCIES[0]], // Only one resolved deficiency
+            };
+
+            // Act
+            await saveCadetInspection(propsWithOldDeficiencies);
+
+            // Assert
+            // Verify that the updateMany call includes the association filter
+            expect(prisma.deficiency.updateMany).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    where: expect.objectContaining({
+                        type: { fk_assosiation: TEST_USER.assosiation },
+                    }),
+                })
+            );
+        });
+
+        it("should handle oldDeficiencyList with only resolved deficiencies", async () => {
+            // Arrange
+            const onlyResolvedDeficiencies = SAMPLE_OLD_DEFICIENCIES.filter(d => d.resolved);
+            const propsWithOnlyResolved = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                oldDeficiencyList: onlyResolvedDeficiencies,
+            };
+
+            // Act
+            await saveCadetInspection(propsWithOnlyResolved);
+
+            // Assert
+            expect(prisma.deficiency.updateMany).toHaveBeenCalledTimes(1);
+            // Should only call updateMany once (for resolving)
+            const updateManyCalls = (prisma.deficiency.updateMany as jest.Mock).mock.calls;
+            const resolutionCalls = updateManyCalls.filter(call =>
+                call[0].where.dateResolved !== undefined
+            );
+            expect(resolutionCalls).toHaveLength(1);
+
+            // Should be the resolving call
+            expect(resolutionCalls[0][0].where.dateResolved).toBe(null);
+        });
+
+        it("should handle oldDeficiencyList with only unresolved deficiencies", async () => {
+            // Arrange
+            const onlyUnresolvedDeficiencies = SAMPLE_OLD_DEFICIENCIES.filter(d => !d.resolved);
+            const propsWithOnlyUnresolved = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                oldDeficiencyList: onlyUnresolvedDeficiencies,
+            };
+
+            // Act
+            await saveCadetInspection(propsWithOnlyUnresolved);
+
+            // Assert
+            expect(prisma.deficiency.updateMany).toHaveBeenCalledTimes(1);
+            // Should only call updateMany once (for unresolving)
+            const updateManyCalls = (prisma.deficiency.updateMany as jest.Mock).mock.calls;
+            const resolutionCalls = updateManyCalls.filter(call =>
+                call[0].where.dateResolved !== undefined
+            );
+            expect(resolutionCalls).toHaveLength(1);
+
+            // Should be the unresolving call
+            expect(resolutionCalls[0][0].where.dateResolved).toEqual({ not: null });
+        });
+    });
+
+    describe("Group 3: New Deficiency Type Validation & Requirements", () => {
+        it("should throw error for non-existent deficiency type", async () => {
+            // Arrange
+            const newDeficiency = {
+                ...BASE_NEW_DEFICIENCY,
+                typeId: "non-existent-type",
+                description: "Test deficiency",
+            };
+
+            const propsWithNewDeficiency = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                newDeficiencyList: [newDeficiency],
+            };
+
+            // Mock findUniqueOrThrow to throw
+            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockRejectedValue(
+                new Error("Record not found")
+            );
+
+            // Act & Assert
+            await expect(saveCadetInspection(propsWithNewDeficiency)).rejects.toThrow("Record not found");
+
+            // Verify the type lookup was attempted
+            expect(prisma.deficiencyType.findUniqueOrThrow).toHaveBeenCalledWith({
+                where: {
+                    id: "non-existent-type",
+                    AND: {
+                        fk_assosiation: TEST_USER.assosiation,
                     }
                 }
             });
-
-            expect(cadetInspection).toBeTruthy();
-            expect(cadetInspection?.uniformComplete).toBe(true);
-            expect(cadetInspection?.inspector).toBe(data.userIds[0]);
         });
 
-        it('should successfully save a cadet inspection with uniform incomplete', async () => {
-            const cadetId = ids.cadetIds[1];
-            const props: CadetInspectionFormSchema = {
-                cadetId,
+        it("should throw error for missing uniformId when dependent='uniform'", async () => {
+            // Arrange
+            const newDeficiency = {
+                ...BASE_NEW_DEFICIENCY,
+                description: "Test deficiency",
+            };
+
+            const propsWithNewDeficiency = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                newDeficiencyList: [newDeficiency],
+            };
+
+            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.uniform);
+
+            // Act & Assert
+            await expect(saveCadetInspection(propsWithNewDeficiency)).rejects.toThrow(
+                "Could not save new Deficiency fk_uniform is missing"
+            );
+        });
+
+        it("should throw error for missing uniformId when dependent='cadet' AND relation='uniform'", async () => {
+            // Arrange
+            const newDeficiency = {
+                ...BASE_NEW_DEFICIENCY,
+                description: "Test deficiency",
+            };
+
+            const propsWithNewDeficiency = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                newDeficiencyList: [newDeficiency],
+            };
+
+            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithUniformRelation);
+
+            // Act & Assert
+            await expect(saveCadetInspection(propsWithNewDeficiency)).rejects.toThrow(
+                "Could not save new Deficiency fk_uniform is missing"
+            );
+        });
+
+        it("should throw error for missing materialId when dependent='cadet' AND relation='material'", async () => {
+            // Arrange
+            const newDeficiency = {
+                ...BASE_NEW_DEFICIENCY,
+                description: "Test deficiency",
+            };
+
+            const propsWithNewDeficiency = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                newDeficiencyList: [newDeficiency],
+            };
+
+            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithMaterialRelation);
+
+            // Act & Assert
+            await expect(saveCadetInspection(propsWithNewDeficiency)).rejects.toThrow(
+                "Could not save new Deficiency fk_material is missing"
+            );
+        });
+
+        it("should allow deficiency when dependent='cadet' AND relation=null", async () => {
+            // Arrange
+            const newDeficiency = {
+                ...BASE_NEW_DEFICIENCY,
+                description: "Manual description",
+            };
+
+            const propsWithNewDeficiency = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                newDeficiencyList: [newDeficiency],
+            };
+
+            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
+            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+
+            // Act
+            await saveCadetInspection(propsWithNewDeficiency);
+
+            // Assert
+            // Should not throw and should create the deficiency
+            expect(prisma.deficiency.upsert).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    create: expect.objectContaining({
+                        fk_deficiencyType: TEST_IDS.typeId1,
+                        description: "Manual description",
+                        comment: "Test comment",
+                    }),
+                })
+            );
+
+            // Should create cadetDeficiency (not uniformDeficiency)
+            expect(prisma.cadetDeficiency.upsert).toHaveBeenCalledWith({
+                where: { deficiencyId: "created-def-id" },
+                create: {
+                    deficiencyId: "created-def-id",
+                    fk_cadet: TEST_IDS.cadetId,
+                    fk_material: undefined,
+                    fk_uniform: undefined
+                },
+                update: {
+                    fk_material: undefined,
+                    fk_uniform: undefined,
+                }
+            });
+        });
+
+        it("should handle 'other' materialId correctly", async () => {
+            // Arrange
+            const newDeficiency = {
+                ...BASE_NEW_DEFICIENCY,
+                materialId: "other",
+                otherMaterialId: "other-material-id",
+            };
+
+            const propsWithNewDeficiency = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                newDeficiencyList: [newDeficiency],
+            };
+
+            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithMaterialRelation);
+            (prisma.material.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_OTHER_MATERIAL);
+            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+
+            // Act
+            await saveCadetInspection(propsWithNewDeficiency);
+
+            // Assert
+            // Should use otherMaterialId for material lookup
+            expect(prisma.material.findUniqueOrThrow).toHaveBeenCalledWith({
+                where: {
+                    id: "other-material-id",
+                    AND: { materialGroup: { fk_assosiation: TEST_USER.assosiation } },
+                },
+                include: { materialGroup: true }
+            });
+
+            // Should generate material description
+            expect(prisma.deficiency.upsert).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    create: expect.objectContaining({
+                        description: "Other Group-Other Material",
+                    }),
+                })
+            );
+        });
+    });
+
+    describe("Group 4: Description Generation Logic", () => {
+        it("should generate uniform description when dependent='uniform'", async () => {
+            // Arrange
+            const newDeficiency = {
+                ...BASE_NEW_DEFICIENCY,
+                uniformId: TEST_IDS.uniformId,
+            };
+
+            const propsWithNewDeficiency = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                newDeficiencyList: [newDeficiency],
+            };
+
+            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.uniform);
+            (prisma.uniform.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_UNIFORM);
+            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+
+            // Act
+            await saveCadetInspection(propsWithNewDeficiency);
+
+            // Assert
+            expect(prisma.uniform.findUniqueOrThrow).toHaveBeenCalledWith({
+                where: {
+                    id: TEST_IDS.uniformId,
+                    type: { fk_assosiation: TEST_USER.assosiation }
+                },
+                include: {
+                    type: true
+                }
+            });
+
+            expect(prisma.deficiency.upsert).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    create: expect.objectContaining({
+                        description: "TestUniform-12345",
+                    }),
+                })
+            );
+        });
+
+        it("should generate uniform description when relation='uniform'", async () => {
+            // Arrange
+            const newDeficiency = {
+                ...BASE_NEW_DEFICIENCY,
+                uniformId: TEST_IDS.uniformId,
+            };
+
+            const propsWithNewDeficiency = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                newDeficiencyList: [newDeficiency],
+            };
+
+            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithUniformRelation);
+            (prisma.uniform.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_UNIFORM);
+            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+
+            // Act
+            await saveCadetInspection(propsWithNewDeficiency);
+
+            // Assert
+            expect(prisma.deficiency.upsert).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    create: expect.objectContaining({
+                        description: "TestUniform-12345",
+                    }),
+                })
+            );
+
+            // Should create cadetDeficiency with uniform relation
+            expect(prisma.cadetDeficiency.upsert).toHaveBeenCalledWith({
+                where: { deficiencyId: "created-def-id" },
+                create: {
+                    deficiencyId: "created-def-id",
+                    fk_cadet: TEST_IDS.cadetId,
+                    fk_material: undefined,
+                    fk_uniform: TEST_IDS.uniformId
+                },
+                update: {
+                    fk_material: undefined,
+                    fk_uniform: TEST_IDS.uniformId,
+                }
+            });
+        });
+
+        it("should generate material description when relation='material'", async () => {
+            // Arrange
+            const newDeficiency = {
+                ...BASE_NEW_DEFICIENCY,
+                materialId: TEST_IDS.materialId,
+            };
+
+            const propsWithNewDeficiency = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                newDeficiencyList: [newDeficiency],
+            };
+
+            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithMaterialRelation);
+            (prisma.material.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_MATERIAL);
+            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+
+            // Act
+            await saveCadetInspection(propsWithNewDeficiency);
+
+            // Assert
+            expect(prisma.material.findUniqueOrThrow).toHaveBeenCalledWith({
+                where: {
+                    id: TEST_IDS.materialId,
+                    AND: { materialGroup: { fk_assosiation: TEST_USER.assosiation } },
+                },
+                include: { materialGroup: true }
+            });
+
+            expect(prisma.deficiency.upsert).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    create: expect.objectContaining({
+                        description: "TestGroup-TestMaterial",
+                    }),
+                })
+            );
+        });
+
+        it("should throw error for missing description", async () => {
+            // Arrange
+            const newDeficiency = {
+                ...BASE_NEW_DEFICIENCY,
+                // description remains empty from base
+            };
+
+            const propsWithNewDeficiency = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                newDeficiencyList: [newDeficiency],
+            };
+
+            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
+
+            // Act & Assert
+            await expect(saveCadetInspection(propsWithNewDeficiency)).rejects.toThrow(
+                "Could not save Deficiency description is missing"
+            );
+        });
+
+        it("should not generate description for dependent='cadet' AND relation=null", async () => {
+            // Arrange
+            const manualDescriptionDeficiency = {
+                ...BASE_NEW_DEFICIENCY,
+                description: "Manual description provided",
+            };
+
+            const propsWithNewDeficiency = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                newDeficiencyList: [manualDescriptionDeficiency],
+            };
+
+            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
+            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+
+            // Act
+            await saveCadetInspection(propsWithNewDeficiency);
+
+            // Assert
+            // Should not call uniform or material lookups
+            expect(prisma.uniform.findUniqueOrThrow).not.toHaveBeenCalled();
+            expect(prisma.material.findUniqueOrThrow).not.toHaveBeenCalled();
+
+            // Should use the provided description
+            expect(prisma.deficiency.upsert).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    create: expect.objectContaining({
+                        description: "Manual description provided",
+                    }),
+                })
+            );
+        });
+    });
+
+    describe("Group 5: Database Operation Flow & Relationship Creation", () => {
+        it("should call deregistration.deleteMany with correct parameters", async () => {
+            // Arrange
+            const props = { ...BASE_CADET_INSPECTION_PROPS };
+
+            // Act
+            await saveCadetInspection(props);
+
+            // Assert
+            expect(prisma.deregistration.deleteMany).toHaveBeenCalledWith({
+                where: {
+                    fk_cadet: TEST_IDS.cadetId,
+                    fk_inspection: TEST_IDS.inspectionId,
+                },
+            });
+        });
+
+        it("should call cadetInspection.upsert with correct create/update data", async () => {
+            // Arrange
+            const props = {
+                ...BASE_CADET_INSPECTION_PROPS,
                 uniformComplete: false,
-                oldDeficiencyList: [],
-                newDeficiencyList: []
             };
 
-            const { success } = await runServerActionTest(
-                saveCadetInspection(props)
-            );
+            // Act
+            await saveCadetInspection(props);
 
-            expect(success).toBeTruthy();
-
-            const cadetInspection = await prisma.cadetInspection.findFirst({
+            // Assert
+            expect(prisma.cadetInspection.upsert).toHaveBeenCalledWith({
                 where: {
-                    fk_cadet: cadetId,
-                    inspection: {
-                        fk_assosiation: data.assosiation.id
+                    fk_inspection_fk_cadet: {
+                        fk_inspection: TEST_IDS.inspectionId,
+                        fk_cadet: TEST_IDS.cadetId,
                     }
-                }
-            });
-
-            expect(cadetInspection?.uniformComplete).toBe(false);
-        });
-
-        it('should update existing cadet inspection', async () => {
-            const cadetId = ids.cadetIds[0];
-
-            // First save
-            await saveCadetInspection({
-                cadetId,
-                uniformComplete: true,
-                oldDeficiencyList: [],
-                newDeficiencyList: []
-            });
-
-            // Second save with different data
-            const { success } = await runServerActionTest(
-                saveCadetInspection({
-                    cadetId,
-                    uniformComplete: false,
-                    oldDeficiencyList: [],
-                    newDeficiencyList: []
-                })
-            );
-
-            expect(success).toBeTruthy();
-
-            const cadetInspections = await prisma.cadetInspection.findMany({
-                where: {
-                    fk_cadet: cadetId,
-                    inspection: {
-                        fk_assosiation: data.assosiation.id
-                    }
-                }
-            });
-
-            // Should only have one record (updated, not created new)
-            expect(cadetInspections).toHaveLength(1);
-            expect(cadetInspections[0].uniformComplete).toBe(false);
-        });
-    });
-
-    describe('Deregistrations handling', () => {
-        it('should clear existing deregistrations for the cadet', async () => {
-            const cadetId = ids.cadetIds[0];
-            const inspection = data.inspections[0];
-
-            // Create some deregistrations first
-            await prisma.deregistration.createMany({
-                data: [
-                    {
-                        fk_cadet: cadetId,
-                        fk_inspection: inspection.id
-                    }
-                ]
-            });
-
-            const { success } = await runServerActionTest(
-                saveCadetInspection({
-                    cadetId,
-                    uniformComplete: true,
-                    oldDeficiencyList: [],
-                    newDeficiencyList: []
-                })
-            );
-
-            expect(success).toBeTruthy();
-
-            // Verify deregistrations were deleted
-            const deregistrations = await prisma.deregistration.findMany({
-                where: {
-                    fk_cadet: cadetId,
-                    fk_inspection: inspection.id
-                }
-            });
-
-            expect(deregistrations).toHaveLength(0);
-        });
-    });
-
-    describe('Old deficiencies handling', () => {
-        it('should resolve old deficiencies when marked as resolved', async () => {
-            const cadetId = ids.cadetIds[0];
-            const deficiencyId = ids.deficiencyIds[0];
-
-            const oldDeficiencyList = [{
-                id: deficiencyId,
-                typeId: ids.deficiencyTypeIds[0],
-                typeName: data.deficiencyTypes[0].name,
-                description: "Test deficiency",
-                comment: "Test comment",
-                dateCreated: new Date(),
-                resolved: true
-            }];
-
-            const { success } = await runServerActionTest(
-                saveCadetInspection({
-                    cadetId,
-                    uniformComplete: true,
-                    oldDeficiencyList,
-                    newDeficiencyList: []
-                })
-            );
-
-            expect(success).toBeTruthy();
-
-            // Verify deficiency was resolved
-            const deficiency = await prisma.deficiency.findUnique({
-                where: { id: deficiencyId }
-            });
-
-            expect(deficiency?.dateResolved).toBeTruthy();
-            expect(deficiency?.userResolved).toBe(data.userIds[0]);
-            expect(deficiency?.fk_inspection_resolved).toBeTruthy();
-        });
-
-        it('should unresolve old deficiencies when marked as unresolved', async () => {
-            const cadetId = ids.cadetIds[0];
-            const deficiencyId = ids.deficiencyIds[0];
-
-            // First resolve the deficiency
-            await prisma.deficiency.update({
-                where: { id: deficiencyId },
-                data: {
-                    dateResolved: new Date(),
-                    userResolved: data.userIds[0],
-                    fk_inspection_resolved: data.inspections[0].id
-                }
-            });
-
-            const oldDeficiencyList = [{
-                id: deficiencyId,
-                typeId: ids.deficiencyTypeIds[0],
-                typeName: data.deficiencyTypes[0].name,
-                description: "Test deficiency",
-                comment: "Test comment",
-                dateCreated: new Date(),
-                resolved: false
-            }];
-
-            const { success } = await runServerActionTest(
-                saveCadetInspection({
-                    cadetId,
-                    uniformComplete: true,
-                    oldDeficiencyList,
-                    newDeficiencyList: []
-                })
-            );
-
-            expect(success).toBeTruthy();
-
-            // Verify deficiency was unresolved
-            const deficiency = await prisma.deficiency.findUnique({
-                where: { id: deficiencyId }
-            });
-
-            expect(deficiency?.dateResolved).toBeNull();
-            expect(deficiency?.userResolved).toBeNull();
-            expect(deficiency?.fk_inspection_resolved).toBeNull();
-        });
-    });
-
-    describe('New deficiencies handling', () => {
-        it('should create new cadet deficiency', async () => {
-            const cadetId = ids.cadetIds[0];
-            const newDeficiencyList = [{
-                typeId: ids.deficiencyTypeIds[1], // cadet type
-                description: "Test new deficiency",
-                comment: "Test comment for new deficiency",
-                uniformId: null,
-                materialId: null,
-                otherMaterialId: null,
-                otherMaterialGroupId: null
-            }];
-
-            const { success } = await runServerActionTest(
-                saveCadetInspection({
-                    cadetId,
-                    uniformComplete: false,
-                    oldDeficiencyList: [],
-                    newDeficiencyList
-                })
-            );
-
-            expect(success).toBeTruthy();
-
-            // Verify deficiency was created
-            const deficiency = await prisma.deficiency.findFirst({
-                where: {
-                    description: "Test new deficiency",
-                    type: { fk_assosiation: data.assosiation.id }
                 },
-                include: {
-                    cadetDeficiency: true
-                }
-            });
-
-            expect(deficiency).toBeTruthy();
-            expect(deficiency?.comment).toBe("Test comment for new deficiency");
-            expect(deficiency?.userCreated).toBe(data.userIds[0]);
-            expect(deficiency?.cadetDeficiency?.fk_cadet).toBe(cadetId);
-        });
-
-        it('should create new uniform deficiency with uniform relation', async () => {
-            const cadetId = ids.cadetIds[0];
-            const uniformId = ids.uniformIds[0][0];
-
-            const newDeficiencyList = [{
-                typeId: ids.deficiencyTypeIds[0], // uniform dependent type
-                description: "", // Will be auto-generated
-                comment: "Uniform deficiency comment",
-                uniformId,
-                materialId: null,
-                otherMaterialId: null,
-                otherMaterialGroupId: null
-            }];
-
-            const { success } = await runServerActionTest(
-                saveCadetInspection({
-                    cadetId,
+                update: {
                     uniformComplete: false,
-                    oldDeficiencyList: [],
-                    newDeficiencyList
-                })
-            );
-
-            expect(success).toBeTruthy();
-
-            // Verify uniform deficiency was created
-            const deficiency = await prisma.deficiency.findFirst({
-                where: {
-                    fk_deficiencyType: ids.deficiencyTypeIds[0],
-                    type: { fk_assosiation: data.assosiation.id }
+                    inspector: TEST_USER.username,
                 },
-                include: {
-                    uniformDeficiency: true
-                }
-            });
-
-            expect(deficiency).toBeTruthy();
-            expect(deficiency?.description).toContain(data.uniformTypes[0].name);
-            expect(deficiency?.uniformDeficiency?.fk_uniform).toBe(uniformId);
-        });
-
-        it('should create new cadet deficiency with material relation', async () => {
-            const cadetId = ids.cadetIds[0];
-            const materialId = ids.materialIds[0];
-
-            const newDeficiencyList = [{
-                typeId: ids.deficiencyTypeIds[2], // material relation type
-                description: "", // Will be auto-generated
-                comment: "Material deficiency comment",
-                uniformId: null,
-                materialId,
-                otherMaterialId: null,
-                otherMaterialGroupId: null
-            }];
-
-            const { success } = await runServerActionTest(
-                saveCadetInspection({
-                    cadetId,
+                create: {
+                    fk_cadet: TEST_IDS.cadetId,
+                    fk_inspection: TEST_IDS.inspectionId,
                     uniformComplete: false,
-                    oldDeficiencyList: [],
-                    newDeficiencyList
-                })
-            );
-
-            expect(success).toBeTruthy();
-
-            // Verify material deficiency was created
-            const deficiency = await prisma.deficiency.findFirst({
-                where: {
-                    fk_deficiencyType: ids.deficiencyTypeIds[2],
-                    type: { fk_assosiation: data.assosiation.id }
+                    inspector: TEST_USER.username,
                 },
-                include: {
-                    cadetDeficiency: true
-                }
             });
-
-            expect(deficiency).toBeTruthy();
-            expect(deficiency?.description).toContain(data.materialGroups[0].description);
-            expect(deficiency?.cadetDeficiency?.fk_material).toBe(materialId);
-            expect(deficiency?.cadetDeficiency?.fk_cadet).toBe(cadetId);
         });
 
-        it('should update existing deficiency', async () => {
-            const cadetId = ids.cadetIds[0];
-            const existingDeficiencyId = ids.deficiencyIds[0];
-
-            const newDeficiencyList = [{
-                id: existingDeficiencyId,
-                typeId: ids.deficiencyTypeIds[1],
-                description: "Updated deficiency description",
-                comment: "Updated comment",
-                uniformId: null,
-                materialId: null,
-                otherMaterialId: null,
-                otherMaterialGroupId: null
-            }];
-
-            const { success } = await runServerActionTest(
-                saveCadetInspection({
-                    cadetId,
-                    uniformComplete: false,
-                    oldDeficiencyList: [],
-                    newDeficiencyList
-                })
-            );
-
-            expect(success).toBeTruthy();
-
-            // Verify deficiency was updated
-            const deficiency = await prisma.deficiency.findUnique({
-                where: { id: existingDeficiencyId }
-            });
-
-            expect(deficiency?.description).toBe("Updated deficiency description");
-            expect(deficiency?.comment).toBe("Updated comment");
-            expect(deficiency?.userUpdated).toBe(data.userIds[0]);
-            expect(deficiency?.dateUpdated).toBeTruthy();
-        });
-    });
-
-    describe('Error handling', () => {
-        it('should throw error when no active inspection exists', async () => {
-            // Remove all inspections
-            await cleanup.inspection();
-
-            const cadetId = ids.cadetIds[0]; const { success, result } = await runServerActionTest(
-                saveCadetInspection({
-                    cadetId,
-                    uniformComplete: true,
-                    oldDeficiencyList: [],
-                    newDeficiencyList: []
-                })
-            );
-
-            expect(success).toBeFalsy();
-            expect(result.message).toContain("Could not save CadetInspection since no inspection is active");
-        });
-
-        it('should throw error when uniform deficiency missing uniformId', async () => {
-            const cadetId = ids.cadetIds[0];
-
-            const newDeficiencyList = [{
-                typeId: ids.deficiencyTypeIds[0], // uniform dependent type
-                description: "Test",
-                comment: "Test comment",
-                uniformId: null, // Missing required uniformId
-                materialId: null,
-                otherMaterialId: null,
-                otherMaterialGroupId: null
-            }];
-
-            const { success, result } = await runServerActionTest(
-                saveCadetInspection({
-                    cadetId,
-                    uniformComplete: false,
-                    oldDeficiencyList: [],
-                    newDeficiencyList
-                })
-            );
-
-            expect(success).toBeFalsy();
-            expect(result.message).toContain("Could not save new Deficiency fk_uniform is missing");
-        });
-
-        it('should throw error when material deficiency missing materialId', async () => {
-            const cadetId = ids.cadetIds[0];
-
-            const newDeficiencyList = [{
-                typeId: ids.deficiencyTypeIds[2], // material relation type
-                description: "Test",
-                comment: "Test comment",
-                uniformId: null,
-                materialId: null, // Missing required materialId
-                otherMaterialId: null,
-                otherMaterialGroupId: null
-            }];
-
-            const { success, result } = await runServerActionTest(
-                saveCadetInspection({
-                    cadetId,
-                    uniformComplete: false,
-                    oldDeficiencyList: [],
-                    newDeficiencyList
-                })
-            );
-
-            expect(success).toBeFalsy();
-            expect(result.message).toContain("Could not save new Deficiency fk_material is missing");
-        });
-
-        it('should handle invalid cadet ID', async () => {
-            const invalidCadetId = "00000000-0000-0000-0000-000000000000"; const { success } = await runServerActionTest(
-                saveCadetInspection({
-                    cadetId: invalidCadetId,
-                    uniformComplete: true,
-                    oldDeficiencyList: [],
-                    newDeficiencyList: []
-                })
-            );
-
-            expect(success).toBeFalsy();
-        });
-
-        it('should handle invalid deficiency type ID', async () => {
-            const cadetId = ids.cadetIds[0];
-            const invalidTypeId = "00000000-0000-0000-0000-000000000000";
-
-            const newDeficiencyList = [{
-                typeId: invalidTypeId,
-                description: "Test",
-                comment: "Test comment",
-                uniformId: null,
-                materialId: null,
-                otherMaterialId: null, otherMaterialGroupId: null
-            }];
-
-            const { success } = await runServerActionTest(
-                saveCadetInspection({
-                    cadetId,
-                    uniformComplete: false,
-                    oldDeficiencyList: [],
-                    newDeficiencyList
-                })
-            );
-
-            expect(success).toBeFalsy();
-        });
-    });
-
-    describe('Complex scenarios', () => {
-        it('should handle mixed operations: resolve old deficiencies and create new ones', async () => {
-            const cadetId = ids.cadetIds[0];
-            const oldDeficiencyId = ids.deficiencyIds[0];
-
-            const oldDeficiencyList = [{
-                id: oldDeficiencyId,
-                typeId: ids.deficiencyTypeIds[0],
-                typeName: data.deficiencyTypes[0].name,
-                description: "Old deficiency",
-                comment: "Old comment",
-                dateCreated: new Date(),
-                resolved: true
-            }];
-
-            const newDeficiencyList = [{
-                typeId: ids.deficiencyTypeIds[1],
+        it("should call deficiency.upsert with correct parameters for new deficiencies", async () => {
+            // Arrange
+            const newDeficiency = {
+                ...BASE_NEW_DEFICIENCY,
                 description: "New deficiency",
-                comment: "New comment",
+            };
+
+            const propsWithNewDeficiency = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                newDeficiencyList: [newDeficiency],
+            };
+
+            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
+            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+
+            // Act
+            await saveCadetInspection(propsWithNewDeficiency);
+
+            // Assert
+            expect(prisma.deficiency.upsert).toHaveBeenCalledWith({
+                where: {
+                    id: expect.any(String),
+                    AND: { type: { fk_assosiation: TEST_USER.assosiation } }
+                },
+                create: {
+                    fk_deficiencyType: TEST_IDS.typeId1,
+                    description: "New deficiency",
+                    comment: "Test comment",
+                    userCreated: TEST_USER.username,
+                    userUpdated: TEST_USER.username,
+                    fk_inspection_created: TEST_IDS.inspectionId,
+                },
+                update: {
+                    description: "New deficiency",
+                    comment: "Test comment",
+                    userUpdated: TEST_USER.username,
+                    dateUpdated: expect.any(Date),
+                }
+            });
+        });
+
+        it("should call deficiency.upsert with correct parameters for existing deficiencies", async () => {
+            // Arrange
+            const existingDeficiency = {
+                ...BASE_NEW_DEFICIENCY,
+                id: "existing-def-id",
+                description: "Updated deficiency",
+                comment: "Updated comment",
+            };
+
+            const propsWithExistingDeficiency = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                newDeficiencyList: [existingDeficiency],
+            };
+
+            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
+            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.existingDeficiency);
+
+            // Act
+            await saveCadetInspection(propsWithExistingDeficiency);
+
+            // Assert
+            expect(prisma.deficiency.upsert).toHaveBeenCalledWith({
+                where: {
+                    id: "existing-def-id",
+                    AND: { type: { fk_assosiation: TEST_USER.assosiation } }
+                },
+                create: {
+                    fk_deficiencyType: TEST_IDS.typeId1,
+                    description: "Updated deficiency",
+                    comment: "Updated comment",
+                    userCreated: TEST_USER.username,
+                    userUpdated: TEST_USER.username,
+                    fk_inspection_created: TEST_IDS.inspectionId,
+                },
+                update: {
+                    description: "Updated deficiency",
+                    comment: "Updated comment",
+                    userUpdated: TEST_USER.username,
+                    dateUpdated: expect.any(Date),
+                }
+            });
+        });
+
+        it("should call uniformDeficiency.upsert when dependent='uniform'", async () => {
+            // Arrange
+            const newDeficiency = {
+                ...BASE_NEW_DEFICIENCY,
+                uniformId: TEST_IDS.uniformId,
+            };
+
+            const propsWithNewDeficiency = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                newDeficiencyList: [newDeficiency],
+            };
+
+            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.uniform);
+            (prisma.uniform.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_UNIFORM);
+            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+
+            // Act
+            await saveCadetInspection(propsWithNewDeficiency);
+
+            // Assert
+            expect(prisma.uniformDeficiency.upsert).toHaveBeenCalledWith({
+                where: { deficiencyId: "created-def-id" },
+                create: {
+                    deficiencyId: "created-def-id",
+                    fk_uniform: TEST_IDS.uniformId,
+                },
+                update: {
+                    fk_uniform: TEST_IDS.uniformId,
+                },
+            });
+
+            // Should NOT create cadetDeficiency
+            expect(prisma.cadetDeficiency.upsert).not.toHaveBeenCalled();
+        });
+
+        it("should call cadetDeficiency.upsert when dependent='cadet'", async () => {
+            // Arrange
+            const newDeficiency = {
+                ...BASE_NEW_DEFICIENCY,
+                description: "Test deficiency",
+            };
+
+            const propsWithNewDeficiency = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                newDeficiencyList: [newDeficiency],
+            };
+
+            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
+            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+
+            // Act
+            await saveCadetInspection(propsWithNewDeficiency);
+
+            // Assert
+            expect(prisma.cadetDeficiency.upsert).toHaveBeenCalledWith({
+                where: { deficiencyId: "created-def-id" },
+                create: {
+                    deficiencyId: "created-def-id",
+                    fk_cadet: TEST_IDS.cadetId,
+                    fk_material: undefined,
+                    fk_uniform: undefined
+                },
+                update: {
+                    fk_material: undefined,
+                    fk_uniform: undefined,
+                }
+            });
+
+            // Should NOT create uniformDeficiency
+            expect(prisma.uniformDeficiency.upsert).not.toHaveBeenCalled();
+        });
+
+        it("should set correct foreign keys in cadetDeficiency based on relation", async () => {
+            // Arrange - Test material relation
+            const newDeficiency = {
+                ...BASE_NEW_DEFICIENCY,
+                materialId: TEST_IDS.materialId,
+            };
+
+            const propsWithNewDeficiency = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                newDeficiencyList: [newDeficiency],
+            };
+
+            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithMaterialRelation);
+            (prisma.material.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_MATERIAL);
+            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+
+            // Act
+            await saveCadetInspection(propsWithNewDeficiency);
+
+            // Assert
+            expect(prisma.cadetDeficiency.upsert).toHaveBeenCalledWith({
+                where: { deficiencyId: "created-def-id" },
+                create: {
+                    deficiencyId: "created-def-id",
+                    fk_cadet: TEST_IDS.cadetId,
+                    fk_material: TEST_IDS.materialId, // Should have material FK
+                    fk_uniform: undefined
+                },
+                update: {
+                    fk_material: TEST_IDS.materialId,
+                    fk_uniform: undefined,
+                }
+            });
+        });
+
+        it("should call deficiency.deleteMany for orphaned deficiencies", async () => {
+            // Arrange
+            mockUnsecuredGetActiveInspection.mockResolvedValue(MOCK_INSPECTION_WITH_ORPHANS);
+
+            const props = { ...BASE_CADET_INSPECTION_PROPS };
+
+            // Act
+            await saveCadetInspection(props);
+
+            // Assert
+            expect(prisma.deficiency.deleteMany).toHaveBeenCalledWith({
+                where: {
+                    id: {
+                        in: ["orphaned-def-1", "orphaned-def-2"]
+                    },
+                    type: { fk_assosiation: TEST_USER.assosiation }
+                },
+            });
+        });
+    });
+
+    describe("Group 6: Edge Cases & Data Handling", () => {
+        it("should handle empty newDeficiencyList - No new deficiency operations", async () => {
+            // Arrange
+            const propsWithEmptyNewDeficiencies = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                newDeficiencyList: [],
+            };
+
+            // Act
+            await saveCadetInspection(propsWithEmptyNewDeficiencies);
+
+            // Assert
+            // Should not call any new deficiency operations
+            expect(prisma.deficiencyType.findUniqueOrThrow).not.toHaveBeenCalled();
+            expect(prisma.deficiency.upsert).not.toHaveBeenCalled();
+            expect(prisma.uniformDeficiency.upsert).not.toHaveBeenCalled();
+            expect(prisma.cadetDeficiency.upsert).not.toHaveBeenCalled();
+            expect(prisma.uniform.findUniqueOrThrow).not.toHaveBeenCalled();
+            expect(prisma.material.findUniqueOrThrow).not.toHaveBeenCalled();
+
+            // Should still call basic operations
+            expect(prisma.cadetInspection.upsert).toHaveBeenCalled();
+            expect(prisma.deregistration.deleteMany).toHaveBeenCalled();
+        });
+
+        it("should handle deficiencies without optional fields - Test with minimal required data", async () => {
+            // Arrange
+            const minimalDeficiency = {
+                typeId: TEST_IDS.typeId1,
+                description: "Minimal deficiency",
+                comment: "", // Empty comment
                 uniformId: null,
                 materialId: null,
                 otherMaterialId: null,
-                otherMaterialGroupId: null
-            }];
+                otherMaterialGroupId: null,
+            };
 
-            const { success } = await runServerActionTest(
-                saveCadetInspection({
-                    cadetId,
-                    uniformComplete: false,
-                    oldDeficiencyList,
-                    newDeficiencyList
-                })
-            );
+            const propsWithMinimalDeficiency = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                newDeficiencyList: [minimalDeficiency],
+            };
 
-            expect(success).toBeTruthy();
+            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
+            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
 
-            // Verify old deficiency was resolved
-            const oldDeficiency = await prisma.deficiency.findUnique({
-                where: { id: oldDeficiencyId }
-            });
-            expect(oldDeficiency?.dateResolved).toBeTruthy();
+            // Act
+            await saveCadetInspection(propsWithMinimalDeficiency);
 
-            // Verify new deficiency was created
-            const newDeficiency = await prisma.deficiency.findFirst({
+            // Assert
+            expect(prisma.deficiency.upsert).toHaveBeenCalledWith({
                 where: {
-                    description: "New deficiency",
-                    type: { fk_assosiation: data.assosiation.id }
+                    id: expect.any(String),
+                    AND: { type: { fk_assosiation: TEST_USER.assosiation } }
+                },
+                create: {
+                    fk_deficiencyType: TEST_IDS.typeId1,
+                    description: "Minimal deficiency",
+                    comment: "", // Should handle empty comment
+                    userCreated: TEST_USER.username,
+                    userUpdated: TEST_USER.username,
+                    fk_inspection_created: TEST_IDS.inspectionId,
+                },
+                update: {
+                    description: "Minimal deficiency",
+                    comment: "",
+                    userUpdated: TEST_USER.username,
+                    dateUpdated: expect.any(Date),
                 }
             });
-            expect(newDeficiency).toBeTruthy();
         });
 
-        it('should delete deficiencies that were removed from the list', async () => {
-            const cadetId = ids.cadetIds[0];
+        it("should handle inspection without deficiencyCreated array - Should not crash when empty", async () => {
+            // Arrange
+            const mockInspectionWithoutDeficiencyCreated = {
+                id: TEST_IDS.inspectionId,
+                deficiencyCreated: [],
+            };
 
-            // Create some deficiencies in the inspection first
-            const inspection = data.inspections[0];
-            const deficiencyToDelete = await prisma.deficiency.create({
-                data: {
-                    id: ids.deficiencyIds[3],
-                    fk_deficiencyType: ids.deficiencyTypeIds[1],
-                    description: "Deficiency to delete",
-                    comment: "Will be deleted",
-                    userCreated: data.userIds[0],
-                    userUpdated: data.userIds[0],
-                    fk_inspection_created: inspection.id
+            mockUnsecuredGetActiveInspection.mockResolvedValue(mockInspectionWithoutDeficiencyCreated);
+
+            const props = { ...BASE_CADET_INSPECTION_PROPS };
+
+            // Act & Assert
+            // Should not throw an error
+            await saveCadetInspection(props)
+
+            // Should not call deficiency.deleteMany
+            expect(prisma.deficiency.deleteMany).not.toHaveBeenCalled();
+
+            // Should still call other operations
+            expect(prisma.cadetInspection.upsert).toHaveBeenCalled();
+            expect(prisma.deregistration.deleteMany).toHaveBeenCalled();
+        });
+
+        it("should handle empty deficiencyCreated array - Should not call deleteMany", async () => {
+            // Arrange
+            const mockInspectionEmptyDeficiencyCreated = {
+                id: TEST_IDS.inspectionId,
+                deficiencyCreated: [], // Empty array
+            };
+
+            mockUnsecuredGetActiveInspection.mockResolvedValue(mockInspectionEmptyDeficiencyCreated);
+
+            const props = { ...BASE_CADET_INSPECTION_PROPS };
+
+            // Act
+            await saveCadetInspection(props);
+
+            // Assert
+            // Should not call deficiency.deleteMany when array is empty
+            expect(prisma.deficiency.deleteMany).not.toHaveBeenCalled();
+
+            // Should still call other operations
+            expect(prisma.cadetInspection.upsert).toHaveBeenCalled();
+            expect(prisma.deregistration.deleteMany).toHaveBeenCalled();
+        });
+
+        it("should filter deficiencyCreated array correctly - Remove processed items during loop", async () => {
+            // Arrange
+            const mockInspectionWithDeficiencies = {
+                id: TEST_IDS.inspectionId,
+                deficiencyCreated: [
+                    { id: "def-to-keep-1" },
+                    { id: "def-to-process" },
+                    { id: "def-to-keep-2" }
+                ]
+            };
+
+            const newDeficiency = {
+                ...BASE_NEW_DEFICIENCY,
+                id: "def-to-process", // This should be removed from the array
+                description: "Processed deficiency",
+            };
+
+            const propsWithExistingDeficiency = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                newDeficiencyList: [newDeficiency],
+            };
+
+            mockUnsecuredGetActiveInspection.mockResolvedValue(mockInspectionWithDeficiencies);
+            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
+            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue({ id: "def-to-process" });
+
+            // Act
+            await saveCadetInspection(propsWithExistingDeficiency);
+
+            // Assert
+            // Should call deleteMany only for the remaining unprocessed deficiencies
+            expect(prisma.deficiency.deleteMany).toHaveBeenCalledWith({
+                where: {
+                    id: {
+                        in: ["def-to-keep-1", "def-to-keep-2"] // The processed one should be filtered out
+                    },
+                    type: { fk_assosiation: TEST_USER.assosiation }
+                },
+            });
+        });
+    });
+
+    describe("Group 7: Audit Fields & Metadata", () => {
+        it("should set correct audit fields for new deficiencies - userCreated, userUpdated, fk_inspection_created", async () => {
+            // Arrange
+            const newDeficiency = {
+                ...BASE_NEW_DEFICIENCY,
+                description: "New deficiency for audit test",
+            };
+
+            const propsWithNewDeficiency = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                newDeficiencyList: [newDeficiency],
+            };
+
+            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
+            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+
+            // Act
+            await saveCadetInspection(propsWithNewDeficiency);
+
+            // Assert
+            expect(prisma.deficiency.upsert).toHaveBeenCalledWith({
+                where: {
+                    id: expect.any(String),
+                    AND: { type: { fk_assosiation: TEST_USER.assosiation } }
+                },
+                create: {
+                    fk_deficiencyType: TEST_IDS.typeId1,
+                    description: "New deficiency for audit test",
+                    comment: "Test comment",
+                    userCreated: TEST_USER.username, // Should set userCreated
+                    userUpdated: TEST_USER.username, // Should set userUpdated
+                    fk_inspection_created: TEST_IDS.inspectionId, // Should set inspection created
+                },
+                update: {
+                    description: "New deficiency for audit test",
+                    comment: "Test comment",
+                    userUpdated: TEST_USER.username,
+                    dateUpdated: expect.any(Date),
                 }
             });
+        });
 
-            // Update inspection to include this deficiency in deficiencyCreated
-            await prisma.inspection.update({
-                where: { id: inspection.id },
+        it("should set correct audit fields for updated deficiencies - userUpdated, dateUpdated (not userCreated)", async () => {
+            // Arrange
+            const existingDeficiency = {
+                ...BASE_NEW_DEFICIENCY,
+                id: "existing-deficiency-id", // Has ID = existing deficiency
+                description: "Updated deficiency for audit test",
+                comment: "Updated comment",
+            };
+
+            const propsWithExistingDeficiency = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                newDeficiencyList: [existingDeficiency],
+            };
+
+            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
+            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue({ id: "existing-deficiency-id" });
+
+            // Act
+            await saveCadetInspection(propsWithExistingDeficiency);
+
+            // Assert
+            expect(prisma.deficiency.upsert).toHaveBeenCalledWith({
+                where: {
+                    id: "existing-deficiency-id", // Existing deficiency has ID
+                    AND: { type: { fk_assosiation: TEST_USER.assosiation } }
+                },
+                create: {
+                    fk_deficiencyType: TEST_IDS.typeId1,
+                    description: "Updated deficiency for audit test",
+                    comment: "Updated comment",
+                    userCreated: TEST_USER.username, // Still set for create fallback
+                    userUpdated: TEST_USER.username,
+                    fk_inspection_created: TEST_IDS.inspectionId,
+                },
+                update: {
+                    description: "Updated deficiency for audit test",
+                    comment: "Updated comment",
+                    userUpdated: TEST_USER.username, // Should update userUpdated
+                    dateUpdated: expect.any(Date), // Should update dateUpdated
+                    // Note: userCreated and fk_inspection_created should NOT be in update
+                }
+            });
+        });
+
+        it("should set correct resolution metadata for old deficiencies - dateResolved, userResolved, fk_inspection_resolved", async () => {
+            // Arrange
+            const resolvedDeficiency = {
+                id: TEST_IDS.deficiency1,
+                resolved: true,
+                typeId: TEST_IDS.typeId1,
+                typeName: "Test Type 1",
+                description: "Test deficiency to resolve",
+                comment: "Test comment",
+                dateCreated: new Date("2024-01-01"),
+            };
+
+            const propsWithResolvedDeficiency = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                oldDeficiencyList: [resolvedDeficiency],
+            };
+
+            // Act
+            await saveCadetInspection(propsWithResolvedDeficiency);
+
+            // Assert
+            expect(prisma.deficiency.updateMany).toHaveBeenCalledWith({
+                where: {
+                    id: { in: [TEST_IDS.deficiency1] },
+                    type: { fk_assosiation: TEST_USER.assosiation },
+                    dateResolved: null, // Only resolve unresolved deficiencies
+                },
                 data: {
-                    deficiencyCreated: {
-                        connect: { id: deficiencyToDelete.id }
+                    dateResolved: expect.any(Date), // Should set resolution date
+                    userResolved: TEST_USER.username, // Should set resolving user
+                    fk_inspection_resolved: TEST_IDS.inspectionId, // Should set resolving inspection
+                },
+            });
+        });
+
+        it("should respect association boundaries - All operations filtered by association", async () => {
+            // Arrange
+            const newDeficiency = {
+                ...BASE_NEW_DEFICIENCY,
+                uniformId: TEST_IDS.uniformId,
+                materialId: TEST_IDS.materialId,
+            };
+
+            const propsWithAssociationTest = {
+                ...BASE_CADET_INSPECTION_PROPS,
+                oldDeficiencyList: [SAMPLE_OLD_DEFICIENCIES[0]], // Include old deficiency
+                newDeficiencyList: [newDeficiency],
+            };
+
+            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithMaterialRelation);
+            (prisma.material.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_MATERIAL);
+            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+
+            // Act
+            await saveCadetInspection(propsWithAssociationTest);
+
+            // Assert
+            // Check deficiencyType lookup includes association filter
+            expect(prisma.deficiencyType.findUniqueOrThrow).toHaveBeenCalledWith({
+                where: {
+                    id: TEST_IDS.typeId1,
+                    AND: {
+                        fk_assosiation: TEST_USER.assosiation, // Association filter
                     }
                 }
             });
 
-            // Save with empty new deficiency list (should delete the existing one)
-            const { success } = await runServerActionTest(
-                saveCadetInspection({
-                    cadetId,
-                    uniformComplete: true,
-                    oldDeficiencyList: [],
-                    newDeficiencyList: []
+            // Check material lookup includes association filter
+            expect(prisma.material.findUniqueOrThrow).toHaveBeenCalledWith({
+                where: {
+                    id: TEST_IDS.materialId,
+                    AND: { materialGroup: { fk_assosiation: TEST_USER.assosiation } }, // Association filter
+                },
+                include: { materialGroup: true }
+            });
+
+            // Check deficiency upsert includes association filter
+            expect(prisma.deficiency.upsert).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    where: expect.objectContaining({
+                        AND: { type: { fk_assosiation: TEST_USER.assosiation } } // Association filter
+                    })
                 })
             );
 
-            expect(success).toBeTruthy();
-
-            // Verify deficiency was deleted
-            const deletedDeficiency = await prisma.deficiency.findUnique({
-                where: { id: deficiencyToDelete.id }
-            });
-            expect(deletedDeficiency).toBeNull();
-        });
-    });
-
-    describe('Authorization', () => {
-        it('should require inspector role', async () => {
-            global.__ROLE__ = AuthRole.user;
-
-            const result = saveCadetInspection({
-                cadetId: ids.cadetIds[0],
-                uniformComplete: true,
-                oldDeficiencyList: [],
-                newDeficiencyList: []
-            })
-
-            await expect(result).rejects.toThrow();
-
-            // Reset role for other tests
-            global.__ROLE__ = AuthRole.inspector;
+            // Check old deficiency resolution includes association filter
+            expect(prisma.deficiency.updateMany).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    where: expect.objectContaining({
+                        type: { fk_assosiation: TEST_USER.assosiation }, // Association filter
+                    })
+                })
+            );
         });
     });
 });
-
-

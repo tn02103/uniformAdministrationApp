@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { CadetInspectionFormSchema, cadetInspectionFormSchema } from "@/zod/deficiency";
 import { PrismaPromise } from "@prisma/client";
 import { unsecuredGetActiveInspection } from "./get";
-
+import { v4 as uuid } from "uuid";
 
 export const saveCadetInspection = async (props: CadetInspectionFormSchema) => genericSAValidator(
     AuthRole.inspector,
@@ -138,7 +138,7 @@ export const saveCadetInspection = async (props: CadetInspectionFormSchema) => g
             // -- save data
             const dbDeficiency = await client.deficiency.upsert({
                 where: {
-                    id: def.id ?? undefined,
+                    id: def.id ?? uuid(),
                     AND: { type: { fk_assosiation: assosiation } }
                 },
                 create: {

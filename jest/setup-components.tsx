@@ -21,6 +21,11 @@ jest.mock('@/lib/locales/client', () => {
     };
 });
 
+// NextJS
+jest.mock('next/navigation', () => ({
+    useParams: jest.fn()
+}));
+
 // Mock common components to avoid complex rendering
 jest.mock("@/components/errorMessage", () => {
     return function ErrorMessage({ error, ariaLabel, testId, ...divProps }: { error: string, testId: string, ariaLabel: string }) {

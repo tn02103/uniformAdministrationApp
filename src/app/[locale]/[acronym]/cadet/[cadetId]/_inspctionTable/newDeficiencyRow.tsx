@@ -24,7 +24,7 @@ export default function NewDeficiencyRow({
     remove: () => void;
 }) {
     const t = useI18n();
-    const { watch, setValue, getValues } = useFormContext<CadetInspectionFormSchema>();
+    const { watch, setValue } = useFormContext<CadetInspectionFormSchema>();
     const [selectedDefType, setSelectedDefType] = useState<DeficiencyType>();
 
     const { cadetId }: ParamType = useParams();
@@ -34,6 +34,7 @@ export default function NewDeficiencyRow({
         name: [`newDeficiencyList.${index}.typeId`, `newDeficiencyList.${index}.dateCreated`]
     });
 
+    const isCreated = !!dateCreated;
     const deficiencyTypeOptions = deficiencyTypeList?.map((type) => ({ value: type.id, label: type.name })) ?? [];
     const uniformOptions = uniformLabels?.map((item) => ({ value: item.id, label: item.description })) ?? [];
 
@@ -43,7 +44,7 @@ export default function NewDeficiencyRow({
             return;
         }
         const type = deficiencyTypeList?.find(t => t.id === typeId);
-        if (selectedDefType && !getValues(`newDeficiencyList.${index}.dateCreated`)) {
+        if (!isCreated) {
             setValue(`newDeficiencyList.${index}.uniformId`, "");
             setValue(`newDeficiencyList.${index}.materialId`, "");
             setValue(`newDeficiencyList.${index}.otherMaterialGroupId`, "");
@@ -51,12 +52,12 @@ export default function NewDeficiencyRow({
         }
 
         setSelectedDefType(type);
-    }, [typeId, deficiencyTypeList, index, getValues, setValue, selectedDefType]);
+    }, [deficiencyTypeList, index, isCreated, setValue, typeId]);
 
     return (
         <Row data-testid={`div_newDef_${index}`} className="p-2 m-0 border-top border-1 border-dark">
             <Col xs={"10"} sm={"5"}>
-                <SelectFormField
+                <SelectFormField<CadetInspectionFormSchema>
                     required
                     name={`newDeficiencyList.${index}.typeId`}
                     label={t('common.type')}
@@ -84,9 +85,9 @@ export default function NewDeficiencyRow({
             }
             {(selectedDefType && ((selectedDefType.dependent === "uniform") || (selectedDefType.relation === "uniform"))) &&
                 <Col xs={"10"} sm={5}>
-                    <SelectFormField
+                    <SelectFormField<CadetInspectionFormSchema>
                         required
-                        name={`newDeficiencyList.${index}.fk_uniform`}
+                        name={`newDeficiencyList.${index}.uniformId`}
                         label={t('common.uniform.item', { count: 1 })}
                         options={uniformOptions}
                         hookFormValidation
@@ -107,13 +108,13 @@ export default function NewDeficiencyRow({
                     testId="btn_delete" />
             </Col>
             {(selectedDefType && ((selectedDefType.dependent === "cadet") && (selectedDefType.relation === "material")))
-                && (watch(`newDeficiencyList.${index}.materialId`) === "others") &&
+                && (watch(`newDeficiencyList.${index}.materialId`) === "other") &&
                 <Col xs={"10"} sm={5}>
                     <MaterialGroupSelect index={index} />
                 </Col>
             }
             {(selectedDefType && ((selectedDefType.dependent === "cadet") && (selectedDefType.relation === "material")))
-                && (watch(`newDeficiencyList.${index}.materialId`) === "others") &&
+                && (watch(`newDeficiencyList.${index}.materialId`) === "other") &&
                 <Col xs={"10"} sm={5}>
                     <MaterialTypeSelect index={index} />
                 </Col>
@@ -138,7 +139,7 @@ const MaterialSelect = ({ index }: { index: number }) => {
     const { materialList } = useCadetMaterialDescriptionList(cadetId);
     const options = [
         ...(materialList?.map((item) => ({ value: item.id, label: item.description })) ?? []),
-        { value: "others", label: t('cadetDetailPage.inspection.otherMaterials') }
+        { value: "other", label: t('cadetDetailPage.inspection.otherMaterials') }
     ]
 
     if (!materialList) return <></>;
@@ -197,6 +198,7 @@ const MaterialTypeSelect = ({ index }: { index: number }) => {
             label={t('common.material.type_one')}
             options={options}
             hookFormValidation
+            disabled={!groupId || groupId === "null" || options.length === 0}
         />
     );
 }

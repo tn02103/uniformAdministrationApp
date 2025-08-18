@@ -35,7 +35,7 @@ export default function CadetInspectionStep2({
     const oldDeficiencyList = useWatch<CadetInspectionFormSchema>({
         name: "oldDeficiencyList"
     }) as OldDeficiencyFormSchema[] | undefined;
-    const numberUnresolvedDeficiencies = oldDeficiencyList?.filter(def => !def.resolved).length || 0;
+    const unresolvedOldDeficiencyList = oldDeficiencyList?.filter(def => !def.resolved) || [];
 
     return (
         <>
@@ -44,11 +44,11 @@ export default function CadetInspectionStep2({
                     <Col xs={"auto"}>
                         {t('cadetDetailPage.header.oldDeficiencies')}
                     </Col>
-                    <Col data-testid={"div_step2_oldDefHeader"} xs={"auto"} className={`fst-italic ${(numberUnresolvedDeficiencies > 0) ? "text-danger" : "text-success"}`}>
-                        {t('cadetDetailPage.header.amountUnresolved', { count: numberUnresolvedDeficiencies })}
+                    <Col data-testid={"div_step2_oldDefHeader"} xs={"auto"} className={`fst-italic ${(unresolvedOldDeficiencyList.length > 0) ? "text-danger" : "text-success"}`}>
+                        {t('cadetDetailPage.header.amountUnresolved', { count: unresolvedOldDeficiencyList.length })}
                     </Col>
                 </Row>
-                {(oldDeficiencyList)?.map((def, index) =>
+                {(unresolvedOldDeficiencyList)?.map((def, index) =>
                     <OldDeficiencyRow deficiency={def} step={2} key={def.id} index={index} />
                 )}
                 <Row className="border-bottom p-1 bg-body-secondary m-0">

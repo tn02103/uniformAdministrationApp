@@ -9,6 +9,8 @@ import { startInspection as si } from "./start";
 import { getInspectionState as gis } from "./state";
 import { stopInspection as soi } from "./stop";
 import { getCadetInspectionFormData as gcifd } from "./cadet/get";
+import { saveCadetInspection as saveci } from "./cadet/save";
+
 
 export const createInspection = ci;
 export const deleteInspection = di;
@@ -19,3 +21,4 @@ export const startInspection = si;
 export const getInspectionState = gis;
 export const stopInspection = soi;
 export const getCadetInspectionFormData = gcifd;
+export const saveCadetInspection = saveci;

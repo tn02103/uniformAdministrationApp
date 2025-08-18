@@ -10,8 +10,8 @@ export default {
         loading: "Lädt",
         status: "Status",
         dates: {
-            created: "Erstellt am:",
-            updated: "zulest Verändert:",
+            created: "Erstellt am",
+            updated: "zuletzt Verändert",
         },
         yes: "Ja",
         no: "Nein",

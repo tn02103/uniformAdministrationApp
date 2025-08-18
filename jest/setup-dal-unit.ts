@@ -56,12 +56,33 @@ const prismaMock = {
     },
     material: {
         findUnique: jest.fn(),
+        findUniqueOrThrow: jest.fn(),
         findMany: jest.fn(),
         create: jest.fn(),
     },
     materialGroup: {
         findUnique: jest.fn(),
         findMany: jest.fn(),
+    },
+    uniformDeficiency: {
+        upsert: jest.fn(),
+        findFirst: jest.fn(),
+        findMany: jest.fn(),
+        findUnique: jest.fn(),
+        create: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+        deleteMany: jest.fn(),
+    },
+    cadetDeficiency: {
+        upsert: jest.fn(),
+        findFirst: jest.fn(),
+        findMany: jest.fn(),
+        findUnique: jest.fn(),
+        create: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+        deleteMany: jest.fn(),
     },
     cadet: {
         findUnique: jest.fn(),

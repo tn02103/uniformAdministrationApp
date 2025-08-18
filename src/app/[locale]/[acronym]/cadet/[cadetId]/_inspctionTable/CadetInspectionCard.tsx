@@ -2,22 +2,28 @@
 /* eslint-disable no-console */
 "use client";
 
-import { getCadetInspectionFormData } from "@/dal/inspection";
+import { getCadetInspectionFormData, saveCadetInspection } from "@/dal/inspection";
 import { useUnresolvedDeficienciesByCadet } from "@/dataFetcher/cadetInspection";
 import { useParams } from "next/navigation";
 import CadetInspectionCardHeader from "./header";
 import { useState } from "react";
-import { CadetInspectionFormSchema } from "@/zod/deficiency";
+import { cadetInspectionFormSchema, CadetInspectionFormSchema } from "@/zod/deficiency";
 import { useI18n } from "@/lib/locales/client";
 import { FormProvider, useForm } from "react-hook-form";
 import OldDeficiencyRow from "./oldDeficiencyRow";
 import CadetInspectionStep1 from "./step1";
 import CadetInspectionStep2 from "./step2";
+import { mutate } from "swr";
+import { toast } from "react-toastify";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 
 export const CadetInspectionCard = () => {
     const t = useI18n();
-    const form = useForm<CadetInspectionFormSchema>({ mode: "onTouched" });
+    const form = useForm<CadetInspectionFormSchema>({
+        mode: "onTouched",
+        resolver: zodResolver(cadetInspectionFormSchema),
+    });
 
     const { cadetId } = useParams<{ cadetId: string }>();
     const [step, setStep] = useState<number>(0);
@@ -25,14 +31,36 @@ export const CadetInspectionCard = () => {
     const { unresolvedDeficiencies } = useUnresolvedDeficienciesByCadet(cadetId);
 
     const handleStartCadetInspection = async () => {
-        const d = await getCadetInspectionFormData(cadetId);
-        console.log("🚀 ~ handleStartCadetInspection ~ d:", d)
-        form.reset(d);
+        const data = await getCadetInspectionFormData(cadetId);
+        form.reset(data);
         setStep(1);
     }
 
     const handleSaveInspection = async (data: CadetInspectionFormSchema) => {
-        console.log("🚀 ~ handleSaveInspection ~ data:", data)
+        data.newDeficiencyList.forEach((def, index) => {
+            if (def.materialId) {
+                if (def.materialId === "others") {
+                    data.newDeficiencyList[index].materialId = def.otherMaterialId;
+                }
+            }
+
+            if (def.uniformId === "") def.uniformId = null;
+            if (def.materialId === "") def.materialId = null;
+            if (def.otherMaterialId === "") def.otherMaterialId = null;
+            if (def.otherMaterialGroupId === "") def.otherMaterialGroupId = null;
+        });
+
+        saveCadetInspection(data).then(() => {
+            mutate(
+                (key: string | object) => (typeof key === "string") && (key === `cadet.${cadetId}.inspection` || key === `cadet.${cadetId}.deficiencies.unresolved`),
+                undefined,
+                { populateCache: false }
+            );
+            setStep(0);
+            toast.success(t('cadetDetailPage.inspection.saved'));
+        }).catch(() => {
+            toast.error(t('common.error.actions.save'));
+        });
     }
 
     return (
@@ -61,7 +89,7 @@ export const CadetInspectionCard = () => {
                     {step === 1 && (
                         <CadetInspectionStep1
                             stepState={[step, setStep]}
-                            cancel={() =>  setStep(0)} />
+                            cancel={() => setStep(0)} />
                     )}
                     {step === 2 && (
                         <CadetInspectionStep2

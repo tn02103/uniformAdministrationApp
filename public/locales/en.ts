@@ -10,8 +10,8 @@ export default {
         loading: "Loading",
         status: "State",
         dates: {
-            "created": "Created on:",
-            "updated": "Last modified:",
+            "created": "Created on",
+            "updated": "Last modified",
         },
         yes: "Yes",
         no: "No",

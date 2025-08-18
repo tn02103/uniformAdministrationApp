@@ -18,15 +18,17 @@ export const updateUniformDeficiencySchema = z.object({
 export type AdminDeficiencytypeFormSchema = z.infer<typeof AdminDeficiencytypeFormSchema>;
 export type UpdateUniformDeficiencySchema = z.infer<typeof updateUniformDeficiencySchema>;
 
+const nullableUUID = z.union([z.string().uuid(), z.string().max(0).transform(() => null)]).nullable().optional();
+
 export const newCadetDeficiencyFormSchema = z.object({
     id: z.string().uuid().optional(),
     typeId: z.string().uuid(),
     description: z.string().trim(),
     comment: z.string().trim().min(1, "string.required").max(1000, "string.maxLength;value:1000"),
-    uniformId: z.string().uuid().nullable(),
-    materialId: z.union([z.string().uuid(), z.enum(["other"])]).nullable(),
-    otherMaterialId: z.string().uuid().nullable(),
-    otherMaterialGroupId: z.string().uuid().nullable(),
+    uniformId: nullableUUID,
+    materialId: z.union([nullableUUID, z.enum(["other"])]).nullable().optional(),
+    otherMaterialId: nullableUUID,
+    otherMaterialGroupId: nullableUUID,
     dateCreated: z.string().datetime().nullable().optional(),
 });
 

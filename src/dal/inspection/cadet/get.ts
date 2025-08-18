@@ -30,19 +30,51 @@ export const getCadetInspectionFormData = async (props: string) => genericSAVali
         activeInspection.id
     )
 
-    const issuedMaterials = await prisma.material.findMany({
-        where: {
-            issuedEntries: {
-                some: {
-                    fk_cadet: cadetId,
-                    dateReturned: null,
+    const [issuedMaterials, issuedCounts, uniformTypes] = await prisma.$transaction([
+        prisma.material.findMany({
+            where: {
+                issuedEntries: {
+                    some: {
+                        fk_cadet: cadetId,
+                        dateReturned: null,
+                    },
                 },
             },
-        },
+        }),
+        prisma.uniform.groupBy({
+            by: ['fk_uniformType'],
+            where: {
+                issuedEntries: {
+                    some: {
+                        fk_cadet: cadetId,
+                        dateReturned: null,
+                    },
+                },
+            },
+            _count: true,
+            orderBy: {
+                fk_uniformType: 'asc',
+            }
+        }),
+        prisma.uniformType.findMany({
+            where: {
+                fk_assosiation: assosiation,
+                recdelete: null,
+            }
+        }),
+    ]);
+    const uniformComplete = uniformTypes.every(type => {
+        const count = issuedCounts.find(count => count.fk_uniformType === type.id);
+        if (!count || typeof count._count !== 'number')
+             return false;
+
+        return count._count >= type.issuedDefault;
     });
 
+
     return {
-        cadetId: cadetId,
+        cadetId,
+        uniformComplete,
         oldDeficiencyList: oldDeficiencies.map(def => ({
             id: def.id,
             typeId: def.type.id,
@@ -56,6 +88,7 @@ export const getCadetInspectionFormData = async (props: string) => genericSAVali
             const isIssued = issuedMaterials.some(mat => mat.id === def.cadetDeficiency?.fk_material);
 
             return {
+                id: def.id,
                 typeId: def.type.id,
                 description: def.description,
                 comment: def.comment,
@@ -63,6 +96,7 @@ export const getCadetInspectionFormData = async (props: string) => genericSAVali
                 materialId: (isIssued ? def.cadetDeficiency?.fk_material : "other") ?? null,
                 otherMaterialId: isIssued ? null : def.cadetDeficiency?.fk_material ?? null,
                 otherMaterialGroupId: isIssued ? null : def.cadetDeficiency?.material?.fk_materialGroup ?? null,
+                dateCreated: dayjs(def.dateCreated).format("YYYY-MM-DDTHH:mm:ss"),
             }
         }),
     } satisfies CadetInspectionFormSchema;
@@ -102,7 +136,11 @@ export const unsecuredGetPreviouslyUnresolvedDeficiencies = async (cadetId: stri
             type: true,
             cadetDeficiency: true,
             uniformDeficiency: true,
-        }
+        },
+        orderBy: [
+            { dateCreated: 'asc'},
+            { description: 'asc'}
+        ]
     });
 }
 export const unsecuredGetActiveInspection = async (cadetId: string, assosiation: string) => {
