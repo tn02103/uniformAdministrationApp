@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { FormProvider, useForm, UseFormReturn } from 'react-hook-form';
 import { CadetInspectionFormSchema } from '@/zod/deficiency';
 import { Deficiency } from '@/types/deficiencyTypes';
-import OldDeficiencyRow from './oldDeficiencyRow';
+import OldDeficiencyRow from './OldDeficiencyRow2';
 
 // Mock data for testing
 const mockDeficiency: Deficiency = {

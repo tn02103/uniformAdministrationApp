@@ -2,7 +2,7 @@ import React from 'react';
 import { getAllByRole, render, screen } from '@testing-library/react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useParams } from 'next/navigation';
-import NewDeficiencyRow from './newDeficiencyRow';
+import NewDeficiencyRow from './NewDeficiencyRow2';
 import { CadetInspectionFormSchema } from '@/zod/deficiency';
 import { MaterialGroup } from '@/types/globalMaterialTypes';
 import userEvent from '@testing-library/user-event';

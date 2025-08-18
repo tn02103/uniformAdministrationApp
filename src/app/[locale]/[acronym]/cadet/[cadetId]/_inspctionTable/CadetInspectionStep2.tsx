@@ -7,8 +7,8 @@ import { useParams } from "next/navigation";
 import { Button, Col, Row } from "react-bootstrap";
 import { useFieldArray, useWatch } from "react-hook-form";
 import { ParamType } from "../page";
-import NewDeficiencyRow from "./newDeficiencyRow";
-import OldDeficiencyRow from "./oldDeficiencyRow";
+import NewDeficiencyRow from "./NewDeficiencyRow2";
+import OldDeficiencyRow from "./OldDeficiencyRow2";
 
 
 const initDeficiency: NewCadetDeficiencyFormSchema = {

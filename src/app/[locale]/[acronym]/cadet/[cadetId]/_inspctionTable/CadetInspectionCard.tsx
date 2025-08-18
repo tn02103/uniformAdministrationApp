@@ -5,14 +5,14 @@
 import { getCadetInspectionFormData, saveCadetInspection } from "@/dal/inspection";
 import { useUnresolvedDeficienciesByCadet } from "@/dataFetcher/cadetInspection";
 import { useParams } from "next/navigation";
-import CadetInspectionCardHeader from "./header";
+import CadetInspectionCardHeader from "./CadetInspectionCardHeader";
 import { useState } from "react";
 import { cadetInspectionFormSchema, CadetInspectionFormSchema } from "@/zod/deficiency";
 import { useI18n } from "@/lib/locales/client";
 import { FormProvider, useForm } from "react-hook-form";
-import OldDeficiencyRow from "./oldDeficiencyRow";
-import CadetInspectionStep1 from "./step1";
-import CadetInspectionStep2 from "./step2";
+import OldDeficiencyRow from "./OldDeficiencyRow2";
+import CadetInspectionStep1 from "./CadetInspectionStep1";
+import CadetInspectionStep2 from "./CadetInspectionStep2";
 import { mutate } from "swr";
 import { toast } from "react-toastify";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,13 +43,14 @@ export const CadetInspectionCard = () => {
                     data.newDeficiencyList[index].materialId = def.otherMaterialId;
                 }
             }
-
+            
             if (def.uniformId === "") def.uniformId = null;
             if (def.materialId === "") def.materialId = null;
             if (def.otherMaterialId === "") def.otherMaterialId = null;
             if (def.otherMaterialGroupId === "") def.otherMaterialGroupId = null;
         });
-
+        console.log("🚀 ~ handleSaveInspection ~ data:", data)
+        
         saveCadetInspection(data).then(() => {
             mutate(
                 (key: string | object) => (typeof key === "string") && (key === `cadet.${cadetId}.inspection` || key === `cadet.${cadetId}.deficiencies.unresolved`),
@@ -57,6 +58,7 @@ export const CadetInspectionCard = () => {
                 { populateCache: false }
             );
             setStep(0);
+            console.log("🚀 ~ handleSaveInspection ~ success:")
             toast.success(t('cadetDetailPage.inspection.saved'));
         }).catch(() => {
             toast.error(t('common.error.actions.save'));
@@ -69,7 +71,7 @@ export const CadetInspectionCard = () => {
                 step={step}
                 startInspecting={handleStartCadetInspection}
             />
-            <form onSubmit={form.handleSubmit(handleSaveInspection)} className="p-3">
+            <form onSubmit={form.handleSubmit(handleSaveInspection, console.warn)} className="p-3">
                 <FormProvider {...form}>
                     {step === 0 &&
                         <div className="row p-0 bg-white border-top border-1 border-dark">

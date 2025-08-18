@@ -2,7 +2,7 @@ import { useI18n } from "@/lib/locales/client"
 import { CadetInspectionFormSchema, OldDeficiencyFormSchema } from "@/zod/deficiency"
 import { Button, Col, Row } from "react-bootstrap"
 import { useWatch } from "react-hook-form"
-import OldDeficiencyRow from "./oldDeficiencyRow"
+import OldDeficiencyRow from "./OldDeficiencyRow2"
 
 
 export default function CadetInspectionStep1({
