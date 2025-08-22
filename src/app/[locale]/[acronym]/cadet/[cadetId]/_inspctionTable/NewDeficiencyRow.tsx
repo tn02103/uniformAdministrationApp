@@ -16,7 +16,7 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { ParamType } from "../page";
 
 
-export default function NewDeficiencyRow({
+export function NewDeficiencyRow({
     index,
     remove,
 }: {

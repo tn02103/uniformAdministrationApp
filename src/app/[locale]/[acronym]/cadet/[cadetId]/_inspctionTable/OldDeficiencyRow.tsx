@@ -5,7 +5,7 @@ import { CadetInspectionFormSchema } from "@/zod/deficiency";
 import { Col, Form, Row } from "react-bootstrap";
 import { useFormContext, useWatch } from "react-hook-form";
 
-export default function OldDeficiencyRow({
+export function OldDeficiencyRow({
     index,
     step,
     deficiency,

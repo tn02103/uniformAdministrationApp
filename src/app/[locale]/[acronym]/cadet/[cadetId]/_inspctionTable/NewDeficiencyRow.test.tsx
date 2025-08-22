@@ -2,7 +2,7 @@ import React from 'react';
 import { getAllByRole, render, screen } from '@testing-library/react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useParams } from 'next/navigation';
-import NewDeficiencyRow from './NewDeficiencyRow2';
+import { NewDeficiencyRow } from './NewDeficiencyRow';
 import { CadetInspectionFormSchema } from '@/zod/deficiency';
 import { MaterialGroup } from '@/types/globalMaterialTypes';
 import userEvent from '@testing-library/user-event';
@@ -601,10 +601,10 @@ describe('NewDeficiencyRow', () => {
             // change Group to Group2
             await user.selectOptions(materialGroupSelect, mockMaterialConfiguration[1].id);
             expect(materialGroupSelect).toHaveValue(mockMaterialConfiguration[1].id);
-            
+
             // verify type is reset
             expect(materialTypeSelect).toHaveValue("");
-            
+
             // verify type options are changed
             const matOption3 = getAllByRole(materialTypeSelect, 'option');
             expect(matOption3).toHaveLength(3);
