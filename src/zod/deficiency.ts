@@ -29,7 +29,7 @@ export const newCadetDeficiencyFormSchema = z.object({
     materialId: z.union([nullableUUID, z.enum(["other"])]).nullable().optional(),
     otherMaterialId: nullableUUID,
     otherMaterialGroupId: nullableUUID,
-    dateCreated: z.string().datetime().nullable().optional(),
+    dateCreated: z.string().regex(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})?$/, "string.invalidDate").nullable().optional(),
 });
 
 export const oldDeficiencyFormSchema = z.object({

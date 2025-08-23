@@ -20,7 +20,7 @@ type PropType = {
 }
 
 
-const TooltipIconButton = (props: PropType) => {
+export const TooltipIconButton = (props: PropType) => {
     const { icon, variant, tooltipText, testId, onClick, buttonSize, buttonClass, disabled, iconClass, buttonType, "aria-label": ariaLabel } = props;
     return (
         <OverlayTrigger

@@ -1,19 +1,20 @@
-import { useI18n } from "@/lib/locales/client"
-import { CadetInspectionFormSchema, OldDeficiencyFormSchema } from "@/zod/deficiency"
-import { Button, Col, Row } from "react-bootstrap"
-import { useWatch } from "react-hook-form"
-import OldDeficiencyRow from "./OldDeficiencyRow2"
+import { useI18n } from "@/lib/locales/client";
+import { CadetInspectionFormSchema, OldDeficiencyFormSchema } from "@/zod/deficiency";
+import { Button, Col, Row } from "react-bootstrap";
+import { useWatch } from "react-hook-form";
+import { OldDeficiencyRow } from "./OldDeficiencyRow";
 
-
-export default function CadetInspectionStep1({
-    cancel,
-    stepState: [step, setStep]
-}: {
+export type CadetInspectionStep1Props = {
     cancel: () => void;
-    stepState: [number, (n: number) => void];
-}) {
+    setNextStep: () => void;
+};
+
+export function CadetInspectionStep1({
+    cancel,
+    setNextStep
+}: CadetInspectionStep1Props) {
     const t = useI18n()
-    
+
     const oldDeficiencyList = useWatch<CadetInspectionFormSchema>({
         name: "oldDeficiencyList"
     }) as OldDeficiencyFormSchema[] | undefined;
@@ -27,7 +28,7 @@ export default function CadetInspectionStep1({
                     </Col>
                 </Row>
                 {oldDeficiencyList?.map((def, index) =>
-                    <OldDeficiencyRow deficiency={def} step={step} key={def.id} index={index} />
+                    <OldDeficiencyRow deficiency={def} step={1} key={def.id} index={index} />
                 )}
             </div>
             <Row className="p-0">
@@ -45,7 +46,7 @@ export default function CadetInspectionStep1({
                     <Button
                         variant="outline-primary"
                         className="border-0"
-                        onClick={() => setStep(2)}
+                        onClick={setNextStep}
                         data-testid={"btn_step1_continue"}
                     >
                         {t('common.actions.nextStep')}

@@ -66,7 +66,7 @@ export const getCadetInspectionFormData = async (props: string) => genericSAVali
     const uniformComplete = uniformTypes.every(type => {
         const count = issuedCounts.find(count => count.fk_uniformType === type.id);
         if (!count || typeof count._count !== 'number')
-             return false;
+            return false;
 
         return count._count >= type.issuedDefault;
     });
@@ -85,7 +85,7 @@ export const getCadetInspectionFormData = async (props: string) => genericSAVali
             resolved: def.dateResolved !== null,
         })),
         newDeficiencyList: activeInspection.deficiencyCreated.map(def => {
-            const isIssued = issuedMaterials.some(mat => mat.id === def.cadetDeficiency?.fk_material);
+            const isIssued = def.cadetDeficiency?.fk_material && issuedMaterials.some(mat => mat.id === def.cadetDeficiency?.fk_material);
 
             return {
                 id: def.id,
@@ -107,6 +107,12 @@ export const unsecuredGetPreviouslyUnresolvedDeficiencies = async (cadetId: stri
         where: {
             type: { fk_assosiation: assosiation },
             AND: [
+                {
+                    OR: [
+                        { fk_inspection_created: null },
+                        { fk_inspection_created: { not: activeInspectionId } }
+                    ]
+                },
                 {
                     OR: [
                         { cadetDeficiency: { fk_cadet: cadetId } },
@@ -138,8 +144,8 @@ export const unsecuredGetPreviouslyUnresolvedDeficiencies = async (cadetId: stri
             uniformDeficiency: true,
         },
         orderBy: [
-            { dateCreated: 'asc'},
-            { description: 'asc'}
+            { dateCreated: 'asc' },
+            { description: 'asc' }
         ]
     });
 }

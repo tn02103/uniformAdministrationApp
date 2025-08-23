@@ -163,6 +163,7 @@ const MaterialGroupSelect = ({ index }: { index: number }) => {
     const t = useI18n();
     const { setValue, } = useFormContext<CadetInspectionFormSchema>();
     const { config } = useMaterialConfiguration();
+    
     if (!config) return null;
 
     const options = config.map((group) => ({ value: group.id, label: group.description }));

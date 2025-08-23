@@ -1,21 +1,19 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-console */
 "use client";
 
 import { getCadetInspectionFormData, saveCadetInspection } from "@/dal/inspection";
 import { useUnresolvedDeficienciesByCadet } from "@/dataFetcher/cadetInspection";
-import { useParams } from "next/navigation";
-import CadetInspectionCardHeader from "./CadetInspectionCardHeader";
-import { useState } from "react";
-import { cadetInspectionFormSchema, CadetInspectionFormSchema } from "@/zod/deficiency";
 import { useI18n } from "@/lib/locales/client";
-import { FormProvider, useForm } from "react-hook-form";
-import OldDeficiencyRow from "./OldDeficiencyRow2";
-import CadetInspectionStep1 from "./CadetInspectionStep1";
-import CadetInspectionStep2 from "./CadetInspectionStep2";
-import { mutate } from "swr";
-import { toast } from "react-toastify";
+import { cadetInspectionFormSchema, CadetInspectionFormSchema } from "@/zod/deficiency";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useParams } from "next/navigation";
+import { useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import { mutate } from "swr";
+import CadetInspectionCardHeader from "./CadetInspectionCardHeader";
+import { CadetInspectionStep1 } from "./CadetInspectionStep1";
+import { CadetInspectionStep2 } from "./CadetInspectionStep2";
+import { OldDeficiencyRow } from "./OldDeficiencyRow";
 
 
 export const CadetInspectionCard = () => {
@@ -43,14 +41,13 @@ export const CadetInspectionCard = () => {
                     data.newDeficiencyList[index].materialId = def.otherMaterialId;
                 }
             }
-            
+
             if (def.uniformId === "") def.uniformId = null;
             if (def.materialId === "") def.materialId = null;
             if (def.otherMaterialId === "") def.otherMaterialId = null;
             if (def.otherMaterialGroupId === "") def.otherMaterialGroupId = null;
         });
-        console.log("🚀 ~ handleSaveInspection ~ data:", data)
-        
+
         saveCadetInspection(data).then(() => {
             mutate(
                 (key: string | object) => (typeof key === "string") && (key === `cadet.${cadetId}.inspection` || key === `cadet.${cadetId}.deficiencies.unresolved`),
@@ -58,7 +55,6 @@ export const CadetInspectionCard = () => {
                 { populateCache: false }
             );
             setStep(0);
-            console.log("🚀 ~ handleSaveInspection ~ success:")
             toast.success(t('cadetDetailPage.inspection.saved'));
         }).catch(() => {
             toast.error(t('common.error.actions.save'));
@@ -90,7 +86,7 @@ export const CadetInspectionCard = () => {
                     }
                     {step === 1 && (
                         <CadetInspectionStep1
-                            stepState={[step, setStep]}
+                            setNextStep={() => setStep(2)}
                             cancel={() => setStep(0)} />
                     )}
                     {step === 2 && (

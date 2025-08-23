@@ -1,14 +1,13 @@
-import TooltipIconButton from "@/components/Buttons/TooltipIconButton";
+import { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
 import { useCadetUniformComplete } from "@/dataFetcher/cadet";
 import { useI18n } from "@/lib/locales/client";
 import { CadetInspectionFormSchema, NewCadetDeficiencyFormSchema, OldDeficiencyFormSchema } from "@/zod/deficiency";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "next/navigation";
 import { Button, Col, Row } from "react-bootstrap";
 import { useFieldArray, useWatch } from "react-hook-form";
 import { ParamType } from "../page";
-import NewDeficiencyRow from "./NewDeficiencyRow2";
-import OldDeficiencyRow from "./OldDeficiencyRow2";
+import { NewDeficiencyRow } from "./NewDeficiencyRow";
+import { OldDeficiencyRow } from "./OldDeficiencyRow";
 
 
 const initDeficiency: NewCadetDeficiencyFormSchema = {
@@ -21,7 +20,7 @@ const initDeficiency: NewCadetDeficiencyFormSchema = {
     otherMaterialId: null,
 }
 
-export default function CadetInspectionStep2({
+export function CadetInspectionStep2({
     setStep
 }: {
     setStep: (step: number) => void
@@ -56,13 +55,9 @@ export default function CadetInspectionStep2({
                         {t('cadetDetailPage.header.newDeficiencies')}
                     </Col>
                     <Col>
-                        <TooltipIconButton
-                            variant="outline-success"
-                            buttonSize="sm"
-                            tooltipText={t('common.actions.addNew')}
-                            icon={faPlus}
+                        <TooltipActionButton
+                            variantKey="create"
                             onClick={() => append(initDeficiency)}
-                            testId="btn_step2_newDef"
                         />
                     </Col>
                 </Row>

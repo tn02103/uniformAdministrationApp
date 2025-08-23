@@ -1,10 +1,11 @@
-import TooltipIconButton from "@/components/Buttons/TooltipIconButton";
-import { useCadetInspection } from "@/dataFetcher/cadetInspection";
-import { useInspectionState } from "@/dataFetcher/inspection";
+import { TooltipIconButton } from "@/components/Buttons/TooltipIconButton";
+import { useGlobalData } from "@/components/globalDataProvider";
+import { useInspectedCadetIdList, useInspectionState } from "@/dataFetcher/inspection";
 import { useScopedI18n } from "@/lib/locales/client";
 import { faClipboardCheck, faClipboardQuestion } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "next/navigation";
 import { Row } from "react-bootstrap";
+import { ParamType } from "../page";
 
 
 export default function CadetInspectionCardHeader({
@@ -16,9 +17,11 @@ export default function CadetInspectionCardHeader({
 }) {
     const t = useScopedI18n('cadetDetailPage');
     const { inspectionState } = useInspectionState();
-    const { cadetId } = useParams();
-    const { cadetInspection } = useCadetInspection(cadetId as string);
-    const inspected = (!!cadetInspection && !!cadetInspection.id)
+    const { userRole } = useGlobalData();
+    const { cadetId }: ParamType = useParams();
+    const { inspectedIdList } = useInspectedCadetIdList(userRole, inspectionState?.active);
+
+    const inspected = inspectionState?.active && inspectedIdList?.includes(cadetId);
 
     return (
         <Row className="fs-5 fw-bold p-0">
@@ -43,5 +46,5 @@ export default function CadetInspectionCardHeader({
                 </div>
             }
         </Row>
-    )
+    );
 }

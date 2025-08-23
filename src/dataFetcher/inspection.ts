@@ -1,5 +1,6 @@
 
-import { getInspectionState, getPlannedInspectionList } from "@/dal/inspection";
+import { getInspectedCadetIdList, getInspectionState, getPlannedInspectionList } from "@/dal/inspection";
+import { AuthRole } from "@/lib/AuthRoles";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
 import useSWR from "swr";
 
@@ -28,4 +29,15 @@ export function usePlannedInspectionList(initialData?: PlannedInspectionType[]) 
         inspectionList: data,
         mutate,
     }
+}
+
+export function useInspectedCadetIdList(userRole: number, inspectionActive?: boolean) {
+    const { data: inspectedIdList } = useSWR(
+        `inspection/status/idList`,
+        () => (userRole >= AuthRole.inspector) ? getInspectedCadetIdList() : null,
+        {
+            refreshInterval: inspectionActive ? 3000 : undefined
+        }
+    )
+    return { inspectedIdList }
 }
