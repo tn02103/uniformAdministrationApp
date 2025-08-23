@@ -1,8 +1,16 @@
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import dayjs from "@/lib/dayjs";
+import { Deficiency } from "@/types/deficiencyTypes";
 import { staticData, wrongAssosiation } from "../../../../jest/setup-dal-integration";
-import { getCadetInspectionFormData, unsecuredGetActiveInspection, unsecuredGetPreviouslyUnresolvedDeficiencies } from "./get";
+import { getCadetInspectionFormData, getUnresolvedByCadet, unsecuredGetActiveInspection, unsecuredGetPreviouslyUnresolvedDeficiencies } from "./get";
+
+// Type for the view result that includes the cadet relationship fields
+type DeficiencyByCadet = Deficiency & {
+    fk_cadet: string;
+    fk_uniform: string | null;
+    fk_material: string | null;
+};
 
 const { ids, data } = staticData;
 
@@ -288,6 +296,74 @@ describe('unsecuredGetActiveInspection Integration Tests', () => {
                 def.cadetDeficiency?.fk_cadet === ids.cadetIds[0] ||
                 def.uniformDeficiency !== null;
             expect(hasCorrectRelation).toBe(true);
+        });
+    });
+});
+
+describe('getUnresolvedByCadet Integration Tests', () => {
+    beforeAll(() => {
+        global.__ROLE__ = AuthRole.inspector;
+        global.__ASSOSIATION__ = data.assosiation.id;
+    });
+
+    afterEach(async () => {
+        await staticData.cleanup.inspection();
+    });
+
+    describe('Success Cases', () => {
+        it('should return array of deficiencies for a cadet', async () => {
+            const result = await getUnresolvedByCadet(ids.cadetIds[0]) as DeficiencyByCadet[];
+
+            expect(Array.isArray(result)).toBe(true);
+            
+            // All returned deficiencies should be unresolved (if any exist)
+            result.forEach(def => {
+                expect(def.dateResolved).toBeNull();
+                expect(def.fk_cadet).toBe(ids.cadetIds[0]);
+            });
+        });
+
+        it('should filter by cadet correctly', async () => {
+            const result1 = await getUnresolvedByCadet(ids.cadetIds[0]) as DeficiencyByCadet[];
+            const result2 = await getUnresolvedByCadet(ids.cadetIds[1]) as DeficiencyByCadet[];
+
+            // Each result should only contain deficiencies for the specific cadet
+            result1.forEach(def => {
+                expect(def.fk_cadet).toBe(ids.cadetIds[0]);
+            });
+            
+            result2.forEach(def => {
+                expect(def.fk_cadet).toBe(ids.cadetIds[1]);
+            });
+        });
+
+        it('should handle cadet with no deficiencies', async () => {
+            // Use a cadet that likely has no deficiencies
+            const result = await getUnresolvedByCadet(ids.cadetIds[9]) as DeficiencyByCadet[];
+
+            expect(Array.isArray(result)).toBe(true);
+            // Result can be empty, that's valid
+        });
+    });
+
+    describe('Error Cases', () => {
+        it('should throw error for invalid cadetId', async () => {
+            await expect(getUnresolvedByCadet("invalid-uuid"))
+                .rejects.toThrow();
+        });
+
+        it('should validate cadetId as UUID', async () => {
+            await expect(getUnresolvedByCadet("not-a-uuid"))
+                .rejects.toThrow();
+        });
+    });
+
+    describe('Database View Integration', () => {
+        it('should execute database view query without errors', async () => {
+            // Test that the function executes the raw SQL query without errors
+            const result = await getUnresolvedByCadet(ids.cadetIds[0]);
+            
+            expect(Array.isArray(result)).toBe(true);
         });
     });
 });

@@ -2,6 +2,7 @@ import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
+import { Deficiency } from "@/types/deficiencyTypes";
 import { CadetInspectionFormSchema } from "@/zod/deficiency";
 import { z } from "zod";
 
@@ -71,7 +72,6 @@ export const getCadetInspectionFormData = async (props: string) => genericSAVali
         return count._count >= type.issuedDefault;
     });
 
-
     return {
         cadetId,
         uniformComplete,
@@ -102,6 +102,21 @@ export const getCadetInspectionFormData = async (props: string) => genericSAVali
     } satisfies CadetInspectionFormSchema;
 });
 
+export const getUnresolvedByCadet = async (props: string): Promise<Deficiency[]> => genericSAValidator(
+    AuthRole.inspector,
+    props,
+    z.string().uuid(),
+    { cadetId: props }
+).then(([, cadetId]) => {
+    return prisma.$queryRaw`
+            SELECT * FROM inspection.v_deficiency_by_cadet 
+             WHERE fk_cadet = ${cadetId}
+             AND "dateResolved" IS NULL
+          ORDER BY "dateCreated"
+        `;
+});
+
+// -----------  UNSECURED -------------
 export const unsecuredGetPreviouslyUnresolvedDeficiencies = async (cadetId: string, assosiation: string, activeInspectionId: string) => {
     return prisma.deficiency.findMany({
         where: {
@@ -149,6 +164,7 @@ export const unsecuredGetPreviouslyUnresolvedDeficiencies = async (cadetId: stri
         ]
     });
 }
+
 export const unsecuredGetActiveInspection = async (cadetId: string, assosiation: string) => {
     return await prisma.inspection.findFirst({
         where: {

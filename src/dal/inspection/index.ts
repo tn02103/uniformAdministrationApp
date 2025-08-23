@@ -8,7 +8,7 @@ import { updateCadetRegistrationForInspection as ucri } from "./planned/updateDe
 import { startInspection as si } from "./start";
 import { getCadetIdList, getInspectionState as gis } from "./state";
 import { stopInspection as soi } from "./stop";
-import { getCadetInspectionFormData as gcifd } from "./cadet/get";
+import { getCadetInspectionFormData as gcifd, getUnresolvedByCadet } from "./cadet/get";
 import { saveCadetInspection as saveci } from "./cadet/save";
 
 
@@ -22,4 +22,5 @@ export const getInspectionState = gis;
 export const getInspectedCadetIdList = getCadetIdList;
 export const stopInspection = soi;
 export const getCadetInspectionFormData = gcifd;
+export const getUnresolvedDeficienciesByCadet = getUnresolvedByCadet;
 export const saveCadetInspection = saveci;

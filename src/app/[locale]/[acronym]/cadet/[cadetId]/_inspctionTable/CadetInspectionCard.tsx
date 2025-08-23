@@ -1,7 +1,7 @@
 "use client";
 
 import { getCadetInspectionFormData, saveCadetInspection } from "@/dal/inspection";
-import { useUnresolvedDeficienciesByCadet } from "@/dataFetcher/cadetInspection";
+import { useUnresolvedDeficienciesByCadet } from "@/dataFetcher/inspection";
 import { useI18n } from "@/lib/locales/client";
 import { cadetInspectionFormSchema, CadetInspectionFormSchema } from "@/zod/deficiency";
 import { zodResolver } from "@hookform/resolvers/zod";

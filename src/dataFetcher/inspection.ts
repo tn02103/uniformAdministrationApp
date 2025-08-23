@@ -1,5 +1,5 @@
 
-import { getInspectedCadetIdList, getInspectionState, getPlannedInspectionList } from "@/dal/inspection";
+import { getInspectedCadetIdList, getInspectionState, getPlannedInspectionList, getUnresolvedDeficienciesByCadet } from "@/dal/inspection";
 import { AuthRole } from "@/lib/AuthRoles";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
 import useSWR from "swr";
@@ -40,4 +40,9 @@ export function useInspectedCadetIdList(userRole: number, inspectionActive?: boo
         }
     )
     return { inspectedIdList }
+}
+
+export const useUnresolvedDeficienciesByCadet = (cadetId: string) => {
+    const { data } = useSWR(`cadet.${cadetId}.deficiencies.unresolved`, () => getUnresolvedDeficienciesByCadet(cadetId));
+    return { unresolvedDeficiencies: data };
 }
