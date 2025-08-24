@@ -91,9 +91,13 @@ test.describe("<CadetInspectionCard />", () => {
     test('active inspection state, not inspected', async ({ page, staticData: { ids }, inspectionComponent, testData }) => {
         await startInspection(ids);
         await page.goto(`/de/app/cadet/${ids.cadetIds[2]}`);
+        
+        await expect(async () => {
+            await page.reload();
+            await expect(inspectionComponent.div_header).toContainText(german.cadetDetailPage.inspection["header.inspection"]);
+        }).toPass();
 
         await test.step('inspection step 0', async () => Promise.all([
-            expect(inspectionComponent.div_header).toContainText(german.cadetDetailPage.inspection["header.inspection"]),
             expect(inspectionComponent.div_oldDeficiency_list).toHaveCount(6),
             expect(inspectionComponent.chk_olddef_resolved(testData.unresolvedIds[0])).toBeHidden(),
 
