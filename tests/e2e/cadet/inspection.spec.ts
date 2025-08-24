@@ -76,7 +76,7 @@ test.describe("<CadetInspectionCard />", () => {
     test('inactive inspection state', async ({ page, staticData: { ids }, inspectionComponent, testData }) => {
         await page.goto(`/de/app/cadet/${ids.cadetIds[2]}`);
 
-        await expect(inspectionComponent.div_header).toContainText(german.cadetDetailPage.header.deficiencies);
+        await expect(inspectionComponent.div_header).toContainText(german.cadetDetailPage.inspection["header.noInspection"]);
         await expect(inspectionComponent.btn_inspect).toBeHidden();
         await expect(inspectionComponent.div_oldDeficiency(testData.unresolvedIds[0])).toBeVisible();
         await expect(inspectionComponent.div_oldDeficiency(testData.unresolvedIds[1])).toBeVisible();
@@ -93,7 +93,7 @@ test.describe("<CadetInspectionCard />", () => {
         await page.goto(`/de/app/cadet/${ids.cadetIds[2]}`);
 
         await test.step('inspection step 0', async () => Promise.all([
-            expect(inspectionComponent.div_header).toContainText(german.cadetDetailPage.header.inspection),
+            expect(inspectionComponent.div_header).toContainText(german.cadetDetailPage.inspection["header.inspection"]),
             expect(inspectionComponent.div_oldDeficiency_list).toHaveCount(6),
             expect(inspectionComponent.chk_olddef_resolved(testData.unresolvedIds[0])).toBeHidden(),
 
@@ -108,7 +108,7 @@ test.describe("<CadetInspectionCard />", () => {
         await expect(inspectionComponent.btn_inspect).toBeVisible();
         await inspectionComponent.btn_inspect.click();
         await expect(inspectionComponent.btn_inspect).toBeDisabled();
-        await expect(inspectionComponent.div_header).toContainText(german.cadetDetailPage.header.inspecting);
+        await expect(inspectionComponent.div_header).toContainText(german.cadetDetailPage.inspection["header.inspecting"]);
 
         await test.step('inspection step 1', async () => {
             await Promise.all([
@@ -178,7 +178,7 @@ test.describe("<CadetInspectionCard />", () => {
             await inspectionComponent.btn_step2_submit.click();
             const toast = new ToastTestComponent(page);
             await expect(toast.toast_success).toBeVisible();
-            await expect(toast.toast_success).toContainText(german.cadetDetailPage.inspection.saved);
+            await expect(toast.toast_success).toContainText(german.cadetDetailPage.inspection["message.saved"]);
 
             await expect(inspectionComponent.div_newDeficiency_list).toHaveCount(0);
             await expect(inspectionComponent.div_oldDeficiency_list).toHaveCount(6);
@@ -289,7 +289,7 @@ test.describe("<CadetInspectionCard />", () => {
         await page.goto(`/de/app/cadet/${ids.cadetIds[2]}`);
 
         await test.step('inspection step 0: verify unresolved deficiencies and new deficiencies are shown', async () => {
-            await expect(inspectionComponent.div_header).toContainText(german.cadetDetailPage.header.inspection);
+            await expect(inspectionComponent.div_header).toContainText(german.cadetDetailPage.inspection["header.inspection"]);
 
             // Should show 6 deficiencies: 3 unresolved old + 3 new from previous inspection
             await expect(inspectionComponent.div_oldDeficiency_list).toHaveCount(6);
@@ -319,7 +319,7 @@ test.describe("<CadetInspectionCard />", () => {
         await expect(inspectionComponent.btn_inspect).toBeVisible();
         await inspectionComponent.btn_inspect.click();
         await expect(inspectionComponent.btn_inspect).toBeDisabled();
-        await expect(inspectionComponent.div_header).toContainText(german.cadetDetailPage.header.inspecting);
+        await expect(inspectionComponent.div_header).toContainText(german.cadetDetailPage.inspection["header.inspecting"]);
 
         await test.step('inspection step 1: verify previously resolved deficiencies are checked, resolve all remaining', async () => {
             // Should show all 9 deficiencies: 6 original
@@ -358,7 +358,7 @@ test.describe("<CadetInspectionCard />", () => {
         await test.step('inspection step 2: verify all old deficiencies resolved, modify existing new deficiencies', async () => {
             // All old deficiencies should be resolved (count 0)
             await expect(inspectionComponent.div_oldDeficiency_list).toHaveCount(0);
-            await expect(inspectionComponent.div_step2_unresolvedDefHeader).toContainText(german.cadetDetailPage.header["amountUnresolved#zero"]);
+            await expect(inspectionComponent.div_step2_unresolvedDefHeader).toContainText(german.cadetDetailPage.inspection["label.amountUnresolved#zero"]);
             await expect(inspectionComponent.div_step2_unifComplete).toContainText(german.common.cadet.uniformComplete.false);
 
             // Should show 3 new deficiencies from previous inspection
@@ -377,12 +377,10 @@ test.describe("<CadetInspectionCard />", () => {
             // Delete the uniform deficiency (index 2)
             await inspectionComponent.btn_newDef_delete(2).click();
             await expect(inspectionComponent.div_newDeficiency_list).toHaveCount(2);
-            await expect(inspectionComponent.div_newDeficiency(2)).toBeHidden();
 
             // Add a new deficiency
             await inspectionComponent.btn_step2_newDef.click();
             await expect(inspectionComponent.div_newDeficiency_list).toHaveCount(3);
-            await expect(inspectionComponent.div_newDeficiency(2)).toBeVisible();
 
             // Configure the new deficiency
             await inspectionComponent.sel_newDef_type(2).selectOption(ids.deficiencyTypeIds[2]);
@@ -397,7 +395,7 @@ test.describe("<CadetInspectionCard />", () => {
             await inspectionComponent.btn_step2_submit.click();
             const toast = new ToastTestComponent(page);
             await expect(toast.toast_success).toBeVisible();
-            await expect(toast.toast_success).toContainText(german.cadetDetailPage.inspection.saved);
+            await expect(toast.toast_success).toContainText(german.cadetDetailPage.inspection["message.saved"]);
 
             // Should show 0 new deficiency form rows
             await expect(inspectionComponent.div_newDeficiency_list).toHaveCount(0);

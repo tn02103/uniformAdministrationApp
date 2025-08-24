@@ -206,6 +206,9 @@ export const unsecuredGetActiveInspection = async (cadetId: string, assosiation:
                     },
                     uniformDeficiency: true,
                 },
+                orderBy: {
+                    type: {name: "asc"},
+                }
             },
         },
     });
