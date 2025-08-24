@@ -462,6 +462,8 @@ export default {
         labels: {
             "stopInspection.header": "Kontrolle Beenden",
             "stopInspection.elementLabel": "Endzeit:",
+            "activeInspection.open": "Kontrolliert: {controlled} / {total}",
+            "activeInspection.collapsed": "{controlled} / {total}"
         },
         links: {
             cadetOverview: "Personal",

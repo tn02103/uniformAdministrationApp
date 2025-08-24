@@ -31,7 +31,7 @@ describe("StorageunitOC", () => {
         expect(screen.getByRole('spinbutton', { name: /capacity/i })).toBeDisabled();
         expect(screen.getByRole('switch', { name: /forReserves/i })).toHaveAttribute("aria-disabled", "true");
 
-        expect(screen.getByText('storageUnit.label.header.uniformlist')).toBeInTheDocument();
+        expect(screen.getByText(/header.uniformlist/i)).toBeInTheDocument();
         expect(screen.getByText(`${mockStorageUnit.uniformList[0].type.name}-${mockStorageUnit.uniformList[0].number}`)).toBeInTheDocument();
         expect(screen.getByText(`${mockStorageUnit.uniformList[1].type.name}-${mockStorageUnit.uniformList[1].number}`)).toBeInTheDocument();
     });
@@ -40,7 +40,7 @@ describe("StorageunitOC", () => {
         render(<StorageunitOC onHide={() => { }} setSelectedStorageUnitId={() => { }} />);
 
         expect(screen.getByRole('heading', { name: /header.create/ })).toBeInTheDocument();
-        expect(screen.queryByText('storageUnit.label.header.uniformlist')).not.toBeInTheDocument();
+        expect(screen.queryByText(/header.uniformlist/i)).not.toBeInTheDocument();
 
         expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();

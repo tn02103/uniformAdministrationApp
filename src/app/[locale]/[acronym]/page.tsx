@@ -34,7 +34,7 @@ export default async function Homepage() {
                 </Col>
                 {(user.role >= AuthRole.inspector) &&
                     <Col xs={"auto"}>
-                        <Link href={"/app/cadet/null"} prefetch={false}>
+                        <Link href={"/app/cadet/new"} prefetch={false}>
                             <div className="card p-1 px-2">
                                 <div className="card-title d-flex justify-content-center">
                                     <span className="fa-layers fa-fw fa-4x m-2">

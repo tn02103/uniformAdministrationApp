@@ -1,5 +1,5 @@
 import { Redirect } from "@prisma/client";
-import { getAllByRole, getByDisplayValue, getByRole, getByText, render, } from "@testing-library/react";
+import { getAllByRole, getByDisplayValue, getByRole, getByText, queryByText, render, } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { toast } from "react-toastify";
 import { RedirectTable } from "./RedirectTable";
@@ -225,8 +225,10 @@ describe("RedirectTable", () => {
 
             expect(codeInput).toHaveValue(mockRedirects[0].code);
             expect(targetInput).toHaveValue(mockRedirects[0].target);
-            expect(activeCheckbox).toBeChecked();
+            expect(getByText(firstRow, /active/i)).toBeInTheDocument();
+            expect(queryByText(firstRow, /inactive/i)).not.toBeInTheDocument();
         });
+
         it("catches exception from DAL-method", async () => {
             const saveRedirectMock = jest.requireMock("@/dal/redirects").updateRedirect;
             saveRedirectMock.mockRejectedValueOnce(new Error("Test error"));

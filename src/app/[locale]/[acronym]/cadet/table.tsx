@@ -74,7 +74,7 @@ const GeneralOverviewTable = ({
 
     return (
         <>
-            <div className="row">
+            <div className="row m-0">
                 <div className="col-auto d-md-inline my-0 w-auto order-last order-md-first">
                     <InputGroup className="mt-2 p-0">
                         <InputGroup.Text className="bg-primary-subtle">
