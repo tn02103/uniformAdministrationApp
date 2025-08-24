@@ -1,19 +1,19 @@
-import { AuthRole } from "@/lib/AuthRoles";
-import { faUser, faShirt, faBoxOpen, faPlus, faClipboardCheck, faGear, faAddressCard, faLink } from "@fortawesome/free-solid-svg-icons";
-import { useParams, usePathname } from "next/navigation";
-import NavButton from "./NavButton";
-import NavGroup from "./NavGroup";
-import { useI18n } from "@/lib/locales/client";
-import NavLink from "./NavLink";
-import { useInspectionState } from "@/dataFetcher/inspection";
 import { startInspection, stopInspection } from "@/dal/inspection";
+import { useInspectionState } from "@/dataFetcher/inspection";
+import { AuthRole } from "@/lib/AuthRoles";
+import dayjs from "@/lib/dayjs";
+import { useI18n } from "@/lib/locales/client";
+import { faAddressCard, faBoxOpen, faClipboardCheck, faGear, faLink, faPlus, faShirt, faUser } from "@fortawesome/free-solid-svg-icons";
+import { useParams, usePathname } from "next/navigation";
 import { toast } from "react-toastify";
 import { mutate } from "swr";
-import dayjs from "@/lib/dayjs";
 import { useModal } from "../modals/modalProvider";
+import NavButton from "./NavButton";
+import NavGroup from "./NavGroup";
+import NavLink from "./NavLink";
+import styles from "./SidebarLinks.module.css";
 
-
-export const SidebarLinks = ({ collapsed, setCollapsed }: { collapsed: boolean, setCollapsed: (b: boolean) => void }) => {
+export const SidebarLinks = () => {
     const t = useI18n();
     const modal = useModal();
 
@@ -60,153 +60,138 @@ export const SidebarLinks = ({ collapsed, setCollapsed }: { collapsed: boolean, 
     }
 
     return (
-        <ul className="flex-column w-100 px-2" style={{ marginTop: '1rem' }}>
-            <NavLink
-                text={t('sidebar.links.cadetOverview')}
-                icon={faUser}
-                href={"/app/cadet"}
-                collapsed={collapsed}
-                requiredRole={AuthRole.user}
-                isRoute={(!pathname.endsWith("cadet/new") && pathname.startsWith(`/${locale}/app/cadet`))}
-                testId="lnk_cadet" />
-            <NavLink
-                text={t('sidebar.links.uniformOverview')}
-                icon={faShirt}
-                href={"/app/uniform/list"}
-                collapsed={collapsed}
-                requiredRole={AuthRole.user}
-                isRoute={pathname.startsWith(`/${locale}/app/uniform/list`)}
-                testId="lnk_uniformList" />
-            <NavLink
-                text={t('sidebar.links.storageUnit')}
-                icon={faBoxOpen}
-                href={"/app/uniform/storage"}
-                collapsed={collapsed}
-                requiredRole={AuthRole.user}
-                isRoute={pathname.startsWith(`/${locale}/app/uniform/storage`)}
-                testId="lnk_storageUnit" />
-            <NavGroup
-                title={t('sidebar.links.create.group')}
-                icon={faPlus}
-                childSelected={(pathname.endsWith("/cadet/new") || pathname.endsWith("/uniform/new"))}
-                collapsed={collapsed}
-                requiredRole={AuthRole.inspector}
-                setCollapsed={setCollapsed}
-                testId="btn_createGroup">
-                <ul>
-                    <NavLink
-                        text={t('sidebar.links.create.cadet')}
-                        href="/app/cadet/new"
-                        isRoute={pathname.endsWith("/cadet/new")}
-                        level={2}
-                        collapsed={collapsed}
-                        requiredRole={AuthRole.inspector}
-                        testId="lnk_createCadet" />
-                    <NavLink
-                        text={t('sidebar.links.create.uniform')}
-                        href="/app/uniform/new"
-                        isRoute={pathname.endsWith("/uniform/new")}
-                        level={2}
-                        collapsed={collapsed}
-                        requiredRole={AuthRole.inspector}
-                        testId="lnk_createUniform" />
-                </ul>
-            </NavGroup>
-            <NavGroup
-                title={t('sidebar.links.inspection.group')}
-                icon={faClipboardCheck}
-                childSelected={pathname.startsWith(`/${locale}/app/inspection`)}
-                collapsed={collapsed}
-                requiredRole={AuthRole.materialManager}
-                setCollapsed={setCollapsed}
-                testId="btn_inspectionGroup">
-                <ul>
-                    <NavLink
-                        text={t('sidebar.links.inspection.inspection')}
-                        href="/app/inspection"
-                        isRoute={pathname.endsWith("/app/inspection")}
-                        level={2}
-                        collapsed={collapsed}
-                        requiredRole={AuthRole.inspector}
-                        testId="lnk_inspection" />
-                     <NavLink
-                        text={t('sidebar.links.inspection.deficiencyType')}
-                        href="/app/inspection/deficiencyType"
-                        isRoute={pathname.endsWith("/app/inspection/deficiencyType")}
-                        level={2}
-                        requiredRole={AuthRole.materialManager}
-                        collapsed={collapsed}
-                        testId="lnk_adminDeficiency"
-                    />
-                    {(inspectionState?.active || inspectionState?.state === "unfinished" || inspectionState?.state === "planned") &&
-                        <NavButton
-                            text={inspectionState?.active
-                                ? t('sidebar.links.inspection.stop')
-                                : (inspectionState?.state === "planned")
-                                    ? t('sidebar.links.inspection.start')
-                                    : t('sidebar.links.inspection.unfinished')}
-                            onClick={startStopInspection}
-                            isRoute={false}
+        <div className={styles.sidebarNavigation}>
+            <ul className="flex-column w-100 px-2" style={{ marginTop: '1rem' }}>
+                <NavLink
+                    text={t('sidebar.links.cadetOverview')}
+                    icon={faUser}
+                    href={"/app/cadet"}
+                    requiredRole={AuthRole.user}
+                    isRoute={(!pathname.endsWith("cadet/new") && pathname.startsWith(`/${locale}/app/cadet`))}
+                    testId="lnk_cadet" />
+                <NavLink
+                    text={t('sidebar.links.uniformOverview')}
+                    icon={faShirt}
+                    href={"/app/uniform/list"}
+                    requiredRole={AuthRole.user}
+                    isRoute={pathname.startsWith(`/${locale}/app/uniform/list`)}
+                    testId="lnk_uniformList" />
+                <NavLink
+                    text={t('sidebar.links.storageUnit')}
+                    icon={faBoxOpen}
+                    href={"/app/uniform/storage"}
+                    requiredRole={AuthRole.user}
+                    isRoute={pathname.startsWith(`/${locale}/app/uniform/storage`)}
+                    testId="lnk_storageUnit" />
+                <NavGroup
+                    title={t('sidebar.links.create.group')}
+                    icon={faPlus}
+                    childSelected={(pathname.endsWith("/cadet/new") || pathname.endsWith("/uniform/new"))}
+                    requiredRole={AuthRole.inspector}
+                    testId="btn_createGroup"
+                >
+                    <ul>
+                        <NavLink
+                            text={t('sidebar.links.create.cadet')}
+                            href="/app/cadet/new"
+                            isRoute={pathname.endsWith("/cadet/new")}
                             level={2}
-                            collapsed={collapsed}
-                            testId="btn_inspection" />
-                    }
-                </ul>
-            </NavGroup>
-            <NavGroup
-                title={t('sidebar.links.administration.group')}
-                icon={faGear}
-                childSelected={/^\/\w{2}\/admin\//.test(pathname)}
-                collapsed={collapsed}
-                requiredRole={AuthRole.materialManager}
-                setCollapsed={setCollapsed}
-                testId="btn_adminGroup">
-                <ul>
-                    <NavLink
-                        text={t('sidebar.links.administration.uniform')}
-                        href="/app/admin/uniform"
-                        isRoute={pathname.endsWith("/app/admin/uniform")}
-                        level={2}
-                        collapsed={collapsed}
-                        requiredRole={AuthRole.materialManager}
-                        testId="lnk_adminUniform"
-                    />
-                    <NavLink
-                        text={t('sidebar.links.administration.size')}
-                        href="/app/admin/uniform/sizes"
-                        isRoute={pathname.endsWith("/app/admin/uniform/sizes")}
-                        level={2}
-                        requiredRole={AuthRole.materialManager}
-                        collapsed={collapsed}
-                        testId="lnk_adminUniformSize"
-                    />
-                    <NavLink
-                        text={t('sidebar.links.administration.material')}
-                        href="/app/admin/material"
-                        isRoute={pathname.endsWith("/app/admin/material")}
-                        level={2}
-                        requiredRole={AuthRole.materialManager}
-                        collapsed={collapsed}
-                        testId="lnk_adminMaterial"
-                    />
-                </ul>
-            </NavGroup>
-            <NavLink
-                text={t('sidebar.links.userOverview')}
-                icon={faAddressCard}
-                href={"/app/admin/user"}
-                collapsed={collapsed}
-                requiredRole={AuthRole.admin}
-                isRoute={pathname.startsWith("/users")}
-                testId="lnk_users" />
-            <NavLink
-                text={t('sidebar.links.redirects')}
-                icon={faLink}
-                href={"/app/redirects"}
-                collapsed={collapsed}
-                requiredRole={AuthRole.admin}
-                isRoute={pathname.startsWith("/redirects")}
-                testId="lnk_redirects" />
-        </ul>
+                            requiredRole={AuthRole.inspector}
+                            testId="lnk_createCadet" />
+                        <NavLink
+                            text={t('sidebar.links.create.uniform')}
+                            href="/app/uniform/new"
+                            isRoute={pathname.endsWith("/uniform/new")}
+                            level={2}
+                            requiredRole={AuthRole.inspector}
+                            testId="lnk_createUniform" />
+                    </ul>
+                </NavGroup>
+                <NavGroup
+                    title={t('sidebar.links.inspection.group')}
+                    icon={faClipboardCheck}
+                    childSelected={pathname.startsWith(`/${locale}/app/inspection`)}
+                    requiredRole={AuthRole.materialManager}
+                    testId="btn_inspectionGroup"
+                    >
+                    <ul>
+                        <NavLink
+                            text={t('sidebar.links.inspection.inspection')}
+                            href="/app/inspection"
+                            isRoute={pathname.endsWith("/app/inspection")}
+                            level={2}
+                            requiredRole={AuthRole.inspector}
+                            testId="lnk_inspection" />
+                        <NavLink
+                            text={t('sidebar.links.inspection.deficiencyType')}
+                            href="/app/inspection/deficiencyType"
+                            isRoute={pathname.endsWith("/app/inspection/deficiencyType")}
+                            level={2}
+                            requiredRole={AuthRole.materialManager}
+                            testId="lnk_adminDeficiency"
+                        />
+                        {(inspectionState?.active || inspectionState?.state === "unfinished" || inspectionState?.state === "planned") &&
+                            <NavButton
+                                text={inspectionState?.active
+                                    ? t('sidebar.links.inspection.stop')
+                                    : (inspectionState?.state === "planned")
+                                        ? t('sidebar.links.inspection.start')
+                                        : t('sidebar.links.inspection.unfinished')}
+                                onClick={startStopInspection}
+                                isRoute={false}
+                                level={2}
+                                testId="btn_inspection" />
+                        }
+                    </ul>
+                </NavGroup>
+                <NavGroup
+                    title={t('sidebar.links.administration.group')}
+                    icon={faGear}
+                    childSelected={/^\/\w{2}\/admin\//.test(pathname)}
+                    requiredRole={AuthRole.materialManager}
+                    testId="btn_adminGroup">
+                    <ul>
+                        <NavLink
+                            text={t('sidebar.links.administration.uniform')}
+                            href="/app/admin/uniform"
+                            isRoute={pathname.endsWith("/app/admin/uniform")}
+                            level={2}
+                            requiredRole={AuthRole.materialManager}
+                            testId="lnk_adminUniform"
+                        />
+                        <NavLink
+                            text={t('sidebar.links.administration.size')}
+                            href="/app/admin/uniform/sizes"
+                            isRoute={pathname.endsWith("/app/admin/uniform/sizes")}
+                            level={2}
+                            requiredRole={AuthRole.materialManager}
+                            testId="lnk_adminUniformSize"
+                        />
+                        <NavLink
+                            text={t('sidebar.links.administration.material')}
+                            href="/app/admin/material"
+                            isRoute={pathname.endsWith("/app/admin/material")}
+                            level={2}
+                            requiredRole={AuthRole.materialManager}
+                            testId="lnk_adminMaterial"
+                        />
+                    </ul>
+                </NavGroup>
+                <NavLink
+                    text={t('sidebar.links.userOverview')}
+                    icon={faAddressCard}
+                    href={"/app/admin/user"}
+                    requiredRole={AuthRole.admin}
+                    isRoute={pathname.startsWith("/users")}
+                    testId="lnk_users" />
+                <NavLink
+                    text={t('sidebar.links.redirects')}
+                    icon={faLink}
+                    href={"/app/redirects"}
+                    requiredRole={AuthRole.admin}
+                    isRoute={pathname.startsWith("/redirects")}
+                    testId="lnk_redirects" />
+            </ul>
+        </div>
     );
 }

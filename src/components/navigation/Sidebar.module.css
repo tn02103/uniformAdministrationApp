@@ -1,11 +1,14 @@
-/* Sidebar styles for all screen sizes */
+/* ###################### Mobile styles ###################### */
 .sidebar {
     position: fixed;
     top: 0;
     left: 0;
-    height: 100vh;
+    /* Always use the JavaScript-calculated height on mobile */
+    height: var(--app-height);
+    /* Ensure it never gets smaller */
+    min-height: var(--app-height);
     z-index: 1050;
-    transition: transform 0.3s ease-in-out;
+    transition: 0.3s ease-in-out;
     /* Prevent scrolling on the sidebar container itself */
     overflow: hidden;
     /* Ensure consistent background with fallback */
@@ -15,8 +18,31 @@
     padding-top: env(safe-area-inset-top, 0px);
     padding-left: env(safe-area-inset-left, 0px);
 
-    /* Adjust height to account for safe area */
-    height: calc(100vh - env(safe-area-inset-bottom, 0px));
+    /* Small screens default - full width, hidden by default */
+    width: 100%;
+    transform: translateX(-100%);
+}
+
+.sidebarVisible {
+    /* Visible when showSidebar is true */
+    transform: translateX(0);
+}
+
+.sidebarContainer {
+    padding: 0;
+    margin: 0;
+    /* Use CSS custom property for dynamic height */
+    min-height: var(--app-height);
+    /* Ensure it covers the full viewport on mobile */
+    min-height: 100vh;
+    min-height: var(--app-height);
+}
+
+.sidebarDivider {
+    border: none;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    margin: 0.75rem 0;
 }
 
 /* Safe area top fill - covers the notch/camera cutout area */
@@ -24,7 +50,6 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
     /* Fallback to 0px if no safe area */
     height: env(safe-area-inset-top, 0px);
     /* Use CSS variable with fallback */
@@ -37,17 +62,83 @@
     transition: width 0.3s ease-in-out, opacity 0.3s ease-in-out;
     /* Only show if there's actually a safe area */
     min-height: 0;
+
+    /* Mobile default - full width, hidden by default */
+    width: 100vw;
+    opacity: 0;
 }
 
-/* Hide safe area fill if no safe area is present */
-@supports not (height: env(safe-area-inset-top)) {
-    .safeAreaTop {
-        display: none;
+.safeAreaTopVisible {
+    /* Visible when sidebar is open */
+    opacity: 1;
+}
+
+.backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    /* Use CSS custom property for dynamic height */
+    height: var(--app-height);
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 1040;
+    cursor: pointer;
+}
+
+.content {
+    margin-left: 0;
+    /* Space for fixed header */
+    padding-top: 70px;
+    /* Space for fixed footer */
+    padding-bottom: 70px;
+    /* Use CSS custom property for dynamic height */
+    min-height: calc(var(--app-height) - 140px);
+}
+
+.contentOverlay {
+    pointer-events: none;
+}
+
+/* ###################### Medium screens and up ###################### */
+@media (max-width: 991px) {
+    .sidebarContainer.noScroll {
+        overflow: hidden;
+        /* Use CSS custom property for dynamic height */
+        height: var(--app-height) !important;
+        /* Backup heights for mobile */
+        height: 100vh;
+        height: var(--app-height) !important;
+        /* Small screens - full lock */
+        position: fixed;
+        width: 100%;
     }
 }
 
-/* On desktop, safe area should only cover the sidebar width */
+@media (min-width: 576px) {
+    .sidebar {
+        /* Partial width, not full screen on medium screens */
+        width: 320px;
+    }
+}
+
+
+/* ###################### Large screens and up - desktop layout ###################### */
 @media (min-width: 992px) {
+    .sidebar {
+        /* Always visible on large screens */
+        transform: translateX(0);
+        width: 280px;
+    }
+
+    .sidebarCollapsed {
+        width: 60px;
+        cursor: pointer;
+    }
+
+    .sidebarExpanded {
+        width: 280px;
+    }
+
     .safeAreaTop {
         /* Default sidebar width */
         width: 280px;
@@ -57,235 +148,32 @@
 
     .safeAreaTopCollapsed {
         /* Collapsed sidebar width */
-        width: 80px;
-    }
-}
-
-/* On mobile/tablet, safe area should cover full width when sidebar is open */
-@media (max-width: 991px) {
-    .safeAreaTop {
-        width: 100vw;
-        /* Hidden by default on mobile */
-        opacity: 0;
+        width: 60px;
     }
 
-    .safeAreaTopVisible {
-        /* Visible when sidebar is open */
-        opacity: 1;
+    .content {
+        margin-left: 280px;
+        transition: margin-left 0.3s ease-in-out;
+        /* Use CSS custom property for dynamic height */
+        min-height: var(--app-height);
+        /* Remove mobile padding */
+        padding-top: 0;
+        padding-bottom: 0;
     }
-}
 
-/* Backdrop for mobile sidebar */
-.backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1040;
-    cursor: pointer;
-}
-
-/* Different backdrop opacity for different screen sizes */
-@media (min-width: 576px) and (max-width: 991px) {
-    .backdrop {
-        /* Lighter backdrop on medium screens */
-        background-color: rgba(0, 0, 0, 0.3);
+    .contentCollapsed {
+        margin-left: 60px;
     }
-}
 
-
-/* Main container styles */
-.sidebarContainer {
-    padding: 0;
-    margin: 0;
-    /* Simplified - no global safe area padding */
-    min-height: 100vh;
-}
-
-/* Apply overflow hidden to the main container when sidebar is open */
-.sidebarContainer.noScroll {
-    overflow: hidden;
-    height: 100vh;
-}
-
-/* Small screens only - full lock */
-@media (max-width: 575px) {
-    .sidebarContainer.noScroll {
-        position: fixed;
-        width: 100%;
-        height: 100vh;
-        overflow: hidden;
-    }
-}
-
-/* Sidebar navigation scrollable section */
-.sidebarNavigation {
-    flex-grow: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    /* Add some padding at the bottom */
-    padding-bottom: 1rem;
-}
-
-/* Custom scrollbar for sidebar navigation */
-.sidebarNavigation::-webkit-scrollbar {
-    width: 4px;
-}
-
-.sidebarNavigation::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.sidebarNavigation::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 2px;
-}
-
-.sidebarNavigation::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.5);
-}
-
-/* Content overlay when sidebar is open on medium screens */
-.contentOverlay {
-    pointer-events: none;
-}
-
-@media (min-width: 992px) {
     .contentOverlay {
         /* Allow interaction on large screens */
         pointer-events: auto;
     }
 }
 
-/* Large screens (992px and up) - Bootstrap lg breakpoint */
-@media (min-width: 992px) {
-
-    /* Content margin when sidebar is visible */
-    .content {
-        margin-left: 280px;
-        transition: margin-left 0.3s ease-in-out;
-        min-height: 100vh;
-    }
-
-    .contentCollapsed {
-        margin-left: 80px;
-    }
-
-    /* Sidebar width on large screens */
-    .sidebar {
-        /* Always visible on large screens */
-        transform: translateX(0);
-    }
-
-    .sidebarCollapsed {
-        width: 80px;
-    }
-
-    .sidebarExpanded {
-        width: 280px;
-    }
-}
-
-/* Medium screens (576px to 991px) - Bootstrap md breakpoint */
-@media (min-width: 576px) and (max-width: 991px) {
-
-    /* Content margin when sidebar is hidden on medium screens */
-    .content {
-        margin-left: 0;
-        /* Space for fixed header */
-        padding-top: 70px;
-        /* Space for fixed footer */
-        padding-bottom: 70px;
-        min-height: calc(100vh - 140px);
-    }
-
-    /* Sidebar behavior on medium screens - partial overlay */
-    .sidebar {
-        /* Partial width, not full screen */
-        width: 320px;
-        /* Hidden by default */
-        transform: translateX(-100%);
-    }
-
-    .sidebarVisible {
-        /* Visible when showSidebar is true */
-        transform: translateX(0);
-    }
-}
-
-/* Small screens (below 576px) - Bootstrap sm breakpoint */
-@media (max-width: 575px) {
-
-    /* Content margin when sidebar is hidden on small screens */
-    .content {
-        margin-left: 0;
-        /* Space for fixed header */
-        padding-top: 70px;
-        /* Space for fixed footer */
-        padding-bottom: 70px;
-        min-height: calc(100vh - 140px);
-    }
-
-
-    /* Sidebar behavior on small screens - full overlay */
-    .sidebar {
-        /* Full width on small screens */
-        width: 100%;
-        /* Hidden by default */
-        transform: translateX(-100%);
-    }
-
-    .sidebarVisible {
-        /* Visible when showSidebar is true */
-        transform: translateX(0);
-    }
-}
-
-/* Sidebar header styling */
-.sidebarHeader {
-    text-align: center;
-    padding: 1rem;
-}
-
-.sidebarHeaderTitle {
-    /* Larger font size */
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin: 0;
-    color: white;
-    text-decoration: none;
-    line-height: 1.2;
-    transition: font-size 0.3s ease-in-out;
-}
-
-.sidebarHeaderTitleCollapsed {
-    /* Slightly smaller when collapsed */
-    font-size: 1.25rem;
-}
-
-/* Custom horizontal rule styling */
-.sidebarDivider {
-    border: none;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-    margin: 0.75rem 0;
-}
-
-/* Responsive header adjustments */
-@media (min-width: 992px) {
-    .sidebarHeader {
-        padding: 1.25rem 1rem;
-    }
-
-    .sidebarHeaderTitle {
-        /* Even larger on desktop */
-        font-size: 1.75rem;
-    }
-
-    .sidebarHeaderTitleCollapsed {
-        /* Smaller when collapsed to fit */
-        font-size: 1.1rem;
+/* Hide safe area fill if no safe area is present */
+@supports not (height: env(safe-area-inset-top)) {
+    .safeAreaTop {
+        display: none;
     }
 }

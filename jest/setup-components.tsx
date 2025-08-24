@@ -2,10 +2,10 @@ import { AuthRole } from '@/lib/AuthRoles';
 import '@testing-library/jest-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-// Mock i18n for component tests
-const useI18nFn = jest.fn((key) => key);
 window.HTMLElement.prototype.scrollIntoView = function () { };
 
+// Mock i18n for component tests
+const useI18nFn = jest.fn((key) => key);
 jest.mock('@/lib/locales/client', () => {
     return {
         useScopedI18n: jest.fn((scope: string) => {
@@ -21,6 +21,12 @@ jest.mock('@/lib/locales/client', () => {
     };
 });
 
+// NextJS
+jest.mock('next/navigation', () => ({
+    useParams: jest.fn(),
+    useRouter: jest.fn(),
+}));
+
 // Mock common components to avoid complex rendering
 jest.mock("@/components/errorMessage", () => {
     return function ErrorMessage({ error, ariaLabel, testId, ...divProps }: { error: string, testId: string, ariaLabel: string }) {
@@ -35,6 +41,7 @@ jest.mock("@/components/modals/modalProvider", () => {
         simpleErrorModal: jest.fn(),
         simpleFormModal: jest.fn(),
         showMessageModal: jest.fn(),
+        changeLanguage: jest.fn(),
     }
     return {
         useModal: jest.fn(() => modals)
@@ -70,8 +77,13 @@ jest.mock("react-toastify", () => {
         success: jest.fn(),
         error: jest.fn(),
         info: jest.fn(),
-        warn: jest.fn(),    };
+        warn: jest.fn(),
+    };
     return {
         toast
     };
 });
+
+jest.mock('usehooks-ts', () => ({
+    useSessionStorage: jest.fn(() => [null, jest.fn()]),
+}));

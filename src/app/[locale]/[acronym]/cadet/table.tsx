@@ -1,9 +1,7 @@
 "use client"
 
-
-import { getInspectedCadetIdList } from "@/actions/controllers/InspectionController";
 import { useGlobalData } from "@/components/globalDataProvider";
-import { useInspectionState } from "@/dataFetcher/inspection";
+import { useInspectedCadetIdList, useInspectionState } from "@/dataFetcher/inspection";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n } from "@/lib/locales/client";
 import { PersonnelListCadet } from "@/types/globalCadetTypes";
@@ -14,7 +12,6 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button, FormCheck, FormControl, InputGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useForm } from "react-hook-form";
-import useSWR from "swr";
 
 const GeneralOverviewTable = ({
     data,
@@ -32,10 +29,7 @@ const GeneralOverviewTable = ({
 
     const { inspectionState } = useInspectionState();
     const { userRole } = useGlobalData();
-    const { data: inspectedIdList } = useSWR(
-        `inspection/status/idList`,
-        () => (userRole >= AuthRole.inspector) ? getInspectedCadetIdList() : null
-    )
+    const { inspectedIdList } = useInspectedCadetIdList(userRole, inspectionState?.active);
 
     function changeSortOrder(sortOrder: string) {
         const params = new URLSearchParams(searchParam);
@@ -80,7 +74,7 @@ const GeneralOverviewTable = ({
 
     return (
         <>
-            <div className="row">
+            <div className="row m-0">
                 <div className="col-auto d-md-inline my-0 w-auto order-last order-md-first">
                     <InputGroup className="mt-2 p-0">
                         <InputGroup.Text className="bg-primary-subtle">
