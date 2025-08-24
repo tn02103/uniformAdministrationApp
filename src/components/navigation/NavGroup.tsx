@@ -54,8 +54,7 @@ const NavGroup = ({ title, icon, childSelected, children, requiredRole, testId }
         >
             <li className="list-group-item rounded my-1 w-100" style={{ transition: "1s ease-in-out" }}>
                 <button data-testid={testId}
-                    className={`btn text-white d-flex  w-100 m-0 px-2 py-1 fs-6 overflow-hidden d-flex flex-row 
-                        ${collapsed ? "justify-content-between" : "justify-content-between"}
+                    className={`btn text-white w-100 m-0 px-2 py-1 fs-6 overflow-hidden d-flex flex-row justify-content-between
                         ${childSelected ? (showChildren ? "fw-bold" : "fw-bold bg-primary") : ""}`}
                     onClick={onHeaderClicked}
                     style={{ transition: "justify-content 1s ease-in-out", transitionDelay: "0.3s" }}

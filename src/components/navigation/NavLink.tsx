@@ -42,8 +42,9 @@ const NavLink = ({ text, icon, isRoute, href, level, requiredRole, testId }: Nav
             <li className={`list-group-item rounded px-2 py-1 w-100 fs-5 
                     ${isRoute ? "fw-bold bg-primary" : ""} 
                     ${collapsed ? "d-flex justify-content-between" : ""}
-                    ${level ? (level == 2) ? "fs-6 fw-light" : "fs-6 my-1 " : "fs-6 my-1 "}`}
-                style={{ transition: "1s ease-in-out" }}>
+                    ${(level === 2) ? "fs-6 fw-light" : "fs-6 my-1 "}`}
+                style={{ transition: "1s ease-in-out" }}
+            >
                 <Link data-testid={testId} href={href} className="stretched-link d-flex flex-row" style={{ overflow: "hidden" }} onClick={handleClick}>
                     {icon &&
                         <FontAwesomeIcon size="xl" icon={icon} width={20} className={collapsed ? "" : "pe-2"} />
