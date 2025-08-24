@@ -22,6 +22,9 @@ jest.mock("next/navigation", () => ({
         toString: () => "",
     }),
 }));
+jest.mock("usehooks-ts", () => ({
+    useSessionStorage: () => [null, jest.fn()],
+}));
 
 // Helper to get sizeList for a type
 function getSizeListForType(type: UniformType) {

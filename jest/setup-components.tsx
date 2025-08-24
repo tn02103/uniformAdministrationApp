@@ -2,11 +2,11 @@ import { AuthRole } from '@/lib/AuthRoles';
 import '@testing-library/jest-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+window.HTMLElement.prototype.scrollIntoView = function () { };
+
 // Mock i18n for component tests
 const useI18nFn = jest.fn((key) => key);
 const useScopedI18nFn = jest.fn();
-window.HTMLElement.prototype.scrollIntoView = function () { };
-
 jest.mock('@/lib/locales/client', () => {
     return {
         useScopedI18n: jest.fn((scope: string) => {

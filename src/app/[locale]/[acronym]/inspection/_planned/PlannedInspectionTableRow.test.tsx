@@ -8,6 +8,14 @@ import { toast } from "react-toastify";
 import { mockInspectionList } from "./jestHelper";
 import { PlannedInspectionTableRow } from "./PlannedInspectionTableRow";
 
+// Mock i18n for component tests
+jest.mock('@/lib/locales/client', () => {
+    return {
+        useScopedI18n: jest.fn((scope: string) => {
+            return jest.fn().mockImplementation((key: string) => `${scope}.${key}`);
+        }),
+    };
+});
 describe('<PlannedInspectionTableRow />', () => {
 
     beforeEach(() => {
