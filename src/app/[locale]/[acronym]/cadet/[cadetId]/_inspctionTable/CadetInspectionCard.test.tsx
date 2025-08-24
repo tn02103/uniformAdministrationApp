@@ -18,24 +18,6 @@ jest.mock('@/dataFetcher/inspection', () => ({
     useUnresolvedDeficienciesByCadet: jest.fn(),
 }));
 
-// Mock useParams
-jest.mock('next/navigation', () => ({
-    useParams: jest.fn(),
-}));
-
-// Mock useI18n
-jest.mock('@/lib/locales/client', () => ({
-    useI18n: () => jest.fn((key: string) => key),
-}));
-
-// Mock react-toastify
-jest.mock('react-toastify', () => ({
-    toast: {
-        success: jest.fn(),
-        error: jest.fn(),
-    },
-}));
-
 // Mock SWR mutate
 jest.mock('swr', () => ({
     mutate: jest.fn(),

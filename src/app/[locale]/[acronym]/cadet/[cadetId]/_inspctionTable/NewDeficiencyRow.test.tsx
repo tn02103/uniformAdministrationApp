@@ -1,11 +1,10 @@
-import React from 'react';
-import { getAllByRole, render, screen } from '@testing-library/react';
-import { FormProvider, useForm } from 'react-hook-form';
-import { useParams } from 'next/navigation';
-import { NewDeficiencyRow } from './NewDeficiencyRow';
-import { CadetInspectionFormSchema } from '@/zod/deficiency';
 import { MaterialGroup } from '@/types/globalMaterialTypes';
+import { CadetInspectionFormSchema } from '@/zod/deficiency';
+import { getAllByRole, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import React from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { NewDeficiencyRow } from './NewDeficiencyRow';
 
 // Mock all the data fetching hooks
 jest.mock('@/dataFetcher/deficiency', jest.fn(() => ({
@@ -101,10 +100,11 @@ describe('NewDeficiencyRow', () => {
     const { useDeficiencyTypes } = jest.requireMock('@/dataFetcher/deficiency');
     const { useCadetUniformDescriptList, useCadetMaterialDescriptionList } = jest.requireMock('@/dataFetcher/cadet');
     const { useMaterialConfiguration, useMaterialTypeList } = jest.requireMock('@/dataFetcher/material');
+    const { useParams } = jest.requireMock('next/navigation');
 
     beforeEach(() => {
         jest.clearAllMocks();
-        (useParams as jest.Mock).mockReturnValue({ cadetId: 'test-cadet-id' });
+        useParams.mockReturnValue({ cadetId: 'test-cadet-id' });
         useDeficiencyTypes.mockReturnValue({ deficiencyTypeList: mockDeficiencyTypeList });
         useCadetUniformDescriptList.mockReturnValue({ uniformLabels: mockUniformLabels });
         useCadetMaterialDescriptionList.mockReturnValue({ materialList: mockMaterialList });
