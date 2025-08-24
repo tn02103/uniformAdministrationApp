@@ -6,12 +6,12 @@ window.HTMLElement.prototype.scrollIntoView = function () { };
 
 // Mock i18n for component tests
 const useI18nFn = jest.fn((key) => key);
-const useScopedI18nFn = jest.fn();
 jest.mock('@/lib/locales/client', () => {
     return {
         useScopedI18n: jest.fn((scope: string) => {
-            useScopedI18nFn.mockImplementation((key: string) => `${scope}.${key}`);
-            return useScopedI18nFn;
+            return function (key: string) {
+                return `${scope}.${key}`;
+            };
         }),
         useI18n: jest.fn().mockImplementation(() => useI18nFn),
         useCurrentLocale: jest.fn(() => ({
@@ -82,5 +82,5 @@ jest.mock('next/navigation', () => ({
 }));
 
 jest.mock('usehooks-ts', () => ({
-    useSessionStorage: jest.fn(),
+    useSessionStorage: jest.fn(() => [null, jest.fn()]),
 }));

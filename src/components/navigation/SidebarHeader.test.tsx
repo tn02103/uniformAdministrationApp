@@ -10,6 +10,16 @@ jest.mock('@/dataFetcher/inspection', () => ({
     useInspectionState: jest.fn(),
 }));
 
+const useScopedI18nFn = jest.fn();
+jest.mock('@/lib/locales/client', () => {
+    return {
+        useScopedI18n: jest.fn((scope: string) => {
+            useScopedI18nFn.mockImplementation((key: string) => `${scope}.${key}`);
+            return useScopedI18nFn;
+        }),
+    };
+});
+
 const testAssosiation = {
     id: 'test-association',
     name: 'Test Association',
