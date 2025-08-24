@@ -28,11 +28,12 @@ export const CadetInspectionCard = () => {
 
     const { unresolvedDeficiencies } = useUnresolvedDeficienciesByCadet(cadetId);
 
-    const handleStartCadetInspection = async () => {
-        const data = await getCadetInspectionFormData(cadetId);
+    const handleStartCadetInspection = async () => getCadetInspectionFormData(cadetId).then((data) => {
         form.reset(data);
         setStep(1);
-    }
+    }).catch(() => {
+        toast.error(t('cadetDetailPage.inspection.error.startInspection'));
+    })
 
     const handleSaveInspection = async (data: CadetInspectionFormSchema) => {
         data.newDeficiencyList.forEach((def, index) => {
@@ -55,7 +56,7 @@ export const CadetInspectionCard = () => {
                 { populateCache: false }
             );
             setStep(0);
-            toast.success(t('cadetDetailPage.inspection.saved'));
+            toast.success(t('cadetDetailPage.inspection.message.saved'));
         }).catch(() => {
             toast.error(t('common.error.actions.save'));
         });
@@ -67,7 +68,7 @@ export const CadetInspectionCard = () => {
                 step={step}
                 startInspecting={handleStartCadetInspection}
             />
-            <form onSubmit={form.handleSubmit(handleSaveInspection, console.warn)} className="p-3">
+            <form onSubmit={form.handleSubmit(handleSaveInspection)} className="p-3">
                 <FormProvider {...form}>
                     {step === 0 &&
                         <div className="row p-0 bg-white border-top border-1 border-dark">
@@ -80,7 +81,7 @@ export const CadetInspectionCard = () => {
                                 />
                             ))}
                             {(unresolvedDeficiencies?.length === 0) &&
-                                <div data-testid="div_step0_noDeficiencies" className="fw-bold p-2">{t('cadetDetailPage.inspection.noDeficiencies')}</div>
+                                <div data-testid="div_step0_noDeficiencies" className="fw-bold p-2">{t('cadetDetailPage.inspection.label.noDeficiencies')}</div>
                             }
                         </div>
                     }

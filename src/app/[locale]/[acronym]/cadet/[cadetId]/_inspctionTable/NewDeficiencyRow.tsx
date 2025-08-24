@@ -139,7 +139,7 @@ const MaterialSelect = ({ index }: { index: number }) => {
     const { materialList } = useCadetMaterialDescriptionList(cadetId);
     const options = [
         ...(materialList?.map((item) => ({ value: item.id, label: item.description })) ?? []),
-        { value: "other", label: t('cadetDetailPage.inspection.otherMaterials') }
+        { value: "other", label: t('cadetDetailPage.inspection.label.otherMaterials') }
     ]
 
     if (!materialList) return <></>;

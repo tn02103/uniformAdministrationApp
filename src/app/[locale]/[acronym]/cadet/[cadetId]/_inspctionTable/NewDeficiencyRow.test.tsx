@@ -447,7 +447,7 @@ describe('NewDeficiencyRow', () => {
             expect(options[0]).toHaveTextContent('common.error.pleaseSelect');
             expect(options[1]).toHaveTextContent('Boots');
             expect(options[2]).toHaveTextContent('Belt');
-            expect(options[3]).toHaveTextContent('cadetDetailPage.inspection.otherMaterials');
+            expect(options[3]).toHaveTextContent(/label.otherMaterials/i);
         });
 
         it('should have material select show "other" when materialId is set to "other"', () => {

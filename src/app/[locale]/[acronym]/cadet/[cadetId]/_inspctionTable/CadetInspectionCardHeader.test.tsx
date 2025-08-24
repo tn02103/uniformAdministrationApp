@@ -42,7 +42,7 @@ describe('<CadetInspectionCardHeader />', () => {
 
         render(<CadetInspectionCardHeader {...defaultProps} />);
 
-        expect(screen.getByTestId('div_header')).toHaveTextContent(/header.deficiencies/i);
+        expect(screen.getByTestId('div_header')).toHaveTextContent(/header.noInspection/i);
         expect(screen.queryByRole('button')).toBeNull();
     });
 
@@ -72,7 +72,7 @@ describe('<CadetInspectionCardHeader />', () => {
             expect(TooltipIconButton).toHaveBeenLastCalledWith(expect.objectContaining({
                 variant: "outline-warning",
                 disabled: false,
-                tooltipText: expect.stringMatching(/tooltips.inspection.notInspected/i),
+                tooltipText: expect.stringMatching(/tooltip.notInspected/i),
                 icon: expect.objectContaining({ iconName: "clipboard-question" }),
             }), undefined);
 
@@ -82,7 +82,7 @@ describe('<CadetInspectionCardHeader />', () => {
             expect(TooltipIconButton).toHaveBeenLastCalledWith(expect.objectContaining({
                 variant: "outline-success",
                 disabled: false,
-                tooltipText: expect.stringMatching(/tooltips.inspection.inspected/i),
+                tooltipText: expect.stringMatching(/tooltip.inspected/i),
                 icon: expect.objectContaining({ iconName: "clipboard-check" }),
             }), undefined);
         });

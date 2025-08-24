@@ -24,7 +24,7 @@ export function CadetInspectionStep1({
             <div className="row p-0 bg-white border-top border-bottom border-1 border-dark">
                 <Row className="border-bottom p-1 bg-body-secondary m-0">
                     <Col xs={"auto"}>
-                        {t('cadetDetailPage.header.oldDeficiencies')}
+                        {t('cadetDetailPage.inspection.label.oldDeficiencies')}
                     </Col>
                 </Row>
                 {oldDeficiencyList?.map((def, index) =>

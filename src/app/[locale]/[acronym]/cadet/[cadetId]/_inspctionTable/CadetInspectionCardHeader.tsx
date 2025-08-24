@@ -15,7 +15,7 @@ export default function CadetInspectionCardHeader({
     step: number;
     startInspecting: () => void;
 }) {
-    const t = useScopedI18n('cadetDetailPage');
+    const t = useScopedI18n('cadetDetailPage.inspection');
     const { inspectionState } = useInspectionState();
     const { userRole } = useGlobalData();
     const { cadetId }: ParamType = useParams();
@@ -32,8 +32,8 @@ export default function CadetInspectionCardHeader({
                         variant={inspected ? "outline-success" : "outline-warning"}
                         disabled={step !== 0}
                         tooltipText={inspected
-                            ? t('tooltips.inspection.inspected')
-                            : t('tooltips.inspection.notInspected')}
+                            ? t('tooltip.inspected')
+                            : t('tooltip.notInspected')}
                         icon={inspected ? faClipboardCheck : faClipboardQuestion}
                         iconClass="fa-xl"
                         onClick={startInspecting}
@@ -42,7 +42,7 @@ export default function CadetInspectionCardHeader({
                 </div>
                 :
                 <div data-testid="div_header" className="col-12 text-center p-0">
-                    {t('header.deficiencies')}
+                    {t('header.noInspection')}
                 </div>
             }
         </Row>

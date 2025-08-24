@@ -1,6 +1,6 @@
 import { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
 import { useCadetUniformComplete } from "@/dataFetcher/cadet";
-import { useI18n } from "@/lib/locales/client";
+import { useScopedI18n } from "@/lib/locales/client";
 import { CadetInspectionFormSchema, NewCadetDeficiencyFormSchema, OldDeficiencyFormSchema } from "@/zod/deficiency";
 import { useParams } from "next/navigation";
 import { Button, Col, Row } from "react-bootstrap";
@@ -25,7 +25,7 @@ export function CadetInspectionStep2({
 }: {
     setStep: (step: number) => void
 }) {
-    const t = useI18n();
+    const [tCommon, tCard] = [useScopedI18n('common'), useScopedI18n('cadetDetailPage.inspection')];
     const { fields, append, remove } = useFieldArray<CadetInspectionFormSchema>({ name: "newDeficiencyList" });
 
     const { cadetId }: ParamType = useParams();
@@ -41,10 +41,10 @@ export function CadetInspectionStep2({
             <div className="row p-0 bg-white border-top border-bottom border-1 border-dark">
                 <Row className="border-bottom p-1 bg-body-secondary m-0">
                     <Col xs={"auto"}>
-                        {t('cadetDetailPage.header.oldDeficiencies')}
+                        {tCard('label.oldDeficiencies')}
                     </Col>
                     <Col data-testid={"div_step2_oldDefHeader"} xs={"auto"} className={`fst-italic ${(unresolvedOldDeficiencyList.length > 0) ? "text-danger" : "text-success"}`}>
-                        {t('cadetDetailPage.header.amountUnresolved', { count: unresolvedOldDeficiencyList.length })}
+                        {tCard('label.amountUnresolved', { count: unresolvedOldDeficiencyList.length })}
                     </Col>
                 </Row>
                 {(unresolvedOldDeficiencyList)?.map((def, index) =>
@@ -52,7 +52,7 @@ export function CadetInspectionStep2({
                 )}
                 <Row className="border-bottom p-1 bg-body-secondary m-0">
                     <Col xs="auto">
-                        {t('cadetDetailPage.header.newDeficiencies')}
+                        {tCard('label.newDeficiencies')}
                     </Col>
                     <Col>
                         <TooltipActionButton
@@ -63,7 +63,7 @@ export function CadetInspectionStep2({
                 </Row>
                 <Row className="p-2 text-center">
                     <Col data-testid={"div_step2_unifComplete"} className={uniformComplete ? "text-success" : "text-danger"}>
-                        {t(`common.cadet.uniformComplete.${uniformComplete ? "true" : "false"}`)}
+                        {tCommon(`cadet.uniformComplete.${uniformComplete ? "true" : "false"}`)}
                     </Col>
                 </Row>
                 {fields.map((item, index) => (
@@ -79,8 +79,8 @@ export function CadetInspectionStep2({
                         data-testid="btn_step2_back"
                     >
                         {(oldDeficiencyList && oldDeficiencyList?.length > 0)
-                            ? t('common.actions.prevStep')
-                            : t('common.actions.cancel')}
+                            ? tCommon('actions.prevStep')
+                            : tCommon('actions.cancel')}
                     </Button>
                 </Col>
                 <Col className="text-end">
@@ -90,7 +90,7 @@ export function CadetInspectionStep2({
                         className="border-0"
                         data-testid="btn_step2_submit"
                     >
-                        {t('common.actions.save')}
+                        {tCommon('actions.save')}
                     </Button>
                 </Col>
             </Row>
