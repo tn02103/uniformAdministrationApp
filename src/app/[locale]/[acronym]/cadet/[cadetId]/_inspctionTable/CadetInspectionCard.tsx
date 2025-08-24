@@ -68,7 +68,7 @@ export const CadetInspectionCard = () => {
                 step={step}
                 startInspecting={handleStartCadetInspection}
             />
-            <form onSubmit={form.handleSubmit(handleSaveInspection)} className="p-3">
+            <form onSubmit={form.handleSubmit(handleSaveInspection)}>
                 <FormProvider {...form}>
                     {step === 0 &&
                         <div className="row p-0 bg-white border-top border-1 border-dark">
