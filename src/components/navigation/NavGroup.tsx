@@ -5,26 +5,28 @@ import { ReactElement, useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { AuthRole } from "../../lib/AuthRoles";
 import { useGlobalData } from "../globalDataProvider";
+import { useSidebarContext } from "./Sidebar";
 
 type NavGroupProps = {
     title: string;
     icon: IconProp;
     childSelected: boolean;
-    collapsed: boolean;
     requiredRole: AuthRole;
-    setCollapsed: (value: boolean) => void;
     children: ReactElement;
     testId: string;
 }
-const NavGroup = ({ title, icon, childSelected, collapsed, setCollapsed, children, requiredRole, testId }: NavGroupProps) => {
+const NavGroup = ({ title, icon, childSelected, children, requiredRole, testId }: NavGroupProps) => {
     const [showChildren, setShowChilden] = useState<boolean>();
     const { userRole } = useGlobalData();
+    const { collapsed, setCollapsed } = useSidebarContext();
 
     useEffect(() => {
-        if (collapsed && showChildren) {
+        if (collapsed) {
             setShowChilden(false);
+        } else if (!collapsed && childSelected) {
+            setShowChilden(true);
         }
-    }, [collapsed, showChildren])
+    }, [collapsed, childSelected])
 
     function onHeaderClicked() {
         if (showChildren) {
@@ -50,15 +52,19 @@ const NavGroup = ({ title, icon, childSelected, collapsed, setCollapsed, childre
                 <Tooltip>{title}</Tooltip>
             }
         >
-            <li className="list-group-item rounded my-1 w-100">
+            <li className="list-group-item rounded my-1 w-100" style={{ transition: "1s ease-in-out" }}>
                 <button data-testid={testId}
-                    className={`btn text-white d-flex  w-100 m-0 px-2 py-1 fs-6 
-                        ${collapsed ? "justify-content-center" : "justify-content-between"}
+                    className={`btn text-white w-100 m-0 px-2 py-1 fs-6 overflow-hidden d-flex flex-row justify-content-between
                         ${childSelected ? (showChildren ? "fw-bold" : "fw-bold bg-primary") : ""}`}
-                    onClick={onHeaderClicked}>
-                    <div>
+                    onClick={onHeaderClicked}
+                    style={{ transition: "justify-content 1s ease-in-out", transitionDelay: "0.3s" }}
+                    type="button"
+                >
+                    <div className="d-flex flex-row align-items-start">
                         <FontAwesomeIcon icon={icon} width={20} size="xl" className={` ${collapsed ? "" : "pe-2"}`} />
-                        {!collapsed && title}
+                        <p style={{ visibility: collapsed ? "hidden" : "visible", transitionDelay: "0.3s" }} className="p-0 m-0">
+                            {!collapsed && title}
+                        </p>
                     </div>
                     <div>
                         {!collapsed &&

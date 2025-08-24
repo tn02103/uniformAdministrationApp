@@ -1,0 +1,33 @@
+.sidebarHeader {
+    text-align: center;
+    padding: 1rem;
+}
+
+.sidebarHeaderTitle {
+    /* Mobile font size */
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    color: white;
+    text-decoration: none;
+    line-height: 1.2;
+    transition: font-size 0.3s ease-in-out;
+}
+
+.sidebarHeaderTitleCollapsed {
+    visibility: hidden;
+}
+
+
+/* ###################### Large screens and up - desktop layout ###################### */
+@media (min-width: 992px) {
+    .sidebarHeader {
+        padding: 1.25rem 1rem;
+        padding-bottom: 0.25rem;
+    }
+
+    .sidebarHeaderTitle {
+        /* Even larger on desktop */
+        font-size: 1.75rem;
+    }
+}

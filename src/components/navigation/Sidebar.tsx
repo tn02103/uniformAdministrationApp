@@ -1,44 +1,65 @@
 "use client"
 
-import { logout } from "@/actions/auth";
-import { useInspectionState } from "@/dataFetcher/inspection";
-import { useI18n } from "@/lib/locales/client";
-import { AuthItem } from "@/lib/storageTypes";
-import { faAngleLeft, faAngleRight, faX } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useBreakpoint } from "@/lib/useBreakpoint";
+import { initViewportHeight } from "@/lib/viewportUtils";
 import { Assosiation } from "@prisma/client";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Dropdown } from "react-bootstrap";
-import { mutate } from "swr";
-import { useModal } from "../modals/modalProvider";
+import { usePathname } from "next/navigation";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { useSessionStorage } from "usehooks-ts";
 import Footer from "./Footer";
 import Header from "./Header";
 import style from "./Sidebar.module.css";
+import { SidebarFooter } from "./SidebarFooter";
+import { SidebarHeader } from "./SidebarHeader";
 import { SidebarLinks } from "./SidebarLinks";
-import { useBreakpoint } from "@/lib/useBreakpoint";
 
+// Sidebar Context
+type SidebarContextType = {
+    collapsed: boolean;
+    setCollapsed: (collapsed: boolean) => void;
+    setShowSidebar: (show: boolean) => void;
+    isSidebarFixed: boolean;
+    isMobile: boolean;
+};
+
+const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
+
+export const useSidebarContext = () => {
+    const context = useContext(SidebarContext);
+    if (context === undefined) {
+        throw new Error('useSidebarContext must be used within a SidebarProvider');
+    }
+    return context;
+};
 
 type SidebarPropType = {
     assosiation: Assosiation;
     username: string;
     children: React.ReactNode;
 }
+
 const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
-    const t = useI18n();
-    const modal = useModal();
-    const [collapsed, setCollapsed] = useState(false);
+
+    const collapseButtonRef = useRef<HTMLButtonElement>(null);
+    const sidebarRef = useRef<HTMLDivElement>(null);
+    const [collapsed, setCollapsed] = useState(true);
+    const [isSidebarFixed] = useSessionStorage("sidebarFixed", true);
     const [showSidebar, setShowSidebar] = useState(false);
-    const { match: isMobile } = useBreakpoint("lg", "lt")
-    const { inspectionState } = useInspectionState();
+    const [isOverCollapseButton, setIsOverCollapseButton] = useState(false);
+
+    const { match: isMobile } = useBreakpoint("lg", "lt");
     const pathname = usePathname();
-    const router = useRouter();
 
     // Close sidebar on navigation change (when links are clicked on mobile/tablet)
     useEffect(() => {
         setShowSidebar(false);
     }, [pathname]);
+
+    // Initialize viewport height handling for mobile browser compatibility
+    useEffect(() => {
+        const cleanup = initViewportHeight();
+        return cleanup;
+    }, []);
 
     useEffect(() => {
         if (isMobile) {
@@ -47,122 +68,146 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
         }
     }, [isMobile]);
 
-    function handleLogout() {
-        logout().then(() => {
-            const authItemString = localStorage.getItem(process.env.NEXT_PUBLIC_LOCAL_AUTH_KEY as string);
-            if (authItemString) {
-                const item: AuthItem = JSON.parse(authItemString);
-                item.authToken = undefined;
-                item.lastLogin = undefined;
-                localStorage.setItem(process.env.NEXT_PUBLIC_LOCAL_AUTH_KEY as string, JSON.stringify(item))
-            }
-            router.push('/login');
-            mutate(() => true, undefined);
-        });
+    // Sidebar context value
+    const sidebarContextValue: SidebarContextType = {
+        collapsed: collapsed && !isSidebarFixed,
+        setCollapsed,
+        isSidebarFixed,
+        isMobile: !!isMobile,
+        setShowSidebar,
+    };
+
+    function handleMouseEnter(e: React.MouseEvent) {
+        // Only for large screens
+        if (isMobile) return;
+
+        const children = (e.target as HTMLDivElement).childNodes;
+        const collapseButton = collapseButtonRef.current === e.target || Array.from(children).includes(collapseButtonRef.current as ChildNode);
+
+        if (collapseButton) {
+            setIsOverCollapseButton(true);
+        } else if (!isSidebarFixed && !isOverCollapseButton) {
+            setCollapsed(false);
+        }
     }
 
+    function handleCollapseButtonMouseLeave(e: React.MouseEvent) {
+        if (isMobile) return;
+
+        const relatedTarget = e.relatedTarget as Node;
+        const isLeavingToSidebar = sidebarRef.current && sidebarRef.current.contains(relatedTarget);
+
+        setIsOverCollapseButton(false);
+
+        if (isLeavingToSidebar && !isSidebarFixed) {
+            setCollapsed(false);
+        }
+    }
+
+    function handleMouseLeave(e: React.MouseEvent) {
+        // Only for large screens
+        if (isMobile) return;
+
+        const relatedTarget = e.relatedTarget as Node;
+        const isLeavingToCollapseButton = collapseButtonRef.current && collapseButtonRef.current.contains(relatedTarget);
+
+        if (isLeavingToCollapseButton) {
+            setIsOverCollapseButton(true);
+            return;
+        }
+
+        setIsOverCollapseButton(false);
+        if (!isSidebarFixed) {
+            setCollapsed(true);
+        }
+    }
+
+    function handleSidebarClick(e: React.MouseEvent) {
+        // Only for large screens
+        if (isMobile) return;
+
+        // If sidebar is not fixed and collapsed, open it and prevent default actions
+        if (!isSidebarFixed && collapsed) {
+            e.preventDefault();
+            e.stopPropagation();
+            setCollapsed(false);
+            return;
+        }
+    }
+
+    function handleContentClick() {
+        // Only for large screens
+        if (isMobile) return;
+
+        // If sidebar is not fixed and not collapsed, collapse it and prevent other actions
+        if (!isSidebarFixed && !collapsed) {
+            setCollapsed(true);
+            return true; // Indicate that the click was handled
+        }
+        return false;
+    }
+
+    const isCollapsed = collapsed && !isSidebarFixed;
+
     return (
-        <div className={`${style.sidebarContainer} ${showSidebar ? style.noScroll : ''}`}>
-            {/* Safe area top fill - always present to cover notch area */}
-            <div className={`${style.safeAreaTop} ${collapsed ? style.safeAreaTopCollapsed : ''
-                } ${showSidebar ? style.safeAreaTopVisible : ''}`}>
-            </div>
-
-            {/* Backdrop for mobile/tablet when sidebar is open */}
-            {showSidebar && (
-                <div
-                    className={`${style.backdrop} d-lg-none`}
-                    onClick={() => setShowSidebar(false)}
-                />
-            )}
-
-            <div className='d-lg-none'>
-                <Footer />
-                <Header showSidebar={() => setShowSidebar(true)} />
-            </div>
-            <div className={`${style.content} ${collapsed ? style.contentCollapsed : ""} ${showSidebar ? style.contentOverlay : ''}`} >
-                <div className={`container-sm px-3 px-lg-4 py-3 m-auto`}>
-                    {children}
+        <SidebarContext.Provider value={sidebarContextValue}>
+            <div className={`${style.sidebarContainer} ${showSidebar ? style.noScroll : ''}`}>
+                {/* Safe area top fill - always present to cover notch area */}
+                <div className={`${style.safeAreaTop} ${isCollapsed ? style.safeAreaTopCollapsed : ''
+                    } ${showSidebar ? style.safeAreaTopVisible : ''}`}>
                 </div>
-            </div>
-            <div
-                className={`bg-navy-secondary ${style.sidebar} ${collapsed
-                    ? style.sidebarCollapsed
-                    : style.sidebarExpanded
-                    } ${showSidebar ? style.sidebarVisible : ''}`}
-                role="navigation"
-            >
-                <div data-testid="div_sidebar" className="d-flex flex-column text-white h-100 bg-navy text-decoration-none">
-                    {/* Header section - always visible */}
-                    <div className="flex-shrink-0">
-                        {/* Header for desktop */}
-                        <div className={`${style.sidebarHeader}`}>
-                            <div className="d-lg-none w-100 position-relative align-items-center p-2 pb-1">
-                                <Link href={"/"} className="text-decoration-none">
-                                    <p data-testid="lnk_header" className={`${style.sidebarHeaderTitle} ${collapsed ? style.sidebarHeaderTitleCollapsed : ''}`}>
-                                        {collapsed ? assosiation.acronym : assosiation.name}
-                                    </p>
-                                </Link>
-                                <button
-                                    className="d-sm-none btn btn-link text-decoration-none text-white fs-5 position-absolute end-0 top-50 translate-middle-y"
-                                    onClick={() => setShowSidebar(false)}
-                                    aria-label="Close sidebar"
-                                >
-                                    <FontAwesomeIcon icon={faX} />
-                                </button>
-                            </div>
-                        </div>
-                        <hr className={style.sidebarDivider} />
-                        {inspectionState?.active &&
-                            <div data-testid="div_inspection" className="text-center d-none d-lg-block text-white-50 small">
-                                {collapsed ? "" : 'Kontrolle: '}
-                                {inspectionState.inspectedCadets}/{inspectionState.activeCadets - inspectionState.deregistrations}
-                            </div>
-                        }
-                    </div>
 
-                    {/* Scrollable navigation section */}
-                    <div className={`${style.sidebarNavigation}`}>
-                        <SidebarLinks
-                            collapsed={collapsed}
-                            setCollapsed={setCollapsed}
+                {/* Backdrop for mobile/tablet when sidebar is open */}
+                {(showSidebar && isMobile) && (
+                    <div
+                        className={`${style.backdrop} d-lg-none`}
+                        onClick={() => setShowSidebar(false)}
+                    />
+                )}
+
+                <div className='d-lg-none'>
+                    <Footer />
+                    <Header showSidebar={() => setShowSidebar(true)} />
+                </div>
+                <div className={`${style.content} ${!isSidebarFixed ? style.contentCollapsed : ""} ${showSidebar ? style.contentOverlay : ''}`}
+                    onClick={(e) => {
+                        const handled = handleContentClick();
+                        if (handled) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }
+                    }}
+                >
+                    <div className={`container-sm px-3 px-lg-4 py-3 m-auto`}>
+                        {children}
+                    </div>
+                </div>
+                <div
+                    ref={sidebarRef}
+                    className={`bg-navy-secondary ${style.sidebar} ${(isCollapsed)
+                        ? style.sidebarCollapsed
+                        : style.sidebarExpanded
+                        } ${showSidebar ? style.sidebarVisible : ''}`}
+                    role="navigation"
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    onClick={handleSidebarClick}
+                >
+                    <div data-testid="div_sidebar" className="d-flex flex-column text-white h-100 bg-navy text-decoration-none">
+                        {/* Header section - always visible */}
+                        <SidebarHeader assosiation={assosiation} />
+                        {/* Scrollable navigation section */}
+                        <SidebarLinks />
+                        {/* Footer section - always visible */}
+                        <SidebarFooter
+                            username={username} 
+                            collapseButtonRef={collapseButtonRef}
+                            handleCollapseButtonMouseLeave={handleCollapseButtonMouseLeave}
                         />
                     </div>
-
-                    {/* Footer section - always visible */}
-                    <div className="flex-shrink-0">
-                        <div className="w-100">
-                            <hr className={`my-1 ${collapsed ? "mx-1" : "mx-3"}`} />
-                        </div>
-                        <div className={`d-flex flex-row w-100 mb-2 ${collapsed ? "justify-content-center" : "justify-content-between"}`}>
-                            {!collapsed &&
-                                <div className="p-2 ms-3 fw-bold">
-                                    <Dropdown drop="up">
-                                        <Dropdown.Toggle variant="primary" className="border-0 text-white bg-navy fw-bold" data-testid={"btn_user_dropdown"}>
-                                            {username}
-                                        </Dropdown.Toggle>
-                                        <Dropdown.Menu className="bg-navy-secondary border-white text-white">
-                                            <Dropdown.Item onClick={handleLogout} data-testid="btn_logout" className="text-white bg-navy-secondary">
-                                                {t('sidebar.logout')}
-                                            </Dropdown.Item>
-                                            <Dropdown.Item onClick={modal?.changeLanguage} data-testid="btn_changeSize" className="text-white bg-navy-secondary my-2 my-lg-0">
-                                                {t('sidebar.changeLanguage')}
-                                            </Dropdown.Item>
-                                        </Dropdown.Menu>
-                                    </Dropdown>
-                                </div>
-                            }
-                            <button data-testid="btn_collapse" className="btn text-white btn-lg d-none d-lg-block" onClick={() => setCollapsed(!collapsed)}>
-                                <FontAwesomeIcon icon={collapsed ? faAngleRight : faAngleLeft} />
-                            </button>
-                            <button data-testid="btn_collapse" className="btn text-white btn-lg d-lg-none" onClick={() => setShowSidebar(false)}>
-                                <FontAwesomeIcon icon={faAngleLeft} />
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
-        </div>
+        </SidebarContext.Provider>
     );
 }
 

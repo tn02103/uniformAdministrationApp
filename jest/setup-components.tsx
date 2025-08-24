@@ -2,10 +2,10 @@ import { AuthRole } from '@/lib/AuthRoles';
 import '@testing-library/jest-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-// Mock i18n for component tests
-const useI18nFn = jest.fn((key) => key);
 window.HTMLElement.prototype.scrollIntoView = function () { };
 
+// Mock i18n for component tests
+const useI18nFn = jest.fn((key) => key);
 jest.mock('@/lib/locales/client', () => {
     return {
         useScopedI18n: jest.fn((scope: string) => {
@@ -35,6 +35,7 @@ jest.mock("@/components/modals/modalProvider", () => {
         simpleErrorModal: jest.fn(),
         simpleFormModal: jest.fn(),
         showMessageModal: jest.fn(),
+        changeLanguage: jest.fn(),
     }
     return {
         useModal: jest.fn(() => modals)
@@ -75,3 +76,11 @@ jest.mock("react-toastify", () => {
         toast
     };
 });
+
+jest.mock('next/navigation', () => ({
+    useRouter: jest.fn(),
+}));
+
+jest.mock('usehooks-ts', () => ({
+    useSessionStorage: jest.fn(() => [null, jest.fn()]),
+}));
