@@ -8,6 +8,9 @@ export class CadetInspectionComponent {
     readonly btn_inspect: Locator;
     readonly icn_inspected: Locator;
 
+    readonly div_oldDeficiency_list: Locator;
+    readonly div_newDeficiency_list: Locator;
+
     readonly div_step0_placeholder: Locator;
     readonly div_step0_loading: Locator;
     readonly btn_step1_back: Locator;
@@ -52,16 +55,16 @@ export class CadetInspectionComponent {
         return this.div_ci.locator(`select[name="newDeficiencyList.${index}.typeId"]`);
     }
     sel_newDef_uniform(index: number) {
-        return this.div_ci.locator(`select[name="newDeficiencyList.${index}.fk_uniform"]`);
+        return this.div_ci.locator(`select[name="newDeficiencyList.${index}.uniformId"]`);
     }
     sel_newDef_material(index: number) {
         return this.div_ci.locator(`select[name="newDeficiencyList.${index}.materialId"]`);
     }
     sel_newDef_materialGroup(index: number) {
-        return this.div_ci.locator(`select[name="newDeficiencyList.${index}.materialGroup"]`);
+        return this.div_ci.locator(`select[name="newDeficiencyList.${index}.otherMaterialGroupId"]`);
     }
     sel_newDef_materialType(index: number) {
-        return this.div_ci.locator(`select[name="newDeficiencyList.${index}.materialType"]`);
+        return this.div_ci.locator(`select[name="newDeficiencyList.${index}.otherMaterialId"]`);
     }
     txt_newDef_description(index: number) {
         return this.div_ci.locator(`input[name="newDeficiencyList.${index}.description"]`);
@@ -107,13 +110,16 @@ export class CadetInspectionComponent {
         this.btn_inspect = this.div_ci.getByTestId('btn_inspect');
         this.icn_inspected = this.btn_inspect.locator('svg');
 
+        this.div_oldDeficiency_list = this.div_ci.getByTestId(/div_olddef_/);
+        this.div_newDeficiency_list = this.div_ci.getByTestId(/div_newDef_/);
+
         this.div_step0_placeholder = this.div_ci.getByTestId("div_step0_noDeficiencies");
         this.div_step0_loading = this.div_ci.getByTestId("div_step0_loading");
         this.btn_step1_back = this.div_ci.getByTestId("btn_step1_back");
         this.btn_step1_continue = this.div_ci.getByTestId("btn_step1_continue");
 
         this.div_step2_unresolvedDefHeader = this.div_ci.getByTestId("div_step2_oldDefHeader");
-        this.btn_step2_newDef = this.div_ci.getByTestId("btn_step2_newDef");
+        this.btn_step2_newDef = this.div_ci.getByTestId("btn_create");
         this.div_step2_unifComplete = this.div_ci.getByTestId("div_step2_unifComplete");
         this.btn_step2_back = this.div_ci.getByTestId("btn_step2_back");
         this.btn_step2_submit = this.div_ci.getByTestId("btn_step2_submit");

@@ -37,8 +37,10 @@ test.describe(() => {
         await expect.soft(uniformListPage.chk_isReserveFilter).toBeChecked();
     });
 
-    test('integration: changing UniformType updates filter and data', async ({ uniformListPage, staticData: { ids } }) => {
+    test('integration: changing UniformType updates filter and data', async ({page, uniformListPage, staticData: { ids } }) => {
         await uniformListPage.sel_type.selectOption(ids.uniformTypeIds[1]);
+        await page.waitForURL(`/de/app/uniform/list/${ids.uniformTypeIds[1]}`);
+        
         await expect(uniformListPage.div_pageHeader).toContainText('Typ2');
         await expect(uniformListPage.div_othersAccordion).toBeVisible();
         // Check that only generations filter is visible for Typ2

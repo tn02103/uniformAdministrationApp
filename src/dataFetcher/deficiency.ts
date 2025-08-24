@@ -8,7 +8,7 @@ import useSWR from "swr";
 export const useDeficiencyTypes = () => {
     const { data } = useSWR(
         `deficiency.type.list`,
-        () => getDeficiencyTypeList(),
+        getDeficiencyTypeList,
     );
     return {
         deficiencyTypeList: data

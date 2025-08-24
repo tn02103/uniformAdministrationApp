@@ -21,6 +21,12 @@ jest.mock('@/lib/locales/client', () => {
     };
 });
 
+// NextJS
+jest.mock('next/navigation', () => ({
+    useParams: jest.fn(),
+    useRouter: jest.fn(),
+}));
+
 // Mock common components to avoid complex rendering
 jest.mock("@/components/errorMessage", () => {
     return function ErrorMessage({ error, ariaLabel, testId, ...divProps }: { error: string, testId: string, ariaLabel: string }) {
@@ -71,15 +77,12 @@ jest.mock("react-toastify", () => {
         success: jest.fn(),
         error: jest.fn(),
         info: jest.fn(),
-        warn: jest.fn(),    };
+        warn: jest.fn(),
+    };
     return {
         toast
     };
 });
-
-jest.mock('next/navigation', () => ({
-    useRouter: jest.fn(),
-}));
 
 jest.mock('usehooks-ts', () => ({
     useSessionStorage: jest.fn(() => [null, jest.fn()]),

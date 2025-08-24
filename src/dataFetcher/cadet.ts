@@ -1,7 +1,7 @@
 import { getCadetMaterialList, getCadetMaterialMap } from "@/actions/controllers/CadetMaterialController";
 import { getCadetUniformMap } from "@/dal/cadet/uniformMap";
 import { CadetMaterialMap, CadetUniformMap } from "@/types/globalCadetTypes";
-import { UniformLabel } from "@/types/globalUniformTypes";
+import { UniformLabel, UniformWithOwner } from "@/types/globalUniformTypes";
 import useSWR, { KeyedMutator, MutatorOptions, SWRResponse, mutate } from "swr";
 import { useUniformTypeList } from "./uniformAdmin";
 
@@ -29,16 +29,18 @@ export function useCadetUniformMap(cadetId: string, initialData?: CadetUniformMa
 
 export function useCadetUniformDescriptList(cadetId: string) {
     const { map } = useCadetUniformMap(cadetId);
-    if (!map) return undefined;
+    if (!map) return { uniformLabels: undefined };
 
-    return Object.values(map)
-        .reduce((descList: UniformLabel[], uList) => [
+    const uniformLabels = Object.values(map)
+        .reduce((descList: UniformLabel[], uList: UniformWithOwner[]) => [
             ...descList,
             ...uList.map(item => ({
                 id: item.id,
                 description: `${item.type.name}-${item.number}`
             }))
-        ], []);
+        ], [])
+
+    return { uniformLabels }
 }
 
 export function useCadetUniformComplete(cadetId: string) {
