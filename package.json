@@ -71,7 +71,7 @@
         "zod": "3.25.67"
     },
     "devDependencies": {
-        "@babel/core": "7.28.0",
+        "@babel/core": "7.28.3",
         "@jest/globals": "30.0.5",
         "@swc/jest": "0.2.39",
         "@testing-library/jest-dom": "6.7.0",
