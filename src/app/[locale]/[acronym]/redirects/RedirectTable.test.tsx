@@ -79,14 +79,6 @@ describe("RedirectTable", () => {
     });
 
     it('copys link to clipboard', async () => {
-        Object.defineProperty(window, 'location', {
-            value: {
-                ...window.location,
-                origin: 'https://example.com',
-            },
-            writable: true,
-        });
-
         const user = userEvent.setup();
         const { container } = render(<RedirectTable redirects={mockRedirects} />);
 
@@ -95,7 +87,7 @@ describe("RedirectTable", () => {
         await user.click(copyButton);
 
         const clipboardText = await navigator.clipboard.readText();
-        expect(clipboardText).toBe(`https://example.com/api/redirects?code=${mockRedirects[0].code}`);
+        expect(clipboardText).toBe(`http://localhost/api/redirects?code=${mockRedirects[0].code}`);
     });
 
     describe("creating a redirect", () => {
