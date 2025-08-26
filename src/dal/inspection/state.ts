@@ -1,10 +1,28 @@
 "use server";
-import { genericSAValidatorV2 } from "@/actions/validations";
+import { genericSANoDataValidator, genericSAValidatorV2 } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { InspectionStatus } from "@/types/deficiencyTypes";
 import dayjs from "@/lib/dayjs";
 import { unstable_cache } from "next/cache";
+
+
+export const getCadetIdList = async () => genericSANoDataValidator(AuthRole.inspector)
+    .then(async ([{ assosiation }]) =>
+        prisma.cadetInspection.findMany({
+            select: {
+                fk_cadet: true
+            },
+            where: {
+                inspection: {
+                    fk_assosiation: assosiation,
+                    date: dayjs().format("YYYY-MM-DD"),
+                    timeEnd: null,
+                    timeStart: { not: null },
+                },
+            },
+        }).then((data) => data.map(c => c.fk_cadet))
+    );
 
 export const getInspectionState = async (): Promise<InspectionStatus | null> => genericSAValidatorV2(
     AuthRole.user, true, {}
@@ -21,6 +39,7 @@ export const getInspectionState = async (): Promise<InspectionStatus | null> => 
         }),
         prisma.inspection.findFirst({
             where: {
+                fk_assosiation: assosiation,
                 timeStart: { not: null },
                 timeEnd: null,
                 date: { lt: today },

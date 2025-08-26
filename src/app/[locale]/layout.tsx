@@ -3,7 +3,7 @@ import { I18nProviderClient } from '@/lib/locales/client';
 import { getStaticParams } from '@/lib/locales/config';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import 'react-calendar/dist/Calendar.css';
 import 'react-date-picker/dist/DatePicker.css';
 import { ToastContainer, Zoom } from 'react-toastify';
@@ -16,6 +16,17 @@ export const metadata: Metadata = {
     title: 'Uniformverwaltung',
     description: 'App zum Verwalen von Uniformteilen',
     applicationName: 'Uniformadmin',
+    appleWebApp: {
+        capable: true,
+        statusBarStyle: 'default',
+    },
+}
+
+export const viewport: Viewport = {
+    width: 'device-width',
+    initialScale: 1,
+    viewportFit: 'cover', // This enables safe area support
+    themeColor: '#01153e', // Navy color for status bar
 }
 
 export function generateStaticParams() {

@@ -10,6 +10,7 @@ export type SimpleFormModalProps = {
     elementLabel: string;
     elementValidation: RegisterOptions<FormType, "input">;
     inputMode?: "search" | "text" | "none" | "tel" | "url" | "email" | "numeric";
+    inputPlaceholder?: string,
     type?: string,
     save: ({ }: { input: string }) => Promise<void>;
     abort: () => void;
@@ -31,6 +32,7 @@ const SimpleFormModal = (props: SimpleFormModalProps) => {
                         type={props.type}
                         isInvalid={!!errors.input}
                         inputMode={props.inputMode}
+                        placeholder={props.inputPlaceholder}
                         {...register("input", props.elementValidation)} />
                     <div data-testid={`err_input`} className="text-danger fs-7">
                         {errors?.input?.message}

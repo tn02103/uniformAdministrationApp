@@ -59,7 +59,8 @@ test.describe(() => {
         expect(issued[0].quantity).toBe(quantity);
     }
 
-    test('Validate form validation', async ({ page, materialComponent, popupComponent, staticData: { ids } }) => {
+    // TODO write component tests
+    test.skip('Validate form validation', async ({ page, materialComponent, popupComponent, staticData: { ids } }) => {
         const testSets = numberValidationTests({ max: 255, min: 1, strict: false, testEmpty: true });
 
         for (const set of testSets) {

@@ -1,109 +1,138 @@
-import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { prisma } from "@/lib/db";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
-import { update } from "./update";
-import { UniformTypeFormType } from "@/zod/uniformConfig";
-import { ZodError } from "zod";
+import { __unsecuredGetUniformTypeList } from "./get";
+import { UniformTypeUpdateProps, update } from "./update";
 
-const { ids, cleanup } = new StaticData(0);
-const defaultProps = {
-    id: ids.uniformTypeIds[0],
-    data: {
-        name: "TestType",
-        acronym: "XX",
-        issuedDefault: 1,
-        usingGenerations: true,
-        usingSizes: false,
-        fk_defaultSizelist: null,
-    }
-}
-const getProps = (formData: Partial<UniformTypeFormType>) => {
-    return {
-        ...defaultProps,
+jest.mock('./get', () => ({
+    __unsecuredGetUniformTypeList: jest.fn(() => Promise.resolve('UpdatedList')),
+}));
+
+describe('<UniformType> update', () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    const mockFindMany = prisma.uniformType.findMany as jest.Mock;
+    const mockUpdate = prisma.uniformType.update as jest.Mock;
+    const mockGetList = __unsecuredGetUniformTypeList as jest.Mock;
+
+    const defaultProps = {
+        id: 'test-id-123',
         data: {
-            ...defaultProps.data,
-            ...formData
+            name: "TestType",
+            acronym: "TT",
+            issuedDefault: 1,
+            usingGenerations: true,
+            usingSizes: false,
+            fk_defaultSizelist: null,
+        }
+    };
+    const getPropsWithData = (data: Partial<UniformTypeUpdateProps["data"]>) => {
+        return {
+            ...defaultProps,
+            data: {
+                ...defaultProps.data,
+                ...data
+            }
         }
     }
-}
-afterEach(async () => {
-    await cleanup.uniformTypeConfiguration();
-})
-describe('<UniformType> update', () => {
-    it('should update data in db', async () => {
-        const { success, result } = await runServerActionTest(
-            update(defaultProps)
-        );
-        expect(success).toBeTruthy();
-        if (!result) return;
-        expect(Array.isArray(result)).toBeTruthy();
-        expect(result).toHaveLength(4);
 
-        expect(result[0]).toEqual(
-            expect.objectContaining(defaultProps.data)
-        );
-        const dbType = await prisma.uniformType.findUniqueOrThrow({
+    const existingTypes = [
+        { id: 'test-id-123', name: 'Current Type', acronym: 'CT' },
+        { id: 'other-id', name: 'Other Type', acronym: 'OT' },
+    ];
+
+    beforeEach(() => {
+        mockFindMany.mockResolvedValue(existingTypes);
+        mockUpdate.mockResolvedValue({});
+        mockGetList.mockResolvedValue('UpdatedList');
+    });
+
+    it('should update uniform type successfully', async () => {
+        const result = await update(defaultProps);
+
+        expect(result).toEqual('UpdatedList');
+        expect(mockFindMany).toHaveBeenCalledWith({
             where: {
-                id: ids.uniformTypeIds[0],
+                fk_assosiation: 'test-assosiation-id',
+                recdelete: null, // Ensure we are checking only for active types
             }
         });
-        expect(dbType).toEqual(
-            expect.objectContaining(defaultProps.data)
-        );
+        expect(mockUpdate).toHaveBeenCalledWith({
+            where: { id: 'test-id-123' },
+            data: defaultProps.data
+        });
+        expect(mockGetList).toHaveBeenCalledWith('test-assosiation-id', expect.anything());
     });
-    it('should return error for duplicated Name', async () => {
-        const { success, result } = await runServerActionTest(
-            update(getProps({ name: 'Typ2' }))
-        );
 
-        expect(success).toBeFalsy();
-        expect(result.error.formElement).toEqual('name');
-        expect(result.error.message).toEqual('custom.uniform.type.nameDuplication');
+    it('should return error if name is duplicated', async () => {
+        const result = await update(getPropsWithData({ name: 'Other Type' }));
+
+        expect(result).toEqual({
+            error: {
+                message: "custom.uniform.type.nameDuplication",
+                formElement: "name",
+            }
+        });
+        expect(mockUpdate).not.toHaveBeenCalled();
+        expect(mockGetList).not.toHaveBeenCalled();
     });
-    it('shold not return error if name stays the same', async () => {
-        const { success, result } = await runServerActionTest(
-            update(getProps({ name: 'Typ1' }))
-        );
 
-        expect(success).toBeTruthy();
-        expect(result).toHaveLength(4);
-    })
-    it('should return error for duplicated Acronym', async () => {
-        const { success, result } = await runServerActionTest(
-            update(getProps({ acronym: 'AB' }))
-        );
+    it('should return error if acronym is duplicated', async () => {
+        const result = await update(getPropsWithData({ acronym: 'OT' }));
 
-        expect(success).toBeFalsy();
-        expect(result.error.formElement).toEqual('acronym');
-        expect(result.error.message).toEqual('custom.uniform.type.acronymDuplication;name:Typ2');
+        expect(result).toEqual({
+            error: {
+                message: "custom.uniform.type.acronymDuplication;name:Other Type",
+                formElement: "acronym",
+            }
+        });
+        expect(mockUpdate).not.toHaveBeenCalled();
+        expect(mockGetList).not.toHaveBeenCalled();
     });
-    it('shold not return error if acronym stays the same', async () => {
-        const { success, result } = await runServerActionTest(
-            update(getProps({ acronym: 'AA' }))
-        );
 
-        expect(success).toBeTruthy();
-        expect(result).toHaveLength(4);
+    it('should return error if usingSizes is true but fk_defaultSizelist is null', async () => {
+        const result = await update(getPropsWithData({ usingSizes: true, fk_defaultSizelist: null }));
+
+        expect(result).toEqual({
+            error: {
+                message: "pleaseSelect",
+                formElement: "fk_defaultSizelist"
+            }
+        });
+        expect(mockUpdate).not.toHaveBeenCalled();
+        expect(mockGetList).not.toHaveBeenCalled();
     });
-    it('should return error if fk_defaultSizelist is null and usinsSizes true', async () => {
-        const { success, result } = await runServerActionTest(
-            update(getProps({ usingSizes: true, fk_defaultSizelist: null }))
-        );
 
-        expect(success).toBeFalsy();
-        expect(result instanceof ZodError).toBeTruthy();
-        expect(result.errors[0].path[1]).toEqual('fk_defaultSizelist');
-        expect(result.errors[0].message).toEqual('string.required');
+    it('should allow updating same type with same name/acronym', async () => {
+        const result = await update(getPropsWithData({ name: 'Current Type', acronym: 'CT' }));
+
+        expect(result).toEqual('UpdatedList');
+        expect(mockUpdate).toHaveBeenCalled();
+        expect(mockGetList).toHaveBeenCalled();
     });
-    it('should not return error if fk_defaultSizelist is not null and usinsSizes true', async () => {
-        const { success, result } = await runServerActionTest(
-            update(getProps({
-                fk_defaultSizelist: ids.sizelistIds[0],
-                usingSizes: true,
-            }))
-        );
 
-        expect(success).toBeTruthy();
-        expect(result).toHaveLength(4);
+    it('should allow usingSizes true with valid fk_defaultSizelist', async () => {
+        const propsWithValidSizelist = getPropsWithData({ usingSizes: true, fk_defaultSizelist: 'sizelist-id' });
+
+        const result = await update(propsWithValidSizelist);
+
+        expect(result).toEqual('UpdatedList');
+        expect(mockUpdate).toHaveBeenCalledWith({
+            where: { id: 'test-id-123' },
+            data: propsWithValidSizelist.data
+        });
+        expect(mockGetList).toHaveBeenCalled();
+    });
+    it('should allow !usingSizes with null fk_defaultSizelist', async () => {
+        const propsWithNoSizes = getPropsWithData({ usingSizes: false, fk_defaultSizelist: null });
+
+        const result = await update(propsWithNoSizes);
+
+        expect(result).toEqual('UpdatedList');
+        expect(mockUpdate).toHaveBeenCalledWith({
+            where: { id: 'test-id-123' },
+            data: propsWithNoSizes.data
+        });
+        expect(mockGetList).toHaveBeenCalled();
     });
 });

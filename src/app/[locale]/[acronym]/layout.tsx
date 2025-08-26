@@ -21,11 +21,9 @@ export async function generateStaticParams() {
 
 const Layout = async ({
     children,
-    modal,
     params
 }: {
     children: ReactNode;
-    modal: ReactNode;
     params: Promise<{ acronym: string }>
 }) => {
     const { acronym } = await params;
@@ -60,7 +58,6 @@ const Layout = async ({
             inspectionState={inspectionState}
         >
             <div>
-                {modal}
                 <div className="container-fluid p-0 m-0 p-md-auto">
                     <Sidebar assosiation={assosiation} username={user.name}>
                         {children}

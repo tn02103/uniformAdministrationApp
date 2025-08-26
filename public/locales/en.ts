@@ -10,8 +10,8 @@ export default {
         loading: "Loading",
         status: "State",
         dates: {
-            "created": "Created on:",
-            "updated": "Last modified:",
+            "created": "Created on",
+            "updated": "Last modified",
         },
         yes: "Yes",
         no: "No",
@@ -266,18 +266,21 @@ export default {
             uniformTable: "Uniform parts",
             cadetTable: "Staff data",
             materialTable: "Materials",
-            inspection: "Uniform inspection",
-            inspecting: "Inspecting VK",
-            deficiencies: "Deficiencies",
-            oldDeficiencies: "Old deficiencies",
-            newDeficiencies: "New deficiencies",
-            "amountUnresolved#other": "- {count} unresolved",
-            "amountUnresolved#zero": "- All resolved",
         },
         inspection: {
-            noDeficiencies: "No deficiencies present",
-            saved: "Inspection successfully saved",
-            otherMaterials: "Other materials",
+            "header.noInspection": "Deficiencies",
+            "header.inspection": "Uniform inspection",
+            "header.inspecting": "Inspecting VK",
+            "label.oldDeficiencies": "Old deficiencies",
+            "label.newDeficiencies": "New deficiencies",
+            "label.otherMaterials": "Other materials",
+            "label.amountUnresolved#other": "- {count} unresolved",
+            "label.amountUnresolved#zero": "- All resolved",
+            "label.noDeficiencies": "No deficiencies present",
+            "tooltip.inspected": "Cadets inspected:\nUpdate cadet inspection",
+            "tooltip.notInspected": "Cadets uninspected:\nStart cadet inspection",
+            "message.saved": "Inspection successfully saved",
+            "error.startInspection": "An error occurred while starting the inspection for this person. Please reload the page and try again."
         },
         returnUniform: {
             error: "An error occurred while withdrawing the uniform part. Please try again",
@@ -289,12 +292,6 @@ export default {
         "defaultIssuedWarning#one": "{count} piece should be issued",
         'defaultIssuedWarning#other': "There should be {count} pieces issued",
         multitypeWarning: "Only 1 type of this material should be issued",
-        tooltips: {
-            inspection: {
-                inspected: "Cadets inspected:\nUpdate cadet inspection",
-                notInspected: "Cadets uninspected:\nStart cadet inspection"
-            },
-        },
         "issueModal": {
             "input.label": "select uniform item",
             "alert.owner.1": "Already issued to the cadet ",
@@ -458,6 +455,17 @@ export default {
     sidebar: {
         logout: "Logout",
         changeLanguage: "Change language",
+        "message.inspection.start": "The inspection was successfully started",
+        "message.inspection.startError": "The inspection could not be started. Please try again later.",
+        "message.inspection.stop": "The inspection was successfully stopped",
+        "message.inspection.stopError": "The inspection could not be stopped. Please try again later.",
+        labels: {
+            "stopInspection.header": "stop inspection",
+            "stopInspection.elementLabel": "Enter finishing time", 
+            "activeInspection.open": "Inspected: {controlled} / {total}",
+            "activeInspection.collapsed": "{controlled} / {total}"
+     
+        },
         links: {
             cadetOverview: "Staff",
             uniformOverview: "Uniform",
@@ -473,13 +481,13 @@ export default {
                 stop: "Stop",
                 unfinished: "Finish old inspection",
                 inspection: "Administration",
+                deficiencyType: "Deficiency types",
             },
             administration: {
                 group: "Administration",
                 uniform: "Uniform",
                 size: "Sizes",
                 material: "Materials",
-                deficiency: "Deficiency",
             },
             userOverview: "Accesses",
             redirects: "Redirects",

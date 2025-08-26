@@ -11,7 +11,7 @@ const propSchema = z.object({
     id: z.string().uuid(),
     data: uniformTypeFormSchema,
 });
-type UniformTypeUpdateProps = z.infer<typeof propSchema>;
+export type UniformTypeUpdateProps = z.infer<typeof propSchema>;
 
 export const update = (props: UniformTypeUpdateProps): SAReturnType<UniformType[]> => genericSAValidator(
     AuthRole.materialManager,

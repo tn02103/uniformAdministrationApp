@@ -1,8 +1,8 @@
 import { genericSAValidator } from "@/actions/validations";
-import { isToday } from "@/dal/_helper/testHelper";
 import { __unsecuredGetCadetUniformMap } from "@/dal/cadet/uniformMap";
 import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
+import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
 import { CadetUniformMap } from "@/types/globalCadetTypes";
 import { Prisma } from "@prisma/client";
@@ -40,7 +40,7 @@ export const returnItem = async (props: PropType): Promise<CadetUniformMap> => g
 }));
 
 export const __unsecuredReturnUniformitem = (issuedEntryId: string, dateIssued: Date, client: Prisma.TransactionClient) => {
-    if (isToday(dateIssued)) {
+    if (dayjs().isSame(dateIssued, "day")) {
         return client.uniformIssued.delete({
             where: { id: issuedEntryId }
         });
