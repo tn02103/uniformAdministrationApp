@@ -8,12 +8,16 @@ import { getScopedI18n } from "@/lib/locales/config";
 import { notFound } from "next/navigation";
 import { Col, Row } from "react-bootstrap";
 import CadetDataTable from "./_cadetDataTable/table";
-import CadetInspectionCard from "./_inspctionTable/card";
+import { CadetInspectionCard } from "./_inspctionTable/CadetInspectionCard";
 import { CadetMaterialTable } from "./_materialTable/CadetMaterialTable";
 import { CadetUniformTable } from "./_uniformTable/CadetUniformTable";
 import CadetDropDown from "./cadetDropDown";
 
-export async function generateMetadata({ params }: { params: Promise<ParamType> }) {
+type PageProps = {
+    params: Promise<ParamType>;
+}
+
+export async function generateMetadata({ params }: PageProps) {
     const { cadetId } = await params;
     const t = await getScopedI18n('pageTitles');
     if (cadetId === "new") {
@@ -27,6 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<ParamType> 
             title: t('cadet.person', { firstname: cadet.firstname, lastname: cadet.lastname }),
         }
     }
+    return notFound();
 }
 
 type PropType = {

@@ -17,12 +17,17 @@ export type SelectFormFieldProps<FormType extends FieldValues> = {
     plaintext?: boolean,
     labelClassName?: string,
     selectClassName?: string,
+    onValueChange?: (value: string | number) => void,
+    hookFormValidation?: boolean,
 }
 
-export const SelectFormField = <FormType extends FieldValues>({ label, name, required, options, labelClassName, selectClassName, ...inputProps }: SelectFormFieldProps<FormType>) => {
+export const SelectFormField = <FormType extends FieldValues>({ label, name, required, options, labelClassName, selectClassName, onValueChange, hookFormValidation, ...inputProps }: SelectFormFieldProps<FormType>) => {
     const t = useI18n();
     const { field, fieldState } = useController({
         name,
+        rules: hookFormValidation ? {
+            required: required ? 'pleaseSelect' : false,
+        } : {},
     });
     const error = useMemo(() => {
         if (fieldState.error?.message === "string.required") {
@@ -35,7 +40,6 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
     const disabled = formContext?.disabled || inputProps.disabled;
     const plaintext = formContext?.plaintext || inputProps.plaintext;
     const formName = inputProps.formName || formContext?.formName || "unnamedForm";
-
 
     return (
         <Field
@@ -54,6 +58,7 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
                 :
                 <Form.Select
                     {...field}
+                    onChange={(e) => { field.onChange(e); onValueChange?.(e.target.value) }}
                     disabled={disabled}
                     id={`${formName}_select-${name}`}
                     isInvalid={!!fieldState.error}

@@ -66,14 +66,14 @@ test.describe('UniformType Configuration', () => {
             });
 
             expect(dbType).not.toBeNull();
-            expect(dbType).toEqual(expect.objectContaining({
+            expect(dbType).toMatchObject({
                 acronym: 'NT',
                 issuedDefault: 4,
                 usingGenerations: false,
                 usingSizes: false,
                 fk_defaultSizelist: null,
                 sortOrder: 4,
-            }));
+            });
         });
     });
 
@@ -119,14 +119,14 @@ test.describe('UniformType Configuration', () => {
             });
 
             expect(dbType).not.toBeNull();
-            expect(dbType).toEqual(expect.objectContaining({
+            expect(dbType).toMatchObject({
                 acronym: 'NB',
                 issuedDefault: 2,
                 usingGenerations: true,
                 usingSizes: true,
                 fk_defaultSizelist: ids.sizelistIds[0],
                 sortOrder: 4,
-            }));
+            });
         });
     });
 
@@ -168,14 +168,14 @@ test.describe('UniformType Configuration', () => {
             });
 
             expect(dbType).not.toBeNull();
-            expect(dbType).toEqual(expect.objectContaining({
+            expect(dbType).toMatchObject({
                 name: 'Updated',
                 acronym: 'UT',
                 issuedDefault: 3,
                 usingGenerations: true,
                 usingSizes: false,
                 fk_defaultSizelist: types[0].fk_defaultSizelist,
-            }));
+            });
         });
     });
 
@@ -249,14 +249,14 @@ test.describe('UniformType Configuration', () => {
 
         await test.step('validate db data', async () => {
             const dbList = await prisma.uniformType.findMany({
-                    where: {
-                        fk_assosiation: types[0].fk_assosiation,
-                        recdelete: null,
-                    },
-                    orderBy: {
-                        sortOrder: 'asc',
-                    },
-                });
+                where: {
+                    fk_assosiation: types[0].fk_assosiation,
+                    recdelete: null,
+                },
+                orderBy: {
+                    sortOrder: 'asc',
+                },
+            });
 
             expect(dbList).toHaveLength(4);
             expect(dbList[0].id).toBe(types[1].id);
@@ -269,7 +269,7 @@ test.describe('UniformType Configuration', () => {
     test('change sortOrder up', async ({ page, types, browserName }) => {
         // eslint-disable-next-line playwright/no-skipped-test
         test.skip(browserName !== 'chromium', 'This test only runs on Chrome');
-        
+
         await test.step('change sortOrder', async () => {
             const secondRow = page.getByRole('row', { name: types[1].name });
             const thirdRow = page.getByRole('row', { name: types[2].name });
@@ -299,14 +299,14 @@ test.describe('UniformType Configuration', () => {
 
         await test.step('validate db data', async () => {
             const dbList = await prisma.uniformType.findMany({
-                    where: {
-                        fk_assosiation: types[0].fk_assosiation,
-                        recdelete: null,
-                    },
-                    orderBy: {
-                        sortOrder: 'asc',
-                    },
-                });
+                where: {
+                    fk_assosiation: types[0].fk_assosiation,
+                    recdelete: null,
+                },
+                orderBy: {
+                    sortOrder: 'asc',
+                },
+            });
 
             expect(dbList).toHaveLength(4);
             expect(dbList[0].id).toBe(types[0].id);

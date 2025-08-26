@@ -1,0 +1,179 @@
+/* ###################### Mobile styles ###################### */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    /* Always use the JavaScript-calculated height on mobile */
+    height: var(--app-height);
+    /* Ensure it never gets smaller */
+    min-height: var(--app-height);
+    z-index: 1050;
+    transition: 0.3s ease-in-out;
+    /* Prevent scrolling on the sidebar container itself */
+    overflow: hidden;
+    /* Ensure consistent background with fallback */
+    background: var(--bs-navy, #01153e) !important;
+
+    /* Handle safe area for devices with notches/camera cutouts */
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+
+    /* Small screens default - full width, hidden by default */
+    width: 100%;
+    transform: translateX(-100%);
+}
+
+.sidebarVisible {
+    /* Visible when showSidebar is true */
+    transform: translateX(0);
+}
+
+.sidebarContainer {
+    padding: 0;
+    margin: 0;
+    /* Use CSS custom property for dynamic height */
+    min-height: var(--app-height);
+    /* Ensure it covers the full viewport on mobile */
+    min-height: 100vh;
+    min-height: var(--app-height);
+}
+
+.sidebarDivider {
+    border: none;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    margin: 0.75rem 0;
+}
+
+/* Safe area top fill - covers the notch/camera cutout area */
+.safeAreaTop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    /* Fallback to 0px if no safe area */
+    height: env(safe-area-inset-top, 0px);
+    /* Use CSS variable with fallback */
+    background: var(--bs-navy, #01153e);
+    /* Higher than everything else */
+    z-index: 1060;
+    display: block;
+    /* Allow touches to pass through */
+    pointer-events: none;
+    transition: width 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    /* Only show if there's actually a safe area */
+    min-height: 0;
+
+    /* Mobile default - full width, hidden by default */
+    width: 100vw;
+    opacity: 0;
+}
+
+.safeAreaTopVisible {
+    /* Visible when sidebar is open */
+    opacity: 1;
+}
+
+.backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    /* Use CSS custom property for dynamic height */
+    height: var(--app-height);
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 1040;
+    cursor: pointer;
+}
+
+.content {
+    margin-left: 0;
+    /* Space for fixed header */
+    padding-top: 70px;
+    /* Space for fixed footer */
+    padding-bottom: 70px;
+    /* Use CSS custom property for dynamic height */
+    min-height: calc(var(--app-height) - 140px);
+}
+
+.contentOverlay {
+    pointer-events: none;
+}
+
+/* ###################### Medium screens and up ###################### */
+@media (max-width: 991px) {
+    .sidebarContainer.noScroll {
+        overflow: hidden;
+        /* Use CSS custom property for dynamic height */
+        height: var(--app-height) !important;
+        /* Backup heights for mobile */
+        height: 100vh;
+        height: var(--app-height) !important;
+        /* Small screens - full lock */
+        position: fixed;
+        width: 100%;
+    }
+}
+
+@media (min-width: 576px) {
+    .sidebar {
+        /* Partial width, not full screen on medium screens */
+        width: 320px;
+    }
+}
+
+
+/* ###################### Large screens and up - desktop layout ###################### */
+@media (min-width: 992px) {
+    .sidebar {
+        /* Always visible on large screens */
+        transform: translateX(0);
+        width: 280px;
+    }
+
+    .sidebarCollapsed {
+        width: 60px;
+        cursor: pointer;
+    }
+
+    .sidebarExpanded {
+        width: 280px;
+    }
+
+    .safeAreaTop {
+        /* Default sidebar width */
+        width: 280px;
+        /* Always visible on desktop */
+        opacity: 1;
+    }
+
+    .safeAreaTopCollapsed {
+        /* Collapsed sidebar width */
+        width: 60px;
+    }
+
+    .content {
+        margin-left: 280px;
+        transition: margin-left 0.3s ease-in-out;
+        /* Use CSS custom property for dynamic height */
+        min-height: var(--app-height);
+        /* Remove mobile padding */
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .contentCollapsed {
+        margin-left: 60px;
+    }
+
+    .contentOverlay {
+        /* Allow interaction on large screens */
+        pointer-events: auto;
+    }
+}
+
+/* Hide safe area fill if no safe area is present */
+@supports not (height: env(safe-area-inset-top)) {
+    .safeAreaTop {
+        display: none;
+    }
+}

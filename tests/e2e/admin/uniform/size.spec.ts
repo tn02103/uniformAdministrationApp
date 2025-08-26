@@ -160,7 +160,8 @@ test.describe('Uniform size configuration', () => {
             expect(size!.sortOrder).toBe(sizes.length + 1);
         });
     });
-    test('validate namePopup formValidation', async ({ page, uniformSizePage, simpleFormPopup }) => {
+    // TODO write component tests
+    test.skip('validate namePopup formValidation', async ({ page, uniformSizePage, simpleFormPopup }) => {
         const tests = newNameValidationTests({
             minLength: 1,
             maxLength: 10

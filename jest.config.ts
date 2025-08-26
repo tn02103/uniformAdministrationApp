@@ -8,7 +8,8 @@ import type { Config } from 'jest';
 const customJestConfig: Config = {
     maxWorkers: 1,
     projects: [
-        "<rootDir>/jest.backend.config.ts",
+        "<rootDir>/jest.dal-integration.config.ts",
+        "<rootDir>/jest.dal-unit.config.ts",
         "<rootDir>/jest.frontend.config.ts",
     ],
 };
