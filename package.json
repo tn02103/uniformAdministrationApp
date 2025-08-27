@@ -39,7 +39,7 @@
         "@swc/core": "1.13.5",
         "@types/react-dnd": "3.0.2",
         "bcrypt": "6.0.0",
-        "bootstrap": "5.3.7",
+        "bootstrap": "5.3.8",
         "date-fns": "4.1.0",
         "dayjs": "1.11.13",
         "debounce": "2.2.0",
