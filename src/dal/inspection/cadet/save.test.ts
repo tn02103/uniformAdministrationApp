@@ -197,7 +197,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.updateMany).toHaveBeenCalledWith({
                 where: {
                     id: { in: [TEST_IDS.deficiency1, TEST_IDS.deficiency3] }, // Only resolved deficiencies
-                    type: { fk_assosiation: TEST_USER.assosiation },
+                    type: { organisationId: TEST_USER.assosiation },
                     dateResolved: null,
                 },
                 data: {
@@ -222,7 +222,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.updateMany).toHaveBeenCalledWith({
                 where: {
                     id: { in: [TEST_IDS.deficiency2] }, // Only unresolved deficiencies
-                    type: { fk_assosiation: TEST_USER.assosiation },
+                    type: { organisationId: TEST_USER.assosiation },
                     dateResolved: { not: null },
                 },
                 data: {
@@ -278,7 +278,7 @@ describe("saveCadetInspection", () => {
             expect(resolvingCall[0]).toMatchObject({
                 where: {
                     id: { in: [TEST_IDS.deficiency1, TEST_IDS.deficiency3] },
-                    type: { fk_assosiation: TEST_USER.assosiation },
+                    type: { organisationId: TEST_USER.assosiation },
                     dateResolved: null,
                 },
                 data: {
@@ -296,7 +296,7 @@ describe("saveCadetInspection", () => {
             expect(unresolvingCall[0]).toMatchObject({
                 where: {
                     id: { in: [TEST_IDS.deficiency2] },
-                    type: { fk_assosiation: TEST_USER.assosiation },
+                    type: { organisationId: TEST_USER.assosiation },
                     dateResolved: { not: null },
                 },
                 data: {
@@ -322,7 +322,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.updateMany).toHaveBeenCalledWith(
                 expect.objectContaining({
                     where: expect.objectContaining({
-                        type: { fk_assosiation: TEST_USER.assosiation },
+                        type: { organisationId: TEST_USER.assosiation },
                     }),
                 })
             );
@@ -404,7 +404,7 @@ describe("saveCadetInspection", () => {
                 where: {
                     id: "non-existent-type",
                     AND: {
-                        fk_assosiation: TEST_USER.assosiation,
+                        organisationId: TEST_USER.assosiation,
                     }
                 }
             });
@@ -541,7 +541,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.material.findUniqueOrThrow).toHaveBeenCalledWith({
                 where: {
                     id: "other-material-id",
-                    AND: { materialGroup: { fk_assosiation: TEST_USER.assosiation } },
+                    AND: { materialGroup: { organisationId: TEST_USER.assosiation } },
                 },
                 include: { materialGroup: true }
             });
@@ -581,7 +581,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.uniform.findUniqueOrThrow).toHaveBeenCalledWith({
                 where: {
                     id: TEST_IDS.uniformId,
-                    type: { fk_assosiation: TEST_USER.assosiation }
+                    type: { organisationId: TEST_USER.assosiation }
                 },
                 include: {
                     type: true
@@ -664,7 +664,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.material.findUniqueOrThrow).toHaveBeenCalledWith({
                 where: {
                     id: TEST_IDS.materialId,
-                    AND: { materialGroup: { fk_assosiation: TEST_USER.assosiation } },
+                    AND: { materialGroup: { organisationId: TEST_USER.assosiation } },
                 },
                 include: { materialGroup: true }
             });
@@ -802,7 +802,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.upsert).toHaveBeenCalledWith({
                 where: {
                     id: expect.any(String),
-                    AND: { type: { fk_assosiation: TEST_USER.assosiation } }
+                    AND: { type: { organisationId: TEST_USER.assosiation } }
                 },
                 create: {
                     fk_deficiencyType: TEST_IDS.typeId1,
@@ -845,7 +845,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.upsert).toHaveBeenCalledWith({
                 where: {
                     id: "existing-def-id",
-                    AND: { type: { fk_assosiation: TEST_USER.assosiation } }
+                    AND: { type: { organisationId: TEST_USER.assosiation } }
                 },
                 create: {
                     fk_deficiencyType: TEST_IDS.typeId1,
@@ -986,7 +986,7 @@ describe("saveCadetInspection", () => {
                     id: {
                         in: ["orphaned-def-1", "orphaned-def-2"]
                     },
-                    type: { fk_assosiation: TEST_USER.assosiation }
+                    type: { organisationId: TEST_USER.assosiation }
                 },
             });
         });
@@ -1044,7 +1044,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.upsert).toHaveBeenCalledWith({
                 where: {
                     id: expect.any(String),
-                    AND: { type: { fk_assosiation: TEST_USER.assosiation } }
+                    AND: { type: { organisationId: TEST_USER.assosiation } }
                 },
                 create: {
                     fk_deficiencyType: TEST_IDS.typeId1,
@@ -1145,7 +1145,7 @@ describe("saveCadetInspection", () => {
                     id: {
                         in: ["def-to-keep-1", "def-to-keep-2"] // The processed one should be filtered out
                     },
-                    type: { fk_assosiation: TEST_USER.assosiation }
+                    type: { organisationId: TEST_USER.assosiation }
                 },
             });
         });
@@ -1174,7 +1174,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.upsert).toHaveBeenCalledWith({
                 where: {
                     id: expect.any(String),
-                    AND: { type: { fk_assosiation: TEST_USER.assosiation } }
+                    AND: { type: { organisationId: TEST_USER.assosiation } }
                 },
                 create: {
                     fk_deficiencyType: TEST_IDS.typeId1,
@@ -1217,7 +1217,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.upsert).toHaveBeenCalledWith({
                 where: {
                     id: "existing-deficiency-id", // Existing deficiency has ID
-                    AND: { type: { fk_assosiation: TEST_USER.assosiation } }
+                    AND: { type: { organisationId: TEST_USER.assosiation } }
                 },
                 create: {
                     fk_deficiencyType: TEST_IDS.typeId1,
@@ -1261,7 +1261,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.updateMany).toHaveBeenCalledWith({
                 where: {
                     id: { in: [TEST_IDS.deficiency1] },
-                    type: { fk_assosiation: TEST_USER.assosiation },
+                    type: { organisationId: TEST_USER.assosiation },
                     dateResolved: null, // Only resolve unresolved deficiencies
                 },
                 data: {
@@ -1299,7 +1299,7 @@ describe("saveCadetInspection", () => {
                 where: {
                     id: TEST_IDS.typeId1,
                     AND: {
-                        fk_assosiation: TEST_USER.assosiation, // Association filter
+                        organisationId: TEST_USER.assosiation, // Association filter
                     }
                 }
             });
@@ -1308,7 +1308,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.material.findUniqueOrThrow).toHaveBeenCalledWith({
                 where: {
                     id: TEST_IDS.materialId,
-                    AND: { materialGroup: { fk_assosiation: TEST_USER.assosiation } }, // Association filter
+                    AND: { materialGroup: { organisationId: TEST_USER.assosiation } }, // Association filter
                 },
                 include: { materialGroup: true }
             });
@@ -1317,7 +1317,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.upsert).toHaveBeenCalledWith(
                 expect.objectContaining({
                     where: expect.objectContaining({
-                        AND: { type: { fk_assosiation: TEST_USER.assosiation } } // Association filter
+                        AND: { type: { organisationId: TEST_USER.assosiation } } // Association filter
                     })
                 })
             );
@@ -1326,7 +1326,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.updateMany).toHaveBeenCalledWith(
                 expect.objectContaining({
                     where: expect.objectContaining({
-                        type: { fk_assosiation: TEST_USER.assosiation }, // Association filter
+                        type: { organisationId: TEST_USER.assosiation }, // Association filter
                     })
                 })
             );

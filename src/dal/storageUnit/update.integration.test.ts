@@ -3,7 +3,7 @@ import { StaticData } from "../../../tests/_playwrightConfig/testData/staticData
 import { __unsecuredGetUnitsWithUniformItems } from "./get";
 import { update } from "./update";
 
-const { data, fk_assosiation: assosiationId } = new StaticData(0);
+const { data, organisationId } = new StaticData(0);
 jest.mock("@/lib/db", () => ({
     prisma: {
         $transaction: jest.fn(async (callback) => callback(prisma)),
@@ -40,7 +40,7 @@ describe("update", () => {
 
         expect(prisma.storageUnit.findFirst).toHaveBeenCalledWith({
             where: {
-                assosiationId,
+                organisationId,
                 name: mockProps.data.name,
                 id: { not: mockProps.id } // Exclude the current unit being updated
             },
@@ -49,7 +49,7 @@ describe("update", () => {
             where: { id: mockProps.id },
             data: mockProps.data,
         });
-        expect(__unsecuredGetUnitsWithUniformItems).toHaveBeenCalledWith(assosiationId, prisma);
+        expect(__unsecuredGetUnitsWithUniformItems).toHaveBeenCalledWith(organisationId, prisma);
         expect(result).toEqual([]);
     });
 
@@ -61,7 +61,7 @@ describe("update", () => {
 
         expect(prisma.storageUnit.findFirst).toHaveBeenCalledWith({
             where: {
-                assosiationId,
+                organisationId,
                 name: mockProps.data.name,
                 id: { not: mockProps.id } // Exclude the current unit being updated
             },

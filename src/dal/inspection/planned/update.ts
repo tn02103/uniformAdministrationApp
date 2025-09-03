@@ -29,10 +29,10 @@ export const updatePlannedInspection = async (props: propSchema) => genericSAVal
     props,
     propSchema,
     { inspectionId: props.id }
-).then(async ([{ assosiation }, { id, data }]) => prisma.$transaction(async (client) => {
+).then(async ([{ organisationId }, { id, data }]) => prisma.$transaction(async (client) => {
     const inspList = await client.inspection.findMany({
         where: {
-            fk_assosiation: assosiation,
+            organisationId,
             id: { not: id }
         }
     });
@@ -52,5 +52,5 @@ export const updatePlannedInspection = async (props: propSchema) => genericSAVal
         data,
     });
 
-    return dbQuery.plannedInspectionListQuery(assosiation, client);
+    return dbQuery.plannedInspectionListQuery(organisationId, client);
 }));

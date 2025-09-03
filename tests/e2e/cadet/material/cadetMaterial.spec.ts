@@ -128,7 +128,7 @@ test.describe(() => {
         });
     });
 
-    test('validate MarterialItemRows', async ({ page, materialComponent, staticData: { ids, fk_assosiation } }) => {
+    test('validate MarterialItemRows', async ({ page, materialComponent, staticData: { ids, organisationId } }) => {
         await test.step('validate issued Material sortOrder and displayed data', async () => {
             const materialList = await prisma.material.findMany({
                 where: {
@@ -149,7 +149,7 @@ test.describe(() => {
                 },
             });
             const groupList = await prisma.materialGroup.findMany({
-                where: { fk_assosiation, recdelete: null }
+                where: { organisationId, recdelete: null }
             });
 
             for (const group of groupList) {

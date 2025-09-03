@@ -27,16 +27,16 @@ export type ItemLabel = {
     } | null;
 }
 /**
- * Get all uniform items for the assosiation
+ * Get all uniform items for the organisation
  * @requires AuthRole.user
  * @returns List of labels for uniform items
  */
 export const getItemLabels = async (): Promise<ItemLabel[]> => genericSANoDataValidator(
     AuthRole.user,
-).then(([{ assosiation }]) => prisma.uniform.findMany({
+).then(([{ organisationId }]) => prisma.uniform.findMany({
     where: {
         type: {
-            fk_assosiation: assosiation
+            organisationId
         },
         recdelete: null,
     },

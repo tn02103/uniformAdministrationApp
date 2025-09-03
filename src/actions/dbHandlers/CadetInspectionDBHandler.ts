@@ -4,9 +4,9 @@ import { Prisma, PrismaPromise } from "@prisma/client";
 import dayjs from "@/lib/dayjs";
 
 export class CadetInspectionDBHandler {
-    getActiveInspection = (fk_assosiation: string) => prisma.inspection.findFirst({
+    getActiveInspection = (organisationId: string) => prisma.inspection.findFirst({
         where: {
-            fk_assosiation,
+            organisationId,
             date: dayjs().format("YYYY-MM-DD"),
             timeEnd: null,
             timeStart: { not: null },
@@ -46,20 +46,20 @@ export class CadetInspectionDBHandler {
       WHERE vdbc."fk_inspectionCreated" = ${activeInspectionId}
         AND vdbc.fk_cadet = ${cadetId}
 `
-    getUniformLabel = (id: string, fk_assosiation: string) => prisma.uniform.findUniqueOrThrow({
+    getUniformLabel = (id: string, organisationId: string) => prisma.uniform.findUniqueOrThrow({
         where: {
             id,
-            AND: { type: { fk_assosiation } }
+            AND: { type: { organisationId } }
         },
         include: {
             type: true,
         }
     }).then(d => `${d.type.name}-${d.number}`);
 
-    getMaterialLabel = (id: string, fk_assosiation: string) => prisma.material.findUniqueOrThrow({
+    getMaterialLabel = (id: string, organisationId: string) => prisma.material.findUniqueOrThrow({
         where: {
             id,
-            AND: { materialGroup: { fk_assosiation } },
+            AND: { materialGroup: { organisationId } },
         },
         include: { materialGroup: true }
     }).then(d => `${d.materialGroup.description}-${d.typename}`);
@@ -91,10 +91,10 @@ export class CadetInspectionDBHandler {
             }
         });
 
-    resolveDeficiencies = (idsToResolve: string[], inspectionId: string, username: string, fk_assosiation: string, client:  Prisma.TransactionClient) => client.deficiency.updateMany({
+    resolveDeficiencies = (idsToResolve: string[], inspectionId: string, username: string, organisationId: string, client:  Prisma.TransactionClient) => client.deficiency.updateMany({
         where: {
             id: { in: idsToResolve },
-            type: { fk_assosiation }
+            type: { organisationId }
         },
         data: {
             dateResolved: new Date(),
@@ -103,10 +103,10 @@ export class CadetInspectionDBHandler {
         }
     });
 
-    unresolveDeficiencies = (idsToUnsolve: string[], fk_assosiation: string, client:  Prisma.TransactionClient) => client.deficiency.updateMany({
+    unresolveDeficiencies = (idsToUnsolve: string[], organisationId: string, client:  Prisma.TransactionClient) => client.deficiency.updateMany({
         where: {
             id: { in: idsToUnsolve },
-            type: { fk_assosiation }
+            type: { organisationId }
         },
         data: {
             dateResolved: null,
@@ -115,10 +115,10 @@ export class CadetInspectionDBHandler {
         }
     });
 
-    upsertDeficiency = (deficiency: Deficiency, username: string, fk_assosiation: string, client:  Prisma.TransactionClient, inspectionId?: string) => client.deficiency.upsert({
+    upsertDeficiency = (deficiency: Deficiency, username: string, organisationId: string, client:  Prisma.TransactionClient, inspectionId?: string) => client.deficiency.upsert({
         where: {
             id: deficiency.id ?? "",
-            AND: { type: { fk_assosiation } }
+            AND: { type: { organisationId } }
         },
         create: {
             fk_deficiencyType: deficiency.typeId,
@@ -169,12 +169,12 @@ export class CadetInspectionDBHandler {
         }
     });
 
-    deleteNewDeficiencies = (idList: string[], fk_assosiation: string, client: Prisma.TransactionClient) => client.deficiency.deleteMany({
+    deleteNewDeficiencies = (idList: string[], organisationId: string, client: Prisma.TransactionClient) => client.deficiency.deleteMany({
         where: {
             id: {
                 in: idList
             },
-            type: { fk_assosiation }
+            type: { organisationId }
         }
     });
 }

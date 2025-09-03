@@ -15,7 +15,7 @@ describe('saveCadetInspection Integration Tests', () => {
     beforeAll(async () => {
         global.__ROLE__ = AuthRole.inspector;
         global.__USERNAME__ = 'aabb';
-        global.__ASSOSIATION__ = data.assosiation.id;
+        global.__ASSOSIATION__ = data.organisation.id;
     });
 
     beforeEach(async () => {
@@ -114,7 +114,7 @@ describe('saveCadetInspection Integration Tests', () => {
             const deficiencies = await prisma.deficiency.findMany({
                 where: {
                     description: "This should fail",
-                    type: { fk_assosiation: data.assosiation.id }
+                    type: { organisationId: data.organisation.id }
                 }
             });
 
@@ -182,7 +182,7 @@ describe('saveCadetInspection Integration Tests', () => {
                 where: {
                     fk_deficiencyType: ids.deficiencyTypeIds[0],
                     comment: "Integration test uniform deficiency",
-                    type: { fk_assosiation: data.assosiation.id }
+                    type: { organisationId: data.organisation.id }
                 }
             });
 
@@ -239,7 +239,7 @@ describe('saveCadetInspection Integration Tests', () => {
                 where: {
                     fk_deficiencyType: ids.deficiencyTypeIds[3],
                     comment: "Integration test material deficiency 1",
-                    type: { fk_assosiation: data.assosiation.id }
+                    type: { organisationId: data.organisation.id }
                 }
             });
 
@@ -298,7 +298,7 @@ describe('saveCadetInspection Integration Tests', () => {
                 where: {
                     fk_deficiencyType: ids.deficiencyTypeIds[2],
                     comment: "Integration test cadet-uniform deficiency 2",
-                    type: { fk_assosiation: data.assosiation.id }
+                    type: { organisationId: data.organisation.id }
                 }
             });
 
@@ -478,7 +478,7 @@ describe('saveCadetInspection Integration Tests', () => {
             });
 
             expect(createdDeficiencies).toHaveLength(1);
-            expect(createdDeficiencies[0].type.fk_assosiation).toBe(data.assosiation.id);
+            expect(createdDeficiencies[0].type.organisationId).toBe(data.organisation.id);
         });
 
         it('should not resolve deficiencies from other associations', async () => {

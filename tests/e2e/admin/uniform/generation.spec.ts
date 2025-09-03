@@ -158,7 +158,7 @@ test.describe('UniformGeneration Configuration', () => {
         });
     });
 
-    test('create generation with size', async ({ page, types, staticData: { data, fk_assosiation } }) => {
+    test('create generation with size', async ({ page, types, staticData: { data, organisationId } }) => {
         await test.step('open type offcanvas', async () => {
             await expect(page.getByRole('row', { name: types[0].name })).toBeVisible();
             await page.getByRole('row', { name: types[0].name }).getByRole('button', { name: 'open' }).click();
@@ -201,7 +201,7 @@ test.describe('UniformGeneration Configuration', () => {
                     name: 'Test Generation 1',
                     recdelete: null,
                     type: {
-                        fk_assosiation
+                        organisationId
                     },
                 },
             });
@@ -220,7 +220,7 @@ test.describe('UniformGeneration Configuration', () => {
             );
         });
     });
-    test('create generation without size', async ({ page, types, staticData: {fk_assosiation } }) => {
+    test('create generation without size', async ({ page, types, staticData: {organisationId } }) => {
         await test.step('open type offcanvas', async () => {
             await expect(page.getByRole('row', { name: types[1].name })).toBeVisible();
             await page.getByRole('row', { name: types[1].name }).getByRole('button', { name: 'open' }).click();
@@ -260,7 +260,7 @@ test.describe('UniformGeneration Configuration', () => {
                     name: 'Test Generation 1',
                     recdelete: null,
                     type: {
-                        fk_assosiation
+                        organisationId
                     },
                 },
             });

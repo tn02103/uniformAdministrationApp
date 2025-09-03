@@ -9,13 +9,13 @@ import { revalidateTag } from "next/cache";
 
 export const startInspection = async () => genericSANoDataValidator(
     AuthRole.materialManager
-).then(async ([{ assosiation }]) => prisma.$transaction(async (client) => {
+).then(async ([{ organisationId }]) => prisma.$transaction(async (client) => {
     const unfinished = await client.inspection.findFirst({
         where: {
             date: { lt: dayjs().format("YYYY-MM-DD") },
             timeStart: { not: null },
             timeEnd: null,
-            fk_assosiation: assosiation,
+            organisationId,
         }
     });
     if (unfinished) {
@@ -24,7 +24,7 @@ export const startInspection = async () => genericSANoDataValidator(
     const i = await client.inspection.findFirst({
         where: {
             date: dayjs().format("YYYY-MM-DD"),
-            fk_assosiation: assosiation,
+            organisationId,
         },
     });
     if (!i) {
@@ -49,5 +49,5 @@ export const startInspection = async () => genericSANoDataValidator(
         });
     }
 
-    revalidateTag(`serverA.inspectionState.${assosiation}`);
+    revalidateTag(`serverA.inspectionState.${organisationId}`);
 }));

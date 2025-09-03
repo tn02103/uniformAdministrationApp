@@ -60,13 +60,13 @@ export const createCadet = async (cadet: Cadet) => genericSAValidatorV2(
     AuthRole.inspector,
     cadetValidation.testWithoutId(cadet),
     {}
-).then(({ assosiation }) => prisma.cadet.create({
+).then(({ organisationId }) => prisma.cadet.create({
     ...cadetArgs,
     data: {
+        organisationId,
         firstname: cadet.firstname,
         lastname: cadet.lastname,
         active: cadet.active,
         comment: cadet.comment,
-        fk_assosiation: assosiation,
     }
 }));

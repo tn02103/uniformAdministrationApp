@@ -21,7 +21,7 @@ export const deleteInspection = async (props: string): Promise<PlannedInspection
     props,
     z.string().uuid(),
     { inspectionId: props }
-).then(async ([{ assosiation }, id]) => prisma.$transaction(async (client) => {
+).then(async ([{ organisationId }, id]) => prisma.$transaction(async (client) => {
     const inspection = await client.inspection.findUnique({
         where: { id }
     });
@@ -33,5 +33,5 @@ export const deleteInspection = async (props: string): Promise<PlannedInspection
         where: { id }
     });
 
-    return dbQuery.plannedInspectionListQuery(assosiation, client);
+    return dbQuery.plannedInspectionListQuery(organisationId, client);
 }));

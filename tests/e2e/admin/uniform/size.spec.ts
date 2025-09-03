@@ -93,7 +93,7 @@ test.describe('Uniform size configuration', () => {
         });
         await test.step('validate db', async () => {
             const dbSizes = await prisma.uniformSize.findMany({
-                where: { fk_assosiation: staticData.fk_assosiation },
+                where: { organisationId: staticData.organisationId },
                 orderBy: { sortOrder: "asc" }
             });
 
@@ -126,7 +126,7 @@ test.describe('Uniform size configuration', () => {
         });
         await test.step('validate db', async () => {
             const dbSizes = await prisma.uniformSize.findMany({
-                where: { fk_assosiation: staticData.fk_assosiation },
+                where: { organisationId: staticData.organisationId },
                 orderBy: { sortOrder: "asc" }
             });
 
@@ -151,7 +151,7 @@ test.describe('Uniform size configuration', () => {
         await test.step('validate db', async () => {
             const size = await prisma.uniformSize.findFirst({
                 where: {
-                    fk_assosiation: staticData.fk_assosiation,
+                    organisationId: staticData.organisationId,
                     name: "newSize"
                 }
             });
@@ -203,7 +203,7 @@ test.describe('Uniform size configuration', () => {
         });
         await test.step('validate db', async () => {
             const dbSizes = await prisma.uniformSize.findMany({
-                where: { fk_assosiation: staticData.fk_assosiation },
+                where: { organisationId: staticData.organisationId },
                 orderBy: { sortOrder: "asc" }
             });
 
@@ -266,7 +266,7 @@ test.describe('Uniform size configuration', () => {
         });
         await test.step('validate db', async () => {
             const dbSizes = await prisma.uniformSize.findMany({
-                where: { fk_assosiation: staticData.fk_assosiation },
+                where: { organisationId: staticData.organisationId },
                 orderBy: { sortOrder: "asc" }
             });
 

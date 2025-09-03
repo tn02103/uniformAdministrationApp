@@ -23,7 +23,7 @@ test.describe('Planned Inspection Overview', () => {
         await expect(plannedComponent.div_row_list.nth(2)).toHaveAttribute('data-testid', `div_inspection_${ids.inspectionIds[3]}`);
     });
 
-    test('create Inspection', async ({ page, staticData: { fk_assosiation } }) => {
+    test('create Inspection', async ({ page, staticData: { organisationId } }) => {
         const testDate = dayjs().add(30, "day").locale('de');
         await test.step('create Inspection', async () => {
             const row = page.getByRole('row', { name: /newInspection/i });
@@ -60,7 +60,7 @@ test.describe('Planned Inspection Overview', () => {
             });
             expect(inspection).toBeDefined();
             expect(inspection).toStrictEqual({
-                fk_assosiation,
+                organisationId,
                 id: expect.any(String),
                 name: "Test Inspection",
                 date: testDate.format('YYYY-MM-DD'),
@@ -70,7 +70,7 @@ test.describe('Planned Inspection Overview', () => {
         });
     });
 
-    test('edit Inspection', async ({ page, staticData: { ids, fk_assosiation } }) => {
+    test('edit Inspection', async ({ page, staticData: { ids, organisationId } }) => {
         const testDate = dayjs().add(30, "day").locale('de');
         await test.step('edit Inspection', async () => {
             const row = page.getByRole('row').nth(1);
@@ -109,7 +109,7 @@ test.describe('Planned Inspection Overview', () => {
             });
             expect(inspection).toBeDefined();
             expect(inspection).toStrictEqual({
-                fk_assosiation,
+                organisationId,
                 id: ids.inspectionIds[2],
                 name: "Test Inspection 2",
                 date: testDate.format('YYYY-MM-DD'),
@@ -156,7 +156,7 @@ test.describe('Planned Inspection Overview', () => {
             });
             expect(inspection).toBeDefined();
             expect(inspection).toStrictEqual({
-                fk_assosiation: expect.any(String),
+                organisationId: expect.any(String),
                 id: ids.inspectionIds[4],
                 name: "today",
                 date: data.inspections[4].date,
@@ -213,7 +213,7 @@ test.describe('Planned Inspection Overview', () => {
             });
             expect(inspection).toBeDefined();
             expect(inspection).toStrictEqual({
-                fk_assosiation: expect.any(String),
+                organisationId: expect.any(String),
                 id: ids.inspectionIds[4],
                 name: "today",
                 date: data.inspections[4].date,
@@ -267,7 +267,7 @@ test.describe('Planned Inspection Overview', () => {
             });
             expect(inspection).toBeDefined();
             expect(inspection).toStrictEqual({
-                fk_assosiation: expect.any(String),
+                organisationId: expect.any(String),
                 id: ids.inspectionIds[2],
                 name: "expired",
                 date: data.inspections[2].date,
@@ -307,7 +307,7 @@ test.describe('Planned Inspection Overview', () => {
             });
             expect(inspection).toBeDefined();
             expect(inspection).toStrictEqual({
-                fk_assosiation: expect.any(String),
+                organisationId: expect.any(String),
                 id: ids.inspectionIds[4],
                 name: "today",
                 date: data.inspections[4].date,

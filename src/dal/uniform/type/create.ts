@@ -9,10 +9,10 @@ export const create = (props: UniformTypeFormType) => genericSAValidator(
     props,
     uniformTypeFormSchema,
     { uniformSizelistId: props.fk_defaultSizelist }
-).then(async ([{ assosiation }, data]) => prisma.$transaction(async (client) => {
+).then(async ([{ organisationId }, data]) => prisma.$transaction(async (client) => {
     const nameDuplication = await client.uniformType.findFirst({
         where: {
-            fk_assosiation: assosiation,
+            organisationId,
             recdelete: null,
             name: props.name,
         }
@@ -28,7 +28,7 @@ export const create = (props: UniformTypeFormType) => genericSAValidator(
 
     const acronymDuplication = await client.uniformType.findFirst({
         where: {
-            fk_assosiation: assosiation,
+            organisationId,
             recdelete: null,
             acronym: props.acronym,
         }
@@ -53,7 +53,7 @@ export const create = (props: UniformTypeFormType) => genericSAValidator(
 
     const amount = await client.uniformType.count({
         where: {
-            fk_assosiation: assosiation,
+            organisationId,
             recdelete: null,
         }
     });
@@ -62,7 +62,7 @@ export const create = (props: UniformTypeFormType) => genericSAValidator(
         ...uniformTypeArgs,
         data: {
             ...data,
-            fk_assosiation: assosiation,
+            organisationId,
             sortOrder: amount,
         }
     });

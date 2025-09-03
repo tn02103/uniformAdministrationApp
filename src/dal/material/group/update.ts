@@ -24,10 +24,10 @@ export const update = async (props: PropType): Promise<void | SAErrorType> => ge
     props,
     propSchema,
     { materialGroupId: props.id }
-).then(async ([{ assosiation }, { id, data }]) => prisma.$transaction(async (client) => {
+).then(async ([{ organisationId }, { id, data }]) => prisma.$transaction(async (client) => {
     const list = await client.materialGroup.findMany({
         where: {
-            fk_assosiation: assosiation,
+            organisationId,
             recdelete: null,
         },
     });
@@ -45,5 +45,5 @@ export const update = async (props: PropType): Promise<void | SAErrorType> => ge
         where: { id },
         data,
     });
-    revalidatePath(`/[locale]/${assosiation}/admin/material`, 'page');
+    revalidatePath(`/[locale]/${organisationId}/admin/material`, 'page');
 }));

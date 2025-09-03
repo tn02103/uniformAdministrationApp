@@ -49,13 +49,13 @@ export const stopInspection = async (props: stopInspectionPropShema) => genericS
         data: { timeEnd: data.time }
     });
     // send Mails
-    const config = await prisma.assosiationConfiguration.findUnique({
-        where: { assosiationId: user.assosiation }
+    const config = await prisma.organisationConfiguration.findUnique({
+        where: { organisationId: user.organisationId }
     });
     if (!config || !config.inspectionReportEmails) {
         return;
     }
-    const inspreview = await dbHandler.getInspectionReviewData(user.assosiation, data.id, client);
+    const inspreview = await dbHandler.getInspectionReviewData(user.organisationId, data.id, client);
 
     await sendInspectionReviewMail(config.inspectionReportEmails, inspreview);
 }));

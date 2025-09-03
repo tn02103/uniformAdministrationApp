@@ -7,7 +7,7 @@ export function getStaticDataIds(index: number) {
 
     const prefix = index.toString().padStart(2, '0');
     return {
-        fk_assosiation: `${prefix}bf2ef8-3894-47d4-ada4-e8b5cda5095c`,
+        organisationId: `${prefix}bf2ef8-3894-47d4-ada4-e8b5cda5095c`,
         userIds: [
             `${prefix}49a1c7-e028-4286-b31d-6510324b8ad4`,
             `${prefix}01b581-2a47-411c-8990-41625eca8e34`,

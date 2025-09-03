@@ -22,16 +22,16 @@ type AssosiationValidationDataType = {
     storageUnitId?: string | string[],
 }
 
-function assosiationValidator(assosiationValidations: AssosiationValidationDataType, fk_assosiation: string) {
+function assosiationValidator(assosiationValidations: AssosiationValidationDataType, organisationId: string) {
     const validationPromises: Promise<object>[] = [];
-    const validate = (ids: string | (string | undefined)[], validator: (id: string, assosiationId: string) => Promise<object>) => {
+    const validate = (ids: string | (string | undefined)[], validator: (id: string, organisationId: string) => Promise<object>) => {
         if (Array.isArray(ids)) {
             validationPromises.push(
-                ...ids.filter(id => id != undefined).map((id) => validator(id as string, fk_assosiation))
+                ...ids.filter(id => id != undefined).map((id) => validator(id as string, organisationId))
             );
         } else {
             validationPromises.push(
-                validator(ids, fk_assosiation)
+                validator(ids, organisationId)
             );
         }
     }
@@ -104,7 +104,7 @@ export const genericSAValidator = async <T>(
     }
 
     if (assosiationValidations) {
-        await assosiationValidator(assosiationValidations, user.assosiation);
+        await assosiationValidator(assosiationValidations, user.organisationId);
     }
 
     return [user, zodResult.data];
@@ -138,89 +138,89 @@ export const genericSAValidatorV2 = async (
         throw new Error("Typevalidation failed");
     }
 
-    await assosiationValidator(assosiationValidations, user.assosiation);
+    await assosiationValidator(assosiationValidations, user.organisationId);
 
     return user;
 }
 
 
-export const validateUserAssosiation = async (id: string, fk_assosiation: string) => prisma.user.findUniqueOrThrow({
-    where: { id, fk_assosiation }
+export const validateUserAssosiation = async (id: string, organisationId: string) => prisma.user.findUniqueOrThrow({
+    where: { id, organisationId }
 });
-export const validateCadetAssosiation = async (cadetId: string, assosiationId: string) => prisma.cadet.findUniqueOrThrow({
+export const validateCadetAssosiation = async (cadetId: string, organisationId: string) => prisma.cadet.findUniqueOrThrow({
     where: {
         id: cadetId,
-        fk_assosiation: assosiationId,
+        organisationId,
         recdelete: null,
     }
 });
 
-const validateUniformTypeAssosiation = async (typeId: string, assosiationId: string) => prisma.uniformType.findUniqueOrThrow({
+const validateUniformTypeAssosiation = async (typeId: string, organisationId: string) => prisma.uniformType.findUniqueOrThrow({
     where: {
         id: typeId,
-        fk_assosiation: assosiationId,
+        organisationId,
         recdelete: null,
     }
 });
-export const validateUniformAssosiation = async (uniformId: string, assosiationId: string) => prisma.uniform.findUniqueOrThrow({
+export const validateUniformAssosiation = async (uniformId: string, organisationId: string) => prisma.uniform.findUniqueOrThrow({
     where: {
         id: uniformId,
         recdelete: null,
         type: {
-            fk_assosiation: assosiationId
+            organisationId
         }
     }
 });
-const validateMaterialGroupAssosiation = async (materialGroupId: string, assosiationId: string) =>
+const validateMaterialGroupAssosiation = async (materialGroupId: string, organisationId: string) =>
     prisma.materialGroup.findUniqueOrThrow({
         where: {
             id: materialGroupId,
             recdelete: null,
-            fk_assosiation: assosiationId,
+            organisationId,
         }
     });
 
-const validateMaterailAssosiation = async (materialId: string, assosiationId: string) => prisma.material.findUniqueOrThrow({
+const validateMaterailAssosiation = async (materialId: string, organisationId: string) => prisma.material.findUniqueOrThrow({
     where: {
         id: materialId,
         recdelete: null,
         materialGroup: {
-            fk_assosiation: assosiationId,
+            organisationId,
         }
     }
 });
 
-const validateUniformSizelistAssosiation = async (id: string, fk_assosiation: string) =>
+const validateUniformSizelistAssosiation = async (id: string, organisationId: string) =>
     prisma.uniformSizelist.findUniqueOrThrow({
-        where: { id, fk_assosiation }
+        where: { id, organisationId }
     })
 
-const validateUniformSizeAssosiation = async (id: string, fk_assosiation: string) =>
+const validateUniformSizeAssosiation = async (id: string, organisationId: string) =>
     prisma.uniformSize.findUniqueOrThrow({
-        where: { id, fk_assosiation }
+        where: { id, organisationId }
     });
 
-const validateDeficiencytypeAssosiation = async (id: string, fk_assosiation: string) =>
+const validateDeficiencytypeAssosiation = async (id: string, organisationId: string) =>
     prisma.deficiencyType.findUniqueOrThrow({
         where: {
-            id, fk_assosiation
+            id, organisationId
         }
     });
-const validateDeficiencyAssosiation = async (id: string, fk_assosiation: string) =>
+const validateDeficiencyAssosiation = async (id: string, organisationId: string) =>
     prisma.deficiency.findUniqueOrThrow({
         where: {
             id,
             type: {
-                fk_assosiation
+                organisationId
             }
         }
     });
-const validateInspectionAssosiation = async (id: string, fk_assosiation: string) =>
+const validateInspectionAssosiation = async (id: string, organisationId: string) =>
     prisma.inspection.findUniqueOrThrow({
-        where: { id, fk_assosiation }
+        where: { id, organisationId }
     });
 
-const validateStorageUnitAssosiation = async (id: string, assosiationId: string) =>
+const validateStorageUnitAssosiation = async (id: string, organisationId: string) =>
     prisma.storageUnit.findUniqueOrThrow({
-        where: { id, assosiationId }
+        where: { id, organisationId }
     });

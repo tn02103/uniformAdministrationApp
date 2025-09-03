@@ -20,17 +20,17 @@ export const getPersonnelListOverviewData = async (props: getPersonnelListPropSc
     AuthRole.user,
     props,
     getPersonnelListPropSchema,
-).then(async ([{ assosiation, role }, { orderBy, asc, include }]) => {
+).then(async ([{ organisationId, role }, { orderBy, asc, include }]) => {
     const inspectionState = await getInspectionState();
     if (role < AuthRole.inspector) {
         return getRestrictedPersonnelList(
-            assosiation,
+            organisationId,
             orderBy,
             asc ? "asc" : "desc",
         );
     } else {
         return getPersonnelList(
-            assosiation,
+            organisationId,
             orderBy,
             asc,
             inspectionState?.active ? {
@@ -42,7 +42,7 @@ export const getPersonnelListOverviewData = async (props: getPersonnelListPropSc
     }
 });
 
-const getRestrictedPersonnelList = (fk_assosiation: string, orderBy: "lastname" | "firstname", asc: "asc" | "desc"): Promise<PersonnelListCadet[]> => {
+const getRestrictedPersonnelList = (organisationId: string, orderBy: "lastname" | "firstname", asc: "asc" | "desc"): Promise<PersonnelListCadet[]> => {
     return prisma.cadet.findMany({
         select: {
             id: true,
@@ -50,7 +50,7 @@ const getRestrictedPersonnelList = (fk_assosiation: string, orderBy: "lastname" 
             lastname: true,
         },
         where: {
-            fk_assosiation,
+            organisationId,
             recdelete: null,
         },
         orderBy: (orderBy === "lastname")
@@ -59,7 +59,7 @@ const getRestrictedPersonnelList = (fk_assosiation: string, orderBy: "lastname" 
     });
 };
 // Export to view
-const getPersonnelList = async (fk_assosiation: string, orderBy: "lastname" | "firstname", asc: boolean, exclude?: { inspectionId: string, exclDeregistrations?: boolean, exclInspected?: boolean }): Promise<PersonnelListCadet[]> => {
+const getPersonnelList = async (organisationId: string, orderBy: "lastname" | "firstname", asc: boolean, exclude?: { inspectionId: string, exclDeregistrations?: boolean, exclInspected?: boolean }): Promise<PersonnelListCadet[]> => {
     const getAsc = (asc: boolean): "asc" | "desc" => asc ? "asc" : "desc";
     
     let joins = "";
@@ -96,7 +96,7 @@ const getPersonnelList = async (fk_assosiation: string, orderBy: "lastname" | "f
         SELECT v.*
           FROM base.v_cadet_generaloverview v
                ${joins}
-         WHERE fk_assosiation = '${fk_assosiation}'
+         WHERE organisationId = '${organisationId}'
                ${where}
       ORDER BY ${order}
     `;

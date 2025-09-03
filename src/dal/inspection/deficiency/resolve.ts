@@ -9,10 +9,10 @@ export const resolve = async (props: string) => genericSAValidator(
     props,
     z.string().uuid(),
     { deficiencyId: props }
-).then(async ([{ username, assosiation }, id]) => {
+).then(async ([{ username, organisationId }, id]) => {
     const activeInspection = await prisma.inspection.findFirst({
         where: {
-            fk_assosiation: assosiation,
+            organisationId,
             date: dayjs().format("YYYY-MM-DD"),
             timeStart: { not: null },
             timeEnd: null,

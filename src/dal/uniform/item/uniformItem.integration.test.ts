@@ -42,7 +42,7 @@ describe('<UniformItem> Integration Tests', () => {
 
         const dbList = await prisma.uniform.findMany({
             where: {
-                type: { fk_assosiation: ids.fk_assosiation },
+                type: { organisationId: ids.organisationId },
                 number: { gt: 9000 }
             }
         });

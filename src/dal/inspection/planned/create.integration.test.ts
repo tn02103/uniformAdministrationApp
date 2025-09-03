@@ -22,10 +22,10 @@ describe('createInspection', () => {
         expect(result).toHaveLength(4);
 
         const dbData = await prisma.inspection.findFirst({
-            where: { name: data.name, fk_assosiation: staticData.fk_assosiation }
+            where: { name: data.name, organisationId: staticData.organisationId }
         });
         expect(dbData).not.toBeNull();
-        expect(dbData!.fk_assosiation).toBe(staticData.fk_assosiation);
+        expect(dbData!.organisationId).toBe(staticData.organisationId);
         expect(dbData!.name).toEqual(data.name);
         expect(dbData!.date).toEqual(data.date);
         expect(dbData!.timeEnd).toBeNull();
@@ -66,7 +66,7 @@ describe('createInspection', () => {
                 name: "Test Inspection",
                 date: dayjs().format("YYYY-MM-DD"),
             }
-            await prisma.inspection.deleteMany({ where: { date: data.date, fk_assosiation: staticData.fk_assosiation } });
+            await prisma.inspection.deleteMany({ where: { date: data.date, organisationId: staticData.organisationId } });
 
             const result = await createInspection(data).catch(e => e);
             expect(result.exceptionType).toBe(undefined);

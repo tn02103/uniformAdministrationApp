@@ -26,7 +26,7 @@ export const createInspection = async (props: PlannedInspectionFormShema) => gen
 ).then(async ([user,data]) => prisma.$transaction(async (client) => {
     const inspList = await client.inspection.findMany({
         where: {
-            fk_assosiation: user.assosiation,
+            organisationId: user.organisationId,
         }
     });
     if (inspList.find(i => i.name === data.name)) {
@@ -39,8 +39,8 @@ export const createInspection = async (props: PlannedInspectionFormShema) => gen
     await client.inspection.create({
         data: {
             ...data,
-            fk_assosiation: user.assosiation,
+            organisationId: user.organisationId,
         }
     });
-    return dbQuery.plannedInspectionListQuery(user.assosiation, client);
+    return dbQuery.plannedInspectionListQuery(user.organisationId, client);
 }));

@@ -16,42 +16,42 @@ import { genericSAValidatorV2 } from "../validations";
 const dbHandler = new UniformSizeDBHandler();
 export const getUniformSizelists = async () => genericSAValidatorV2(
     AuthRole.user, true, {}
-).then(({ assosiation }) => dbHandler.getSizelistList(assosiation));
+).then(({ organisationId }) => dbHandler.getSizelistList(organisationId));
 
 
 export const createUniformSizelist = async (name: string): Promise<UniformSizelist> => genericSAValidatorV2(
     AuthRole.materialManager,
     descriptionValidationPattern.test(name),
     {}
-).then(({ assosiation }) => prisma.$transaction(async (client) => {
-    const list = await dbHandler.getSizelistList(assosiation, client as PrismaClient);
+).then(({ organisationId }) => prisma.$transaction(async (client) => {
+    const list = await dbHandler.getSizelistList(organisationId, client as PrismaClient);
 
     if (list.find(l => l.name === name)) {
         throw new SaveDataException('Could not create Sizelist because name allready in use');
     }
 
-    return dbHandler.createSizelist(name, assosiation, client as PrismaClient);
+    return dbHandler.createSizelist(name, organisationId, client as PrismaClient);
 }));
 
 export const getAllUniformSizesList = async () => genericSAValidatorV2(
     AuthRole.materialManager,
     true,
     {}
-).then(({ assosiation }) => dbHandler.getAllUniformSizesByAssosiation(assosiation));
+).then(({ organisationId }) => dbHandler.getAllUniformSizesByOrganisation(organisationId));
 
 export const renameSizelist = async (sizelistId: string, name: string) => genericSAValidatorV2(
     AuthRole.materialManager,
     descriptionValidationPattern.test(name) && uuidValidationPattern.test(sizelistId),
     { uniformSizelistId: sizelistId }
-).then(({ assosiation }) => prisma.$transaction(async (client) => {
-    const lists = await dbHandler.getSizelistList(assosiation, client as PrismaClient);
+).then(({ organisationId }) => prisma.$transaction(async (client) => {
+    const lists = await dbHandler.getSizelistList(organisationId, client as PrismaClient);
     if (lists.find(sl => sl.id !== sizelistId && sl.name === name)) {
         throw new SaveDataException('Could not rename Sizelist because name is allready in use');
     }
 
     await dbHandler.renameSizelist(sizelistId, name, client as PrismaClient);
 
-    return dbHandler.getSizelistList(assosiation, client as PrismaClient);
+    return dbHandler.getSizelistList(organisationId, client as PrismaClient);
 }));
 
 export const saveSizelistSizes = async (sizelistId: string, sizeIds: string[]) => genericSAValidatorV2(
@@ -61,7 +61,7 @@ export const saveSizelistSizes = async (sizelistId: string, sizeIds: string[]) =
         uniformSizelistId: sizelistId,
         uniformSizeId: sizeIds,
     }
-).then(({ assosiation }) => prisma.$transaction(async (client) => {
+).then(({ organisationId }) => prisma.$transaction(async (client) => {
     await client.uniformSizelist.update({
         where: { id: sizelistId },
         data: {
@@ -74,15 +74,15 @@ export const saveSizelistSizes = async (sizelistId: string, sizeIds: string[]) =
             uniformSizes: { connect: sizeIds.map(id => ({ id })) }
         }
     });
-    return dbHandler.getSizelistList(assosiation, client as PrismaClient);
+    return dbHandler.getSizelistList(organisationId, client as PrismaClient);
 }));
 
 export const deleteSizelist = async (sizelistId: string): Promise<UniformSizelist[] | SAErrorResponse> => genericSAValidatorV2(
     AuthRole.materialManager,
     uuidValidationPattern.test(sizelistId),
     { uniformSizelistId: sizelistId }
-).then(({ assosiation }) => prisma.$transaction(async (client) => {
-    const type = await dbHandler.getTypeUsingSizelist(sizelistId, assosiation, client as PrismaClient);
+).then(({ organisationId }) => prisma.$transaction(async (client) => {
+    const type = await dbHandler.getTypeUsingSizelist(sizelistId, organisationId, client as PrismaClient);
     if (type) return {
         error: {
             exceptionType: ExceptionType.InUseException,
@@ -94,7 +94,7 @@ export const deleteSizelist = async (sizelistId: string): Promise<UniformSizelis
         }
     };
 
-    const generation = await dbHandler.getGenerationUsingSizelist(sizelistId, assosiation, client as PrismaClient);
+    const generation = await dbHandler.getGenerationUsingSizelist(sizelistId, organisationId, client as PrismaClient);
     if (generation)
         return {
             error: {
@@ -108,21 +108,21 @@ export const deleteSizelist = async (sizelistId: string): Promise<UniformSizelis
         };
 
     await dbHandler.deleteSizelist(sizelistId, client as PrismaClient);
-    return dbHandler.getSizelistList(assosiation);
+    return dbHandler.getSizelistList(organisationId);
 }));
 
 export const createSize = async (name: string) => genericSAValidatorV2(
     AuthRole.materialManager,
     (nameValidationPattern.test(name)),
     {}
-).then(({ assosiation }) => prisma.$transaction(async (client) => {
-    const sizes = await dbHandler.getAllUniformSizesByAssosiation(assosiation, client as PrismaClient);
+).then(({ organisationId }) => prisma.$transaction(async (client) => {
+    const sizes = await dbHandler.getAllUniformSizesByOrganisation(organisationId, client as PrismaClient);
     if (sizes.find(s => s.name === name)) {
         throw new SaveDataException('Could not create Size. Size allready exists');
     }
 
-    await dbHandler.createSize(name, sizes.length + 1, assosiation, client as PrismaClient);
-    revalidatePath(`/[locale]/${assosiation}/admin/uniform/sizes`, 'page');
+    await dbHandler.createSize(name, sizes.length + 1, organisationId, client as PrismaClient);
+    revalidatePath(`/[locale]/${organisationId}/admin/uniform/sizes`, 'page');
     return true;
 }));
 
@@ -130,17 +130,17 @@ export const moveSize = async (sizeId: string, up: boolean) => genericSAValidato
     AuthRole.materialManager,
     (uuidValidationPattern.test(sizeId) && (typeof up === "boolean")),
     { uniformSizeId: sizeId }
-).then(({ assosiation }) => prisma.$transaction(async (client) => {
+).then(({ organisationId }) => prisma.$transaction(async (client) => {
     const size = await dbHandler.getUniformsize(sizeId, client as PrismaClient);
 
     const newSortOrder = up ? (size.sortOrder - 1) : (size.sortOrder + 1);
 
-    if ((await dbHandler.moveMultipleSizes(assosiation, newSortOrder, newSortOrder, !up, client as PrismaClient)) !== 1) {
+    if ((await dbHandler.moveMultipleSizes(organisationId, newSortOrder, newSortOrder, !up, client as PrismaClient)) !== 1) {
         throw new SaveDataException('Could not move second size');
     }
 
     await dbHandler.setSortorder(sizeId, newSortOrder, client as PrismaClient);
-    revalidatePath(`/[locale]/${assosiation}/admin/uniform/sizes`, 'page');
+    revalidatePath(`/[locale]/${organisationId}/admin/uniform/sizes`, 'page');
     return true;
 }));
 
@@ -148,10 +148,10 @@ export const setSizeSortorder = async (sizeId: string, sortOrder: number) => gen
     AuthRole.materialManager,
     (uuidValidationPattern.test(sizeId) && Number.isInteger(sortOrder)),
     { uniformSizeId: sizeId }
-).then(({ assosiation }) => prisma.$transaction(async (client) => {
+).then(({ organisationId }) => prisma.$transaction(async (client) => {
     const [size, sizeList] = await Promise.all([
         dbHandler.getUniformsize(sizeId, client as PrismaClient),
-        dbHandler.getAllUniformSizesByAssosiation(assosiation, client as PrismaClient),
+        dbHandler.getAllUniformSizesByOrganisation(organisationId, client as PrismaClient),
     ]);
 
     if (sortOrder > sizeList.length) {
@@ -166,13 +166,13 @@ export const setSizeSortorder = async (sizeId: string, sortOrder: number) => gen
     const min = up ? sortOrder : (size.sortOrder + 1);
     const max = up ? (size.sortOrder - 1) : sortOrder;
 
-    const movedSizes = await dbHandler.moveMultipleSizes(assosiation, min, max, !up, client as PrismaClient);
+    const movedSizes = await dbHandler.moveMultipleSizes(organisationId, min, max, !up, client as PrismaClient);
     if (movedSizes !== (max - min + 1)) {
         throw new SaveDataException('Could move all sizes');
     }
 
     await dbHandler.setSortorder(sizeId, sortOrder, client as PrismaClient);
-    revalidatePath(`/[locale]/${assosiation}/admin/uniform/sizes`, 'page');
+    revalidatePath(`/[locale]/${organisationId}/admin/uniform/sizes`, 'page');
     return true;
 }));
 
@@ -180,11 +180,11 @@ export const deleteSize = async (sizeId: string) => genericSAValidatorV2(
     AuthRole.materialManager,
     uuidValidationPattern.test(sizeId),
     { uniformSizeId: sizeId }
-).then(({ assosiation }) => prisma.$transaction(async (client) => {
+).then(({ organisationId }) => prisma.$transaction(async (client) => {
     const size = await dbHandler.getUniformsize(sizeId, client as PrismaClient);
 
     await dbHandler.deleteSize(sizeId, client as PrismaClient);
-    await dbHandler.moveMultipleSizes(assosiation, size.sortOrder, -1, true, client as PrismaClient);
-    revalidatePath(`/[locale]/${assosiation}/admin/uniform/sizes`, 'page');
+    await dbHandler.moveMultipleSizes(organisationId, size.sortOrder, -1, true, client as PrismaClient);
+    revalidatePath(`/[locale]/${organisationId}/admin/uniform/sizes`, 'page');
     return true;
 }));

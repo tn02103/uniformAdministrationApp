@@ -16,7 +16,7 @@ export const createUniformDef = async (props: CreateUniformDeficiencyProps) => g
     props,
     createUniformDeficiencySchema,
     { uniformId: props.uniformId, deficiencytypeId: props.data.typeId }
-).then(async ([{ username, assosiation }, { uniformId, data }]) => {
+).then(async ([{ username, organisationId }, { uniformId, data }]) => {
     const type = await prisma.deficiencyType.findUnique({
         where: { id: data.typeId },
     });
@@ -29,7 +29,7 @@ export const createUniformDef = async (props: CreateUniformDeficiencyProps) => g
 
     const activeInspection = await prisma.inspection.findFirst({
         where: {
-            fk_assosiation: assosiation,
+            organisationId,
             date: dayjs().format("YYYY-MM-DD"),
             timeStart: { not: null },
             timeEnd: null,

@@ -43,7 +43,7 @@ describe('<UniformType> sortOrder', () => {
         expect( mockPrisma.uniformType.updateMany).toHaveBeenCalledWith({
             where: {
                 sortOrder: { gte: 1, lte: 1 },
-                fk_assosiation: 'test-assosiation-id',
+                organisationId: 'test-organisation-id',
                 recdelete: null
             },
             data: {
@@ -64,7 +64,7 @@ describe('<UniformType> sortOrder', () => {
         expect( mockPrisma.uniformType.updateMany).toHaveBeenCalledWith({
             where: {
                 sortOrder: { gte: 3, lte: 4 },
-                fk_assosiation: "test-assosiation-id",
+                organisationId: "test-organisation-id",
                 recdelete: null
             },
             data: {
@@ -105,7 +105,7 @@ describe('<UniformType> sortOrder', () => {
         const { __unsecuredGetUniformTypeList } = jest.requireMock("./get");
         const result = await changeSortOrder({ typeId: 'SomeTypeId', newPosition: 4 });
         
-        expect(__unsecuredGetUniformTypeList).toHaveBeenCalledWith('test-assosiation-id', expect.anything());
+        expect(__unsecuredGetUniformTypeList).toHaveBeenCalledWith('test-organisation-id', expect.anything());
         expect(result).toEqual('ReturnedList');
     });
 });

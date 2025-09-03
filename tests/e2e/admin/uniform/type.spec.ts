@@ -26,7 +26,7 @@ test.afterEach(async ({ staticData: { cleanup } }) => {
 });
 
 test.describe('UniformType Configuration', () => {
-    test('create type wihtout sizes', async ({ page, staticData: { fk_assosiation } }) => {
+    test('create type wihtout sizes', async ({ page, staticData: { organisationId } }) => {
         await test.step('open create type offcanvas', async () => {
             await expect(page.getByRole('button', { name: 'create' })).toBeVisible();
             await page.getByRole('button', { name: 'create' }).click();
@@ -60,7 +60,7 @@ test.describe('UniformType Configuration', () => {
         await test.step('validate db data', async () => {
             const dbType = await prisma.uniformType.findFirst({
                 where: {
-                    fk_assosiation,
+                    organisationId,
                     name: 'New Type',
                 }
             });
@@ -77,7 +77,7 @@ test.describe('UniformType Configuration', () => {
         });
     });
 
-    test('create type with sizes', async ({ page, staticData: { fk_assosiation, ids, data } }) => {
+    test('create type with sizes', async ({ page, staticData: { organisationId, ids, data } }) => {
         const sizeList = data.uniformSizelists[0]
         await test.step('open dialog', async () => {
             await expect(page.getByRole('button', { name: 'create' })).toBeVisible();
@@ -113,7 +113,7 @@ test.describe('UniformType Configuration', () => {
         await test.step('validate db data', async () => {
             const dbType = await prisma.uniformType.findFirst({
                 where: {
-                    fk_assosiation,
+                    organisationId,
                     name: 'New Type 2',
                 }
             });
@@ -250,7 +250,7 @@ test.describe('UniformType Configuration', () => {
         await test.step('validate db data', async () => {
             const dbList = await prisma.uniformType.findMany({
                 where: {
-                    fk_assosiation: types[0].fk_assosiation,
+                    organisationId: types[0].organisationId,
                     recdelete: null,
                 },
                 orderBy: {
@@ -300,7 +300,7 @@ test.describe('UniformType Configuration', () => {
         await test.step('validate db data', async () => {
             const dbList = await prisma.uniformType.findMany({
                 where: {
-                    fk_assosiation: types[0].fk_assosiation,
+                    organisationId: types[0].organisationId,
                     recdelete: null,
                 },
                 orderBy: {

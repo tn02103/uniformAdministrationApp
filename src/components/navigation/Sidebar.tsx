@@ -2,7 +2,7 @@
 
 import { useBreakpoint } from "@/lib/useBreakpoint";
 import { initViewportHeight } from "@/lib/viewportUtils";
-import { Assosiation } from "@prisma/client";
+import { Organisation } from "@prisma/client";
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useSessionStorage } from "usehooks-ts";
@@ -33,12 +33,12 @@ export const useSidebarContext = () => {
 };
 
 type SidebarPropType = {
-    assosiation: Assosiation;
+    organisation: Organisation;
     username: string;
     children: React.ReactNode;
 }
 
-const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
+const Sidebar = ({ organisation, username, children }: SidebarPropType) => {
 
     const collapseButtonRef = useRef<HTMLButtonElement>(null);
     const sidebarRef = useRef<HTMLDivElement>(null);
@@ -195,7 +195,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                 >
                     <div data-testid="div_sidebar" className="d-flex flex-column text-white h-100 bg-navy text-decoration-none">
                         {/* Header section - always visible */}
-                        <SidebarHeader assosiation={assosiation} />
+                        <SidebarHeader organisation={organisation} />
                         {/* Scrollable navigation section */}
                         <SidebarLinks />
                         {/* Footer section - always visible */}

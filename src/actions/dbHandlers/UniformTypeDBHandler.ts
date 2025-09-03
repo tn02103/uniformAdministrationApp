@@ -28,19 +28,19 @@ export class UniformTypeDBHandler {
             }
         });
 
-    getTypeList = async (fk_assosiation: string, client?: PrismaClient) => (client ?? prisma).uniformType.findMany({
-        where: { fk_assosiation, recdelete: null },
+    getTypeList = async (organisationId: string, client?: PrismaClient) => (client ?? prisma).uniformType.findMany({
+        where: { organisationId, recdelete: null },
         orderBy: { sortOrder: "asc" },
         ...uniformTypeArgs,
     });
 
-    insertType = async (name: string, acronym: string, sortOrder: number, fk_assosiation: string, client: PrismaClient) => client.uniformType.create({
+    insertType = async (name: string, acronym: string, sortOrder: number, organisationId: string, client: PrismaClient) => client.uniformType.create({
         ...uniformTypeArgs,
         data: {
             name,
             acronym,
             sortOrder,
-            fk_assosiation,
+            organisationId,
             issuedDefault: 1,
             usingSizes: false,
             usingGenerations: false,
@@ -53,9 +53,9 @@ export class UniformTypeDBHandler {
             data
         });
 
-    updateSortOrderByOldSortOrder = async (oldSortOrder: number, up: boolean, fk_assosiation: string, client: PrismaClient): Promise<boolean> => client.uniformType.updateMany({
+    updateSortOrderByOldSortOrder = async (oldSortOrder: number, up: boolean, organisationId: string, client: PrismaClient): Promise<boolean> => client.uniformType.updateMany({
         where: {
-            fk_assosiation: fk_assosiation,
+            organisationId: organisationId,
             sortOrder: oldSortOrder,
             recdelete: null,
         },
@@ -75,10 +75,10 @@ export class UniformTypeDBHandler {
         }
     });
 
-    moveUpBelowHole = async (sortOrder: number, fk_assosiation: string, client: PrismaClient) =>
+    moveUpBelowHole = async (sortOrder: number, organisationId: string, client: PrismaClient) =>
         client.uniformType.updateMany({
             where: {
-                fk_assosiation,
+                organisationId,
                 sortOrder: { gt: sortOrder },
                 recdelete: null,
             },

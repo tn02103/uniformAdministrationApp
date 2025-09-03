@@ -11,9 +11,9 @@ export const saveCadetInspection = async (props: CadetInspectionFormSchema) => g
     props,
     cadetInspectionFormSchema,
     { cadetId: props.cadetId }
-).then(async ([{ assosiation, username }, { cadetId, newDeficiencyList, oldDeficiencyList, uniformComplete }]) => {
+).then(async ([{ organisationId, username }, { cadetId, newDeficiencyList, oldDeficiencyList, uniformComplete }]) => {
     // Check if Inspection is active
-    const inspection = await unsecuredGetActiveInspection(cadetId, assosiation);
+    const inspection = await unsecuredGetActiveInspection(cadetId, organisationId);
     if (!inspection) {
         throw new Error("Could not save CadetInspection since no inspection is active");
     }
@@ -62,7 +62,7 @@ export const saveCadetInspection = async (props: CadetInspectionFormSchema) => g
                     client.deficiency.updateMany({
                         where: {
                             id: { in: resolvedOldDefIds },
-                            type: { fk_assosiation: assosiation },
+                            type: { organisationId },
                             dateResolved: null,
                         },
                         data: {
@@ -79,7 +79,7 @@ export const saveCadetInspection = async (props: CadetInspectionFormSchema) => g
                     client.deficiency.updateMany({
                         where: {
                             id: { in: unresolvedOldDefIds },
-                            type: { fk_assosiation: assosiation },
+                            type: { organisationId },
                             dateResolved: { not: null },
                         },
                         data: {
@@ -99,7 +99,7 @@ export const saveCadetInspection = async (props: CadetInspectionFormSchema) => g
                 where: {
                     id: def.typeId,
                     AND: {
-                        fk_assosiation: assosiation,
+                        organisationId,
                     }
                 }
             });
@@ -109,7 +109,7 @@ export const saveCadetInspection = async (props: CadetInspectionFormSchema) => g
                 const uniform = await prisma.uniform.findUniqueOrThrow({
                     where: {
                         id: def.uniformId,
-                        type: { fk_assosiation: assosiation }
+                        type: { organisationId }
                     },
                     include: {
                         type: true
@@ -126,7 +126,7 @@ export const saveCadetInspection = async (props: CadetInspectionFormSchema) => g
                 const material = await prisma.material.findUniqueOrThrow({
                     where: {
                         id: materialId,
-                        AND: { materialGroup: { fk_assosiation: assosiation } },
+                        AND: { materialGroup: { organisationId } },
                     },
                     include: { materialGroup: true }
                 });
@@ -139,7 +139,7 @@ export const saveCadetInspection = async (props: CadetInspectionFormSchema) => g
             const dbDeficiency = await client.deficiency.upsert({
                 where: {
                     id: def.id ?? uuid(),
-                    AND: { type: { fk_assosiation: assosiation } }
+                    AND: { type: { organisationId } }
                 },
                 create: {
                     fk_deficiencyType: def.typeId,
@@ -202,7 +202,7 @@ export const saveCadetInspection = async (props: CadetInspectionFormSchema) => g
                         id: {
                             in: inspection.deficiencyCreated.map(d => d.id!)
                         },
-                        type: { fk_assosiation: assosiation }
+                        type: { organisationId }
                     },
                 })
             );

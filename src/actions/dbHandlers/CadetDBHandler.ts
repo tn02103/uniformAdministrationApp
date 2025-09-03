@@ -12,7 +12,7 @@ export class CadetDBHandler {
             }
         });
 
-    getRestrictedPersonnelList = (fk_assosiation: string, orderBy: "lastname" | "firstname", asc: "asc" | "desc", exclDeregistrations?: boolean, exclInspected?: boolean): Promise<PersonnelListCadet[]> => {
+    getRestrictedPersonnelList = (organisationId: string, orderBy: "lastname" | "firstname", asc: "asc" | "desc", exclDeregistrations?: boolean, exclInspected?: boolean): Promise<PersonnelListCadet[]> => {
         const filter: Prisma.CadetWhereInput = {}
         if (exclDeregistrations) {
             filter.deregistrations = {
@@ -39,7 +39,7 @@ export class CadetDBHandler {
                 lastname: true,
             },
             where: {
-                fk_assosiation,
+                organisationId,
                 recdelete: null,
                 ...filter,
             },
@@ -49,7 +49,7 @@ export class CadetDBHandler {
         });
     };
     // Export to view
-    getPersonnelList = async (fk_assosiation: string, orderBy: "lastname" | "firstname", asc: boolean, exclude?: { inspectionId: string, exclDeregistrations?: boolean, exclInspected?: boolean }): Promise<PersonnelListCadet[]> => {
+    getPersonnelList = async (organisationId: string, orderBy: "lastname" | "firstname", asc: boolean, exclude?: { inspectionId: string, exclDeregistrations?: boolean, exclInspected?: boolean }): Promise<PersonnelListCadet[]> => {
         let joins = "";
         let where = "";
         if (exclude?.exclDeregistrations) {
@@ -76,7 +76,7 @@ export class CadetDBHandler {
             SELECT v.*
               FROM base.v_cadet_generaloverview v
                    ${joins}
-             WHERE fk_assosiation = '${fk_assosiation}'
+             WHERE organisationId = '${organisationId}'
                    ${where}
           ORDER BY ${(orderBy === "lastname") ? "lastname" : "firstname"} ${asc ? "asc" : "desc"}
         `;

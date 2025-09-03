@@ -173,7 +173,7 @@ test.describe("Storage Unit Admin Overview", () => {
             });
         });
 
-        test('create storageunit', async ({ page, staticData: { data, fk_assosiation } }) => {
+        test('create storageunit', async ({ page, staticData: { data, organisationId } }) => {
             const rows = page.locator(`tbody tr`);
             const offcanvas = page.getByRole('dialog');
             const createButton = page.getByRole('button', { name: /create/i });
@@ -236,7 +236,7 @@ test.describe("Storage Unit Admin Overview", () => {
                         description: 'This is a new storage unit.',
                         capacity: 50,
                         isReserve: true,
-                        assosiationId: fk_assosiation,
+                        assosiationId: organisationId,
                         id: expect.any(String), // ID is auto-generated, so we check it exists
                     })
                 );

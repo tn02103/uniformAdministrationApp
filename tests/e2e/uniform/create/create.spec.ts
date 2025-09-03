@@ -13,7 +13,7 @@ const test = adminTest.extend<Fixture>({
 test.beforeEach(async ({ page }) => await page.goto(`/de/app/uniform/new`));
 test.afterEach(async ({ staticData: { cleanup } }) => cleanup.uniform());
 
-test('validate knownIds', async ({ page, createPage, staticData: { ids, fk_assosiation } }) => {
+test('validate knownIds', async ({ page, createPage, staticData: { ids, organisationId } }) => {
     await test.step('configuration', async () => {
         await createPage.btn_tab_knownIds.click();
 
@@ -41,7 +41,7 @@ test('validate knownIds', async ({ page, createPage, staticData: { ids, fk_assos
             where: {
                 number: { gte: 9900 },
                 recdelete: null,
-                type: { fk_assosiation }
+                type: { organisationId }
             }
         });
 
@@ -53,7 +53,7 @@ test('validate knownIds', async ({ page, createPage, staticData: { ids, fk_assos
         expect.soft(uniformItems[0].fk_size).toBe(ids.sizeIds[8]);
     });
 });
-test('validate generate Ids', async ({ page, createPage, staticData: { ids, fk_assosiation } }) => {
+test('validate generate Ids', async ({ page, createPage, staticData: { ids, organisationId } }) => {
     const year = (+(new Date().getFullYear()) % 100);
     await test.step('configuration', async () => {
         await createPage.btn_tab_generateIds.click();
@@ -83,7 +83,7 @@ test('validate generate Ids', async ({ page, createPage, staticData: { ids, fk_a
                     lt: ((year + 1) * 100),
                 },
                 recdelete: null,
-                type: { fk_assosiation }
+                type: { organisationId }
             }
         });
 

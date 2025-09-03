@@ -9,7 +9,7 @@ const groupIds = staticData.ids.materialGroupIds;
 afterEach(() => staticData.cleanup.materialConfig());
 function getGroupList() {
     return prisma.materialGroup.findMany({
-        where: { fk_assosiation: staticData.fk_assosiation, recdelete: null },
+        where: { organisationId: staticData.organisationId, recdelete: null },
         orderBy: { sortOrder: "asc" }
     });
 }

@@ -22,7 +22,7 @@ export const changeSortOrder = async (props: PropType) => genericSAValidator(
     props,
     propSchema,
     { materialGroupId: props.groupId }
-).then(async ([{ assosiation }, { groupId, up }]) => prisma.$transaction(async (client) => {
+).then(async ([{ organisationId }, { groupId, up }]) => prisma.$transaction(async (client) => {
     const group = await client.materialGroup.findUniqueOrThrow({
         where: { id: groupId }
     });
@@ -33,7 +33,7 @@ export const changeSortOrder = async (props: PropType) => genericSAValidator(
     } else {
         const groupCount = await client.materialGroup.aggregate({
             _count: true,
-            where: { fk_assosiation: assosiation, recdelete: null }
+            where: { organisationId, recdelete: null }
         });
         if (group.sortOrder >= (groupCount._count - 1)) {
             throw new SaveDataException('Could not change SortOrder. Element already last in list');
@@ -42,18 +42,18 @@ export const changeSortOrder = async (props: PropType) => genericSAValidator(
 
     // Update sortorder of other type
     const newSortOrder = up ? (group.sortOrder - 1) : (group.sortOrder + 1);
-    if (!await updateSecondGroup(newSortOrder, assosiation, !up, client)) {
+    if (!await updateSecondGroup(newSortOrder, organisationId, !up, client)) {
         throw new SaveDataException("Could not update sortOrder of seccond materialGroup");
     }
 
     await updateMainGroup(groupId, up, client);
-    revalidatePath(`/[locale]/${assosiation}/admin/material`, 'page');
+    revalidatePath(`/[locale]/${organisationId}/admin/material`, 'page');
 }));
 
-function updateSecondGroup(sortOrder: number, fk_assosiation: string, up: boolean, client: Prisma.TransactionClient) {
+function updateSecondGroup(sortOrder: number, organisationId: string, up: boolean, client: Prisma.TransactionClient) {
     return client.materialGroup.updateMany({
         where: {
-            fk_assosiation,
+            organisationId,
             sortOrder,
             recdelete: null,
         },

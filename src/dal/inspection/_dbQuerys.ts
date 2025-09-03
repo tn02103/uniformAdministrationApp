@@ -3,10 +3,10 @@ import { InspectionReview, InspectionReviewCadet, InspectionReviewDeficiency } f
 import { Prisma } from "@prisma/client";
 
 export class DBQuery {
-  getInspectionReviewData = async (fk_assosiation: string, id: string, client: Prisma.TransactionClient) => {
+  getInspectionReviewData = async (organisationId: string, id: string, client: Prisma.TransactionClient) => {
     const insp = await this.getInspectionInformation(id, client).then(d => d[0]);
     const activeDeficiencieList = await this.getActiveDeficiencyList(id, client);
-    const cadetList = await this.getInspectionReviewCadetList(fk_assosiation, id, insp.date, client);
+    const cadetList = await this.getInspectionReviewCadetList(organisationId, id, insp.date, client);
     return {
       id: id,
       date: insp.date,
@@ -51,7 +51,7 @@ export class DBQuery {
                       WHERE dr.fk_inspection = i.id) as "deregisteredCadets",
                     (SELECT COUNT(c.id)
                        FROM base.cadet c
-                      WHERE c.fk_assosiation = i.fk_assosiation
+                      WHERE c.organisation_id = i.organisation_id
                         AND c.recdelete IS NULL) as "activeCadets",
          	        (SELECT COUNT(cd.id)
                        FROM inspection.deficiency cd
@@ -64,7 +64,7 @@ export class DBQuery {
                        JOIN inspection.deficiency_type dt
                          ON cd3.fk_deficiency_type = dt.id
                       WHERE to_char(cd3.date_created, 'YYYY-MM-DD') <= i.date
-                        AND dt.fk_assosiation = i.fk_assosiation
+                        AND dt.organisation_id = i.organisation_id
           	  	        AND	(cd3.date_resolved IS NULL 
                          OR to_char(cd3.date_resolved, 'YYYY-MM-DD') > i.date)) as "activeDeficiencies"
                FROM inspection.inspection i
@@ -107,7 +107,7 @@ export class DBQuery {
       } : undefined
     })));
 
-  getInspectionReviewCadetList = (fk_assosiation: string, inspectionId: string, date: string, client: Prisma.TransactionClient): Promise<InspectionReviewCadet[]> =>
+  getInspectionReviewCadetList = (organisationId: string, inspectionId: string, date: string, client: Prisma.TransactionClient): Promise<InspectionReviewCadet[]> =>
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     client.$queryRaw<any[]>`
          SELECT c."id" as "cadetId",
@@ -153,7 +153,7 @@ export class DBQuery {
 				  WHERE "dateCreated" <= ${dayjs(date).toDate()}
 			   GROUP BY "fk_cadet") as "counts"
 	         ON counts.fk_cadet = c.id
-          WHERE c.fk_assosiation= ${fk_assosiation}
+          WHERE c.organisation_id= ${organisationId}
             AND c.recdelete IS NULL
     `.then(list => list.map(d => ({
       cadet: {

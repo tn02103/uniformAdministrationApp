@@ -1,6 +1,6 @@
 
 export type AuthItem = {
-    assosiationId: string;
+    organisationId: string;
     authToken?: string;
     lastLogin?: Date;
     deviceId: string;

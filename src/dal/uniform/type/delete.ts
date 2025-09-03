@@ -11,7 +11,7 @@ export const markDeleted = (props: string): Promise<UniformType[]> => genericSAV
     props,
     z.string().uuid(),
     { uniformTypeId: props }
-).then(([{ assosiation, username }, typeId]): Promise<UniformType[]> => prisma.$transaction(async (client) => {
+).then(([{ organisationId, username }, typeId]): Promise<UniformType[]> => prisma.$transaction(async (client) => {
     await Promise.all([
         returnAllUniformItems(typeId, client),
         deleteAllUniformItems(typeId, username, client),
@@ -20,9 +20,9 @@ export const markDeleted = (props: string): Promise<UniformType[]> => genericSAV
     ]);
 
     const type = await deleteType(typeId, username, client as PrismaClient);
-    await moveSortOrderUp(assosiation, type.sortOrder, client as PrismaClient);
+    await moveSortOrderUp(organisationId, type.sortOrder, client as PrismaClient);
 
-    return __unsecuredGetUniformTypeList(assosiation, client);
+    return __unsecuredGetUniformTypeList(organisationId, client);
 }));
 
 const returnAllUniformItems = (fk_uniformType: string, client: Prisma.TransactionClient) =>
@@ -69,10 +69,10 @@ const deleteType = (id: string, username: string, client: Prisma.TransactionClie
         }
     });
 
-const moveSortOrderUp = (fk_assosiation: string, minSortOrder: number, client: Prisma.TransactionClient) =>
+const moveSortOrderUp = (organisationId: string, minSortOrder: number, client: Prisma.TransactionClient) =>
     client.uniformType.updateMany({
         where: {
-            fk_assosiation,
+            organisationId,
             sortOrder: { gt: minSortOrder },
             recdelete: null,
         },

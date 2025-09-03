@@ -10,91 +10,143 @@ datasource db {
     schemas  = ["authentication", "base", "inspection", "public"]
 }
 
-model Assosiation {
-    id                       String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    name                     String                     @unique @db.VarChar(100)
-    acronym                  String                     @db.VarChar(5)
-    useBeta                  Boolean                    @default(false) @map("use_beta")
-    user                     User[]
-    cadet                    Cadet[]
-    materialGroup            MaterialGroup[]
-    uniformSize              UniformSize[]
-    uniformSizelist          UniformSizelist[]
-    uniformType              UniformType[]
-    deficiencyType           DeficiencyType[]
-    inspection               Inspection[]
-    AssosiationConfiguration AssosiationConfiguration[]
-    StorageUnit              StorageUnit[]
-    Redirect                 Redirect[]
+// ########### AUTHENTICATION SCHEMA ###########
+model Organisation {
+    id                        String                      @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    name                      String                      @unique @db.VarChar(100)
+    acronym                   String                      @db.VarChar(5)
+    useBeta                   Boolean                     @default(false) @map("use_beta")
+    user                      User[]
+    cadet                     Cadet[]
+    materialGroup             MaterialGroup[]
+    uniformSize               UniformSize[]
+    uniformSizelist           UniformSizelist[]
+    uniformType               UniformType[]
+    deficiencyType            DeficiencyType[]
+    inspection                Inspection[]
+    OrganisationConfiguration OrganisationConfiguration[]
+    StorageUnit               StorageUnit[]
+    Redirect                  Redirect[]
+    AuditLog                  AuditLog[]
 
-    @@map("assosiation")
+    @@map("organisation")
     @@schema("authentication")
 }
 
-model AssosiationConfiguration {
-    assosiationId            String      @id @db.Char(36)
+model OrganisationConfiguration {
     sendEmailAfterInspection Boolean
     inspectionReportEmails   String[]
-    assosiation              Assosiation @relation(fields: [assosiationId], references: [id], onDelete: Cascade)
+    organisationId           String       @id @db.Char(36)
+    organisation             Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
 
-    @@map("assosiation_configuration")
+    @@map("organisation_configuration")
     @@schema("base")
 }
 
 model RefreshToken {
-    fk_user   String   @db.Char(36)
-    token     String   @id @db.Char(50)
-    endOfLife DateTime @map("end_of_live") @db.Timestamp(6)
-    deviceId  String   @map("device_id") @db.Char(36)
-    user      User     @relation(fields: [fk_user], references: [id], onDelete: Cascade)
+    userId    String    @map("user_id") @db.Char(36)
+    token     String    @id @db.Char(128)
+    endOfLife DateTime  @map("end_of_live") @db.Timestamp(6)
+    deviceId  String    @map("device_id") @db.Char(36)
+    usedAt    DateTime? @map("used_at") @db.Timestamp(6)
+    revoked   Boolean   @default(false)
+    user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    ipAddress String?   @db.VarChar(45)
+    userAgent String?   @db.VarChar(255)
 
-    @@index([fk_user])
+    @@index([userId])
     @@map("refresh_token")
     @@schema("authentication")
 }
 
 model User {
-    id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_assosiation   String         @map("fk_assosiation") @db.Char(36)
-    username         String         @db.VarChar(10)
-    name             String         @db.VarChar(20)
-    password         String         @db.VarChar(100)
-    role             Int            @db.SmallInt
-    active           Boolean
-    failedLoginCount Int            @default(0) @map("failed_login_count")
-    refreshToken     RefreshToken[]
-    assosiation      Assosiation    @relation(fields: [fk_assosiation], references: [id], onUpdate: Restrict)
+    id                    String         @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    organisationId        String         @map("organisation_id") @db.Char(36)
+    email                 String         @db.VarChar(100)
+    username              String         @db.VarChar(10)
+    name                  String         @db.VarChar(20)
+    password              String         @db.VarChar(100)
+    role                  Int            @db.SmallInt
+    active                Boolean
+    failedLoginCount      Int            @default(0) @map("failed_login_count")
+    changePasswordOnLogin Boolean        @default(false) @map("change_password_on_login")
+    lastLoginAt           DateTime?
+    recDelete             DateTime?      @map("rec_delete") @db.Timestamp(6)
+    recDeleteUser         String?        @map("rec_delete_user") @db.VarChar(36)
+    refreshToken          RefreshToken[]
+    organisation          Organisation   @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
+    Device                Device[]
+    AuditLog              AuditLog[]
 
-    @@unique([username, fk_assosiation])
-    @@index([fk_assosiation])
+    @@unique([username, organisationId])
+    @@index([organisationId])
     @@map("user")
     @@schema("authentication")
 }
 
+model Device {
+    id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    name        String    @db.VarChar(50)
+    description String?   @db.VarChar(100)
+    userId      String    @map("user_id") @db.Char(36)
+    user        User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+    createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+    lastUsedAt  DateTime? @map("last_used_at") @db.Timestamp(6)
+    ipAddress   String?   @db.VarChar(45)
+    userAgent   String?   @db.Text
+    valid       Boolean   @default(true)
+
+    @@index([userId])
+    @@map("device")
+    @@schema("authentication")
+}
+
+model AuditLog {
+    id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    organisationId String       @map("organisation_id") @db.Char(36)
+    userId         String?       @map("user_id") @db.Char(36)
+    action         String       @db.VarChar(50)
+    state          String       @db.VarChar(50)
+    entity         String       @db.VarChar(50)
+    timestamp      DateTime     @default(now()) @db.Timestamp(6)
+    details        String?      @db.Text
+    ipAddress      String?      @db.VarChar(45)
+    userAgent      String?      @db.Text
+    organisation   Organisation @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
+    user           User?         @relation(fields: [userId], references: [id], onUpdate: Restrict)
+
+    @@index([organisationId])
+    @@index([userId])
+    @@map("audit_log")
+    @@schema("authentication")
+}
+
+// ########### BASE SCHEMA ###########
+
 model Cadet {
     id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_assosiation  String            @db.Char(36)
+    organisationId  String            @db.Char(36)
     firstname       String            @db.VarChar(30)
     lastname        String            @db.VarChar(30)
     active          Boolean           @default(true)
     comment         String            @default("")
     recdelete       DateTime?         @db.Timestamp(6)
     recdeleteUser   String?           @map("recdelete_user") @db.VarChar(10)
-    assosiation     Assosiation       @relation(fields: [fk_assosiation], references: [id])
+    organisation    Organisation      @relation(fields: [organisationId], references: [id])
     materialIssued  MaterialIssued[]
     uniformIssued   UniformIssued[]
     cadetDeficiency CadetDeficiency[]
     cadetInspection CadetInspection[]
     deregistrations Deregistration[]
 
-    @@index([fk_assosiation])
+    @@index([organisationId])
     @@map("cadet")
     @@schema("base")
 }
 
 model UniformType {
     id                    String              @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_assosiation        String              @db.Char(36)
+    organisationId        String              @db.Char(36)
     acronym               String              @db.VarChar(2)
     name                  String              @db.VarChar(10)
     issuedDefault         Int                 @default(1) @map("issued_default")
@@ -106,11 +158,11 @@ model UniformType {
     fk_defaultSizelist    String?             @map("fk_default_sizelist") @db.Char(36)
     uniformList           Uniform[]
     uniformGenerationList UniformGeneration[]
-    assosiation           Assosiation         @relation(fields: [fk_assosiation], references: [id], onUpdate: Restrict)
+    organisation          Organisation        @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
     defaultSizelist       UniformSizelist?    @relation(fields: [fk_defaultSizelist], references: [id], onUpdate: SetNull)
 
     @@index([fk_defaultSizelist])
-    @@index([fk_assosiation])
+    @@index([organisationId])
     @@map("uniform_type")
     @@schema("base")
 }
@@ -136,30 +188,30 @@ model UniformGeneration {
 
 model UniformSize {
     id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_assosiation   String            @db.Char(36)
+    organisationId   String            @db.Char(36)
     name             String            @db.VarChar(10)
     sortOrder        Int               @map("sort_order")
     uniformList      Uniform[]
-    assosiation      Assosiation       @relation(fields: [fk_assosiation], references: [id], onUpdate: Restrict)
+    organisation     Organisation      @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
     uniformSizelists UniformSizelist[] @relation("uniformsizetouniformsizelist")
 
-    @@unique([name, fk_assosiation])
-    @@index([fk_assosiation])
+    @@unique([name, organisationId])
+    @@index([organisationId])
     @@map("uniform_size")
     @@schema("base")
 }
 
 model UniformSizelist {
     id                    String              @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_assosiation        String              @db.Char(36)
+    organisationId        String              @db.Char(36)
     name                  String              @db.VarChar(40)
     uniformGenerationList UniformGeneration[]
-    assosiation           Assosiation         @relation(fields: [fk_assosiation], references: [id], onUpdate: Restrict)
+    organisation          Organisation        @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
     uniformTypeList       UniformType[]
     uniformSizes          UniformSize[]       @relation("uniformsizetouniformsizelist")
 
-    @@unique([name, fk_assosiation])
-    @@index([fk_assosiation])
+    @@unique([name, organisationId])
+    @@index([organisationId])
     @@map("uniform_sizelist")
     @@schema("base")
 }
@@ -207,33 +259,33 @@ model UniformIssued {
 }
 
 model StorageUnit {
-    id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    name          String      @db.VarChar(20)
-    description   String?     @db.VarChar(100)
-    isReserve     Boolean     @default(false) @map("is_reserve")
-    capacity      Int?        @db.SmallInt
-    uniformList   Uniform[]
-    assosiationId String      @db.Char(36)
-    assosiacion   Assosiation @relation(fields: [assosiationId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+    id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    name           String       @db.VarChar(20)
+    description    String?      @db.VarChar(100)
+    isReserve      Boolean      @default(false) @map("is_reserve")
+    capacity       Int?         @db.SmallInt
+    uniformList    Uniform[]
+    organisationId String       @db.Char(36)
+    assosiacion    Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
-    @@unique([name, assosiationId])
+    @@unique([name, organisationId])
     @@map("storage_unit")
     @@schema("base")
 }
 
 model MaterialGroup {
-    id               String      @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_assosiation   String      @db.Char(36)
-    description      String      @db.VarChar(20)
-    issuedDefault    Int?        @map("issued_default") @db.SmallInt
-    sortOrder        Int         @map("sort_order") @db.SmallInt
-    recdelete        DateTime?   @db.Timestamp(6)
-    recdeleteUser    String?     @map("recdelete_user") @db.VarChar(10)
-    multitypeAllowed Boolean     @map("multitype_allowed")
+    id               String       @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    organisationId   String       @db.Char(36)
+    description      String       @db.VarChar(20)
+    issuedDefault    Int?         @map("issued_default") @db.SmallInt
+    sortOrder        Int          @map("sort_order") @db.SmallInt
+    recdelete        DateTime?    @db.Timestamp(6)
+    recdeleteUser    String?      @map("recdelete_user") @db.VarChar(10)
+    multitypeAllowed Boolean      @map("multitype_allowed")
     typeList         Material[]
-    assosiation      Assosiation @relation(fields: [fk_assosiation], references: [id], onUpdate: Restrict)
+    organisation     Organisation @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
 
-    @@index([fk_assosiation])
+    @@index([organisationId])
     @@map("material_group")
     @@schema("base")
 }
@@ -274,7 +326,7 @@ model MaterialIssued {
 
 model Inspection {
     id                 String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_assosiation     String            @db.Char(36)
+    organisationId     String            @db.Char(36)
     date               String            @db.Char(10)
     name               String
     timeStart          String?           @map("time_start") @db.Char(5)
@@ -282,11 +334,11 @@ model Inspection {
     cadetInspection    CadetInspection[]
     deficiencyCreated  Deficiency[]      @relation("Deficiency_InspectionCreated")
     deficiencyResolved Deficiency[]      @relation("Deficiency_InspectionResolved")
-    assosiation        Assosiation       @relation(fields: [fk_assosiation], references: [id], onDelete: Cascade, onUpdate: Restrict)
+    organisation       Organisation      @relation(fields: [organisationId], references: [id], onDelete: Cascade, onUpdate: Restrict)
     deregistrations    Deregistration[]
 
-    @@unique([date, fk_assosiation])
-    @@index([fk_assosiation])
+    @@unique([date, organisationId])
+    @@index([organisationId])
     @@map("inspection")
     @@schema("inspection")
 }
@@ -320,16 +372,16 @@ model CadetInspection {
 
 model DeficiencyType {
     id             String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_assosiation String                   @db.Char(36)
+    organisationId String                   @db.Char(36)
     name           String                   @db.VarChar(20)
     dependent      deficiencytype_dependent
     relation       deficiencytype_relation?
     disabledDate   DateTime?                @map("disabled_date") @db.Date
     disabledUser   String?                  @map("disabled_user") @db.VarChar(10)
     deficiencyList Deficiency[]
-    assosiation    Assosiation              @relation(fields: [fk_assosiation], references: [id], onUpdate: Restrict)
+    organisation   Organisation             @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
 
-    @@unique([name, fk_assosiation])
+    @@unique([name, organisationId])
     @@map("deficiency_type")
     @@schema("inspection")
 }
@@ -396,12 +448,12 @@ enum deficiencytype_relation {
 }
 
 model Redirect {
-    id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    assosiationId String      @db.Char(36)
-    code          String      @db.VarChar(30)
-    target        String      @db.VarChar(100)
-    active        Boolean     @default(true)
-    assosiation   Assosiation @relation(fields: [assosiationId], references: [id], onUpdate: Restrict)
+    id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    organisationId String       @db.Char(36)
+    code           String       @db.VarChar(30)
+    target         String       @db.VarChar(100)
+    active         Boolean      @default(true)
+    organisation   Organisation @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
 
     @@unique(code)
     @@map("redirect")

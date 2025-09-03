@@ -8,14 +8,14 @@ import { unstable_cache } from "next/cache";
 
 
 export const getCadetIdList = async () => genericSANoDataValidator(AuthRole.inspector)
-    .then(async ([{ assosiation }]) =>
+    .then(async ([{ organisationId }]) =>
         prisma.cadetInspection.findMany({
             select: {
                 fk_cadet: true
             },
             where: {
                 inspection: {
-                    fk_assosiation: assosiation,
+                    organisationId,
                     date: dayjs().format("YYYY-MM-DD"),
                     timeEnd: null,
                     timeStart: { not: null },
@@ -26,20 +26,20 @@ export const getCadetIdList = async () => genericSANoDataValidator(AuthRole.insp
 
 export const getInspectionState = async (): Promise<InspectionStatus | null> => genericSAValidatorV2(
     AuthRole.user, true, {}
-).then(async ({ assosiation, role }) => unstable_cache(async (): Promise<InspectionStatus | null> => {
+).then(async ({ organisationId, role }) => unstable_cache(async (): Promise<InspectionStatus | null> => {
     if (role === AuthRole.user) return null;
     const today = dayjs().format("YYYY-MM-DD");
 
     const [inspection, unfinished] = await prisma.$transaction([
         prisma.inspection.findFirst({
             where: {
-                fk_assosiation: assosiation,
+                organisationId,
                 date: today,
             }
         }),
         prisma.inspection.findFirst({
             where: {
-                fk_assosiation: assosiation,
+                organisationId,
                 timeStart: { not: null },
                 timeEnd: null,
                 date: { lt: today },
@@ -81,7 +81,7 @@ export const getInspectionState = async (): Promise<InspectionStatus | null> => 
         prisma.cadet.aggregate({
             _count: true,
             where: {
-                fk_assosiation: assosiation,
+                organisationId,
                 active: true,
                 recdelete: null,
             },
@@ -106,7 +106,7 @@ export const getInspectionState = async (): Promise<InspectionStatus | null> => 
         activeCadets: activeCadets._count,
         deregistrations: deregistrations._count,
     }
-}, [`serverA.inspectionState.${assosiation}`], {
+}, [`serverA.inspectionState.${organisationId}`], {
     revalidate: process.env.STAGE === "DEV" ? 0.0000001 : 30,
-    tags: [`serverA.inspectionState.${assosiation}`]
+    tags: [`serverA.inspectionState.${organisationId}`]
 })());

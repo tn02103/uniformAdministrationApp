@@ -9,11 +9,11 @@ import { Prisma } from "@prisma/client";
  * @returns Array of all MaterialGroups with Materials. MaterialGroups without any Materials are not included.
  */
 export const getConfiguration = async () =>
-    genericSANoDataValidator(AuthRole.user).then(async ([{ assosiation }]) =>
+    genericSANoDataValidator(AuthRole.user).then(async ([{ organisationId }]) =>
         prisma.materialGroup.findMany({
             ...materialGroupArgs,
             where: {
-                fk_assosiation: assosiation,
+                organisationId,
                 recdelete: null,
                 typeList: {
                     some: {
@@ -31,10 +31,10 @@ export const getConfiguration = async () =>
  * @returns list of MaterialGroups
  */
 export const getAdministrationConfiguration = (): Promise<AdministrationMaterialGroup[]> =>
-    genericSANoDataValidator(AuthRole.materialManager).then(async ([{ assosiation }]) => {
+    genericSANoDataValidator(AuthRole.materialManager).then(async ([{ organisationId }]) => {
         const [groups, issuedQuantities] = await prisma.$transaction([
-            getAdminList(assosiation),
-            getMaterialIssueCountsByAssosiation(assosiation),
+            getAdminList(organisationId),
+            getMaterialIssueCountsByAssosiation(organisationId),
         ]);
 
         return groups.map(group => ({
@@ -46,7 +46,7 @@ export const getAdministrationConfiguration = (): Promise<AdministrationMaterial
         }));
     });
 
-const getAdminList = (fk_assosiation: string, client?: Prisma.TransactionClient) =>
+const getAdminList = (organisationId: string, client?: Prisma.TransactionClient) =>
     (client ?? prisma).materialGroup.findMany({
         select: {
             id: true,
@@ -66,16 +66,16 @@ const getAdminList = (fk_assosiation: string, client?: Prisma.TransactionClient)
                 orderBy: { sortOrder: "asc" }
             },
         },
-        where: { fk_assosiation, recdelete: null },
+        where: { organisationId, recdelete: null },
         orderBy: { sortOrder: "asc" }
     });
-const getMaterialIssueCountsByAssosiation = (fk_assosiation: string) =>
+const getMaterialIssueCountsByAssosiation = (organisationId: string) =>
     prisma.materialIssued.groupBy({
         by: ['fk_material'],
         _sum: { quantity: true },
         where: {
             material: {
-                materialGroup: { fk_assosiation }
+                materialGroup: { organisationId }
             },
             dateReturned: null,
         }

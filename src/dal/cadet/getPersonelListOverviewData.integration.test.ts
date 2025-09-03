@@ -51,8 +51,8 @@ describe('manager tests', () => {
             user: {
                 name: 'VK Verwaltung',
                 username: 'insp',
-                assosiation: data.assosiation.id,
-                acronym: data.assosiation.acronym,
+                organisationId: data.organisation.id,
+                acronym: data.organisation.acronym,
                 role: AuthRole.inspector
             }
         }),

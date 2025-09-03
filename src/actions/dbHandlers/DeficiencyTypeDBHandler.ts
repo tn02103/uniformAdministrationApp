@@ -5,7 +5,7 @@ import { Prisma } from "@prisma/client";
 
 export class DeficiencyTypeDBHandler {
 
-    getDeficiencyAdmintypeList = (fk_assosiation: string, client?: Prisma.TransactionClient): Promise<AdminDeficiencyType[]> =>
+    getDeficiencyAdmintypeList = (organisationId: string, client?: Prisma.TransactionClient): Promise<AdminDeficiencyType[]> =>
         (client ?? prisma).$queryRaw<AdminDeficiencyType[]>`
              SELECT dt.id,
                     dt.name,
@@ -17,7 +17,7 @@ export class DeficiencyTypeDBHandler {
                     COUNT(d.date_resolved) resolved
                FROM inspection.deficiency_type dt
           LEFT JOIN inspection.deficiency d ON dt.id = d.fk_deficiency_type
-              WHERE dt.fk_assosiation = ${fk_assosiation}
+              WHERE dt.organisationId = ${organisationId}
            GROUP BY dt.id
            ORDER BY dt.disabled_date DESC, dt.name ASC
         `.then((data) =>
@@ -34,11 +34,11 @@ export class DeficiencyTypeDBHandler {
             where: { id },
             data
         });
-    create = (data: AdminDeficiencytypeFormSchema, fk_assosiation: string, client: Prisma.TransactionClient) =>
+    create = (data: AdminDeficiencytypeFormSchema, organisationId: string, client: Prisma.TransactionClient) =>
         client.deficiencyType.create({
             data: {
                 ...data,
-                fk_assosiation
+                organisationId
             }
         });
     markDeleted = (id: string, username: string, client: Prisma.TransactionClient) =>

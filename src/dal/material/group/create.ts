@@ -10,11 +10,11 @@ import { revalidatePath } from "next/cache";
 
 export const create = async () => genericSANoDataValidator(
     AuthRole.materialManager
-).then(async ([{ assosiation }]) => {
+).then(async ([{ organisationId }]) => {
     const data = prisma.$transaction(
         async (client) => {
             const groupList = await client.materialGroup.findMany({
-                where: { fk_assosiation: assosiation, recdelete: null }
+                where: { organisationId, recdelete: null }
             });
 
             // CREATE DATA
@@ -27,7 +27,7 @@ export const create = async () => genericSANoDataValidator(
 
             return client.materialGroup.create({
                 data: {
-                    fk_assosiation: assosiation,
+                    organisationId,
                     description,
                     multitypeAllowed: false,
                     sortOrder: groupList.length,
@@ -36,6 +36,6 @@ export const create = async () => genericSANoDataValidator(
         }
     );
 
-    revalidatePath(`/[locale]/${assosiation}/admin/material`, 'page');
+    revalidatePath(`/[locale]/${organisationId}/admin/material`, 'page');
     return data;
 });

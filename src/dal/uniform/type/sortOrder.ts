@@ -16,7 +16,7 @@ export const changeSortOrder = (props: PropType) => genericSAValidator(
     props,
     propShema,
     { uniformTypeId: props.typeId }
-).then(([{ assosiation }, { typeId, newPosition }]) => prisma.$transaction(async (client) => {
+).then(([{ organisationId }, { typeId, newPosition }]) => prisma.$transaction(async (client) => {
     const type = await client.uniformType.findUniqueOrThrow({
         where: {
             id: typeId
@@ -24,12 +24,12 @@ export const changeSortOrder = (props: PropType) => genericSAValidator(
     });
 
     if (type.sortOrder === newPosition) {
-        return __unsecuredGetUniformTypeList(assosiation, client);
+        return __unsecuredGetUniformTypeList(organisationId, client);
     }
 
     const listsize = await client.uniformType.count({
         where: {
-            fk_assosiation: assosiation,
+            organisationId,
             recdelete: null
         }
     });
@@ -42,20 +42,20 @@ export const changeSortOrder = (props: PropType) => genericSAValidator(
     const up = newPosition < type.sortOrder;
     const upperLimit = up ? newPosition : (type.sortOrder + 1);
     const lowerLimit = up ? (type.sortOrder - 1) : newPosition;
-    if (!await updateOtherTypes(upperLimit, lowerLimit, up, assosiation, client)) {
+    if (!await updateOtherTypes(upperLimit, lowerLimit, up, organisationId, client)) {
         throw new SaveDataException("Could not update sortOrder of other types");
     }
 
     // UPDATE sortorder of type
     await updateInitialType(typeId, newPosition, client);
-    return __unsecuredGetUniformTypeList(assosiation, client)
+    return __unsecuredGetUniformTypeList(organisationId, client)
 }));
 
-const updateOtherTypes = async (upperLimit: number, lowerLimit: number, up: boolean, fk_assosiation: string, client: Prisma.TransactionClient) =>
+const updateOtherTypes = async (upperLimit: number, lowerLimit: number, up: boolean, organisationId: string, client: Prisma.TransactionClient) =>
     client.uniformType.updateMany({
         where: {
             sortOrder: { gte: upperLimit, lte: lowerLimit },
-            fk_assosiation,
+            organisationId,
             recdelete: null
         },
         data: {

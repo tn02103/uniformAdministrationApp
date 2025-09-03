@@ -5,7 +5,7 @@ import { PrismaClient } from "@prisma/client";
 import { isToday } from "date-fns";
 
 export class CadetMaterialDBHandler {
-    getMaterialMap = (fk_cadet: string, fk_assosiation: string, client?: PrismaClient) =>
+    getMaterialMap = (fk_cadet: string, organisationId: string, client?: PrismaClient) =>
         (client ?? prisma).material.findMany({
             select: {
                 ...dbCadetMaterialArgs.select,
@@ -25,7 +25,7 @@ export class CadetMaterialDBHandler {
             },
             where: {
                 recdelete: null,
-                materialGroup: { fk_assosiation },
+                materialGroup: { organisationId },
                 issuedEntries: {
                     some: {
                         fk_cadet,

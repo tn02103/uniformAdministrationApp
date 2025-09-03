@@ -9,23 +9,23 @@ export const getType = (props: string) => genericSAValidator(
     AuthRole.user,
     props,
     z.string().uuid(),
-).then(([{ assosiation }, typeId]) => prisma.uniformType.findUnique({
+).then(([{ organisationId }, typeId]) => prisma.uniformType.findUnique({
     where: {
         id: typeId,
-        fk_assosiation: assosiation,
+        organisationId,
         recdelete: null
     },
     ...uniformTypeArgs
 }));
 
 export const getList = (): Promise<UniformType[]> =>
-    genericSANoDataValidator(AuthRole.user).then(([{ assosiation }]) =>
-        __unsecuredGetUniformTypeList(assosiation),
+    genericSANoDataValidator(AuthRole.user).then(([{ organisationId }]) =>
+        __unsecuredGetUniformTypeList(organisationId),
     );
 
-export const __unsecuredGetUniformTypeList = async (fk_assosiation: string, client?: Prisma.TransactionClient) =>
+export const __unsecuredGetUniformTypeList = async (organisationId: string, client?: Prisma.TransactionClient) =>
     (client ?? prisma).uniformType.findMany({
-        where: { fk_assosiation, recdelete: null },
+        where: { organisationId, recdelete: null },
         orderBy: { sortOrder: "asc" },
         ...uniformTypeArgs,
     });

@@ -69,7 +69,7 @@ test.describe('sizeList Configuration', () => {
         await test.step('validate db', async () => {
             const list = await prisma.uniformSizelist.findFirst({
                 where: {
-                    fk_assosiation: staticData.fk_assosiation,
+                    organisationId: staticData.organisationId,
                     name
                 },
                 include: { uniformSizes: true }

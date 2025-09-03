@@ -45,7 +45,7 @@ describe('validate deletion', () => {
     it('delets group', async () => {
         const groupList = await prisma.materialGroup.findMany({
             where: {
-                fk_assosiation: staticData.fk_assosiation,
+                organisationId: staticData.organisationId,
             },
             orderBy: { description: 'asc' }
         });
@@ -58,7 +58,7 @@ describe('validate deletion', () => {
     it('updates sortOrders of others', async () => {
         const groupList = await prisma.materialGroup.findMany({
             where: {
-                fk_assosiation: staticData.fk_assosiation,
+                organisationId: staticData.organisationId,
             },
             orderBy: { description: 'asc' }
         });

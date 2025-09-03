@@ -18,8 +18,8 @@ export const getCadetInspectionFormData = async (props: string) => genericSAVali
     props,
     z.string().uuid(),
     { cadetId: props }
-).then(async ([{ assosiation }, cadetId]) => {
-    const activeInspection = await unsecuredGetActiveInspection(cadetId, assosiation);
+).then(async ([{ organisationId }, cadetId]) => {
+    const activeInspection = await unsecuredGetActiveInspection(cadetId, organisationId);
 
     if (!activeInspection) {
         throw new Error("No active inspection found for today.");
@@ -27,7 +27,7 @@ export const getCadetInspectionFormData = async (props: string) => genericSAVali
 
     const oldDeficiencies = await unsecuredGetPreviouslyUnresolvedDeficiencies(
         cadetId,
-        activeInspection.fk_assosiation,
+        activeInspection.organisationId,
         activeInspection.id
     )
 
@@ -59,7 +59,7 @@ export const getCadetInspectionFormData = async (props: string) => genericSAVali
         }),
         prisma.uniformType.findMany({
             where: {
-                fk_assosiation: assosiation,
+                organisationId,
                 recdelete: null,
             }
         }),
@@ -117,10 +117,10 @@ export const getUnresolvedByCadet = async (props: string): Promise<Deficiency[]>
 });
 
 // -----------  UNSECURED -------------
-export const unsecuredGetPreviouslyUnresolvedDeficiencies = async (cadetId: string, assosiation: string, activeInspectionId: string) => {
+export const unsecuredGetPreviouslyUnresolvedDeficiencies = async (cadetId: string, organisationId: string, activeInspectionId: string) => {
     return prisma.deficiency.findMany({
         where: {
-            type: { fk_assosiation: assosiation },
+            type: { organisationId },
             AND: [
                 {
                     OR: [
@@ -165,10 +165,10 @@ export const unsecuredGetPreviouslyUnresolvedDeficiencies = async (cadetId: stri
     });
 }
 
-export const unsecuredGetActiveInspection = async (cadetId: string, assosiation: string) => {
+export const unsecuredGetActiveInspection = async (cadetId: string, organisationId: string) => {
     return await prisma.inspection.findFirst({
         where: {
-            fk_assosiation: assosiation,
+            organisationId,
             date: dayjs().format("YYYY-MM-DD"),
             timeStart: { not: null },
             timeEnd: null,

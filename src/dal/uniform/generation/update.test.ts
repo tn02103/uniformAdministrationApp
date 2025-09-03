@@ -92,7 +92,7 @@ describe('<UniformGeneration> update', () => {
             // Verify uniform type lookup
             expect(mockPrisma.uniformType.findFirstOrThrow).toHaveBeenCalledWith({
                 where: {
-                    fk_assosiation: 'test-assosiation-id',
+                    organisationId: 'test-organisation-id',
                     uniformGenerationList: {
                         some: { id: mockGenerationId }
                     }
@@ -113,7 +113,7 @@ describe('<UniformGeneration> update', () => {
                 data: defaultUpdateData
             });
 
-            expect(mockGetUniformTypeList).toHaveBeenCalledWith('test-assosiation-id', expect.anything());
+            expect(mockGetUniformTypeList).toHaveBeenCalledWith('test-organisation-id', expect.anything());
         });
 
         it('passes correct data to update operation', async () => {
@@ -147,7 +147,7 @@ describe('<UniformGeneration> update', () => {
 
             expect(mockPrisma.uniformType.findFirstOrThrow).toHaveBeenCalledWith({
                 where: {
-                    fk_assosiation: 'test-assosiation-id',
+                    organisationId: 'test-organisation-id',
                     uniformGenerationList: {
                         some: { id: customGenerationId }
                     }

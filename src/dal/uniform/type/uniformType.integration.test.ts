@@ -10,7 +10,7 @@ import { getList, getType } from "./get";
 import { update } from "./update";
 import { changeSortOrder } from "./sortOrder";
 
-const { ids, cleanup, fk_assosiation, data } = new StaticData(0);
+const { ids, cleanup, organisationId, data } = new StaticData(0);
 
 describe('<UniformType> Integration Tests', () => {
     afterEach(async () => {
@@ -99,7 +99,7 @@ describe('<UniformType> Integration Tests', () => {
             prisma.uniformGeneration.findMany({
                 where: {
                     fk_uniformType: { not: ids.uniformTypeIds[1] },
-                    type: { fk_assosiation },
+                    type: { organisationId },
                 }
             }),
             prisma.uniform.findMany({
@@ -110,7 +110,7 @@ describe('<UniformType> Integration Tests', () => {
             prisma.uniform.findMany({
                 where: {
                     fk_uniformType: { not: ids.uniformTypeIds[1] },
-                    type: { fk_assosiation },
+                    type: { organisationId },
                 }
             }),
         ]);
@@ -163,7 +163,7 @@ describe('<UniformType> Integration Tests', () => {
 
         const dbTypes = await prisma.uniformType.findMany({
             where: {
-                fk_assosiation,
+                organisationId,
             },
             orderBy: [
                 { sortOrder: 'asc' },

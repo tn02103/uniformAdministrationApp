@@ -14,9 +14,9 @@ import { getUniformTypeList } from "@/dal/uniform/type/_index";
 export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
-    const assosiations = await prisma.assosiation.findMany();
+    const organisations = await prisma.organisation.findMany();
 
-    return assosiations.map((a) => ({ acronym: a.acronym }))
+    return organisations.map((a) => ({ acronym: a.acronym }))
 }
 
 const Layout = async ({
@@ -38,28 +38,28 @@ const Layout = async ({
     }
 
 
-    const [typeList, assosiation, sizelists, inspectionState] = await Promise.all([
+    const [typeList, organisation, sizelists, inspectionState] = await Promise.all([
         getUniformTypeList(),
-        prisma.assosiation.findUnique({ where: { id: user.assosiation } }),
+        prisma.organisation.findUnique({ where: { id: user.organisationId } }),
         getUniformSizelists(),
         (user.role > AuthRole.user) ? getInspectionState() : null,
     ])
 
-    if (!assosiation) {
+    if (!organisation) {
         redirect(`/login`);
     }
 
     return (
         <GlobalDataProvider
             userRole={user.role}
-            useBeta={assosiation.useBeta}
+            useBeta={organisation.useBeta}
             typeList={typeList}
             sizelists={sizelists}
             inspectionState={inspectionState}
         >
             <div>
                 <div className="container-fluid p-0 m-0 p-md-auto">
-                    <Sidebar assosiation={assosiation} username={user.name}>
+                    <Sidebar organisation={organisation} username={user.name}>
                         {children}
                     </Sidebar>
                 </div>

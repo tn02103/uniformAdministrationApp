@@ -17,7 +17,7 @@ const { ids, data } = staticData;
 describe('getCadetInspectionFormData Integration Tests', () => {
     beforeAll(() => {
         global.__ROLE__ = AuthRole.inspector;
-        global.__ASSOSIATION__ = data.assosiation.id;
+        global.__ASSOSIATION__ = data.organisation.id;
     });
 
     beforeEach(async () => {
@@ -143,7 +143,7 @@ describe('unsecuredGetPreviouslyUnresolvedDeficiencies Integration Tests', () =>
         // Test basic functionality without creating new data
         const result = await unsecuredGetPreviouslyUnresolvedDeficiencies(
             ids.cadetIds[0],
-            data.assosiation.id,
+            data.organisation.id,
             ids.inspectionIds[4]
         );
 
@@ -151,7 +151,7 @@ describe('unsecuredGetPreviouslyUnresolvedDeficiencies Integration Tests', () =>
         
         // All returned deficiencies should be from the correct association
         result.forEach(def => {
-            expect(def.type.fk_assosiation).toBe(data.assosiation.id);
+            expect(def.type.organisationId).toBe(data.organisation.id);
         });
 
         // Should exclude deficiencies from current inspection
@@ -165,7 +165,7 @@ describe('unsecuredGetPreviouslyUnresolvedDeficiencies Integration Tests', () =>
         // Test the logic without creating complex test data
         const result = await unsecuredGetPreviouslyUnresolvedDeficiencies(
             ids.cadetIds[0],
-            data.assosiation.id,
+            data.organisation.id,
             ids.inspectionIds[4]
         );
 
@@ -183,7 +183,7 @@ describe('unsecuredGetPreviouslyUnresolvedDeficiencies Integration Tests', () =>
     it('should exclude deficiencies from other associations', async () => {
         const result = await unsecuredGetPreviouslyUnresolvedDeficiencies(
             ids.cadetIds[0],
-            wrongAssosiation.data.assosiation.id, // Different association
+            wrongAssosiation.data.organisation.id, // Different association
             ids.inspectionIds[4]
         );
 
@@ -193,7 +193,7 @@ describe('unsecuredGetPreviouslyUnresolvedDeficiencies Integration Tests', () =>
     it('should order results by dateCreated ASC, then description ASC', async () => {
         const result = await unsecuredGetPreviouslyUnresolvedDeficiencies(
             ids.cadetIds[0],
-            data.assosiation.id,
+            data.organisation.id,
             ids.inspectionIds[4]
         );
 
@@ -234,7 +234,7 @@ describe('unsecuredGetActiveInspection Integration Tests', () => {
             data: { date: "2023-01-01" }
         });
 
-        const result = await unsecuredGetActiveInspection(ids.cadetIds[0], data.assosiation.id);
+        const result = await unsecuredGetActiveInspection(ids.cadetIds[0], data.organisation.id);
         expect(result).toBeNull();
     });
 
@@ -244,7 +244,7 @@ describe('unsecuredGetActiveInspection Integration Tests', () => {
             data: { timeStart: null }
         });
 
-        const result = await unsecuredGetActiveInspection(ids.cadetIds[0], data.assosiation.id);
+        const result = await unsecuredGetActiveInspection(ids.cadetIds[0], data.organisation.id);
         expect(result).toBeNull();
     });
 
@@ -254,24 +254,24 @@ describe('unsecuredGetActiveInspection Integration Tests', () => {
             data: { timeEnd: "17:00" }
         });
 
-        const result = await unsecuredGetActiveInspection(ids.cadetIds[0], data.assosiation.id);
+        const result = await unsecuredGetActiveInspection(ids.cadetIds[0], data.organisation.id);
         expect(result).toBeNull();
     });
 
     it('should return null for inspections from other associations', async () => {
         const result = await unsecuredGetActiveInspection(
             ids.cadetIds[0], 
-            wrongAssosiation.data.assosiation.id
+            wrongAssosiation.data.organisation.id
         );
         expect(result).toBeNull();
     });
 
     it('should return active inspection with correct structure', async () => {
-        const result = await unsecuredGetActiveInspection(ids.cadetIds[0], data.assosiation.id);
+        const result = await unsecuredGetActiveInspection(ids.cadetIds[0], data.organisation.id);
 
         expect(result).toMatchObject({
             id: ids.inspectionIds[4],
-            fk_assosiation: data.assosiation.id,
+            organisationId: data.organisation.id,
             date: dayjs().format("YYYY-MM-DD"),
             timeStart: "08:00",
             timeEnd: null,
@@ -281,7 +281,7 @@ describe('unsecuredGetActiveInspection Integration Tests', () => {
     });
 
     it('should include filtered cadetInspection and deficiencyCreated', async () => {
-        const result = await unsecuredGetActiveInspection(ids.cadetIds[0], data.assosiation.id);
+        const result = await unsecuredGetActiveInspection(ids.cadetIds[0], data.organisation.id);
 
         expect(result).not.toBeNull();
         
@@ -303,7 +303,7 @@ describe('unsecuredGetActiveInspection Integration Tests', () => {
 describe('getUnresolvedByCadet Integration Tests', () => {
     beforeAll(() => {
         global.__ROLE__ = AuthRole.inspector;
-        global.__ASSOSIATION__ = data.assosiation.id;
+        global.__ASSOSIATION__ = data.organisation.id;
     });
 
     afterEach(async () => {

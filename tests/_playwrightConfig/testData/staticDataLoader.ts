@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { Assosiation, AssosiationConfiguration, Cadet, DeficiencyType, Inspection, Material, MaterialGroup, Prisma, StorageUnit, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@prisma/client";
+import { Organisation, OrganisationConfiguration, Cadet, DeficiencyType, Inspection, Material, MaterialGroup, Prisma, StorageUnit, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@prisma/client";
 import bcrypt from 'bcrypt';
 import StaticDataGenerator, { StaticDataIdType } from "./staticDataGenerator";
 import { getStaticDataIds } from "./staticDataIds"; 
@@ -7,7 +7,7 @@ import { getStaticDataIds } from "./staticDataIds";
 export class StaticData {
 
     readonly index: number;
-    readonly fk_assosiation: string;
+    readonly organisationId: string;
     readonly ids: StaticDataIdType;
     readonly data: StaticDataGetter;
     readonly fill: StaticDataLoader;
@@ -20,7 +20,7 @@ export class StaticData {
 
         this.index = i;
         this.ids = getStaticDataIds(i);
-        this.fk_assosiation = this.ids.fk_assosiation;
+        this.organisationId = this.ids.organisationId;
         this.data = new StaticDataGetter(i, this.ids);
         this.fill = new StaticDataLoader(this.data);
         this.cleanup = new StaticDataCleanup(this.data, this.fill);
@@ -28,11 +28,11 @@ export class StaticData {
 
     async resetData() {
         try {
-            const db = await prisma.assosiation.findUnique({
-                where: { id: this.fk_assosiation }
+            const db = await prisma.organisation.findUnique({
+                where: { id: this.organisationId }
             });
             if (db !== null) {
-                await this.cleanup.removeAssosiation();
+                await this.cleanup.removeOrganisation();
             }
         } catch (e) {
             console.error(e);
@@ -44,8 +44,8 @@ export class StaticData {
 class StaticDataGetter {
 
     readonly index: number;
-    readonly assosiation: Assosiation;
-    readonly assosiationConfiguration: AssosiationConfiguration;
+    readonly organisation: Organisation;
+    readonly organisationConfiguration: OrganisationConfiguration;
     readonly cadets: Cadet[];
     readonly userIds: string[];
 
@@ -76,26 +76,26 @@ class StaticDataGetter {
     constructor(i: number, ids: StaticDataIdType) {
         this.index = i;
         const generator = new StaticDataGenerator(ids);
-        const { fk_assosiation, userIds, sizeIds, sizelistIds } = ids;
+        const { organisationId, userIds, sizeIds, sizelistIds } = ids;
         this.userIds = userIds;
 
-        this.assosiation = {
-            id: fk_assosiation,
+        this.organisation = {
+            id: organisationId,
             name: `Testautomatisation-${i}`,
             acronym: `test${i}`,
             useBeta: false,
         };
 
 
-        this.assosiationConfiguration = generator.assosiationConfiguration();
+        this.organisationConfiguration = generator.organisationConfiguration();
         this.cadets = generator.cadet();
         this.uniformSizes = generator.uniformSize();
 
         this.uniformSizelists = [
-            { id: sizelistIds[0], name: 'Liste1', fk_assosiation },
-            { id: sizelistIds[1], name: 'Liste2', fk_assosiation },
-            { id: sizelistIds[2], name: 'Liste3', fk_assosiation },
-            { id: sizelistIds[3], name: 'Liste4', fk_assosiation },
+            { id: sizelistIds[0], name: 'Liste1', organisationId },
+            { id: sizelistIds[1], name: 'Liste2', organisationId },
+            { id: sizelistIds[2], name: 'Liste3', organisationId },
+            { id: sizelistIds[3], name: 'Liste4', organisationId },
         ];
         this.sizeConnections = [
             [
@@ -158,25 +158,25 @@ class StaticDataGetter {
     }
 
     async users() {
-        const fk_assosiation = this.assosiation.id;
+        const organisationId = this.organisation.id;
         const password = await bcrypt.hash(process.env.TEST_USER_PASSWORD??"Test!234" as string, 12);
         return [
-            { id: this.userIds[0], fk_assosiation, role: 4, username: 'test4', name: `Test ${this.index} Admin`, password, active: true },
-            { id: this.userIds[1], fk_assosiation, role: 3, username: 'test3', name: `Test ${this.index} Verwaltung`, password, active: true },
-            { id: this.userIds[2], fk_assosiation, role: 2, username: 'test2', name: `Test ${this.index} Kontrolleur`, password, active: true },
-            { id: this.userIds[3], fk_assosiation, role: 1, username: 'test1', name: `Test ${this.index} Nutzer`, password, active: true },
-            { id: this.userIds[4], fk_assosiation, role: 1, username: 'test5', name: `Test ${this.index} Gesperrt`, password, active: false },
+            { id: this.userIds[0], organisationId, role: 4, username: 'test4', email: 'test4@test.com',  name: `Test ${this.index} Admin`, password, active: true },
+            { id: this.userIds[1], organisationId, role: 3, username: 'test3', email: 'test3@test.com', name: `Test ${this.index} Verwaltung`, password, active: true },
+            { id: this.userIds[2], organisationId, role: 2, username: 'test2', email: 'test2@test.com', name: `Test ${this.index} Kontrolleur`, password, active: true },
+            { id: this.userIds[3], organisationId, role: 1, username: 'test1', email: 'test1@test.com', name: `Test ${this.index} Nutzer`, password, active: true },
+            { id: this.userIds[4], organisationId, role: 1, username: 'test5', email: 'test5@test.com', name: `Test ${this.index} Gesperrt`, password, active: false },
         ]
     }
 }
 class StaticDataCleanup {
     readonly data: StaticDataGetter;
     readonly loader: StaticDataLoader;
-    readonly fk_assosiation: string;
+    readonly organisationId: string;
     constructor(getter: StaticDataGetter, filler: StaticDataLoader) {
         this.data = getter;
         this.loader = filler;
-        this.fk_assosiation = getter.assosiation.id;
+        this.organisationId = getter.organisation.id;
     }
 
     async inspection() {
@@ -202,7 +202,7 @@ class StaticDataCleanup {
             this.deleteUniformIssued(),
             this.deleteMaterialIssued(),
             prisma.cadetDeficiency.deleteMany({
-                where: { cadet: { fk_assosiation: this.data.assosiation.id } }
+                where: { cadet: { organisationId: this.data.organisation.id } }
             }),
             this.deleteCadetInspection(),
         ]);
@@ -298,7 +298,7 @@ class StaticDataCleanup {
         await this.loader.redirects();
     }
 
-    async removeAssosiation() {
+    async removeOrganisation() {
         await this.deleteRedirects();
         await this.deleteDeficiency();
         await this.deleteDeficiencyType();
@@ -318,64 +318,64 @@ class StaticDataCleanup {
 
         await this.deleteCadet();
         await this.deleteUsers();
-        await this.deleteAssosiation();
+        await this.deleteOrganisation();
     }
     private deleteDeficiency = () => prisma.deficiency.deleteMany({
-        where: { type: { fk_assosiation: this.fk_assosiation } }
+        where: { type: { organisationId: this.organisationId } }
     });
     private deleteDeficiencyType = () => prisma.deficiencyType.deleteMany({
-        where: { fk_assosiation: this.fk_assosiation }
+        where: { organisationId: this.organisationId }
     });
     private deleteCadetInspection = () => prisma.cadetInspection.deleteMany({
-        where: { inspection: { fk_assosiation: this.fk_assosiation } }
+        where: { inspection: { organisationId: this.organisationId } }
     });
     private deleteInspection = () => prisma.inspection.deleteMany({
-        where: { fk_assosiation: this.fk_assosiation }
+        where: { organisationId: this.organisationId }
     });
 
     private deleteUniformIssued = () => prisma.uniformIssued.deleteMany({
-        where: { cadet: { fk_assosiation: this.fk_assosiation } }
+        where: { cadet: { organisationId: this.organisationId } }
     });
     private deleteMaterialIssued = () => prisma.materialIssued.deleteMany({
-        where: { cadet: { fk_assosiation: this.fk_assosiation } }
+        where: { cadet: { organisationId: this.organisationId } }
     });
 
     private deleteMaterial = () => prisma.material.deleteMany({
-        where: { materialGroup: { fk_assosiation: this.fk_assosiation } }
+        where: { materialGroup: { organisationId: this.organisationId } }
     });
     private deleteMaterialGroup = () => prisma.materialGroup.deleteMany({
-        where: { fk_assosiation: this.fk_assosiation }
+        where: { organisationId: this.organisationId }
     });
 
     private deleteUniform = () => prisma.uniform.deleteMany({
-        where: { type: { fk_assosiation: this.fk_assosiation } }
+        where: { type: { organisationId: this.organisationId } }
     });
     private deleteUniformGeneration = () => prisma.uniformGeneration.deleteMany({
-        where: { type: { fk_assosiation: this.fk_assosiation } }
+        where: { type: { organisationId: this.organisationId } }
     });
     private deleteUniformType = () => prisma.uniformType.deleteMany({
-        where: { fk_assosiation: this.fk_assosiation } }
+        where: { organisationId: this.organisationId } }
     );
     private deleteUniformSize = () => prisma.uniformSize.deleteMany({
-        where: { fk_assosiation: this.fk_assosiation }
+        where: { organisationId: this.organisationId }
     });
     private deleteUniformSizelist = () => prisma.uniformSizelist.deleteMany({
-        where: { fk_assosiation: this.fk_assosiation }
+        where: { organisationId: this.organisationId }
     });
     private deleteCadet = () => prisma.cadet.deleteMany({
-        where: { fk_assosiation: this.fk_assosiation }
+        where: { organisationId: this.organisationId }
     });
     private deleteUsers = () => prisma.user.deleteMany({
-        where: { fk_assosiation: this.fk_assosiation }
+        where: { organisationId: this.organisationId }
     });
-    private deleteAssosiation = () => prisma.assosiation.delete({
-        where: { id: this.fk_assosiation }
+    private deleteOrganisation = () => prisma.organisation.delete({
+        where: { id: this.organisationId }
     });
     private deleteStorage = () => prisma.storageUnit.deleteMany({
-        where: { assosiationId: this.fk_assosiation }
+        where: { organisationId: this.organisationId }
     });
     private deleteRedirects = () => prisma.redirect.deleteMany({
-        where: { assosiationId: this.fk_assosiation }
+        where: { organisationId: this.organisationId }
     });
 }
 class StaticDataLoader {
@@ -386,8 +386,8 @@ class StaticDataLoader {
     }
 
     async all() {
-        await this.assosiation();
-        await this.assosiationConfiguration();
+        await this.organisation();
+        await this.organisationConfiguration();
         await this.users();
 
         await this.storageUnits();
@@ -412,14 +412,14 @@ class StaticDataLoader {
         await this.cadetInspections();
         await this.redirects();
     }
-    async assosiation() {
-        await prisma.assosiation.create({
-            data: this.data.assosiation,
+    async organisation() {
+        await prisma.organisation.create({
+            data: this.data.organisation,
         });
     }
-    async assosiationConfiguration() {
-        await prisma.assosiationConfiguration.create({
-            data: this.data.assosiationConfiguration,
+    async organisationConfiguration() {
+        await prisma.organisationConfiguration.create({
+            data: this.data.organisationConfiguration,
         });
     }
     async users() {

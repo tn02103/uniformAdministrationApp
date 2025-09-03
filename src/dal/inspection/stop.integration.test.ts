@@ -44,7 +44,7 @@ describe('stopInspection', () => {
         expect(success).toBeTruthy();
 
         const email = process.env.EMAIL_ADRESS_TESTS ?? 'admin@example.com';
-        const inspectionReviewData = await dbQuery.getInspectionReviewData(staticData.fk_assosiation, staticData.ids.inspectionIds[4], prisma);
+        const inspectionReviewData = await dbQuery.getInspectionReviewData(staticData.organisationId, staticData.ids.inspectionIds[4], prisma);
         expect(jest.isMockFunction(sendInspectionReviewMail)).toBeTruthy();
         expect(sendInspectionReviewMail).toHaveBeenCalled();
         expect(sendInspectionReviewMail).toHaveBeenCalledWith([email], inspectionReviewData);

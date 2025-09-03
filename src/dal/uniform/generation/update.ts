@@ -18,10 +18,10 @@ export const update = (props: PropType): SAReturnType<UniformType[]> => genericS
     props,
     propSchema,
     { uniformGenerationId: props.id, uniformSizelistId: props.data.fk_sizelist }
-).then(([{ assosiation }, { id, data }]) => prisma.$transaction(async (client) => {
+).then(([{ organisationId }, { id, data }]) => prisma.$transaction(async (client) => {
     const type = await client.uniformType.findFirstOrThrow({
         where: {
-            fk_assosiation: assosiation,
+            organisationId,
             uniformGenerationList: {
                 some: { id }
             }
@@ -59,5 +59,5 @@ export const update = (props: PropType): SAReturnType<UniformType[]> => genericS
         data
     });
 
-    return __unsecuredGetUniformTypeList(assosiation, client);
+    return __unsecuredGetUniformTypeList(organisationId, client);
 }));

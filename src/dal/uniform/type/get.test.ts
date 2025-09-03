@@ -16,7 +16,7 @@ describe('<UniformType> get', () => {
                 id: 'test-id-123',
                 name: 'Test Uniform Type',
                 acronym: 'TUT',
-                fk_assosiation: 'test-assosiation-id',
+                organisationId: 'test-organisation-id',
             };
 
             mockFindUnique.mockResolvedValue(mockUniformType);
@@ -27,7 +27,7 @@ describe('<UniformType> get', () => {
             expect(mockFindUnique).toHaveBeenCalledWith({
                 where: {
                     id: 'test-id-123',
-                    fk_assosiation: 'test-assosiation-id',
+                    organisationId: 'test-organisation-id',
                     recdelete: null
                 },
                 select: expect.any(Object)
@@ -43,7 +43,7 @@ describe('<UniformType> get', () => {
             expect(mockFindUnique).toHaveBeenCalledWith({
                 where: {
                     id: 'non-existent-id',
-                    fk_assosiation: 'test-assosiation-id',
+                    organisationId: 'test-organisation-id',
                     recdelete: null
                 },
                 select: expect.any(Object)
@@ -64,7 +64,7 @@ describe('<UniformType> get', () => {
 
             expect(result).toEqual(mockUniformTypes);
             expect(mockFindMany).toHaveBeenCalledWith({
-                where: { fk_assosiation: 'test-assosiation-id', recdelete: null },
+                where: { organisationId: 'test-organisation-id', recdelete: null },
                 orderBy: { sortOrder: "asc" },
                 select: expect.any(Object)
             });
@@ -91,7 +91,7 @@ describe('<UniformType> get', () => {
 
             expect(result).toEqual(mockUniformTypes);
             expect(mockFindMany).toHaveBeenCalledWith({
-                where: { fk_assosiation: 'test-assoc', recdelete: null },
+                where: { organisationId: 'test-assoc', recdelete: null },
                 orderBy: { sortOrder: "asc" },
                 select: uniformTypeArgs.select,
             });

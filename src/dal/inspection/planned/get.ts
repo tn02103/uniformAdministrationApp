@@ -14,4 +14,4 @@ const dbQuery = new PlannedInspectionDBQuery();
  */
 export const getPlannedInspectionList = async (): Promise<PlannedInspectionType[]> => genericSAValidatorV2(
     AuthRole.materialManager, true, {}
-).then(async ({ assosiation }) => dbQuery.plannedInspectionListQuery(assosiation, prisma));
+).then(async ({ organisationId }) => dbQuery.plannedInspectionListQuery(organisationId, prisma));

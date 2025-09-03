@@ -18,7 +18,7 @@ it('create working', async () => {
         description: 'Gruppe-2',
         sortOrder: 4,
         multitypeAllowed: false,
-        fk_assosiation: staticData.fk_assosiation,
+        organisationId: staticData.organisationId,
         issuedDefault: null,
         recdelete: null,
         recdeleteUser: null,

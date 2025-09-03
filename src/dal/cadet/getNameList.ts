@@ -5,10 +5,10 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 
 export const getPersonnelNameList = async () => genericSAValidatorV2(AuthRole.user, true, {})
-    .then(({ assosiation }) => prisma.cadet.findMany({
+    .then(({ organisationId }) => prisma.cadet.findMany({
         select: { id: true, firstname: true, lastname: true },
         where: {
-            fk_assosiation: assosiation,
+            organisationId,
             recdelete: null
         },
         orderBy: [

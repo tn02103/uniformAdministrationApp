@@ -250,7 +250,7 @@ test('changePassword', async ({ userPage, staticData: { ids, index } }) => {
         expect(await bcrypt.compare("newPassword123", dbUser.password)).toBeTruthy();
     });
 });
-test('create new user', async ({ userPage, staticData: { fk_assosiation } }) => {
+test('create new user', async ({ userPage, staticData: { organisationId } }) => {
     await test.step('fill Data', async () => {
         await userPage.btn_create.click();
 
@@ -273,7 +273,7 @@ test('create new user', async ({ userPage, staticData: { fk_assosiation } }) => 
 
     await test.step('validate ui and db', async () => {
         const dbUser = await prisma.user.findFirst({
-            where: { username: 'test9', fk_assosiation }
+            where: { username: 'test9', organisationId }
         });
 
         expect(dbUser).not.toBeNull();

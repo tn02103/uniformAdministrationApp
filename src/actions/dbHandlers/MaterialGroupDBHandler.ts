@@ -4,11 +4,11 @@ import { Prisma } from "@prisma/client";
 
 export class MaterialGroupDBHandler {
 
-    getNormalList = (fk_assosiation: string, client?: Prisma.TransactionClient) =>
+    getNormalList = (organisationId: string, client?: Prisma.TransactionClient) =>
         (client ?? prisma).materialGroup.findMany({
             ...materialGroupArgs,
             where: {
-                fk_assosiation,
+                organisationId,
                 recdelete: null,
                 typeList: {
                     some: {
@@ -19,7 +19,7 @@ export class MaterialGroupDBHandler {
             orderBy: { sortOrder: "asc" }
         });
 
-    getAdminList = (fk_assosiation: string, client?: Prisma.TransactionClient) =>
+    getAdminList = (organisationId: string, client?: Prisma.TransactionClient) =>
         (client ?? prisma).materialGroup.findMany({
             select: {
                 id: true,
@@ -39,7 +39,7 @@ export class MaterialGroupDBHandler {
                     orderBy: { sortOrder: "asc" }
                 },
             },
-            where: { fk_assosiation, recdelete: null },
+            where: { organisationId, recdelete: null },
             orderBy: { sortOrder: "asc" }
         });
 
@@ -49,23 +49,23 @@ export class MaterialGroupDBHandler {
             ...materialGroupArgs
         });
 
-    getMaterialIssueCountsByAssosiation = (fk_assosiation: string) =>
+    getMaterialIssueCountsByAssosiation = (organisationId: string) =>
         prisma.materialIssued.groupBy({
             by: ['fk_material'],
             _sum: { quantity: true },
             where: {
                 material: {
-                    materialGroup: { fk_assosiation }
+                    materialGroup: { organisationId }
                 },
                 dateReturned: null,
             }
         });
 
 
-    updateSortOrderByOldSortOrder = (fk_assosiation: string, oldSortOrder: number, up: boolean, client: Prisma.TransactionClient) =>
+    updateSortOrderByOldSortOrder = (organisationId: string, oldSortOrder: number, up: boolean, client: Prisma.TransactionClient) =>
         client.materialGroup.updateMany({
             where: {
-                fk_assosiation: fk_assosiation,
+                organisationId: organisationId,
                 sortOrder: oldSortOrder,
                 recdelete: null,
             },
@@ -84,10 +84,10 @@ export class MaterialGroupDBHandler {
                     : { increment: 1 }
             }
         });
-    moveSortorderUpBelowNumber = (fk_assosiation: string, limit: number, client: Prisma.TransactionClient) =>
+    moveSortorderUpBelowNumber = (organisationId: string, limit: number, client: Prisma.TransactionClient) =>
         client.materialGroup.updateMany({
             where: {
-                fk_assosiation,
+                organisationId,
                 sortOrder: { gt: limit },
                 recdelete: null,
             },
@@ -106,10 +106,10 @@ export class MaterialGroupDBHandler {
             }
         });
 
-    create = (fk_assosiation: string, description: string, sortOrder: number, client: Prisma.TransactionClient) =>
+    create = (organisationId: string, description: string, sortOrder: number, client: Prisma.TransactionClient) =>
         client.materialGroup.create({
             data: {
-                fk_assosiation,
+                organisationId,
                 description,
                 sortOrder,
                 multitypeAllowed: false,

@@ -19,7 +19,7 @@ it('deletes a storage unit', async () => {
 
     const dbList = await prisma.storageUnit.findMany({
         where: {
-            assosiationId: ids.fk_assosiation,
+            organisationId: ids.organisationId,
             id: ids.storageUnitIds[0],
         }
     });

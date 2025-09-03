@@ -75,7 +75,7 @@ test('validate moveDown', async ({ page, groupListComponent, staticData: { ids }
         expect.soft(seccond?.sortOrder).toBe(1);
     });
 });
-test('validate create', async ({ page, groupListComponent, groupDetailComponent, staticData: { fk_assosiation } }) => {
+test('validate create', async ({ page, groupListComponent, groupDetailComponent, staticData: { organisationId } }) => {
     await test.step('create and validate ui', async () => {
         await groupListComponent.btn_create.click();
 
@@ -93,7 +93,7 @@ test('validate create', async ({ page, groupListComponent, groupDetailComponent,
     });
     await test.step('validte db', async () => {
         const dbGroup = await prisma.materialGroup.findFirst({
-            where: { fk_assosiation, description: "Gruppe-1" }
+            where: { organisationId, description: "Gruppe-1" }
         });
 
         expect(dbGroup).not.toBeNull();

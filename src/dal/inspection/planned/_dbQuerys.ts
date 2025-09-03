@@ -4,11 +4,11 @@ import { plannedInspectionTypeArgs } from "@/types/inspectionTypes";
 import { Prisma } from "@prisma/client";
 
 export class PlannedInspectionDBQuery {
-    plannedInspectionListQuery = (fk_assosiation: string, client: Prisma.TransactionClient) =>
+    plannedInspectionListQuery = (organisationId: string, client: Prisma.TransactionClient) =>
         client.inspection.findMany({
             ...plannedInspectionTypeArgs,
             where: {
-                fk_assosiation,
+                organisationId,
                 OR: [
                     { date: { gte: dayjs().format("YYYY-MM-DD") } },
                     { timeStart: null },

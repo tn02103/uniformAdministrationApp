@@ -1,4 +1,4 @@
-import { AssosiationConfiguration, Deregistration, Inspection, Prisma, Redirect, StorageUnit, Uniform } from "@prisma/client";
+import { OrganisationConfiguration, Deregistration, Inspection, Prisma, Redirect, StorageUnit, Uniform } from "@prisma/client";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import utc from "dayjs/plugin/utc";
@@ -9,7 +9,7 @@ dayjs.extend(customParseFormat);
 const uuidArray = (i: number) => Array(i).fill("").map(() => uuid());
 
 export type StaticDataIdType = {
-    fk_assosiation: string;
+    organisationId: string;
     userIds: string[];
     cadetIds: string[];
     deficiencyIds: string[];
@@ -36,7 +36,7 @@ export type StaticDataIdType = {
 };
 export function getStaticDataIds(): StaticDataIdType {
     return {
-        fk_assosiation: uuid(),
+        organisationId: uuid(),
         userIds: uuidArray(5),
         cadetIds: uuidArray(10),
         sizeIds: uuidArray(21),
@@ -69,63 +69,63 @@ export default class StaticDataGenerator {
         this.ids = ids;
     }
 
-    assosiationConfiguration() {
+    organisationConfiguration() {
         return {
-            assosiationId: this.ids.fk_assosiation,
+            organisationId: this.ids.organisationId,
             sendEmailAfterInspection: true,
             inspectionReportEmails: [process.env.EMAIL_ADRESS_TESTS ?? 'admin@example.com'],
-        } satisfies AssosiationConfiguration
+        } satisfies OrganisationConfiguration
     }
 
     cadet() {
-        const { cadetIds, fk_assosiation } = this.ids
+        const { cadetIds, organisationId } = this.ids
         return [
-            { id: cadetIds[0], fk_assosiation, firstname: 'Antje', lastname: 'Fried', active: true, comment: '', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[1], fk_assosiation, firstname: 'Marie', lastname: 'Becker', active: true, comment: 'Bemerkung Test', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[2], fk_assosiation, firstname: 'Sven', lastname: 'Keller', active: true, comment: '', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[3], fk_assosiation, firstname: 'Lucas', lastname: 'Schwartz', active: true, comment: '', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[4], fk_assosiation, firstname: 'Uwe', lastname: 'Luft', active: true, comment: 'initial-comment', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[5], fk_assosiation, firstname: 'Maik', lastname: 'Finkel', active: true, comment: 'initial-comment', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[6], fk_assosiation, firstname: 'Tim', lastname: 'Weissmuller', active: true, comment: '', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[7], fk_assosiation, firstname: 'Juliane', lastname: 'Unger', active: true, comment: '', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[8], fk_assosiation, firstname: 'Simone', lastname: 'Osterhagen', active: true, comment: '', recdelete: new Date('2023-08-16 09:45:25'), recdeleteUser: 'test4' },
-            { id: cadetIds[9], fk_assosiation, firstname: 'Christina', lastname: 'Faber', active: true, comment: '', recdelete: null, recdeleteUser: null },
+            { id: cadetIds[0], organisationId, firstname: 'Antje', lastname: 'Fried', active: true, comment: '', recdelete: null, recdeleteUser: null },
+            { id: cadetIds[1], organisationId, firstname: 'Marie', lastname: 'Becker', active: true, comment: 'Bemerkung Test', recdelete: null, recdeleteUser: null },
+            { id: cadetIds[2], organisationId, firstname: 'Sven', lastname: 'Keller', active: true, comment: '', recdelete: null, recdeleteUser: null },
+            { id: cadetIds[3], organisationId, firstname: 'Lucas', lastname: 'Schwartz', active: true, comment: '', recdelete: null, recdeleteUser: null },
+            { id: cadetIds[4], organisationId, firstname: 'Uwe', lastname: 'Luft', active: true, comment: 'initial-comment', recdelete: null, recdeleteUser: null },
+            { id: cadetIds[5], organisationId, firstname: 'Maik', lastname: 'Finkel', active: true, comment: 'initial-comment', recdelete: null, recdeleteUser: null },
+            { id: cadetIds[6], organisationId, firstname: 'Tim', lastname: 'Weissmuller', active: true, comment: '', recdelete: null, recdeleteUser: null },
+            { id: cadetIds[7], organisationId, firstname: 'Juliane', lastname: 'Unger', active: true, comment: '', recdelete: null, recdeleteUser: null },
+            { id: cadetIds[8], organisationId, firstname: 'Simone', lastname: 'Osterhagen', active: true, comment: '', recdelete: new Date('2023-08-16 09:45:25'), recdeleteUser: 'test4' },
+            { id: cadetIds[9], organisationId, firstname: 'Christina', lastname: 'Faber', active: true, comment: '', recdelete: null, recdeleteUser: null },
         ]
     }
 
     uniformSize() {
         return [
-            { id: this.ids.sizeIds[0], name: '0', sortOrder: 1, fk_assosiation: this.ids.fk_assosiation },
-            { id: this.ids.sizeIds[1], name: '1', sortOrder: 2, fk_assosiation: this.ids.fk_assosiation },
-            { id: this.ids.sizeIds[2], name: '2', sortOrder: 3, fk_assosiation: this.ids.fk_assosiation },
-            { id: this.ids.sizeIds[3], name: '3', sortOrder: 4, fk_assosiation: this.ids.fk_assosiation },
-            { id: this.ids.sizeIds[4], name: '4', sortOrder: 5, fk_assosiation: this.ids.fk_assosiation },
-            { id: this.ids.sizeIds[5], name: '5', sortOrder: 6, fk_assosiation: this.ids.fk_assosiation },
-            { id: this.ids.sizeIds[6], name: '6', sortOrder: 7, fk_assosiation: this.ids.fk_assosiation },
-            { id: this.ids.sizeIds[7], name: '7', sortOrder: 8, fk_assosiation: this.ids.fk_assosiation },
-            { id: this.ids.sizeIds[8], name: '8', sortOrder: 9, fk_assosiation: this.ids.fk_assosiation },
-            { id: this.ids.sizeIds[9], name: '9', sortOrder: 10, fk_assosiation: this.ids.fk_assosiation },
-            { id: this.ids.sizeIds[10], name: '10', sortOrder: 11, fk_assosiation: this.ids.fk_assosiation },
-            { id: this.ids.sizeIds[11], name: '11', sortOrder: 12, fk_assosiation: this.ids.fk_assosiation },
-            { id: this.ids.sizeIds[12], name: '12', sortOrder: 13, fk_assosiation: this.ids.fk_assosiation },
-            { id: this.ids.sizeIds[13], name: '13', sortOrder: 14, fk_assosiation: this.ids.fk_assosiation },
-            { id: this.ids.sizeIds[14], name: '14', sortOrder: 15, fk_assosiation: this.ids.fk_assosiation },
-            { id: this.ids.sizeIds[15], name: '15', sortOrder: 16, fk_assosiation: this.ids.fk_assosiation },
-            { id: this.ids.sizeIds[16], name: 'Größe16', sortOrder: 17, fk_assosiation: this.ids.fk_assosiation },
-            { id: this.ids.sizeIds[17], name: 'Größe17', sortOrder: 18, fk_assosiation: this.ids.fk_assosiation },
-            { id: this.ids.sizeIds[18], name: 'Größe18', sortOrder: 19, fk_assosiation: this.ids.fk_assosiation },
-            { id: this.ids.sizeIds[19], name: 'Größe19', sortOrder: 20, fk_assosiation: this.ids.fk_assosiation },
-            { id: this.ids.sizeIds[20], name: 'Größe20', sortOrder: 21, fk_assosiation: this.ids.fk_assosiation },
+            { id: this.ids.sizeIds[0], name: '0', sortOrder: 1, organisationId: this.ids.organisationId },
+            { id: this.ids.sizeIds[1], name: '1', sortOrder: 2, organisationId: this.ids.organisationId },
+            { id: this.ids.sizeIds[2], name: '2', sortOrder: 3, organisationId: this.ids.organisationId },
+            { id: this.ids.sizeIds[3], name: '3', sortOrder: 4, organisationId: this.ids.organisationId },
+            { id: this.ids.sizeIds[4], name: '4', sortOrder: 5, organisationId: this.ids.organisationId },
+            { id: this.ids.sizeIds[5], name: '5', sortOrder: 6, organisationId: this.ids.organisationId },
+            { id: this.ids.sizeIds[6], name: '6', sortOrder: 7, organisationId: this.ids.organisationId },
+            { id: this.ids.sizeIds[7], name: '7', sortOrder: 8, organisationId: this.ids.organisationId },
+            { id: this.ids.sizeIds[8], name: '8', sortOrder: 9, organisationId: this.ids.organisationId },
+            { id: this.ids.sizeIds[9], name: '9', sortOrder: 10, organisationId: this.ids.organisationId },
+            { id: this.ids.sizeIds[10], name: '10', sortOrder: 11, organisationId: this.ids.organisationId },
+            { id: this.ids.sizeIds[11], name: '11', sortOrder: 12, organisationId: this.ids.organisationId },
+            { id: this.ids.sizeIds[12], name: '12', sortOrder: 13, organisationId: this.ids.organisationId },
+            { id: this.ids.sizeIds[13], name: '13', sortOrder: 14, organisationId: this.ids.organisationId },
+            { id: this.ids.sizeIds[14], name: '14', sortOrder: 15, organisationId: this.ids.organisationId },
+            { id: this.ids.sizeIds[15], name: '15', sortOrder: 16, organisationId: this.ids.organisationId },
+            { id: this.ids.sizeIds[16], name: 'Größe16', sortOrder: 17, organisationId: this.ids.organisationId },
+            { id: this.ids.sizeIds[17], name: 'Größe17', sortOrder: 18, organisationId: this.ids.organisationId },
+            { id: this.ids.sizeIds[18], name: 'Größe18', sortOrder: 19, organisationId: this.ids.organisationId },
+            { id: this.ids.sizeIds[19], name: 'Größe19', sortOrder: 20, organisationId: this.ids.organisationId },
+            { id: this.ids.sizeIds[20], name: 'Größe20', sortOrder: 21, organisationId: this.ids.organisationId },
         ]
     }
 
     uniformType() {
         return [
-            { id: this.ids.uniformTypeIds[0], fk_assosiation: this.ids.fk_assosiation, name: 'Typ1', acronym: 'AA', issuedDefault: 3, usingGenerations: true, usingSizes: true, fk_defaultSizelist: this.ids.sizelistIds[0], sortOrder: 0, recdelete: null, recdeleteUser: null },
-            { id: this.ids.uniformTypeIds[1], fk_assosiation: this.ids.fk_assosiation, name: 'Typ2', acronym: 'AB', issuedDefault: 1, usingGenerations: true, usingSizes: false, fk_defaultSizelist: null, sortOrder: 1, recdelete: null, recdeleteUser: null },
-            { id: this.ids.uniformTypeIds[2], fk_assosiation: this.ids.fk_assosiation, name: 'Typ3', acronym: 'AC', issuedDefault: 1, usingGenerations: false, usingSizes: true, fk_defaultSizelist: this.ids.sizelistIds[1], sortOrder: 2, recdelete: null, recdeleteUser: null },
-            { id: this.ids.uniformTypeIds[3], fk_assosiation: this.ids.fk_assosiation, name: 'Typ4', acronym: 'AD', issuedDefault: 1, usingGenerations: false, usingSizes: false, fk_defaultSizelist: null, sortOrder: 3, recdelete: null, recdeleteUser: null },
-            { id: this.ids.uniformTypeIds[4], fk_assosiation: this.ids.fk_assosiation, name: 'Typ5', acronym: 'AE', issuedDefault: 1, usingGenerations: false, usingSizes: false, fk_defaultSizelist: null, sortOrder: 2, recdelete: new Date('2023-08-15 16:07:58'), recdeleteUser: 'test4' },
+            { id: this.ids.uniformTypeIds[0], organisationId: this.ids.organisationId, name: 'Typ1', acronym: 'AA', issuedDefault: 3, usingGenerations: true, usingSizes: true, fk_defaultSizelist: this.ids.sizelistIds[0], sortOrder: 0, recdelete: null, recdeleteUser: null },
+            { id: this.ids.uniformTypeIds[1], organisationId: this.ids.organisationId, name: 'Typ2', acronym: 'AB', issuedDefault: 1, usingGenerations: true, usingSizes: false, fk_defaultSizelist: null, sortOrder: 1, recdelete: null, recdeleteUser: null },
+            { id: this.ids.uniformTypeIds[2], organisationId: this.ids.organisationId, name: 'Typ3', acronym: 'AC', issuedDefault: 1, usingGenerations: false, usingSizes: true, fk_defaultSizelist: this.ids.sizelistIds[1], sortOrder: 2, recdelete: null, recdeleteUser: null },
+            { id: this.ids.uniformTypeIds[3], organisationId: this.ids.organisationId, name: 'Typ4', acronym: 'AD', issuedDefault: 1, usingGenerations: false, usingSizes: false, fk_defaultSizelist: null, sortOrder: 3, recdelete: null, recdeleteUser: null },
+            { id: this.ids.uniformTypeIds[4], organisationId: this.ids.organisationId, name: 'Typ5', acronym: 'AE', issuedDefault: 1, usingGenerations: false, usingSizes: false, fk_defaultSizelist: null, sortOrder: 2, recdelete: new Date('2023-08-15 16:07:58'), recdeleteUser: 'test4' },
         ]
     }
 
@@ -144,11 +144,11 @@ export default class StaticDataGenerator {
 
     storageUnits() {
         return [
-            { id: this.ids.storageUnitIds[0], assosiationId: this.ids.fk_assosiation, name: 'Kiste 01', description: 'Für Typ1 Uniformteile in Reserve', capacity: 5, isReserve: true },
-            { id: this.ids.storageUnitIds[1], assosiationId: this.ids.fk_assosiation, name: 'Kiste 02', description: 'Für Typ1 Uniformteile in Reserve', capacity: 5, isReserve: true },
-            { id: this.ids.storageUnitIds[2], assosiationId: this.ids.fk_assosiation, name: 'Kiste 03', description: 'Für Typ3 Uniformteile in Reserve', capacity: 10, isReserve: true },
-            { id: this.ids.storageUnitIds[3], assosiationId: this.ids.fk_assosiation, name: 'Kiste 04', description: 'Für Typ3 aktive Uniformteile', capacity: 10, isReserve: false },
-            { id: this.ids.storageUnitIds[4], assosiationId: this.ids.fk_assosiation, name: 'Kiste 05', description: 'Für Typ2 aktive Uniformteile', capacity: null, isReserve: false },
+            { id: this.ids.storageUnitIds[0], organisationId: this.ids.organisationId, name: 'Kiste 01', description: 'Für Typ1 Uniformteile in Reserve', capacity: 5, isReserve: true },
+            { id: this.ids.storageUnitIds[1], organisationId: this.ids.organisationId, name: 'Kiste 02', description: 'Für Typ1 Uniformteile in Reserve', capacity: 5, isReserve: true },
+            { id: this.ids.storageUnitIds[2], organisationId: this.ids.organisationId, name: 'Kiste 03', description: 'Für Typ3 Uniformteile in Reserve', capacity: 10, isReserve: true },
+            { id: this.ids.storageUnitIds[3], organisationId: this.ids.organisationId, name: 'Kiste 04', description: 'Für Typ3 aktive Uniformteile', capacity: 10, isReserve: false },
+            { id: this.ids.storageUnitIds[4], organisationId: this.ids.organisationId, name: 'Kiste 05', description: 'Für Typ2 aktive Uniformteile', capacity: null, isReserve: false },
         ] satisfies StorageUnit[]
     }
 
@@ -418,11 +418,11 @@ export default class StaticDataGenerator {
 
     materialGroup() {
         return [
-            { id: this.ids.materialGroupIds[0], fk_assosiation: this.ids.fk_assosiation, description: 'Gruppe1', issuedDefault: null, sortOrder: 0, recdelete: null, recdeleteUser: null, multitypeAllowed: false },
-            { id: this.ids.materialGroupIds[1], fk_assosiation: this.ids.fk_assosiation, description: 'Gruppe2', issuedDefault: 4, sortOrder: 1, recdelete: null, recdeleteUser: null, multitypeAllowed: false },
-            { id: this.ids.materialGroupIds[2], fk_assosiation: this.ids.fk_assosiation, description: 'Gruppe3', issuedDefault: null, sortOrder: 2, recdelete: null, recdeleteUser: null, multitypeAllowed: true },
-            { id: this.ids.materialGroupIds[3], fk_assosiation: this.ids.fk_assosiation, description: 'Gruppe4', issuedDefault: null, sortOrder: 1, recdelete: new Date('2023-08-16 09:45:25'), recdeleteUser: 'test4', multitypeAllowed: true },
-            { id: this.ids.materialGroupIds[4], fk_assosiation: this.ids.fk_assosiation, description: 'Gruppe5', issuedDefault: null, sortOrder: 3, recdelete: null, recdeleteUser: null, multitypeAllowed: false },
+            { id: this.ids.materialGroupIds[0], organisationId: this.ids.organisationId, description: 'Gruppe1', issuedDefault: null, sortOrder: 0, recdelete: null, recdeleteUser: null, multitypeAllowed: false },
+            { id: this.ids.materialGroupIds[1], organisationId: this.ids.organisationId, description: 'Gruppe2', issuedDefault: 4, sortOrder: 1, recdelete: null, recdeleteUser: null, multitypeAllowed: false },
+            { id: this.ids.materialGroupIds[2], organisationId: this.ids.organisationId, description: 'Gruppe3', issuedDefault: null, sortOrder: 2, recdelete: null, recdeleteUser: null, multitypeAllowed: true },
+            { id: this.ids.materialGroupIds[3], organisationId: this.ids.organisationId, description: 'Gruppe4', issuedDefault: null, sortOrder: 1, recdelete: new Date('2023-08-16 09:45:25'), recdeleteUser: 'test4', multitypeAllowed: true },
+            { id: this.ids.materialGroupIds[4], organisationId: this.ids.organisationId, description: 'Gruppe5', issuedDefault: null, sortOrder: 3, recdelete: null, recdeleteUser: null, multitypeAllowed: false },
         ]
     }
 
@@ -491,14 +491,14 @@ export default class StaticDataGenerator {
 
     deficiencyType(): Prisma.DeficiencyTypeCreateManyInput[] {
         return [
-            { id: this.ids.deficiencyTypeIds[0], fk_assosiation: this.ids.fk_assosiation, name: 'Uniform', dependent: 'uniform', relation: null, disabledDate: null, disabledUser: null },
-            { id: this.ids.deficiencyTypeIds[1], fk_assosiation: this.ids.fk_assosiation, name: 'Cadet', dependent: 'cadet', relation: null, disabledDate: null, disabledUser: null },
-            { id: this.ids.deficiencyTypeIds[2], fk_assosiation: this.ids.fk_assosiation, name: 'CadetUniform', dependent: 'cadet', relation: 'uniform', disabledDate: null, disabledUser: null },
-            { id: this.ids.deficiencyTypeIds[3], fk_assosiation: this.ids.fk_assosiation, name: 'CadetMaterial', dependent: 'cadet', relation: 'material', disabledDate: null, disabledUser: null },
-            { id: this.ids.deficiencyTypeIds[4], fk_assosiation: this.ids.fk_assosiation, name: 'inactive', dependent: 'cadet', relation: null, disabledDate: new Date('2023-08-13T09:58:00.000Z'), disabledUser: 'test4' },
-            { id: this.ids.deficiencyTypeIds[5], fk_assosiation: this.ids.fk_assosiation, name: 'XX unused type', dependent: 'cadet', relation: 'material', disabledDate: null, disabledUser: null },
-            { id: this.ids.deficiencyTypeIds[6], fk_assosiation: this.ids.fk_assosiation, name: 'inactive seccond', dependent: 'cadet', relation: 'material', disabledDate: new Date('2023-08-01T09:58:00.000Z'), disabledUser: 'test4' },
-            { id: this.ids.deficiencyTypeIds[7], fk_assosiation: this.ids.fk_assosiation, name: 'Uniform Broken', dependent: 'uniform', relation: null, disabledDate: null, disabledUser: null },
+            { id: this.ids.deficiencyTypeIds[0], organisationId: this.ids.organisationId, name: 'Uniform', dependent: 'uniform', relation: null, disabledDate: null, disabledUser: null },
+            { id: this.ids.deficiencyTypeIds[1], organisationId: this.ids.organisationId, name: 'Cadet', dependent: 'cadet', relation: null, disabledDate: null, disabledUser: null },
+            { id: this.ids.deficiencyTypeIds[2], organisationId: this.ids.organisationId, name: 'CadetUniform', dependent: 'cadet', relation: 'uniform', disabledDate: null, disabledUser: null },
+            { id: this.ids.deficiencyTypeIds[3], organisationId: this.ids.organisationId, name: 'CadetMaterial', dependent: 'cadet', relation: 'material', disabledDate: null, disabledUser: null },
+            { id: this.ids.deficiencyTypeIds[4], organisationId: this.ids.organisationId, name: 'inactive', dependent: 'cadet', relation: null, disabledDate: new Date('2023-08-13T09:58:00.000Z'), disabledUser: 'test4' },
+            { id: this.ids.deficiencyTypeIds[5], organisationId: this.ids.organisationId, name: 'XX unused type', dependent: 'cadet', relation: 'material', disabledDate: null, disabledUser: null },
+            { id: this.ids.deficiencyTypeIds[6], organisationId: this.ids.organisationId, name: 'inactive seccond', dependent: 'cadet', relation: 'material', disabledDate: new Date('2023-08-01T09:58:00.000Z'), disabledUser: 'test4' },
+            { id: this.ids.deficiencyTypeIds[7], organisationId: this.ids.organisationId, name: 'Uniform Broken', dependent: 'uniform', relation: null, disabledDate: null, disabledUser: null },
         ]
     }
     deficiency() {
@@ -628,11 +628,11 @@ export default class StaticDataGenerator {
     }
     inspection() {
         return [
-            { id: this.ids.inspectionIds[0], fk_assosiation: this.ids.fk_assosiation, name: "Quartal 1", date: '2023-06-18', timeStart: "07:58", timeEnd: "13:06" },
-            { id: this.ids.inspectionIds[1], fk_assosiation: this.ids.fk_assosiation, name: "Quartal 2", date: '2023-08-13', timeStart: "07:58", timeEnd: "13:06" },
-            { id: this.ids.inspectionIds[2], fk_assosiation: this.ids.fk_assosiation, name: "expired", date: '2023-08-17', timeStart: null, timeEnd: null },
-            { id: this.ids.inspectionIds[3], fk_assosiation: this.ids.fk_assosiation, name: "planned", date: dayjs().add(10, "day").format("YYYY-MM-DD"), timeStart: null, timeEnd: null },
-            { id: this.ids.inspectionIds[4], fk_assosiation: this.ids.fk_assosiation, name: "today", date: dayjs().format("YYYY-MM-DD"), timeStart: null, timeEnd: null },
+            { id: this.ids.inspectionIds[0], organisationId: this.ids.organisationId, name: "Quartal 1", date: '2023-06-18', timeStart: "07:58", timeEnd: "13:06" },
+            { id: this.ids.inspectionIds[1], organisationId: this.ids.organisationId, name: "Quartal 2", date: '2023-08-13', timeStart: "07:58", timeEnd: "13:06" },
+            { id: this.ids.inspectionIds[2], organisationId: this.ids.organisationId, name: "expired", date: '2023-08-17', timeStart: null, timeEnd: null },
+            { id: this.ids.inspectionIds[3], organisationId: this.ids.organisationId, name: "planned", date: dayjs().add(10, "day").format("YYYY-MM-DD"), timeStart: null, timeEnd: null },
+            { id: this.ids.inspectionIds[4], organisationId: this.ids.organisationId, name: "today", date: dayjs().format("YYYY-MM-DD"), timeStart: null, timeEnd: null },
         ] satisfies Inspection[];
     }
     cadetInspection() {
@@ -663,10 +663,10 @@ export default class StaticDataGenerator {
 
     redirects(index: number | string) {
         return [
-            { id: this.ids.redirectIds[0], assosiationId: this.ids.fk_assosiation, code: 'homepage' + index, target: 'https://example.com/homepage', active: true },
-            { id: this.ids.redirectIds[1], assosiationId: this.ids.fk_assosiation, code: 'ausbildung' + index, target: 'https://example.com/ausbildung', active: true },
-            { id: this.ids.redirectIds[2], assosiationId: this.ids.fk_assosiation, code: 'kontakt' + index, target: 'https://example.com/kontakt', active: true },
-            { id: this.ids.redirectIds[3], assosiationId: this.ids.fk_assosiation, code: 'impressum' + index, target: 'https://example.com/impressum', active: false },
+            { id: this.ids.redirectIds[0], organisationId: this.ids.organisationId, code: 'homepage' + index, target: 'https://example.com/homepage', active: true },
+            { id: this.ids.redirectIds[1], organisationId: this.ids.organisationId, code: 'ausbildung' + index, target: 'https://example.com/ausbildung', active: true },
+            { id: this.ids.redirectIds[2], organisationId: this.ids.organisationId, code: 'kontakt' + index, target: 'https://example.com/kontakt', active: true },
+            { id: this.ids.redirectIds[3], organisationId: this.ids.organisationId, code: 'impressum' + index, target: 'https://example.com/impressum', active: false },
         ] satisfies Redirect[];
     }
 }

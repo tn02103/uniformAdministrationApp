@@ -12,12 +12,12 @@ beforeAll(async () => {
 
 afterAll(async () => {
     try {
-        await staticData.cleanup.removeAssosiation();
+        await staticData.cleanup.removeOrganisation();
     } catch { 
         // Ignore cleanup errors
     }
     try {
-        await wrongAssosiation.cleanup.removeAssosiation();
+        await wrongAssosiation.cleanup.removeOrganisation();
     } catch { 
         // Ignore cleanup errors
     }
@@ -27,13 +27,13 @@ afterAll(async () => {
 jest.mock('@/lib/ironSession', () => ({
     getIronSession: () => {
         const role = global.__ROLE__ ?? AuthRole.materialManager;
-        const assosiation = global.__ASSOSIATION__ ?? staticData.fk_assosiation;
+        const organisationId = global.__ASSOSIATION__ ?? staticData.organisationId;
         return {
             user: {
                 name: 'VK Verwaltung',
                 username: global.__USERNAME__ ?? 'mana',
-                assosiation: assosiation,
-                acronym: staticData.data.assosiation.acronym,
+                organisationId: organisationId,
+                acronym: staticData.data.organisation.acronym,
                 role: role,
             }
         }

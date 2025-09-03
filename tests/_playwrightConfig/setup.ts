@@ -16,7 +16,7 @@ export const dataFixture = setup.extend<object, { staticData: StaticData }>({
 
         await use(staticData);
         if (index >= 0) {
-            await staticData.cleanup.removeAssosiation();
+            await staticData.cleanup.removeOrganisation();
         }
     }, { scope: "worker" }],
 });
@@ -25,7 +25,7 @@ export const adminTest = dataFixture.extend<authenticatedFixture>({
     page: async ({ page, staticData }, use) => {
         const body = {
             username: 'test4',
-            assosiation: staticData.fk_assosiation,
+            organisationId: staticData.organisationId,
             password: process.env.TEST_USER_PASSWORD??"Test!234" as string,
             deviceId: uuid(),
         };
@@ -41,7 +41,7 @@ export const managerTest = dataFixture.extend<authenticatedFixture>({
     page: async ({ page, staticData }, use) => {
         const body = {
             username: 'test3',
-            assosiation: staticData.fk_assosiation,
+            organisationId: staticData.organisationId,
             password: process.env.TEST_USER_PASSWORD??"Test!234" as string,
             deviceId: uuid(),
         };
@@ -58,7 +58,7 @@ export const inspectorTest = dataFixture.extend<authenticatedFixture>({
     page: async ({ page, staticData }, use) => {
         const body = {
             username: 'test2',
-            assosiation: staticData.fk_assosiation,
+            organisationId: staticData.organisationId,
             password: process.env.TEST_USER_PASSWORD??"Test!234" as string,
             deviceId: uuid(),
         };
@@ -75,7 +75,7 @@ export const userTest = dataFixture.extend<authenticatedFixture>({
     page: async ({ page, staticData }, use) => {
         const body = {
             username: 'test1',
-            assosiation: staticData.fk_assosiation,
+            organisationId: staticData.organisationId,
             password: process.env.TEST_USER_PASSWORD??"Test!234" as string,
             deviceId: uuid(),
         };

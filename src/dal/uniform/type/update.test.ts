@@ -53,7 +53,7 @@ describe('<UniformType> update', () => {
         expect(result).toEqual('UpdatedList');
         expect(mockFindMany).toHaveBeenCalledWith({
             where: {
-                fk_assosiation: 'test-assosiation-id',
+                organisationId: 'test-organisation-id',
                 recdelete: null, // Ensure we are checking only for active types
             }
         });

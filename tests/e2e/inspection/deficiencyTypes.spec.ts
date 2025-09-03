@@ -195,7 +195,7 @@ test.describe('<DeficiencyTypeAdministrationPage />', () => {
         const dbType = await prisma.deficiencyType.findFirst({
             where: {
                 name: "NewType",
-                fk_assosiation: staticData.fk_assosiation
+                organisationId: staticData.organisationId
             }
         });
         expect(dbType).not.toBeNull();
@@ -216,7 +216,7 @@ test.describe('<DeficiencyTypeAdministrationPage />', () => {
                 relation: null,
                 disabledDate: null,
                 disabledUser: null,
-                fk_assosiation: staticData.fk_assosiation,
+                organisationId: staticData.organisationId,
             }));
         });
     });

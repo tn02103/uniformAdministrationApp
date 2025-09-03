@@ -35,14 +35,14 @@ describe('<UniformType> create', () => {
         expect(mockPrisma.uniformType.findFirst).toHaveBeenCalledTimes(2);
         expect(mockPrisma.uniformType.findFirst).toHaveBeenCalledWith({
             where: {
-                fk_assosiation: global.__ASSOSIATION__,
+                organisationId: global.__ASSOSIATION__,
                 recdelete: null, // Ensure we are checking only for active types
                 name: defaultProps.name,
             }
         });
         expect(mockPrisma.uniformType.findFirst).toHaveBeenCalledWith({
             where: {
-                fk_assosiation: global.__ASSOSIATION__,
+                organisationId: global.__ASSOSIATION__,
                 recdelete: null, // Ensure we are checking only for active types
                 acronym: defaultProps.acronym,
             }
@@ -50,7 +50,7 @@ describe('<UniformType> create', () => {
         expect(mockPrisma.uniformType.count).toHaveBeenCalledTimes(1);
         expect(mockPrisma.uniformType.count).toHaveBeenCalledWith({
             where: {
-                fk_assosiation: global.__ASSOSIATION__,
+                organisationId: global.__ASSOSIATION__,
                 recdelete: null,
             }
         });
@@ -58,7 +58,7 @@ describe('<UniformType> create', () => {
         expect(mockPrisma.uniformType.create).toHaveBeenCalledWith({
             data: {
                 ...defaultProps,
-                fk_assosiation: 'test-assosiation-id',
+                organisationId: 'test-assosiation-id',
                 sortOrder: 4,
             },
             ...uniformTypeArgs,
@@ -81,7 +81,7 @@ describe('<UniformType> create', () => {
         expect(mockPrisma.uniformType.findFirst).toHaveBeenCalledTimes(1);
         expect(mockPrisma.uniformType.findFirst).toHaveBeenCalledWith({
             where: {
-                fk_assosiation: 'test-assosiation-id',
+                organisationId: 'test-assosiation-id',
                 recdelete: null,
                 name: defaultProps.name,
             }
@@ -104,14 +104,14 @@ describe('<UniformType> create', () => {
         expect(mockPrisma.uniformType.findFirst).toHaveBeenCalledTimes(2);
         expect(mockPrisma.uniformType.findFirst).toHaveBeenCalledWith({
             where: {
-                fk_assosiation: 'test-assosiation-id',
+                organisationId: 'test-assosiation-id',
                 recdelete: null,
                 name: defaultProps.name,
             }
         });
         expect(mockPrisma.uniformType.findFirst).toHaveBeenCalledWith({
             where: {
-                fk_assosiation: 'test-assosiation-id',
+                organisationId: 'test-assosiation-id',
                 recdelete: null,
                 acronym: defaultProps.acronym,
             }
@@ -136,7 +136,7 @@ describe('<UniformType> create', () => {
         expect(mockPrisma.uniformType.create).toHaveBeenCalledWith({
             data: {
                 ...props,
-                fk_assosiation: 'test-assosiation-id',
+                organisationId: 'test-assosiation-id',
                 sortOrder: 2,
             },
             ...uniformTypeArgs,
@@ -153,7 +153,7 @@ describe('<UniformType> create', () => {
         expect(mockPrisma.uniformType.create).toHaveBeenCalledWith({
             data: {
                 ...defaultProps,
-                fk_assosiation: 'test-assosiation-id',
+                organisationId: 'test-assosiation-id',
                 sortOrder: 7, // Should use the count as sortOrder
             },
             ...uniformTypeArgs,

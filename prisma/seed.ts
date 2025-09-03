@@ -5,37 +5,36 @@ import bcrypt from "bcrypt";
 const prismaClient = new PrismaClient()
 async function main() {
     const ids = getStaticDataIds()
-    ids.fk_assosiation = process.env.ASSOSIATION_ID ?? ids.fk_assosiation;
+    ids.organisationId = process.env.ORGANISATION_ID ?? ids.organisationId;
     const generator = new StaticDataGenerator(ids);
-    const { fk_assosiation, sizeIds, sizelistIds } = ids;
+    const { organisationId, sizeIds, sizelistIds } = ids;
     const password = await bcrypt.hash(process.env.USER_PASSWORD ?? "Test!234" as string, 15);
 
     await prismaClient.$transaction(async (prisma) => {
-        await prisma.assosiation.create({
+        await prisma.organisation.create({
             data: {
-                id: fk_assosiation,
+                id: organisationId,
                 name: "Verkehrskadetten",
                 acronym: "vkme",
             }
         });
         await prisma.user.createMany({
             data: [
-                { fk_assosiation, role: 4, username: 'admin', name: `VK Admin`, password, active: true },
-                { fk_assosiation, role: 3, username: 'mana', name: `VK Verwaltung`, password, active: true },
-                { fk_assosiation, role: 2, username: 'insp', name: `VK Kontrolleur`, password, active: true },
-                { fk_assosiation, role: 1, username: 'user', name: `VK Nutzer`, password, active: true },
-                { fk_assosiation, role: 1, username: 'blck', name: `VK Gesperrt`, password, active: false },
+                { organisationId, role: 4, email: 'admin@test.com', username: 'admin', name: `VK Admin`, password, active: true },
+                { organisationId, role: 3, email: 'mana@test.com', username: 'mana', name: `VK Verwaltung`, password, active: true },
+                { organisationId, role: 2, email: 'insp@test.com', username: 'insp', name: `VK Kontrolleur`, password, active: true },
+                { organisationId, role: 1, email: 'user@test.com', username: 'user', name: `VK Nutzer`, password, active: true },
+                { organisationId, role: 1, email: 'blocked@test.com', username: 'blck', name: `VK Gesperrt`, password, active: false },
             ]
         });
 
-        await prisma.assosiationConfiguration.create({
-            data: generator.assosiationConfiguration(),
+        await prisma.organisationConfiguration.create({
+            data: generator.organisationConfiguration(),
         });
 
         await prisma.cadet.createMany({
             data: generator.cadet()
         });
-
 
         await prisma.uniformSize.createMany({
             data: generator.uniformSize()
@@ -47,7 +46,7 @@ async function main() {
                     data: {
                         id: sizelistIds[index],
                         name: `Liste${index}`,
-                        fk_assosiation,
+                        organisationId,
                         uniformSizes: {
                             connect: sizeIds.slice(x, y).map(z => ({ id: z }))
                         },

@@ -20,7 +20,7 @@ export default async function UniformsizeConfigurationPage({ params }: { params:
     const t = await getI18n();
     const dbHandler = new UniformSizeDBHandler();
     const assosiation = await prisma.assosiation.findFirstOrThrow({ where: { acronym } });
-    const sizes = await dbHandler.getAllUniformSizesByAssosiation(assosiation.id);
+    const sizes = await dbHandler.getAllUniformSizesByOrganisation(assosiation.id);
 
     const quad = Math.round((sizes.length / 4) + 0.25);
     const half = Math.round((sizes.length / 2));

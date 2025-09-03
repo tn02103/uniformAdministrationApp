@@ -77,7 +77,7 @@ describe('resolveDeficiency', () => {
 
         expect(prisma.inspection.findFirst).toHaveBeenCalledWith({
             where: {
-                fk_assosiation: 'fk_assoasiation',
+                organisationId: 'fk_assoasiation',
                 date: dayjs(date).format("YYYY-MM-DD"),
                 timeStart: { not: null },
                 timeEnd: null,

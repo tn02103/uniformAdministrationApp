@@ -7,7 +7,8 @@ const sessionOptions: SessionOptions = {
     cookieName: process.env.IRON_SESSION_COOKIE_NAME as string,
     cookieOptions: {
         secure: process.env.STAGE !== "DEV",
-        maxAge: (3600 * 6),
+        httpOnly: true,
+        maxAge: 60 * 10,
         sameSite: "strict"
     }
 }
@@ -18,11 +19,12 @@ declare module "iron-session" {
     }
 }
 export type IronSessionUser = {
+    id: string;
     name: string;
     username: string;
-    assosiation: string;
-    acronym: string;
     role: AuthRole;
+    acronym: string;
+    organisationId: string;
 }
 
 
