@@ -20,7 +20,7 @@ jest.mock('@/lib/locales/client', () => {
     };
 });
 
-const testAssosiation = {
+const testOrganisation = {
     id: 'test-association',
     name: 'Test Association',
     acronym: "TA",
@@ -57,11 +57,11 @@ describe('SidebarHeader', () => {
     });
 
     it('renders opend', () => {
-        render(<SidebarHeader assosiation={testAssosiation} />);
+        render(<SidebarHeader organisation={testOrganisation} />);
 
         expect(screen.getByRole('link', { name: /homepage/i })).toBeInTheDocument();
         expect(screen.getByRole('link')).toHaveAttribute('href', '/');
-        expect(screen.getByRole('link')).toHaveTextContent(testAssosiation.name);
+        expect(screen.getByRole('link')).toHaveTextContent(testOrganisation.name);
 
         expect(screen.getByRole('button', { name: 'Close sidebar' })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Close sidebar' })).toHaveClass('d-sm-none');
@@ -75,9 +75,9 @@ describe('SidebarHeader', () => {
             isSidebarFixed: false,
         });
 
-        render(<SidebarHeader assosiation={testAssosiation} />);
+        render(<SidebarHeader organisation={testOrganisation} />);
 
-        expect(screen.getByTestId('lnk_header')).toHaveTextContent(testAssosiation.name);
+        expect(screen.getByTestId('lnk_header')).toHaveTextContent(testOrganisation.name);
         expect(screen.getByTestId('lnk_header')).toHaveClass('sidebarHeaderTitleCollapsed');
 
         expect(screen.getByRole('button', { name: 'Close sidebar' })).toBeInTheDocument();
@@ -96,7 +96,7 @@ describe('SidebarHeader', () => {
             },
         });
 
-        render(<SidebarHeader assosiation={testAssosiation} />);
+        render(<SidebarHeader organisation={testOrganisation} />);
 
         expect(screen.getByTestId('div_inspection')).toHaveTextContent('activeInspection.open');
         expect(t).toHaveBeenCalledWith('activeInspection.open', {
@@ -120,7 +120,7 @@ describe('SidebarHeader', () => {
             },
         });
 
-        render(<SidebarHeader assosiation={testAssosiation} />);
+        render(<SidebarHeader organisation={testOrganisation} />);
 
         expect(screen.getByTestId('div_inspection')).toHaveTextContent('activeInspection.collapsed');
         expect(t).toHaveBeenCalledWith('activeInspection.collapsed', {
@@ -137,7 +137,7 @@ describe('SidebarHeader', () => {
             isSidebarFixed: false,
             setCollapsed,
         });
-        render(<SidebarHeader assosiation={testAssosiation} />);
+        render(<SidebarHeader organisation={testOrganisation} />);
 
         const clickEvent = new MouseEvent('click', { bubbles: true });
         const preventDefaultSpy = jest.spyOn(clickEvent, 'preventDefault');
@@ -159,7 +159,7 @@ describe('SidebarHeader', () => {
             isSidebarFixed: true,
             setCollapsed,
         });
-        render(<SidebarHeader assosiation={testAssosiation} />);
+        render(<SidebarHeader organisation={testOrganisation} />);
 
         const clickEvent = new MouseEvent('click', { bubbles: true });
         const preventDefaultSpy = jest.spyOn(clickEvent, 'preventDefault');

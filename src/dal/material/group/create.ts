@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
 /**
- * Create a new MaterialGroup for usesAssosiation. Initial data is automaticly created.
+ * Create a new MaterialGroup for usesOrganisation. Initial data is automaticly created.
  * @returns 
  */
 

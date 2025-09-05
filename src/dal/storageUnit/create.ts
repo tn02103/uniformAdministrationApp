@@ -20,10 +20,10 @@ export const create = (props: PropType): returnType => genericSAValidator(
     props,
     propSchema,
     {  }
-).then(([{ assosiation }, data]) => prisma.$transaction(async (client) => {
+).then(([{ organisationId }, data]) => prisma.$transaction(async (client) => {
     const nameDuplicate = await client.storageUnit.findFirst({
         where: {
-            assosiationId: assosiation,
+            organisationId,
             name: data.name,
         }
     });
@@ -38,9 +38,9 @@ export const create = (props: PropType): returnType => genericSAValidator(
 
     await client.storageUnit.create({
         data: {
-            assosiationId: assosiation,
+            organisationId,
             ...data,
         }
     });
-    return __unsecuredGetUnitsWithUniformItems(assosiation, client);
+    return __unsecuredGetUnitsWithUniformItems(organisationId, client);
 }));

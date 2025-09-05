@@ -91,15 +91,15 @@ describe('stopInspection', () => {
         expect(result.message).toMatch(/Endtime is not a valid time/);
     });
     describe('different data', () => {
-        const wrongAssosiation = new StaticData(1);
-        afterEach(() => wrongAssosiation.cleanup.inspection());
-        it('wrong assosiation', async () => {
+        const wrongOrganisation = new StaticData(1);
+        afterEach(() => wrongOrganisation.cleanup.inspection());
+        it('wrong organisation', async () => {
             await prisma.inspection.update({
-                where: { id: wrongAssosiation.ids.inspectionIds[4] },
+                where: { id: wrongOrganisation.ids.inspectionIds[4] },
                 data: { timeStart: '09:00' }
             });
             const { result, success } = await runServerActionTest(
-                stopInspection({ ...defaultParams, id: wrongAssosiation.ids.inspectionIds[4] })
+                stopInspection({ ...defaultParams, id: wrongOrganisation.ids.inspectionIds[4] })
             );
             expect(success).toBeFalsy();
             expect(result).toBeDefined();

@@ -7,12 +7,12 @@ import { RedirectFormSchema, RedirectFormType } from "@/zod/redirect";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-export const getRedirectsByAssosiation = async () => genericSANoDataValidator(
+export const getRedirectsByOrganisation = async () => genericSANoDataValidator(
     AuthRole.admin,
-).then(async ([{ assosiation }]) => {
+).then(async ([{ organisationId }]) => {
     return prisma.redirect.findMany({
         where: {
-            assosiationId: assosiation,
+            organisationId,
         },
         orderBy: {
             code: "asc",
@@ -25,7 +25,7 @@ export const createRedirect = async (props: RedirectFormType) => genericSAValida
     props,
     RedirectFormSchema,
     {},
-).then(async ([{ assosiation }, data]) => {
+).then(async ([{ organisationId }, data]) => {
     const duplicateRedirect = await prisma.redirect.findFirst({
         where: {
             code: data.code,
@@ -44,11 +44,11 @@ export const createRedirect = async (props: RedirectFormType) => genericSAValida
     await prisma.redirect.create({
         data: {
             ...props,
-            assosiationId: assosiation,
+            organisationId,
         },
     });
 
-    revalidatePath(`/[locale]/${assosiation}/app/redirects`, 'page');
+    revalidatePath(`/[locale]/${organisationId}/app/redirects`, 'page');
 });
 
 const UpdateRedirectPropSchema = z.object({
@@ -60,7 +60,7 @@ export const updateRedirect = async (props: UpdateRedirectProps) => genericSAVal
     AuthRole.admin,
     props,
     UpdateRedirectPropSchema
-).then(async ([{ assosiation }, { id, data }]) => {
+).then(async ([{ organisationId }, { id, data }]) => {
     const redirect = await prisma.redirect.findUnique({
         where: {
             id,
@@ -69,7 +69,7 @@ export const updateRedirect = async (props: UpdateRedirectProps) => genericSAVal
     if (!redirect) {
         throw new Error("Redirect not found");
     }
-    if (redirect.assosiationId !== assosiation) {
+    if (redirect.organisationId !== organisationId) {
         throw new Error("Redirect not found in this association");
     }
 
@@ -97,7 +97,7 @@ export const updateRedirect = async (props: UpdateRedirectProps) => genericSAVal
         data,
     });
 
-    revalidatePath(`/[locale]/${assosiation}/app/redirects`, 'page');
+    revalidatePath(`/[locale]/${organisationId}/app/redirects`, 'page');
 });
 
 export const deleteRedirect = async (props: string) => genericSAValidator(
@@ -105,7 +105,7 @@ export const deleteRedirect = async (props: string) => genericSAValidator(
     props,
     z.string().uuid(),
     {}
-).then(async ([{ assosiation }, id]) => {
+).then(async ([{ organisationId }, id]) => {
     const redirect = await prisma.redirect.findUnique({
         where: {
             id,
@@ -114,7 +114,7 @@ export const deleteRedirect = async (props: string) => genericSAValidator(
     if (!redirect) {
         throw new Error("Redirect not found");
     }
-    if (redirect.assosiationId !== assosiation) {
+    if (redirect.organisationId !== organisationId) {
         throw new Error("Redirect not found in this association");
     }
 
@@ -124,5 +124,5 @@ export const deleteRedirect = async (props: string) => genericSAValidator(
         },
     });
 
-    revalidatePath(`/[locale]/${assosiation}/app/redirects`, 'page');
+    revalidatePath(`/[locale]/${organisationId}/app/redirects`, 'page');
 });

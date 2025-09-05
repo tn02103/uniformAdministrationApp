@@ -26,7 +26,7 @@ export const create = (props: PropType): SAReturnType<void> => genericSAValidato
     props,
     propSchema,
     { materialGroupId: props.groupId }
-).then(([{ assosiation }, { data, groupId }]) => prisma.$transaction(async (client) => {
+).then(([{ organisationId }, { data, groupId }]) => prisma.$transaction(async (client) => {
     const group = await client.materialGroup.findUniqueOrThrow({
         where: { id: groupId },
         include: {
@@ -58,5 +58,5 @@ export const create = (props: PropType): SAReturnType<void> => genericSAValidato
             sortOrder: group.typeList.length,
         }
     });
-    revalidatePath(`/[locale]/${assosiation}/admin/material`, 'page');
+    revalidatePath(`/[locale]/${organisationId}/admin/material`, 'page');
 }));

@@ -14,7 +14,7 @@ export const markDeleted = (props: string) => genericSAValidator(
     props,
     z.string().uuid(),
     { materialId: props }
-).then(([{ username, assosiation }, id]) => prisma.$transaction(async (client) => {
+).then(([{ username, organisationId }, id]) => prisma.$transaction(async (client) => {
     const material = await prisma.material.findUniqueOrThrow({ where: { id } });
 
     await client.materialIssued.updateMany({
@@ -42,5 +42,5 @@ export const markDeleted = (props: string) => genericSAValidator(
             sortOrder: { decrement: 1 }
         }
     })
-    revalidatePath(`/[locale]/${assosiation}/admin/material`, 'page');
+    revalidatePath(`/[locale]/${organisationId}/admin/material`, 'page');
 }));

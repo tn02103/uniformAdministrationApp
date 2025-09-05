@@ -236,7 +236,7 @@ test.describe("Storage Unit Admin Overview", () => {
                         description: 'This is a new storage unit.',
                         capacity: 50,
                         isReserve: true,
-                        assosiationId: organisationId,
+                        organisationId: organisationId,
                         id: expect.any(String), // ID is auto-generated, so we check it exists
                     })
                 );

@@ -18,12 +18,12 @@ export const changeSortOrder = (props: PropType): Promise<UniformType[]> => gene
     props,
     propSchema,
     { uniformGenerationId: props.id }
-).then(([{ assosiation }, { id, newPosition }]) => prisma.$transaction(async (client) => {
+).then(([{ organisationId }, { id, newPosition }]) => prisma.$transaction(async (client) => {
     const generation = await prisma.uniformGeneration.findUniqueOrThrow({
         where: { id }
     });
     if (generation.sortOrder === newPosition) {
-        return __unsecuredGetUniformTypeList(assosiation, client);
+        return __unsecuredGetUniformTypeList(organisationId, client);
     }
 
     const count = await prisma.uniformGeneration.count({
@@ -47,7 +47,7 @@ export const changeSortOrder = (props: PropType): Promise<UniformType[]> => gene
 
     // UPDATE sortorder of type
     await updateInitialType(id, newPosition, client);
-    return __unsecuredGetUniformTypeList(assosiation, client)
+    return __unsecuredGetUniformTypeList(organisationId, client)
 }));
 
 const updateOtherTypes = async (upperLimit: number, lowerLimit: number, up: boolean, fk_uniformType: string, client: Prisma.TransactionClient) =>

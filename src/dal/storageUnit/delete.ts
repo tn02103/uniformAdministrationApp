@@ -15,9 +15,9 @@ export const deleteUnit = (props: string): Promise<StorageUnitWithUniformItems[]
     props,
     z.string().uuid(),
     { storageUnitId: props }
-).then(async ([{assosiation}, id]) => {
+).then(async ([{ organisationId }, id]) => {
     await prisma.storageUnit.delete({
         where: { id },
     });
-    return __unsecuredGetUnitsWithUniformItems(assosiation);
+    return __unsecuredGetUnitsWithUniformItems(organisationId);
 });

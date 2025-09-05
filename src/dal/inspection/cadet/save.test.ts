@@ -12,7 +12,7 @@ jest.mock("./get", () => ({
 const TEST_IDS = {
     cadetId: "cadet-123",
     inspectionId: "inspection-456",
-    assosiation: "test-assosiation-id",
+    organisation: "test-organisation-id",
     deficiency1: "def-001",
     deficiency2: "def-002",
     deficiency3: "def-003",
@@ -25,7 +25,7 @@ const TEST_IDS = {
 
 const TEST_USER = {
     username: "testuser",
-    assosiation: "test-assosiation-id",
+    organisation: "test-organisation-id",
 };
 
 const MOCK_INSPECTION = {
@@ -156,7 +156,7 @@ describe("saveCadetInspection", () => {
         // Setup global test values
         global.__ROLE__ = AuthRole.inspector;
         global.__USERNAME__ = TEST_USER.username;
-        global.__ASSOSIATION__ = TEST_USER.assosiation;
+        global.__ORGANISATION__ = TEST_USER.organisation;
     });
 
     describe("Group 1: Pre-condition Validation", () => {
@@ -174,7 +174,7 @@ describe("saveCadetInspection", () => {
             // Verify mocks were called correctly
             expect(mockUnsecuredGetActiveInspection).toHaveBeenCalledWith(
                 TEST_IDS.cadetId,
-                TEST_USER.assosiation
+                TEST_USER.organisation
             );
 
             // Verify no database transaction was started
@@ -197,7 +197,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.updateMany).toHaveBeenCalledWith({
                 where: {
                     id: { in: [TEST_IDS.deficiency1, TEST_IDS.deficiency3] }, // Only resolved deficiencies
-                    type: { organisationId: TEST_USER.assosiation },
+                    type: { organisationId: TEST_USER.organisation },
                     dateResolved: null,
                 },
                 data: {
@@ -222,7 +222,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.updateMany).toHaveBeenCalledWith({
                 where: {
                     id: { in: [TEST_IDS.deficiency2] }, // Only unresolved deficiencies
-                    type: { organisationId: TEST_USER.assosiation },
+                    type: { organisationId: TEST_USER.organisation },
                     dateResolved: { not: null },
                 },
                 data: {
@@ -278,7 +278,7 @@ describe("saveCadetInspection", () => {
             expect(resolvingCall[0]).toMatchObject({
                 where: {
                     id: { in: [TEST_IDS.deficiency1, TEST_IDS.deficiency3] },
-                    type: { organisationId: TEST_USER.assosiation },
+                    type: { organisationId: TEST_USER.organisation },
                     dateResolved: null,
                 },
                 data: {
@@ -296,7 +296,7 @@ describe("saveCadetInspection", () => {
             expect(unresolvingCall[0]).toMatchObject({
                 where: {
                     id: { in: [TEST_IDS.deficiency2] },
-                    type: { organisationId: TEST_USER.assosiation },
+                    type: { organisationId: TEST_USER.organisation },
                     dateResolved: { not: null },
                 },
                 data: {
@@ -322,7 +322,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.updateMany).toHaveBeenCalledWith(
                 expect.objectContaining({
                     where: expect.objectContaining({
-                        type: { organisationId: TEST_USER.assosiation },
+                        type: { organisationId: TEST_USER.organisation },
                     }),
                 })
             );
@@ -404,7 +404,7 @@ describe("saveCadetInspection", () => {
                 where: {
                     id: "non-existent-type",
                     AND: {
-                        organisationId: TEST_USER.assosiation,
+                        organisationId: TEST_USER.organisation,
                     }
                 }
             });
@@ -541,7 +541,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.material.findUniqueOrThrow).toHaveBeenCalledWith({
                 where: {
                     id: "other-material-id",
-                    AND: { materialGroup: { organisationId: TEST_USER.assosiation } },
+                    AND: { materialGroup: { organisationId: TEST_USER.organisation } },
                 },
                 include: { materialGroup: true }
             });
@@ -581,7 +581,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.uniform.findUniqueOrThrow).toHaveBeenCalledWith({
                 where: {
                     id: TEST_IDS.uniformId,
-                    type: { organisationId: TEST_USER.assosiation }
+                    type: { organisationId: TEST_USER.organisation }
                 },
                 include: {
                     type: true
@@ -664,7 +664,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.material.findUniqueOrThrow).toHaveBeenCalledWith({
                 where: {
                     id: TEST_IDS.materialId,
-                    AND: { materialGroup: { organisationId: TEST_USER.assosiation } },
+                    AND: { materialGroup: { organisationId: TEST_USER.organisation } },
                 },
                 include: { materialGroup: true }
             });
@@ -802,7 +802,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.upsert).toHaveBeenCalledWith({
                 where: {
                     id: expect.any(String),
-                    AND: { type: { organisationId: TEST_USER.assosiation } }
+                    AND: { type: { organisationId: TEST_USER.organisation } }
                 },
                 create: {
                     fk_deficiencyType: TEST_IDS.typeId1,
@@ -845,7 +845,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.upsert).toHaveBeenCalledWith({
                 where: {
                     id: "existing-def-id",
-                    AND: { type: { organisationId: TEST_USER.assosiation } }
+                    AND: { type: { organisationId: TEST_USER.organisation } }
                 },
                 create: {
                     fk_deficiencyType: TEST_IDS.typeId1,
@@ -986,7 +986,7 @@ describe("saveCadetInspection", () => {
                     id: {
                         in: ["orphaned-def-1", "orphaned-def-2"]
                     },
-                    type: { organisationId: TEST_USER.assosiation }
+                    type: { organisationId: TEST_USER.organisation }
                 },
             });
         });
@@ -1044,7 +1044,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.upsert).toHaveBeenCalledWith({
                 where: {
                     id: expect.any(String),
-                    AND: { type: { organisationId: TEST_USER.assosiation } }
+                    AND: { type: { organisationId: TEST_USER.organisation } }
                 },
                 create: {
                     fk_deficiencyType: TEST_IDS.typeId1,
@@ -1145,7 +1145,7 @@ describe("saveCadetInspection", () => {
                     id: {
                         in: ["def-to-keep-1", "def-to-keep-2"] // The processed one should be filtered out
                     },
-                    type: { organisationId: TEST_USER.assosiation }
+                    type: { organisationId: TEST_USER.organisation }
                 },
             });
         });
@@ -1174,7 +1174,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.upsert).toHaveBeenCalledWith({
                 where: {
                     id: expect.any(String),
-                    AND: { type: { organisationId: TEST_USER.assosiation } }
+                    AND: { type: { organisationId: TEST_USER.organisation } }
                 },
                 create: {
                     fk_deficiencyType: TEST_IDS.typeId1,
@@ -1217,7 +1217,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.upsert).toHaveBeenCalledWith({
                 where: {
                     id: "existing-deficiency-id", // Existing deficiency has ID
-                    AND: { type: { organisationId: TEST_USER.assosiation } }
+                    AND: { type: { organisationId: TEST_USER.organisation } }
                 },
                 create: {
                     fk_deficiencyType: TEST_IDS.typeId1,
@@ -1261,7 +1261,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.updateMany).toHaveBeenCalledWith({
                 where: {
                     id: { in: [TEST_IDS.deficiency1] },
-                    type: { organisationId: TEST_USER.assosiation },
+                    type: { organisationId: TEST_USER.organisation },
                     dateResolved: null, // Only resolve unresolved deficiencies
                 },
                 data: {
@@ -1299,7 +1299,7 @@ describe("saveCadetInspection", () => {
                 where: {
                     id: TEST_IDS.typeId1,
                     AND: {
-                        organisationId: TEST_USER.assosiation, // Association filter
+                        organisationId: TEST_USER.organisation, // Association filter
                     }
                 }
             });
@@ -1308,7 +1308,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.material.findUniqueOrThrow).toHaveBeenCalledWith({
                 where: {
                     id: TEST_IDS.materialId,
-                    AND: { materialGroup: { organisationId: TEST_USER.assosiation } }, // Association filter
+                    AND: { materialGroup: { organisationId: TEST_USER.organisation } }, // Association filter
                 },
                 include: { materialGroup: true }
             });
@@ -1317,7 +1317,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.upsert).toHaveBeenCalledWith(
                 expect.objectContaining({
                     where: expect.objectContaining({
-                        AND: { type: { organisationId: TEST_USER.assosiation } } // Association filter
+                        AND: { type: { organisationId: TEST_USER.organisation } } // Association filter
                     })
                 })
             );
@@ -1326,7 +1326,7 @@ describe("saveCadetInspection", () => {
             expect(prisma.deficiency.updateMany).toHaveBeenCalledWith(
                 expect.objectContaining({
                     where: expect.objectContaining({
-                        type: { organisationId: TEST_USER.assosiation }, // Association filter
+                        type: { organisationId: TEST_USER.organisation }, // Association filter
                     })
                 })
             );

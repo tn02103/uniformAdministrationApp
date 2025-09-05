@@ -23,7 +23,7 @@ export const changeSortOrder = (props: PropType) => genericSAValidator(
     props,
     propSchema,
     { materialId: props.id }
-).then(async ([{ assosiation }, { id, up },]) => prisma.$transaction(async (client) => {
+).then(async ([{ organisationId }, { id, up },]) => prisma.$transaction(async (client) => {
     const material = await client.material.findUniqueOrThrow({ where: { id } });
     if (up) {
         if (material.sortOrder === 0) {
@@ -46,7 +46,7 @@ export const changeSortOrder = (props: PropType) => genericSAValidator(
 
     await updateMainMaterial(id, up, client);
 
-    revalidatePath(`/[locale]/${assosiation}/admin/material`, 'page');
+    revalidatePath(`/[locale]/${organisationId}/admin/material`, 'page');
 }));
 
 function updateSecondMaterial(sortOrder: number, fk_materialGroup: string, up: boolean, client: Prisma.TransactionClient) {

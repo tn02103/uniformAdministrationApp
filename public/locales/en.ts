@@ -236,14 +236,15 @@ export default {
     login: {
         header: "Login",
         label: {
-            assosiation: "Association",
+            organisation: "Association",
             username: "Username",
             password: "Password",
             login: "Login"
         },
         error: {
             unknown: "The login attempt failed, please try again.",
-            failed: "Username or password are invalid"
+            failed: "Username or password are invalid",
+            userBlocked: "The user is blocked. Please contact an administrator."
         },
     },
     notFound: {
@@ -461,10 +462,10 @@ export default {
         "message.inspection.stopError": "The inspection could not be stopped. Please try again later.",
         labels: {
             "stopInspection.header": "stop inspection",
-            "stopInspection.elementLabel": "Enter finishing time", 
+            "stopInspection.elementLabel": "Enter finishing time",
             "activeInspection.open": "Inspected: {controlled} / {total}",
             "activeInspection.collapsed": "{controlled} / {total}"
-     
+
         },
         links: {
             cadetOverview: "Staff",

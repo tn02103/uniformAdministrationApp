@@ -20,7 +20,7 @@ const mockPrisma = jest.requireMock("@/lib/db").prisma as DeepMockProxy<PrismaCl
 // Mock data
 const mockGenerationId = 'generation-to-delete-id';
 const mockUniformTypeId = 'uniform-type-id';
-const mockSession = { assosiation: 'test-assosiation-id', username: 'testuser' };
+const mockSession = { organisation: 'test-organisation-id', username: 'testuser' };
 
 const mockGenerationToDelete = {
     id: mockGenerationId,
@@ -102,7 +102,7 @@ describe('<UniformGeneration> markDeleted', () => {
                 }
             });
 
-            expect(mockGetUniformTypeList).toHaveBeenCalledWith(mockSession.assosiation, expect.anything());
+            expect(mockGetUniformTypeList).toHaveBeenCalledWith(mockSession.organisation, expect.anything());
         });
 
         it('handles generation with sortOrder 0 correctly', async () => {
@@ -251,7 +251,7 @@ describe('<UniformGeneration> markDeleted', () => {
             await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
             expect(mockGetUniformTypeList).toHaveBeenCalledWith(
-                mockSession.assosiation,
+                mockSession.organisation,
                 expect.anything() // transaction client
             );
         });

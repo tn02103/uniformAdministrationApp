@@ -96,7 +96,7 @@ const getPersonnelList = async (organisationId: string, orderBy: "lastname" | "f
         SELECT v.*
           FROM base.v_cadet_generaloverview v
                ${joins}
-         WHERE organisationId = '${organisationId}'
+         WHERE organisation_id = '${organisationId}'
                ${where}
       ORDER BY ${order}
     `;

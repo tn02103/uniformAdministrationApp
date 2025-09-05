@@ -30,7 +30,7 @@ describe('createUniformDeficiency', () => {
     const { prisma } = jest.requireMock('@/lib/db');
     const date = new Date();
     beforeAll(() => {
-        global.__ASSOSIATION__ = 'fk_assoasiation';
+        global.__ORGANISATION__ = 'fk_assoasiation';
     });
     beforeEach(() => {
         jest.useFakeTimers();
@@ -39,7 +39,7 @@ describe('createUniformDeficiency', () => {
     afterEach(() => {
         jest.clearAllMocks();
     });
-    afterAll(() => global.__ASSOSIATION__ = undefined);
+    afterAll(() => global.__ORGANISATION__ = undefined);
 
     it('creates a deficiency', async () => {
         // Call the function with the mock data

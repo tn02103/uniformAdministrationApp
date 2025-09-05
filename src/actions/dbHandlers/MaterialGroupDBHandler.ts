@@ -49,7 +49,7 @@ export class MaterialGroupDBHandler {
             ...materialGroupArgs
         });
 
-    getMaterialIssueCountsByAssosiation = (organisationId: string) =>
+    getMaterialIssueCountsByOrganisation = (organisationId: string) =>
         prisma.materialIssued.groupBy({
             by: ['fk_material'],
             _sum: { quantity: true },

@@ -61,7 +61,7 @@ describe('<UniformType> update', () => {
             where: { id: 'test-id-123' },
             data: defaultProps.data
         });
-        expect(mockGetList).toHaveBeenCalledWith('test-assosiation-id', expect.anything());
+        expect(mockGetList).toHaveBeenCalledWith('test-organisation-id', expect.anything());
     });
 
     it('should return error if name is duplicated', async () => {

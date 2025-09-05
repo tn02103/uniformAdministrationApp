@@ -11,8 +11,8 @@ jest.mock("@/dal/redirects", () => ({
 }));
 
 const mockRedirects: Redirect[] = [
-    { id: "1", code: "test1", target: "https://example.com/1", active: true, assosiationId: '2348ec51-722b-43eb-bc55-31a3e7f456db' },
-    { id: "2", code: "test2", target: "https://example.com/2", active: false, assosiationId: '2348ec51-722b-43eb-bc55-31a3e7f456db' },
+    { id: "1", code: "test1", target: "https://example.com/1", active: true, organisationId: '2348ec51-722b-43eb-bc55-31a3e7f456db' },
+    { id: "2", code: "test2", target: "https://example.com/2", active: false, organisationId: '2348ec51-722b-43eb-bc55-31a3e7f456db' },
 ];
 
 describe("RedirectTable", () => {

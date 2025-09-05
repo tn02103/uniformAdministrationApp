@@ -11,7 +11,7 @@ jest.mock('@/lib/db', () => ({
 }));
 jest.mock("@/actions/validations", () => ({
     genericSAValidator: jest.fn((_, props) =>
-        Promise.resolve([{ assosiation: 'test-assosiation' }, props])
+        Promise.resolve([{ organisation: 'test-organisation' }, props])
     ),
 }));
 jest.mock("./get", () => ({
@@ -42,7 +42,7 @@ describe('<storageUnit> removeUniform', () => {
                 storageUnitId: null
             }
         });
-        expect(getUnitsWithUniformItems).toHaveBeenCalledWith('test-assosiation');
+        expect(getUnitsWithUniformItems).toHaveBeenCalledWith('test-organisation');
         expect(result).toEqual(['TestReturnValue']);
     });
 

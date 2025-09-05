@@ -14,7 +14,7 @@ export const removeUniform = (props: PropType) => genericSAValidator(
     props,
     propSchema,
     { uniformId: props.uniformIds, storageUnitId: props.storageUnitId },
-).then(async ([{ assosiation }, { uniformIds, storageUnitId }]) => prisma.$transaction(async (client) => {
+).then(async ([{ organisationId }, { uniformIds, storageUnitId }]) => prisma.$transaction(async (client) => {
     const updateItems = await client.uniform.updateMany({
         where: {
             id: { in: uniformIds },
@@ -27,5 +27,5 @@ export const removeUniform = (props: PropType) => genericSAValidator(
     if (!updateItems) {
         throw new Error("Failed to update uniforms");
     }
-    return __unsecuredGetUnitsWithUniformItems(assosiation);
+    return __unsecuredGetUnitsWithUniformItems(organisationId);
 }));

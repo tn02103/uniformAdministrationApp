@@ -46,7 +46,7 @@ const mockExistingGenerations = [
 ];
 
 const mockUniformTypeList = [mockUniformType];
-const mockSession = { assosiation: 'test-assosiation-id', username: 'testuser' };
+const mockSession = { organisation: 'test-organisation-id', username: 'testuser' };
 
 describe('<UniformGeneration> create', () => {
 
@@ -96,7 +96,7 @@ describe('<UniformGeneration> create', () => {
                     sortOrder: 2, // Length of existing generations
                 }
             });
-            expect(mockGetUniformTypeList).toHaveBeenCalledWith(mockSession.assosiation, expect.anything());
+            expect(mockGetUniformTypeList).toHaveBeenCalledWith(mockSession.organisation, expect.anything());
         });
 
         it('creates generation with null sizelist when type does not use sizes', async () => {

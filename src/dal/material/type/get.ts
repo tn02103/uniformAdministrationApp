@@ -34,7 +34,7 @@ export const getAdministrationConfiguration = (): Promise<AdministrationMaterial
     genericSANoDataValidator(AuthRole.materialManager).then(async ([{ organisationId }]) => {
         const [groups, issuedQuantities] = await prisma.$transaction([
             getAdminList(organisationId),
-            getMaterialIssueCountsByAssosiation(organisationId),
+            getMaterialIssueCountsByOrganisation(organisationId),
         ]);
 
         return groups.map(group => ({
@@ -69,7 +69,7 @@ const getAdminList = (organisationId: string, client?: Prisma.TransactionClient)
         where: { organisationId, recdelete: null },
         orderBy: { sortOrder: "asc" }
     });
-const getMaterialIssueCountsByAssosiation = (organisationId: string) =>
+const getMaterialIssueCountsByOrganisation = (organisationId: string) =>
     prisma.materialIssued.groupBy({
         by: ['fk_material'],
         _sum: { quantity: true },

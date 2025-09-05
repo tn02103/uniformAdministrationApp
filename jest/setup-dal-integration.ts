@@ -3,11 +3,11 @@ import { StaticData } from "../tests/_playwrightConfig/testData/staticDataLoader
 
 // Setup static data for integration tests with real database
 const staticData = new StaticData(0);
-const wrongAssosiation = new StaticData(1);
+const wrongOrganisation = new StaticData(1);
 
 beforeAll(async () => {
     await staticData.resetData();
-    await wrongAssosiation.resetData();
+    await wrongOrganisation.resetData();
 });
 
 afterAll(async () => {
@@ -17,7 +17,7 @@ afterAll(async () => {
         // Ignore cleanup errors
     }
     try {
-        await wrongAssosiation.cleanup.removeOrganisation();
+        await wrongOrganisation.cleanup.removeOrganisation();
     } catch { 
         // Ignore cleanup errors
     }
@@ -27,7 +27,7 @@ afterAll(async () => {
 jest.mock('@/lib/ironSession', () => ({
     getIronSession: () => {
         const role = global.__ROLE__ ?? AuthRole.materialManager;
-        const organisationId = global.__ASSOSIATION__ ?? staticData.organisationId;
+        const organisationId = global.__ORGANISATION__ ?? staticData.organisationId;
         return {
             user: {
                 name: 'VK Verwaltung',
@@ -48,4 +48,4 @@ jest.mock('next/cache', () => ({
 }));
 
 // Export static data for use in tests
-export { staticData, wrongAssosiation };
+export { staticData, wrongOrganisation };

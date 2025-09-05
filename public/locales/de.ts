@@ -236,14 +236,15 @@ export default {
     login: {
         header: "Login",
         label: {
-            assosiation: "Verein",
+            organisation: "Verein",
             username: "Nutzername",
             password: "Password",
             login: "Anmelden"
         },
         error: {
             unknown: "Der Loginversuch ist fehlgeschlagen, bitte versuchen Sie es erneut.",
-            failed: "Nutzername oder Passwort sind ungültig"
+            failed: "Nutzername oder Passwort sind ungültig",
+            userBlocked: "Ihr Zugang wurde gesperrt. Bitte kontaktieren Sie den Administrator.",
         },
     },
     notFound: {

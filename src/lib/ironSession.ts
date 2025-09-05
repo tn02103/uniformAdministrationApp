@@ -1,5 +1,5 @@
 import { AuthRole } from "./AuthRoles";
-import { IronSessionData, SessionOptions, getIronSession as getSession } from "iron-session";
+import { IronSession as UntypedIronSession, IronSessionData, SessionOptions, getIronSession as getSession } from "iron-session";
 import { cookies } from "next/headers";
 
 const sessionOptions: SessionOptions = {
@@ -27,5 +27,6 @@ export type IronSessionUser = {
     organisationId: string;
 }
 
+export type IronSession = UntypedIronSession<IronSessionData>
 
 export const getIronSession = async () => getSession<IronSessionData>(await cookies(), sessionOptions);

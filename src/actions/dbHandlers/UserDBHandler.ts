@@ -5,21 +5,22 @@ import { PrismaClient } from "@prisma/client";
 
 export class UserDBHandler {
 
-    getUsersList = (fk_assosiation: string, client?: PrismaClient) =>
+    getUsersList = (organisationId: string, client?: PrismaClient) =>
         (client ?? prisma).user.findMany({
-            where: { fk_assosiation },
+            where: { organisationId },
             ...userArgs,
         });
 
-    create = (data: { username: string, name: string, role: AuthRole, active: boolean }, fk_assosiation: string, password: string, client: PrismaClient) =>
+    create = (data: { username: string, name: string, role: AuthRole, active: boolean }, organisationId: string, password: string, client: PrismaClient) =>
         client.user.create({
             data: {
                 username: data.username,
                 name: data.name,
+                email: data.username,
                 role: data.role,
                 active: data.active,
                 password,
-                assosiation: { connect: { id: fk_assosiation } },
+                organisation: { connect: { id: organisationId } },
             }
         });
 
@@ -40,9 +41,9 @@ export class UserDBHandler {
             data: { password }
         });
 
-    removeRefreshToken = (fk_user: string, client: PrismaClient) =>
+    removeRefreshToken = (userId: string, client: PrismaClient) =>
         client.refreshToken.deleteMany({
-            where: { fk_user }
+            where: { userId }
         });
 
     delete = (id: string, client: PrismaClient) =>

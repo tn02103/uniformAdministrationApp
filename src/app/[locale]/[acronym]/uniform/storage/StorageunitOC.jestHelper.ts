@@ -43,7 +43,7 @@ export const mockStorageUnitWithItems: StorageUnitWithUniformItems[] = [
         capacity: 10,
         isReserve: false,
         description: "This is a test storage unit.",
-        assosiationId: "12345678-1234-1234-1234-123456789012",
+        organisationId: "12345678-1234-1234-1234-123456789012",
         uniformList: [
             mockUniformList[0],
             mockUniformList[1],
@@ -55,7 +55,7 @@ export const mockStorageUnitWithItems: StorageUnitWithUniformItems[] = [
         capacity: 20,
         isReserve: false,
         description: "This is another test storage unit.",
-        assosiationId: "12345678-1234-1234-1234-123456789012",
+        organisationId: "12345678-1234-1234-1234-123456789012",
         uniformList: [
             mockUniformList[2],
             mockUniformList[3],

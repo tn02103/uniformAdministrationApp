@@ -9,7 +9,7 @@ export const markDeleted = (props: string) => genericSAValidator(
     props,
     z.string().uuid(),
     { uniformGenerationId: props }
-).then(([{ assosiation, username }, id]) => prisma.$transaction(async (client) => {
+).then(([{ organisationId, username }, id]) => prisma.$transaction(async (client) => {
     const gen = await client.uniformGeneration.findUniqueOrThrow({
         where: { id }
     });
@@ -45,5 +45,5 @@ export const markDeleted = (props: string) => genericSAValidator(
         }
     });
 
-    return __unsecuredGetUniformTypeList(assosiation, client);
+    return __unsecuredGetUniformTypeList(organisationId, client);
 }));

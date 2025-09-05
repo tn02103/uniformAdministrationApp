@@ -15,14 +15,14 @@ export const getCadetMaterialMap = async (cadetId: string): Promise<CadetMateria
     AuthRole.user,
     uuidValidationPattern.test(cadetId),
     { cadetId }
-).then(async ({ assosiation }) => dbHandler.getMaterialMap(cadetId, assosiation));
+).then(async ({ organisationId }) => dbHandler.getMaterialMap(cadetId, organisationId));
 
 export const getCadetMaterialList = async (cadetId: string): Promise<UniformLabel[]> => genericSAValidatorV2(
     AuthRole.user,
     uuidValidationPattern.test(cadetId),
     { cadetId }
-).then(({ assosiation }) =>
-    dbHandler.getMaterialMap(cadetId, assosiation)
+).then(({ organisationId }) =>
+    dbHandler.getMaterialMap(cadetId, organisationId)
 ).then((map) =>
     Object.values(map).reduce(
         (list: UniformLabel[], matList) => [
@@ -43,7 +43,7 @@ export const issueMaterial = async (cadetId: string, newMaterialId: string, quan
         && (!oldMaterialId || uuidValidationPattern.test(oldMaterialId))
         && Number.isInteger(quantity) && quantity > 0),
     { cadetId, materialId: [newMaterialId, oldMaterialId] }
-).then(async ({ assosiation }) => prisma.$transaction(async (prismaCl) => {
+).then(async ({ organisationId }) => prisma.$transaction(async (prismaCl) => {
     if (oldMaterialId) {
         // IssuedMaterial 
         const matIssued = await dbHandler.getMaterialIssued(cadetId, oldMaterialId, prismaCl as PrismaClient);
@@ -62,7 +62,7 @@ export const issueMaterial = async (cadetId: string, newMaterialId: string, quan
     if (newMaterialId) {
         await dbHandler.issueMaterial(newMaterialId, cadetId, quantity, prismaCl as PrismaClient);
     }
-    return dbHandler.getMaterialMap(cadetId, assosiation, prismaCl as PrismaClient);
+    return dbHandler.getMaterialMap(cadetId, organisationId, prismaCl as PrismaClient);
 }));
 
 export const returnMaterial = async (cadetId: string, materialId: string): Promise<CadetMaterialMap> => genericSAValidatorV2(
@@ -70,9 +70,9 @@ export const returnMaterial = async (cadetId: string, materialId: string): Promi
     (uuidValidationPattern.test(cadetId)
         && uuidValidationPattern.test(materialId)),
     { cadetId, materialId }
-).then(async ({ assosiation }) => {
+).then(async ({ organisationId }) => {
     const mi = await dbHandler.getMaterialIssued(cadetId, materialId);
 
     await dbHandler.returnMaterial(mi.id, mi.dateIssued, prisma);
-    return dbHandler.getMaterialMap(cadetId, assosiation);
+    return dbHandler.getMaterialMap(cadetId, organisationId);
 });

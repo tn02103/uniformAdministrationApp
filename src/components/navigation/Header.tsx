@@ -15,7 +15,7 @@ const Header = ({ showSidebar }: {showSidebar: () => void}) => {
                 </div>
                 <div className="d-flex justify-content-center align-items-center">
                     <Link href={"/"}>
-                        <p data-testid="lnk_assosiationName" className="my-auto text-white fs-5 align-middle fw-bold">
+                        <p data-testid="lnk_organisationName" className="my-auto text-white fs-5 align-middle fw-bold">
 
                         </p>
                     </Link>

@@ -27,7 +27,7 @@ export const addUniform = async (props: PropType): Promise<StorageUnitWithUnifor
     props,
     propSchema,
     { storageUnitId: props.storageUnitId, uniformId: props.uniformId }
-).then(([{ assosiation }, { storageUnitId, uniformId }]) => prisma.$transaction(async (client) => {
+).then(([{ organisationId }, { storageUnitId, uniformId }]) => prisma.$transaction(async (client) => {
     const uniform = await client.uniform.findUniqueOrThrow({
         where: { id: uniformId },
         include: {
@@ -75,5 +75,5 @@ export const addUniform = async (props: PropType): Promise<StorageUnitWithUnifor
         where: { id: uniformId },
         data
     });
-    return __unsecuredGetUnitsWithUniformItems(assosiation, client);
+    return __unsecuredGetUnitsWithUniformItems(organisationId, client);
 }));

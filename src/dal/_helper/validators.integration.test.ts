@@ -10,8 +10,8 @@ describe('genericSAValidatorV2', () => {
         expect(result).toEqual({
             name: 'VK Verwaltung',
             username: 'mana',
-            assosiation: staticData.data.assosiation.id,
-            acronym: staticData.data.assosiation.acronym,
+            organisation: staticData.data.organisation.id,
+            acronym: staticData.data.organisation.acronym,
             role: AuthRole.materialManager
         });
     });
@@ -36,8 +36,8 @@ describe('genericSAValidator', () => {
         expect(result[0]).toEqual({
             name: 'VK Verwaltung',
             username: 'mana',
-            assosiation: staticData.data.assosiation.id,
-            acronym: staticData.data.assosiation.acronym,
+            organisation: staticData.data.organisation.id,
+            acronym: staticData.data.organisation.acronym,
             role: AuthRole.materialManager
         });
         expect(result[1]).toEqual("somestring");

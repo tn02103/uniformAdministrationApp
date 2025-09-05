@@ -12,7 +12,7 @@ export class MobileLayoutComponent {
 
     readonly div_header: Locator;
     readonly btn_openSidebar: Locator;
-    readonly lnk_assosiationName: Locator;
+    readonly lnk_organisationName: Locator;
     readonly div_inspection: Locator;
 
 
@@ -27,7 +27,7 @@ export class MobileLayoutComponent {
 
         this.div_header = page.getByTestId('div_layout_header');
         this.btn_openSidebar = this.div_header.getByTestId('btn_openSidebar');
-        this.lnk_assosiationName = this.div_header.getByTestId('lnk_assosiationName');
+        this.lnk_organisationName = this.div_header.getByTestId('lnk_organisationName');
         this.div_inspection = this.div_header.getByTestId('div_inspection');
     }
 }

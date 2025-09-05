@@ -19,7 +19,7 @@ describe('resolveDeficiency', () => {
     const { prisma } = jest.requireMock('@/lib/db');
     const date = new Date();
     beforeAll(() => {
-        global.__ASSOSIATION__ = 'fk_assoasiation';
+        global.__ORGANISATION__ = 'fk_assoasiation';
     })
     beforeEach(() => {
         jest.useFakeTimers();
@@ -28,7 +28,7 @@ describe('resolveDeficiency', () => {
     afterEach(() => {
         jest.clearAllMocks();
     });
-    afterAll(() => global.__ASSOSIATION__ = undefined)
+    afterAll(() => global.__ORGANISATION__ = undefined)
 
     it('resolves the deficiency', async () => {
         prisma.inspection.findFirst.mockResolvedValueOnce(null);

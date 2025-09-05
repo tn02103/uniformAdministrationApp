@@ -25,7 +25,7 @@ describe('deleteInspection', () => {
         expect(result.exceptionType).toBe(1);
         expect(result.message).toBe('Inspections that have been started once can not be deleted');
     });
-    it('catches wrong assosiation', async () => {
+    it('catches wrong organisation', async () => {
         const wrongData = new StaticData(1);
         await expect(deleteInspection(wrongData.ids.inspectionIds[3])).rejects.toBeDefined();
     });

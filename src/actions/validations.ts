@@ -6,7 +6,7 @@ import { IronSessionUser, getIronSession } from "@/lib/ironSession";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-type AssosiationValidationDataType = {
+type OrganisationValidationDataType = {
     userId?: string | string[],
     cadetId?: string | string[],
     uniformId?: string | string[],
@@ -22,7 +22,7 @@ type AssosiationValidationDataType = {
     storageUnitId?: string | string[],
 }
 
-function assosiationValidator(assosiationValidations: AssosiationValidationDataType, organisationId: string) {
+function organisationValidator(organisationValidations: OrganisationValidationDataType, organisationId: string) {
     const validationPromises: Promise<object>[] = [];
     const validate = (ids: string | (string | undefined)[], validator: (id: string, organisationId: string) => Promise<object>) => {
         if (Array.isArray(ids)) {
@@ -36,49 +36,49 @@ function assosiationValidator(assosiationValidations: AssosiationValidationDataT
         }
     }
 
-    if (assosiationValidations.userId) {
-        validate(assosiationValidations.userId, validateUserAssosiation);
+    if (organisationValidations.userId) {
+        validate(organisationValidations.userId, validateUserOrganisation);
     }
 
-    if (assosiationValidations.cadetId) {
-        validate(assosiationValidations.cadetId, validateCadetAssosiation);
+    if (organisationValidations.cadetId) {
+        validate(organisationValidations.cadetId, validateCadetOrganisation);
     }
 
-    if (assosiationValidations.uniformId) {
-        validate(assosiationValidations.uniformId, validateUniformAssosiation);
+    if (organisationValidations.uniformId) {
+        validate(organisationValidations.uniformId, validateUniformOrganisation);
     }
 
-    if (assosiationValidations.uniformTypeId) {
-        validate(assosiationValidations.uniformTypeId, validateUniformTypeAssosiation);
+    if (organisationValidations.uniformTypeId) {
+        validate(organisationValidations.uniformTypeId, validateUniformTypeOrganisation);
     }
 
-    if (assosiationValidations.materialId) {
-        validate(assosiationValidations.materialId, validateMaterailAssosiation);
+    if (organisationValidations.materialId) {
+        validate(organisationValidations.materialId, validateMaterailOrganisation);
     }
 
-    if (assosiationValidations.materialGroupId) {
-        validate(assosiationValidations.materialGroupId, validateMaterialGroupAssosiation);
+    if (organisationValidations.materialGroupId) {
+        validate(organisationValidations.materialGroupId, validateMaterialGroupOrganisation);
     }
 
-    if (assosiationValidations.uniformSizelistId && assosiationValidations.uniformSizelistId !== null) {
-        validate(assosiationValidations.uniformSizelistId, validateUniformSizelistAssosiation);
+    if (organisationValidations.uniformSizelistId && organisationValidations.uniformSizelistId !== null) {
+        validate(organisationValidations.uniformSizelistId, validateUniformSizelistOrganisation);
     }
 
-    if (assosiationValidations.uniformSizeId) {
-        validate(assosiationValidations.uniformSizeId, validateUniformSizeAssosiation);
+    if (organisationValidations.uniformSizeId) {
+        validate(organisationValidations.uniformSizeId, validateUniformSizeOrganisation);
     }
 
-    if (assosiationValidations.deficiencytypeId) {
-        validate(assosiationValidations.deficiencytypeId, validateDeficiencytypeAssosiation);
+    if (organisationValidations.deficiencytypeId) {
+        validate(organisationValidations.deficiencytypeId, validateDeficiencytypeOrganisation);
     }
-    if (assosiationValidations.deficiencyId) {
-        validate(assosiationValidations.deficiencyId, validateDeficiencyAssosiation);
+    if (organisationValidations.deficiencyId) {
+        validate(organisationValidations.deficiencyId, validateDeficiencyOrganisation);
     }
-    if (assosiationValidations.inspectionId) {
-        validate(assosiationValidations.inspectionId, validateInspectionAssosiation);
+    if (organisationValidations.inspectionId) {
+        validate(organisationValidations.inspectionId, validateInspectionOrganisation);
     }
-    if (assosiationValidations.storageUnitId) {
-        validate(assosiationValidations.storageUnitId, validateStorageUnitAssosiation);
+    if (organisationValidations.storageUnitId) {
+        validate(organisationValidations.storageUnitId, validateStorageUnitOrganisation);
     }
     return Promise.all(validationPromises);
 }
@@ -88,7 +88,7 @@ export const genericSAValidator = async <T>(
     requiredRole: AuthRole,
     data: T,
     shema: z.ZodType<T>,
-    assosiationValidations?: AssosiationValidationDataType
+    organisationValidations?: OrganisationValidationDataType
 ): Promise<[IronSessionUser, T]> => {
 
     const { user } = await getIronSession();
@@ -103,8 +103,8 @@ export const genericSAValidator = async <T>(
         throw zodResult.error;
     }
 
-    if (assosiationValidations) {
-        await assosiationValidator(assosiationValidations, user.organisationId);
+    if (organisationValidations) {
+        await organisationValidator(organisationValidations, user.organisationId);
     }
 
     return [user, zodResult.data];
@@ -124,7 +124,7 @@ export const genericSANoDataValidator = async (requiredRole: AuthRole) => {
 export const genericSAValidatorV2 = async (
     requiredRole: AuthRole,
     typeValidation: boolean,
-    assosiationValidations: AssosiationValidationDataType,
+    organisationValidations: OrganisationValidationDataType,
 ): Promise<IronSessionUser> => {
 
     const { user } = await getIronSession();
@@ -138,16 +138,16 @@ export const genericSAValidatorV2 = async (
         throw new Error("Typevalidation failed");
     }
 
-    await assosiationValidator(assosiationValidations, user.organisationId);
+    await organisationValidator(organisationValidations, user.organisationId);
 
     return user;
 }
 
 
-export const validateUserAssosiation = async (id: string, organisationId: string) => prisma.user.findUniqueOrThrow({
+export const validateUserOrganisation = async (id: string, organisationId: string) => prisma.user.findUniqueOrThrow({
     where: { id, organisationId }
 });
-export const validateCadetAssosiation = async (cadetId: string, organisationId: string) => prisma.cadet.findUniqueOrThrow({
+export const validateCadetOrganisation = async (cadetId: string, organisationId: string) => prisma.cadet.findUniqueOrThrow({
     where: {
         id: cadetId,
         organisationId,
@@ -155,14 +155,14 @@ export const validateCadetAssosiation = async (cadetId: string, organisationId: 
     }
 });
 
-const validateUniformTypeAssosiation = async (typeId: string, organisationId: string) => prisma.uniformType.findUniqueOrThrow({
+const validateUniformTypeOrganisation = async (typeId: string, organisationId: string) => prisma.uniformType.findUniqueOrThrow({
     where: {
         id: typeId,
         organisationId,
         recdelete: null,
     }
 });
-export const validateUniformAssosiation = async (uniformId: string, organisationId: string) => prisma.uniform.findUniqueOrThrow({
+export const validateUniformOrganisation = async (uniformId: string, organisationId: string) => prisma.uniform.findUniqueOrThrow({
     where: {
         id: uniformId,
         recdelete: null,
@@ -171,7 +171,7 @@ export const validateUniformAssosiation = async (uniformId: string, organisation
         }
     }
 });
-const validateMaterialGroupAssosiation = async (materialGroupId: string, organisationId: string) =>
+const validateMaterialGroupOrganisation = async (materialGroupId: string, organisationId: string) =>
     prisma.materialGroup.findUniqueOrThrow({
         where: {
             id: materialGroupId,
@@ -180,7 +180,7 @@ const validateMaterialGroupAssosiation = async (materialGroupId: string, organis
         }
     });
 
-const validateMaterailAssosiation = async (materialId: string, organisationId: string) => prisma.material.findUniqueOrThrow({
+const validateMaterailOrganisation = async (materialId: string, organisationId: string) => prisma.material.findUniqueOrThrow({
     where: {
         id: materialId,
         recdelete: null,
@@ -190,23 +190,23 @@ const validateMaterailAssosiation = async (materialId: string, organisationId: s
     }
 });
 
-const validateUniformSizelistAssosiation = async (id: string, organisationId: string) =>
+const validateUniformSizelistOrganisation = async (id: string, organisationId: string) =>
     prisma.uniformSizelist.findUniqueOrThrow({
         where: { id, organisationId }
     })
 
-const validateUniformSizeAssosiation = async (id: string, organisationId: string) =>
+const validateUniformSizeOrganisation = async (id: string, organisationId: string) =>
     prisma.uniformSize.findUniqueOrThrow({
         where: { id, organisationId }
     });
 
-const validateDeficiencytypeAssosiation = async (id: string, organisationId: string) =>
+const validateDeficiencytypeOrganisation = async (id: string, organisationId: string) =>
     prisma.deficiencyType.findUniqueOrThrow({
         where: {
             id, organisationId
         }
     });
-const validateDeficiencyAssosiation = async (id: string, organisationId: string) =>
+const validateDeficiencyOrganisation = async (id: string, organisationId: string) =>
     prisma.deficiency.findUniqueOrThrow({
         where: {
             id,
@@ -215,12 +215,12 @@ const validateDeficiencyAssosiation = async (id: string, organisationId: string)
             }
         }
     });
-const validateInspectionAssosiation = async (id: string, organisationId: string) =>
+const validateInspectionOrganisation = async (id: string, organisationId: string) =>
     prisma.inspection.findUniqueOrThrow({
         where: { id, organisationId }
     });
 
-const validateStorageUnitAssosiation = async (id: string, organisationId: string) =>
+const validateStorageUnitOrganisation = async (id: string, organisationId: string) =>
     prisma.storageUnit.findUniqueOrThrow({
         where: { id, organisationId }
     });

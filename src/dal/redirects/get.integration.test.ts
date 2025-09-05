@@ -1,5 +1,5 @@
 import { AuthRole } from "@/lib/AuthRoles";
-import { getRedirectsByAssosiation } from ".";
+import { getRedirectsByOrganisation } from ".";
 import { cleanData } from "../_helper/testHelper";
 
 
@@ -16,7 +16,7 @@ describe('getRedirects', () => {
     });
 
     it('should return redirects successfully', async () => {
-        const redirects = await getRedirectsByAssosiation();
+        const redirects = await getRedirectsByOrganisation();
 
         expect(redirects).toBeDefined();
         expect(redirects).toHaveLength(4);

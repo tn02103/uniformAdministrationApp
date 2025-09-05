@@ -18,7 +18,7 @@ const dbHandler = new DeficiencyTypeDBHandler();
  */
 export const getDeficiencyAdmintypeList = async (): Promise<AdminDeficiencyType[]> => genericSAValidatorV2(
     AuthRole.materialManager, true, {}
-).then(({ assosiation }) => dbHandler.getDeficiencyAdmintypeList(assosiation));
+).then(({ organisationId }) => dbHandler.getDeficiencyAdmintypeList(organisationId));
 
 const SaveDeficiencyTypePropSchema = z.object({
     id: z.string().uuid(),
@@ -32,9 +32,9 @@ export const saveDeficiencyType = async (props: SaveDeficiencyTypePropSchema) =>
         props,
         SaveDeficiencyTypePropSchema,
         { deficiencytypeId: props.id }
-    ).then(async ([{ assosiation }, { id, data }]) => {
+    ).then(async ([{ organisationId }, { id, data }]) => {
         await prisma.$transaction(async (client) => {
-            const list = await dbHandler.getDeficiencyAdmintypeList(assosiation);
+            const list = await dbHandler.getDeficiencyAdmintypeList(organisationId);
 
             if (list.find(t => t.id !== id && t.name === data.name)) {
                 throw new Error("Could not update deficiencyType: Name duplication");
@@ -53,7 +53,7 @@ export const saveDeficiencyType = async (props: SaveDeficiencyTypePropSchema) =>
 
             await dbHandler.update(id, data, client);
         });
-        revalidatePath(`/[locale]/${assosiation}/app/admin/deficiency`, 'page');
+        revalidatePath(`/[locale]/${organisationId}/app/admin/deficiency`, 'page');
     });
 
 export const createDeficiencyType = async (props: AdminDeficiencytypeFormSchema) =>
@@ -62,18 +62,18 @@ export const createDeficiencyType = async (props: AdminDeficiencytypeFormSchema)
         props,
         AdminDeficiencytypeFormSchema,
         {}
-    ).then(async ([{ assosiation }, data]) => {
+    ).then(async ([{ organisationId }, data]) => {
         const value = await prisma.$transaction(async (client) => {
-            const list = await dbHandler.getDeficiencyAdmintypeList(assosiation, client);
+            const list = await dbHandler.getDeficiencyAdmintypeList(organisationId, client);
 
             if (list.find(t => t.name === data.name)) {
                 throw new Error("Could not create Deficiencytype");
             }
 
-            return dbHandler.create(data, assosiation, client);
+            return dbHandler.create(data, organisationId, client);
         });
 
-        revalidatePath(`/[locale]/${assosiation}/app/admin/deficiency`, 'page');
+        revalidatePath(`/[locale]/${organisationId}/app/admin/deficiency`, 'page');
         return value;
     });
 
@@ -103,7 +103,7 @@ export const deactivateDeficiencyType = async (props: string) => genericSAValida
             disabledUser: user.username,
         }
     });
-    revalidatePath(`/[locale]/${user.assosiation}/app/admin/deficiency`, 'page');
+    revalidatePath(`/[locale]/${user.organisationId}/app/admin/deficiency`, 'page');
 });
 
 /**
@@ -118,7 +118,7 @@ export const reactivateDeficiencyType = async (props: string) => genericSAValida
     props,
     z.string().uuid(),
     { deficiencytypeId: props }
-).then(async ([{ assosiation }, id]) => {
+).then(async ([{ organisationId }, id]) => {
     await prisma.deficiencyType.update({
         where: { id },
         data: {
@@ -126,7 +126,7 @@ export const reactivateDeficiencyType = async (props: string) => genericSAValida
             disabledUser: null,
         }
     });
-    revalidatePath(`/[locale]/${assosiation}/app/admin/deficiency`, 'page');
+    revalidatePath(`/[locale]/${organisationId}/app/admin/deficiency`, 'page');
 });
 
 /**
@@ -142,7 +142,7 @@ export const deleteDeficiencyType = async (props: string) => genericSAValidator(
     props,
     z.string().uuid(),
     { deficiencytypeId: props }
-).then(async ([{ assosiation }, id]) => prisma.$transaction(async (client) => {
+).then(async ([{ organisationId }, id]) => prisma.$transaction(async (client) => {
     const type = await client.deficiencyType.findUniqueOrThrow({
         where: { id },
         include: {
@@ -162,5 +162,5 @@ export const deleteDeficiencyType = async (props: string) => genericSAValidator(
     await client.deficiencyType.delete({
         where: { id }
     });
-    revalidatePath(`/[locale]/${assosiation}/app/admin/deficiency`, 'page');
+    revalidatePath(`/[locale]/${organisationId}/app/admin/deficiency`, 'page');
 }));

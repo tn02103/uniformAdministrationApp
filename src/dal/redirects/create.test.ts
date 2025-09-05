@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 describe("createRedirect", () => {
     const { prisma } = jest.requireMock('@/lib/db');
 
-    const mockAssosiation = "test-assosiation-id";
+    const mockOrganisation = "test-organisation-id";
     const mockProps: RedirectFormType = {
         code: "test-code",
         target: "https://example.com",
@@ -36,11 +36,11 @@ describe("createRedirect", () => {
         expect(prisma.redirect.create).toHaveBeenCalledWith({
             data: {
                 ...mockProps,
-                assosiationId: mockAssosiation,
+                organisationId: mockOrganisation,
             },
         });
         expect(revalidatePath).toHaveBeenCalledWith(
-            `/[locale]/${mockAssosiation}/app/redirects`,
+            `/[locale]/${mockOrganisation}/app/redirects`,
             "page"
         );
         expect(result).toBeUndefined(); // No error returned on success

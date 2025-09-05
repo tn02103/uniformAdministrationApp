@@ -15,7 +15,7 @@ describe('saveCadetInspection Integration Tests', () => {
     beforeAll(async () => {
         global.__ROLE__ = AuthRole.inspector;
         global.__USERNAME__ = 'aabb';
-        global.__ASSOSIATION__ = data.organisation.id;
+        global.__ORGANISATION__ = data.organisation.id;
     });
 
     beforeEach(async () => {

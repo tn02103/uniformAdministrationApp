@@ -15,7 +15,7 @@ const dbHandler = new UserDBHandler();
 export const getUserList = async () => genericSAValidatorV2(
     AuthRole.admin,
     true, {}
-).then(({ assosiation }) => dbHandler.getUsersList(assosiation));
+).then(({ organisationId }) => dbHandler.getUsersList(organisationId));
 
 export const createUser = async (data: { username: string, name: string, role: AuthRole, active: boolean }, password: string) => genericSAValidatorV2(
     AuthRole.admin,
@@ -24,9 +24,9 @@ export const createUser = async (data: { username: string, name: string, role: A
         && (typeof data.active === "boolean")
         && (data.role in AuthRole && typeof data.role === 'number')),
     {}
-).then(async ({ assosiation }) => {
+).then(async ({ organisationId }) => {
     await prisma.$transaction(async (client) => {
-        const userList = await dbHandler.getUsersList(assosiation, client as PrismaClient);
+        const userList = await dbHandler.getUsersList(organisationId, client as PrismaClient);
 
         if (userList.find(u => u.username === data.username)) {
             throw new Error("Could not save data Username allready in use");
@@ -34,12 +34,12 @@ export const createUser = async (data: { username: string, name: string, role: A
 
         await dbHandler.create(
             data,
-            assosiation,
+            organisationId,
             await bcrypt.hash(password, 12),
             client as PrismaClient
         );
     });
-    revalidatePath(`/[locale]/${assosiation}/admin/users`, 'page');
+    revalidatePath(`/[locale]/${organisationId}/admin/users`, 'page');
 });
 
 export const updateUser = async (data: User) => genericSAValidatorV2(
@@ -50,9 +50,9 @@ export const updateUser = async (data: User) => genericSAValidatorV2(
         && (typeof data.active === "boolean")
         && (data.role in AuthRole && typeof data.role === 'number')),
     { userId: data.id }
-).then(async ({ assosiation }) => {
+).then(async ({ organisationId }) => {
     await dbHandler.update(data.id, data.name, data.role, data.active, prisma)
-    revalidatePath(`/[locale]/${assosiation}/admin/users`, 'page');
+    revalidatePath(`/[locale]/${organisationId}/admin/users`, 'page');
 });
 
 export const changeUserPassword = async (userId: string, password: string) => genericSAValidatorV2(
@@ -68,7 +68,7 @@ export const deleteUser = async (userId: string) => genericSAValidatorV2(
     AuthRole.admin,
     uuidValidationPattern.test(userId),
     { userId }
-).then(async ({ assosiation }) => {
+).then(async ({ organisationId }) => {
     await dbHandler.delete(userId, prisma);
-    revalidatePath(`/[locale]/${assosiation}/admin/users`, 'page');
+    revalidatePath(`/[locale]/${organisationId}/admin/users`, 'page');
 });

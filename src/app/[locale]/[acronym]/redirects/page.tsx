@@ -1,11 +1,11 @@
-import { getRedirectsByAssosiation } from "@/dal/redirects";
+import { getRedirectsByOrganisation } from "@/dal/redirects";
 import { getI18n } from "@/lib/locales/config";
 import { Col, Row } from "react-bootstrap";
 import { RedirectTable } from "./RedirectTable";
 
 export default async function RedirectPage() {
     const t = await getI18n();
-    const redirects = await getRedirectsByAssosiation();
+    const redirects = await getRedirectsByOrganisation();
 
     return (
         <div className="container-xl content-center bg-light rounded">

@@ -6,7 +6,7 @@ import { deleteRedirect } from "./index";
 describe("deleteRedirect", () => {
     const { prisma } = jest.requireMock('@/lib/db');
 
-    const mockAssosiation = "test-assosiation-id";
+    const mockOrganisation = "test-organisation-id";
     const mockId = "961a294a-8ac3-4329-a844-af6b85af5d68";
 
     beforeAll(() => {
@@ -17,7 +17,7 @@ describe("deleteRedirect", () => {
 
         prisma.redirect.findUnique.mockResolvedValue({
             id: mockId,
-            assosiationId: mockAssosiation,
+            organisationId: mockOrganisation,
         });
         prisma.redirect.delete.mockResolvedValue({});
     });
@@ -35,7 +35,7 @@ describe("deleteRedirect", () => {
             where: { id: mockId },
         });
         expect(revalidatePath).toHaveBeenCalledWith(
-            `/[locale]/${mockAssosiation}/app/redirects`,
+            `/[locale]/${mockOrganisation}/app/redirects`,
             "page"
         );
         expect(result).toBeUndefined(); // No error returned on success
@@ -51,7 +51,7 @@ describe("deleteRedirect", () => {
     it("should throw an error if the redirect does not belong to the association", async () => {
         prisma.redirect.findUnique.mockResolvedValue({
             id: mockId,
-            assosiationId: "different-association-id",
+            organisationId: "different-association-id",
         });
 
         await expect(deleteRedirect(mockId)).rejects.toThrow(

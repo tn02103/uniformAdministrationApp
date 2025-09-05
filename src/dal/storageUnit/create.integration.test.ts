@@ -7,7 +7,7 @@ jest.mock('@/lib/db', () => ({
             findFirst: jest.fn(),
             create: jest.fn(),
         },
-        assosiation: {
+        organisation: {
             create: jest.fn(),
             delete: jest.fn(),
         },
@@ -19,7 +19,7 @@ jest.mock('@/lib/db', () => ({
 }));
 jest.mock("@/actions/validations", () => ({
     genericSAValidator: jest.fn((_, props) =>
-        Promise.resolve([{ assosiation: 'test-assosiation' }, props])
+        Promise.resolve([{ organisation: 'test-organisation' }, props])
     ),
 }));
 jest.mock("./get", () => ({
@@ -52,15 +52,15 @@ describe('<StorageUnit> create', () => {
             expect.objectContaining(testUnit)
         ]);
         expect(prismafindFirst).toHaveBeenCalledWith({
-            where: { assosiationId: 'test-assosiation', name: testUnit.name }
+            where: { organisationId: 'test-organisation', name: testUnit.name }
         });
         expect(prismaCreate).toHaveBeenCalledWith({
             data: {
-                assosiationId: 'test-assosiation',
+                organisationId: 'test-organisation',
                 ...testUnit,
             }
         });
-        expect(getUnitsWithUniformItems).toHaveBeenCalledWith('test-assosiation', prisma);
+        expect(getUnitsWithUniformItems).toHaveBeenCalledWith('test-organisation', prisma);
     });
 
     it('throws soft error if name is duplicated', async () => {

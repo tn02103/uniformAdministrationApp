@@ -158,7 +158,7 @@ jest.mock('@/lib/ironSession', () => ({
         user: {
             name: 'Test User',
             username: global.__USERNAME__ ?? 'testuser',
-            assosiation: global.__ASSOSIATION__ ?? 'test-assosiation-id',
+            organisationId: global.__ORGANISATION__ ?? 'test-organisation-id',
             acronym: 'TEST',
             role: global.__ROLE__ ?? AuthRole.materialManager,
         }
@@ -174,11 +174,11 @@ jest.mock('next/cache', () => ({
 
 jest.mock("@/actions/validations", () => ({
     genericSAValidator: jest.fn((_, props) => Promise.resolve([{
-        assosiation: global.__ASSOSIATION__ ?? 'test-assosiation-id',
+        organisationId: global.__ORGANISATION__ ?? 'test-organisation-id',
         username: global.__USERNAME__ ?? 'testuser',
     }, props])),
     genericSANoDataValidator: jest.fn(() => Promise.resolve([{
-        assosiation: global.__ASSOSIATION__ ?? 'test-assosiation-id',
+        organisationId: global.__ORGANISATION__ ?? 'test-organisation-id',
         username: global.__USERNAME__ ?? 'testuser'
     }])),
 }));
@@ -190,5 +190,5 @@ beforeEach(() => {
     // Set default global values for unit tests
     global.__ROLE__ = AuthRole.materialManager;
     global.__USERNAME__ = 'testuser';
-    global.__ASSOSIATION__ = 'test-assosiation-id';
+    global.__ORGANISATION__ = 'test-organisation-id';
 });

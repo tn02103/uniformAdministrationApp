@@ -98,14 +98,14 @@ it('should succeed with fk_sizelist null when not using sizes', async () => {
     expect(success).toBeTruthy();
 });
 
-it('should throw error when fk_sizelist is from different assosiation', async () => {
-    const wrongAssosiation = new StaticData(1);
+it('should throw error when fk_sizelist is from different organisation', async () => {
+    const wrongOrganisation = new StaticData(1);
     const { success } = await runServerActionTest(
         update({
             id: ids.uniformGenerationIds[0],
             data: {
                 ...defaultData,
-                fk_sizelist: wrongAssosiation.ids.sizelistIds[0],
+                fk_sizelist: wrongOrganisation.ids.sizelistIds[0],
             }
         }),
     );

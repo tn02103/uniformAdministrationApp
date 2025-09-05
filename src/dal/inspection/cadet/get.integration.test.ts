@@ -2,7 +2,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import dayjs from "@/lib/dayjs";
 import { Deficiency } from "@/types/deficiencyTypes";
-import { staticData, wrongAssosiation } from "../../../../jest/setup-dal-integration";
+import { staticData, wrongOrganisation } from "../../../../jest/setup-dal-integration";
 import { getCadetInspectionFormData, getUnresolvedByCadet, unsecuredGetActiveInspection, unsecuredGetPreviouslyUnresolvedDeficiencies } from "./get";
 
 // Type for the view result that includes the cadet relationship fields
@@ -17,7 +17,7 @@ const { ids, data } = staticData;
 describe('getCadetInspectionFormData Integration Tests', () => {
     beforeAll(() => {
         global.__ROLE__ = AuthRole.inspector;
-        global.__ASSOSIATION__ = data.organisation.id;
+        global.__ORGANISATION__ = data.organisation.id;
     });
 
     beforeEach(async () => {
@@ -183,7 +183,7 @@ describe('unsecuredGetPreviouslyUnresolvedDeficiencies Integration Tests', () =>
     it('should exclude deficiencies from other associations', async () => {
         const result = await unsecuredGetPreviouslyUnresolvedDeficiencies(
             ids.cadetIds[0],
-            wrongAssosiation.data.organisation.id, // Different association
+            wrongOrganisation.data.organisation.id, // Different association
             ids.inspectionIds[4]
         );
 
@@ -261,7 +261,7 @@ describe('unsecuredGetActiveInspection Integration Tests', () => {
     it('should return null for inspections from other associations', async () => {
         const result = await unsecuredGetActiveInspection(
             ids.cadetIds[0], 
-            wrongAssosiation.data.organisation.id
+            wrongOrganisation.data.organisation.id
         );
         expect(result).toBeNull();
     });
@@ -303,7 +303,7 @@ describe('unsecuredGetActiveInspection Integration Tests', () => {
 describe('getUnresolvedByCadet Integration Tests', () => {
     beforeAll(() => {
         global.__ROLE__ = AuthRole.inspector;
-        global.__ASSOSIATION__ = data.organisation.id;
+        global.__ORGANISATION__ = data.organisation.id;
     });
 
     afterEach(async () => {
