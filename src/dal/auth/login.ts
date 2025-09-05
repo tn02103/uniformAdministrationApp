@@ -87,6 +87,16 @@ export const Login = async (props: LoginProps): Promise<LoginReturnType> => new 
         // ############# POST AUTHENTICATION #############
         await handleSuccessfulLogin({ user, organisation, ipAddress, agent, cookieList: cookieList, accountCookie, account });
         console.log("Test1");
+
+        await logAuthenticationAttempt({
+            userId: user.id,
+            organisationId: organisation.id,
+            success: true,
+            ipAddress,
+            userAgent: agent,
+            details: "Successful login",
+            action: "LOGIN_ATTEMPT",
+        })
         return resolves({
             loginSuccessful: true,
         });
