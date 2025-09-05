@@ -6,6 +6,7 @@ import { userAgent } from "next/server";
 import z from "zod";
 import crypto from 'crypto';
 import { IronSession } from "@/lib/ironSession";
+import { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/headers";
 
 
 // ########## SCHEMAS AND TYPES ##########
@@ -30,6 +31,10 @@ export const AuthConfig = {
     refreshTokenCookie: process.env.AUTH_REFRESH_COOKIE_NAME ?? "refreshToken",
     maxSessionAgeDays: +(process.env.AUTH_MAX_SESSION ?? 30), // After this many days a full re-auth is required
     maxRefreshTokenAgeDays: +(process.env.AUTH_MAX_REFRESH ?? 30), // After this many days the refresh token is invalid
+}
+
+export const getIPAddress = (headers: ReadonlyHeaders) => {
+    return headers.get('true-client-ip') ?? headers.get('x-forwarded-for') ?? "Unknown IP";
 }
 
 

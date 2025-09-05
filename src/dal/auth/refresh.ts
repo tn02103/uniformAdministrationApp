@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { cookies, headers } from "next/headers";
 import { userAgent } from "next/server";
-import { AuthConfig, getDeviceAccountFromCookies, issueNewAccessToken, issueNewRefreshToken, logAuthenticationAttempt, validateDeviceFingerprint, type UserAgent } from "./helper";
+import { AuthConfig, getDeviceAccountFromCookies, getIPAddress, issueNewAccessToken, issueNewRefreshToken, logAuthenticationAttempt, validateDeviceFingerprint, type UserAgent } from "./helper";
 import { prisma } from "@/lib/db";
 import { isValid } from "date-fns";
 import dayjs from "dayjs";
@@ -22,7 +22,7 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
 
         const userAgentStructure = { headers: headerList }
         const agent: UserAgent = userAgent(userAgentStructure);
-        const ipAddress = headerList.get('x-real-ip') ?? headerList.get('x-forwarded-for');
+        const ipAddress = getIPAddress(headerList);
         const refreshToken = cookieList.get(AuthConfig.refreshTokenCookie);
 
         console.log("🚀 ~ refreshAccessToken ~ agent:", agent)

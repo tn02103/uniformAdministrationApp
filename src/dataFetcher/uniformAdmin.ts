@@ -4,7 +4,6 @@ import { UniformSize, UniformType } from "@/types/globalUniformTypes";
 
 import useSWR from "swr";
 
-
 export function useUniformTypeList(fallbackData?: UniformType[]) {
     const { data, mutate } = useSWR(
         'uniform.type.list',

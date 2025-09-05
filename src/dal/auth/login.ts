@@ -3,15 +3,14 @@ import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
 import { Organisation, User } from "@prisma/client";
 import bcrypt from 'bcrypt';
-import crypto from 'crypto';
-import dayjs from "dayjs";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { cookies, headers } from "next/headers";
+import { redirect, RedirectType } from "next/navigation";
 import { userAgent } from "next/server";
+import { RateLimiterMemory } from "rate-limiter-flexible";
 import { setTimeout } from "timers/promises";
 import { z } from "zod";
-import { AuthConfig, DeviceIdsCookie, DeviceIdsCookieAccount, getDeviceAccountFromCookies, issueNewAccessToken, issueNewRefreshToken, logAuthenticationAttempt, UserAgent } from "./helper";
-import { redirect, RedirectType } from "next/navigation";
+import { AuthConfig, DeviceIdsCookie, DeviceIdsCookieAccount, getDeviceAccountFromCookies, getIPAddress, issueNewAccessToken, issueNewRefreshToken, logAuthenticationAttempt, UserAgent } from "./helper";
 
 const LoginPropSchema = z.object({
     organisationId: z.string().uuid(),
@@ -22,43 +21,71 @@ type LoginProps = z.infer<typeof LoginPropSchema>;
 
 type LoginReturnType = {
     loginSuccessful: false;
-    exceptionType: "AuthenticationFailed" | "User Blocked" | "UnknownError",
+    exceptionType: "AuthenticationFailed" | "User Blocked" | "UnknownError" | "TooManyRequests",
 } | { loginSuccessful: true };
+
+
+const ipLimiter = new RateLimiterMemory({
+    points: 15, // 15 failed attempts allowed
+    duration: 60 * 15, // reset after 15 minutes
+});
+
+const consumeIpLimiter = async (ipAddress: string, points: number) => {
+    return ipLimiter.consume(ipAddress, points)
+        .then((limit) => {
+            console.log("🚀 ~ consumeIpLimiter ~ limit:", limit, ipAddress);
+            if (limit.remainingPoints <= 0) {
+                console.warn("IP temporarily blocked due to too many failed login attempts", ipAddress);
+            }
+        }).catch(() => console.warn("IP temporarily blocked due to too many failed login attempts", ipAddress));
+}
 
 export const Login = async (props: LoginProps): Promise<LoginReturnType> => new Promise<LoginReturnType>(async (resolves) => {
     try {
         console.log("🚀 ~ Login ~ props:", props);
         // ######## DATA COLLECTION ########
-        await setTimeout(Math.random() * 500); // Mitigate timing analysis attacks by adding random delay between 0ms and 500ms
         const headerList = await headers();
+        const ipAddress = getIPAddress(headerList);
+        const ipLimit = await ipLimiter.get(ipAddress);
+        console.log("🚀 ~ Login ~ ipAddress:", ipAddress)
+        console.log("🚀 ~ Login ~ ipLimit:", ipLimit)
+        if (ipLimit && ipLimit.remainingPoints <= 0) {
+            console.warn("IP temporarily blocked due to too many failed login attempts", ipAddress);
+            return resolves({
+                loginSuccessful: false,
+                exceptionType: "TooManyRequests"
+            });
+        }
+
+
         for (const pair of headerList.entries()) {
             console.log(`🚀 ~ Login ~ HEADERS ~ ${pair[0]}: ${pair[1]}`);
         }
+        await setTimeout(Math.random() * 500); // Mitigate timing analysis attacks by adding random delay between 0ms and 500ms
+
         const cookieList = await cookies();
         const userAgentStructure = { headers: headerList }
         const agent: UserAgent = userAgent(userAgentStructure);
-        const ipAddress = headerList.get('x-real-ip') ?? headerList.get('x-forwarded-for') ?? "Unknown IP";
         console.log("🚀 ~ Login ~ agent:", agent);
 
 
         const parsed = LoginPropSchema.safeParse(props);
-        const { email, password, organisationId } = parsed.data!;
         if (!parsed.success) {
+            await consumeIpLimiter(ipAddress, 2);
             return resolves({
                 loginSuccessful: false,
                 exceptionType: "UnknownError"
             });
         }
 
+        const { email, password, organisationId } = parsed.data!;
         const organisation = await prisma.organisation.findFirst({
             where: { id: organisationId },
         });
-        console.log("Test5");
+        console.log("🚀 ~ Login ~ Test5");
         // ############# PRE AUTHENTICATION CHECKS #############
-        if (agent.isBot) {
-            return resolves(handleBot({ organisation, formOrganisationId: organisationId, email, ipAddress, userAgent: agent }));
-        }
         if (!organisation) {
+            await consumeIpLimiter(ipAddress, 5);
             console.warn("Loginattempt to non existing organisation", { organisationId, email, ipAddress, userAgent: agent });
             return resolves({
                 loginSuccessful: false,
@@ -67,26 +94,28 @@ export const Login = async (props: LoginProps): Promise<LoginReturnType> => new 
         }
 
         const { account, accountCookie } = getDeviceAccountFromCookies({ cookieList, organisationId });
-        console.log("Test4");
+        console.log("🚀 ~ Login ~ Test4");
 
         // ############# AUTHENTICATION #############
         const getUserReturn = await getActiveUser({ email, organisationId, ipAddress, agent });
         if (Object(getUserReturn).hasOwnProperty('loginSuccessful')) {
+            await consumeIpLimiter(ipAddress, 1);
             return resolves(getUserReturn as LoginReturnType);
         }
         const user = getUserReturn as User;
-        console.log("Test3");
+        console.log("🚀 ~ Login ~ Test3");
         // Validate Password
         const isValidPassword = await bcrypt.compare(password, user.password);
         if (!isValidPassword) {
+            await consumeIpLimiter(ipAddress, 1);
             return resolves(handleInvalidPassword({ userId: user.id, organisationId, ipAddress, agent }));
         }
         // Conditionally other verifications
-        console.log("Test2");
+        console.log("🚀 ~ Login ~ Test2");
 
         // ############# POST AUTHENTICATION #############
         await handleSuccessfulLogin({ user, organisation, ipAddress, agent, cookieList: cookieList, accountCookie, account });
-        console.log("Test1");
+        console.log("🚀 ~ Login ~ Test1");
 
         await logAuthenticationAttempt({
             userId: user.id,
@@ -110,50 +139,15 @@ export const Login = async (props: LoginProps): Promise<LoginReturnType> => new 
 }).then(async (response) => {
     console.log("🚀 ~ Login ~ response:", response)
     if (!response.loginSuccessful) {
-        console.error("Login failed:", response);
+        // Invalidate IRON-SESSION
         const session = await getIronSession();
         session.destroy();
     } else {
-        console.log("Login successful, redirecting:", response);
+        console.log("🚀 ~ Login ~ Login successful, redirecting:", response);
         return redirect(`/app/cadet`, RedirectType.push);
     }
     return response;
 });
-
-
-type HandleBotProps = {
-    organisation: Organisation | null;
-    formOrganisationId: string;
-    email: string;
-    ipAddress: string | null;
-    userAgent: UserAgent;
-}
-/**
- * Handles bot login attempts.
- * @param props 
- * @returns 
- */
-const handleBot = async (props: HandleBotProps): Promise<LoginReturnType> => {
-    const { organisation, email, ipAddress, userAgent, formOrganisationId } = props;
-
-    if (organisation) {
-        await logAuthenticationAttempt({
-            organisationId: organisation.id,
-            success: false,
-            ipAddress,
-            userAgent: userAgent,
-            details: "Bot detected",
-            action: "LOGIN_ATTEMPT",
-        });
-    } else {
-        console.warn("Loginattempt to non existing organisation by a bot", { formOrganisationId, email, ipAddress, userAgent: userAgent });
-    }
-    return {
-        loginSuccessful: false,
-        exceptionType: "AuthenticationFailed"
-    }
-}
-
 
 type GetActiveUserProps = {
     email: string;
@@ -369,48 +363,4 @@ const handleDeviceUsage = async (props: HandleDeviceUsageProps): Promise<DeviceI
     }
 
     return account;
-}
-
-type HandleRefreshTokenProps = {
-    cookieList: ReadonlyRequestCookies;
-    account: DeviceIdsCookieAccount;
-    userId: string;
-    ipAddress: string;
-}
-/**
- * Invalidates existing refresh tokens for the device and user, creates a new refresh token, saves it to the database and sets it as a cookie.
- * @param props 
- */
-const handleRefreshToken = async (props: HandleRefreshTokenProps) => {
-    const { cookieList, account, userId, ipAddress } = props;
-    // Invalidate existing refreshTokens
-    prisma.refreshToken.updateMany({
-        where: {
-            deviceId: account.deviceId,
-            userId: userId,
-        },
-        data: {
-            revoked: true,
-        }
-    });
-
-    // Create new refresh Token
-    const refreshToken = crypto.randomBytes(64).toString('hex');
-    const endOfLife = dayjs().add(3, "days").toDate();
-    await prisma.refreshToken.create({
-        data: {
-            userId: userId,
-            deviceId: account.deviceId,
-            token: refreshToken,
-            endOfLife,
-            ipAddress,
-        }
-    });
-    // Set Refreshtoken cookie
-    cookieList.set(AuthConfig.refreshTokenCookie, refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-        expires: endOfLife,
-    });
 }
