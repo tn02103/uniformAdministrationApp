@@ -13,4 +13,32 @@ updates:
       prefix: "deps"
     versioning-strategy: "auto" # Default strategy for updates
     open-pull-requests-limit: 10
+    cooldown: 
+      default-days: 5
+      semver-major-days: 10
+      semver-minor-days: 7
+      semver-patch-days: 3
+    groups:
+      fontawesome:
+        patterns:
+          - "fortawesome/*"
+          - "react-fontawesome"
+        update-types:
+          - "major"
+          - "minor"
+      prisma:
+        patterns:
+          - "prisma"
+          - "@prisma/*"
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      jest:
+        patterns:
+          - "jest"
+          - "jest-environment-jsdom"
+          - "@types/jest"
     
