@@ -1,5 +1,5 @@
 import { useScopedI18n } from "@/lib/locales/client"
-import { Form } from "react-bootstrap"
+import { Form, FormControlProps } from "react-bootstrap"
 import { FieldValues, Path, useController } from "react-hook-form"
 import { Field } from "./Field"
 import { useFormContext } from "./Form"
@@ -15,10 +15,10 @@ type Props<FormType extends FieldValues> = {
     plaintext?: boolean,
     maxLength?: number,
     hookFormValidation?: boolean,
-}
+} & Pick<FormControlProps, 'type' | 'autoComplete'>
 
 export const InputFormField = <FormType extends FieldValues>(props: Props<FormType>) => {
-    const { label, name, required, placeholder, className, hookFormValidation,  maxLength, ...inputProps } = props;
+    const { label, name, required, placeholder, className, hookFormValidation, maxLength, type = "text", ...inputProps } = props;
 
     const t = useScopedI18n('common.error');
     const { field, fieldState } = useController({
@@ -44,13 +44,14 @@ export const InputFormField = <FormType extends FieldValues>(props: Props<FormTy
         >
             <Form.Control
                 {...field}
+                {...inputProps}
                 className={className}
                 disabled={disabled}
                 plaintext={plaintext}
                 id={`${formName}_input-${name}`}
                 isInvalid={!!fieldState.error}
                 placeholder={placeholder}
-                type="text"
+                type={type}
                 width={"auto"}
                 value={field.value ?? ""}
                 aria-errormessage={fieldState.error ? `${formName}_err_${name}` : undefined}

@@ -8,7 +8,7 @@ async function main() {
     ids.organisationId = process.env.ORGANISATION_ID ?? ids.organisationId;
     const generator = new StaticDataGenerator(ids);
     const { organisationId, sizeIds, sizelistIds } = ids;
-    const password = await bcrypt.hash(process.env.USER_PASSWORD ?? "Test!234" as string, 15);
+    const password = await bcrypt.hash(process.env.USER_PASSWORD ?? "Test!234" as string, 12);
 
     await prismaClient.$transaction(async (prisma) => {
         await prisma.organisation.create({

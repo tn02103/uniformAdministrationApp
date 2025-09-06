@@ -1,11 +1,11 @@
 import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
-import { Device, Organisation, User } from "@prisma/client";
+import { Device, Organisation, RefreshToken, User } from "@prisma/client";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { userAgent } from "next/server";
 import z from "zod";
 import crypto from 'crypto';
-import { IronSession } from "@/lib/ironSession";
+import { getIronSession, IronSession } from "@/lib/ironSession";
 import { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/headers";
 
 
@@ -24,7 +24,6 @@ const DeviceIdsCookieSchema = z.object({
 export type DeviceIdsCookie = z.infer<typeof DeviceIdsCookieSchema>;
 export type DeviceIdsCookieAccount = z.infer<typeof DeviceIdsCookieAccountSchema>;
 
-
 // ########## CONFIG ##########
 export const AuthConfig = {
     deviceCookie: process.env.AUTH_DEVICE_COOKIE_NAME ?? "deviceToken",
@@ -37,11 +36,10 @@ export const getIPAddress = (headers: ReadonlyHeaders) => {
     return headers.get('true-client-ip') ?? headers.get('x-forwarded-for') ?? "Unknown IP";
 }
 
-
-
 type LogLoginAttemptData = {
-    action: "LOGIN_ATTEMPT" | "REFRESH_ACCESS_TOKEN";
+    action: "LOGIN_ATTEMPT" | "REFRESH_ACCESS_TOKEN"
     userId?: string;
+    deviceId?: string;
     organisationId?: string;
     success: boolean;
     ipAddress: string | null;
@@ -53,12 +51,13 @@ type LogLoginAttemptData = {
 * @param data 
 */
 export const logAuthenticationAttempt = async (data: LogLoginAttemptData) => {
-    const { userId, organisationId, success, ipAddress, details, action } = data;
+    const { userId, organisationId, success, ipAddress, details, action, deviceId } = data;
     const userAgent = JSON.stringify(data.userAgent);
 
     await prisma.auditLog.create({
         data: {
             userId,
+            deviceId,
             details,
             organisationId,
             ipAddress,
@@ -73,11 +72,13 @@ export const logAuthenticationAttempt = async (data: LogLoginAttemptData) => {
 type IssueNewRefreshTokenProps = {
     cookieList: ReadonlyRequestCookies;
     userId: string;
-    usedRefreshToken?: string;
     deviceId: string;
     ipAddress: string;
     endOfLife?: Date;
-}
+} & ({ usedRefreshToken?: undefined, userAgent?: undefined } | {
+    userAgent: UserAgent;
+    usedRefreshToken: string;
+})
 /**
  * Issues a new access token for the user.
  */
@@ -88,7 +89,8 @@ export const issueNewRefreshToken = async (props: IssueNewRefreshTokenProps) => 
         userId,
         ipAddress,
         usedRefreshToken,
-        endOfLife = dayjs().add(3, "days").toDate()
+        endOfLife = dayjs().add(3, "days").toDate(),
+        userAgent,
     } = props;
 
     if (usedRefreshToken) {
@@ -101,12 +103,16 @@ export const issueNewRefreshToken = async (props: IssueNewRefreshTokenProps) => 
                 usedAt: null,
                 endOfLife: { gt: new Date() },
             },
-            data: { usedAt: new Date() }
+            data: {
+                usedAt: new Date(),
+                usedIpAddress: ipAddress,
+                usedUserAgent: JSON.stringify(userAgent),
+            }
         });
     }
 
     // Invalidate existing refreshTokens
-    prisma.refreshToken.updateMany({
+    await prisma.refreshToken.updateMany({
         where: {
             deviceId: deviceId,
             userId: userId,
@@ -133,7 +139,7 @@ export const issueNewRefreshToken = async (props: IssueNewRefreshTokenProps) => 
             deviceId: deviceId,
             token: refreshToken,
             endOfLife,
-            ipAddress,
+            issuerIpAddress: ipAddress,
         }
     });
     // Set Refreshtoken cookie
@@ -211,8 +217,8 @@ type DeviceValidationResult = {
  */
 export const validateDeviceFingerprint = async (
     ipAddress: string,
-    device: Device,
-    deviceCookie: DeviceIdsCookieAccount,
+    device: Pick<Device, "id" | "userAgent">,
+    currentDeviceId: string,
     currentIP: string,
     currentUA: UserAgent
 ): Promise<DeviceValidationResult> => {
@@ -220,7 +226,7 @@ export const validateDeviceFingerprint = async (
     let riskLevel: DeviceValidationResult["riskLevel"] = 'LOW';
 
     // 1. CRITICAL: Device ID must match
-    if (device.id !== deviceCookie.deviceId) {
+    if (device.id !== currentDeviceId) {
         return {
             riskLevel: 'SEVERE',
             reasons: ['Device ID mismatch']
@@ -282,3 +288,97 @@ export const validateDeviceFingerprint = async (
 
     return { riskLevel, reasons };
 }
+
+type RefreshTokenReuseResult = {
+    action: 'ALLOW' | 'REQUIRE_REAUTH' | 'INVALIDATE_ALL_SESSIONS';
+    reason: string;
+    riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+}
+/**
+ * Handles refresh token reuse detection and determines appropriate response
+ */
+export const handleRefreshTokenReuse = async (
+    usedToken: RefreshToken,
+    currentRequest: {
+        deviceId: string;
+        ipAddress: string;
+        userAgent: UserAgent;
+    }
+): Promise<RefreshTokenReuseResult> => {
+    if (!usedToken.usedAt || !usedToken.usedIpAddress || !usedToken.usedUserAgent) {
+        // If any critical information is missing, we cannot validate the token
+        return {
+            action: 'INVALIDATE_ALL_SESSIONS',
+            reason: 'Missing token usage context - implementation error',
+            riskLevel: 'CRITICAL'
+        };
+    }
+
+    // Compare the original token usage context with current request
+    const deviceFingerprint = await validateDeviceFingerprint(
+        usedToken.usedIpAddress ?? 'unknown',
+        { id: usedToken.deviceId, userAgent: usedToken.usedUserAgent },
+        currentRequest.deviceId,
+        currentRequest.ipAddress,
+        currentRequest.userAgent
+    );
+
+    // Same device, same IP, same user agent = likely parallel requests
+    const isLowRiskUA = deviceFingerprint.riskLevel === 'LOW' && deviceFingerprint.reasons.length === 0;
+
+    // Time since token was used (parallel requests should be very close)
+    const timeSinceUsed = Date.now() - usedToken.usedAt!.getTime();
+    const isWithinParallelWindow = timeSinceUsed < 10000; // 10 seconds TODO - make configurable //
+
+    if (isLowRiskUA && isWithinParallelWindow) {
+        return {
+            action: 'ALLOW',
+            reason: 'Likely parallel request from same context',
+            riskLevel: 'LOW'
+        };
+    }
+
+    if (isLowRiskUA && !isWithinParallelWindow) {
+        return {
+            action: 'REQUIRE_REAUTH',
+            reason: 'Same device but not in parallel request window',
+            riskLevel: 'MEDIUM'
+        };
+    }
+
+    // Different device or significant time gap = potential attack
+    return {
+        action: 'INVALIDATE_ALL_SESSIONS',
+        reason: 'Refresh token reuse from different context - possible token theft',
+        riskLevel: 'CRITICAL'
+    };
+};
+
+/**
+ * Invalidates all active sessions for a user across all devices
+ */
+export const invalidateAllUserSessions = async (userId: string, deviceId: string): Promise<void> => {
+    await prisma.refreshToken.updateMany({
+        where: {
+            userId: userId,
+            revoked: false
+        },
+        data: {
+            revoked: true
+        }
+    });
+    const session = await getIronSession();
+    session.destroy();
+
+
+    // Log this critical security event
+    await logAuthenticationAttempt({
+        userId,
+        deviceId,
+        success: false,
+        ipAddress: null,
+        userAgent: {} as UserAgent,
+        details: 'All user sessions invalidated due to refresh token reuse attack',
+        action: 'REFRESH_ACCESS_TOKEN',
+    });
+};

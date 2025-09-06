@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
 import { Organisation, User } from "@prisma/client";
@@ -9,15 +8,9 @@ import { redirect, RedirectType } from "next/navigation";
 import { userAgent } from "next/server";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import { setTimeout } from "timers/promises";
-import { z } from "zod";
 import { AuthConfig, DeviceIdsCookie, DeviceIdsCookieAccount, getDeviceAccountFromCookies, getIPAddress, issueNewAccessToken, issueNewRefreshToken, logAuthenticationAttempt, UserAgent } from "./helper";
-
-const LoginPropSchema = z.object({
-    organisationId: z.string().uuid(),
-    email: z.string().email(),
-    password: z.string().min(6).max(100)
-});
-type LoginProps = z.infer<typeof LoginPropSchema>;
+import { LoginFormSchema, LoginFormType } from "@/zod/auth";
+import { sendUserBlockedEmail } from "@/lib/email/userBlockedEmail";
 
 type LoginReturnType = {
     loginSuccessful: false;
@@ -30,25 +23,41 @@ const ipLimiter = new RateLimiterMemory({
     duration: 60 * 15, // reset after 15 minutes
 });
 
-const consumeIpLimiter = async (ipAddress: string, points: number) => {
+const consumeIpLimiter = async (ipAddress: string, points: number, userAgent: UserAgent, deviceId?: string) => {
     return ipLimiter.consume(ipAddress, points)
         .then((limit) => {
-            console.log("🚀 ~ consumeIpLimiter ~ limit:", limit, ipAddress);
             if (limit.remainingPoints <= 0) {
-                console.warn("IP temporarily blocked due to too many failed login attempts", ipAddress);
+                logAuthenticationAttempt({
+                    success: false,
+                    ipAddress,
+                    details: "IP temporarily blocked due to too many failed login attempts",
+                    action: "LOGIN_ATTEMPT",
+                    userAgent,
+                    deviceId,
+                });
             }
-        }).catch(() => console.warn("IP temporarily blocked due to too many failed login attempts", ipAddress));
+        }).catch(() => logAuthenticationAttempt({
+            success: false,
+            ipAddress,
+            details: "IP temporarily blocked due to too many failed login attempts",
+            action: "LOGIN_ATTEMPT",
+            userAgent,
+            deviceId,
+        }));
 }
 
-export const Login = async (props: LoginProps): Promise<LoginReturnType> => new Promise<LoginReturnType>(async (resolves) => {
+export const Login = async (props: LoginFormType): Promise<LoginReturnType> => new Promise<LoginReturnType>(async (resolves) => {
     try {
-        console.log("🚀 ~ Login ~ props:", props);
+        await setTimeout(Math.random() * 500); // Mitigate timing analysis attacks by adding random delay between 0ms and 500ms
+
         // ######## DATA COLLECTION ########
         const headerList = await headers();
+        const cookieList = await cookies();
         const ipAddress = getIPAddress(headerList);
+        const userAgentStructure = { headers: headerList }
+        const agent: UserAgent = userAgent(userAgentStructure);
+
         const ipLimit = await ipLimiter.get(ipAddress);
-        console.log("🚀 ~ Login ~ ipAddress:", ipAddress)
-        console.log("🚀 ~ Login ~ ipLimit:", ipLimit)
         if (ipLimit && ipLimit.remainingPoints <= 0) {
             console.warn("IP temporarily blocked due to too many failed login attempts", ipAddress);
             return resolves({
@@ -57,21 +66,9 @@ export const Login = async (props: LoginProps): Promise<LoginReturnType> => new 
             });
         }
 
-
-        for (const pair of headerList.entries()) {
-            console.log(`🚀 ~ Login ~ HEADERS ~ ${pair[0]}: ${pair[1]}`);
-        }
-        await setTimeout(Math.random() * 500); // Mitigate timing analysis attacks by adding random delay between 0ms and 500ms
-
-        const cookieList = await cookies();
-        const userAgentStructure = { headers: headerList }
-        const agent: UserAgent = userAgent(userAgentStructure);
-        console.log("🚀 ~ Login ~ agent:", agent);
-
-
-        const parsed = LoginPropSchema.safeParse(props);
+        const parsed = LoginFormSchema.safeParse(props);
         if (!parsed.success) {
-            await consumeIpLimiter(ipAddress, 2);
+            await consumeIpLimiter(ipAddress, 2, agent);
             return resolves({
                 loginSuccessful: false,
                 exceptionType: "UnknownError"
@@ -79,132 +76,160 @@ export const Login = async (props: LoginProps): Promise<LoginReturnType> => new 
         }
 
         const { email, password, organisationId } = parsed.data!;
-        const organisation = await prisma.organisation.findFirst({
-            where: { id: organisationId },
-        });
-        console.log("🚀 ~ Login ~ Test5");
+        const [organisation, user] = await prisma.$transaction([
+            prisma.organisation.findFirst({
+                where: { id: organisationId },
+            }),
+            prisma.user.findFirst({
+                where: {
+                    email,
+                    organisationId,
+                },
+            }),
+        ]);
+
         // ############# PRE AUTHENTICATION CHECKS #############
         if (!organisation) {
-            await consumeIpLimiter(ipAddress, 5);
-            console.warn("Loginattempt to non existing organisation", { organisationId, email, ipAddress, userAgent: agent });
+            await consumeIpLimiter(ipAddress, 5, agent);
+            await logAuthenticationAttempt({
+                success: false,
+                ipAddress,
+                userAgent: agent,
+                details: `Failed login attempt: Organisation with id ${organisationId} not found`,
+                action: "LOGIN_ATTEMPT",
+            });
+
+            return resolves({
+                loginSuccessful: false,
+                exceptionType: "AuthenticationFailed"
+            });
+        }
+        const { account, accountCookie } = getDeviceAccountFromCookies({ cookieList, organisationId });
+        if (!user) {
+            await consumeIpLimiter(ipAddress, 1, agent, account?.deviceId);
+            await logAuthenticationAttempt({
+                ipAddress,
+                organisationId,
+                success: false,
+                userAgent: agent,
+                details: `Failed login attempt: User with email ${email} not found`,
+                action: "LOGIN_ATTEMPT",
+                deviceId: account?.deviceId,
+            });
+
             return resolves({
                 loginSuccessful: false,
                 exceptionType: "AuthenticationFailed"
             });
         }
 
-        const { account, accountCookie } = getDeviceAccountFromCookies({ cookieList, organisationId });
-        console.log("🚀 ~ Login ~ Test4");
-
         // ############# AUTHENTICATION #############
-        const getUserReturn = await getActiveUser({ email, organisationId, ipAddress, agent });
-        if (Object(getUserReturn).hasOwnProperty('loginSuccessful')) {
-            await consumeIpLimiter(ipAddress, 1);
-            return resolves(getUserReturn as LoginReturnType);
+        const isVerified = await verifyUser({ user, account, organisationId, ipAddress, agent, password });
+        if (!isVerified.loginSuccessful) {
+            return resolves(isVerified);
         }
-        const user = getUserReturn as User;
-        console.log("🚀 ~ Login ~ Test3");
-        // Validate Password
-        const isValidPassword = await bcrypt.compare(password, user.password);
-        if (!isValidPassword) {
-            await consumeIpLimiter(ipAddress, 1);
-            return resolves(handleInvalidPassword({ userId: user.id, organisationId, ipAddress, agent }));
-        }
-        // Conditionally other verifications
-        console.log("🚀 ~ Login ~ Test2");
 
         // ############# POST AUTHENTICATION #############
         await handleSuccessfulLogin({ user, organisation, ipAddress, agent, cookieList: cookieList, accountCookie, account });
-        console.log("🚀 ~ Login ~ Test1");
 
-        await logAuthenticationAttempt({
-            userId: user.id,
-            organisationId: organisation.id,
-            success: true,
-            ipAddress,
-            userAgent: agent,
-            details: "Successful login",
-            action: "LOGIN_ATTEMPT",
-        })
         return resolves({
             loginSuccessful: true,
         });
     } catch (e) {
-        console.error("Login error:", e);
+        console.error("Uncaught login error:", e);
         return resolves({
             loginSuccessful: false,
             exceptionType: "UnknownError"
         });
     }
 }).then(async (response) => {
-    console.log("🚀 ~ Login ~ response:", response)
     if (!response.loginSuccessful) {
         // Invalidate IRON-SESSION
         const session = await getIronSession();
         session.destroy();
     } else {
-        console.log("🚀 ~ Login ~ Login successful, redirecting:", response);
         return redirect(`/app/cadet`, RedirectType.push);
     }
     return response;
 });
 
-type GetActiveUserProps = {
-    email: string;
+type VerifyUserProps = {
+    user: User;
+    account: DeviceIdsCookieAccount | null;
     organisationId: string;
-    ipAddress: string | null;
+    ipAddress: string;
     agent: UserAgent;
+    password: string;
 }
 /**
  * Retrieves the active user for a given email and organisation. Handles cases where user does not exists or is blocked.
  * @param props
  * @returns returns a user, or the errorResponse if not found or blocked
  */
-const getActiveUser = async (props: GetActiveUserProps): Promise<LoginReturnType | User> => {
-    const { email, organisationId, ipAddress, agent } = props;
-    const user = await prisma.user.findFirst({
-        where: {
-            email,
-            organisationId,
-            recDelete: null,
-        }
-    });
-
-    if (!user) {
-        await logAuthenticationAttempt({
-            organisationId,
-            success: false,
-            ipAddress,
-            userAgent: agent,
-            details: `Failed login attempt: User with email ${email} not found`,
-            action: "LOGIN_ATTEMPT",
-        });
-        return {
-            loginSuccessful: false,
-            exceptionType: "AuthenticationFailed"
-        }
+const verifyUser = async (props: VerifyUserProps): Promise<LoginReturnType> => {
+    const { user, account, ipAddress, agent, organisationId } = props;
+    const criticalReasons: string[] = [];
+    if (user.recDelete) {
+        criticalReasons.push("User has been deleted");
     }
+
     if (!user.active) {
+        criticalReasons.push("User is inactive");
+    }
+
+    // If there are critical problems with the user, log and return
+    if (criticalReasons.length > 0) {
         await logAuthenticationAttempt({
             userId: user.id,
-            organisationId,
+            organisationId: user.organisationId,
             success: false,
             ipAddress,
             userAgent: agent,
-            details: "Failed login attempt: User is blocked",
+            details: `${criticalReasons.join(", ")}`,
             action: "LOGIN_ATTEMPT",
+            deviceId: account?.deviceId,
         });
         return {
             loginSuccessful: false,
-            exceptionType: "User Blocked"
+            exceptionType: user.active ? "AuthenticationFailed" : "User Blocked"
         }
     }
-    return user;
+
+    const isValidPassword = await bcrypt.compare(props.password, user.password);
+    if (!isValidPassword) {
+        await consumeIpLimiter(ipAddress, 1, agent, account?.deviceId);
+        return handleInvalidPassword({ userId: user.id, organisationId, ipAddress, agent })
+    }
+
+    /* 
+      USE WHEN 2FA IS IMPLEMENTED
+      let fingerprintValidation = null;
+      if (account) {
+          const device = await prisma.device.findFirst({
+              where: {
+                  id: account.deviceId,
+              }
+          });
+          if (device) {
+              fingerprintValidation = await validateDeviceFingerprint(
+                  device.lastIpAddress,
+                  device,
+                  account,
+                  ipAddress,
+                  agent
+              );
+          }
+      }
+  */
+    return {
+        loginSuccessful: true,
+    }
 }
 
 
 type handleInvalidPasswordProps = {
     userId: string;
+    deviceId?: string;
     organisationId: string;
     ipAddress: string | null;
     agent: UserAgent;
@@ -216,11 +241,11 @@ type handleInvalidPasswordProps = {
  */
 const handleInvalidPassword = async (props: handleInvalidPasswordProps): Promise<LoginReturnType> => {
     const { userId, organisationId, ipAddress, agent } = props;
-    const x = await prisma.user.update({
+    const updatedUser = await prisma.user.update({
         where: { id: userId },
         data: { failedLoginCount: { increment: 1 } }
     });
-    if (x.failedLoginCount >= 10) {
+    if (updatedUser.failedLoginCount >= 10) {
         await prisma.user.update({
             where: { id: userId },
             data: { active: false }
@@ -242,13 +267,13 @@ const handleInvalidPassword = async (props: handleInvalidPasswordProps): Promise
             userAgent: agent,
             details: "Failed login attempt: User is now blocked due to too many failed login attempts",
             action: "LOGIN_ATTEMPT",
+            deviceId: props.deviceId,
         });
+        await sendUserBlockedEmail(userId);
         return {
             loginSuccessful: false,
             exceptionType: "User Blocked"
         }
-
-        // TODO: Send mail to admin and user that user is now logged out
     }
 
     logAuthenticationAttempt({
@@ -259,6 +284,7 @@ const handleInvalidPassword = async (props: handleInvalidPasswordProps): Promise
         userAgent: agent,
         details: `Failed login attempt: Invalid password`,
         action: "LOGIN_ATTEMPT",
+        deviceId: props.deviceId,
     });
     return {
         loginSuccessful: false,
@@ -282,7 +308,7 @@ const handleSuccessfulLogin = async (props: HandleSuccessfulLoginProps): Promise
 
     const session = await getIronSession();
 
-    prisma.user.update({
+    await prisma.user.update({
         where: { id: user.id },
         data: {
             lastLoginAt: new Date(),
@@ -295,6 +321,16 @@ const handleSuccessfulLogin = async (props: HandleSuccessfulLoginProps): Promise
 
     await issueNewRefreshToken({ cookieList, userId: user.id, deviceId: account.deviceId, ipAddress });
     await issueNewAccessToken({ session, user, organisation });
+    await logAuthenticationAttempt({
+        userId: user.id,
+        organisationId: organisation.id,
+        success: true,
+        ipAddress,
+        userAgent: agent,
+        details: "Successful login",
+        action: "LOGIN_ATTEMPT",
+        deviceId: account.deviceId,
+    });
 };
 
 type HandleDeviceUsageProps = {

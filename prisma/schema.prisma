@@ -43,15 +43,18 @@ model OrganisationConfiguration {
 }
 
 model RefreshToken {
-    token     String    @id @db.Char(128)
-    userId    String    @map("user_id") @db.Char(36)
-    deviceId  String    @map("device_id") @db.Char(36)
-    endOfLife DateTime  @map("end_of_live") @db.Timestamp(3)
-    usedAt    DateTime? @map("used_at") @db.Timestamp(3)
-    revoked   Boolean   @default(false)
-    ipAddress String    @map("ip_address") @db.VarChar(45)
-    user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-    device    Device    @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+    token               String    @id @db.Char(128)
+    userId              String    @map("user_id") @db.Char(36)
+    deviceId            String    @map("device_id") @db.Char(36)
+    endOfLife           DateTime  @map("end_of_live") @db.Timestamp(3)
+    revoked             Boolean   @default(false)
+    issuerIpAddress     String    @map("issuer_ip_address") @db.VarChar(45)
+    usedAt              DateTime? @map("used_at") @db.Timestamp(3)
+    usedIpAddress       String?   @map("used_ip_address") @db.VarChar(45)
+    usedUserAgent       String?   @map("used_user_agent") @db.Text
+    numberOfUseAttempts Int       @default(0) @map("number_of_uses")
+    user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    device              Device    @relation(fields: [deviceId], references: [id], onDelete: Cascade)
 
     @@unique([token])
     @@index([userId])
@@ -71,7 +74,7 @@ model User {
     failedLoginCount      Int            @default(0) @map("failed_login_count")
     changePasswordOnLogin Boolean        @default(false) @map("change_password_on_login")
     lastLoginAt           DateTime?      @map("last_login_at")
-    recDelete             DateTime?      @map("rec_delete") @db.Timestamp(6)
+    recDelete             DateTime?      @map("rec_delete") @db.Timestamp(3)
     recDeleteUser         String?        @map("rec_delete_user") @db.VarChar(36)
     refreshToken          RefreshToken[]
     organisation          Organisation   @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
@@ -98,6 +101,7 @@ model Device {
     userAgent     String         @map("user_agent") @db.Text
     valid         Boolean        @default(true)
     RefreshToken  RefreshToken[]
+    AuditLog      AuditLog[]
 
     @@index([userId])
     @@map("device")
@@ -108,6 +112,7 @@ model AuditLog {
     id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
     organisationId String?       @map("organisation_id") @db.Char(36)
     userId         String?       @map("user_id") @db.Char(36)
+    deviceId       String?       @map("device_id") @db.Char(36)
     action         String        @db.VarChar(50)
     state          String        @db.VarChar(50)
     entity         String        @db.VarChar(50)
@@ -117,6 +122,7 @@ model AuditLog {
     userAgent      String?       @map("user_agent") @db.Text
     organisation   Organisation? @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
     user           User?         @relation(fields: [userId], references: [id], onUpdate: Restrict)
+    device         Device?       @relation(fields: [deviceId], references: [id], onUpdate: Restrict)
 
     @@index([organisationId])
     @@index([userId])
@@ -268,7 +274,7 @@ model StorageUnit {
     isReserve      Boolean      @default(false) @map("is_reserve")
     capacity       Int?         @db.SmallInt
     uniformList    Uniform[]
-    organisationId String       @db.Char(36) @map("organisation_id")
+    organisationId String       @map("organisation_id") @db.Char(36)
     assosiacion    Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
     @@unique([name, organisationId])

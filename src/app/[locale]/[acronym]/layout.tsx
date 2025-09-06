@@ -37,7 +37,6 @@ const Layout = async ({
         return redirect('/login');
     }
 
-
     const [typeList, organisation, sizelists, inspectionState] = await Promise.all([
         getUniformTypeList(),
         prisma.organisation.findUnique({ where: { id: user.organisationId } }),

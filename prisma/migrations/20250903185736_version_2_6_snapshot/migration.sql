@@ -41,9 +41,12 @@ DELETE FROM "authentication"."refresh_token";
 ALTER TABLE "authentication"."refresh_token"
 RENAME COLUMN "fk_user" TO "user_id";
 ALTER TABLE "authentication"."refresh_token" DROP CONSTRAINT "refresh_token_pkey",
-ADD COLUMN     "ip_address" VARCHAR(45) NOT NULL,
+ADD COLUMN     "issuer_ip_address" VARCHAR(45) NOT NULL,
 ADD COLUMN     "revoked" BOOLEAN NOT NULL DEFAULT false,
 ADD COLUMN     "used_at" TIMESTAMP(3),
+ADD COLUMN     "number_of_uses" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "used_ip_address" VARCHAR(45),
+ADD COLUMN     "used_user_agent" TEXT,
 ALTER COLUMN "end_of_live" SET DATA TYPE TIMESTAMP(3),
 ALTER COLUMN "token" SET DATA TYPE CHAR(128),
 ADD CONSTRAINT "refresh_token_pkey" PRIMARY KEY ("token");
@@ -85,6 +88,7 @@ CREATE TABLE "authentication"."audit_log" (
     "id" CHAR(36) NOT NULL DEFAULT gen_random_uuid(),
     "organisation_id" CHAR(36),
     "user_id" CHAR(36),
+    "device_id" CHAR(36),
     "action" VARCHAR(50) NOT NULL,
     "state" VARCHAR(50) NOT NULL,
     "entity" VARCHAR(50) NOT NULL,
@@ -200,6 +204,9 @@ ALTER TABLE "authentication"."audit_log" ADD CONSTRAINT "audit_log_organisation_
 
 -- AddForeignKey
 ALTER TABLE "authentication"."audit_log" ADD CONSTRAINT "audit_log_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "authentication"."user"("id") ON DELETE SET NULL ON UPDATE RESTRICT;
+
+-- AddForeignKey
+ALTER TABLE "authentication"."audit_log" ADD CONSTRAINT "audit_log_device_id_fkey" FOREIGN KEY ("device_id") REFERENCES "authentication"."device"("id") ON DELETE SET NULL ON UPDATE RESTRICT;
 
 -- AlterView
 ALTER VIEW base.v_cadet_generaloverview RENAME COLUMN "fk_assosiation" TO "organisation_id";

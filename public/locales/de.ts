@@ -159,6 +159,7 @@ export default {
             },
             string: {
                 required: "Bitte ausfüllen",
+                emailValidation: "Bitte eine gültige E-Mail Adresse eingeben",
                 maxLength: "Es sind höchtens {value} Zeichen erlaubt",
                 lengthRequired: "Es wird eine Länge von {value} benötigt",
                 noSpecialChars: "Es dürfen keine Sonderzeichen genutzt werden",
