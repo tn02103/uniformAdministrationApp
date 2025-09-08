@@ -26,7 +26,7 @@ exports[`RedirectTable creating a redirect allows adding a new redirect 1`] = `
           >
             <svg
               aria-hidden="true"
-              class="svg-inline--fa fa-plus "
+              class="svg-inline--fa fa-plus"
               data-icon="plus"
               data-prefix="fas"
               role="img"
@@ -103,7 +103,7 @@ exports[`RedirectTable creating a redirect allows adding a new redirect 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-x "
+                class="svg-inline--fa fa-x"
                 data-icon="x"
                 data-prefix="fas"
                 role="img"
@@ -123,7 +123,7 @@ exports[`RedirectTable creating a redirect allows adding a new redirect 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-check "
+                class="svg-inline--fa fa-check"
                 data-icon="check"
                 data-prefix="fas"
                 role="img"
@@ -155,7 +155,7 @@ exports[`RedirectTable creating a redirect allows adding a new redirect 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-copy "
+                class="svg-inline--fa fa-copy"
                 data-icon="copy"
                 data-prefix="fas"
                 role="img"
@@ -202,7 +202,7 @@ exports[`RedirectTable creating a redirect allows adding a new redirect 1`] = `
           >
             <svg
               aria-hidden="true"
-              class="svg-inline--fa fa-pen-to-square "
+              class="svg-inline--fa fa-pen-to-square"
               data-icon="pen-to-square"
               data-prefix="fas"
               role="img"
@@ -223,7 +223,7 @@ exports[`RedirectTable creating a redirect allows adding a new redirect 1`] = `
           >
             <svg
               aria-hidden="true"
-              class="svg-inline--fa fa-trash "
+              class="svg-inline--fa fa-trash"
               data-icon="trash"
               data-prefix="fas"
               role="img"
@@ -254,7 +254,7 @@ exports[`RedirectTable creating a redirect allows adding a new redirect 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-copy "
+                class="svg-inline--fa fa-copy"
                 data-icon="copy"
                 data-prefix="fas"
                 role="img"
@@ -301,7 +301,7 @@ exports[`RedirectTable creating a redirect allows adding a new redirect 1`] = `
           >
             <svg
               aria-hidden="true"
-              class="svg-inline--fa fa-pen-to-square "
+              class="svg-inline--fa fa-pen-to-square"
               data-icon="pen-to-square"
               data-prefix="fas"
               role="img"
@@ -322,7 +322,7 @@ exports[`RedirectTable creating a redirect allows adding a new redirect 1`] = `
           >
             <svg
               aria-hidden="true"
-              class="svg-inline--fa fa-trash "
+              class="svg-inline--fa fa-trash"
               data-icon="trash"
               data-prefix="fas"
               role="img"
@@ -367,7 +367,7 @@ exports[`RedirectTable editing a redirect allows editing a redirect row 1`] = `
           >
             <svg
               aria-hidden="true"
-              class="svg-inline--fa fa-plus "
+              class="svg-inline--fa fa-plus"
               data-icon="plus"
               data-prefix="fas"
               role="img"
@@ -444,7 +444,7 @@ exports[`RedirectTable editing a redirect allows editing a redirect row 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-x "
+                class="svg-inline--fa fa-x"
                 data-icon="x"
                 data-prefix="fas"
                 role="img"
@@ -464,7 +464,7 @@ exports[`RedirectTable editing a redirect allows editing a redirect row 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-check "
+                class="svg-inline--fa fa-check"
                 data-icon="check"
                 data-prefix="fas"
                 role="img"
@@ -496,7 +496,7 @@ exports[`RedirectTable editing a redirect allows editing a redirect row 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-copy "
+                class="svg-inline--fa fa-copy"
                 data-icon="copy"
                 data-prefix="fas"
                 role="img"
@@ -543,7 +543,7 @@ exports[`RedirectTable editing a redirect allows editing a redirect row 1`] = `
           >
             <svg
               aria-hidden="true"
-              class="svg-inline--fa fa-pen-to-square "
+              class="svg-inline--fa fa-pen-to-square"
               data-icon="pen-to-square"
               data-prefix="fas"
               role="img"
@@ -564,7 +564,7 @@ exports[`RedirectTable editing a redirect allows editing a redirect row 1`] = `
           >
             <svg
               aria-hidden="true"
-              class="svg-inline--fa fa-trash "
+              class="svg-inline--fa fa-trash"
               data-icon="trash"
               data-prefix="fas"
               role="img"
@@ -608,7 +608,7 @@ exports[`RedirectTable renders the table with redirects 1`] = `
           >
             <svg
               aria-hidden="true"
-              class="svg-inline--fa fa-plus "
+              class="svg-inline--fa fa-plus"
               data-icon="plus"
               data-prefix="fas"
               role="img"
@@ -641,7 +641,7 @@ exports[`RedirectTable renders the table with redirects 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-copy "
+                class="svg-inline--fa fa-copy"
                 data-icon="copy"
                 data-prefix="fas"
                 role="img"
@@ -687,7 +687,7 @@ exports[`RedirectTable renders the table with redirects 1`] = `
           >
             <svg
               aria-hidden="true"
-              class="svg-inline--fa fa-pen-to-square "
+              class="svg-inline--fa fa-pen-to-square"
               data-icon="pen-to-square"
               data-prefix="fas"
               role="img"
@@ -707,7 +707,7 @@ exports[`RedirectTable renders the table with redirects 1`] = `
           >
             <svg
               aria-hidden="true"
-              class="svg-inline--fa fa-trash "
+              class="svg-inline--fa fa-trash"
               data-icon="trash"
               data-prefix="fas"
               role="img"
@@ -738,7 +738,7 @@ exports[`RedirectTable renders the table with redirects 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-copy "
+                class="svg-inline--fa fa-copy"
                 data-icon="copy"
                 data-prefix="fas"
                 role="img"
@@ -784,7 +784,7 @@ exports[`RedirectTable renders the table with redirects 1`] = `
           >
             <svg
               aria-hidden="true"
-              class="svg-inline--fa fa-pen-to-square "
+              class="svg-inline--fa fa-pen-to-square"
               data-icon="pen-to-square"
               data-prefix="fas"
               role="img"
@@ -804,7 +804,7 @@ exports[`RedirectTable renders the table with redirects 1`] = `
           >
             <svg
               aria-hidden="true"
-              class="svg-inline--fa fa-trash "
+              class="svg-inline--fa fa-trash"
               data-icon="trash"
               data-prefix="fas"
               role="img"
