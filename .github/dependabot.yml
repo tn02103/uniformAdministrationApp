@@ -13,6 +13,9 @@ updates:
       prefix: "deps"
     versioning-strategy: "auto" # Default strategy for updates
     open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "autosquash"
     cooldown: 
       default-days: 5
       semver-major-days: 10
@@ -21,8 +24,7 @@ updates:
     groups:
       fontawesome:
         patterns:
-          - "fortawesome/*"
-          - "react-fontawesome"
+          - "@fortawesome/*"
         update-types:
           - "major"
           - "minor"
@@ -36,9 +38,11 @@ updates:
           - "react-dom"
           - "@types/react"
           - "@types/react-dom"
-      jest:
+      react-dnd:
         patterns:
-          - "jest"
-          - "jest-environment-jsdom"
-          - "@types/jest"
-    
+          - "react-dnd"
+          - "react-dnd-html5-backend""
+      react-email:
+        patterns:
+          - "@react-email/*"
+          - "react-email"
