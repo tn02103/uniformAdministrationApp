@@ -31,15 +31,13 @@ const LoginForm = ({ organisations, lastUsedOrganisationId, ...props }: PropType
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     async function onSubmit(data: LoginFormType) {
-        console.log("🚀 ~ onSubmit ~ data:", data)
         setIsSubmitting(true);
         setUserBlocked(false);
         setFailedLogin(false);
-        data.email = data.email.trim();
 
         userLogin({
             organisationId: data.organisationId,
-            email: data.email,
+            email: data.email.trim(),
             password: data.password
         }).then((response) => {
             setIsSubmitting(false);
@@ -86,24 +84,27 @@ const LoginForm = ({ organisations, lastUsedOrganisationId, ...props }: PropType
                 </Alert>
             }
 
-            <SelectFormField
-                name="organisationId"
-                label={t('login.label.organisation')}
-                options={organisations.map(o => ({ value: o.id, label: o.name }))}
-                selectClassName="mb-3"
-            />
-            <InputFormField
-                name="email"
-                label={t('login.label.username')}
-                className="mb-3"
-            />
-            <InputFormField
-                name="password"
-                label={t('login.label.password')}
-                type="password"
-                autoComplete={"off"}
-                className="mb-3"
-            />
+            <div className="mb-3">
+                <SelectFormField
+                    name="organisationId"
+                    label={t('login.label.organisation')}
+                    options={organisations.map(o => ({ value: o.id, label: o.name }))}
+                />
+            </div>
+            <div className="mb-3">
+                <InputFormField
+                    name="email"
+                    label={t('login.label.username')}
+                />
+            </div>
+            <div className="mb-3">
+                <InputFormField
+                    name="password"
+                    label={t('login.label.password')}
+                    type="password"
+                    autoComplete={"off"}
+                />
+            </div>
             <Row>
                 <Col>
                     <Button variant="primary" type="submit" disabled={isSubmitting} data-testid="btn_login">

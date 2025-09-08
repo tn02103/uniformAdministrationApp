@@ -1,8 +1,11 @@
 
+import { refreshAccessToken } from "@/dal/auth";
+import { AuthConfig } from "@/dal/auth/helper";
 import { UnauthorizedException } from "@/errors/CustomException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { IronSessionUser, getIronSession } from "@/lib/ironSession";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -90,13 +93,7 @@ export const genericSAValidator = async <T>(
     shema: z.ZodType<T>,
     organisationValidations?: OrganisationValidationDataType
 ): Promise<[IronSessionUser, T]> => {
-
-    const { user } = await getIronSession();
-    if (!user) {
-        return redirect('/login');
-    } else if (user.role < requiredRole) {
-        throw new UnauthorizedException(`user does not have required role ${requiredRole}`);
-    }
+    const [user] = await genericSANoDataValidator(requiredRole);
 
     const zodResult = shema.safeParse(data);
     if (!zodResult.success) {
@@ -111,9 +108,23 @@ export const genericSAValidator = async <T>(
 }
 
 export const genericSANoDataValidator = async (requiredRole: AuthRole) => {
-    const { user } = await getIronSession();
+    let { user } = await getIronSession();
     if (!user) {
-        return redirect('/login');
+        const cookieList = await cookies();
+        if (!cookieList.has(AuthConfig.refreshTokenCookie)) {
+            return redirect('/login');
+        }
+
+        const refreshResponse = await refreshAccessToken().catch(() => ({ success: false }))
+
+        if (!refreshResponse.success) {
+            return redirect('/login');
+        }
+        const newSession = await getIronSession();
+        user = newSession.user;
+        if (!user) {
+            return redirect('/login');
+        }
     } else if (user.role < requiredRole) {
         throw new UnauthorizedException(`user does not have required role ${requiredRole}`);
     }
@@ -126,13 +137,7 @@ export const genericSAValidatorV2 = async (
     typeValidation: boolean,
     organisationValidations: OrganisationValidationDataType,
 ): Promise<IronSessionUser> => {
-
-    const { user } = await getIronSession();
-    if (!user) {
-        return redirect('/login');
-    } else if (user.role < requiredRole) {
-        throw new UnauthorizedException(`user does not have required role ${requiredRole}`);
-    }
+   const [user] = await genericSANoDataValidator(requiredRole);
 
     if (!typeValidation) {
         throw new Error("Typevalidation failed");

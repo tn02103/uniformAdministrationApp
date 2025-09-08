@@ -335,6 +335,26 @@ export function getStaticDataIds(index: number) {
             `${prefix}f6c2a0-93de-45dd-aa20-eb882f574283`,
             `${prefix}d1f277-408a-4408-834f-7941624517d3`
         ],
+        deviceIds: [
+            `${prefix}a1b2c3-d4e5-f6a7-b8c9-d0e1f2a3b4c5`,
+            `${prefix}e6f7a8-b9c0-d1e2-f3a4-b5c6d7e8f9a0`,
+            `${prefix}b1c2d3-e4f5-a6b7-c8d9-e0f1a2b3c4d5`,
+            `${prefix}f6a7b8-c9d0-e1f2-a3b4-c5d6e7f8a9b0`,
+            `${prefix}c1d2e3-f4a5-b6c7-d8e9-f0a1b2c3d4e5`,
+            `${prefix}a7b8c9-d0e1-f2a3-b4c5-d6e7f8a9b0c1`
+        ],
+        refreshTokenIds: [
+            `${prefix}12a3b4-c5d6-e7f8-a9b0-c1d2e3f4a5b6`,
+            `${prefix}34c5d6-e7f8-a9b0-c1d2-e3f4a5b6c7d8`,
+            `${prefix}56e7f8-a9b0-c1d2-e3f4-a5b6c7d8e9f0`,
+            `${prefix}78a9b0-c1d2-e3f4-a5b6-c7d8e9f0a1b2`,
+            `${prefix}9ac1d2-e3f4-a5b6-c7d8-e9f0a1b2c3d4`,
+            `${prefix}bce3f4-a5b6-c7d8-e9f0-a1b2c3d4e5f6`,
+            `${prefix}dea5b6-c7d8-e9f0-a1b2-c3d4e5f6a7b8`,
+            `${prefix}f0c7d8-e9f0-a1b2-c3d4-e5f6a7b8c9d0`,
+            `${prefix}12e9f0-a1b2-c3d4-e5f6-a7b8c9d0e1f2`,
+            `${prefix}34a1b2-c3d4-e5f6-a7b8-c9d0e1f2a3b4`
+        ],
         dynamic: {
             firstInspection: {
                 id: `${prefix}cde146-9a10-4480-b665-720996118b91`,

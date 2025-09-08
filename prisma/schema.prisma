@@ -76,10 +76,10 @@ model User {
     lastLoginAt           DateTime?      @map("last_login_at")
     recDelete             DateTime?      @map("rec_delete") @db.Timestamp(3)
     recDeleteUser         String?        @map("rec_delete_user") @db.VarChar(36)
-    refreshToken          RefreshToken[]
+    refreshTokens         RefreshToken[]
     organisation          Organisation   @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
-    Device                Device[]
-    AuditLog              AuditLog[]
+    devices               Device[]
+    auditLogs             AuditLog[]
 
     @@unique([username, organisationId])
     @@index([organisationId])

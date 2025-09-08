@@ -10,6 +10,7 @@ import { ReactNode } from "react";
 import { AuthRole } from "@/lib/AuthRoles";
 import { getInspectionState } from "@/dal/inspection/state";
 import { getUniformTypeList } from "@/dal/uniform/type/_index";
+import { SessionKeepAlive } from "./SessionKeepAlive";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +64,7 @@ const Layout = async ({
                     </Sidebar>
                 </div>
             </div>
+            <SessionKeepAlive/>
         </GlobalDataProvider>
     )
 }

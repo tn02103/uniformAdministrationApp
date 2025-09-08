@@ -30,6 +30,10 @@ export const AuthConfig = {
     refreshTokenCookie: process.env.AUTH_REFRESH_COOKIE_NAME ?? "refreshToken",
     maxSessionAgeDays: +(process.env.AUTH_MAX_SESSION ?? 30), // After this many days a full re-auth is required
     maxRefreshTokenAgeDays: +(process.env.AUTH_MAX_REFRESH ?? 30), // After this many days the refresh token is invalid
+    refreshTokenReuse: {
+        acceptedTime: 1000,
+        mediumRiskTime: 5000,
+    },
 }
 
 export const getIPAddress = (headers: ReadonlyHeaders) => {
@@ -233,6 +237,12 @@ export const validateDeviceFingerprint = async (
         };
     }
 
+     // 4. IP Address check (informational)
+    if (ipAddress !== currentIP) {
+        reasons.push('IP address changed');
+        // Mobile users change IPs frequently - don't elevate risk
+    }
+
     // 2. Parse stored user agent
     let storedUA;
     try {
@@ -241,6 +251,7 @@ export const validateDeviceFingerprint = async (
         reasons.push('Invalid stored user agent');
         riskLevel = 'SEVERE';
     }
+   
 
     // 3. User Agent validation
     if (storedUA) {
@@ -280,11 +291,6 @@ export const validateDeviceFingerprint = async (
         }
     }
 
-    // 4. IP Address check (informational)
-    if (ipAddress !== currentIP) {
-        reasons.push('IP address changed');
-        // Mobile users change IPs frequently - don't elevate risk
-    }
 
     return { riskLevel, reasons };
 }
@@ -328,8 +334,8 @@ export const handleRefreshTokenReuse = async (
 
     // Time since token was used (parallel requests should be very close)
     const timeSinceUsed = Date.now() - usedToken.usedAt!.getTime();
-    const isWithinParallelWindow = timeSinceUsed < 10000; // 10 seconds TODO - make configurable //
-
+    const isWithinParallelWindow = timeSinceUsed < AuthConfig.refreshTokenReuse.acceptedTime; // 2 seconds TODO - make configurable //
+    const isWithinLowRiskWindow = timeSinceUsed < AuthConfig.refreshTokenReuse.mediumRiskTime;
     if (isLowRiskUA && isWithinParallelWindow) {
         return {
             action: 'ALLOW',
@@ -338,7 +344,7 @@ export const handleRefreshTokenReuse = async (
         };
     }
 
-    if (isLowRiskUA && !isWithinParallelWindow) {
+    if (isLowRiskUA && !isWithinParallelWindow && isWithinLowRiskWindow) {
         return {
             action: 'REQUIRE_REAUTH',
             reason: 'Same device but not in parallel request window',

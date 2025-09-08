@@ -120,6 +120,7 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
             user: dbToken.user,
             device: dbToken.device,
             cookieList,
+            accountCookie,
         });
         if (!verificationResult.isValid) {
             await consumeIpLimiter(ipAddress, 1, agent);
@@ -186,7 +187,7 @@ type verificationsProp = {
     dbToken: RefreshToken;
     user: User;
     cookieList: ReadonlyRequestCookies;
-    accountCookie?: DeviceIdsCookie
+    accountCookie?: DeviceIdsCookie | null;
     device: Device;
 }
 type VerivicationsResult = {

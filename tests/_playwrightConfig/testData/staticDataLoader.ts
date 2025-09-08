@@ -72,6 +72,8 @@ class StaticDataGetter {
     readonly cadetInspections: Prisma.CadetInspectionCreateManyInput[];
     readonly deregistrations: Prisma.DeregistrationCreateManyInput[];
     readonly redirects: Prisma.RedirectCreateManyInput[];
+    readonly devices: Prisma.DeviceCreateManyInput[];
+    readonly refreshTokens: Prisma.RefreshTokenCreateManyInput[];
 
     constructor(i: number, ids: StaticDataIdType) {
         this.index = i;
@@ -155,6 +157,8 @@ class StaticDataGetter {
         this.cadetInspections = generator.cadetInspection();
         this.deregistrations = generator.deregistrations();
         this.redirects = generator.redirects(i);
+        this.devices = generator.device();
+        this.refreshTokens = generator.refreshToken();
     }
 
     async users() {
@@ -194,8 +198,12 @@ class StaticDataCleanup {
         await this.loader.deficienciesUniform();
     }
     async user() {
+        await this.deleteRefreshTokens();
+        await this.deleteDevices();
         await this.deleteUsers();
         await this.loader.users();
+        await this.loader.devices();
+        await this.loader.refreshTokens();
     }
     async cadet() {
         await prisma.$transaction([
@@ -377,6 +385,12 @@ class StaticDataCleanup {
     private deleteRedirects = () => prisma.redirect.deleteMany({
         where: { organisationId: this.organisationId }
     });
+    private deleteRefreshTokens = () => prisma.refreshToken.deleteMany({
+        where: { user: { organisationId: this.organisationId } }
+    });
+    private deleteDevices = () => prisma.device.deleteMany({
+        where: { user: { organisationId: this.organisationId } }
+    });
 }
 class StaticDataLoader {
     readonly data: StaticDataGetter;
@@ -389,6 +403,8 @@ class StaticDataLoader {
         await this.organisation();
         await this.organisationConfiguration();
         await this.users();
+        await this.devices();
+        await this.refreshTokens();
 
         await this.storageUnits();
         await this.cadets();
@@ -425,6 +441,16 @@ class StaticDataLoader {
     async users() {
         await prisma.user.createMany({
             data: await this.data.users(),
+        });
+    }
+    async devices() {
+        await prisma.device.createMany({
+            data: this.data.devices,
+        });
+    }
+    async refreshTokens() {
+        await prisma.refreshToken.createMany({
+            data: this.data.refreshTokens,
         });
     }
     async cadets() {

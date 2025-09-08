@@ -24,6 +24,8 @@ export type StaticDataIdType = {
     uniformTypeIds: string[];
     storageUnitIds: string[];
     redirectIds: string[];
+    deviceIds: string[];
+    refreshTokenIds: string[];
     dynamic: {
         firstInspection: {
             id: string;
@@ -51,6 +53,8 @@ export function getStaticDataIds(): StaticDataIdType {
         deficiencyIds: uuidArray(16),
         inspectionIds: uuidArray(6),
         redirectIds: uuidArray(4),
+        deviceIds: uuidArray(6), // 2 devices per admin (id 0), manager (id 1), and inspector (id 2) 
+        refreshTokenIds: uuidArray(10), // Mix of active, expired, and used tokens
         dynamic: {
             firstInspection: {
                 id: uuid(),
@@ -659,6 +663,271 @@ export default class StaticDataGenerator {
             { fk_cadet: this.ids.cadetIds[7], fk_inspection: this.ids.inspectionIds[2], date: dayjs().subtract(5, "day").toDate() },
             { fk_cadet: this.ids.cadetIds[8], fk_inspection: this.ids.inspectionIds[2], date: dayjs().subtract(5, "day").toDate() },
         ] satisfies Deregistration[]
+    }
+
+    device() {
+        const { userIds, deviceIds } = this.ids;
+        const baseDate = dayjs();
+        
+        return [
+            // Admin user (userIds[0]) devices
+            {
+                id: deviceIds[0],
+                userId: userIds[0],
+                name: 'Admin Desktop Chrome',
+                description: 'Primary work desktop',
+                createdAt: baseDate.subtract(30, 'days').toDate(),
+                lastUsedAt: baseDate.subtract(1, 'hour').toDate(),
+                lastLoginAt: baseDate.subtract(1, 'hour').toDate(),
+                last2FAAt: baseDate.subtract(7, 'days').toDate(),
+                lastIpAddress: '192.168.1.100',
+                userAgent: JSON.stringify({
+                    browser: { name: 'Chrome', version: '120.0.0.0' },
+                    os: { name: 'Windows', version: '10' },
+                    device: { type: 'desktop' },
+                    ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                }),
+                valid: true
+            },
+            {
+                id: deviceIds[1],
+                userId: userIds[0],
+                name: 'Admin Mobile Safari',
+                description: 'iPhone for mobile access',
+                createdAt: baseDate.subtract(15, 'days').toDate(),
+                lastUsedAt: baseDate.subtract(3, 'hours').toDate(),
+                lastLoginAt: baseDate.subtract(3, 'hours').toDate(),
+                last2FAAt: baseDate.subtract(3, 'days').toDate(),
+                lastIpAddress: '192.168.1.150',
+                userAgent: JSON.stringify({
+                    browser: { name: 'Safari', version: '17.0' },
+                    os: { name: 'iOS', version: '17.1' },
+                    device: { type: 'mobile' },
+                    ua: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_1 like Mac OS X) AppleWebKit/605.1.15'
+                }),
+                valid: true
+            },
+            // Manager user (userIds[1]) devices  
+            {
+                id: deviceIds[2],
+                userId: userIds[1],
+                name: 'Manager Laptop Firefox',
+                description: 'Work laptop',
+                createdAt: baseDate.subtract(25, 'days').toDate(),
+                lastUsedAt: baseDate.subtract(30, 'minutes').toDate(),
+                lastLoginAt: baseDate.subtract(30, 'minutes').toDate(),
+                last2FAAt: baseDate.subtract(10, 'days').toDate(),
+                lastIpAddress: '192.168.1.101',
+                userAgent: JSON.stringify({
+                    browser: { name: 'Firefox', version: '119.0' },
+                    os: { name: 'Windows', version: '11' },
+                    device: { type: 'desktop' },
+                    ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:119.0) Gecko/20100101 Firefox/119.0'
+                }),
+                valid: true
+            },
+            {
+                id: deviceIds[3],
+                userId: userIds[1],
+                name: 'Manager Tablet Chrome',
+                description: 'iPad for meetings',
+                createdAt: baseDate.subtract(20, 'days').toDate(),
+                lastUsedAt: baseDate.subtract(2, 'hours').toDate(),
+                lastLoginAt: baseDate.subtract(2, 'hours').toDate(),
+                last2FAAt: baseDate.subtract(5, 'days').toDate(),
+                lastIpAddress: '192.168.1.160',
+                userAgent: JSON.stringify({
+                    browser: { name: 'Chrome', version: '119.0.0.0' },
+                    os: { name: 'iOS', version: '17.0' },
+                    device: { type: 'tablet' },
+                    ua: 'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15'
+                }),
+                valid: true
+            },
+            // Inspector user (userIds[2]) devices
+            {
+                id: deviceIds[4],
+                userId: userIds[2],
+                name: 'Inspector Desktop Edge',
+                description: 'Office computer',
+                createdAt: baseDate.subtract(40, 'days').toDate(),
+                lastUsedAt: baseDate.subtract(5, 'hours').toDate(),
+                lastLoginAt: baseDate.subtract(5, 'hours').toDate(),
+                last2FAAt: baseDate.subtract(15, 'days').toDate(),
+                lastIpAddress: '192.168.1.102',
+                userAgent: JSON.stringify({
+                    browser: { name: 'Edge', version: '119.0.0.0' },
+                    os: { name: 'Windows', version: '10' },
+                    device: { type: 'desktop' },
+                    ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0'
+                }),
+                valid: true
+            },
+            {
+                id: deviceIds[5],
+                userId: userIds[2],
+                name: 'Inspector Phone Chrome',
+                description: 'Android phone',
+                createdAt: baseDate.subtract(35, 'days').toDate(),
+                lastUsedAt: baseDate.subtract(1, 'day').toDate(),
+                lastLoginAt: baseDate.subtract(1, 'day').toDate(),
+                last2FAAt: baseDate.subtract(12, 'days').toDate(),
+                lastIpAddress: '192.168.1.170',
+                userAgent: JSON.stringify({
+                    browser: { name: 'Chrome', version: '119.0.0.0' },
+                    os: { name: 'Android', version: '13' },
+                    device: { type: 'mobile' },
+                    ua: 'Mozilla/5.0 (Linux; Android 13; SM-G973F) AppleWebKit/537.36'
+                }),
+                valid: true
+            }
+        ] satisfies Prisma.DeviceCreateManyInput[];
+    }
+
+    refreshToken() {
+        const { userIds, deviceIds, refreshTokenIds } = this.ids;
+        const baseDate = dayjs();
+        
+        return [
+            // Active tokens - Admin desktop
+            {
+                token: refreshTokenIds[0].replace(/-/g, ''), // Remove hyphens to make it look more like a proper token
+                userId: userIds[0],
+                deviceId: deviceIds[0],
+                endOfLife: baseDate.add(3, 'days').toDate(),
+                revoked: false,
+                issuerIpAddress: '192.168.1.100',
+                usedAt: null,
+                usedIpAddress: null,
+                usedUserAgent: null,
+                numberOfUseAttempts: 0
+            },
+            // Active tokens - Admin mobile
+            {
+                token: refreshTokenIds[1].replace(/-/g, ''),
+                userId: userIds[0],
+                deviceId: deviceIds[1],
+                endOfLife: baseDate.add(2, 'days').toDate(),
+                revoked: false,
+                issuerIpAddress: '192.168.1.150',
+                usedAt: null,
+                usedIpAddress: null,
+                usedUserAgent: null,
+                numberOfUseAttempts: 0
+            },
+            // Used token - for testing token reuse scenarios
+            {
+                token: refreshTokenIds[2].replace(/-/g, ''),
+                userId: userIds[0],
+                deviceId: deviceIds[0],
+                endOfLife: baseDate.add(1, 'day').toDate(),
+                revoked: false,
+                issuerIpAddress: '192.168.1.100',
+                usedAt: baseDate.subtract(5, 'minutes').toDate(), // Recently used
+                usedIpAddress: '192.168.1.100',
+                usedUserAgent: JSON.stringify({
+                    browser: { name: 'Chrome', version: '120.0.0.0' },
+                    os: { name: 'Windows', version: '10' },
+                    device: { type: 'desktop' }
+                }),
+                numberOfUseAttempts: 1
+            },
+            // Active tokens - Manager laptop
+            {
+                token: refreshTokenIds[3].replace(/-/g, ''),
+                userId: userIds[1],
+                deviceId: deviceIds[2],
+                endOfLife: baseDate.add(4, 'days').toDate(),
+                revoked: false,
+                issuerIpAddress: '192.168.1.101',
+                usedAt: null,
+                usedIpAddress: null,
+                usedUserAgent: null,
+                numberOfUseAttempts: 0
+            },
+            // Active tokens - Manager tablet
+            {
+                token: refreshTokenIds[4].replace(/-/g, ''),
+                userId: userIds[1],
+                deviceId: deviceIds[3],
+                endOfLife: baseDate.add(1, 'day').toDate(),
+                revoked: false,
+                issuerIpAddress: '192.168.1.160',
+                usedAt: null,
+                usedIpAddress: null,
+                usedUserAgent: null,
+                numberOfUseAttempts: 0
+            },
+            // Revoked token - for testing
+            {
+                token: refreshTokenIds[5].replace(/-/g, ''),
+                userId: userIds[1],
+                deviceId: deviceIds[2],
+                endOfLife: baseDate.add(2, 'days').toDate(),
+                revoked: true, // Revoked
+                issuerIpAddress: '192.168.1.101',
+                usedAt: null,
+                usedIpAddress: null,
+                usedUserAgent: null,
+                numberOfUseAttempts: 0
+            },
+            // Expired token - for testing
+            {
+                token: refreshTokenIds[6].replace(/-/g, ''),
+                userId: userIds[2],
+                deviceId: deviceIds[4],
+                endOfLife: baseDate.subtract(1, 'day').toDate(), // Expired
+                revoked: false,
+                issuerIpAddress: '192.168.1.102',
+                usedAt: null,
+                usedIpAddress: null,
+                usedUserAgent: null,
+                numberOfUseAttempts: 0
+            },
+            // Active tokens - Inspector desktop
+            {
+                token: refreshTokenIds[7].replace(/-/g, ''),
+                userId: userIds[2],
+                deviceId: deviceIds[4],
+                endOfLife: baseDate.add(3, 'days').toDate(),
+                revoked: false,
+                issuerIpAddress: '192.168.1.102',
+                usedAt: null,
+                usedIpAddress: null,
+                usedUserAgent: null,
+                numberOfUseAttempts: 0
+            },
+            // Active tokens - Inspector phone
+            {
+                token: refreshTokenIds[8].replace(/-/g, ''),
+                userId: userIds[2],
+                deviceId: deviceIds[5],
+                endOfLife: baseDate.add(5, 'days').toDate(),
+                revoked: false,
+                issuerIpAddress: '192.168.1.170',
+                usedAt: null,
+                usedIpAddress: null,
+                usedUserAgent: null,
+                numberOfUseAttempts: 0
+            },
+            // Old used token - for reuse detection edge cases
+            {
+                token: refreshTokenIds[9].replace(/-/g, ''),
+                userId: userIds[0],
+                deviceId: deviceIds[0],
+                endOfLife: baseDate.add(2, 'days').toDate(),
+                revoked: false,
+                issuerIpAddress: '192.168.1.100',
+                usedAt: baseDate.subtract(10, 'minutes').toDate(), // Used 10 minutes ago
+                usedIpAddress: '192.168.1.100',
+                usedUserAgent: JSON.stringify({
+                    browser: { name: 'Chrome', version: '119.0.0.0' }, // Different version
+                    os: { name: 'Windows', version: '10' },
+                    device: { type: 'desktop' }
+                }),
+                numberOfUseAttempts: 1
+            }
+        ] satisfies Prisma.RefreshTokenCreateManyInput[];
     }
 
     redirects(index: number | string) {

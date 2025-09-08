@@ -94,8 +94,10 @@ const Sidebar = ({ organisation, username, children }: SidebarPropType) => {
     function handleCollapseButtonMouseLeave(e: React.MouseEvent) {
         if (isMobile) return;
 
-        const relatedTarget = e.relatedTarget as Node;
-        const isLeavingToSidebar = sidebarRef.current && sidebarRef.current.contains(relatedTarget);
+        const relatedTarget = e.relatedTarget;
+        const isLeavingToSidebar = sidebarRef.current
+            && relatedTarget instanceof Node
+            && sidebarRef.current.contains(relatedTarget);
 
         setIsOverCollapseButton(false);
 
@@ -108,8 +110,10 @@ const Sidebar = ({ organisation, username, children }: SidebarPropType) => {
         // Only for large screens
         if (isMobile) return;
 
-        const relatedTarget = e.relatedTarget as Node;
-        const isLeavingToCollapseButton = collapseButtonRef.current && collapseButtonRef.current.contains(relatedTarget);
+        const relatedTarget = e.relatedTarget;
+        const isLeavingToCollapseButton = collapseButtonRef.current
+            && relatedTarget instanceof Node
+            && collapseButtonRef.current.contains(relatedTarget);
 
         if (isLeavingToCollapseButton) {
             setIsOverCollapseButton(true);
@@ -200,7 +204,7 @@ const Sidebar = ({ organisation, username, children }: SidebarPropType) => {
                         <SidebarLinks />
                         {/* Footer section - always visible */}
                         <SidebarFooter
-                            username={username} 
+                            username={username}
                             collapseButtonRef={collapseButtonRef}
                             handleCollapseButtonMouseLeave={handleCollapseButtonMouseLeave}
                         />
