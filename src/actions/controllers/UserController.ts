@@ -28,8 +28,8 @@ export const createUser = async (data: { username: string, name: string, role: A
     await prisma.$transaction(async (client) => {
         const userList = await dbHandler.getUsersList(organisationId, client as PrismaClient);
 
-        if (userList.find(u => u.username === data.username)) {
-            throw new Error("Could not save data Username allready in use");
+        if (userList.find(u => u.email === data.username)) {
+            throw new Error("Could not save data Email allready in use");
         }
 
         await dbHandler.create(

@@ -504,6 +504,11 @@ export default {
         "activeLabel.false": "Inaktiv",
         sourceUrl: "Quell-URL",
     },
+    user: {
+        offcanvas: {
+            "header.new": "Neuer Nutzer",
+        },
+    },
     admin: {
         uniform: {
             header: "Uniformadministration",

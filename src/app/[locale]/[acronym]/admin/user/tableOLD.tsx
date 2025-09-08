@@ -6,7 +6,7 @@ import { User } from "@/types/userTypes"
 import { faPlus } from "@fortawesome/free-solid-svg-icons"
 import { useState } from "react"
 import { Table } from "react-bootstrap"
-import UserAdminTableRow from "./tableLine"
+import UserAdminTableRow from "./tableLineOLD"
 
 export default function UserAdminTable({
     userList
