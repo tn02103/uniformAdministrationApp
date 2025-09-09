@@ -10,6 +10,8 @@ import { Row, Col, Button } from "react-bootstrap";
 import { useState } from "react";
 import { LabelIconButton } from "@/components/Buttons/LabelIconButton";
 import { useFormContext } from "react-hook-form";
+import { faKey, faLock, faLockOpen } from "@fortawesome/free-solid-svg-icons";
+import { Field } from "@/components/fields/Field";
 
 type UserDetailFormProps = {
     user: User | null;
@@ -34,6 +36,9 @@ export const UserOCDetailForm = ({ user, onClose }: UserDetailFormProps) => {
     const handleDeleteUser = () => {
         console.log("🚀 ~ handleDeleteUser ~ user:", user)
     }
+    const handleActiveStateToggle = () => {
+    }
+
     return (
         <div>
             <hr className="mb-0" />
@@ -41,21 +46,32 @@ export const UserOCDetailForm = ({ user, onClose }: UserDetailFormProps) => {
                 <Row className="mb-3 justify-content-evenly">
                     <LabelIconButton
                         variantKey="edit"
-                        disabled={editable}
+                        disabled={editable || !user.active}
                         onClick={() => setEditable(true)} />
                     <LabelIconButton
                         variantKey="delete"
                         onClick={handleDeleteUser}
                         disabled={editable}
                     />
+                    <LabelIconButton
+                        label="Passwort zurücksetzen"
+                        icon={faKey}
+                        disabled={editable || !user.active}
+                        buttonVariant="outline-secondary"
+                        onClick={() => console.log("Passwort zurücksetzen")}
+                    />
+                    <LabelIconButton
+                        label={user.active ? "Deaktivieren" : "Aktivieren"}
+                        icon={user.active ? faLock : faLockOpen}
+                        buttonVariant={user.active ? "outline-danger" : "outline-success"}
+                        onClick={() => console.log(user.active ? "Deaktivieren" : "Aktivieren")}
+                    />
+
                 </Row>
             }
 
             <Form<UserFormType>
-                defaultValues={{
-                    ...(user as UserFormType),
-                    active: user ? String(user.active) : "true",
-                }}
+                defaultValues={user ?? undefined}
                 onSubmit={handleSaveUser}
                 zodSchema={UserFormSchema}
                 disabled={!editable}
@@ -84,14 +100,14 @@ export const UserOCDetailForm = ({ user, onClose }: UserDetailFormProps) => {
                         />
                     </Col>
                     <Col xs={6} className="mb-3">
-                        <SelectFormField
+                        <Field
                             name="active"
-                            label="Status"
-                            options={[
-                                { value: "true", label: t('common.user.active.true') },
-                                { value: "false", label: t('common.user.active.false') },
-                            ]}
-                        />
+                            label={t('common.status')}
+                        >
+                            <p aria-label={t('common.status')} aria-readonly className="py-2 m-0">
+                                {t(`common.user.active.${user?.active ? 'true' : 'false'}`)}
+                            </p>
+                        </Field>
                     </Col>
                 </Row>
                 {editable && (

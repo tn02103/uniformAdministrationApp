@@ -21,8 +21,6 @@ export const userArgs = Prisma.validator<Prisma.UserFindManyArgs>()({
         lastLoginAt: true,
         organisationId: true,
     },
-    orderBy: { name: "asc" },
-
 });
 
 export type User = Prisma.UserGetPayload<typeof userArgs>

@@ -56,6 +56,7 @@ export default {
             firstname: "Vorname",
             lastname: "Nachname",
             status: "Status",
+            
             lastInspection: "Letzte Kontrolle",
             notInspected: "Bisher noch nicht Kontrolliert",
             uniformComplete: {
@@ -188,6 +189,7 @@ export default {
                     pattern: "Der Nutzername darf keine Sonder oder Leerzeichen beinhalten",
                     duplicate: "Der Nutzername wird bereits von einem anderen Nutzer benutzt",
                 },
+                "email.duplicate": "Die E-Mail Adresse wird bereits von einem anderen Nutzer benutzt",
             },
             custom: {
                 nameDuplication: {
