@@ -35,7 +35,7 @@
         "@hookform/resolvers": "5.2.1",
         "@prisma/client": "6.15.0",
         "@react-email/html": "0.0.11",
-        "@react-email/render": "1.2.1",
+        "@react-email/render": "1.2.3",
         "@swc/core": "1.13.5",
         "@types/react-dnd": "3.0.2",
         "bcrypt": "6.0.0",
