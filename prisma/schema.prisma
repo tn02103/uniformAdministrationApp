@@ -35,10 +35,19 @@ model Organisation {
 model OrganisationConfiguration {
     sendEmailAfterInspection Boolean
     inspectionReportEmails   String[]
-    organisationId           String       @id @map("organisation_id") @db.Char(36)
-    organisation             Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+    twoFactorAuthRule        OrganisationConfiguration_2FARule @default(optional) @map("two_factor_auth_rule")
+    organisationId           String                            @id @map("organisation_id") @db.Char(36)
+    organisation             Organisation                      @relation(fields: [organisationId], references: [id], onDelete: Cascade)
 
     @@map("organisation_configuration")
+    @@schema("authentication")
+}
+
+enum OrganisationConfiguration_2FARule {
+    optional
+    administrators
+    required
+
     @@schema("authentication")
 }
 
@@ -63,23 +72,28 @@ model RefreshToken {
 }
 
 model User {
-    id                    String         @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    organisationId        String         @map("organisation_id") @db.Char(36)
-    email                 String         @db.VarChar(100)
-    username              String         @db.VarChar(10)
-    name                  String         @db.VarChar(20)
-    password              String         @db.VarChar(100)
-    role                  Int            @db.SmallInt
+    id                    String               @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    organisationId        String               @map("organisation_id") @db.Char(36)
+    email                 String               @db.VarChar(100)
+    username              String               @db.VarChar(10)
+    name                  String               @db.VarChar(20)
+    password              String               @db.VarChar(100)
+    role                  Int                  @db.SmallInt
     active                Boolean
-    failedLoginCount      Int            @default(0) @map("failed_login_count")
-    changePasswordOnLogin Boolean        @default(false) @map("change_password_on_login")
-    lastLoginAt           DateTime?      @map("last_login_at")
-    recDelete             DateTime?      @map("rec_delete") @db.Timestamp(3)
-    recDeleteUser         String?        @map("rec_delete_user") @db.VarChar(36)
+    failedLoginCount      Int                  @default(0) @map("failed_login_count")
+    changePasswordOnLogin Boolean              @default(false) @map("change_password_on_login")
+    lastLoginAt           DateTime?            @map("last_login_at")
+    recDelete             DateTime?            @map("rec_delete") @db.Timestamp(3)
+    recDeleteUser         String?              @map("rec_delete_user") @db.VarChar(36)
+    twoFAEnabled          Boolean              @default(false) @map("two_fa_enabled")
+    default2FAMethod      String?              @map("default_2fa_method") @db.VarChar(36)
     refreshTokens         RefreshToken[]
-    organisation          Organisation   @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
+    organisation          Organisation         @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
     devices               Device[]
     auditLogs             AuditLog[]
+    emailVerifications    EmailVerifications[]
+    emailToken            EmailToken[]
+    twoFactorApps         TwoFactorApp[]
 
     @@unique([username, organisationId])
     @@index([organisationId])
@@ -128,6 +142,42 @@ model AuditLog {
     @@index([userId])
     @@map("audit_log")
     @@schema("authentication")
+}
+
+model EmailVerifications {
+    id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    userId    String   @map("user_id") @db.Char(36)
+    email     String   @db.VarChar(100)
+    code      String   @db.Char(36)
+    validated Boolean  @default(false)
+    valid     Boolean  @default(true)
+    createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+    @@schema("authentication")
+}
+
+model EmailToken {
+    id        String   @id @default(dbgenerated("gen_random_uuid()"))
+    token     Int
+    userId    String   @map("user_id") @db.Char(36)
+    endOfLive DateTime @map("end_of_live")
+    user      User     @relation(fields: [userId], references: [id])
+
+    @@unique([token, userId])
+    @@schema("authentication")
+}
+
+model TwoFactorApp {
+    id       String  @id @default(dbgenerated("gen_random_uuid()"))
+    secret   String
+    appName  String  @map("app_name") @db.VarChar(20)
+    verified Boolean @default(false)
+    userId   String  @map("user_id") @db.Char(36)
+    user     User    @relation(fields: [userId], references: [id])
+
+    @@schema("authentication")
+    @@unique([appName, userId])
 }
 
 // ########### BASE SCHEMA ###########

@@ -40,8 +40,8 @@ export const getIPAddress = (headers: ReadonlyHeaders) => {
     return headers.get('true-client-ip') ?? headers.get('x-forwarded-for') ?? "Unknown IP";
 }
 
-type LogLoginAttemptData = {
-    action: "LOGIN_ATTEMPT" | "REFRESH_ACCESS_TOKEN"
+type LogSecurityAuditEntryData = {
+    action: "LOGIN_ATTEMPT" | "REFRESH_ACCESS_TOKEN" | "LOGOUT" | "CREATE_2FA_APP" | "VERIFY_2FA_APP" | "REMOVE_2FA_APP";
     userId?: string;
     deviceId?: string;
     organisationId?: string;
@@ -54,7 +54,7 @@ type LogLoginAttemptData = {
 * Logs a login attempt to the audit log.
 * @param data 
 */
-export const logAuthenticationAttempt = async (data: LogLoginAttemptData) => {
+export const logSecurityAuditEntry = async (data: LogSecurityAuditEntryData) => {
     const { userId, organisationId, success, ipAddress, details, action, deviceId } = data;
     const userAgent = JSON.stringify(data.userAgent);
 
@@ -378,7 +378,7 @@ export const invalidateAllUserSessions = async (userId: string, deviceId: string
 
 
     // Log this critical security event
-    await logAuthenticationAttempt({
+    await logSecurityAuditEntry({
         userId,
         deviceId,
         success: false,

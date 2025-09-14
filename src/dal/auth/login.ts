@@ -8,7 +8,7 @@ import { redirect, RedirectType } from "next/navigation";
 import { userAgent } from "next/server";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import { setTimeout } from "timers/promises";
-import { AuthConfig, DeviceIdsCookie, DeviceIdsCookieAccount, getDeviceAccountFromCookies, getIPAddress, issueNewAccessToken, issueNewRefreshToken, logAuthenticationAttempt, UserAgent } from "./helper";
+import { AuthConfig, DeviceIdsCookie, DeviceIdsCookieAccount, getDeviceAccountFromCookies, getIPAddress, issueNewAccessToken, issueNewRefreshToken, logSecurityAuditEntry, UserAgent } from "./helper";
 import { LoginFormSchema, LoginFormType } from "@/zod/auth";
 import { sendUserBlockedEmail } from "@/lib/email/userBlockedEmail";
 
@@ -27,7 +27,7 @@ const consumeIpLimiter = async (ipAddress: string, points: number, userAgent: Us
     return ipLimiter.consume(ipAddress, points)
         .then((limit) => {
             if (limit.remainingPoints <= 0) {
-                logAuthenticationAttempt({
+                logSecurityAuditEntry({
                     success: false,
                     ipAddress,
                     details: "IP temporarily blocked due to too many failed login attempts",
@@ -36,7 +36,7 @@ const consumeIpLimiter = async (ipAddress: string, points: number, userAgent: Us
                     deviceId,
                 });
             }
-        }).catch(() => logAuthenticationAttempt({
+        }).catch(() => logSecurityAuditEntry({
             success: false,
             ipAddress,
             details: "IP temporarily blocked due to too many failed login attempts",
@@ -91,7 +91,7 @@ export const Login = async (props: LoginFormType): Promise<LoginReturnType> => n
         // ############# PRE AUTHENTICATION CHECKS #############
         if (!organisation) {
             await consumeIpLimiter(ipAddress, 5, agent);
-            await logAuthenticationAttempt({
+            await logSecurityAuditEntry({
                 success: false,
                 ipAddress,
                 userAgent: agent,
@@ -107,7 +107,7 @@ export const Login = async (props: LoginFormType): Promise<LoginReturnType> => n
         const { account, accountCookie } = getDeviceAccountFromCookies({ cookieList, organisationId });
         if (!user) {
             await consumeIpLimiter(ipAddress, 1, agent, account?.deviceId);
-            await logAuthenticationAttempt({
+            await logSecurityAuditEntry({
                 ipAddress,
                 organisationId,
                 success: false,
@@ -179,7 +179,7 @@ const verifyUser = async (props: VerifyUserProps): Promise<LoginReturnType> => {
 
     // If there are critical problems with the user, log and return
     if (criticalReasons.length > 0) {
-        await logAuthenticationAttempt({
+        await logSecurityAuditEntry({
             userId: user.id,
             organisationId: user.organisationId,
             success: false,
@@ -259,7 +259,7 @@ const handleInvalidPassword = async (props: handleInvalidPasswordProps): Promise
             }
         });
 
-        await logAuthenticationAttempt({
+        await logSecurityAuditEntry({
             userId: userId,
             organisationId,
             success: false,
@@ -276,7 +276,7 @@ const handleInvalidPassword = async (props: handleInvalidPasswordProps): Promise
         }
     }
 
-    logAuthenticationAttempt({
+    logSecurityAuditEntry({
         userId: userId,
         organisationId,
         success: false,
@@ -321,7 +321,7 @@ const handleSuccessfulLogin = async (props: HandleSuccessfulLoginProps): Promise
 
     await issueNewRefreshToken({ cookieList, userId: user.id, deviceId: account.deviceId, ipAddress });
     await issueNewAccessToken({ session, user, organisation });
-    await logAuthenticationAttempt({
+    await logSecurityAuditEntry({
         userId: user.id,
         organisationId: organisation.id,
         success: true,

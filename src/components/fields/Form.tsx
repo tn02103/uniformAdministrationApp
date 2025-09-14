@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createContext, useContext, useMemo } from "react";
-import { FieldErrors, FieldValues, FormProvider, useForm, UseFormProps } from "react-hook-form";
+import { FieldErrors, FieldValues, FormProvider, useForm, UseFormProps, UseFormReturn } from "react-hook-form";
 import { ZodTypeAny } from "zod";
 
 
@@ -14,8 +14,8 @@ export const FormContext = createContext<FormContextType | null>(null);
 export const useFormContext = () => useContext(FormContext);
 
 type FormProps<TFieldValue extends FieldValues> = {
-    onSubmit: (data: TFieldValue) => void;
-    onSubmitError?: (errors: FieldErrors<TFieldValue>) => void;
+    onSubmit: (data: TFieldValue, form: UseFormReturn<TFieldValue>) => void;
+    onSubmitError?: (errors: FieldErrors<TFieldValue>, form: UseFormReturn<TFieldValue>) => void;
     children: React.ReactNode;
     disabled?: boolean;
     plaintext?: boolean;
@@ -48,7 +48,17 @@ export const Form = <TFieldValue extends FieldValues>({
     }), [disabled, plaintext, formName]);
 
     return (
-        <form noValidate autoComplete="off" onSubmit={form.handleSubmit(onSubmit, onSubmitError)} className="form">
+        <form
+            noValidate
+            autoComplete="off"
+            onSubmit={
+                form.handleSubmit(
+                    (data) => onSubmit(data, form),
+                    (errors) => onSubmitError?.(errors, form)
+                )
+            }
+            className="form"
+        >
             <FormContext.Provider value={formContextValue}>
                 <FormProvider {...form}>
                     {children}

@@ -165,6 +165,7 @@ export default {
                 noSpecialChars: "Es dürfen keine Sonderzeichen genutzt werden",
                 commentValidation: "Nicht alle Zeichen die Sie genutzt haben sind erlaubt",
                 descriptionPattern: "Nur die Sonderzeichen -_ sind erlaubt",
+                numeric: "Es sind nur Zahlen erlaubt",
             },
             actions: {
                 changeSortorder: "Beim ändern der Reihnfolge ist ein unbekannter Fehler aufgetreten.",
@@ -218,6 +219,9 @@ export default {
                     code: {
                         duplication: "Der Code wird bereits von einem anderen Redirect ihrer/ oder einer anderen Organisation benutzt.",
                     },
+                },
+                auth: {
+                    "2fa.appNameNotUnique": "Der Name wird bereits von einer ihrer anderen 2FA Apps benutzt"
                 }
             },
         },

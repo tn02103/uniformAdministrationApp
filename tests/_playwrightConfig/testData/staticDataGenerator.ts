@@ -78,6 +78,7 @@ export default class StaticDataGenerator {
             organisationId: this.ids.organisationId,
             sendEmailAfterInspection: true,
             inspectionReportEmails: [process.env.EMAIL_ADRESS_TESTS ?? 'admin@example.com'],
+            twoFactorAuthRule: "optional",
         } satisfies OrganisationConfiguration
     }
 

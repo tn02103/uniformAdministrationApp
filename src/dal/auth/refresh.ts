@@ -1,6 +1,6 @@
 import { cookies, headers } from "next/headers";
 import { userAgent } from "next/server";
-import { AuthConfig, DeviceIdsCookie, getDeviceAccountFromCookies, getIPAddress, handleRefreshTokenReuse, invalidateAllUserSessions, issueNewAccessToken, issueNewRefreshToken, logAuthenticationAttempt, validateDeviceFingerprint, type UserAgent } from "./helper";
+import { AuthConfig, DeviceIdsCookie, getDeviceAccountFromCookies, getIPAddress, handleRefreshTokenReuse, invalidateAllUserSessions, issueNewAccessToken, issueNewRefreshToken, logSecurityAuditEntry, validateDeviceFingerprint, type UserAgent } from "./helper";
 import { prisma } from "@/lib/db";
 import { isValid } from "date-fns";
 import dayjs from "dayjs";
@@ -23,7 +23,7 @@ const consumeIpLimiter = async (ipAddress: string, points: number, userAgent: Us
     return ipLimiter.consume(ipAddress, points)
         .then((limit) => {
             if (limit.remainingPoints <= 0) {
-                logAuthenticationAttempt({
+                logSecurityAuditEntry({
                     success: false,
                     ipAddress,
                     details: "IP temporarily blocked due to too many failed login attempts",
@@ -33,7 +33,7 @@ const consumeIpLimiter = async (ipAddress: string, points: number, userAgent: Us
                 });
             }
         }).catch(() =>
-            logAuthenticationAttempt({
+            logSecurityAuditEntry({
                 ipAddress,
                 success: false,
                 details: "IP temporarily blocked due to too many failed login attempts",
@@ -70,7 +70,7 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
         // ##### Get Refresh Token from Cookie####
         if (!refreshToken) {
             await consumeIpLimiter(ipAddress, 1, agent, account?.deviceId);
-            logAuthenticationAttempt({
+            logSecurityAuditEntry({
                 success: false,
                 ipAddress,
                 details: "Refresh token cookie is missing",
@@ -98,7 +98,7 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
         });
         if (!dbToken) {
             await consumeIpLimiter(ipAddress, 5, agent, account?.deviceId);
-            logAuthenticationAttempt({
+            logSecurityAuditEntry({
                 success: false,
                 ipAddress,
                 details: "Refresh token not found in database",
@@ -124,7 +124,7 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
         });
         if (!verificationResult.isValid) {
             await consumeIpLimiter(ipAddress, 1, agent);
-            logAuthenticationAttempt({
+            logSecurityAuditEntry({
                 userId: dbToken.userId,
                 organisationId: dbToken.user.organisationId,
                 success: false,
@@ -141,7 +141,7 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
         }
 
         // ##### ISSUE NEW TOKENS ####
-        logAuthenticationAttempt({
+        logSecurityAuditEntry({
             userId: dbToken.userId,
             organisationId: dbToken.user.organisationId,
             success: true,
@@ -220,7 +220,7 @@ const verifications = async (props: verificationsProp): Promise<VerivicationsRes
         }
         
         // If ALLOW, we continue normally but still log the incident
-        await logAuthenticationAttempt({
+        await logSecurityAuditEntry({
             userId: user.id,
             organisationId: user.organisationId,
             success: reuseResult.action === 'ALLOW',
