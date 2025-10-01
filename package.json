@@ -62,7 +62,7 @@
         "react-hook-form": "7.63.0",
         "react-toastify": "11.0.5",
         "react-tooltip": "5.29.1",
-        "sass": "1.93.1",
+        "sass": "1.93.2",
         "server-only": "0.0.1",
         "swr": "2.3.6",
         "timers": "0.1.1",
