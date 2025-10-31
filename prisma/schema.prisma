@@ -11,10 +11,10 @@ datasource db {
 
 // ########### AUTHENTICATION SCHEMA ###########
 model Organisation {
-    id                        String                      @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    name                      String                      @unique @db.VarChar(100)
-    acronym                   String                      @db.VarChar(5)
-    useBeta                   Boolean                     @default(false) @map("use_beta")
+    id                        String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    name                      String                     @unique @db.VarChar(100)
+    acronym                   String                     @db.VarChar(5)
+    useBeta                   Boolean                    @default(false) @map("use_beta")
     user                      User[]
     cadet                     Cadet[]
     materialGroup             MaterialGroup[]
@@ -23,10 +23,10 @@ model Organisation {
     uniformType               UniformType[]
     deficiencyType            DeficiencyType[]
     inspection                Inspection[]
-    OrganisationConfiguration OrganisationConfiguration[]
-    StorageUnit               StorageUnit[]
-    Redirect                  Redirect[]
-    AuditLog                  AuditLog[]
+    organisationConfiguration OrganisationConfiguration?
+    storageUnit               StorageUnit[]
+    redirect                  Redirect[]
+    auditLog                  AuditLog[]
 
     @@map("organisation")
     @@schema("authentication")
@@ -72,26 +72,25 @@ model RefreshToken {
 }
 
 model User {
-    id                    String               @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    organisationId        String               @map("organisation_id") @db.Char(36)
-    email                 String               @db.VarChar(100)
-    username              String               @db.VarChar(10)
-    name                  String               @db.VarChar(20)
-    password              String               @db.VarChar(100)
-    role                  Int                  @db.SmallInt
+    id                    String         @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    organisationId        String         @map("organisation_id") @db.Char(36)
+    email                 String         @db.VarChar(100)
+    username              String         @db.VarChar(10)
+    name                  String         @db.VarChar(20)
+    password              String         @db.VarChar(100)
+    role                  Int            @db.SmallInt
     active                Boolean
-    failedLoginCount      Int                  @default(0) @map("failed_login_count")
-    changePasswordOnLogin Boolean              @default(false) @map("change_password_on_login")
-    lastLoginAt           DateTime?            @map("last_login_at")
-    recDelete             DateTime?            @map("rec_delete") @db.Timestamp(3)
-    recDeleteUser         String?              @map("rec_delete_user") @db.VarChar(36)
-    twoFAEnabled          Boolean              @default(false) @map("two_fa_enabled")
-    default2FAMethod      String?              @map("default_2fa_method") @db.VarChar(36)
+    failedLoginCount      Int            @default(0) @map("failed_login_count")
+    changePasswordOnLogin Boolean        @default(false) @map("change_password_on_login")
+    lastLoginAt           DateTime?      @map("last_login_at")
+    recDelete             DateTime?      @map("rec_delete") @db.Timestamp(3)
+    recDeleteUser         String?        @map("rec_delete_user") @db.VarChar(36)
+    twoFAEnabled          Boolean        @default(false) @map("two_fa_enabled")
+    default2FAMethod      String?        @map("default_2fa_method") @db.VarChar(36)
     refreshTokens         RefreshToken[]
-    organisation          Organisation         @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
+    organisation          Organisation   @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
     devices               Device[]
     auditLogs             AuditLog[]
-    emailVerifications    EmailVerifications[]
     emailToken            EmailToken[]
     twoFactorApps         TwoFactorApp[]
 
@@ -102,20 +101,22 @@ model User {
 }
 
 model Device {
-    id            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    name          String         @db.VarChar(50)
-    description   String?        @db.VarChar(100)
-    userId        String         @map("user_id") @db.Char(36)
-    user          User           @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
-    createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamp(3)
-    lastUsedAt    DateTime       @map("last_used_at") @db.Timestamp(3)
-    lastLoginAt   DateTime       @map("last_login_at") @db.Timestamp(3)
-    last2FAAt     DateTime?      @map("last_2fa_login_at") @db.Timestamp(3)
-    lastIpAddress String         @map("last_ip_address") @db.VarChar(45)
-    userAgent     String         @map("user_agent") @db.Text
-    valid         Boolean        @default(true)
-    RefreshToken  RefreshToken[]
-    AuditLog      AuditLog[]
+    id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    name            String         @db.VarChar(50)
+    description     String?        @db.VarChar(100)
+    userId          String         @map("user_id") @db.Char(36)
+    user            User           @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+    createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamp(3)
+    lastUsedAt      DateTime       @map("last_used_at") @db.Timestamp(3)
+    lastLoginAt     DateTime       @map("last_login_at") @db.Timestamp(3)
+    last2FAAt       DateTime?      @map("last_2fa_login_at") @db.Timestamp(3)
+    lastIpAddress   String         @map("last_ip_address") @db.VarChar(45)
+    userAgent       String         @map("user_agent") @db.Text
+    sessionLifetime DateTime?      @map("session_lifetime") @db.Timestamp(3)
+    valid           Boolean        @default(true)
+    RefreshToken    RefreshToken[]
+    AuditLog        AuditLog[]
+    EmailToken      EmailToken[]
 
     @@index([userId])
     @@map("device")
@@ -125,6 +126,7 @@ model Device {
 model AuditLog {
     id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
     organisationId String?       @map("organisation_id") @db.Char(36)
+    debugLevel     Int           @map("security_level") @db.SmallInt // 0 = Success, 1 = Info, 2 = Warning, 3 = Critical
     userId         String?       @map("user_id") @db.Char(36)
     deviceId       String?       @map("device_id") @db.Char(36)
     action         String        @db.VarChar(50)
@@ -144,40 +146,35 @@ model AuditLog {
     @@schema("authentication")
 }
 
-model EmailVerifications {
-    id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    userId    String   @map("user_id") @db.Char(36)
-    email     String   @db.VarChar(100)
-    code      String   @db.Char(36)
-    validated Boolean  @default(false)
-    valid     Boolean  @default(true)
-    createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(3)
-    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
-
-    @@schema("authentication")
-}
-
 model EmailToken {
-    id        String   @id @default(dbgenerated("gen_random_uuid()"))
-    token     Int
-    userId    String   @map("user_id") @db.Char(36)
-    endOfLive DateTime @map("end_of_live")
-    user      User     @relation(fields: [userId], references: [id])
+    id            String    @id @default(dbgenerated("gen_random_uuid()"))
+    token         String    @db.Char(6)
+    userId        String    @map("user_id") @db.Char(36)
+    endOfLive     DateTime  @map("end_of_live")
+    user          User      @relation(fields: [userId], references: [id])
+    deviceId      String    @map("device_id") @db.Char(36)
+    device        Device    @relation(fields: [deviceId], references: [id])
+    ipAddress     String    @map("ip_address") @db.VarChar(45)
+    userAgent     String    @map("user_agent") @db.Text
+    usedAt        DateTime? @map("used_at")
+    usedIpAddress String?   @map("used_ip_address") @db.VarChar(45)
+    usedUserAgent String?   @map("used_user_agent") @db.Text
 
     @@unique([token, userId])
     @@schema("authentication")
 }
 
 model TwoFactorApp {
-    id       String  @id @default(dbgenerated("gen_random_uuid()"))
-    secret   String
-    appName  String  @map("app_name") @db.VarChar(20)
-    verified Boolean @default(false)
-    userId   String  @map("user_id") @db.Char(36)
-    user     User    @relation(fields: [userId], references: [id])
+    id         String    @id @default(dbgenerated("gen_random_uuid()"))
+    secret     String
+    appName    String    @map("app_name") @db.VarChar(20)
+    userId     String    @map("user_id") @db.Char(36)
+    user       User      @relation(fields: [userId], references: [id])
+    createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamp(3)
+    verifiedAt DateTime? @map("verified_at") @db.Timestamp(3)
 
-    @@schema("authentication")
     @@unique([appName, userId])
+    @@schema("authentication")
 }
 
 // ########### BASE SCHEMA ###########

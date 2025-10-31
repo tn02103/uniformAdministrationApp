@@ -107,7 +107,7 @@ export const genericSAValidator = async <T>(
     return [user, zodResult.data];
 }
 
-export const genericSANoDataValidator = async (requiredRole: AuthRole) => {
+export const genericSANoDataValidator = async (requiredRole: AuthRole): Promise<[IronSessionUser]> => {
     let { user } = await getIronSession();
     if (!user) {
         const cookieList = await cookies();

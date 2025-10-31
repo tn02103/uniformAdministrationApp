@@ -91,46 +91,39 @@ describe('validateDeviceFingerprint', () => {
         ...overrides
     });
 
-    const mockDevice = {
-        id: 'device-123',
-        userAgent: JSON.stringify({
-            os: { name: 'Windows', version: '10' },
-            device: { type: 'desktop' },
-            browser: { name: 'Chrome', version: '120.0.0.0' }
-        })
-    };
-
-    const mockCurrentUA = createMockUserAgent();
-    const mockIPAddress = '192.168.1.100';
-    const mockCurrentIP = '192.168.1.100';
-    const mockCurrentDeviceId = 'device-123';
+    const mockCurrent = {
+        deviceId: 'device-123',
+        ipAddress: '192.168.1.100',
+        userAgent: createMockUserAgent()
+    }
+    const mockExpected = {
+        deviceId: 'device-123',
+        ipAddress: '192.168.1.100',
+        userAgent: JSON.stringify(createMockUserAgent()),
+    }
 
     describe('SEVERE risk scenarios', () => {
         it('should return SEVERE risk when device ID mismatch occurs', async () => {
-            const result = await validateDeviceFingerprint(
-                mockIPAddress,
-                mockDevice,
-                'different-device-id', // Mismatched device ID
-                mockCurrentIP,
-                mockCurrentUA
-            );
+            const result = await validateDeviceFingerprint({
+                current: mockCurrent,
+                expected: {
+                    ...mockExpected,
+                    deviceId: 'different-device-id',
+                },
+            });
 
             expect(result.riskLevel).toBe('SEVERE');
             expect(result.reasons).toEqual(['Device ID mismatch']);
         });
         it('should return SEVERE risk when stored user agent is invalid JSON', async () => {
-            const deviceWithInvalidUA = {
-                ...mockDevice,
-                userAgent: 'invalid-json-{malformed'
-            };
+            const result = await validateDeviceFingerprint({
+                current: mockCurrent,
+                expected: {
+                    ...mockExpected,
+                    userAgent: 'invalid-json-{malformed'
+                },
 
-            const result = await validateDeviceFingerprint(
-                mockIPAddress,
-                deviceWithInvalidUA,
-                mockCurrentDeviceId,
-                mockCurrentIP,
-                mockCurrentUA
-            );
+            });
 
             expect(result.riskLevel).toBe('SEVERE');
             expect(result.reasons).toContain('Invalid stored user agent');
@@ -141,13 +134,13 @@ describe('validateDeviceFingerprint', () => {
                 os: { name: 'macOS', version: '13' } // Changed from Windows to macOS
             });
 
-            const result = await validateDeviceFingerprint(
-                mockIPAddress,
-                mockDevice,
-                mockCurrentDeviceId,
-                mockCurrentIP,
-                currentUAWithDifferentOS
-            );
+            const result = await validateDeviceFingerprint({
+                current: {
+                    ...mockCurrent,
+                    userAgent: currentUAWithDifferentOS
+                },
+                expected: mockExpected,
+            });
 
             expect(result.riskLevel).toBe('SEVERE');
             expect(result.reasons).toEqual(['OS name changed']);
@@ -158,13 +151,13 @@ describe('validateDeviceFingerprint', () => {
                 device: { vendor: undefined, model: undefined, type: 'mobile' } // Changed from desktop to mobile
             });
 
-            const result = await validateDeviceFingerprint(
-                mockIPAddress,
-                mockDevice,
-                mockCurrentDeviceId,
-                mockCurrentIP,
-                currentUAWithDifferentDeviceType
-            );
+            const result = await validateDeviceFingerprint({
+                current: {
+                    ...mockCurrent,
+                    userAgent: currentUAWithDifferentDeviceType
+                },
+                expected: mockExpected,
+            });
 
             expect(result.riskLevel).toBe('SEVERE');
             expect(result.reasons).toEqual(['Device type changed']);
@@ -175,13 +168,13 @@ describe('validateDeviceFingerprint', () => {
                 browser: { name: 'Firefox', version: '120.0.0.0', major: '120' } // Changed from Chrome to Firefox
             });
 
-            const result = await validateDeviceFingerprint(
-                mockIPAddress,
-                mockDevice,
-                mockCurrentDeviceId,
-                mockCurrentIP,
-                currentUAWithDifferentBrowser
-            );
+            const result = await validateDeviceFingerprint({
+                current: {
+                    ...mockCurrent,
+                    userAgent: currentUAWithDifferentBrowser
+                },
+                expected: mockExpected,
+            });
 
             expect(result.riskLevel).toBe('SEVERE');
             expect(result.reasons).toEqual(['Browser name changed']);
@@ -194,13 +187,13 @@ describe('validateDeviceFingerprint', () => {
                 browser: { name: 'Safari', version: '16.0', major: '16' } // Changed browser
             });
 
-            const result = await validateDeviceFingerprint(
-                mockIPAddress,
-                mockDevice,
-                mockCurrentDeviceId,
-                mockCurrentIP,
-                currentUAWithMultipleChanges
-            );
+            const result = await validateDeviceFingerprint({
+                current: {
+                    ...mockCurrent,
+                    userAgent: currentUAWithMultipleChanges
+                },
+                expected: mockExpected,
+            });
 
             expect(result.riskLevel).toBe('SEVERE');
             expect(result.reasons).toEqual(['OS name changed', 'Device type changed', 'Browser name changed']);
@@ -213,13 +206,13 @@ describe('validateDeviceFingerprint', () => {
                 os: { name: 'Windows', version: '11' } // Changed from version 10 to 11
             });
 
-            const result = await validateDeviceFingerprint(
-                mockIPAddress,
-                mockDevice,
-                mockCurrentDeviceId,
-                mockCurrentIP,
-                currentUAWithDifferentOSVersion
-            );
+            const result = await validateDeviceFingerprint({
+                current: {
+                    ...mockCurrent,
+                    userAgent: currentUAWithDifferentOSVersion
+                },
+                expected: mockExpected,
+            });
 
             expect(result.riskLevel).toBe('HIGH');
             expect(result.reasons).toEqual(['OS version updated']);
@@ -230,13 +223,14 @@ describe('validateDeviceFingerprint', () => {
                 os: { name: 'Windows', version: '11' }
             });
 
-            const result = await validateDeviceFingerprint(
-                mockIPAddress,
-                mockDevice,
-                mockCurrentDeviceId,
-                '192.168.1.200', // Different IP
-                currentUAWithDifferentOSVersion
-            );
+            const result = await validateDeviceFingerprint({
+                current: {
+                    ...mockCurrent,
+                    ipAddress: '192.168.1.200', // Different IP
+                    userAgent: currentUAWithDifferentOSVersion
+                },
+                expected: mockExpected,
+            });
 
             expect(result.riskLevel).toBe('HIGH');
             expect(result.reasons).toEqual(['IP address changed', 'OS version updated']);
@@ -249,13 +243,13 @@ describe('validateDeviceFingerprint', () => {
                 browser: { name: 'Chrome', version: '121.0.0.0', major: '121' } // Updated browser version
             });
 
-            const result = await validateDeviceFingerprint(
-                mockIPAddress,
-                mockDevice,
-                mockCurrentDeviceId,
-                mockCurrentIP,
-                currentUAWithDifferentBrowserVersion
-            );
+            const result = await validateDeviceFingerprint({
+                current: {
+                    ...mockCurrent,
+                    userAgent: currentUAWithDifferentBrowserVersion
+                },
+                expected: mockExpected,
+            });
 
             expect(result.riskLevel).toBe('MEDIUM');
             expect(result.reasons).toEqual(['Browser version updated']);
@@ -266,13 +260,14 @@ describe('validateDeviceFingerprint', () => {
                 browser: { name: 'Chrome', version: '121.0.0.0', major: '121' }
             });
 
-            const result = await validateDeviceFingerprint(
-                mockIPAddress,
-                mockDevice,
-                mockCurrentDeviceId,
-                '10.0.0.50', // Different IP
-                currentUAWithDifferentBrowserVersion
-            );
+            const result = await validateDeviceFingerprint({
+                current: {
+                    ...mockCurrent,
+                    ipAddress: '10.0.0.50', // Different IP
+                    userAgent: currentUAWithDifferentBrowserVersion
+                },
+                expected: mockExpected,
+            });
 
             expect(result.riskLevel).toBe('MEDIUM');
             expect(result.reasons).toEqual(['IP address changed', 'Browser version updated']);
@@ -281,26 +276,23 @@ describe('validateDeviceFingerprint', () => {
 
     describe('LOW risk scenarios', () => {
         it('should return LOW risk when everything matches perfectly', async () => {
-            const result = await validateDeviceFingerprint(
-                mockIPAddress,
-                mockDevice,
-                mockCurrentDeviceId,
-                mockCurrentIP,
-                mockCurrentUA
-            );
+            const result = await validateDeviceFingerprint({
+                current: mockCurrent,
+                expected: mockExpected,
+            });
 
             expect(result.riskLevel).toBe('LOW');
             expect(result.reasons).toEqual([]);
         });
 
         it('should return LOW risk when only IP address changes', async () => {
-            const result = await validateDeviceFingerprint(
-                mockIPAddress,
-                mockDevice,
-                mockCurrentDeviceId,
-                '203.0.113.50', // Different IP (mobile user scenario)
-                mockCurrentUA
-            );
+            const result = await validateDeviceFingerprint({
+                current: {
+                    ...mockCurrent,
+                    ipAddress: '203.0.113.50', // Different IP (mobile user scenario)
+                },
+                expected: mockExpected,
+            });
 
             expect(result.riskLevel).toBe('LOW');
             expect(result.reasons).toEqual(['IP address changed']);
@@ -309,22 +301,17 @@ describe('validateDeviceFingerprint', () => {
 
     describe('edge cases and malformed data', () => {
         it('should handle stored user agent with missing properties gracefully', async () => {
-            const deviceWithIncompleteUA = {
-                ...mockDevice,
-                userAgent: JSON.stringify({
-                    os: { name: 'Windows' }, // Missing version
-                    // Missing device property entirely
-                    browser: { name: 'Chrome' } // Missing version
-                })
-            };
-
-            const result = await validateDeviceFingerprint(
-                mockIPAddress,
-                deviceWithIncompleteUA,
-                mockCurrentDeviceId,
-                mockCurrentIP,
-                mockCurrentUA
-            );
+            const result = await validateDeviceFingerprint({
+                current: mockCurrent,
+                expected: {
+                    ...mockExpected,
+                    userAgent: JSON.stringify({
+                        os: { name: 'Windows' }, // Missing version
+                        // Missing device property entirely
+                        browser: { name: 'Chrome' } // Missing version
+                    })
+                },
+            });
 
             expect(result.riskLevel).toBe('SEVERE'); // Should still work with partial data
             expect(result.reasons).toEqual(["Device type changed"]);
@@ -337,13 +324,13 @@ describe('validateDeviceFingerprint', () => {
                 browser: { name: 'Chrome', version: undefined, major: undefined } // Missing version
             });
 
-            const result = await validateDeviceFingerprint(
-                mockIPAddress,
-                mockDevice,
-                mockCurrentDeviceId,
-                mockCurrentIP,
-                incompleteCurrentUA
-            );
+            const result = await validateDeviceFingerprint({
+                current: {
+                    ...mockCurrent,
+                    userAgent: incompleteCurrentUA
+                },
+                expected: mockExpected,
+            });
 
             expect(result.riskLevel).toBe('SEVERE');
             expect(result.reasons).toEqual(['Device type changed']);

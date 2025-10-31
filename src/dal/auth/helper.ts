@@ -1,12 +1,16 @@
+import { AuthRole } from "@/lib/AuthRoles";
 import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
-import { Device, Organisation, RefreshToken, User } from "@prisma/client";
+import { getIronSession, IronSession } from "@/lib/ironSession";
+import { Organisation, RefreshToken, User } from "@prisma/client";
+import crypto from 'crypto';
+import { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/headers";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { userAgent } from "next/server";
 import z from "zod";
-import crypto from 'crypto';
-import { getIronSession, IronSession } from "@/lib/ironSession";
-import { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/headers";
+import { verifyEmailCode } from "./email/verifyCode";
+import { __unsecuredVerifyTwoFactorCode } from "./2fa/verify";
+import { AuthenticationExceptionData } from "@/errors/Authentication";
 
 
 // ########## SCHEMAS AND TYPES ##########
@@ -41,25 +45,34 @@ export const getIPAddress = (headers: ReadonlyHeaders) => {
 }
 
 type LogSecurityAuditEntryData = {
-    action: "LOGIN_ATTEMPT" | "REFRESH_ACCESS_TOKEN" | "LOGOUT" | "CREATE_2FA_APP" | "VERIFY_2FA_APP" | "REMOVE_2FA_APP";
+    action: "LOGIN_ATTEMPT" | "REFRESH_ACCESS_TOKEN" | "LOGOUT" | "CREATE_2FA_APP"
+    | "VERIFY_2FA_APP" | "REMOVE_2FA_APP" | "SEND_EMAIL_CODE" | "VERIFY_EMAIL_CODE";
+    debugLevel: LogDebugLevel;
     userId?: string;
     deviceId?: string;
     organisationId?: string;
     success: boolean;
-    ipAddress: string | null;
+    ipAddress: string;
     userAgent: UserAgent;
     details: string;
+}
+export enum LogDebugLevel {
+    SUCCESS = 0,
+    INFO = 1,
+    WARNING = 2,
+    CRITICAL = 3,
 }
 /**
 * Logs a login attempt to the audit log.
 * @param data 
 */
 export const logSecurityAuditEntry = async (data: LogSecurityAuditEntryData) => {
-    const { userId, organisationId, success, ipAddress, details, action, deviceId } = data;
+    const { userId, organisationId, success, ipAddress, details, action, deviceId, debugLevel } = data;
     const userAgent = JSON.stringify(data.userAgent);
 
     await prisma.auditLog.create({
         data: {
+            debugLevel: debugLevel.valueOf(),
             userId,
             deviceId,
             details,
@@ -130,7 +143,6 @@ export const issueNewRefreshToken = async (props: IssueNewRefreshTokenProps) => 
     });
 
     // Create new refresh Token
-
     let refreshToken = crypto.randomBytes(64).toString('hex');
     while (await prisma.refreshToken.findUnique({ where: { token: refreshToken } })) {
         // Regenerate if collision (extremely unlikely)
@@ -154,6 +166,38 @@ export const issueNewRefreshToken = async (props: IssueNewRefreshTokenProps) => 
         expires: endOfLife,
     });
 }
+
+export const calculateSessionLifetime = (context: {
+    isNewDevice: boolean;
+    fingerprintRisk: 'LOW' | 'MEDIUM' | 'HIGH' | 'SEVERE';
+    user2FAEnabled: boolean;
+    authMethod: 'USERNAME_PASSWORD' | 'USERNAME_PASSWORD_2FA';
+}): number => {
+    const { isNewDevice, fingerprintRisk, user2FAEnabled, authMethod } = context;
+
+    // Base lifetime in days
+    let baseDays = 30;
+
+    // Reduce for risk factors
+    if (isNewDevice) baseDays *= 0.5; // 15 days for new devices
+    if (fingerprintRisk === 'MEDIUM') baseDays *= 0.7; // 21 days
+    if (fingerprintRisk === 'HIGH') baseDays *= 0.3; // 9 days
+    if (fingerprintRisk === 'SEVERE')
+        return 0;
+
+    // Adjust for authentication strength
+    if (authMethod === 'USERNAME_PASSWORD_2FA') {
+        baseDays *= 1.5; // Longer for strong auth
+    }
+
+    // 2FA users get longer sessions
+    if (user2FAEnabled) {
+        baseDays *= 1.2;
+    }
+
+    // Minimum 1 day, maximum 45 days
+    return Math.max(1, Math.min(45, Math.floor(baseDays)));
+};
 
 type IssueNewAccessTokenProps = {
     user: User;
@@ -219,26 +263,31 @@ type DeviceValidationResult = {
  * @param currentUA 
  * @returns 
  */
-export const validateDeviceFingerprint = async (
-    ipAddress: string,
-    device: Pick<Device, "id" | "userAgent">,
-    currentDeviceId: string,
-    currentIP: string,
-    currentUA: UserAgent
-): Promise<DeviceValidationResult> => {
+export const validateDeviceFingerprint = async ({ current, expected }: {
+    current: {
+        ipAddress: string;
+        userAgent: UserAgent;
+        deviceId: string;
+    };
+    expected: {
+        ipAddress: string;
+        userAgent: string;
+        deviceId: string;
+    };
+}): Promise<DeviceValidationResult> => {
     const reasons: string[] = [];
     let riskLevel: DeviceValidationResult["riskLevel"] = 'LOW';
 
     // 1. CRITICAL: Device ID must match
-    if (device.id !== currentDeviceId) {
+    if (expected.deviceId !== current.deviceId) {
         return {
             riskLevel: 'SEVERE',
             reasons: ['Device ID mismatch']
         };
     }
 
-     // 4. IP Address check (informational)
-    if (ipAddress !== currentIP) {
+    // 4. IP Address check (informational)
+    if (expected.ipAddress !== current.ipAddress) {
         reasons.push('IP address changed');
         // Mobile users change IPs frequently - don't elevate risk
     }
@@ -246,51 +295,36 @@ export const validateDeviceFingerprint = async (
     // 2. Parse stored user agent
     let storedUA;
     try {
-        storedUA = JSON.parse(device.userAgent);
+        storedUA = JSON.parse(expected.userAgent);
     } catch {
-        reasons.push('Invalid stored user agent');
-        riskLevel = 'SEVERE';
+        return {
+            riskLevel: 'SEVERE',
+            reasons: ['Invalid stored user agent']
+        };
     }
-   
 
     // 3. User Agent validation
-    if (storedUA) {
-        // Critical properties that shouldn't change
-        const criticalMismatches = [];
-
-        if (storedUA.os?.name !== currentUA.os?.name) {
-            criticalMismatches.push('OS name changed');
-        }
-
-        if (storedUA.device?.type !== currentUA.device?.type) {
-            criticalMismatches.push('Device type changed');
-        }
-
-        if (storedUA.browser?.name !== currentUA.browser?.name) {
-            criticalMismatches.push('Browser name changed');
-        }
-
-        // If any critical property changed, this is suspicious
-        if (criticalMismatches.length > 0) {
-            return {
-                riskLevel: 'SEVERE',
-                reasons: criticalMismatches
-            };
-        }
-
-        // Check for minor changes (informational only)
-        if (storedUA.browser?.version !== currentUA.browser?.version) {
-            reasons.push('Browser version updated');
-            riskLevel = "MEDIUM"
-            // This is normal - browsers auto-update
-        }
-
-        if (storedUA.os?.version !== currentUA.os?.version) {
-            reasons.push('OS version updated');
-            riskLevel = 'HIGH'; // Less common, slightly more suspicious
-        }
+    // Critical properties that shouldn't change
+    if (storedUA.os?.name !== current.userAgent.os?.name) {
+        reasons.push('OS name changed');
+        riskLevel = 'SEVERE';
+    } else if (storedUA.os?.version !== current.userAgent.os?.version) {
+        reasons.push('OS version updated');
+        riskLevel = 'HIGH';
     }
 
+    if (storedUA.device?.type !== current.userAgent.device?.type) {
+        reasons.push('Device type changed');
+        riskLevel = 'SEVERE';
+    }
+
+    if (storedUA.browser?.name !== current.userAgent.browser?.name) {
+        reasons.push('Browser name changed');
+        riskLevel = 'SEVERE';
+    } else if (storedUA.browser?.version !== current.userAgent.browser?.version) {
+        reasons.push('Browser version updated');
+        if (riskLevel === "LOW") riskLevel = "MEDIUM";
+    }
 
     return { riskLevel, reasons };
 }
@@ -321,13 +355,19 @@ export const handleRefreshTokenReuse = async (
     }
 
     // Compare the original token usage context with current request
-    const deviceFingerprint = await validateDeviceFingerprint(
-        usedToken.usedIpAddress ?? 'unknown',
-        { id: usedToken.deviceId, userAgent: usedToken.usedUserAgent },
-        currentRequest.deviceId,
-        currentRequest.ipAddress,
-        currentRequest.userAgent
-    );
+    const deviceFingerprint = await validateDeviceFingerprint({
+        current: {
+            deviceId: currentRequest.deviceId,
+            ipAddress: currentRequest.ipAddress,
+            userAgent: currentRequest.userAgent,
+        },
+        expected: {
+            deviceId: usedToken.deviceId,
+            ipAddress: usedToken.usedIpAddress ?? 'unknown',
+            userAgent: usedToken.usedUserAgent,
+        },
+    });
+
 
     // Same device, same IP, same user agent = likely parallel requests
     const isLowRiskUA = deviceFingerprint.riskLevel === 'LOW' && deviceFingerprint.reasons.length === 0;
@@ -363,7 +403,7 @@ export const handleRefreshTokenReuse = async (
 /**
  * Invalidates all active sessions for a user across all devices
  */
-export const invalidateAllUserSessions = async (userId: string, deviceId: string): Promise<void> => {
+export const invalidateAllUserSessions = async (userId: string, deviceId: string, ipAddress: string): Promise<void> => {
     await prisma.refreshToken.updateMany({
         where: {
             userId: userId,
@@ -382,9 +422,98 @@ export const invalidateAllUserSessions = async (userId: string, deviceId: string
         userId,
         deviceId,
         success: false,
-        ipAddress: null,
+        ipAddress: ipAddress,
         userAgent: {} as UserAgent,
         details: 'All user sessions invalidated due to refresh token reuse attack',
         action: 'REFRESH_ACCESS_TOKEN',
+        debugLevel: LogDebugLevel.CRITICAL,
     });
 };
+
+export const getUser2FAConfig = async (userId: string) => {
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: {
+            organisation: {
+                include: {
+                    organisationConfiguration: true,
+                }
+            }
+        }
+    });
+    if (!user) throw new Error('User not found');
+    const method = user.default2FAMethod ?? "email";
+    if (user.twoFAEnabled)
+        return { enabled: true, method };
+
+
+    if (user.organisation.organisationConfiguration) {
+        const config = user.organisation.organisationConfiguration;
+        if (config.twoFactorAuthRule === 'required') {
+            return { enabled: true, method };
+        }
+        if (config.twoFactorAuthRule === 'administrators' && user.role >= AuthRole.admin) {
+            return { enabled: true, method };
+        }
+    }
+    return { enabled: false, methdo: null };
+};
+
+type Get2FARequiredForLoginProps = {
+    account: DeviceIdsCookieAccount | null;
+    ipAddress: string;
+    agent: UserAgent;
+}
+
+export const get2FARequiredForLogin = async (props: Get2FARequiredForLoginProps) => {
+    const { account, ipAddress, agent } = props;
+    if (!account) {
+        return true;
+    }
+
+    const device = await prisma.device.findFirst({
+        where: {
+            id: account.deviceId,
+        }
+    });
+    if (!device) {
+        return true;
+    }
+    if (!device.last2FAAt) {
+        return true;
+    }
+    const fingerprintValidation = await validateDeviceFingerprint({
+        expected: {
+            ipAddress: device.lastIpAddress,
+            deviceId: device.id,
+            userAgent: device.userAgent,
+        },
+        current: {
+            deviceId: account.deviceId,
+            ipAddress,
+            userAgent: agent,
+        }
+    });
+
+    if (fingerprintValidation.riskLevel === "SEVERE") {
+        return true;
+    }
+    // HIGH --> 2FA within a week
+    if ((fingerprintValidation.riskLevel === "HIGH")
+        && dayjs(device.last2FAAt).isBefore(dayjs().subtract(7, 'days'))) {
+        return true;
+    }
+    // MEDIUM --> 2FA within a month
+    if ((fingerprintValidation.riskLevel === "MEDIUM")
+        && dayjs(device.last2FAAt).isBefore(dayjs().subtract(30, 'days'))) {
+        return true;
+    }
+    return false;
+}
+
+export const verifyMFAToken = async (token: string, appId: string, organisationId: string, logData: AuthenticationExceptionData): Promise<void> => {
+    if (appId === "email") {
+        return verifyEmailCode(organisationId, "", token);
+    }
+    return __unsecuredVerifyTwoFactorCode(organisationId, "", token, appId, logData);
+}
