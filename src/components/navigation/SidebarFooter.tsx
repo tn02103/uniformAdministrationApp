@@ -9,6 +9,7 @@ import { mutate } from "swr";
 import { useSessionStorage } from "usehooks-ts";
 import { useModal } from "../modals/modalProvider";
 import { useSidebarContext } from "./Sidebar";
+import Link from "next/link";
 
 type SidebarFooterProps = {
     username: string;
@@ -44,11 +45,16 @@ export const SidebarFooter = ({ username, collapseButtonRef, handleCollapseButto
                                 {username}
                             </Dropdown.Toggle>
                             <Dropdown.Menu className="bg-navy-secondary border-white text-white">
-                                <Dropdown.Item onClick={handleLogout} data-testid="btn_logout" className="text-white bg-navy-secondary">
-                                    {t('sidebar.logout')}
+                                <Dropdown.Item className="text-white bg-navy-secondary my-2 my-lg-0">
+                                    <Link href="/app/profile">
+                                        {t('sidebar.links.profile')}
+                                    </Link>
                                 </Dropdown.Item>
                                 <Dropdown.Item onClick={modal?.changeLanguage} data-testid="btn_changeSize" className="text-white bg-navy-secondary my-2 my-lg-0">
                                     {t('sidebar.changeLanguage')}
+                                </Dropdown.Item>
+                                <Dropdown.Item onClick={handleLogout} data-testid="btn_logout" className="text-white bg-navy-secondary">
+                                    {t('sidebar.logout')}
                                 </Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>

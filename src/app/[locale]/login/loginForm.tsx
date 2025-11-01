@@ -13,6 +13,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Alert, Button, Col, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
+import { NumberInputFormField } from "@/components/fields/NumberInputFormField";
 
 type PropType = {
     organisations: Organisation[];
@@ -29,6 +30,7 @@ const LoginForm = ({ organisations, lastUsedOrganisationId, ...props }: PropType
     const [failedLogin, setFailedLogin] = useState(false);
     const [userBlocked, setUserBlocked] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [step, setStep] = useState(0);
 
     async function onSubmit(data: LoginFormType) {
         setIsSubmitting(true);
@@ -44,7 +46,9 @@ const LoginForm = ({ organisations, lastUsedOrganisationId, ...props }: PropType
             if (response.loginSuccessful) {
 
             } else {
-                if (response.exceptionType === "AuthenticationFailed") {
+                if (response.exceptionType === "TwoFactorRequired") {
+                    setStep(1);
+                } else if (response.exceptionType === "AuthenticationFailed") {
                     setFailedLogin(true);
                 } else if (response.exceptionType === "UnknownError") {
                     setFailedLogin(false);
@@ -83,38 +87,46 @@ const LoginForm = ({ organisations, lastUsedOrganisationId, ...props }: PropType
                     {t('login.error.failed')}
                 </Alert>
             }
-
-            <div className="mb-3">
-                <SelectFormField
-                    name="organisationId"
-                    label={t('login.label.organisation')}
-                    options={organisations.map(o => ({ value: o.id, label: o.name }))}
-                />
-            </div>
-            <div className="mb-3">
-                <InputFormField
-                    name="email"
-                    label={t('login.label.username')}
-                />
-            </div>
-            <div className="mb-3">
-                <InputFormField
-                    name="password"
-                    label={t('login.label.password')}
-                    type="password"
-                    autoComplete={"off"}
-                />
-            </div>
-            <Row>
-                <Col>
-                    <Button variant="primary" type="submit" disabled={isSubmitting} data-testid="btn_login">
-                        {isSubmitting ?
-                            <FontAwesomeIcon icon={faSpinner} className="mx-3 fa-spin-pulse" />
-                            : t('login.label.login')
-                        }
-                    </Button>
-                </Col>
-            </Row>
+            {step === 0 &&
+                <div>
+                    <div className="mb-3">
+                        <SelectFormField
+                            name="organisationId"
+                            label={t('login.label.organisation')}
+                            options={organisations.map(o => ({ value: o.id, label: o.name }))}
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <InputFormField
+                            name="email"
+                            label={t('login.label.username')}
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <InputFormField
+                            name="password"
+                            label={t('login.label.password')}
+                            type="password"
+                            autoComplete={"off"}
+                        />
+                    </div>
+                    <Row>
+                        <Col>
+                            <Button variant="primary" type="submit" disabled={isSubmitting} data-testid="btn_login">
+                                {isSubmitting ?
+                                    <FontAwesomeIcon icon={faSpinner} className="mx-3 fa-spin-pulse" />
+                                    : t('login.label.login')
+                                }
+                            </Button>
+                        </Col>
+                    </Row>
+                </div>
+            }
+            {step === 1 &&
+                <div>
+                    <NumberInputFormField name="twoFactorCode" label={t('login.label.twoFactorCode')} />
+                </div>
+            }
         </Form>
     )
 }

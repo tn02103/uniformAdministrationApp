@@ -12,8 +12,9 @@ import { userAgent } from "next/server";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import { setTimeout } from "timers/promises";
 import { __unsecuredSendEmailVerifyCode } from "./email/verifyCode";
-import { AuthConfig, DeviceIdsCookie, DeviceIdsCookieAccount, get2FARequiredForLogin, getDeviceAccountFromCookies, getIPAddress, getUser2FAConfig, issueNewAccessToken, issueNewRefreshToken, LogDebugLevel, logSecurityAuditEntry, UserAgent, verifyMFAToken } from "./helper";
-
+import { AuthConfig, get2FARequiredForLogin, getDeviceAccountFromCookies, getIPAddress, getUser2FAConfig, issueNewAccessToken, issueNewRefreshToken, logSecurityAuditEntry, verifyMFAToken } from "./helper";
+import type { DeviceIdsCookie, DeviceIdsCookieAccount, UserAgent } from "./helper";
+import { LogDebugLevel } from "./LogDebugLeve.enum";
 
 type LoginReturnType = {
     loginSuccessful: false;
@@ -79,7 +80,7 @@ export const Login = async (props: LoginFormType): Promise<LoginReturnType> => {
         const parsed = LoginFormSchema.safeParse(props);
         if (!parsed.success) {
             await consumeIpLimiter(ipAddress, 2, agent);
-            throw new AuthenticationException("props could not be passed via zod schema", "UnknownError", LogDebugLevel.CRITICAL, loginLogData);
+            throw new AuthenticationException("Props could not be passed via zod schema", "UnknownError", LogDebugLevel.CRITICAL, loginLogData);
         }
 
         const { email, password, organisationId, secondFactor } = parsed.data!;
@@ -114,7 +115,7 @@ export const Login = async (props: LoginFormType): Promise<LoginReturnType> => {
         try {
             await verifyUser({ user, account, organisationId, ipAddress, agent, password, secondFactor, loginLogData });
         } catch (e) {
-            if (e instanceof AuthenticationException) {
+            if (e instanceof AuthenticationException && e.exceptionType !== "TwoFactorRequired") {
                 consumeIpLimiter(ipAddress, 1, agent, account?.deviceId);
             }
             throw e;
@@ -258,7 +259,6 @@ const handleSuccessfulLogin = async (props: HandleSuccessfulLoginProps): Promise
             failedLoginCount: 0,
         }
     });
-
     // Register new device if it does not exists
     account = await handleDeviceUsage({ account, accountCookie, organisationId: organisation.id, userAgent: agent, ipAddress, userId: user.id, cookieList: cookieList });
 
@@ -301,6 +301,9 @@ const handleDeviceUsage = async (props: HandleDeviceUsageProps): Promise<DeviceI
             },
             data: {
                 lastUsedAt: new Date(),
+                lastIpAddress: ipAddress,
+                userAgent: JSON.stringify(userAgent),
+                lastLoginAt: new Date(),
             }
         });
     } else {
@@ -330,7 +333,7 @@ const handleDeviceUsage = async (props: HandleDeviceUsageProps): Promise<DeviceI
                 lastUsedAt: new Date(),
             },
             otherAccounts: accountCookie.otherAccounts,
-        }));
+        }), { httpOnly: true, secure: true, path: '/', sameSite: 'strict' });
     } else {
         const otherAccounts = accountCookie ? accountCookie.otherAccounts.filter(x => x.organisationId !== organisationId) : [];
         cookieList.set(AuthConfig.deviceCookie, JSON.stringify({
@@ -339,7 +342,7 @@ const handleDeviceUsage = async (props: HandleDeviceUsageProps): Promise<DeviceI
                 lastUsedAt: new Date(),
             },
             otherAccounts: otherAccounts,
-        }));
+        }), { httpOnly: true, secure: true, path: '/', sameSite: 'strict' });
     }
 
     return account;

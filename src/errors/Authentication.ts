@@ -1,4 +1,5 @@
-import { LogDebugLevel, UserAgent } from "@/dal/auth/helper";
+import { UserAgent } from "@/dal/auth/helper";
+import { LogDebugLevel } from "@/dal/auth/LogDebugLeve.enum";
 
 export type ExceptionType = "AuthenticationFailed" | "User Blocked" | "UnknownError" | "TwoFactorRequired" | "TooManyRequests";
 export type AuthenticationExceptionData = {

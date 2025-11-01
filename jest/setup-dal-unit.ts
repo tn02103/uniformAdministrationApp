@@ -1,6 +1,46 @@
 import { AuthRole } from "@/lib/AuthRoles";
 
 const prismaMock = {
+    organisation: {
+        updateMany: jest.fn(),
+        create: jest.fn(),
+        upsert: jest.fn(),
+        findFirst: jest.fn(),
+        findMany: jest.fn(),
+        findUnique: jest.fn(),
+        findUniqueOrThrow: jest.fn(),
+        delete: jest.fn(),
+        deleteMany: jest.fn(),
+    },
+    user: {
+        updateMany: jest.fn(),
+        create: jest.fn(),
+        update: jest.fn(),
+        findFirst: jest.fn(),
+        findMany: jest.fn(),
+        findUnique: jest.fn(),
+        findUniqueOrThrow: jest.fn(),
+        delete: jest.fn(),
+        deleteMany: jest.fn(),
+    },
+    twoFactorApp: { updateMany: jest.fn(),
+        create: jest.fn(),
+        upsert: jest.fn(),
+        findFirst: jest.fn(),
+        findMany: jest.fn(),
+        findUnique: jest.fn(),
+        findUniqueOrThrow: jest.fn(),
+        delete: jest.fn(),
+        deleteMany: jest.fn(),
+    },
+    refreshToken: {
+        updateMany: jest.fn(),
+        create: jest.fn(),
+    },
+    device: {
+        update: jest.fn(),
+        create: jest.fn(),
+    },
     // Mock all Prisma models with common methods
     cadetInspection: {
         upsert: jest.fn(),
