@@ -7,6 +7,7 @@ import { getDeviceAccountFromCookies, getIPAddress, logSecurityAuditEntry } from
 import { cookies, headers } from "next/headers";
 import { userAgent } from "next/server";
 import { SAReturnType } from "@/dal/_helper/testHelper";
+import dayjs from "@/lib/dayjs";
 
 const AppConfig = {
     digits: 6,
@@ -42,7 +43,7 @@ export const add = async (props: AddPropType): AddAuthAppReturnType => genericSA
     await client.twoFactorApp.deleteMany({
         where: {
             userId: userId,
-            verified: false
+            verifiedAt: null
         }
     });
 
@@ -83,7 +84,7 @@ export const add = async (props: AddPropType): AddAuthAppReturnType => genericSA
             secret: totp.secret.base32,
             userId: user.id!,
             appName: name,
-            verified: false,
+            verifiedAt: null,
         }
     });
     await logSecurityAuditEntry({
@@ -118,7 +119,7 @@ export const removeUnverified = async (props: RemovedUnverifiedAuthAppType) => g
         where: {
             userId: data.userId || id,
             id: data.appId,
-            verified: false
+            verifiedAt: null
         }
     });
 });
@@ -174,9 +175,13 @@ export const verify = async (props: VerifyPropType): VerifyReturnType => generic
         logAudit(false, `2FA app not found (${appId})`);
         return { success: false, error: 'Unknown 2FA app' };
     }
-    if (dbApp.verified) {
+    if (dbApp.verifiedAt) {
         logAudit(false, `2FA app already verified (${appId})`);
         return { success: false, error: 'App already verified' };
+    }
+    if (dayjs(dbApp.createdAt).isBefore(dayjs().subtract(1, 'hour'))) {
+        logAudit(false, `2FA app verification expired (${appId})`);
+        return { success: false, error: 'App verification expired. Please create a new one.' };
     }
 
     const totp = new TOTP({
@@ -193,9 +198,9 @@ export const verify = async (props: VerifyPropType): VerifyReturnType => generic
 
     await client.twoFactorApp.update({
         where: { id: dbApp.id },
-        data: { verified: true }
+        data: { verifiedAt: new Date() }
     });
-    if (dbApp.user.twoFAEnabled === false) {
+    if (dbApp.user.twoFAEnabled === false || dbApp.user.default2FAMethod === "email") {
         await client.user.update({
             where: { id: dbApp.user.id },
             data: {

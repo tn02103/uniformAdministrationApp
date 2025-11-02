@@ -244,6 +244,7 @@ export default {
             organisation: "Verein",
             username: "Nutzername",
             password: "Password",
+            twoFactorCode: "2FA Code",
             login: "Anmelden"
         },
         error: {
@@ -496,6 +497,7 @@ export default {
             },
             userOverview: "Zugänge",
             redirects: "Weiterleitungen",
+            profile: "Profiel"
         },
     },
     redirects: {

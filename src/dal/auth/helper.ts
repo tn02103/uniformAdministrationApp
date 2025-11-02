@@ -11,6 +11,7 @@ import z from "zod";
 import { verifyEmailCode } from "./email/verifyCode";
 import { __unsecuredVerifyTwoFactorCode } from "./2fa/verify";
 import { AuthenticationExceptionData } from "@/errors/Authentication";
+import { LogDebugLevel } from "./LogDebugLeve.enum";
 
 
 // ########## SCHEMAS AND TYPES ##########
@@ -56,12 +57,7 @@ type LogSecurityAuditEntryData = {
     userAgent: UserAgent;
     details: string;
 }
-export enum LogDebugLevel {
-    SUCCESS = 0,
-    INFO = 1,
-    WARNING = 2,
-    CRITICAL = 3,
-}
+
 /**
 * Logs a login attempt to the audit log.
 * @param data 

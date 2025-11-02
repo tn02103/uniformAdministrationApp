@@ -218,7 +218,7 @@ const verifications = async (props: verificationsProp): Promise<VerivicationsRes
             criticalReasons.push(`Suspicious token reuse: ${reuseResult.reason}`);
             cookieList.delete(AuthConfig.refreshTokenCookie);
         }
-        
+
         // If ALLOW, we continue normally but still log the incident
         await logSecurityAuditEntry({
             userId: user.id,
@@ -244,7 +244,7 @@ const verifications = async (props: verificationsProp): Promise<VerivicationsRes
         criticalReasons.push("User is deleted");
     }
     if (user.changePasswordOnLogin) {
-        criticalReasons.push("User has to change. No refresh Possible");
+        criticalReasons.push("User has to change. No refresh possible");
     }
 
     // ##### VALIDATE DEVICE FROM DB ####
@@ -260,13 +260,19 @@ const verifications = async (props: verificationsProp): Promise<VerivicationsRes
 
     // ##### VALIDATE FINGERPRINT ####
     if (device && accountCookie?.lastUsed) {
-        const fingerprintValidation = await validateDeviceFingerprint(
-            dbToken.issuerIpAddress,
-            device,
-            accountCookie?.lastUsed.deviceId,
-            ipAddress,
-            agent
-        );
+        const fingerprintValidation = await validateDeviceFingerprint({
+            expected: {
+                ipAddress: dbToken.issuerIpAddress,
+                deviceId: device.id,
+                userAgent: device.userAgent,
+            },
+            current: {
+                ipAddress,
+                userAgent: agent,
+                deviceId: accountCookie.lastUsed.deviceId,
+            }
+        });
+
         if (fingerprintValidation.riskLevel === 'SEVERE' || fingerprintValidation.riskLevel === 'HIGH') {
             return {
                 isValid: false,
