@@ -114,7 +114,7 @@ jobs:
         if: steps.version-check.outputs.is_major_update == 'false'
         run: |
           echo "All checks passed, enabling auto-merge for non-major update"
-          gh pr merge --auto --squash "${{ github.event.pull_request.number }}"
+          gh pr merge --auto --rebase "${{ github.event.pull_request.number }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
