@@ -16,7 +16,7 @@ exports[`UniformDeficiencyRow renders correctly 1`] = `
          
         <svg
           aria-hidden="true"
-          class="svg-inline--fa fa-plus fa-sm "
+          class="svg-inline--fa fa-plus fa-sm"
           data-icon="plus"
           data-prefix="fas"
           role="img"
@@ -90,7 +90,7 @@ exports[`UniformDeficiencyRow renders correctly 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-ellipsis-vertical "
+                  class="svg-inline--fa fa-ellipsis-vertical"
                   data-icon="ellipsis-vertical"
                   data-prefix="fas"
                   role="img"
@@ -183,7 +183,7 @@ exports[`UniformDeficiencyRow renders correctly 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-ellipsis-vertical "
+                  class="svg-inline--fa fa-ellipsis-vertical"
                   data-icon="ellipsis-vertical"
                   data-prefix="fas"
                   role="img"
