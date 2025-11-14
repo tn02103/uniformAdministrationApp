@@ -487,6 +487,7 @@ export default {
                 uniform: "Uniform",
                 size: "Größen",
                 material: "Materialien",
+                dashboard: "Daschboard"
             },
             userOverview: "Zugänge",
             redirects: "Weiterleitungen",
@@ -651,6 +652,35 @@ export default {
                 'message#other': "Do you really want to delete the type? This will also delete all {count} existing defects. This action cannot be undone.",
             },
         },
+        dashboard: {
+            "header.page": "Dashboard",
+            "header.uniformCounts": "Anzahlen der Uniformteile",
+            "header.uniformCountsByType": "Verteilung nach Typ",
+            "header.uniformCountsBySize": "Verteilung nach Größe für {type}",
+            charts: {
+                available: {
+                    short: "Verfügbar",
+                    long: "Verfügbar (Aktiv, Nicht Ausgegeben)"
+                },
+                issued: {
+                    short: "Ausgegeben",
+                    long: "Ausgegeben (Aktiv, Derzeit Ausgegeben)"
+                },
+                reserves: {
+                    short: "Reserven",
+                    long: "Reserven (Inaktiv, Nicht Ausgegeben)"
+                },
+                issuedReserves: {
+                    short: "Ausgegebene Reserven",
+                    long: "Ausgegebene Reserven (Inaktiv, Derzeit Ausgegeben)"
+                },
+                missing: {
+                    short: "Fehlend",
+                    long: "Fehlend (Sollte Ausgegeben Sein)"
+                },
+                count: "Anzahl"
+            }
+        }
     },
     inspection: {
         header: {
