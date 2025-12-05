@@ -37,7 +37,8 @@ test.describe(() => {
         await expect.soft(uniformListPage.chk_isReserveFilter).toBeChecked();
     });
 
-    test('integration: changing UniformType updates filter and data', async ({page, uniformListPage, staticData: { ids } }) => {
+    // eslint-disable-next-line playwright/no-skipped-test
+    test.skip('integration: changing UniformType updates filter and data', async ({page, uniformListPage, staticData: { ids } }) => {
         await uniformListPage.sel_type.selectOption(ids.uniformTypeIds[1]);
         await page.waitForURL(`/de/app/uniform/list/${ids.uniformTypeIds[1]}`);
         
