@@ -1,7 +1,7 @@
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { userArgs } from "@/types/userTypes";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/prisma/client";
 
 export class UserDBHandler {
 

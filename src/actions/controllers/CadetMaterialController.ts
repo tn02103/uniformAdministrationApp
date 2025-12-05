@@ -7,7 +7,7 @@ import { prisma } from "@/lib/db";
 import { uuidValidationPattern } from "@/lib/validations";
 import { CadetMaterialMap } from "@/types/globalCadetTypes";
 import { UniformLabel } from "@/types/globalUniformTypes";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/prisma/client";
 import { CadetMaterialDBHandler } from "../dbHandlers/CadetMaterialDBHandler";
 
 const dbHandler = new CadetMaterialDBHandler();

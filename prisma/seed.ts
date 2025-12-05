@@ -1,9 +1,15 @@
-import { PrismaClient } from '@prisma/client';
-import StaticDataGenerator, { getStaticDataIds } from '../tests/_playwrightConfig/testData/staticDataGenerator';
+import { PrismaClient } from '@/prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import bcrypt from "bcrypt";
+import 'dotenv/config';
+import StaticDataGenerator, { getStaticDataIds } from '../tests/_playwrightConfig/testData/staticDataGenerator';
 
-const prismaClient = new PrismaClient()
+
+const adapter = new PrismaPg({ connectionString: `${process.env.DATABASE_URL}` });
+const prismaClient = new PrismaClient({adapter});
+
 async function main() {
+    
     const ids = getStaticDataIds()
     ids.fk_assosiation = process.env.ASSOSIATION_ID ?? ids.fk_assosiation;
     const generator = new StaticDataGenerator(ids);

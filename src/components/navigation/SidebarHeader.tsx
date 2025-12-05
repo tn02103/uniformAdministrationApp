@@ -2,7 +2,7 @@ import { faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 import style from './SidebarHeader.module.css';
-import { Assosiation } from "@prisma/client";
+import { Assosiation } from "@/prisma/client";
 import { useSidebarContext } from './Sidebar';
 import { useInspectionState } from '@/dataFetcher/inspection';
 import { useScopedI18n } from '@/lib/locales/client';
