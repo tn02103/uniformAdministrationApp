@@ -658,6 +658,7 @@ export default {
             "header.uniformCountsByType": "Verteilung nach Typ",
             "header.uniformCountsBySize": "Verteilung nach Größe für {type}",
             charts: {
+                "total": "Gesamt",
                 available: {
                     short: "Verfügbar",
                     long: "Verfügbar (Aktiv, Nicht Ausgegeben)"

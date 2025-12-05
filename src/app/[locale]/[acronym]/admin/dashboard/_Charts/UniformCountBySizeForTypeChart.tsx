@@ -8,30 +8,34 @@ import { Col, Row, Table } from 'react-bootstrap';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { CustomChartTooltip } from '../_Components/CustomChartTooltip';
 import { CustomLegend, LegendItem } from '../_Components/CustomLegend';
+import styles from './Chart.module.css';
+import clsx from 'clsx';
 
 type UniformTypeChartProps = {
     data: UniformCountBySizeForTypeData[];
 }
+type QuantityKey = keyof UniformCountBySizeForTypeData["quantities"];
+type DataKeys = Omit<LegendItem, "key"> & {
+    key: QuantityKey;
+    stackId: string;
+    label: string;
+}
 
 export const UniformCountBySizeForTypeChart = ({ data }: UniformTypeChartProps) => {
     const t = useI18n();
-    const quantities = React.useMemo(() => 
-        ["available", "issued", "reserves", "issuedReserves"] as const,
-        []
-    );
-    
-    // State for interactive legend
-    const [visibleSeries, setVisibleSeries] = useState<Set<string>>(new Set(quantities));
-    const [hoveredSeries, setHoveredSeries] = useState<string | null>(null);
-    
+
     // Legend items configuration
-    const legendItems: LegendItem[] = [
-        { key: 'available', color: '#16a34a', label: t('admin.dashboard.charts.available.long') },
-        { key: 'issued', color: '#475569', label: t('admin.dashboard.charts.issued.long') },
-        { key: 'reserves', color: '#d97706', label: t('admin.dashboard.charts.reserves.long') },
-        { key: 'issuedReserves', color: '#b91c1c', label: t('admin.dashboard.charts.issuedReserves.long') }
+    const barItems: DataKeys[] = [
+        { key: 'available', color: '#4dacff', description: t('admin.dashboard.charts.available.long'), label: t('admin.dashboard.charts.available.short'), stackId: "active" },
+        { key: 'issued', color: '#007be6', description: t('admin.dashboard.charts.issued.long'), label: t('admin.dashboard.charts.issued.short'), stackId: "active" },
+        { key: 'reserves', color: '#fd9e4e', description: t('admin.dashboard.charts.reserves.long'), label: t('admin.dashboard.charts.reserves.short'), stackId: "reserve" },
+        { key: 'issuedReserves', color: '#e46902', description: t('admin.dashboard.charts.issuedReserves.long'), label: t('admin.dashboard.charts.issuedReserves.short'), stackId: "reserve" }
     ];
-    
+
+    // State for interactive legend
+    const [visibleSeries, setVisibleSeries] = useState<Set<string>>(new Set(barItems.map(item => item.key)));
+    const [hoveredSeries, setHoveredSeries] = useState<string | null>(null);
+
     return (
         <div>
             <div style={{ width: '100%', height: '400px', marginTop: '2px' }}>
@@ -54,49 +58,28 @@ export const UniformCountBySizeForTypeChart = ({ data }: UniformTypeChartProps) 
                         />
                         <YAxis />
                         <Tooltip content={<CustomChartTooltip />} />
-
-                        {/* Always render bars in consistent order - Available first */}
-                        <Bar
-                            dataKey="quantities.available"
-                            stackId="uniform"
-                            fill="#16a34a"
-                            name={t('admin.dashboard.charts.available.long')}
-                            hide={!visibleSeries.has('available')}
-                        />
-
-                        {/* Issued - Professional slate blue */}
-                        <Bar
-                            dataKey="quantities.issued"
-                            stackId="uniform"
-                            fill="#475569"
-                            name={t('admin.dashboard.charts.issued.long')}
-                            hide={!visibleSeries.has('issued')}
-                        />
-
-                        {/* Reserves - Muted amber/orange */}
-                        <Bar
-                            dataKey="quantities.reserves"
-                            stackId="uniform"
-                            fill="#d97706"
-                            name={t('admin.dashboard.charts.reserves.long')}
-                            hide={!visibleSeries.has('reserves')}
-                        />
-
-                        {/* Issued Reserves - Professional dark red that stands out */}
-                        <Bar
-                            dataKey="quantities.issuedReserves"
-                            stackId="uniform"
-                            fill="#b91c1c"
-                            name={t('admin.dashboard.charts.issuedReserves.long')}
-                            hide={!visibleSeries.has('issuedReserves')}
-                        />
+                        {barItems.map(item => (
+                            <Bar
+                                key={item.key}
+                                dataKey={`quantities.${item.key}`}
+                                stackId={item.stackId}
+                                fill={item.color}
+                                name={item.label}
+                                hide={!visibleSeries.has(item.key)}
+                                className={clsx(
+                                    styles.bar,
+                                    (hoveredSeries && hoveredSeries === item.key) ? styles.hovered : undefined,
+                                    (hoveredSeries && hoveredSeries !== item.key) ? styles.dimmed : undefined
+                                )}
+                            />
+                        ))}
                     </BarChart>
                 </ResponsiveContainer>
             </div>
-            
+
             {/* Independent Custom Legend */}
             <CustomLegend
-                items={legendItems}
+                items={barItems}
                 visibleSeries={visibleSeries}
                 hoveredSeries={hoveredSeries}
                 onVisibilityChange={setVisibleSeries}
@@ -110,21 +93,29 @@ export const UniformCountBySizeForTypeChart = ({ data }: UniformTypeChartProps) 
                         <Table>
                             <thead>
                                 <tr>
-                                    <th>{t('admin.dashboard.charts.count')}</th>
+                                    <th className='bg-dark-subtle'>{t('admin.dashboard.charts.count')}</th>
                                     {data.map(sizeData => (
-                                        <th key={sizeData.sizeId}>{sizeData.size}</th>
+                                        <th key={sizeData.sizeId} className='bg-dark-subtle'>{sizeData.size}</th>
                                     ))}
                                 </tr>
                             </thead>
                             <tbody>
-                                {quantities.map((quantity) => (
-                                    <tr key={quantity}>
-                                        <th>{t(`admin.dashboard.charts.${quantity}.short`)}</th>
+                                {barItems.map(({ key, label }) => (
+                                    <tr key={key}>
+                                        <th>{label}</th>
                                         {data.map(sizeData => (
-                                            <td key={sizeData.sizeId}>{sizeData.quantities[quantity]}</td>
+                                            <td key={sizeData.sizeId}>{sizeData.quantities[key]}</td>
                                         ))}
                                     </tr>
                                 ))}
+                                <tr className='bg-secondary-subtle'>
+                                    <th className='bg-secondary-subtle'>{t('admin.dashboard.charts.total')}</th>
+                                    {data.map(sizeData => (
+                                        <td key={sizeData.sizeId} className='bg-secondary-subtle'>
+                                            {barItems.reduce((sum, item) => sum + sizeData.quantities[item.key], 0)}
+                                        </td>
+                                    ))}
+                                </tr>
                             </tbody>
                         </Table>
                     </ExpandableDividerArea>

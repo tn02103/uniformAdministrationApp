@@ -40,6 +40,7 @@
         "@types/react-dnd": "3.0.2",
         "bcrypt": "6.0.0",
         "bootstrap": "5.3.8",
+        "clsx": "^2.1.1",
         "date-fns": "4.1.0",
         "dayjs": "1.11.19",
         "debounce": "2.2.0",

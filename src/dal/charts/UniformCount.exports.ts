@@ -6,7 +6,7 @@ import { __unsecuredGetUniformTypeList } from "../uniform/type/get";
 import { getUniformCountBySizeForType, getUniformCountByType } from "./UniformCounts";
 import { generateUniformCountXLSX } from "@/lib/fileCreations/uniformCount";
 
-export const exportUniformCount = async (): Promise<{ buffer: number[]; filename: string }> => 
+export const exportUniformCount = async (): Promise<{ buffer: number[]; filename: string }> =>
     genericSANoDataValidator(AuthRole.materialManager).then(async ([{ assosiation }]) => {
         const uniformTypeList = (await __unsecuredGetUniformTypeList(assosiation)).filter(type => type.usingSizes);
 
@@ -29,13 +29,13 @@ export const exportUniformCount = async (): Promise<{ buffer: number[]; filename
 
         // Convert workbook to buffer
         const buffer = Buffer.from(await workbook.xlsx.writeBuffer());
-        
+
         // Generate filename with current date
         const currentDate = new Date().toISOString().split('T')[0];
         const filename = `uniform-count-report-${currentDate}.xlsx`;
 
-        return { 
+        return {
             buffer: Array.from(buffer), // Convert to array for JSON serialization
-            filename 
+            filename
         };
     });

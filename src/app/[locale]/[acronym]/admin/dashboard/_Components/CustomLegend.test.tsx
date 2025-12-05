@@ -7,10 +7,10 @@ describe('CustomLegend', () => {
     const mockOnItemHover = jest.fn();
 
     const defaultItems: LegendItem[] = [
-        { key: 'available', color: '#16a34a', label: 'Available' },
-        { key: 'issued', color: '#475569', label: 'Issued' },
-        { key: 'reserves', color: '#d97706', label: 'Reserves' },
-        { key: 'issuedReserves', color: '#b91c1c', label: 'Issued Reserves' }
+        { key: 'available', color: '#16a34a', description: 'Available' },
+        { key: 'issued', color: '#475569', description: 'Issued' },
+        { key: 'reserves', color: '#d97706', description: 'Reserves' },
+        { key: 'issuedReserves', color: '#b91c1c', description: 'Issued Reserves' }
     ];
 
     const defaultProps: CustomLegendProps = {
@@ -39,8 +39,8 @@ describe('CustomLegend', () => {
 
             it('shows correct labels for each item', () => {
                 const customItems = [
-                    { key: 'test1', color: '#000', label: 'Custom Label 1' },
-                    { key: 'test2', color: '#fff', label: 'Custom Label 2' }
+                    { key: 'test1', color: '#000', description: 'Custom Label 1' },
+                    { key: 'test2', color: '#fff', description: 'Custom Label 2' }
                 ];
 
                 render(
@@ -500,7 +500,7 @@ describe('CustomLegend', () => {
                 const manyItems: LegendItem[] = Array.from({ length: 15 }, (_, i) => ({
                     key: `item${i}`,
                     color: '#000000',
-                    label: `Item ${i}`
+                    description: `Item ${i}`
                 }));
 
                 render(
@@ -520,7 +520,7 @@ describe('CustomLegend', () => {
                 const longLabelItems: LegendItem[] = [{
                     key: 'long',
                     color: '#000000',
-                    label: 'This is a very long label that might cause layout issues in some scenarios'
+                    description: 'This is a very long label that might cause layout issues in some scenarios'
                 }];
 
                 render(
@@ -538,7 +538,7 @@ describe('CustomLegend', () => {
                 const emptyLabelItems: LegendItem[] = [{
                     key: 'empty',
                     color: '#000000',
-                    label: ''
+                    description: ''
                 }];
 
                 const { container } = render(
@@ -556,8 +556,8 @@ describe('CustomLegend', () => {
 
             it('handles duplicate keys in items array', () => {
                 const duplicateItems: LegendItem[] = [
-                    { key: 'duplicate1', color: '#000000', label: 'First' },
-                    { key: 'duplicate2', color: '#ffffff', label: 'Second' }
+                    { key: 'duplicate1', color: '#000000', description: 'First' },
+                    { key: 'duplicate2', color: '#ffffff', description: 'Second' }
                 ];
 
                 render(
@@ -577,7 +577,7 @@ describe('CustomLegend', () => {
                 const invalidColorItems: LegendItem[] = [{
                     key: 'invalid',
                     color: 'not-a-color',
-                    label: 'Invalid Color'
+                    description: 'Invalid Color'
                 }];
 
                 const { container } = render(

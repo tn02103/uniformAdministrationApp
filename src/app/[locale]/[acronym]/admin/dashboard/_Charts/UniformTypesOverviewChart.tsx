@@ -3,37 +3,42 @@
 import { ExpandableDividerArea } from '@/components/ExpandableArea/ExpandableArea';
 import { UniformCountByTypeData } from '@/dal/charts/UniformCounts';
 import { useI18n } from '@/lib/locales/client';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Col, OverlayTrigger, Row, Table } from 'react-bootstrap';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { CustomChartTooltip } from '../_Components/CustomChartTooltip';
 import { CustomLegend, LegendItem } from '../_Components/CustomLegend';
+import styles from './Chart.module.css';
+import { clsx } from 'clsx';
 
 
 type UniformTypesOverviewChartProps = {
     data: UniformCountByTypeData[];
 }
 
+type QuantityKey = keyof UniformCountByTypeData["quantities"];
+type DataKeys = Omit<LegendItem, "key"> & {
+    key: QuantityKey;
+    stackId: string;
+    label: string;
+}
+
 export const UniformTypesOverviewChart = ({ data }: UniformTypesOverviewChartProps) => {
     const t = useI18n();
-    const quantities = React.useMemo(() => 
-        ["available", "issued", "reserves", "issuedReserves", "missing"] as const,
-        []
-    );
-    
-    // State for interactive legend
-    const [visibleSeries, setVisibleSeries] = useState<Set<string>>(new Set(quantities));
-    const [hoveredSeries, setHoveredSeries] = useState<string | null>(null);
-    
+
     // Legend items configuration
-    const legendItems: LegendItem[] = [
-        { key: 'available', color: '#16a34a', label: t('admin.dashboard.charts.available.long') },
-        { key: 'issued', color: '#475569', label: t('admin.dashboard.charts.issued.long') },
-        { key: 'reserves', color: '#d97706', label: t('admin.dashboard.charts.reserves.long') },
-        { key: 'issuedReserves', color: '#b91c1c', label: t('admin.dashboard.charts.issuedReserves.long') },
-        { key: 'missing', color: '#7c3aed', label: t('admin.dashboard.charts.missing.long') }
-    ];
-    
+    const barItems: DataKeys[] = useMemo(() => [
+        { key: 'available', color: '#4dacff', description: t('admin.dashboard.charts.available.long'), label: t('admin.dashboard.charts.available.short'), stackId: "active" },
+        { key: 'issued', color: '#007be6', description: t('admin.dashboard.charts.issued.long'), label: t('admin.dashboard.charts.issued.short'), stackId: "active" },
+        { key: 'reserves', color: '#fd9e4e', description: t('admin.dashboard.charts.reserves.long'), label: t('admin.dashboard.charts.reserves.short'), stackId: "reserves" },
+        { key: 'issuedReserves', color: '#e46902', description: t('admin.dashboard.charts.issuedReserves.long'), label: t('admin.dashboard.charts.issuedReserves.short'), stackId: "reserves" },
+        { key: 'missing', color: '#b91c1c', description: t('admin.dashboard.charts.missing.long'), label: t('admin.dashboard.charts.missing.short'), stackId: "missing" }
+    ], [t]);
+
+    // State for interactive legend
+    const [visibleSeries, setVisibleSeries] = useState<Set<string>>(new Set(barItems.map(item => item.key)));
+    const [hoveredSeries, setHoveredSeries] = useState<string | null>(null);
+
     const getDataCell = (typeData: UniformCountByTypeData, quantityLabel: keyof UniformCountByTypeData["quantities"]) => {
         if (quantityLabel === "missing" || quantityLabel === "issuedReserves") {
             const cadetList = quantityLabel === "missing" ? typeData.missingCadets : typeData.issuedReserveCadets;
@@ -58,6 +63,7 @@ export const UniformTypesOverviewChart = ({ data }: UniformTypesOverviewChartPro
             <td key={typeData.id} >{typeData.quantities[quantityLabel]}</td>
         )
     }
+
     return (
         <div>
             <div style={{ width: '100%', height: '500px', marginTop: '20px' }}>
@@ -82,56 +88,28 @@ export const UniformTypesOverviewChart = ({ data }: UniformTypesOverviewChartPro
                         <Tooltip content={<CustomChartTooltip />} />
 
                         {/* Always render bars in consistent order - Available first */}
-                        <Bar
-                            dataKey="quantities.available"
-                            stackId="uniformType"
-                            fill="#16a34a"
-                            name={t('admin.dashboard.charts.available.long')}
-                            hide={!visibleSeries.has('available')}
-                        />
-
-                        {/* Issued - Professional slate blue */}
-                        <Bar
-                            dataKey="quantities.issued"
-                            stackId="uniformType"
-                            fill="#475569"
-                            name={t('admin.dashboard.charts.issued.long')}
-                            hide={!visibleSeries.has('issued')}
-                        />
-
-                        {/* Reserves - Muted amber/orange */}
-                        <Bar
-                            dataKey="quantities.reserves"
-                            stackId="uniformType"
-                            fill="#d97706"
-                            name={t('admin.dashboard.charts.reserves.long')}
-                            hide={!visibleSeries.has('reserves')}
-                        />
-
-                        {/* Issued Reserves - Professional dark red that stands out */}
-                        <Bar
-                            dataKey="quantities.issuedReserves"
-                            stackId="uniformType"
-                            fill="#b91c1c"
-                            name={t('admin.dashboard.charts.issuedReserves.long')}
-                            hide={!visibleSeries.has('issuedReserves')}
-                        />
-
-                        {/* Missing - Purple to indicate need for procurement */}
-                        <Bar
-                            dataKey="quantities.missing"
-                            stackId="uniformType"
-                            fill="#7c3aed"
-                            name={t('admin.dashboard.charts.missing.long')}
-                            hide={!visibleSeries.has('missing')}
-                        />
+                        {barItems.map(item => (
+                            <Bar
+                                key={item.key}
+                                dataKey={`quantities.${item.key}`}
+                                stackId={item.stackId}
+                                fill={item.color}
+                                name={item.label}
+                                hide={!visibleSeries.has(item.key)}
+                                className={clsx(
+                                    styles.bar,
+                                    (hoveredSeries && hoveredSeries === item.key) ? styles.hovered : undefined,
+                                    (hoveredSeries && hoveredSeries !== item.key) ? styles.dimmed : undefined
+                                )}
+                            />
+                        ))}
                     </BarChart>
                 </ResponsiveContainer>
             </div>
-            
+
             {/* Independent Custom Legend */}
             <CustomLegend
-                items={legendItems}
+                items={barItems}
                 visibleSeries={visibleSeries}
                 hoveredSeries={hoveredSeries}
                 onVisibilityChange={setVisibleSeries}
@@ -139,25 +117,35 @@ export const UniformTypesOverviewChart = ({ data }: UniformTypesOverviewChartPro
                 paddingTop="20px"
                 className="mx-5"
             />
-            <Row  className='mb-5 justify-content-center'>
+            <Row className='mb-5 justify-content-center'>
                 <Col xs={10}>
                     <ExpandableDividerArea>
                         <Table>
                             <thead>
                                 <tr>
-                                    <th>{t('admin.dashboard.charts.count')}</th>
+                                    <th className='bg-dark-subtle'>{t('admin.dashboard.charts.count')}</th>
                                     {data.map(typeData => (
-                                        <th key={typeData.id}>{typeData.name}</th>
+                                        <th key={typeData.id} className='bg-dark-subtle'>
+                                            {typeData.name}
+                                        </th>
                                     ))}
                                 </tr>
                             </thead>
                             <tbody>
-                                {quantities.map((quantityLabel) => (
-                                    <tr key={quantityLabel}>
-                                        <th>{t(`admin.dashboard.charts.${quantityLabel}.short`)}</th>
-                                        {data.map(typeData => getDataCell(typeData, quantityLabel))}
+                                {barItems.map(({ key, label }) => (
+                                    <tr key={key}>
+                                        <th>{label}</th>
+                                        {data.map(typeData => getDataCell(typeData, key))}
                                     </tr>
                                 ))}
+                                <tr className='bg-secondary-subtle'>
+                                    <th className='bg-secondary-subtle'>{t('admin.dashboard.charts.total')}</th>
+                                    {data.map(typeData => (
+                                        <td key={typeData.id} className='bg-secondary-subtle'>
+                                            {barItems.reduce((sum, item) => sum + typeData.quantities[item.key], 0)}
+                                        </td>
+                                    ))}
+                                </tr>
                             </tbody>
                         </Table>
                     </ExpandableDividerArea>

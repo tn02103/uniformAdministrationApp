@@ -1,10 +1,11 @@
+import { clsx } from 'clsx';
 import React from 'react';
 import styles from './CustomLegend.module.css';
 
 export type LegendItem = {
     key: string;
     color: string;
-    label: string;
+    description: string;
 };
 
 export type CustomLegendProps = {
@@ -31,7 +32,7 @@ export const CustomLegend: React.FC<CustomLegendProps> = ({
         const newVisible = new Set(visibleSeries);
         const allVisible = items.every(item => visibleSeries.has(item.key));
         const isOnlyVisible = visibleSeries.size === 1 && visibleSeries.has(dataKey);
-        
+
         if (allVisible) {
             // Rule 1: If everything is visible, show only clicked dataset
             onVisibilityChange(new Set([dataKey]));
@@ -50,45 +51,43 @@ export const CustomLegend: React.FC<CustomLegendProps> = ({
         }
     };
     return (
-        <div 
-            style={{ paddingTop }} 
+        <div
+            style={{ paddingTop }}
             className={`${styles.container} ${className}`.trim()}
+            aria-label='legend'
         >
-            {items.map((item) => {
+            {items.map((item: LegendItem) => {
                 const isVisible = visibleSeries.has(item.key);
                 const isHovered = hoveredSeries === item.key;
                 const isDimmed = hoveredSeries && !isHovered;
-                
-                const itemClasses = [
-                    styles.legendItem,
-                    isVisible ? (isDimmed ? styles.dimmed : styles.visible) : styles.hidden,
-                    isHovered ? styles.hovered : ''
-                ].filter(Boolean).join(' ');
-
-                const colorClasses = [
-                    styles.colorIndicator,
-                    isVisible ? styles.visible : styles.hidden
-                ].join(' ');
-
-                const labelClasses = [
-                    styles.label,
-                    isVisible ? styles.visible : styles.hidden
-                ].join(' ');
 
                 return (
                     <div
                         key={item.key}
-                        className={itemClasses}
+                        className={clsx([
+                            styles.legendItem,
+                            isVisible ? (isDimmed ? styles.dimmed : styles.visible) : styles.hidden,
+                            isHovered ? styles.hovered : ''
+                        ])}
                         onClick={() => handleLegendClick(item.key)}
                         onMouseEnter={() => isVisible ? onItemHover(item.key) : null}
                         onMouseLeave={() => onItemHover(null)}
+                        role="button"
                     >
                         <div
-                            className={colorClasses}
+                            className={clsx([
+                                styles.colorIndicator,
+                                isVisible ? styles.visible : styles.hidden
+                            ])}
                             style={{ backgroundColor: item.color }}
                         />
-                        <span className={labelClasses}>
-                            {item.label}
+                        <span
+                            className={clsx([
+                                styles.label,
+                                isVisible ? styles.visible : styles.hidden
+                            ])}
+                        >
+                            {item.description}
                         </span>
                     </div>
                 );
