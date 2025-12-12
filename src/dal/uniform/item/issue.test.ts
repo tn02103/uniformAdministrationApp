@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/prisma/client";
 import { DeepMockProxy } from "jest-mock-extended";
 import { mockTypeList, mockUniformList } from "../../../../tests/_jestConfig/staticMockData";
 import { issue } from "./issue";

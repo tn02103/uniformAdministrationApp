@@ -4,7 +4,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { nameValidationPattern, passwordValidationPattern, userNameValidationPattern, uuidValidationPattern } from "@/lib/validations";
 import { User } from "@/types/userTypes";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/prisma/client";
 import bcrypt from 'bcrypt';
 import { revalidatePath } from "next/cache";
 import { UserDBHandler } from "../dbHandlers/UserDBHandler";

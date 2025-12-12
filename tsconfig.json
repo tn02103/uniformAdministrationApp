@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2024",
     "lib": [
       "dom",
       "dom.iterable",
       "esnext"
     ],
-    "allowJs": true,
+    "allowJs": false,
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
@@ -25,6 +25,9 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@/prisma/*": [
+        "./prisma/generated/*"
       ]
     }
   },

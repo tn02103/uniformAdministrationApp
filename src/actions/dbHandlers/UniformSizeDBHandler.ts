@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { uniformSizeArgs, uniformSizelistArgs } from "@/types/globalUniformTypes";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/prisma/client";
 
 export default class UniformSizeDBHandler {
     getSizelistList = (fk_assosiation: string, client?: PrismaClient) =>

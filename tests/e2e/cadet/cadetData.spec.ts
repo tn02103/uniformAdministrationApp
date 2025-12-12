@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { Cadet } from "@prisma/client";
+import { Cadet } from "@/prisma/client";
 import { expect, } from "playwright/test";
 import t from "../../../public/locales/de";
 import { adminTest, inspectorTest, managerTest, userTest } from "../../_playwrightConfig/setup";

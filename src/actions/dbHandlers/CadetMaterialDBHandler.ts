@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 import { CadetMaterialMap } from "@/types/globalCadetTypes";
 import { dbCadetMaterialArgs } from "@/types/globalMaterialTypes";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/prisma/client";
 import { isToday } from "date-fns";
 
 export class CadetMaterialDBHandler {

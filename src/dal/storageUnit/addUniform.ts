@@ -3,7 +3,7 @@ import CustomException, { ExceptionType } from "@/errors/CustomException";
 import { UniformIssuedException } from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/prisma/client";
 import { z } from "zod";
 import { __unsecuredGetUnitsWithUniformItems, StorageUnitWithUniformItems } from "./get";
 

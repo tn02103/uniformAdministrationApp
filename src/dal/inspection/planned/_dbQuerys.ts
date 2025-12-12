@@ -1,7 +1,7 @@
 
 import dayjs from "@/lib/dayjs";
 import { plannedInspectionTypeArgs } from "@/types/inspectionTypes";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/prisma/client";
 
 export class PlannedInspectionDBQuery {
     plannedInspectionListQuery = (fk_assosiation: string, client: Prisma.TransactionClient) =>

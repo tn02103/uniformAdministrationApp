@@ -1,6 +1,6 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/prisma/client";
 
-export const userArgs = Prisma.validator<Prisma.UserFindManyArgs>()({
+export const userArgs = {
     select: {
         id: true,
         username: true,
@@ -9,6 +9,6 @@ export const userArgs = Prisma.validator<Prisma.UserFindManyArgs>()({
         role: true
     },
     orderBy: { username: "asc"}
-});
+} satisfies Prisma.UserFindManyArgs;
 
 export type User = Prisma.UserGetPayload<typeof userArgs>

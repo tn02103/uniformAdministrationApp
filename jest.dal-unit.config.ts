@@ -9,6 +9,7 @@ const customJestConfig: Config = { // CONFIGURATION FOR DAL UNIT TESTS (MOCKED)
     moduleNameMapper: {
         '^uuid$': require.resolve('uuid'),
         '^@/components/(.*)$': '<rootDir>/src/components/$1',
+        '^@/prisma/(.*)$': '<rootDir>/prisma/generated/$1',
         '^@/(.*)$': '<rootDir>/src/$1',
     },
     transform: {

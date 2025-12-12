@@ -8,7 +8,7 @@ import { AuthRole } from "@/lib/AuthRoles"
 import { prisma } from "@/lib/db"
 import { cadetArgs, CadetUniformMap } from "@/types/globalCadetTypes"
 import { uniformNumberSchema } from "@/zod/uniform"
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient } from "@/prisma/client"
 import { z } from "zod"
 import { __unsecuredReturnUniformitem } from "./return"
 

@@ -2,7 +2,7 @@ import { genericSAValidator } from "@/actions/validations";
 import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 

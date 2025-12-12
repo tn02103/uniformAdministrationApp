@@ -2,7 +2,7 @@
 
 import { useBreakpoint } from "@/lib/useBreakpoint";
 import { initViewportHeight } from "@/lib/viewportUtils";
-import { Assosiation } from "@prisma/client";
+import { Assosiation } from "@/prisma/client";
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useSessionStorage } from "usehooks-ts";

@@ -1,6 +1,6 @@
 import t from "@/../public/locales/de";
 import { prisma } from "@/lib/db";
-import { UniformSize } from "@prisma/client";
+import { UniformSize } from "@/prisma/client";
 import { expect } from "playwright/test";
 import { newNameValidationTests, numberValidationTests } from "../../../_playwrightConfig/global/testSets";
 import { UniformSizeAdministrationPage } from "../../../_playwrightConfig/pages/admin/uniform/UniformSizeAdministration.page";

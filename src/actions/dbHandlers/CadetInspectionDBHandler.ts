@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { Deficiency } from "@/types/deficiencyTypes";
-import { Prisma, PrismaPromise } from "@prisma/client";
+import { Prisma } from "@/prisma/client";
 import dayjs from "@/lib/dayjs";
 
 export class CadetInspectionDBHandler {
@@ -29,7 +29,7 @@ export class CadetInspectionDBHandler {
           ORDER BY "dateCreated"
         `;
 
-    getPreviouslyUnresolvedDeficiencies = (cadetId: string, activeInspectionId: string, date: string): PrismaPromise<Deficiency[]> => prisma.$queryRaw`
+    getPreviouslyUnresolvedDeficiencies = (cadetId: string, activeInspectionId: string, date: string): Promise<Deficiency[]> => prisma.$queryRaw`
         SELECT vdbc.*
            FROM inspection.v_deficiency_by_cadet as vdbc
          WHERE ((vdbc."fk_inspectionCreated" IS NULL AND to_char(vdbc."dateCreated", 'YYYY-MM-DD') < ${date})
@@ -40,7 +40,7 @@ export class CadetInspectionDBHandler {
         ORDER BY vdbc."dateCreated"
     `;
 
-    getCadetDeficienciesFromInspection = (cadetId: string, activeInspectionId: string): PrismaPromise<Deficiency[]> => prisma.$queryRaw`
+    getCadetDeficienciesFromInspection = (cadetId: string, activeInspectionId: string): Promise<Deficiency[]> => prisma.$queryRaw`
      SELECT *
        FROM inspection.v_deficiency_by_cadet as vdbc
       WHERE vdbc."fk_inspectionCreated" = ${activeInspectionId}

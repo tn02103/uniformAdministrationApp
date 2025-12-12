@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { Assosiation, AssosiationConfiguration, Cadet, DeficiencyType, Inspection, Material, MaterialGroup, Prisma, StorageUnit, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@prisma/client";
+import { Assosiation, AssosiationConfiguration, Cadet, DeficiencyType, Inspection, Material, MaterialGroup, Prisma, StorageUnit, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@/prisma/client";
 import bcrypt from 'bcrypt';
 import StaticDataGenerator, { StaticDataIdType } from "./staticDataGenerator";
 import { getStaticDataIds } from "./staticDataIds"; 

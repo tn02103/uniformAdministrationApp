@@ -1,6 +1,6 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/prisma/client";
 
-export const dbCadetMaterialArgs = Prisma.validator<Prisma.MaterialFindManyArgs>()({
+export const dbCadetMaterialArgs = {
     select: {
         id: true,
         typename: true,
@@ -22,15 +22,15 @@ export const dbCadetMaterialArgs = Prisma.validator<Prisma.MaterialFindManyArgs>
         },
         fk_materialGroup: true,
     }
-});
-export const materialTypeArgs = Prisma.validator<Prisma.MaterialFindManyArgs>()({
+} satisfies Prisma.MaterialFindManyArgs;
+export const materialTypeArgs = {
     select: {
         id: true,
         typename: true,
         sortOrder: true,
     }
-});
-export const materialGroupArgs = Prisma.validator<Prisma.MaterialGroupFindManyArgs>()({
+} satisfies Prisma.MaterialFindManyArgs;
+export const materialGroupArgs = {
     select: {
         id: true,
         description: true,
@@ -45,7 +45,7 @@ export const materialGroupArgs = Prisma.validator<Prisma.MaterialGroupFindManyAr
             orderBy: { sortOrder: "asc" }
         }
     },
-});
+} satisfies Prisma.MaterialGroupFindManyArgs;
 
 
 export type DBCadetMaterial = Prisma.MaterialGetPayload<typeof dbCadetMaterialArgs>;

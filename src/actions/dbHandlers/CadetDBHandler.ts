@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { PersonnelListCadet, cadetArgs } from "@/types/globalCadetTypes";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@/prisma/client";
 import dayjs from "@/lib/dayjs";
 
 export class CadetDBHandler {

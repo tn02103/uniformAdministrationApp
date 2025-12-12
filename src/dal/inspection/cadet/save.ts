@@ -2,7 +2,7 @@ import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { CadetInspectionFormSchema, cadetInspectionFormSchema } from "@/zod/deficiency";
-import { PrismaPromise } from "@prisma/client";
+
 import { unsecuredGetActiveInspection } from "./get";
 import { v4 as uuid } from "uuid";
 
@@ -20,7 +20,7 @@ export const saveCadetInspection = async (props: CadetInspectionFormSchema) => g
 
     await prisma.$transaction(async (client) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const dbPromises: PrismaPromise<any>[] = [];
+        const dbPromises: Promise<any>[] = [];
         // DEREGISTRATIONS
         dbPromises.push(
             client.deregistration.deleteMany({
