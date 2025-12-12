@@ -15,10 +15,10 @@
         "test:components": "jest --config jest.frontend.config.ts",
         "test:dal": "npm run test:dal:unit && npm run test:dal:integration",
         "test:dal:unit": "jest --config jest.dal-unit.config.ts",
-        "test:dal:integration": "jest --config jest.dal-integration.config.ts",
+        "test:dal:integration": "cross-env NODE_OPTIONS=\"--experimental-vm-modules\" jest --config jest.dal-integration.config.ts",
         "test:watch:components": "jest --config jest.frontend.config.ts --watch",
         "test:watch:dal:unit": "jest --config jest.dal-unit.config.ts --watch",
-        "test:watch:dal:integration": "jest --config jest.dal-integration.config.ts --watch",
+        "test:watch:dal:integration": "cross-env NODE_OPTIONS=\"--experimental-vm-modules\" jest --config jest.dal-integration.config.ts --watch",
         "test:coverage:all": "npm run test:all -- --coverage",
         "test:coverage:components": "jest --config jest.frontend.config.ts --coverage",
         "test:coverage:dal": "jest --config jest.dal-unit.config.ts --coverage",
@@ -100,6 +100,7 @@
         "prisma": "^7.1.0",
         "ts-jest": "29.4.6",
         "ts-node": "10.9.2",
+        "tsx": "^4.21.0",
         "typescript": "5.9.3"
     }
 }

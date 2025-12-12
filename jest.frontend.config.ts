@@ -18,6 +18,7 @@ const customJestConfig = {
     moduleNameMapper: {
         '^uuid$': require.resolve('uuid'),
         '^@/components/(.*)$': '<rootDir>/src/components/$1',
+        '^@/prisma/(.*)$': '<rootDir>/prisma/generated/$1',
         '^@/(.*)$': '<rootDir>/src/$1',
     },
     testMatch: [
