@@ -3,7 +3,7 @@
 import { ExpandableDividerArea } from '@/components/ExpandableArea/ExpandableArea';
 import { UniformCountBySizeForTypeData } from '@/dal/charts/UniformCounts';
 import { useI18n } from '@/lib/locales/client';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Col, Row, Table } from 'react-bootstrap';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { CustomChartTooltip } from '../_Components/CustomChartTooltip';
@@ -25,12 +25,12 @@ export const UniformCountBySizeForTypeChart = ({ data }: UniformTypeChartProps) 
     const t = useI18n();
 
     // Legend items configuration
-    const barItems: DataKeys[] = [
+    const barItems: DataKeys[] = useMemo(() => [
         { key: 'available', color: '#4dacff', description: t('admin.dashboard.charts.available.long'), label: t('admin.dashboard.charts.available.short'), stackId: "active" },
         { key: 'issued', color: '#007be6', description: t('admin.dashboard.charts.issued.long'), label: t('admin.dashboard.charts.issued.short'), stackId: "active" },
         { key: 'reserves', color: '#fd9e4e', description: t('admin.dashboard.charts.reserves.long'), label: t('admin.dashboard.charts.reserves.short'), stackId: "reserve" },
         { key: 'issuedReserves', color: '#e46902', description: t('admin.dashboard.charts.issuedReserves.long'), label: t('admin.dashboard.charts.issuedReserves.short'), stackId: "reserve" }
-    ];
+    ], [t]);
 
     // State for interactive legend
     const [visibleSeries, setVisibleSeries] = useState<Set<string>>(new Set(barItems.map(item => item.key)));

@@ -1,5 +1,6 @@
 "use client";
 import { exportUniformCount } from "@/dal/charts/UniformCount.exports";
+import { useScopedI18n } from "@/lib/locales/client";
 import { UniformType } from "@/types/globalUniformTypes";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -8,6 +9,7 @@ import { toast } from "react-toastify";
 
 
 export const TypeSelect = (props: { initialValue: string, uniformTypeList: UniformType[], paramName: string }) => {
+    const t = useScopedI18n("admin.dashboard");
     const router = useRouter();
     const params = useParams();
     const searchParams = useSearchParams();
@@ -22,7 +24,7 @@ export const TypeSelect = (props: { initialValue: string, uniformTypeList: Unifo
     }
     return (
         <div className="d-flex ms-5">
-            Ausgewählter Typ:&nbsp;
+            {t("label.selectedType")}&nbsp;
             <FormSelect
                 name="uniformTypeSelect"
                 onChange={handleChange}
@@ -41,6 +43,7 @@ export const TypeSelect = (props: { initialValue: string, uniformTypeList: Unifo
 
 
 export const ExportLinks = () => {
+    const t = useScopedI18n("admin.dashboard");
     const [isExporting, setIsExporting] = useState(false);
 
     const handleUniformOverviewExport = async () => {
@@ -89,7 +92,7 @@ export const ExportLinks = () => {
                     opacity: isExporting ? 0.6 : 1
                 }}
             >
-                {isExporting ? 'Exportiere...' : 'Uniformübersicht Exportieren'}
+                {isExporting ? t("label.exporting") : t("label.export.uniformOverview")}
             </a>
         </div>
     );

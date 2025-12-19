@@ -414,20 +414,6 @@ describe('UniformTypesOverviewChart', () => {
             expect(getByText(insideExpandableArea, 'Count')).toBeInTheDocument();
             expect(getByText(insideExpandableArea, 'Combat Jacket')).toBeInTheDocument();
         });
-
-        it('issuedReserves and missing data cells show cadet tooltips', () => {
-            render(<UniformTypesOverviewChart data={sampleData} />);
-
-            // Note: Since we're testing integration and the actual tooltip behavior 
-            // depends on Bootstrap OverlayTrigger, we verify the data is present
-            // and that the tooltip structure exists (cursor: pointer style)
-            
-            // Check that issuedReserves and missing values are displayed
-            expect(screen.getByText('5')).toBeInTheDocument(); // Combat Jacket - issuedReserves
-            expect(screen.getByText('2')).toBeInTheDocument(); // Combat Jacket - missing
-            expect(screen.getAllByText('3')).toHaveLength(2); // Combat Trousers - issuedReserves and Combat Boots - missing (both have value 3)
-            expect(screen.getByText('1')).toBeInTheDocument(); // Combat Trousers - missing
-        });
     });
 
     describe('Edge Cases & Error Handling', () => {

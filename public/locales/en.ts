@@ -657,6 +657,7 @@ export default {
             "header.uniformCounts": "Uniform Item Counts",
             "header.uniformCountsByType": "Distribution by Type",
             "header.uniformCountsBySize": "Distribution by Size for {type}",
+            "label.selectedType": "Selected type:",
             charts: {
                 available: {
                     short: "Available",

@@ -657,6 +657,9 @@ export default {
             "header.uniformCounts": "Anzahlen der Uniformteile",
             "header.uniformCountsByType": "Verteilung nach Typ",
             "header.uniformCountsBySize": "Verteilung nach Größe für {type}",
+            "label.selectedType": "Ausgewählter Typ:",
+            "label.exporting": "Exportiere...",
+            "label.export.uniformOverview": "Uniformübersicht Exportieren",
             charts: {
                 "total": "Gesamt",
                 available: {
