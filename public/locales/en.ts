@@ -678,7 +678,8 @@ export default {
                     short: "Missing",
                     long: "Missing (Should be Issued)"
                 },
-                count: "Count"
+                count: "Count",
+                total: "Total"
             }
         }
     },

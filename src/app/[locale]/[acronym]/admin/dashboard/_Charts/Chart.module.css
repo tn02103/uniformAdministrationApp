@@ -7,6 +7,6 @@
     opacity: 1;
 }
 
-& .dimmed {
+.dimmed {
     opacity: 0.5;
 }

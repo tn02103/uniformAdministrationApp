@@ -487,7 +487,7 @@ export default {
                 uniform: "Uniform",
                 size: "Größen",
                 material: "Materialien",
-                dashboard: "Daschboard"
+                dashboard: "Dashboard"
             },
             userOverview: "Zugänge",
             redirects: "Weiterleitungen",
