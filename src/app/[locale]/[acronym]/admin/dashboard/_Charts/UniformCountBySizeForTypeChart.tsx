@@ -37,7 +37,7 @@ export const UniformCountBySizeForTypeChart = ({ data }: UniformTypeChartProps) 
     const [hoveredSeries, setHoveredSeries] = useState<string | null>(null);
 
     return (
-        <div>
+        <div data-testid="uniform-size-chart">
             <div style={{ width: '100%', height: '400px', marginTop: '2px' }}>
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart
@@ -78,19 +78,21 @@ export const UniformCountBySizeForTypeChart = ({ data }: UniformTypeChartProps) 
             </div>
 
             {/* Independent Custom Legend */}
-            <CustomLegend
-                items={barItems}
-                visibleSeries={visibleSeries}
-                hoveredSeries={hoveredSeries}
-                onVisibilityChange={setVisibleSeries}
-                onItemHover={setHoveredSeries}
-                paddingTop="10px"
-                className="mx-4"
-            />
+            <div data-testid="uniform-size-legend">
+                <CustomLegend
+                    items={barItems}
+                    visibleSeries={visibleSeries}
+                    hoveredSeries={hoveredSeries}
+                    onVisibilityChange={setVisibleSeries}
+                    onItemHover={setHoveredSeries}
+                    paddingTop="10px"
+                    className="mx-4"
+                />
+            </div>
             <Row className='mb-5 justify-content-center'>
                 <Col xs={10}>
                     <ExpandableDividerArea>
-                        <Table>
+                        <Table data-testid="uniform-size-table">
                             <thead>
                                 <tr>
                                     <th className='bg-dark-subtle'>{t('admin.dashboard.charts.count')}</th>

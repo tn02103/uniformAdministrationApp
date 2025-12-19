@@ -65,7 +65,7 @@ export const UniformTypesOverviewChart = ({ data }: UniformTypesOverviewChartPro
     }
 
     return (
-        <div>
+        <div data-testid="uniform-types-overview-chart">
             <div style={{ width: '100%', height: '500px', marginTop: '20px' }}>
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart
@@ -108,19 +108,21 @@ export const UniformTypesOverviewChart = ({ data }: UniformTypesOverviewChartPro
             </div>
 
             {/* Independent Custom Legend */}
-            <CustomLegend
-                items={barItems}
-                visibleSeries={visibleSeries}
-                hoveredSeries={hoveredSeries}
-                onVisibilityChange={setVisibleSeries}
-                onItemHover={setHoveredSeries}
-                paddingTop="20px"
-                className="mx-5"
-            />
+            <div data-testid="uniform-types-legend">
+                <CustomLegend
+                    items={barItems}
+                    visibleSeries={visibleSeries}
+                    hoveredSeries={hoveredSeries}
+                    onVisibilityChange={setVisibleSeries}
+                    onItemHover={setHoveredSeries}
+                    paddingTop="20px"
+                    className="mx-5"
+                />
+            </div>
             <Row className='mb-5 justify-content-center'>
                 <Col xs={10}>
                     <ExpandableDividerArea>
-                        <Table>
+                        <Table data-testid="uniform-types-table">
                             <thead>
                                 <tr>
                                     <th className='bg-dark-subtle'>{t('admin.dashboard.charts.count')}</th>
