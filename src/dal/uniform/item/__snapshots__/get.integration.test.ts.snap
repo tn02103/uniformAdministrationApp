@@ -3,7 +3,7 @@
 exports[`getItemLabels should return a list of uniform item labels 1`] = `
 [
   {
-    "isReserve": false,
+    "isReserve": true,
     "label": "Typ1-1100",
     "number": 1100,
     "owner": {
@@ -18,7 +18,7 @@ exports[`getItemLabels should return a list of uniform item labels 1`] = `
     },
   },
   {
-    "isReserve": false,
+    "isReserve": true,
     "label": "Typ1-1101",
     "number": 1101,
     "owner": {
@@ -33,7 +33,7 @@ exports[`getItemLabels should return a list of uniform item labels 1`] = `
     },
   },
   {
-    "isReserve": false,
+    "isReserve": true,
     "label": "Typ1-1102",
     "number": 1102,
     "owner": {
@@ -48,7 +48,7 @@ exports[`getItemLabels should return a list of uniform item labels 1`] = `
     },
   },
   {
-    "isReserve": false,
+    "isReserve": true,
     "label": "Typ1-1103",
     "number": 1103,
     "owner": null,
@@ -59,7 +59,7 @@ exports[`getItemLabels should return a list of uniform item labels 1`] = `
     },
   },
   {
-    "isReserve": false,
+    "isReserve": true,
     "label": "Typ1-1104",
     "number": 1104,
     "owner": null,

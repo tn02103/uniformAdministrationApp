@@ -85,12 +85,12 @@ describe("<StorageUnit> addUniform", () => {
         expect(result).toBe("unitsWithUniformItems");
     });
 
-    it("should set active=false if storageUnit is isReserve", async () => {
+    it("should set isReserve true if storageUnit is reserve", async () => {
         prismaUniformFindUniqueOrThrow.mockResolvedValueOnce({
             ...uniformBase,
             storageUnit: null,
             issuedEntries: [],
-            active: true,
+            isReserve: false,
         });
         prismaStorageUnitFindUniqueOrThrow.mockResolvedValueOnce({
             ...storageUnitBase,
@@ -102,7 +102,7 @@ describe("<StorageUnit> addUniform", () => {
         await addUniform(defaultProps);
         expect(prismaUniformUpdate).toHaveBeenCalledWith({
             where: { id: defaultProps.uniformId },
-            data: { storageUnitId: defaultProps.storageUnitId, active: false }
+            data: { storageUnitId: defaultProps.storageUnitId, isReserve: true }
         });
     });
 
