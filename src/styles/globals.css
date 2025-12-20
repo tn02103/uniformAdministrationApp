@@ -132,6 +132,11 @@ a {
     text-decoration: none;
 }
 
+.link {
+    text-decoration: underline !important;
+    color: var(--bs-link-color) !important;
+}
+
 * {
     box-sizing: border-box;
 }

@@ -1,0 +1,12 @@
+.bar {
+    opacity: 0.8;
+
+
+}
+.hovered {
+    opacity: 1;
+}
+
+.dimmed {
+    opacity: 0.5;
+}

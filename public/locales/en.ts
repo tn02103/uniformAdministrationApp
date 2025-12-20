@@ -464,7 +464,6 @@ export default {
             "stopInspection.elementLabel": "Enter finishing time", 
             "activeInspection.open": "Inspected: {controlled} / {total}",
             "activeInspection.collapsed": "{controlled} / {total}"
-     
         },
         links: {
             cadetOverview: "Staff",
@@ -488,6 +487,7 @@ export default {
                 uniform: "Uniform",
                 size: "Sizes",
                 material: "Materials",
+                dashboard: "Dashboard",
             },
             userOverview: "Accesses",
             redirects: "Redirects",
@@ -652,6 +652,37 @@ export default {
                 'message#other': "Should the type really be deleted? All {count} existing deficiencies will also be deleted. This action cannot be undone.",
             },
         },
+        dashboard: {
+            "header.page": "Dashboard",
+            "header.uniformCounts": "Uniform Item Counts",
+            "header.uniformCountsByType": "Distribution by Type",
+            "header.uniformCountsBySize": "Distribution by Size for {type}",
+            "label.selectedType": "Selected type:",
+            charts: {
+                available: {
+                    short: "Available",
+                    long: "Available (Active, Not Issued)"
+                },
+                issued: {
+                    short: "Issued",
+                    long: "Issued (Active, Currently Issued)"
+                },
+                reserves: {
+                    short: "Reserves",
+                    long: "Reserves (Inactive, Not Issued)"
+                },
+                issuedReserves: {
+                    short: "Issued Reserves",
+                    long: "Issued Reserves (Inactive, Currently Issued)"
+                },
+                missing: {
+                    short: "Missing",
+                    long: "Missing (Should be Issued)"
+                },
+                count: "Count",
+                total: "Total"
+            }
+        }
     },
     inspection: {
         header: {
