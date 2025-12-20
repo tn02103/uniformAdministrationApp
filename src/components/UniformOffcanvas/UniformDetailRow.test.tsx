@@ -83,7 +83,7 @@ describe('UniformDetailRow', () => {
             expect(sizeSelect).toBeInTheDocument();
 
             // initial state with sizelist
-            const options = getAllByRole(sizeSelect, "option")
+            const options = getAllByRole(sizeSelect, "option");
             expect(options).toHaveLength(mockSizeLists[0].uniformSizes.length + 1); // +1 for the default "please select" option
             mockSizeLists[0].uniformSizes.forEach(size => {
                 expect(screen.getByText(size.name)).toBeInTheDocument();
