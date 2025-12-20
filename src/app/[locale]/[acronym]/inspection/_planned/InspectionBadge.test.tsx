@@ -56,7 +56,6 @@ describe('InspectionBadge', () => {
     });
     it('expired', () => {
         const insp: PlannedInspectionType = { ...defaultValues, date: dayjs().subtract(2, "day").format('YYYY-MM-DD'), timeStart: null, timeEnd: null }
-        console.log("🚀 ~ insp:", insp)
         render(<InspectionBadge inspection={insp} />);
 
         const comp = screen.getByTestId('lbl_badge');

@@ -343,7 +343,7 @@ export default {
         tooltips: {
             "utOptions.owner": "Besitzer: ",
             "utOptions.storageUnit": "Lagereinheit: ",
-            "utOptions.isReserve": "isReserve",
+            "utOptions.isReserve": "Reserve",
         }
     },
     uniformList: {

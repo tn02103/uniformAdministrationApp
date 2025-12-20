@@ -40,7 +40,7 @@ test.describe(() => {
             dateReturned: null,
             fk_cadet,
         });
-    }
+    };
     const dbIssuedAmountCheck = async (fk_cadet: string, amount: number) => {
         const uiList = await prisma.uniformIssued.findMany({
             where: {
@@ -49,7 +49,7 @@ test.describe(() => {
             }
         });
         expect.soft(uiList).toHaveLength(amount);
-    }
+    };
     const dbReturnedCheck = async (fk_uniform: string, fk_cadet: string, dateIssued: Date) => {
         const date = new Date();
         date.setUTCHours(0, 0, 0, 0);
@@ -64,7 +64,7 @@ test.describe(() => {
             dateReturned: date,
             fk_cadet,
         });
-    }
+    };
     const dbCommentCheck = async (cadetId: string, uniformNumber: string) => {
         const cadet = await prisma.cadet.findUniqueOrThrow({ where: { id: cadetId } });
 
@@ -72,7 +72,7 @@ test.describe(() => {
         expect(cadet.comment).toContain('Marie Becker');
         expect(cadet.comment).toContain('Typ1');
         expect(cadet.comment).toContain(uniformNumber);
-    }
+    };
 
     test.beforeEach(async ({ page, cadetId }) => {
         await page.goto(`/de/app/cadet/${cadetId}`);
@@ -227,7 +227,7 @@ test.describe(() => {
             issuedToCadet: "1185",
             nonExisting: "9999",
             issuedReserve: "1123",
-        }
+        };
         const div_popup = page.getByRole("dialog");
         const txt_autocomplete = div_popup.getByRole('textbox', { name: t.cadetDetailPage.issueModal["input.label"] });
         const alerts = div_popup.getByRole("alert");

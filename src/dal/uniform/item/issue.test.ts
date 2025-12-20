@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { ExceptionType } from "@/errors/CustomException";
+import { AuthRole } from "@/lib/AuthRoles";
 import { PrismaClient } from "@prisma/client";
 import { DeepMockProxy } from "jest-mock-extended";
-import { mockTypeList, mockUniformList, mockGenerationLists } from "../../../../tests/_jestConfig/staticMockData";
+import { mockGenerationLists, mockTypeList, mockUniformList } from "../../../../tests/_jestConfig/staticMockData";
 import { issue } from "./issue";
-import { AuthRole } from "@/lib/AuthRoles";
-import { ExceptionType } from "@/errors/CustomException";
 
 // Mock the dependencies
 jest.mock("./return");
@@ -45,13 +45,7 @@ const mockReserveUniform = {
 };
 
 // Use existing mock generation data from staticMockData.ts
-const mockActiveGeneration = mockGenerationLists[0][1]; // isReserve: false
 const mockReserveGeneration = mockGenerationLists[0][0]; // isReserve: true
-
-const mockUniformWithActiveGeneration = {
-    ...mockUniform,
-    generation: mockActiveGeneration
-};
 
 const mockUniformWithReserveGeneration = {
     ...mockUniform,
@@ -75,11 +69,6 @@ const mockUniformWithReserveGenerationButTypeNotUsingGenerations = {
 };
 
 // Update existing mocks to include type with usingGenerations info
-const mockUniformWithActiveGenerationAndType = {
-    ...mockUniformWithActiveGeneration,
-    type: mockTypeWithGenerations
-};
-
 const mockUniformWithReserveGenerationAndType = {
     ...mockUniformWithReserveGeneration,
     type: mockTypeWithGenerations

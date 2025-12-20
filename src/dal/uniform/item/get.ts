@@ -180,7 +180,7 @@ export const getListWithOwner = async (props: getListWithOwnerProps): Promise<Un
                     { generation: { isReserve: false } },
                     { generation: null },
                 ]
-            })
+            });
         } else if (!filter.isActive) {
             // only reserve items
             andConditions.push({

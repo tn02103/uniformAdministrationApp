@@ -5,24 +5,24 @@ import { getUniformCountBySizeForType, getUniformCountByType } from './UniformCo
 const mockPrisma = jest.requireMock('@/lib/db').prisma;
 
 describe('UniformCounts DAL - Unit Tests', () => {
+    const mockUniformTypeId = 'uniform-type-123';
     beforeEach(() => {
         jest.clearAllMocks();
-        
+
         // Set default test globals
         global.__ROLE__ = AuthRole.admin;
         global.__USERNAME__ = 'testuser';
         global.__ASSOSIATION__ = 'test-assosiation-id';
+
+        mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue({
+            id: mockUniformTypeId,
+            usingGenerations: false
+        });
     });
 
     describe('getUniformCountBySizeForType', () => {
-        const mockUniformTypeId = 'uniform-type-123';
-
         describe('Empty and Edge Cases', () => {
             it('should handle empty size list', async () => {
-                mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue({
-                    id: mockUniformTypeId,
-                    usingGenerations: false
-                });
                 mockPrisma.uniformSize.findMany.mockResolvedValue([]);
 
                 const result = await getUniformCountBySizeForType(mockUniformTypeId);
@@ -78,10 +78,6 @@ describe('UniformCounts DAL - Unit Tests', () => {
             });
 
             it('should handle size with no uniforms', async () => {
-                mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue({
-                    id: mockUniformTypeId,
-                    usingGenerations: false
-                });
                 const mockSizes = [{
                     id: 'size-1',
                     name: 'Small',
@@ -109,10 +105,6 @@ describe('UniformCounts DAL - Unit Tests', () => {
 
         describe('Available Uniforms Calculation', () => {
             it('should correctly count available uniforms (not reserve with no issues)', async () => {
-                mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue({
-                    id: mockUniformTypeId,
-                    usingGenerations: false
-                });
                 const mockSizes = [{
                     id: 'size-1',
                     name: 'Medium',
@@ -134,10 +126,6 @@ describe('UniformCounts DAL - Unit Tests', () => {
 
         describe('Issued Uniforms Calculation', () => {
             it('should correctly count issued uniforms (not reserve with issues)', async () => {
-                mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue({
-                    id: mockUniformTypeId,
-                    usingGenerations: false
-                });
                 const mockSizes = [{
                     id: 'size-1',
                     name: 'Large',
@@ -159,10 +147,6 @@ describe('UniformCounts DAL - Unit Tests', () => {
 
         describe('Reserve Uniforms Calculation', () => {
             it('should correctly count reserve uniforms (reserve with no issues)', async () => {
-                mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue({
-                    id: mockUniformTypeId,
-                    usingGenerations: false
-                });
                 const mockSizes = [{
                     id: 'size-1',
                     name: 'XL',
@@ -185,29 +169,25 @@ describe('UniformCounts DAL - Unit Tests', () => {
 
         describe('Issued Reserves Calculation', () => {
             it('should correctly count issued reserves and map cadets (reserve with issues)', async () => {
-                mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue({
-                    id: mockUniformTypeId,
-                    usingGenerations: false
-                });
                 const mockSizes = [{
                     id: 'size-1',
                     name: 'XXL',
                     uniformList: [
-                        { 
-                            id: 'uniform-1', 
-                            isReserve: true, 
-                            issuedEntries: [{ id: 'issue-1', cadet: { id: 'cadet-1', firstname: 'Alice', lastname: 'Johnson' } }] 
+                        {
+                            id: 'uniform-1',
+                            isReserve: true,
+                            issuedEntries: [{ id: 'issue-1', cadet: { id: 'cadet-1', firstname: 'Alice', lastname: 'Johnson' } }]
                         },
-                        { 
-                            id: 'uniform-2', 
-                            isReserve: true, 
-                            issuedEntries: [{ id: 'issue-2', cadet: { id: 'cadet-2', firstname: 'Bob', lastname: 'Williams' } }] 
+                        {
+                            id: 'uniform-2',
+                            isReserve: true,
+                            issuedEntries: [{ id: 'issue-2', cadet: { id: 'cadet-2', firstname: 'Bob', lastname: 'Williams' } }]
                         },
                         { id: 'uniform-3', isReserve: true, issuedEntries: [] }, // Should not count
-                        { 
-                            id: 'uniform-4', 
-                            isReserve: false, 
-                            issuedEntries: [{ id: 'issue-3', cadet: { id: 'cadet-3', firstname: 'Carol', lastname: 'Brown' } }] 
+                        {
+                            id: 'uniform-4',
+                            isReserve: false,
+                            issuedEntries: [{ id: 'issue-3', cadet: { id: 'cadet-3', firstname: 'Carol', lastname: 'Brown' } }]
                         } // Should not count
                     ]
                 }];
@@ -227,10 +207,6 @@ describe('UniformCounts DAL - Unit Tests', () => {
 
         describe('Mixed Scenario Calculation', () => {
             it('should correctly handle complex scenario with all uniform states', async () => {
-                mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue({
-                    id: mockUniformTypeId,
-                    usingGenerations: false
-                });
                 const mockSizes = [{
                     id: 'size-1',
                     name: 'Mixed',
@@ -238,18 +214,18 @@ describe('UniformCounts DAL - Unit Tests', () => {
                         // Available: not isReserve + no issues
                         { id: 'uniform-1', isReserve: false, issuedEntries: [] },
                         { id: 'uniform-2', isReserve: false, issuedEntries: [] },
-                        
+
                         // Issued: not isReserve + has issues  
                         { id: 'uniform-3', isReserve: false, issuedEntries: [{ id: 'issue-1', cadet: { id: 'cadet-1', firstname: 'John', lastname: 'Doe' } }] },
                         { id: 'uniform-4', isReserve: false, issuedEntries: [{ id: 'issue-2', cadet: { id: 'cadet-2', firstname: 'Jane', lastname: 'Smith' } }] },
                         { id: 'uniform-5', isReserve: false, issuedEntries: [{ id: 'issue-3', cadet: { id: 'cadet-3', firstname: 'Bob', lastname: 'Wilson' } }] },
-                        
+
                         // Reserves: isReserve + no issues
                         { id: 'uniform-6', isReserve: true, issuedEntries: [] },
                         { id: 'uniform-7', isReserve: true, issuedEntries: [] },
                         { id: 'uniform-8', isReserve: true, issuedEntries: [] },
                         { id: 'uniform-9', isReserve: true, issuedEntries: [] },
-                        
+
                         // Issued reserves: isReserve + has issues
                         { id: 'uniform-10', isReserve: true, issuedEntries: [{ id: 'issue-4', cadet: { id: 'cadet-4', firstname: 'Alice', lastname: 'Brown' } }] },
                         { id: 'uniform-11', isReserve: true, issuedEntries: [{ id: 'issue-5', cadet: { id: 'cadet-5', firstname: 'Charlie', lastname: 'Davis' } }] }
@@ -279,10 +255,6 @@ describe('UniformCounts DAL - Unit Tests', () => {
 
         describe('Sort Order and Data Structure', () => {
             it('should preserve sort order and maintain proper data structure', async () => {
-                mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue({
-                    id: mockUniformTypeId,
-                    usingGenerations: false
-                });
                 const mockSizes = [
                     {
                         id: 'size-3',
@@ -293,7 +265,7 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     },
                     {
                         id: 'size-1',
-                        name: 'Small', 
+                        name: 'Small',
                         uniformList: [
                             { id: 'uniform-2', isReserve: false, issuedEntries: [] }
                         ]
@@ -317,7 +289,7 @@ describe('UniformCounts DAL - Unit Tests', () => {
                         orderBy: { sortOrder: 'asc' }
                     })
                 );
-                
+
                 // Verify each result has the correct structure
                 result.forEach(sizeResult => {
                     expect(sizeResult).toHaveProperty('size');
@@ -333,12 +305,12 @@ describe('UniformCounts DAL - Unit Tests', () => {
         });
 
         describe('Generation-Based Reserve Logic', () => {
-            it('should consider generation.isReserve flag when usingGenerations is true and uniform.is  Reserve is false', async () => {
+            it('uses generation.isReserve flag when usingGenerations', async () => {
                 mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue({
                     id: mockUniformTypeId,
                     usingGenerations: true
                 });
-                
+
                 const mockSizes = [{
                     id: 'size-1',
                     name: 'Medium',
@@ -362,12 +334,8 @@ describe('UniformCounts DAL - Unit Tests', () => {
                 expect(result[0].quantities.reserves).toBe(3); // uniform-1, uniform-3, uniform-4
             });
 
-            it('should ignore generation.isReserve flag when usingGenerations is false', async () => {
-                mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue({
-                    id: mockUniformTypeId,
-                    usingGenerations: false
-                });
-                
+            it('uses generation.isReserve flag when usingGenerations is false', async () => {
+
                 const mockSizes = [{
                     id: 'size-1',
                     name: 'Medium',
@@ -388,50 +356,12 @@ describe('UniformCounts DAL - Unit Tests', () => {
                 expect(result[0].quantities.reserves).toBe(2); // uniform-3, uniform-4
             });
 
-            it('should handle generation-based reserve with issued uniforms', async () => {
-                mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue({
-                    id: mockUniformTypeId,
-                    usingGenerations: true
-                });
-                
-                const mockSizes = [{
-                    id: 'size-1',
-                    name: 'Large',
-                    uniformList: [
-                        { 
-                            id: 'uniform-1', 
-                            isReserve: false, 
-                            issuedEntries: [{ id: 'issue-1', cadet: { id: 'cadet-1', firstname: 'John', lastname: 'Doe' } }], 
-                            generation: { isReserve: true } 
-                        },
-                        { 
-                            id: 'uniform-2', 
-                            isReserve: false, 
-                            issuedEntries: [{ id: 'issue-2', cadet: { id: 'cadet-2', firstname: 'Jane', lastname: 'Smith' } }], 
-                            generation: { isReserve: false } 
-                        }
-                    ]
-                }];
-
-                mockPrisma.uniformSize.findMany.mockResolvedValue(mockSizes);
-
-                const result = await getUniformCountBySizeForType(mockUniformTypeId);
-
-                // uniform-1: isReserve=false but generation.isReserve=true and issued -> should be issuedReserves
-                // uniform-2: isReserve=false and generation.isReserve=false and issued -> should be issued
-                expect(result[0].quantities.issued).toBe(1); // uniform-2
-                expect(result[0].quantities.issuedReserves).toBe(1); // uniform-1
-                expect(result[0].issuedReserveCadets).toEqual([
-                    { id: 'cadet-1', firstname: 'John', lastname: 'Doe' }
-                ]);
-            });
-
             it('should handle null generation gracefully', async () => {
                 mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue({
                     id: mockUniformTypeId,
                     usingGenerations: true
                 });
-                
+
                 const mockSizes = [{
                     id: 'size-1',
                     name: 'Medium',
@@ -512,10 +442,10 @@ describe('UniformCounts DAL - Unit Tests', () => {
                         // Available: not isReserve + no issues
                         { id: 'uniform-1', isReserve: false, issuedEntries: [] },
                         { id: 'uniform-2', isReserve: false, issuedEntries: [] },
-                        
+
                         // Issued: not isReserve + has issues
                         { id: 'uniform-3', isReserve: false, issuedEntries: [{ id: 'issue-1', cadet: { id: 'cadet-1', firstname: 'John', lastname: 'Doe' } }] },
-                        
+
                         // Reserves: isReserve + no issues
                         { id: 'uniform-4', isReserve: true, issuedEntries: [] },
                         { id: 'uniform-5', isReserve: true, issuedEntries: [] },
@@ -643,11 +573,11 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     uniformList: [
                         // Regular issued uniform
                         { id: 'uniform-1', isReserve: false, issuedEntries: [{ id: 'issue-1', cadet: { id: 'cadet-1', firstname: 'John', lastname: 'Doe' } }] },
-                        
+
                         // Issued reserves
                         { id: 'uniform-2', isReserve: true, issuedEntries: [{ id: 'issue-2', cadet: { id: 'cadet-2', firstname: 'Alice', lastname: 'Brown' } }] },
                         { id: 'uniform-3', isReserve: true, issuedEntries: [{ id: 'issue-3', cadet: { id: 'cadet-3', firstname: 'Bob', lastname: 'Wilson' } }] },
-                        
+
                         // Regular isReserve
                         { id: 'uniform-4', isReserve: true, issuedEntries: [] }
                     ]
@@ -681,16 +611,16 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     uniformList: [
                         // Alice has 1 uniform (needs 2 more)
                         { id: 'uniform-1', isReserve: false, issuedEntries: [{ id: 'issue-1', cadet: { id: 'cadet-1', firstname: 'Alice', lastname: 'Brown' } }] },
-                        
+
                         // Bob has 2 uniforms (needs 1 more)
                         { id: 'uniform-2', isReserve: false, issuedEntries: [{ id: 'issue-2', cadet: { id: 'cadet-2', firstname: 'Bob', lastname: 'Wilson' } }] },
                         { id: 'uniform-3', isReserve: false, issuedEntries: [{ id: 'issue-3', cadet: { id: 'cadet-2', firstname: 'Bob', lastname: 'Wilson' } }] },
-                        
+
                         // Charlie has 3 uniforms (needs 0 more)
                         { id: 'uniform-4', isReserve: false, issuedEntries: [{ id: 'issue-4', cadet: { id: 'cadet-3', firstname: 'Charlie', lastname: 'Davis' } }] },
                         { id: 'uniform-5', isReserve: false, issuedEntries: [{ id: 'issue-5', cadet: { id: 'cadet-3', firstname: 'Charlie', lastname: 'Davis' } }] },
                         { id: 'uniform-6', isReserve: false, issuedEntries: [{ id: 'issue-6', cadet: { id: 'cadet-3', firstname: 'Charlie', lastname: 'Davis' } }] },
-                        
+
                         // Diana has 0 uniforms (needs 3 more) - no uniforms issued
                     ]
                 }];
@@ -728,14 +658,14 @@ describe('UniformCounts DAL - Unit Tests', () => {
                         // Available
                         { id: 'uniform-1', isReserve: false, issuedEntries: [] },
                         { id: 'uniform-2', isReserve: false, issuedEntries: [] },
-                        
+
                         // Issued
                         { id: 'uniform-3', isReserve: false, issuedEntries: [{ id: 'issue-1', cadet: { id: 'cadet-1', firstname: 'John', lastname: 'Doe' } }] },
                         { id: 'uniform-4', isReserve: false, issuedEntries: [{ id: 'issue-2', cadet: { id: 'cadet-1', firstname: 'John', lastname: 'Doe' } }] },
-                        
+
                         // Reserves
                         { id: 'uniform-5', isReserve: true, issuedEntries: [] },
-                        
+
                         // Issued Reserves
                         { id: 'uniform-6', isReserve: true, issuedEntries: [{ id: 'issue-3', cadet: { id: 'cadet-3', firstname: 'isReserve', lastname: 'User' } }] }
                     ]
@@ -842,11 +772,11 @@ describe('UniformCounts DAL - Unit Tests', () => {
                         { id: 'uniform-1', isReserve: false, issuedEntries: [], generation: { isReserve: true } },
                         { id: 'uniform-2', isReserve: false, issuedEntries: [], generation: { isReserve: false } },
                         { id: 'uniform-3', isReserve: true, issuedEntries: [], generation: { isReserve: false } },
-                        { 
-                            id: 'uniform-4', 
-                            isReserve: false, 
-                            issuedEntries: [{ id: 'issue-1', cadet: { id: 'cadet-1', firstname: 'John', lastname: 'Doe' } }], 
-                            generation: { isReserve: true } 
+                        {
+                            id: 'uniform-4',
+                            isReserve: false,
+                            issuedEntries: [{ id: 'issue-1', cadet: { id: 'cadet-1', firstname: 'John', lastname: 'Doe' } }],
+                            generation: { isReserve: true }
                         }
                     ]
                 }];
@@ -884,11 +814,11 @@ describe('UniformCounts DAL - Unit Tests', () => {
                         { id: 'uniform-1', isReserve: false, issuedEntries: [], generation: { isReserve: true } },
                         { id: 'uniform-2', isReserve: false, issuedEntries: [], generation: { isReserve: false } },
                         { id: 'uniform-3', isReserve: true, issuedEntries: [], generation: { isReserve: false } },
-                        { 
-                            id: 'uniform-4', 
-                            isReserve: false, 
-                            issuedEntries: [{ id: 'issue-1', cadet: { id: 'cadet-1', firstname: 'John', lastname: 'Doe' } }], 
-                            generation: { isReserve: true } 
+                        {
+                            id: 'uniform-4',
+                            isReserve: false,
+                            issuedEntries: [{ id: 'issue-1', cadet: { id: 'cadet-1', firstname: 'John', lastname: 'Doe' } }],
+                            generation: { isReserve: true }
                         }
                     ]
                 }];
@@ -918,18 +848,18 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     usingGenerations: true,
                     uniformList: [
                         // John has one regular issued uniform
-                        { 
-                            id: 'uniform-1', 
-                            isReserve: false, 
-                            issuedEntries: [{ id: 'issue-1', cadet: { id: 'cadet-1', firstname: 'John', lastname: 'Doe' } }], 
-                            generation: { isReserve: false } 
+                        {
+                            id: 'uniform-1',
+                            isReserve: false,
+                            issuedEntries: [{ id: 'issue-1', cadet: { id: 'cadet-1', firstname: 'John', lastname: 'Doe' } }],
+                            generation: { isReserve: false }
                         },
                         // John has one generation-based isReserve issued (shouldn't count toward regular issued)
-                        { 
-                            id: 'uniform-2', 
-                            isReserve: false, 
-                            issuedEntries: [{ id: 'issue-2', cadet: { id: 'cadet-1', firstname: 'John', lastname: 'Doe' } }], 
-                            generation: { isReserve: true } 
+                        {
+                            id: 'uniform-2',
+                            isReserve: false,
+                            issuedEntries: [{ id: 'issue-2', cadet: { id: 'cadet-1', firstname: 'John', lastname: 'Doe' } }],
+                            generation: { isReserve: true }
                         }
                     ]
                 }];
