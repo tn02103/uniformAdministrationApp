@@ -84,6 +84,16 @@ const prismaMock = {
         create: jest.fn(),
         createMany: jest.fn(),
     },
+    uniformSize: {
+        findUnique: jest.fn(),
+        findFirst: jest.fn(),
+        findMany: jest.fn(),
+        findUniqueOrThrow: jest.fn(),
+        update: jest.fn(),
+        updateMany: jest.fn(),
+        create: jest.fn(),
+        createMany: jest.fn(),
+    },
     uniformIssued: {
         findFirst: jest.fn(),
         findMany: jest.fn(),

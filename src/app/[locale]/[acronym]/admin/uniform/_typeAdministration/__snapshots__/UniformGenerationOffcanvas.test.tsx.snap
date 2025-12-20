@@ -44,7 +44,7 @@ exports[`<UniformgenerationOffcanvas> with generation renders the component 1`] 
          
         <svg
           aria-hidden="true"
-          class="svg-inline--fa fa-pen fa-sm "
+          class="svg-inline--fa fa-pen fa-sm"
           data-icon="pen"
           data-prefix="fas"
           role="img"
@@ -64,7 +64,7 @@ exports[`<UniformgenerationOffcanvas> with generation renders the component 1`] 
          
         <svg
           aria-hidden="true"
-          class="svg-inline--fa fa-trash fa-sm "
+          class="svg-inline--fa fa-trash fa-sm"
           data-icon="trash"
           data-prefix="fas"
           role="img"
@@ -222,7 +222,7 @@ exports[`<UniformgenerationOffcanvas> without generation renders in editable sta
          
         <svg
           aria-hidden="true"
-          class="svg-inline--fa fa-pen fa-sm "
+          class="svg-inline--fa fa-pen fa-sm"
           data-icon="pen"
           data-prefix="fas"
           role="img"
@@ -243,7 +243,7 @@ exports[`<UniformgenerationOffcanvas> without generation renders in editable sta
          
         <svg
           aria-hidden="true"
-          class="svg-inline--fa fa-trash fa-sm "
+          class="svg-inline--fa fa-trash fa-sm"
           data-icon="trash"
           data-prefix="fas"
           role="img"

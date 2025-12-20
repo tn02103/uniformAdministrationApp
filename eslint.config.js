@@ -39,6 +39,7 @@ export default defineConfig([
         files: ["tests/**/*.spec.*", "tests/**/setup.ts"],
         rules: {
             ...playwright.configs['flat/recommended'].rules,
+            "playwright/no-wait-for-selector": "off",
             'react-hooks/rules-of-hooks': "off",
             "playwright/no-standalone-expect": "off",
             "playwright/no-conditional-in-test": "off",

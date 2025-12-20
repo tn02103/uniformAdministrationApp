@@ -28,6 +28,62 @@ jest.mock('next/navigation', () => ({
 }));
 
 // Mock common components to avoid complex rendering
+// Mock react-calendar
+jest.mock('react-calendar', () => {
+    return function MockCalendar({ onChange, minDate }: { onChange: (date: Date | null) => void; minDate?: Date }) {
+        const handleDateClick = (day: number) => {
+            const today = new Date();
+            const selectedDate = new Date(today.getFullYear(), today.getMonth(), day);
+            
+            // Check if date is before minDate (compare dates only, not time)
+            if (minDate) {
+                const minDateOnly = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate());
+                const selectedDateOnly = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+                
+                if (selectedDateOnly < minDateOnly) {
+                    return; // Don't call onChange for disabled dates
+                }
+            }
+            
+            onChange(selectedDate);
+        };
+
+        // Generate calendar days for current month
+        const today = new Date();
+        const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+        const days = [];
+        
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(today.getFullYear(), today.getMonth(), day);
+            let isDisabled = false;
+            
+            if (minDate) {
+                const minDateOnly = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate());
+                const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+                isDisabled = dateOnly < minDateOnly;
+            }
+            
+            days.push(
+                <button
+                    key={day}
+                    type="button"
+                    onClick={() => handleDateClick(day)}
+                    disabled={isDisabled}
+                    aria-label={`${day}`}
+                >
+                    {day}
+                </button>
+            );
+        }
+
+        return (
+            <div data-testid="mock-calendar" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', padding: '10px', border: '1px solid #ccc', backgroundColor: 'white' }}>
+                {days}
+            </div>
+        );
+    };
+});
+
 jest.mock("@/components/errorMessage", () => {
     return function ErrorMessage({ error, ariaLabel, testId, ...divProps }: { error: string, testId: string, ariaLabel: string }) {
         return <div className="text-danger fs-7" role="alert" aria-label={ariaLabel} data-testid={testId} {...divProps}>{error}</div>;

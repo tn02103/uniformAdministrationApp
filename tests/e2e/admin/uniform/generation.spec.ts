@@ -52,6 +52,7 @@ test.describe('UniformGeneration Configuration', () => {
 
             await firstRowMove.dragTo(thirdRowMove, {
                 targetPosition: { x: 10, y: 5 }, // Adjust the `y` value to drag further up
+                steps: 100, // Add more intermediate mouse move events,
             });
 
             await expect(page.getByText(german.common.success.changeSortorder)).toBeVisible();
@@ -107,6 +108,7 @@ test.describe('UniformGeneration Configuration', () => {
 
             await thirdRowMove.dragTo(secondRowMove, {
                 targetPosition: { x: 10, y: 25 }, // Adjust the `y` value to drag further down
+                steps: 100, // Add more intermediate mouse move events
             });
 
             await expect(page.getByText(german.common.success.changeSortorder)).toBeVisible();
