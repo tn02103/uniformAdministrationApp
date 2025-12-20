@@ -62,7 +62,7 @@ describe('getItemLabels', () => {
         expect(firstItem).toHaveProperty('id');
         expect(firstItem).toHaveProperty('label');
         expect(firstItem).toHaveProperty('number');
-        expect(firstItem).toHaveProperty('active');
+        expect(firstItem).toHaveProperty('isReserve');
         expect(firstItem).toHaveProperty('type');
         expect(firstItem.type).toHaveProperty('id');
         expect(firstItem.type).toHaveProperty('name');

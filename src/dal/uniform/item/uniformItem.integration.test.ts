@@ -136,7 +136,7 @@ describe('<UniformItem> Integration Tests', () => {
             }],
             data: {
                 uniformTypeId: ids.uniformTypeIds[0],
-                generationId: ids.uniformGenerationIds[0],
+                generationId: ids.uniformGenerationIds[1],
                 comment: 'Lifecycle test uniform',
                 isReserve: false,
             },
