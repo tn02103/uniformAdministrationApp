@@ -94,6 +94,7 @@ exports[`UniformOffcanvas should render correctly 1`] = `
       >
         <div
           class="col-sm-auto col-12"
+          style="min-width: 120px;"
         >
           <div>
             <label

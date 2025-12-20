@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`UniformDetailRow should render correctly 1`] = `
+exports[`UniformDetailRow Render Components should render correctly 1`] = `
 <div>
   <form
     autocomplete="off"
@@ -12,6 +12,7 @@ exports[`UniformDetailRow should render correctly 1`] = `
     >
       <div
         class="col-sm-auto col-12"
+        style="min-width: 120px;"
       >
         <div>
           <label
@@ -124,7 +125,7 @@ exports[`UniformDetailRow should render correctly 1`] = `
 </div>
 `;
 
-exports[`UniformDetailRow should render correctly when editable 1`] = `
+exports[`UniformDetailRow Render Components should render correctly when editable 1`] = `
 <div>
   <form
     autocomplete="off"
@@ -136,6 +137,7 @@ exports[`UniformDetailRow should render correctly when editable 1`] = `
     >
       <div
         class="col-sm-auto col-12"
+        style="min-width: 120px;"
       >
         <div>
           <label
