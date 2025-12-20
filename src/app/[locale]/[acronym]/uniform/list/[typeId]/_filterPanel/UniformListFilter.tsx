@@ -38,7 +38,7 @@ export function UniformListFilter({
         } else {
             const options: FilterType = {
                 isActive: true,
-                isReserve: false,
+                isReserve: true,
                 issued: true,
                 notIssued: true,
                 inStorageUnit: true,

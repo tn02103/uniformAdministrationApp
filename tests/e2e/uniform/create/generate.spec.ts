@@ -23,7 +23,10 @@ const test = adminTest.extend<Fixture>({
         });
         await use(staticData);
         await prisma.uniform.deleteMany({
-            where: { number: { in: uniformNumbers.map(m => +m), }, }
+            where: {
+                number: { in: uniformNumbers.map(m => +m), },
+                fk_uniformType: staticData.ids.uniformTypeIds[0]
+            }
         });
     }
 });

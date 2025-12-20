@@ -763,31 +763,6 @@ export default {
                     header: "Withdraw uniform part",
                     message: "Are you sure you want to withdraw the uniform part {type} {number}?"
                 },
-                issue: {
-                    header: "Issue {type}",
-                },
-                replace: {
-                    header: "Replace {type} {number}",
-                },
-                issueUnknown: "An unknown problem occurred when assigning the uniform part.",
-                issuedException: {
-                    header: "Uniform part assigned",
-                    message: "The uniform part {type} {number} has already been assigned to the cadet {firstname} {lastname}.",
-                    ownerInactive: "The cadet is not active",
-                    option: {
-                        openCadet: "Open cadets",
-                        changeOwner: "Change owner"
-                    }
-                },
-                inactiveException: {
-                    header: "Uniform part passive",
-                    message: "The uniform part {type} {number} is set to passive and should therefore not be issued. \nShould the uniform part still be issued to the cadet?"
-                },
-                nullValueException: {
-                    header: "Uniform part not found",
-                    message: "The uniform part {type} {number} does not exist. Should the uniform part be created new?",
-                    createOption: "Create uniform part"
-                },
             },
         },
         dangerConfirmation: {

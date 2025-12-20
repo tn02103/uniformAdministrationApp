@@ -73,7 +73,7 @@ describe("UniformListFilter", () => {
         expect(screen.getAllByLabelText("K.A.")[1]).toBeChecked();
 
         expect(screen.getByLabelText("common.uniform.state.active")).toBeChecked();
-        expect(screen.getByLabelText("common.uniform.state.isReserve")).not.toBeChecked();
+        expect(screen.getByLabelText("common.uniform.state.isReserve")).toBeChecked();
         expect(screen.getByLabelText("uniformList.issued")).toBeChecked();
         expect(screen.getByLabelText("uniformList.notIssued")).toBeChecked();
         expect(screen.getByLabelText("uniformList.inStorageUnit")).toBeChecked();
@@ -83,12 +83,14 @@ describe("UniformListFilter", () => {
         renderComponent();
         // Uncheck active. isReserve is unchecked by default
         const active = screen.getByLabelText("common.uniform.state.active");
+        const reserve = screen.getByLabelText("common.uniform.state.isReserve");
         const user = userEvent.setup();
         await user.click(active);
+        await user.click(reserve);
         expect(screen.getByTestId("btn_load")).toBeDisabled();
 
         // Re-check active, uncheck issued, notIssued, inStorageUnit
-        await user.click(active); // check active again
+        await user.click(active);
         const issued = screen.getByLabelText("uniformList.issued");
         const notIssued = screen.getByLabelText("uniformList.notIssued");
         const inStorageUnit = screen.getByLabelText("uniformList.inStorageUnit");
@@ -103,6 +105,7 @@ describe("UniformListFilter", () => {
         const user = userEvent.setup();
         // Uncheck both active and isReserve to trigger activeReserveError
         await user.click(screen.getByLabelText("common.uniform.state.active"));
+        await user.click(screen.getByLabelText("common.uniform.state.isReserve"));
         expect(screen.getByTestId("err_filterError")).toHaveTextContent("uniformList.error.activ");
 
         // Re-check active, uncheck issued, notIssued, inStorageUnit to trigger ownerError
@@ -119,7 +122,7 @@ describe("UniformListFilter", () => {
         await user.click(screen.getByTestId("btn_load"));
         expect(setFilterMock).toHaveBeenCalledWith(expect.objectContaining({
             isActive: true,
-            isReserve: false,
+            isReserve: true,
             issued: true,
             notIssued: true,
             inStorageUnit: true,
