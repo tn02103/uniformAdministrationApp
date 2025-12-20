@@ -139,8 +139,8 @@ exports[`<UniformgenerationOffcanvas> with generation renders the component 1`] 
             <div
               aria-label="error message isReserve"
               class="text-danger fs-7"
-              data-testid="err_reserve"
-              id="uniformGenerationForm_err_reserve"
+              data-testid="err_isReserve"
+              id="uniformGenerationForm_err_isReserve"
               role="alert"
             />
           </div>
@@ -317,8 +317,8 @@ exports[`<UniformgenerationOffcanvas> without generation renders in editable sta
             <div
               aria-label="error message isReserve"
               class="text-danger fs-7"
-              data-testid="err_reserve"
-              id="uniformGenerationForm_err_reserve"
+              data-testid="err_isReserve"
+              id="uniformGenerationForm_err_isReserve"
               role="alert"
             />
           </div>

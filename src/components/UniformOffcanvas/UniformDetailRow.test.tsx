@@ -31,22 +31,22 @@ describe('UniformDetailRow', () => {
         const generationSelect = screen.getByRole('combobox', { name: /generation/i });
         const sizeSelect = screen.getByRole('combobox', { name: /size/i });
         const commentInput = screen.getByRole('textbox', { name: /comment/i });
-        const activeCheckbox = screen.getByRole('switch', { name: /status/i });
+        const reserveCheckbox = screen.getByRole('switch', { name: /status/i });
 
         expect(generationSelect).toBeInTheDocument();
         expect(sizeSelect).toBeInTheDocument();
         expect(commentInput).toBeInTheDocument();
-        expect(activeCheckbox).toBeInTheDocument();
+        expect(reserveCheckbox).toBeInTheDocument();
 
         expect(generationSelect).toHaveValue(mockUniform.generation.id);
         expect(sizeSelect).toHaveValue(mockUniform.size.id);
         expect(commentInput).toHaveValue(mockUniform.comment);
-        expect(activeCheckbox).toBeChecked();
+        expect(reserveCheckbox).not.toBeChecked();
 
         expect(generationSelect).toBeEnabled();
         expect(sizeSelect).toBeEnabled();
         expect(commentInput).toBeEnabled();
-        expect(activeCheckbox).toBeEnabled();
+        expect(reserveCheckbox).toBeEnabled();
 
         expect(container).toMatchSnapshot();
     });
@@ -146,26 +146,26 @@ describe('UniformDetailRow', () => {
             generation: mockGenerationLists[0][0],
             size: mockSizeLists[0].uniformSizes[1],
             comment: 'New comment',
-            active: false,
+            isReserve: true,
         };
         it('should reset form when uniform prop changes', () => {
             const { rerender } = render(<UniformDetailRow {...defaultProps} />);
             const generationSelect = screen.getByLabelText('common.uniform.generation.label');
             const sizeSelect = screen.getByLabelText('common.uniform.size');
             const commentInput = screen.getByLabelText('common.comment');
-            const activeCheckbox = screen.getByLabelText('common.status');
+            const reserveCheckbox = screen.getByLabelText('common.status');
 
             expect(generationSelect).toHaveTextContent(mockUniform.generation.name);
             expect(sizeSelect).toHaveTextContent(mockUniform.size.name);
             expect(commentInput).toHaveTextContent(mockUniform.comment);
-            expect(activeCheckbox).toHaveTextContent('common.uniform.state.active');
+            expect(reserveCheckbox).toHaveTextContent('common.uniform.state.active');
 
             rerender(<UniformDetailRow {...defaultProps} uniform={newUniform} />);
 
             expect(generationSelect).toHaveTextContent(newUniform.generation.name);
             expect(sizeSelect).toHaveTextContent(newUniform.size.name);
             expect(commentInput).toHaveTextContent(newUniform.comment);
-            expect(activeCheckbox).toHaveTextContent('common.uniform.state.isReserve');
+            expect(reserveCheckbox).toHaveTextContent('common.uniform.state.isReserve');
         });
 
         it('should not reset if editable', () => {
@@ -175,19 +175,19 @@ describe('UniformDetailRow', () => {
             const generationSelect = screen.getByLabelText('common.uniform.generation.label');
             const sizeSelect = screen.getByLabelText('common.uniform.size');
             const commentInput = screen.getByLabelText('common.comment');
-            const activeCheckbox = screen.getByLabelText('common.status');
+            const reserveCheckbox = screen.getByLabelText('common.status');
 
             expect(generationSelect).toHaveTextContent(mockUniform.generation.name);
             expect(sizeSelect).toHaveTextContent(mockUniform.size.name);
             expect(commentInput).toHaveTextContent(mockUniform.comment);
-            expect(activeCheckbox).toBeChecked();
+            expect(reserveCheckbox).not.toBeChecked();
 
             rerender(<UniformDetailRow {...defaultProps} uniform={newUniform} editable />);
 
             expect(generationSelect).toHaveTextContent(mockUniform.generation.name);
             expect(sizeSelect).toHaveTextContent(mockUniform.size.name);
             expect(commentInput).toHaveTextContent(mockUniform.comment);
-            expect(activeCheckbox).toBeChecked();
+            expect(reserveCheckbox).not.toBeChecked();
         });
     });
     describe('edit uniform', () => {
@@ -200,19 +200,19 @@ describe('UniformDetailRow', () => {
             const generationSelect = screen.getByRole('combobox', { name: /generation/i });
             const sizeSelect = screen.getByRole('combobox', { name: /size/i });
             const commentInput = screen.getByRole('textbox', { name: /comment/i });
-            const activeCheckbox = screen.getByRole('switch', { name: /status/i });
+            const reserveCheckbox = screen.getByRole('switch', { name: /status/i });
             const saveButton = screen.getByRole('button', { name: /save/i });
 
             await user.selectOptions(generationSelect, mockGenerationLists[0][0].id);
             await user.selectOptions(sizeSelect, mockSizeLists[0].uniformSizes[1].id);
             await user.clear(commentInput);
             await user.type(commentInput, 'New comment');
-            await user.click(activeCheckbox);
+            await user.click(reserveCheckbox);
 
             expect(generationSelect).toHaveValue(mockGenerationLists[0][0].id);
             expect(sizeSelect).toHaveValue(mockSizeLists[0].uniformSizes[1].id);
             expect(commentInput).toHaveValue('New comment');
-            expect(activeCheckbox).not.toBeChecked();
+            expect(reserveCheckbox).toBeChecked();
 
             await user.click(saveButton);
             expect(defaultProps.onSave).toHaveBeenCalledTimes(1);
@@ -226,7 +226,7 @@ describe('UniformDetailRow', () => {
                 generation: mockGenerationLists[0][0].id,
                 size: mockSizeLists[0].uniformSizes[1].id,
                 comment: 'New comment',
-                active: false,
+                isReserve: true,
             });
         });
 
@@ -239,19 +239,19 @@ describe('UniformDetailRow', () => {
             const generationSelect = screen.getByRole('combobox', { name: /generation/i });
             const sizeSelect = screen.getByRole('combobox', { name: /size/i });
             const commentInput = screen.getByRole('textbox', { name: /comment/i });
-            const activeCheckbox = screen.getByRole('switch', { name: /status/i });
+            const reserveCheckbox = screen.getByRole('switch', { name: /status/i });
             const cancelButton = screen.getByRole('button', { name: /cancel/i });
 
             await user.selectOptions(generationSelect, mockGenerationLists[0][0].id);
             await user.selectOptions(sizeSelect, mockSizeLists[0].uniformSizes[1].id);
             await user.clear(commentInput);
             await user.type(commentInput, 'New comment');
-            await user.click(activeCheckbox);
+            await user.click(reserveCheckbox);
 
             expect(generationSelect).toHaveValue(mockGenerationLists[0][0].id);
             expect(sizeSelect).toHaveValue(mockSizeLists[0].uniformSizes[1].id);
             expect(commentInput).toHaveValue('New comment');
-            expect(activeCheckbox).not.toBeChecked();
+            expect(reserveCheckbox).toBeChecked();
 
             await user.click(cancelButton);
             expect(defaultProps.setEditable).toHaveBeenCalledTimes(1);
@@ -260,7 +260,7 @@ describe('UniformDetailRow', () => {
             expect(generationSelect).toHaveValue(mockUniform.generation.id);
             expect(sizeSelect).toHaveValue(mockUniform.size.id);
             expect(commentInput).toHaveValue(mockUniform.comment);
-            expect(activeCheckbox).toBeChecked();
+            expect(reserveCheckbox).not.toBeChecked();
         });
 
         it('should not allow null value for generation', async () => {

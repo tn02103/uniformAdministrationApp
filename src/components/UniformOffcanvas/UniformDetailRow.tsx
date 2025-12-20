@@ -114,7 +114,7 @@ export const UniformDetailRow = ({ uniform, uniformType, editable, setEditable, 
                             formName="uniform"
                             disabled={!editable}
                             hideToggle={!editable}
-                            toggleText={t(`common.uniform.state.${form.watch('isReserve') ? "active" : "isReserve"}`)}
+                            toggleText={t(`common.uniform.state.${form.watch('isReserve') ? "isReserve" : "active"}`)}
                         />
                     </Col>
                     {uniformType.usingGenerations &&
