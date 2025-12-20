@@ -61,7 +61,7 @@ export const getItemLabels = async (): Promise<ItemLabel[]> => genericSANoDataVa
     id: item.id,
     number: item.number,
     label: `${item.type.name}-${item.number}`,
-    isReserve: item.isReserve ?? item.generation?.isReserve ?? false,
+    isReserve: item.isReserve || item.generation?.isReserve || false,
     type: {
         id: item.type.id,
         name: item.type.name,

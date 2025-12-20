@@ -115,7 +115,7 @@ test.describe(() => {
         });
     });
 
-    test('Switch UniformItem without errors', async ({ uniformComponent, page, cadetId, staticData: { ids } }) => {
+    test('Switch UniformItem', async ({ uniformComponent, page, cadetId, staticData: { ids } }) => {
         const div_popup = page.getByRole("dialog");
         const txt_autocomplete = div_popup.getByRole('textbox', { name: t.cadetDetailPage.issueModal["input.label"] });
         const btn_save = div_popup.getByRole("button", { name: t.cadetDetailPage.issueModal["button.replace"] });
@@ -137,26 +137,26 @@ test.describe(() => {
             await txt_autocomplete.click();
             await expect(div_popup.getByRole("option").nth(0)).toBeVisible(); // waiting till options are loaded
 
-            await txt_autocomplete.fill('1111');
-            await expect(txt_autocomplete).toHaveValue('1111');
+            await txt_autocomplete.fill('1125');
+            await expect(txt_autocomplete).toHaveValue('1125');
             await expect(btn_save).toBeEnabled();
             await btn_save.click();
         });
 
         await test.step('verify ui', async () => {
             await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(3 ${t.common.of} 3)`);
-            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][11])).toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][25])).toBeVisible();
             await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).toBeHidden();
         });
         await test.step('verify db', async () => {
             await Promise.all([
                 dbIssuedAmountCheck(cadetId, 6),
-                dbIssuedItemCheck(ids.uniformIds[0][11], cadetId),
+                dbIssuedItemCheck(ids.uniformIds[0][25], cadetId),
                 dbReturnedCheck(ids.uniformIds[0][84], cadetId, new Date('2023-08-16T00:00:00.000Z')),
             ]);
         });
     });
-    test('Issue UniformItem without errors', async ({ uniformComponent, page, cadetId, staticData: { ids } }) => {
+    test('Issue UniformItem', async ({ uniformComponent, page, cadetId, staticData: { ids } }) => {
         const div_popup = page.getByRole("dialog");
         const txt_autocomplete = div_popup.getByRole('textbox', { name: t.cadetDetailPage.issueModal["input.label"] });
         const btn_save = div_popup.getByRole("button", { name: t.cadetDetailPage.issueModal["button.issue"] });
@@ -172,19 +172,19 @@ test.describe(() => {
             await txt_autocomplete.click();
             await expect(div_popup.getByRole("option").nth(0)).toBeVisible(); // waiting till options are loaded
 
-            await txt_autocomplete.fill('1111');
-            await expect(txt_autocomplete).toHaveValue('1111');
+            await txt_autocomplete.fill('1125');
+            await expect(txt_autocomplete).toHaveValue('1125');
             await expect(btn_save).toBeEnabled();
             await btn_save.click();
         });
         await test.step('verify ui', async () => {
             await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(4 ${t.common.of} 3)`);
-            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][11])).toBeVisible();
+            await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][25])).toBeVisible();
         });
         await test.step('verify db', async () => {
             await Promise.all([
                 dbIssuedAmountCheck(cadetId, 7),
-                dbIssuedItemCheck(ids.uniformIds[0][11], cadetId),
+                dbIssuedItemCheck(ids.uniformIds[0][25], cadetId),
             ]);
         });
     });
@@ -216,6 +216,86 @@ test.describe(() => {
                 dbReturnedCheck(ids.uniformIds[0][0], ids.cadetIds[5], new Date('2023-08-13T00:00:00.000Z')),
                 dbCommentCheck(ids.cadetIds[5], '1100'),
             ]);
+        });
+    });
+
+    test('Warnings', async ({ page, uniformComponent, staticData: { ids, data } }) => {
+        const itemNumbers = {
+            itemReserve: "1124",
+            generationReserve: "1104",
+            issued: "1143",
+            issuedToCadet: "1185",
+            nonExisting: "9999",
+            issuedReserve: "1123",
+        }
+        const div_popup = page.getByRole("dialog");
+        const txt_autocomplete = div_popup.getByRole('textbox', { name: t.cadetDetailPage.issueModal["input.label"] });
+        const alerts = div_popup.getByRole("alert");
+        const alertIcon = alerts.getByRole('img', { includeHidden: true });
+
+        await test.step('setup', async () => {
+            await uniformComponent.btn_utype_issue(ids.uniformTypeIds[0]).click();
+            await expect.soft(div_popup).toBeVisible();
+            await expect.soft(div_popup.getByRole("heading")).toHaveText(`Typ1 ausgeben`);
+            await expect.soft(txt_autocomplete).toBeVisible();
+            await txt_autocomplete.click();
+            await expect.soft(div_popup.getByRole("option").nth(0)).toBeVisible(); // waiting till options are loaded
+        });
+
+        await test.step('itemReserve', async () => {
+            await txt_autocomplete.fill(itemNumbers.itemReserve);
+            await expect.soft(alerts).toHaveCount(1);
+            await expect.soft(alerts).toHaveClass(/alert-warning/);
+            await expect.soft(alertIcon).toHaveAttribute('data-icon', 'registered');
+            await expect.soft(alerts).toContainText(t.cadetDetailPage.issueModal["alert.isReserve"]);
+        });
+
+        await test.step('generationReserve', async () => {
+            await txt_autocomplete.fill(itemNumbers.generationReserve);
+            await expect.soft(alerts).toHaveCount(1);
+            await expect.soft(alerts).toHaveClass(/alert-warning/);
+            await expect.soft(alertIcon).toHaveAttribute('data-icon', 'registered');
+            await expect.soft(alerts).toContainText(t.cadetDetailPage.issueModal["alert.isReserve"]);
+        });
+
+        await test.step('issued', async () => {
+            await txt_autocomplete.fill(itemNumbers.issued);
+            await expect.soft(alerts).toHaveCount(1);
+            await expect.soft(alerts).toHaveClass(/alert-danger/);
+            await expect.soft(alertIcon).toHaveAttribute('data-icon', 'user');
+            await expect.soft(alerts).toContainText(t.cadetDetailPage.issueModal["alert.owner.1"]);
+            await expect.soft(alerts).toContainText(t.cadetDetailPage.issueModal["alert.owner.2"]);
+            await expect.soft(alerts).toContainText(data.cadets[0].firstname);
+            await expect.soft(alerts).toContainText(data.cadets[0].lastname);
+        });
+
+        await test.step('issuedToCadet', async () => {
+            await txt_autocomplete.fill(itemNumbers.issuedToCadet);
+            await expect.soft(alerts).toHaveCount(1);
+            await expect.soft(alerts).toHaveClass(/alert-info/);
+            await expect.soft(alertIcon).toHaveAttribute('data-icon', 'circle-info');
+            await expect.soft(alerts).toContainText(t.cadetDetailPage.issueModal["alert.itemAlreadyOwned"]);
+        });
+
+        await test.step('nonExisting', async () => {
+            await txt_autocomplete.fill(itemNumbers.nonExisting);
+            await expect.soft(alerts).toHaveCount(2);
+            const warningAlert = alerts.filter({ hasNotText: t.autocomplete.noOptions });
+            await expect.soft(warningAlert).toHaveClass(/alert-warning/);
+            await expect.soft(warningAlert.getByRole('img', { includeHidden: true })).toHaveAttribute('data-icon', 'triangle-exclamation');
+            await expect.soft(warningAlert).toContainText(t.cadetDetailPage.issueModal["alert.noItemFound"].replace('{number}', itemNumbers.nonExisting));
+        });
+
+        await test.step('issuedReserve', async () => {
+            await txt_autocomplete.fill(itemNumbers.issuedReserve);
+            await expect.soft(alerts).toHaveCount(2);
+            const issuedAlert = alerts.filter({ hasText: t.cadetDetailPage.issueModal["alert.owner.1"] });
+            await expect.soft(issuedAlert).toHaveClass(/alert-danger/);
+            await expect.soft(issuedAlert.getByRole('img', { includeHidden: true })).toHaveAttribute('data-icon', 'user');
+
+            const reserveAlert = alerts.filter({ hasText: t.cadetDetailPage.issueModal["alert.isReserve"] });
+            await expect.soft(reserveAlert).toHaveClass(/alert-warning/);
+            await expect.soft(reserveAlert.getByRole('img', { includeHidden: true })).toHaveAttribute('data-icon', 'registered');
         });
     });
 
