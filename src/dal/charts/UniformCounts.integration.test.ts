@@ -349,7 +349,7 @@ describe('UniformCounts DAL - Integration Tests', () => {
                 const typeWithIssued = result.find(type => type.quantities.issued > 0);
                 expect(typeWithIssued).toBeDefined();
                 
-                // Test issued reserve cadets structure when present
+                // Test issued isReserve cadets structure when present
                 if (typeWithIssued && typeWithIssued.quantities.issuedReserves > 0) {
                     expect(typeWithIssued.issuedReserveCadets.length).toBe(typeWithIssued.quantities.issuedReserves);
                     

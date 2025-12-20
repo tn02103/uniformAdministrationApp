@@ -72,7 +72,7 @@ export default {
             generation: {
                 "label#one": "Generation",
                 "label#other": "Generations",
-                outdated: "outdated",
+                isReserve: "Reserve",
             },
             size: "Size",
             size_other: "Sizes",
@@ -83,7 +83,7 @@ export default {
             owner: "Owner",
             state: {
                 active: "Active",
-                reserve: "Reserve"
+                isReserve: "Reserve"
             },
             type: {
                 "type#one": "Uniform type",
@@ -299,7 +299,7 @@ export default {
             "alert.noItemFound": "There is no uniform part with the number {number}. Do you want to create it?",
             "alert.itemAlreadyOwned": "The selected uniform part is already issued to this person.",
             "alert.storageUnit": "The selected uniform part is assigned to the storage unit {unit}.",
-            "alert.reserve": "The selected uniform part is marked as reserve.",
+            "alert.isReserve": "The selected uniform part is marked as reserve.",
             "button.changeOwner": "Change owner",
             "button.replace": "Replace",
             "button.issue": "Issue",

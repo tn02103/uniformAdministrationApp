@@ -26,7 +26,7 @@ describe('<UniformItem> Integration Tests', () => {
                 uniformTypeId,
                 generationId,
                 comment: 'Integration test uniforms',
-                active: true,
+                isReserve: true,
             },
             numberMap: [{
                 sizeId,
@@ -49,7 +49,7 @@ describe('<UniformItem> Integration Tests', () => {
         expect(dbList).toHaveLength(3);
         dbList.forEach(dbItem =>
             expect(dbItem).toMatchObject({
-                active: createProps.data.active,
+                isReserve: createProps.data.isReserve,
                 comment: createProps.data.comment,
                 fk_generation: createProps.data.generationId,
                 fk_uniformType: createProps.data.uniformTypeId,
@@ -68,7 +68,7 @@ describe('<UniformItem> Integration Tests', () => {
             orderBy: 'number',
             asc: true,
             filter: {
-                active: true,
+                isActive: true,
                 issued: true,
                 notIssued: false,
                 inStorageUnit: false,
@@ -82,7 +82,7 @@ describe('<UniformItem> Integration Tests', () => {
             uniformTypeId: issuedUniform.type.id,
             cadetId: ids.cadetIds[0],
             options: {
-                ignoreInactive: false,
+                ignoreReserve: false,
                 force: true,
                 create: false,
             },
@@ -138,7 +138,7 @@ describe('<UniformItem> Integration Tests', () => {
                 uniformTypeId: ids.uniformTypeIds[0],
                 generationId: ids.uniformGenerationIds[0],
                 comment: 'Lifecycle test uniform',
-                active: true,
+                isReserve: false,
             },
         });
 
@@ -153,7 +153,7 @@ describe('<UniformItem> Integration Tests', () => {
 
         const createdUniform = uniforms.find(u => u.number === 9100);
         expect(createdUniform).toBeDefined();
-        expect(createdUniform!.active).toBe(true);
+        expect(createdUniform!.isReserve).toBe(false);
         expect(createdUniform!.issuedEntries.length).toBe(0);
 
         // 3. Issue the uniform
@@ -169,7 +169,7 @@ describe('<UniformItem> Integration Tests', () => {
         expect(issueResult[ids.uniformTypeIds[0]]).toEqual(
             expect.arrayContaining([expect.objectContaining({
                 number: 9100,
-                active: true,
+                isReserve: false,
                 issuedEntries: expect.arrayContaining([expect.objectContaining({
                     cadet: expect.objectContaining({ id: ids.cadetIds[0] }),
                     dateIssued: expect.anything(),
@@ -189,7 +189,7 @@ describe('<UniformItem> Integration Tests', () => {
         expect(returnResult[ids.uniformTypeIds[0]]).not.toEqual(
             expect.arrayContaining([expect.objectContaining({
                 number: 9100,
-                active: true,
+                isReserve: false,
                 issuedEntries: expect.arrayContaining([expect.objectContaining({
                     cadet: expect.objectContaining({ id: ids.cadetIds[0] }),
                     dateIssued: expect.anything(),
@@ -203,7 +203,7 @@ describe('<UniformItem> Integration Tests', () => {
             updateUniformItem({
                 id: createdUniform!.id,
                 number: createdUniform!.number,
-                active: false,
+                isReserve: true,
                 comment: 'Lifecycle complete',
                 generation: ids.uniformGenerationIds[3],
                 size: ids.sizeIds[16],
@@ -214,7 +214,7 @@ describe('<UniformItem> Integration Tests', () => {
         expect(updateResult).toMatchObject({
             id: createdUniform!.id,
             number: createdUniform!.number,
-            active: false,
+            isReserve: true,
             comment: 'Lifecycle complete',
             generation: {
                 id: ids.uniformGenerationIds[3],

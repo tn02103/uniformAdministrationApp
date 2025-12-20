@@ -29,7 +29,7 @@ const getUniformFormData = (uniform: UniformWithOwner): UniformFormType => {
         generation: uniform.generation?.id,
         size: uniform.size?.id,
         comment: uniform.comment || "",
-        active: uniform.active,
+        isReserve: uniform.isReserve,
     }
 }
 
@@ -110,11 +110,11 @@ export const UniformDetailRow = ({ uniform, uniformType, editable, setEditable, 
                     <Col xs={(uniformType.usingGenerations && uniformType.usingSizes) ? 12 : 5} sm={"auto"}>
                         <ToggleFormField<UniformFormType>
                             label={t('common.status')}
-                            name={"active"}
+                            name={"isReserve"}
                             formName="uniform"
                             disabled={!editable}
                             hideToggle={!editable}
-                            toggleText={t(`common.uniform.state.${form.watch('active') ? "active" : "reserve"}`)}
+                            toggleText={t(`common.uniform.state.${form.watch('isReserve') ? "active" : "isReserve"}`)}
                         />
                     </Col>
                     {uniformType.usingGenerations &&

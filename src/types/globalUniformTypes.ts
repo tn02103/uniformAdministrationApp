@@ -4,7 +4,7 @@ const generationDescriptionArgs = Prisma.validator<Prisma.UniformGenerationFindM
     select: {
         id: true,
         name: true,
-        outdated: true,
+        isReserve: true,
     }
 });
 const sizeDescriptionArgs = Prisma.validator<Prisma.UniformSizeFindManyArgs>()({
@@ -40,7 +40,7 @@ export const uniformWithOwnerArgs = Prisma.validator<Prisma.UniformFindManyArgs>
     select: {
         id: true,
         number: true,
-        active: true,
+        isReserve: true,
         comment: true,
         type: typeDescriptionArgs,
         generation: generationDescriptionArgs,
@@ -61,7 +61,7 @@ export const uniformArgs = Prisma.validator<Prisma.UniformFindManyArgs>()({
     select: {
         id: true,
         number: true,
-        active: true,
+        isReserve: true,
         comment: true,
         type: typeDescriptionArgs,
         generation: generationDescriptionArgs,
@@ -94,7 +94,7 @@ export const uniformGenerationArgs = Prisma.validator<Prisma.UniformGenerationFi
         id: true,
         name: true,
         fk_sizelist: true,
-        outdated: true,
+        isReserve: true,
         sortOrder: true,
         sizelist: {
             select: {

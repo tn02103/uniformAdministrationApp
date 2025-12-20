@@ -54,7 +54,7 @@ describe("UniformListFilter", () => {
         // Check for other checkboxes
         const othersAccordion = screen.getByTestId("div_othersAccordion");
         expect(getByLabelText(othersAccordion, "common.uniform.state.active")).toBeInTheDocument();
-        expect(getByLabelText(othersAccordion, "common.uniform.state.reserve")).toBeInTheDocument();
+        expect(getByLabelText(othersAccordion, "common.uniform.state.isReserve")).toBeInTheDocument();
         expect(getByLabelText(othersAccordion, "uniformList.issued")).toBeInTheDocument();
         expect(getByLabelText(othersAccordion, "uniformList.notIssued")).toBeInTheDocument();
         expect(getByLabelText(othersAccordion, "uniformList.inStorageUnit")).toBeInTheDocument();
@@ -73,7 +73,7 @@ describe("UniformListFilter", () => {
         expect(screen.getAllByLabelText("K.A.")[1]).toBeChecked();
 
         expect(screen.getByLabelText("common.uniform.state.active")).toBeChecked();
-        expect(screen.getByLabelText("common.uniform.state.reserve")).not.toBeChecked();
+        expect(screen.getByLabelText("common.uniform.state.isReserve")).not.toBeChecked();
         expect(screen.getByLabelText("uniformList.issued")).toBeChecked();
         expect(screen.getByLabelText("uniformList.notIssued")).toBeChecked();
         expect(screen.getByLabelText("uniformList.inStorageUnit")).toBeChecked();
@@ -118,7 +118,7 @@ describe("UniformListFilter", () => {
         const user = userEvent.setup();
         await user.click(screen.getByTestId("btn_load"));
         expect(setFilterMock).toHaveBeenCalledWith(expect.objectContaining({
-            active: true,
+            isActive: true,
             isReserve: false,
             issued: true,
             notIssued: true,
@@ -169,7 +169,7 @@ describe("UniformListFilter", () => {
 
     it("uses stored filter configuration from session storage if present", () => {
         const storedFilter = {
-            active: false,
+            isActive: false,
             isReserve: true,
             issued: false,
             notIssued: false,
@@ -190,7 +190,7 @@ describe("UniformListFilter", () => {
             />
         );
         expect(screen.getByLabelText("common.uniform.state.active")).not.toBeChecked();
-        expect(screen.getByLabelText("common.uniform.state.reserve")).toBeChecked();
+        expect(screen.getByLabelText("common.uniform.state.isReserve")).toBeChecked();
         expect(screen.getByLabelText("uniformList.issued")).not.toBeChecked();
         expect(screen.getByLabelText("uniformList.notIssued")).not.toBeChecked();
         expect(screen.getByLabelText("uniformList.inStorageUnit")).not.toBeChecked();

@@ -281,15 +281,15 @@ describe('<UniformItem> getListWithOwner', () => {
     });
 
     it('filters by generations', async () => {
-        const generationId = ids.uniformGenerationIds[0];
+        const generationId = ids.uniformGenerationIds[1];
         const result = await getUniformListWithOwner({
             uniformTypeId: ids.uniformTypeIds[0],
             orderBy: 'number',
             asc: true,
             filter: {
                 generations: {
-                    [ids.uniformGenerationIds[0]]: true,
-                    [ids.uniformGenerationIds[1]]: false,
+                    [ids.uniformGenerationIds[0]]: false,
+                    [ids.uniformGenerationIds[1]]: true,
                 }
             }
         });
@@ -320,12 +320,12 @@ describe('<UniformItem> getListWithOwner', () => {
             orderBy: 'number',
             asc: true,
             filter: {
-                active: true,
+                isActive: true,
                 isReserve: false,
             }
         });
         expect(result.length).toBeGreaterThan(1);
-        expect(result.every(u => u.active === true)).toBe(true);
+        expect(result.every(u => !u.isReserve && !u.generation?.isReserve)).toBe(true);
     });
 
     it('filters reserve uniforms', async () => {
@@ -335,11 +335,11 @@ describe('<UniformItem> getListWithOwner', () => {
             asc: true,
             filter: {
                 isReserve: true,
-                active: false,
+                isActive: false,
             }
         });
         expect(result.length).toBeGreaterThan(1);
-        expect(result.every(u => u.active === false)).toBe(true);
+        expect(result.every(u => u.isReserve || u.generation?.isReserve)).toBe(true);
     });
 
     it('filters issued uniforms', async () => {
@@ -378,7 +378,7 @@ describe('<UniformItem> getListWithOwner', () => {
             orderBy: 'number',
             asc: true,
             filter: {
-                active: true,
+                isActive: true,
                 isReserve: true,
                 issued: false,
                 notIssued: false,
@@ -395,7 +395,7 @@ describe('<UniformItem> getListWithOwner', () => {
             orderBy: 'number',
             asc: true,
             filter: {
-                active: true,
+                isActive: true,
                 isReserve: true,
                 issued: true,
                 notIssued: false,

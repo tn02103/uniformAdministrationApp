@@ -165,7 +165,7 @@ describe('UniformDetailRow', () => {
             expect(generationSelect).toHaveTextContent(newUniform.generation.name);
             expect(sizeSelect).toHaveTextContent(newUniform.size.name);
             expect(commentInput).toHaveTextContent(newUniform.comment);
-            expect(activeCheckbox).toHaveTextContent('common.uniform.state.reserve');
+            expect(activeCheckbox).toHaveTextContent('common.uniform.state.isReserve');
         });
 
         it('should not reset if editable', () => {

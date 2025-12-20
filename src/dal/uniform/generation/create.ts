@@ -52,7 +52,7 @@ export const create = (props: PropType): SAReturnType<UniformType[]> => genericS
     await client.uniformGeneration.create({
         data: {
             name: data.name,
-            outdated: data.outdated,
+            isReserve: data.isReserve,
             fk_sizelist: data.fk_sizelist,
             fk_uniformType: data.uniformTypeId,
             sortOrder: generationList.length,

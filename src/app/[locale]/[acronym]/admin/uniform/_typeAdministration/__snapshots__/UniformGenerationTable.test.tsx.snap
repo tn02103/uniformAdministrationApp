@@ -27,7 +27,7 @@ exports[`<UniformGenerationTable /> renders the component 1`] = `
           <th
             class="d-none d-sm-table-cell"
           >
-            common.uniform.generation.outdated
+            common.uniform.generation.isReserve
           </th>
           <th>
             common.uniform.sizelist.label

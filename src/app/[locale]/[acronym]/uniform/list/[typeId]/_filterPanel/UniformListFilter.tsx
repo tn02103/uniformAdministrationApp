@@ -22,7 +22,7 @@ export function UniformListFilter({
     const { handleSubmit, register, watch, reset, formState: { isLoading } } = form;
     const [filter, setFilter] = useSessionStorage<FilterType | null>(`filter_${uniformType.id}`, null);
 
-    const activeReserveError = (!watch("active") && !watch("isReserve"));
+    const activeReserveError = (!watch("isActive") && !watch("isReserve"));
     const ownerError = (!watch("notIssued") && !watch("issued")) && !watch("inStorageUnit");
 
     function filterSubmit(data: FilterType) {
@@ -37,7 +37,7 @@ export function UniformListFilter({
             reset(filter);
         } else {
             const options: FilterType = {
-                active: true,
+                isActive: true,
                 isReserve: false,
                 issued: true,
                 notIssued: true,
@@ -97,10 +97,10 @@ export function UniformListFilter({
                                             label={t('common.uniform.state.active')}
                                             id="uniformListFilter-active"
                                             isInvalid={activeReserveError}
-                                            {...register(`active`)} />
+                                            {...register(`isActive`)} />
                                         <Form.Check
-                                            label={t('common.uniform.state.reserve')}
-                                            id="uniformListFilter-reserve"
+                                            label={t('common.uniform.state.isReserve')}
+                                            id="uniformListFilter-isReserve"
                                             isInvalid={activeReserveError}
                                             {...register(`isReserve`)} />
                                         <hr />

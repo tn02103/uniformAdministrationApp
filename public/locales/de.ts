@@ -72,7 +72,7 @@ export default {
             generation: {
                 "label#one": "Generation",
                 "label#other": "Generationen",
-                outdated: "veraltet",
+                isReserve: "Reserve",
             },
             size: "Größe",
             size_other: "Sizes",
@@ -83,7 +83,7 @@ export default {
             owner: "Besitzer",
             state: {
                 active: "Aktiv",
-                reserve: "Reserve"
+                isReserve: "Reserve"
             },
             type: {
                 "type#one": "Uniformtyp",
@@ -299,7 +299,7 @@ export default {
             "alert.noItemFound": "Es existiert kein Uniformteil mit der Nummer {number}. Möchten Sie es anlegen?",
             "alert.itemAlreadyOwned": "Das ausgewählte Uniformteil ist bereits an diese Person ausgegeben.",
             "alert.storageUnit": "Das ausgewählte Uniformteil ist der Lagereinheit \"{unit}\" zugeordnet.",
-            "alert.reserve": "Das ausgewählte Uniformteil ist als Reserve markiert.",
+            "alert.isReserve": "Das ausgewählte Uniformteil ist als Reserve markiert.",
             "button.changeOwner": "Besitzer ändern",
             "button.replace": "Ersetzen",
             "button.issue": "Ausgeben",
@@ -343,7 +343,7 @@ export default {
         tooltips: {
             "utOptions.owner": "Besitzer: ",
             "utOptions.storageUnit": "Lagereinheit: ",
-            "utOptions.isReserve": "Reserve",
+            "utOptions.isReserve": "isReserve",
         }
     },
     uniformList: {

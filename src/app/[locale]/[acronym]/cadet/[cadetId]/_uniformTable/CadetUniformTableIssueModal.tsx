@@ -60,7 +60,7 @@ export const CadetUniformTableIssueModal = ({ cadetId, type, itemToReplace, onCl
                 uniformTypeId: type.id,
                 idToReplace: itemToReplace?.id,
                 options: {
-                    ignoreInactive: (!!selectedItem && !selectedItem.active),
+                    ignoreReserve: (!!selectedItem && selectedItem.isReserve ),
                     force: !!(selectedItem && selectedItem.owner),
                     create: !selectedItem,
                 }
@@ -150,12 +150,12 @@ export const CadetUniformTableIssueModal = ({ cadetId, type, itemToReplace, onCl
                         &nbsp;{t('cadetDetailPage.issueModal.alert.owner.2')}
                     </CustomAlert>
                 )}
-                {(selectedItem && !selectedItem?.active) && (
+                {(selectedItem && selectedItem?.isReserve) && (
                     <CustomAlert
                         variant="warning"
                         icon={faRegistered}
                     >
-                        {t('cadetDetailPage.issueModal.alert.reserve')}
+                        {t('cadetDetailPage.issueModal.alert.isReserve')}
                     </CustomAlert>
                 )}
                 {(!selectedItem && inputValue && !isOwnedByCadet) && (
@@ -223,7 +223,7 @@ const getRenderOptionFunction = (translations: { isReserve: string, owner: strin
             textColor = "text-secondary";
         } else if (option.owner) {
             textColor = "text-danger";
-        } else if (!option.active) {
+        } else if (option.isReserve) {
             textColor = "text-warning";
         }
 
@@ -242,7 +242,7 @@ const getRenderOptionFunction = (translations: { isReserve: string, owner: strin
                 {option.owner &&
                     <FontAwesomeIcon icon={faUser} className="text-danger" />
                 }
-                {!option.active &&
+                {option.isReserve &&
                     <FontAwesomeIcon icon={faRegistered} className="text-warning" />
                 }
                 {option.storageUnit &&
@@ -251,7 +251,7 @@ const getRenderOptionFunction = (translations: { isReserve: string, owner: strin
             </div>
         )
 
-        if (!option.owner && !option.storageUnit && option.active)
+        if (!option.owner && !option.storageUnit && !option.isReserve)
             return optionElement;
 
         return (
@@ -261,7 +261,7 @@ const getRenderOptionFunction = (translations: { isReserve: string, owner: strin
                 overlay={
                     <Tooltip className="d-none d-lg-inline">
                         <ul className="m-0 p-1 ps-3 text-start">
-                            {option.active || <li>{translations.isReserve}</li>}
+                            {option.isReserve || <li>{translations.isReserve}</li>}
                             {option.owner && <li>{translations.owner}{option.owner.firstname} {option.owner.lastname}</li>}
                             {option.storageUnit && <li>{translations.storageUnit}<span style={{ "whiteSpace": "nowrap" }}>&quot;{option.storageUnit.name}&quot;</span></li>}
                         </ul>

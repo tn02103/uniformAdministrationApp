@@ -19,7 +19,7 @@ const propSchema = z.object({
     idToReplace: z.string().uuid().optional(),
     cadetId: z.string().uuid(),
     options: z.object({
-        ignoreInactive: z.boolean(),
+        ignoreReserve: z.boolean(),
         force: z.boolean(),
         create: z.boolean(),
     }).partial(),
@@ -42,6 +42,7 @@ export const issue = async (props: IssuePropType): Promise<CadetUniformMap | SAE
         },
         include: {
             type: true,
+            generation: true,
             issuedEntries: {
                 where: {
                     dateReturned: null,
@@ -78,7 +79,7 @@ export const issue = async (props: IssuePropType): Promise<CadetUniformMap | SAE
             data: {
                 number,
                 fk_uniformType: uniformTypeId,
-                active: true,
+                isReserve: false,
                 issuedEntries: {
                     create: {
                         fk_cadet: cadetId,
@@ -89,8 +90,8 @@ export const issue = async (props: IssuePropType): Promise<CadetUniformMap | SAE
         return cadetId;
     }
 
-    // CHECK uniform active
-    if ((!options.ignoreInactive) && !uniform.active) {
+    // CHECK uniform is isReserve
+    if (!options.ignoreReserve && (uniform.isReserve || (uniform.generation?.isReserve && uniform.type.usingGenerations))) {
         throw new UniformInactiveException();
     }
 

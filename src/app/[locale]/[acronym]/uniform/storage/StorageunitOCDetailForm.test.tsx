@@ -31,7 +31,7 @@ describe("StorageunitOCDetailForm", () => {
         expect(screen.getByRole("textbox", { name: /name/i })).toBeInTheDocument();
         expect(screen.getByRole("textbox", { name: /description/i })).toBeInTheDocument();
         expect(screen.getByRole("spinbutton", { name: /capacity/i })).toBeInTheDocument();
-        expect(screen.getByRole("switch", { name: /reserve/i })).toBeInTheDocument();
+        expect(screen.getByRole("switch", { name: /isReserve/i })).toBeInTheDocument();
         expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
         expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
 
@@ -39,13 +39,13 @@ describe("StorageunitOCDetailForm", () => {
         expect(screen.getByRole("textbox", { name: /name/i })).toBeEnabled();
         expect(screen.getByRole("textbox", { name: /description/i })).toBeEnabled();
         expect(screen.getByRole("spinbutton", { name: /capacity/i })).toBeEnabled();
-        expect(screen.getByRole("switch", { name: /reserve/i })).not.toHaveAttribute("aria-disabled", null);
+        expect(screen.getByRole("switch", { name: /isReserve/i })).not.toHaveAttribute("aria-disabled", null);
 
         // Check values of the form fields
         expect(screen.getByRole("textbox", { name: /name/i })).toHaveValue("");
         expect(screen.getByRole("spinbutton", { name: /capacity/i })).toHaveValue(null);
         expect(screen.getByRole("textbox", { name: /description/i })).toHaveValue("");
-        expect(screen.getByRole("switch", { name: /reserve/i })).toHaveAttribute("aria-checked", "false");
+        expect(screen.getByRole("switch", { name: /isReserve/i })).toHaveAttribute("aria-checked", "false");
     });
 
     it("should render with storageunit", () => {
@@ -63,19 +63,19 @@ describe("StorageunitOCDetailForm", () => {
         expect(screen.queryByRole("textbox", { name: /name/i })).toBeNull();
         expect(screen.getByRole("textbox", { name: /description/i })).toBeInTheDocument();
         expect(screen.getByRole("spinbutton", { name: /capacity/i })).toBeInTheDocument();
-        expect(screen.getByRole("switch", { name: /reserve/i })).toBeInTheDocument();
+        expect(screen.getByRole("switch", { name: /isReserve/i })).toBeInTheDocument();
         expect(screen.queryByRole("button", { name: /save/i })).toBeNull();
         expect(screen.queryByRole("button", { name: /cancel/i })).toBeNull();
 
         // Check that the form fields are disabled
         expect(screen.getByRole("textbox", { name: /description/i })).toBeDisabled();
         expect(screen.getByRole("spinbutton", { name: /capacity/i })).toBeDisabled();
-        expect(screen.getByRole("switch", { name: /reserve/i })).toHaveAttribute("aria-disabled", "true");
+        expect(screen.getByRole("switch", { name: /isReserve/i })).toHaveAttribute("aria-disabled", "true");
 
         // Check values of the form fields
         expect(screen.getByRole("spinbutton", { name: /capacity/i })).toHaveValue(mockStorageUnitWithItems[0].capacity);
         expect(screen.getByRole("textbox", { name: /description/i })).toHaveValue(mockStorageUnitWithItems[0].description);
-        expect(screen.getByRole("switch", { name: /reserve/i })).toHaveAttribute("aria-checked", mockStorageUnitWithItems[0].isReserve.toString());
+        expect(screen.getByRole("switch", { name: /isReserve/i })).toHaveAttribute("aria-checked", mockStorageUnitWithItems[0].isReserve.toString());
     });
 
     describe("editable state", () => {
@@ -93,7 +93,7 @@ describe("StorageunitOCDetailForm", () => {
             const nameInput = queryByRole(container, "textbox", { name: /name/i });
             const capacityInput = getByRole(container, "spinbutton", { name: /capacity/i });
             const descriptionInput = getByRole(container, "textbox", { name: /description/i });
-            const reserveSwitch = getByRole(container, "switch", { name: /reserve/i });
+            const reserveSwitch = getByRole(container, "switch", { name: /isReserve/i });
 
             expect(nameInput).toBeNull();
             expect(capacityInput).toBeInTheDocument();
@@ -118,7 +118,7 @@ describe("StorageunitOCDetailForm", () => {
             const nameInput = queryByRole(container, "textbox", { name: /name/i });
             const capacityInput = getByRole(container, "spinbutton", { name: /capacity/i });
             const descriptionInput = getByRole(container, "textbox", { name: /description/i });
-            const reserveSwitch = getByRole(container, "switch", { name: /reserve/i });
+            const reserveSwitch = getByRole(container, "switch", { name: /isReserve/i });
 
             expect(nameInput).not.toBeInTheDocument();
             expect(capacityInput).toBeInTheDocument();
@@ -158,7 +158,7 @@ describe("StorageunitOCDetailForm", () => {
 
             const capacityInput = getByRole(container, "spinbutton", { name: /capacity/i });
             const descriptionInput = getByRole(container, "textbox", { name: /description/i });
-            const reserveSwitch = getByRole(container, "switch", { name: /reserve/i });
+            const reserveSwitch = getByRole(container, "switch", { name: /isReserve/i });
 
             await user.clear(capacityInput);
             await user.clear(descriptionInput);
