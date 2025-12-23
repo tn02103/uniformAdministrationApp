@@ -2,7 +2,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
 import { getIronSession, IronSession } from "@/lib/ironSession";
-import { Organisation, RefreshToken, User } from "@prisma/client";
+import { Device, Organisation, RefreshToken, User } from "@prisma/client";
 import crypto from 'crypto';
 import { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/headers";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
@@ -33,12 +33,21 @@ export type DeviceIdsCookieAccount = z.infer<typeof DeviceIdsCookieAccountSchema
 export const AuthConfig = {
     deviceCookie: process.env.AUTH_DEVICE_COOKIE_NAME ?? "deviceToken",
     refreshTokenCookie: process.env.AUTH_REFRESH_COOKIE_NAME ?? "refreshToken",
-    maxSessionAgeDays: +(process.env.AUTH_MAX_SESSION ?? 30), // After this many days a full re-auth is required
-    maxRefreshTokenAgeDays: +(process.env.AUTH_MAX_REFRESH ?? 30), // After this many days the refresh token is invalid
     refreshTokenReuse: {
         acceptedTime: 1000,
         mediumRiskTime: 5000,
     },
+    sessionAges: {
+        no2FA: 7,
+        email2FA: 14,
+        totp2FA: 30,
+        newDevice: 3,
+        requirePasswordReauthDays: 30,
+        elevated: {
+            password: 10,
+            mfa: 20,
+        },
+    }
 }
 
 export const getIPAddress = (headers: ReadonlyHeaders) => {
@@ -165,34 +174,52 @@ export const issueNewRefreshToken = async (props: IssueNewRefreshTokenProps) => 
 
 export const calculateSessionLifetime = (context: {
     isNewDevice: boolean;
-    fingerprintRisk: 'LOW' | 'MEDIUM' | 'HIGH' | 'SEVERE';
-    user2FAEnabled: boolean;
-    authMethod: 'USERNAME_PASSWORD' | 'USERNAME_PASSWORD_2FA';
+    fingerprintRisk: RiskLevel;
+    mfa?: {
+        lastValidation: Date;
+        method: "email" | "totp";
+    }
+    lastPWValidation: Date;
+    userRole: AuthRole;
 }): number => {
-    const { isNewDevice, fingerprintRisk, user2FAEnabled, authMethod } = context;
-
     // Base lifetime in days
-    let baseDays = 30;
+    let baseDays = AuthConfig.sessionAges.no2FA; // Conservative default
 
-    // Reduce for risk factors
-    if (isNewDevice) baseDays *= 0.5; // 15 days for new devices
-    if (fingerprintRisk === 'MEDIUM') baseDays *= 0.7; // 21 days
-    if (fingerprintRisk === 'HIGH') baseDays *= 0.3; // 9 days
-    if (fingerprintRisk === 'SEVERE')
-        return 0;
-
-    // Adjust for authentication strength
-    if (authMethod === 'USERNAME_PASSWORD_2FA') {
-        baseDays *= 1.5; // Longer for strong auth
+    // Authentication method bonus
+    if (context.mfa?.method === 'totp') {
+        baseDays = AuthConfig.sessionAges.totp2FA;
+    } else if (context.mfa?.method === 'email') {
+        baseDays = AuthConfig.sessionAges.email2FA;
     }
 
-    // 2FA users get longer sessions
-    if (user2FAEnabled) {
-        baseDays *= 1.2;
+    // Device trust penalty
+    if (context.isNewDevice) {
+        baseDays = Math.min(baseDays, AuthConfig.sessionAges.newDevice);
     }
 
-    // Minimum 1 day, maximum 45 days
-    return Math.max(1, Math.min(45, Math.floor(baseDays)));
+    // Risk-based reduction
+    const riskMultipliers = {
+        [RiskLevel.LOW]: 1.0,
+        [RiskLevel.MEDIUM]: 0.7,
+        [RiskLevel.HIGH]: 0.3,
+        [RiskLevel.SEVERE]: 0 // Force re-auth
+    };
+
+    baseDays *= riskMultipliers[context.fingerprintRisk];
+
+    // Admin users get shorter sessions for security
+    if (context.userRole >= AuthRole.admin) {
+        baseDays *= 0.7;
+    }
+
+    // Hard limits based on last authentication
+    const daysSincePasswordAuth = dayjs().diff(context.lastPWValidation, 'days');
+
+    if (daysSincePasswordAuth >= AuthConfig.sessionAges.requirePasswordReauthDays) {
+        return 0; // Force password re-authentication
+    }
+
+    return baseDays;
 };
 
 type IssueNewAccessTokenProps = {
@@ -246,8 +273,14 @@ export const getDeviceAccountFromCookies = ({ cookieList, organisationId }: GetA
     return { account: null, accountCookie: null };
 }
 
-type DeviceValidationResult = {
-    riskLevel: "LOW" | "MEDIUM" | "HIGH" | "SEVERE",
+export enum RiskLevel {
+    "LOW" = 0,
+    "MEDIUM" = 1,
+    "HIGH" = 2,
+    "SEVERE" = 3,
+}
+export type FingerprintValidationResult = {
+    riskLevel: RiskLevel,
     reasons: string[];
 }
 /**
@@ -270,14 +303,14 @@ export const validateDeviceFingerprint = async ({ current, expected }: {
         userAgent: string;
         deviceId: string;
     };
-}): Promise<DeviceValidationResult> => {
+}): Promise<FingerprintValidationResult> => {
     const reasons: string[] = [];
-    let riskLevel: DeviceValidationResult["riskLevel"] = 'LOW';
+    let riskLevel: FingerprintValidationResult["riskLevel"] = RiskLevel.LOW;
 
     // 1. CRITICAL: Device ID must match
     if (expected.deviceId !== current.deviceId) {
         return {
-            riskLevel: 'SEVERE',
+            riskLevel: RiskLevel.SEVERE,
             reasons: ['Device ID mismatch']
         };
     }
@@ -294,7 +327,7 @@ export const validateDeviceFingerprint = async ({ current, expected }: {
         storedUA = JSON.parse(expected.userAgent);
     } catch {
         return {
-            riskLevel: 'SEVERE',
+            riskLevel: RiskLevel.SEVERE,
             reasons: ['Invalid stored user agent']
         };
     }
@@ -303,23 +336,23 @@ export const validateDeviceFingerprint = async ({ current, expected }: {
     // Critical properties that shouldn't change
     if (storedUA.os?.name !== current.userAgent.os?.name) {
         reasons.push('OS name changed');
-        riskLevel = 'SEVERE';
+        riskLevel = RiskLevel.SEVERE;
     } else if (storedUA.os?.version !== current.userAgent.os?.version) {
         reasons.push('OS version updated');
-        riskLevel = 'HIGH';
+        riskLevel = RiskLevel.HIGH;
     }
 
     if (storedUA.device?.type !== current.userAgent.device?.type) {
         reasons.push('Device type changed');
-        riskLevel = 'SEVERE';
+        riskLevel = RiskLevel.SEVERE;
     }
 
     if (storedUA.browser?.name !== current.userAgent.browser?.name) {
         reasons.push('Browser name changed');
-        riskLevel = 'SEVERE';
+        riskLevel = RiskLevel.SEVERE;
     } else if (storedUA.browser?.version !== current.userAgent.browser?.version) {
         reasons.push('Browser version updated');
-        if (riskLevel === "LOW") riskLevel = "MEDIUM";
+        if (riskLevel === RiskLevel.LOW) riskLevel = RiskLevel.MEDIUM;
     }
 
     return { riskLevel, reasons };
@@ -328,7 +361,7 @@ export const validateDeviceFingerprint = async ({ current, expected }: {
 type RefreshTokenReuseResult = {
     action: 'ALLOW' | 'REQUIRE_REAUTH' | 'INVALIDATE_ALL_SESSIONS';
     reason: string;
-    riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+    riskLevel: RiskLevel;
 }
 /**
  * Handles refresh token reuse detection and determines appropriate response
@@ -346,7 +379,7 @@ export const handleRefreshTokenReuse = async (
         return {
             action: 'INVALIDATE_ALL_SESSIONS',
             reason: 'Missing token usage context - implementation error',
-            riskLevel: 'CRITICAL'
+            riskLevel: RiskLevel.SEVERE
         };
     }
 
@@ -366,7 +399,7 @@ export const handleRefreshTokenReuse = async (
 
 
     // Same device, same IP, same user agent = likely parallel requests
-    const isLowRiskUA = deviceFingerprint.riskLevel === 'LOW' && deviceFingerprint.reasons.length === 0;
+    const isLowRiskUA = deviceFingerprint.riskLevel === RiskLevel.LOW && deviceFingerprint.reasons.length === 0;
 
     // Time since token was used (parallel requests should be very close)
     const timeSinceUsed = Date.now() - usedToken.usedAt!.getTime();
@@ -376,7 +409,7 @@ export const handleRefreshTokenReuse = async (
         return {
             action: 'ALLOW',
             reason: 'Likely parallel request from same context',
-            riskLevel: 'LOW'
+            riskLevel: RiskLevel.LOW
         };
     }
 
@@ -384,7 +417,7 @@ export const handleRefreshTokenReuse = async (
         return {
             action: 'REQUIRE_REAUTH',
             reason: 'Same device but not in parallel request window',
-            riskLevel: 'MEDIUM'
+            riskLevel: RiskLevel.MEDIUM
         };
     }
 
@@ -392,7 +425,7 @@ export const handleRefreshTokenReuse = async (
     return {
         action: 'INVALIDATE_ALL_SESSIONS',
         reason: 'Refresh token reuse from different context - possible token theft',
-        riskLevel: 'CRITICAL'
+        riskLevel: RiskLevel.SEVERE
     };
 };
 
@@ -426,7 +459,7 @@ export const invalidateAllUserSessions = async (userId: string, deviceId: string
     });
 };
 
-export const getUser2FAConfig = async (userId: string) => {
+export const getUserMFAConfig = async (userId: string) => {
     const user = await prisma.user.findUnique({
         where: { id: userId },
         include: {
@@ -456,55 +489,43 @@ export const getUser2FAConfig = async (userId: string) => {
 };
 
 type Get2FARequiredForLoginProps = {
-    account: DeviceIdsCookieAccount | null;
-    ipAddress: string;
-    agent: UserAgent;
+    userId: string;
+    riskLevel: RiskLevel;
+    device: Device | null;
 }
 
-export const get2FARequiredForLogin = async (props: Get2FARequiredForLoginProps) => {
-    const { account, ipAddress, agent } = props;
-    if (!account) {
-        return true;
+export const getMFARequiredForLogin = async (props: Get2FARequiredForLoginProps): Promise<{ mfaMethod: string | null }> => {
+    const { userId, riskLevel, device } = props;
+    const { enabled, method } = await getUserMFAConfig(userId);
+    const mfaMethod = method ?? "email";
+
+    if (riskLevel === RiskLevel.SEVERE) {
+        // Always require 2FA on severe risk even if disabled
+        return { mfaMethod }
     }
 
-    const device = await prisma.device.findFirst({
-        where: {
-            id: account.deviceId,
-        }
-    });
+    if (!enabled) {
+        return { mfaMethod: null };
+    }
+
     if (!device) {
-        return true;
+        return { mfaMethod };
     }
     if (!device.last2FAAt) {
-        return true;
+        return { mfaMethod };
     }
-    const fingerprintValidation = await validateDeviceFingerprint({
-        expected: {
-            ipAddress: device.lastIpAddress,
-            deviceId: device.id,
-            userAgent: device.userAgent,
-        },
-        current: {
-            deviceId: account.deviceId,
-            ipAddress,
-            userAgent: agent,
-        }
-    });
 
-    if (fingerprintValidation.riskLevel === "SEVERE") {
-        return true;
-    }
     // HIGH --> 2FA within a week
-    if ((fingerprintValidation.riskLevel === "HIGH")
+    if ((riskLevel === RiskLevel.HIGH)
         && dayjs(device.last2FAAt).isBefore(dayjs().subtract(7, 'days'))) {
-        return true;
+        return { mfaMethod };
     }
     // MEDIUM --> 2FA within a month
-    if ((fingerprintValidation.riskLevel === "MEDIUM")
+    if ((riskLevel === RiskLevel.MEDIUM)
         && dayjs(device.last2FAAt).isBefore(dayjs().subtract(30, 'days'))) {
-        return true;
+        return { mfaMethod };
     }
-    return false;
+    return { mfaMethod: null };
 }
 
 export const verifyMFAToken = async (token: string, appId: string, organisationId: string, logData: AuthenticationExceptionData): Promise<void> => {

@@ -113,6 +113,7 @@ model Device {
     lastIpAddress   String         @map("last_ip_address") @db.VarChar(45)
     userAgent       String         @map("user_agent") @db.Text
     sessionLifetime DateTime?      @map("session_lifetime") @db.Timestamp(3)
+    sessionRL       String         @map("session_rl") @db.Char(10)
     valid           Boolean        @default(true)
     RefreshToken    RefreshToken[]
     AuditLog        AuditLog[]

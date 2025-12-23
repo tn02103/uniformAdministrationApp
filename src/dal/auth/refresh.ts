@@ -8,6 +8,8 @@ import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adap
 import { Device, RefreshToken, User } from "@prisma/client";
 import { getIronSession } from "@/lib/ironSession";
 import { RateLimiterMemory } from "rate-limiter-flexible";
+import { LogDebugLevel } from "./LogDebugLeve.enum";
+import { AuthenticationException, AuthenticationExceptionData } from "@/errors/Authentication";
 
 type RefreshResponse = {
     success: false;
@@ -30,6 +32,7 @@ const consumeIpLimiter = async (ipAddress: string, points: number, userAgent: Us
                     action: "REFRESH_ACCESS_TOKEN",
                     userAgent,
                     deviceId,
+                    debugLevel: LogDebugLevel.CRITICAL
                 });
             }
         }).catch(() =>
@@ -40,6 +43,7 @@ const consumeIpLimiter = async (ipAddress: string, points: number, userAgent: Us
                 action: "REFRESH_ACCESS_TOKEN",
                 userAgent,
                 deviceId,
+                debugLevel: LogDebugLevel.CRITICAL
             })
         );
 }
@@ -66,22 +70,17 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
             console.warn("IP temporarily blocked due to too many failed login attempts", ipAddress);
             return { success: false, exceptionType: "AuthenticationFailed" };
         }
+        const logData: AuthenticationExceptionData = {
+            ipAddress,
+            userAgent: agent,
+            organisationId: account?.organisationId,
+            deviceId: account?.deviceId,
+        }
 
         // ##### Get Refresh Token from Cookie####
         if (!refreshToken) {
-            await consumeIpLimiter(ipAddress, 1, agent, account?.deviceId);
-            logSecurityAuditEntry({
-                success: false,
-                ipAddress,
-                details: "Refresh token cookie is missing",
-                action: "REFRESH_ACCESS_TOKEN",
-                userAgent: agent,
-                deviceId: account?.deviceId
-            });
-            return {
-                success: false,
-                exceptionType: "AuthenticationFailed",
-            }
+            await consumeIpLimiter(ipAddress, 2, agent, account?.deviceId);
+            throw new AuthenticationException("Refresh token cookie is missing", "AuthenticationFailed", LogDebugLevel.WARNING, logData);
         }
         const dbToken = await prisma.refreshToken.findUnique({
             where: {
@@ -98,22 +97,11 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
         });
         if (!dbToken) {
             await consumeIpLimiter(ipAddress, 5, agent, account?.deviceId);
-            logSecurityAuditEntry({
-                success: false,
-                ipAddress,
-                details: "Refresh token not found in database",
-                action: "REFRESH_ACCESS_TOKEN",
-                userAgent: agent,
-                deviceId: account?.deviceId
-            });
-            return {
-                success: false,
-                exceptionType: "AuthenticationFailed",
-            }
+            throw new AuthenticationException("Refresh token not found in database", "AuthenticationFailed", LogDebugLevel.WARNING, logData);
         }
 
         // ##### AUTHORIZE User ####
-        const verificationResult = await verifications({
+        await verifyRefreshToken({
             agent,
             ipAddress: ipAddress ?? "unknown",
             dbToken,
@@ -121,24 +109,11 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
             device: dbToken.device,
             cookieList,
             accountCookie,
-        });
-        if (!verificationResult.isValid) {
+            logData
+        }).catch(async (e) => {
             await consumeIpLimiter(ipAddress, 1, agent);
-            logSecurityAuditEntry({
-                userId: dbToken.userId,
-                organisationId: dbToken.user.organisationId,
-                success: false,
-                ipAddress,
-                details: verificationResult.reasons.join(", "),
-                action: "REFRESH_ACCESS_TOKEN",
-                userAgent: agent,
-                deviceId: account?.deviceId
-            });
-            return {
-                success: false,
-                exceptionType: "AuthenticationFailed",
-            }
-        }
+            throw e;
+        });
 
         // ##### ISSUE NEW TOKENS ####
         logSecurityAuditEntry({
@@ -149,7 +124,8 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
             details: "Refresh token valid",
             action: "REFRESH_ACCESS_TOKEN",
             userAgent: agent,
-            deviceId: account?.deviceId
+            deviceId: account?.deviceId,
+            debugLevel: LogDebugLevel.SUCCESS,
         });
 
         const maxSession = dayjs(dbToken.device.lastLoginAt).add(Number(AuthConfig.maxSessionAgeDays), "days");
@@ -189,73 +165,53 @@ type verificationsProp = {
     cookieList: ReadonlyRequestCookies;
     accountCookie?: DeviceIdsCookie | null;
     device: Device;
+    logData: AuthenticationExceptionData;
 }
-type VerivicationsResult = {
-    isValid: boolean;
-    reasons: string[];
-}
-const verifications = async (props: verificationsProp): Promise<VerivicationsResult> => {
-    const { agent, ipAddress, cookieList, dbToken, user, device, accountCookie } = props;
+const verifyRefreshToken = async (props: verificationsProp): Promise<void> => {
+    const { agent, ipAddress, cookieList, dbToken, user, device, accountCookie, logData } = props;
     const criticalReasons: string[] = [];
 
     if (dbToken.revoked) {
-        criticalReasons.push("RefreshToken has been revoked");
+        throw new AuthenticationException("Refresh token has been revoked", "AuthenticationFailed", LogDebugLevel.CRITICAL, logData);
     }
     if (dbToken.usedAt) {
-        // Handle refresh token reuse - this could be parallel requests or an attack
-        const reuseResult = await handleRefreshTokenReuse(dbToken, {
-            deviceId: device.id,
-            ipAddress,
-            userAgent: agent
-        });
-
-        if (reuseResult.action === 'INVALIDATE_ALL_SESSIONS') {
-            // Critical security incident - invalidate all user sessions
-            await invalidateAllUserSessions(user.id, device.id);
-            criticalReasons.push(`SECURITY_INCIDENT: ${reuseResult.reason}`);
-            cookieList.delete(AuthConfig.refreshTokenCookie);
-        } else if (reuseResult.action === 'REQUIRE_REAUTH') {
-            criticalReasons.push(`Suspicious token reuse: ${reuseResult.reason}`);
-            cookieList.delete(AuthConfig.refreshTokenCookie);
-        }
-
-        // If ALLOW, we continue normally but still log the incident
-        await logSecurityAuditEntry({
-            userId: user.id,
-            organisationId: user.organisationId,
-            success: reuseResult.action === 'ALLOW',
-            ipAddress,
-            userAgent: agent,
-            details: `Refresh token reuse detected: ${reuseResult.reason} (Risk: ${reuseResult.riskLevel})`,
-            action: "REFRESH_ACCESS_TOKEN",
-            deviceId: accountCookie?.lastUsed.deviceId
-        });
+        return handleRefreshTokenReuse(dbToken.token);
     }
     if (!isValid(dbToken.endOfLife) || dayjs().isAfter(dbToken.endOfLife)) {
-        criticalReasons.push(`RefreshToken has expired ${dayjs().diff(dbToken.endOfLife, 'seconds')} seconds ago`);
+        throw new AuthenticationException(
+            `Refresh token has expired. The token expired ${dayjs().diff(dbToken.endOfLife, 'seconds')} seconds ago`,
+            "AuthenticationFailed",
+            LogDebugLevel.INFO,
+            logData
+        );
     }
     if (!user.active) {
-        criticalReasons.push("User is not active");
+        throw new AuthenticationException("User is not active", "AuthenticationFailed", LogDebugLevel.WARNING, logData);
     }
     if (user.failedLoginCount > 5) {
-        criticalReasons.push("User has to many failed login attempts");
+        throw new AuthenticationException("User has to many failed login attempts", "AuthenticationFailed", LogDebugLevel.WARNING, logData);
     }
     if (user.recDelete) {
-        criticalReasons.push("User is deleted");
+        throw new AuthenticationException("User is deleted", "AuthenticationFailed", LogDebugLevel.WARNING, logData);
     }
     if (user.changePasswordOnLogin) {
-        criticalReasons.push("User has to change. No refresh possible");
+        throw new AuthenticationException("User has to change. No refresh possible", "AuthenticationFailed", LogDebugLevel.INFO, logData);
     }
 
     // ##### VALIDATE DEVICE FROM DB ####
     if (!accountCookie) {
-        criticalReasons.push("Device cookie not found");
+        throw new AuthenticationException("Device cookie not found", "AuthenticationFailed", LogDebugLevel.WARNING, logData);
     }
     if (!accountCookie?.lastUsed) {
-        criticalReasons.push("No last used device in cookie");
+        throw new AuthenticationException("No last used device in cookie", "AuthenticationFailed", LogDebugLevel.WARNING, logData);
     }
     if (accountCookie?.lastUsed.organisationId !== user.organisationId) {
-        criticalReasons.push("Organisation ID mismatch");
+        throw new AuthenticationException(
+            "Organisation ID mismatch. The last used organisation Id in the account cookie does not match the user's organisation Id",
+            "AuthenticationFailed",
+            LogDebugLevel.WARNING,
+            logData
+        );
     }
 
     // ##### VALIDATE FINGERPRINT ####
@@ -274,18 +230,18 @@ const verifications = async (props: verificationsProp): Promise<VerivicationsRes
         });
 
         if (fingerprintValidation.riskLevel === 'SEVERE' || fingerprintValidation.riskLevel === 'HIGH') {
-            return {
-                isValid: false,
-                reasons: [
-                    ...criticalReasons,
-                    ...fingerprintValidation.reasons
-                ],
-            };
+            throw new AuthenticationException(
+                `Device fingerprint validation failed. 
+                 Risk level: ${fingerprintValidation.riskLevel}
+                 Reasons: ${fingerprintValidation.reasons.join(", ")}`,
+                "AuthenticationFailed",
+                fingerprintValidation.riskLevel === 'SEVERE' ? LogDebugLevel.CRITICAL : LogDebugLevel.INFO,
+                logData
+            );
         }
     }
+}
 
-    return {
-        isValid: criticalReasons.length === 0,
-        reasons: criticalReasons,
-    }
+const handleRefreshTokenReuse = async (dbToken: string) => {
+
 }
