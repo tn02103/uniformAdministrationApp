@@ -52,22 +52,43 @@ enum OrganisationConfiguration_2FARule {
 }
 
 model RefreshToken {
-    token               String    @id @db.Char(128)
-    userId              String    @map("user_id") @db.Char(36)
-    deviceId            String    @map("device_id") @db.Char(36)
-    endOfLife           DateTime  @map("end_of_live") @db.Timestamp(3)
-    revoked             Boolean   @default(false)
-    issuerIpAddress     String    @map("issuer_ip_address") @db.VarChar(45)
-    usedAt              DateTime? @map("used_at") @db.Timestamp(3)
-    usedIpAddress       String?   @map("used_ip_address") @db.VarChar(45)
-    usedUserAgent       String?   @map("used_user_agent") @db.Text
-    numberOfUseAttempts Int       @default(0) @map("number_of_uses")
-    user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-    device              Device    @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+    token               String             @id @db.Char(512)
+    userId              String             @map("user_id") @db.Char(36)
+    deviceId            String             @map("device_id") @db.Char(36)
+    endOfLife           DateTime           @map("end_of_live") @db.Timestamp(3)
+    status              RefreshTokenStatus @default(active)
+    tokenFamilyId       String             @db.Char(36)
+    rotatedFromTokenId  String?            @db.Char(36)
+    rotatedFrom         RefreshToken?      @relation(fields: [rotatedFromTokenId], references: [token], name: "tokenRotation")
+    rotatedToTokens     RefreshToken?      @relation(name: "tokenRotation")
+    issuedAt            DateTime           @default(now())
+    issuerIpAddress     String             @map("issuer_ip_address") @db.VarChar(45)
+    usedAt              DateTime?          @map("used_at") @db.Timestamp(3)
+    usedIpAddress       String?            @map("used_ip_address") @db.VarChar(45)
+    usedUserAgent       String?            @map("used_user_agent") @db.Text
+    numberOfUseAttempts Int                @default(0) @map("number_of_uses")
+    user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+    device              Device             @relation(fields: [deviceId], references: [id], onDelete: Cascade)
 
     @@unique([token])
+    @@unique([rotatedFromTokenId])
     @@index([userId])
     @@map("refresh_token")
+    @@schema("authentication")
+}
+
+enum RefreshTokenStatus {
+    active
+    rotated
+    revoked
+
+    @@schema("authentication")
+}
+
+enum MFAType {
+    totp
+    email
+
     @@schema("authentication")
 }
 
@@ -101,23 +122,24 @@ model User {
 }
 
 model Device {
-    id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    name            String         @db.VarChar(50)
-    description     String?        @db.VarChar(100)
-    userId          String         @map("user_id") @db.Char(36)
-    user            User           @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
-    createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamp(3)
-    lastUsedAt      DateTime       @map("last_used_at") @db.Timestamp(3)
-    lastLoginAt     DateTime       @map("last_login_at") @db.Timestamp(3)
-    last2FAAt       DateTime?      @map("last_2fa_login_at") @db.Timestamp(3)
-    lastIpAddress   String         @map("last_ip_address") @db.VarChar(45)
-    userAgent       String         @map("user_agent") @db.Text
-    sessionLifetime DateTime?      @map("session_lifetime") @db.Timestamp(3)
-    sessionRL       String         @map("session_rl") @db.Char(10)
-    valid           Boolean        @default(true)
-    RefreshToken    RefreshToken[]
-    AuditLog        AuditLog[]
-    EmailToken      EmailToken[]
+    id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    name              String         @db.VarChar(50)
+    description       String?        @db.VarChar(100)
+    userId            String         @map("user_id") @db.Char(36)
+    user              User           @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+    createdAt         DateTime       @default(now()) @map("created_at") @db.Timestamp(3)
+    lastUsedAt        DateTime       @map("last_used_at") @db.Timestamp(3)
+    lastLoginAt       DateTime       @map("last_login_at") @db.Timestamp(3)
+    lastMFAAt         DateTime?      @map("last_mfa_login_at") @db.Timestamp(3)
+    lastUsedMFAType   MFAType?       @map("last_used_mfa_type")
+    lastIpAddress     String         @map("last_ip_address") @db.VarChar(45)
+    userAgent         String         @map("user_agent") @db.Text
+    sessionLifetime   DateTime?      @map("session_lifetime") @db.Timestamp(3)
+    sessionRL         String         @map("session_rl") @db.Char(10)
+    valid             Boolean        @default(true)
+    RefreshToken      RefreshToken[]
+    AuditLog          AuditLog[]
+    EmailToken        EmailToken[]
 
     @@index([userId])
     @@map("device")

@@ -2,12 +2,13 @@ import { AuthenticationException, AuthenticationExceptionData, ExceptionType, Tw
 import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
 import { LoginFormSchema, LoginFormType } from "@/zod/auth";
+import { Device, Organisation, User } from "@prisma/client";
 import { cookies, headers } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
 import { userAgent } from "next/server";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import { setTimeout } from "timers/promises";
-import { FingerprintValidationResult, getDeviceAccountFromCookies, getIPAddress, logSecurityAuditEntry, RiskLevel, UserAgent, validateDeviceFingerprint } from "../helper";
+import { DeviceIdsCookieAccount, FingerprintValidationResult, getDeviceAccountFromCookies, getIPAddress, logSecurityAuditEntry, RiskLevel, UserAgent, validateDeviceFingerprint } from "../helper";
 import { LogDebugLevel } from "../LogDebugLeve.enum";
 import { handleSuccessfulLogin } from "./handleSuccessfulLogin";
 import { verifyUser } from "./verifyUser";
@@ -50,6 +51,17 @@ const consumeIpLimiter = async (ipAddress: string, points: number, userAgent: Us
             userAgent,
             deviceId,
         }));
+}
+
+export type UserLoginData = AuthenticationExceptionData & {
+    user: User;
+    organisationId: string;
+    organisation: Organisation;
+    ipAddress: string;
+    agent: UserAgent;
+    account: DeviceIdsCookieAccount | null;
+    fingerprint: FingerprintValidationResult;
+    device: Device | null;
 }
 
 export const Login = async (props: LoginFormType): Promise<LoginReturnType> => {
@@ -136,15 +148,21 @@ export const Login = async (props: LoginFormType): Promise<LoginReturnType> => {
         }
 
         // ############# AUTHENTICATION #############
-
-        const { mfaMethod } = await verifyUser({
-            user,
+        const UserLoginData: UserLoginData = {
+            ...loginLogData,
             organisationId: organisation.id,
-            password: formData.password,
-            secondFactor: formData.secondFactor,
-            loginLogData,
+            organisation,
+            user,
+            ipAddress,
+            agent,
+            account,
             fingerprint,
             device: dbDevice,
+        };
+
+        const { mfaMethod } = await verifyUser({
+            userData: UserLoginData,
+            loginFormData: formData,
         }).catch((e) => {
             if (e instanceof AuthenticationException && e.exceptionType !== "TwoFactorRequired") {
                 consumeIpLimiter(ipAddress, 1, agent, account?.deviceId);
@@ -154,15 +172,10 @@ export const Login = async (props: LoginFormType): Promise<LoginReturnType> => {
 
         // ############# POST AUTHENTICATION #############
         await handleSuccessfulLogin({
-            user,
-            organisation,
-            ipAddress,
-            agent,
+            userLoginData: UserLoginData,
             cookieList: cookieList,
             accountCookie,
-            account,
             mfaMethod,
-            fingerprint,
         });
 
         return redirect(`/app/cadet`, RedirectType.push);

@@ -1,16 +1,15 @@
+import { AuthenticationExceptionData } from "@/errors/Authentication";
 import { AuthRole } from "@/lib/AuthRoles";
 import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
-import { getIronSession, IronSession } from "@/lib/ironSession";
-import { Device, Organisation, RefreshToken, User } from "@prisma/client";
-import crypto from 'crypto';
+import { getIronSession } from "@/lib/ironSession";
+import { MFAType, RefreshToken } from "@prisma/client";
 import { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/headers";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { userAgent } from "next/server";
 import z from "zod";
-import { verifyEmailCode } from "./email/verifyCode";
 import { __unsecuredVerifyTwoFactorCode } from "./2fa/verify";
-import { AuthenticationExceptionData } from "@/errors/Authentication";
+import { verifyEmailCode } from "./email/verifyCode";
 import { LogDebugLevel } from "./LogDebugLeve.enum";
 
 
@@ -37,13 +36,15 @@ export const AuthConfig = {
         acceptedTime: 1000,
         mediumRiskTime: 5000,
     },
-    sessionAges: {
+    accessTokenAgeMinutes: 15,
+    sessionAgesInDays: {
+        // In Days
         no2FA: 7,
         email2FA: 14,
         totp2FA: 30,
         newDevice: 3,
-        requirePasswordReauthDays: 30,
-        elevated: {
+        requirePasswordReauth: 30,
+        elevatedSessionInMin: {
             password: 10,
             mfa: 20,
         },
@@ -91,104 +92,23 @@ export const logSecurityAuditEntry = async (data: LogSecurityAuditEntryData) => 
     });
 }
 
-type IssueNewRefreshTokenProps = {
-    cookieList: ReadonlyRequestCookies;
-    userId: string;
-    deviceId: string;
-    ipAddress: string;
-    endOfLife?: Date;
-} & ({ usedRefreshToken?: undefined, userAgent?: undefined } | {
-    userAgent: UserAgent;
-    usedRefreshToken: string;
-})
-/**
- * Issues a new access token for the user.
- */
-export const issueNewRefreshToken = async (props: IssueNewRefreshTokenProps) => {
-    const {
-        cookieList,
-        deviceId,
-        userId,
-        ipAddress,
-        usedRefreshToken,
-        endOfLife = dayjs().add(3, "days").toDate(),
-        userAgent,
-    } = props;
-
-    if (usedRefreshToken) {
-        // Mark the used refresh token as used
-        await prisma.refreshToken.update({
-            where: {
-                token: usedRefreshToken,
-                userId: userId,
-                revoked: false,
-                usedAt: null,
-                endOfLife: { gt: new Date() },
-            },
-            data: {
-                usedAt: new Date(),
-                usedIpAddress: ipAddress,
-                usedUserAgent: JSON.stringify(userAgent),
-            }
-        });
-    }
-
-    // Invalidate existing refreshTokens
-    await prisma.refreshToken.updateMany({
-        where: {
-            deviceId: deviceId,
-            userId: userId,
-            revoked: false,
-            usedAt: null,
-            endOfLife: { gt: new Date() },
-        },
-        data: {
-            revoked: true,
-        }
-    });
-
-    // Create new refresh Token
-    let refreshToken = crypto.randomBytes(64).toString('hex');
-    while (await prisma.refreshToken.findUnique({ where: { token: refreshToken } })) {
-        // Regenerate if collision (extremely unlikely)
-        refreshToken = crypto.randomBytes(64).toString('hex');
-    }
-
-    await prisma.refreshToken.create({
-        data: {
-            userId: userId,
-            deviceId: deviceId,
-            token: refreshToken,
-            endOfLife,
-            issuerIpAddress: ipAddress,
-        }
-    });
-    // Set Refreshtoken cookie
-    cookieList.set(AuthConfig.refreshTokenCookie, refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-        expires: endOfLife,
-    });
-}
-
 export const calculateSessionLifetime = (context: {
     isNewDevice: boolean;
     fingerprintRisk: RiskLevel;
     mfa?: {
         lastValidation: Date;
-        method: "email" | "totp";
+        type: MFAType;
     }
     lastPWValidation: Date;
     userRole: AuthRole;
-}): number => {
+}): Date | null => {
     // Base lifetime in days
     let baseDays = AuthConfig.sessionAges.no2FA; // Conservative default
 
     // Authentication method bonus
-    if (context.mfa?.method === 'totp') {
+    if (context.mfa?.type === MFAType.totp) {
         baseDays = AuthConfig.sessionAges.totp2FA;
-    } else if (context.mfa?.method === 'email') {
+    } else if (context.mfa?.type === 'email') {
         baseDays = AuthConfig.sessionAges.email2FA;
     }
 
@@ -216,29 +136,18 @@ export const calculateSessionLifetime = (context: {
     const daysSincePasswordAuth = dayjs().diff(context.lastPWValidation, 'days');
 
     if (daysSincePasswordAuth >= AuthConfig.sessionAges.requirePasswordReauthDays) {
-        return 0; // Force password re-authentication
+        baseDays = 0; // Force password re-authentication
+    }
+    if (baseDays === 0) {
+        return null;
+    }
+    if (baseDays * 24 < 8) {
+        baseDays = 8 / 24; // Minimum 8 hours
     }
 
-    return baseDays;
+    return dayjs(context.lastPWValidation).add(baseDays * 24, 'hours').toDate();
 };
 
-type IssueNewAccessTokenProps = {
-    user: User;
-    session: IronSession;
-    organisation: Organisation;
-}
-export const issueNewAccessToken = async (props: IssueNewAccessTokenProps) => {
-    const { user, session, organisation } = props;
-    session.user = {
-        id: user.id,
-        name: user.name,
-        username: user.username,
-        role: user.role,
-        organisationId: organisation.id,
-        acronym: organisation.acronym
-    };
-    await session.save();
-}
 
 type GetAccountProps = {
     cookieList: ReadonlyRequestCookies;
@@ -436,10 +345,10 @@ export const invalidateAllUserSessions = async (userId: string, deviceId: string
     await prisma.refreshToken.updateMany({
         where: {
             userId: userId,
-            revoked: false
+            status: "active",
         },
         data: {
-            revoked: true
+            status: "revoked",
         }
     });
     const session = await getIronSession();
@@ -487,46 +396,6 @@ export const getUserMFAConfig = async (userId: string) => {
     }
     return { enabled: false, methdo: null };
 };
-
-type Get2FARequiredForLoginProps = {
-    userId: string;
-    riskLevel: RiskLevel;
-    device: Device | null;
-}
-
-export const getMFARequiredForLogin = async (props: Get2FARequiredForLoginProps): Promise<{ mfaMethod: string | null }> => {
-    const { userId, riskLevel, device } = props;
-    const { enabled, method } = await getUserMFAConfig(userId);
-    const mfaMethod = method ?? "email";
-
-    if (riskLevel === RiskLevel.SEVERE) {
-        // Always require 2FA on severe risk even if disabled
-        return { mfaMethod }
-    }
-
-    if (!enabled) {
-        return { mfaMethod: null };
-    }
-
-    if (!device) {
-        return { mfaMethod };
-    }
-    if (!device.last2FAAt) {
-        return { mfaMethod };
-    }
-
-    // HIGH --> 2FA within a week
-    if ((riskLevel === RiskLevel.HIGH)
-        && dayjs(device.last2FAAt).isBefore(dayjs().subtract(7, 'days'))) {
-        return { mfaMethod };
-    }
-    // MEDIUM --> 2FA within a month
-    if ((riskLevel === RiskLevel.MEDIUM)
-        && dayjs(device.last2FAAt).isBefore(dayjs().subtract(30, 'days'))) {
-        return { mfaMethod };
-    }
-    return { mfaMethod: null };
-}
 
 export const verifyMFAToken = async (token: string, appId: string, organisationId: string, logData: AuthenticationExceptionData): Promise<void> => {
     if (appId === "email") {

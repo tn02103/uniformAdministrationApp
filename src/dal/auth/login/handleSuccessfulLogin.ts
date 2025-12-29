@@ -1,32 +1,30 @@
+import { AuthenticationException } from "@/errors/Authentication";
 import { prisma } from "@/lib/db";
-import { User, Organisation, Prisma } from "@prisma/client";
-import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
-import { UserAgent, DeviceIdsCookieAccount, DeviceIdsCookie, calculateSessionLifetime, issueNewRefreshToken, issueNewAccessToken, logSecurityAuditEntry, RiskLevel, AuthConfig, FingerprintValidationResult } from "../helper";
-import { LogDebugLevel } from "../LogDebugLeve.enum";
 import { getIronSession } from "@/lib/ironSession";
-import dayjs from "@/lib/dayjs";
+import { Prisma } from "@prisma/client";
+import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
+import { UserLoginData } from ".";
+import { AuthConfig, calculateSessionLifetime, DeviceIdsCookie, DeviceIdsCookieAccount, logSecurityAuditEntry, RiskLevel, UserAgent } from "../helper";
+import { issueNewAccessToken, issueNewRefreshToken } from "../helper.tokens";
+import { LogDebugLevel } from "../LogDebugLeve.enum";
 
 // ############## POST AUTHENTICATION ##################
 type HandleSuccessfulLoginProps = {
-    user: User;
-    organisation: Organisation;
-    ipAddress: string;
-    agent: UserAgent;
+    userLoginData: UserLoginData;
     cookieList: ReadonlyRequestCookies;
-    account: DeviceIdsCookieAccount | null;
     accountCookie: DeviceIdsCookie | null;
     mfaMethod: null | "email" | "totp";
-    fingerprint: FingerprintValidationResult;
 }
 export const handleSuccessfulLogin = async (props: HandleSuccessfulLoginProps): Promise<void> => {
-    const { user, organisation, ipAddress, agent, cookieList, accountCookie, mfaMethod, fingerprint } = props;
-    let { account } = props;
-    
+    const { userLoginData, cookieList, accountCookie, mfaMethod } = props;
+    const { user, organisationId, ipAddress, agent, fingerprint } = userLoginData;
+    let { account } = userLoginData;
+
     // Register new device if it does not exists
     account = await handleDeviceUsage({
         account,
         accountCookie,
-        organisationId: organisation.id,
+        organisationId: organisationId,
         userAgent: agent,
         ipAddress,
         userId: user.id,
@@ -35,23 +33,28 @@ export const handleSuccessfulLogin = async (props: HandleSuccessfulLoginProps): 
         mfaUsed: !!mfaMethod
     });
 
-    const lifetime = calculateSessionLifetime({
-        isNewDevice: account.deviceId === props.account?.deviceId,
+    const sessionEOL = calculateSessionLifetime({
+        isNewDevice: account.deviceId === userLoginData.account?.deviceId,
         lastPWValidation: new Date(),
         mfa: mfaMethod ? {
             lastValidation: new Date(),
-            method: mfaMethod,
+            type: mfaMethod,
         } : undefined,
         fingerprintRisk: fingerprint.riskLevel,
         userRole: user.role,
     });
-    
-    const sessionEOL = dayjs().add(
-        Math.max(lifetime * 24, 4),
-        "hours"
-    );
+
+    if (!sessionEOL) {
+        throw new AuthenticationException(
+            "Session lifetime could not be determined, password re-authentication required",
+            "AuthenticationFailed",
+            LogDebugLevel.WARNING,
+            userLoginData
+        );
+    }
+
     const session = await getIronSession();
-    
+
     await prisma.user.update({
         where: { id: user.id },
         data: {
@@ -65,12 +68,14 @@ export const handleSuccessfulLogin = async (props: HandleSuccessfulLoginProps): 
         userId: user.id,
         deviceId: account.deviceId,
         ipAddress,
-        endOfLife: sessionEOL.toDate()
+        endOfLife: sessionEOL,
+        logData: userLoginData,
+        mode: "new",
     });
-    await issueNewAccessToken({ session, user, organisation });
+    await issueNewAccessToken({ session, user, organisation: userLoginData.organisation });
     await logSecurityAuditEntry({
         userId: user.id,
-        organisationId: organisation.id,
+        organisationId: organisationId,
         success: true,
         ipAddress,
         userAgent: agent,
@@ -106,7 +111,7 @@ const handleDeviceUsage = async (props: HandleDeviceUsageProps): Promise<DeviceI
         userAgent: JSON.stringify(userAgent),
         lastUsedAt: new Date(),
         lastLoginAt: new Date(),
-        last2FAAt: mfaUsed ? new Date() : null,
+        lastMFAAt: mfaUsed ? new Date() : null,
         sessionRL: String(riskLevel),
     } satisfies Prisma.DeviceUpdateInput
     const dbDevice = await prisma.device.upsert({
