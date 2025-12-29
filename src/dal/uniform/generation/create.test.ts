@@ -23,7 +23,7 @@ const mockUniformTypeNoGenerations = mockTypeList[2]; // Type without generation
 
 const defaultProps = {
     name: "New Generation",
-    outdated: true,
+    isReserve: true,
     fk_sizelist: mockSizeLists[0].id,
     uniformTypeId: mockUniformType.id,
 };
@@ -57,7 +57,7 @@ describe('<UniformGeneration> create', () => {
         mockPrisma.uniformGeneration.create.mockResolvedValue({
             id: 'new-generation-id',
             name: defaultProps.name,
-            outdated: defaultProps.outdated,
+            isReserve: defaultProps.isReserve,
             fk_sizelist: defaultProps.fk_sizelist,
             fk_uniformType: defaultProps.uniformTypeId,
             sortOrder: 2,
@@ -90,7 +90,7 @@ describe('<UniformGeneration> create', () => {
             expect(mockPrisma.uniformGeneration.create).toHaveBeenCalledWith({
                 data: {
                     name: defaultProps.name,
-                    outdated: defaultProps.outdated,
+                    isReserve: defaultProps.isReserve,
                     fk_sizelist: defaultProps.fk_sizelist,
                     fk_uniformType: defaultProps.uniformTypeId,
                     sortOrder: 2, // Length of existing generations
@@ -114,7 +114,7 @@ describe('<UniformGeneration> create', () => {
             expect(mockPrisma.uniformGeneration.create).toHaveBeenCalledWith({
                 data: {
                     name: props.name,
-                    outdated: props.outdated,
+                    isReserve: props.isReserve,
                     fk_sizelist: null, // Should be null for types not using sizes
                     fk_uniformType: props.uniformTypeId,
                     sortOrder: 2,

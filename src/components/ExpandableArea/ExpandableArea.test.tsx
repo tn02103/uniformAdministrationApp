@@ -1,14 +1,14 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ExpandableArea } from "./ExpandableArea";
+import { ExpandableDividerArea } from "./ExpandableArea";
 
 describe('ExpandableArea', () => {
 
     it('renders area closed', () => {
         const { container } = render(
-            <ExpandableArea>
+            <ExpandableDividerArea>
                 <div>Test</div>
-            </ExpandableArea>
+            </ExpandableDividerArea>
         );
 
         const button = screen.getByRole('button');
@@ -22,9 +22,9 @@ describe('ExpandableArea', () => {
     it('renders area open', async () => {
         const user = userEvent.setup();
         const { container } = render(
-            <ExpandableArea>
+            <ExpandableDividerArea>
                 <div>Test</div>
-            </ExpandableArea>
+            </ExpandableDividerArea>
         );
         const button = screen.getByRole('button');
 

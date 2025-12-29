@@ -10,7 +10,8 @@ import { SWRConfig } from "swr";
 type GlobalDataProviderContextType = {
     userRole: AuthRole;
     useBeta: boolean;
-    sizelists: UniformSizelist[]
+    sizelists: UniformSizelist[],
+    typeList: UniformType[],
 }
 
 type GlobalDataProviderPropType = {
@@ -32,8 +33,9 @@ const GlobalDataProvider = ({ children, userRole, useBeta, sizelists, typeList, 
             userRole: userRole,
             useBeta: useBeta,
             sizelists: sizelists,
+            typeList: typeList,
         }
-    }, [sizelists, useBeta, userRole]);
+    }, [sizelists, useBeta, userRole, typeList]);
 
     GlobalDataContext = createContext<GlobalDataProviderContextType>(getProviderContext());
     return (

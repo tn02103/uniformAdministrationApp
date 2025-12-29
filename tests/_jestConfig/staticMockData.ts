@@ -6,7 +6,7 @@ export const mockGenerationLists = [
             id: '8c0e873b-2b7d-4624-8a61-a192146f6587',
             name: 'Generation1-1',
             fk_sizelist: '9feb9d1a-654a-4829-a01b-74d6ffbd5405',
-            outdated: true,
+            isReserve: true,
             sortOrder: 0,
             sizelist: { id: '9feb9d1a-654a-4829-a01b-74d6ffbd5405', name: 'Liste0' }
         },
@@ -14,7 +14,7 @@ export const mockGenerationLists = [
             id: '0292fdd9-9d47-4470-86b6-107c6f8797e4',
             name: 'Generation1-2',
             fk_sizelist: '9feb9d1a-654a-4829-a01b-74d6ffbd5405',
-            outdated: false,
+            isReserve: false,
             sortOrder: 1,
             sizelist: { id: '9feb9d1a-654a-4829-a01b-74d6ffbd5405', name: 'Liste0' }
         },
@@ -22,7 +22,7 @@ export const mockGenerationLists = [
             id: '6649bcce-7ea2-4f8c-b5cc-85242f2f4dec',
             name: 'Generation1-3',
             fk_sizelist: '27021179-ec3d-4b04-9ed8-6ac53fdc3b4e',
-            outdated: false,
+            isReserve: false,
             sortOrder: 2,
             sizelist: { id: '27021179-ec3d-4b04-9ed8-6ac53fdc3b4e', name: 'Liste1' }
         },
@@ -30,7 +30,7 @@ export const mockGenerationLists = [
             id: '654d3e11-caee-410d-af04-427a052d37dd',
             name: 'Generation1-4',
             fk_sizelist: 'cc0a225d-b3ec-4108-bd4b-451437d93fbf',
-            outdated: false,
+            isReserve: false,
             sortOrder: 3,
             sizelist: null,
         }
@@ -40,7 +40,7 @@ export const mockGenerationLists = [
             id: 'd85de47c-f465-4d2a-b696-6f7474bca261',
             name: 'Generation2-1',
             fk_sizelist: null,
-            outdated: true,
+            isReserve: true,
             sortOrder: 0,
             sizelist: null
         },
@@ -48,7 +48,7 @@ export const mockGenerationLists = [
             id: '2e702b62-d250-4e89-a26c-b11d4c8f8a8e',
             name: 'Generation2-2',
             fk_sizelist: null,
-            outdated: false,
+            isReserve: false,
             sortOrder: 1,
             sizelist: null
         }
@@ -272,7 +272,7 @@ export const mockUniformList = [
         generation: mockGenerationLists[0][1],
         size: mockSizeLists[0].uniformSizes[0],
         comment: 'Test comment',
-        active: true,
+        isReserve: false,
         type: {
             id: mockTypeList[0].id,
             name: mockTypeList[0].name,
@@ -286,7 +286,7 @@ export const mockUniformList = [
         generation: mockGenerationLists[0][2],
         size: mockSizeLists[1].uniformSizes[1],
         comment: 'Another test comment',
-        active: true,
+        isReserve: false,
         type: {
             id: mockTypeList[1].id,
             name: mockTypeList[1].name,
@@ -300,7 +300,7 @@ export const mockUniformList = [
         generation: mockGenerationLists[1][0],
         size: mockSizeLists[2].uniformSizes[2],
         comment: 'Yet another test comment',
-        active: false,
+        isReserve: true,
         type: {
             id: mockTypeList[2].id,
             name: mockTypeList[2].name,
@@ -314,7 +314,7 @@ export const mockUniformList = [
         generation: mockGenerationLists[1][1],
         size: mockSizeLists[3].uniformSizes[3],
         comment: 'Final test comment',
-        active: true,
+        isReserve: false,
         type: {
             id: mockTypeList[3].id,
             name: mockTypeList[3].name,

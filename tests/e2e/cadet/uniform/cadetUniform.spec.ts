@@ -117,16 +117,16 @@ test.describe(() => {
                 expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toBeVisible(),
                 expect.soft(uniformComponent.div_utype_name(ids.uniformTypeIds[0])).toBeVisible(),
 
-                expect.soft(uniformComponent.btn_uitem_open(ids.uniformIds[0][84])).toBeVisible(),
-                expect.soft(uniformComponent.btn_uitem_switch(ids.uniformIds[0][84])).toBeVisible(),
-                expect.soft(uniformComponent.btn_uitem_withdraw(ids.uniformIds[0][84])).toBeVisible(),
+                expect.soft(uniformComponent.btn_uitem_open(ids.uniformIds[0][84])).toBeHidden(),
+                expect.soft(uniformComponent.btn_uitem_switch(ids.uniformIds[0][84])).toBeHidden(),
+                expect.soft(uniformComponent.btn_uitem_withdraw(ids.uniformIds[0][84])).toBeHidden(),
 
                 expect.soft(uniformComponent.div_uitem_number(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84]).getByTestId('div_size')).toBeVisible(),
                 expect.soft(uniformComponent.div_uitem_generation(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.div_uitem_comment(ids.uniformIds[0][84])).toBeHidden(),
 
-                expect.soft(uniformComponent.btn_uitem_menu(ids.uniformIds[0][84])).toBeHidden(),
+                expect.soft(uniformComponent.btn_uitem_menu(ids.uniformIds[0][84])).toBeVisible(),
                 expect.soft(uniformComponent.btn_uitem_menu_open(ids.uniformIds[0][84])).toBeHidden(),
                 expect.soft(uniformComponent.btn_uitem_menu_switch(ids.uniformIds[0][84])).toBeHidden(),
                 expect.soft(uniformComponent.btn_uitem_menu_withdraw(ids.uniformIds[0][84])).toBeHidden(),

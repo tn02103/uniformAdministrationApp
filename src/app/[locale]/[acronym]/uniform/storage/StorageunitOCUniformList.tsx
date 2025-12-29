@@ -75,7 +75,6 @@ export function StorageunitOCUniformList({ storageUnit }: Props) {
     const customFilter = (options: Option[], searchTerm: string) => {
         if (!searchTerm) return options;
 
-
         const parts = searchTerm.split(/[-\s]+/).filter(Boolean);
         const isNumber = parts.map(part => !isNaN(Number(part)));
         return options.filter(option => {
@@ -84,9 +83,9 @@ export function StorageunitOCUniformList({ storageUnit }: Props) {
                     return String(option.number).includes(part);
                 } else {
                     const lowerPart = part.toLowerCase();
-                    
+
                     return (
-                        option.type.name.toLocaleLowerCase().includes(lowerPart) 
+                        option.type.name.toLocaleLowerCase().includes(lowerPart)
                         || option.type.acronym.toLocaleLowerCase().includes(lowerPart)
                     );
                 }
@@ -125,31 +124,37 @@ export function StorageunitOCUniformList({ storageUnit }: Props) {
                     </tr>
                 </thead>
                 <tbody>
-                    {storageUnit.uniformList.map((uniform) => (
-                        <tr key={uniform.id} className={"hoverCol align-middle"}>
-                            <td>
-                                {(userRole >= AuthRole.inspector) &&
-                                    <Button
-                                        variant={"light"}
-                                        className={(process.env.NEXT_PUBLIC_STAGE !== "TEST") ? "hoverColHidden" : ""}
-                                        size="sm"
-                                        onClick={() => handleRemove(uniform.id)}
-                                        aria-label={tCommon('actions.remove')}
-                                    >
-                                        <FontAwesomeIcon icon={faX} className="text-danger" />
-                                    </Button>
-                                }
-                            </td>
-                            <td className={!uniform.active ? " text-secondary" : ""}>
-                                <div className="d-flex align-items-left gap-2">
-                                    {uniform.type.name}-{uniform.number}
-                                    {!uniform.active && <TooltipIcon icon={faRegistered} tooltipText={tCommon('uniform.state.reserve')} className="text-secondary my-auto" />}
-                                </div>
-                            </td>
-                            <td className={!uniform.active ? " text-secondary" : ""}>{uniform.size?.name}</td>
-                            <td className={uniform.generation?.outdated ? "text-orange-500" : !uniform.active ? " text-secondary" : ""}>{uniform.generation?.name ?? "--"}</td>
-                        </tr>
-                    ))}
+                    {storageUnit.uniformList.map((uniform) => {
+                        const isReserve = uniform.isReserve || uniform.generation?.isReserve;
+                        return (
+                            <tr
+                                key={uniform.id}
+                                className={`hoverCol align-middle`}
+                            >
+                                <td>
+                                    {(userRole >= AuthRole.inspector) &&
+                                        <Button
+                                            variant={"light"}
+                                            className={(process.env.NEXT_PUBLIC_STAGE !== "TEST") ? "hoverColHidden" : ""}
+                                            size="sm"
+                                            onClick={() => handleRemove(uniform.id)}
+                                            aria-label={tCommon('actions.remove')}
+                                        >
+                                            <FontAwesomeIcon icon={faX} className="text-danger" />
+                                        </Button>
+                                    }
+                                </td>
+                                <td>
+                                    <div className="d-flex align-items-left gap-2">
+                                        {uniform.type.name}-{uniform.number}
+                                        {isReserve && <TooltipIcon icon={faRegistered} tooltipText={tCommon('uniform.state.isReserve')} className="text-secondary my-auto" />}
+                                    </div>
+                                </td>
+                                <td>{uniform.size?.name}</td>
+                                <td>{uniform.generation?.name ?? "--"}</td>
+                            </tr>
+                        )
+                    })}
                 </tbody>
             </Table>
         </div>
@@ -159,14 +164,16 @@ export function StorageunitOCUniformList({ storageUnit }: Props) {
 const getRenderOptionFunction = (translations: { isReserve: string, owner: string, storageUnit: string }) => {
     const render = ({ option, onMouseDown, highlighted, selected }: RenderOptionProps<Option>) => {
         const disabled = !!(option.owner || option.storageUnit);
-
+        const getTextColor = () => {
+            if (option.owner) return 'text-danger';
+            if (option.storageUnit) return 'text-danger';
+            return '';
+        }
 
         const optionElement = (
             <div key={option.value}
-                className={`d-flex align-items-center gap-2 p-2 ${highlighted ? 'bg-secondary-subtle' : 'bg-white'} ${disabled ? 'text-danger' : ''}`}
-                style={{
-                    cursor: disabled ? 'not-allowed' : 'pointer',
-                }}
+                className={`d-flex align-items-center gap-2 p-2 ${highlighted ? 'bg-secondary-subtle' : 'bg-white'} ${getTextColor()}`}
+                style={{ cursor: disabled ? 'not-allowed' : 'pointer' }}
                 role="option"
                 aria-selected={selected}
                 aria-disabled={disabled}
@@ -176,8 +183,8 @@ const getRenderOptionFunction = (translations: { isReserve: string, owner: strin
                 {option.owner &&
                     <FontAwesomeIcon icon={faUser} className="text-danger" />
                 }
-                {!option.active &&
-                    <FontAwesomeIcon icon={faRegistered} className="text-warning" />
+                {option.isReserve &&
+                    <FontAwesomeIcon icon={faRegistered} className="text-secondary" />
                 }
                 {option.storageUnit &&
                     <FontAwesomeIcon icon={faBoxOpen} className="text-danger" />
@@ -185,7 +192,7 @@ const getRenderOptionFunction = (translations: { isReserve: string, owner: strin
             </div>
         )
 
-        if (!disabled && option.active)
+        if (!disabled && !option.isReserve)
             return optionElement;
 
         return (
@@ -195,7 +202,7 @@ const getRenderOptionFunction = (translations: { isReserve: string, owner: strin
                 overlay={
                     <Tooltip className="d-none d-lg-inline">
                         <ul className="m-0 p-1 ps-3 text-start">
-                            {option.active || <li>{translations.isReserve}</li>}
+                            {option.isReserve && <li>{translations.isReserve}</li>}
                             {option.owner && <li>{translations.owner}{option.owner.firstname} {option.owner.lastname}</li>}
                             {option.storageUnit && <li>{translations.storageUnit}<span style={{ "whiteSpace": "nowrap" }}>&quot;{option.storageUnit.name}&quot;</span></li>}
                         </ul>

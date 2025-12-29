@@ -23,7 +23,7 @@ export const testTypes: UniformType[] = [
             {
                 id: "ab5d155c-49cf-4019-831e-ca7b3e0bd51c",
                 name: "Test Generation 1",
-                outdated: false,
+                isReserve: false,
                 sortOrder: 1,
                 fk_sizelist: sizeListIds[0],
                 sizelist: {
@@ -34,7 +34,7 @@ export const testTypes: UniformType[] = [
             {
                 id: "7feb435c-ee23-486d-af9f-b7c874383e22",
                 name: "Test Generation 2",
-                outdated: false,
+                isReserve: false,
                 sortOrder: 2,
                 fk_sizelist: sizeListIds[1],
                 sizelist: {
@@ -45,7 +45,7 @@ export const testTypes: UniformType[] = [
             {
                 id: "c46adb18-1a04-4dda-884d-972a7aa0e0da",
                 name: "Test Generation 3",
-                outdated: true,
+                isReserve: true,
                 sortOrder: 3,
                 fk_sizelist: sizeListIds[1],
                 sizelist: {
@@ -85,7 +85,7 @@ export const testTypes: UniformType[] = [
             {
                 id: "ab5d155c-49cf-4019-831e-ca7b3e0bd51c",
                 name: "Test Generation 1",
-                outdated: false,
+                isReserve: false,
                 sortOrder: 1,
                 fk_sizelist: sizeListIds[0],
                 sizelist: {
@@ -111,7 +111,7 @@ export const testTypes: UniformType[] = [
             {
                 id: "ab5d155c-49cf-4019-831e-ca7b3e0bd51c",
                 name: "Test Generation 1",
-                outdated: false,
+                isReserve: false,
                 sortOrder: 1,
                 fk_sizelist: sizeListIds[0],
                 sizelist: {
@@ -122,7 +122,7 @@ export const testTypes: UniformType[] = [
             {
                 id: "7feb435c-ee23-486d-af9f-b7c874383e22",
                 name: "Test Generation 2",
-                outdated: false,
+                isReserve: false,
                 sortOrder: 2,
                 fk_sizelist: sizeListIds[1],
                 sizelist: {

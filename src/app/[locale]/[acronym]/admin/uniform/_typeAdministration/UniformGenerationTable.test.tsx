@@ -67,7 +67,7 @@ describe('<UniformGenerationTable />', () => {
                 {
                     id: "invalid-generation",
                     name: "Invalid Generation",
-                    outdated: false,
+                    isReserve: false,
                     sortOrder: 4,
                     fk_sizelist: null,
                     sizelist: null,
@@ -235,25 +235,25 @@ describe('<UniformGenerationTable />', () => {
         expect(row).not.toBeNull();
         expect(row!.childNodes).toHaveLength(4);
     });
-    it('shows outdated column on Mobile when !usingSizes', () => {
+    it('shows reserve column on Mobile when !usingSizes', () => {
         const testTypeWithoutSizeList: UniformType = {
             ...testType,
             usingSizes: false,
         };
         render(<UniformGenerationTable uniformType={testTypeWithoutSizeList} />);
 
-        expect(screen.getByText("common.uniform.generation.outdated")).toBeInTheDocument();
-        expect(screen.queryByText("common.uniform.generation.outdated")).not.toHaveClass("d-none d-sm-table-cell");
+        expect(screen.getByText("common.uniform.generation.isReserve")).toBeInTheDocument();
+        expect(screen.queryByText("common.uniform.generation.isReserve")).not.toHaveClass("d-none d-sm-table-cell");
 
         const row = screen.getByRole("row", { name: "Test Generation 1" });
         expect(row).not.toBeNull();
         expect(row?.childNodes[2]).not.toHaveClass("d-none d-sm-table-cell");
     });
-    it('hides outdated column on Mobile when usingSizes', () => {
+    it('hides reserve column on Mobile when usingSizes', () => {
         render(<UniformGenerationTable uniformType={testType} />);
 
-        expect(screen.getByText("common.uniform.generation.outdated")).toBeInTheDocument();
-        expect(screen.queryByText("common.uniform.generation.outdated")).toHaveClass("d-none d-sm-table-cell");
+        expect(screen.getByText("common.uniform.generation.isReserve")).toBeInTheDocument();
+        expect(screen.queryByText("common.uniform.generation.isReserve")).toHaveClass("d-none d-sm-table-cell");
 
         const row = screen.getByRole("row", { name: "Test Generation 1" });
         expect(row).not.toBeNull();
