@@ -11,14 +11,14 @@ exports[`returns correct data 1`] = `
     "name": "Kiste 01",
     "uniformList": [
       {
-        "active": false,
         "comment": "",
         "generation": {
           "id": "5a8f39-6e54-46f7-978b-cf23c52c042c",
+          "isReserve": true,
           "name": "Generation1-1",
-          "outdated": true,
         },
         "id": "9a453c-607e-4950-ad8b-12d8b61688fd",
+        "isReserve": true,
         "number": 1108,
         "size": {
           "id": "81f13b-8200-48e8-8ace-b55a6732d261",
@@ -36,14 +36,14 @@ exports[`returns correct data 1`] = `
         },
       },
       {
-        "active": false,
         "comment": "",
         "generation": {
           "id": "5a8f39-6e54-46f7-978b-cf23c52c042c",
+          "isReserve": true,
           "name": "Generation1-1",
-          "outdated": true,
         },
         "id": "534ca4-b5bd-4538-bdfa-7413c8b9ca36",
+        "isReserve": true,
         "number": 1109,
         "size": {
           "id": "81f13b-8200-48e8-8ace-b55a6732d261",
@@ -71,14 +71,14 @@ exports[`returns correct data 1`] = `
     "name": "Kiste 02",
     "uniformList": [
       {
-        "active": false,
         "comment": "",
         "generation": {
           "id": "5a8f39-6e54-46f7-978b-cf23c52c042c",
+          "isReserve": true,
           "name": "Generation1-1",
-          "outdated": true,
         },
         "id": "53a5c7-4153-4b73-8f01-f399434b398b",
+        "isReserve": true,
         "number": 1115,
         "size": {
           "id": "e8cd60-4633-45d8-bf2d-c76a6282e455",
@@ -96,14 +96,14 @@ exports[`returns correct data 1`] = `
         },
       },
       {
-        "active": false,
         "comment": "",
         "generation": {
           "id": "5a8f39-6e54-46f7-978b-cf23c52c042c",
+          "isReserve": true,
           "name": "Generation1-1",
-          "outdated": true,
         },
         "id": "ed9f3b-0e77-49e4-b52d-114e0227b200",
+        "isReserve": true,
         "number": 1116,
         "size": {
           "id": "e8cd60-4633-45d8-bf2d-c76a6282e455",
@@ -121,14 +121,14 @@ exports[`returns correct data 1`] = `
         },
       },
       {
-        "active": false,
         "comment": "",
         "generation": {
           "id": "5a8f39-6e54-46f7-978b-cf23c52c042c",
+          "isReserve": true,
           "name": "Generation1-1",
-          "outdated": true,
         },
         "id": "a1490c-c035-4918-b649-3c74bdc317c4",
+        "isReserve": true,
         "number": 1117,
         "size": {
           "id": "c5441c-799c-4511-95db-f7674bcb89cd",
@@ -146,14 +146,14 @@ exports[`returns correct data 1`] = `
         },
       },
       {
-        "active": false,
         "comment": "",
         "generation": {
           "id": "5a8f39-6e54-46f7-978b-cf23c52c042c",
+          "isReserve": true,
           "name": "Generation1-1",
-          "outdated": true,
         },
         "id": "f86b45-d43c-4f80-a264-1cebab8f7ff2",
+        "isReserve": true,
         "number": 1118,
         "size": {
           "id": "c5441c-799c-4511-95db-f7674bcb89cd",
@@ -171,14 +171,14 @@ exports[`returns correct data 1`] = `
         },
       },
       {
-        "active": false,
         "comment": "",
         "generation": {
           "id": "5a8f39-6e54-46f7-978b-cf23c52c042c",
+          "isReserve": true,
           "name": "Generation1-1",
-          "outdated": true,
         },
         "id": "c3945d-83f1-42ea-9b2b-dce2d9c36ac0",
+        "isReserve": true,
         "number": 1119,
         "size": {
           "id": "3c9e63-d49a-4152-976d-3ba34eafd7a6",
@@ -206,10 +206,10 @@ exports[`returns correct data 1`] = `
     "name": "Kiste 03",
     "uniformList": [
       {
-        "active": true,
         "comment": "",
         "generation": null,
         "id": "ce0d2b-077a-4cbb-b924-63079e749bab",
+        "isReserve": false,
         "number": 1310,
         "size": {
           "id": "fbbfe5-d485-48a0-b139-7493e3b4dbfa",
@@ -227,10 +227,10 @@ exports[`returns correct data 1`] = `
         },
       },
       {
-        "active": true,
         "comment": "",
         "generation": null,
         "id": "6a0ca2-05fb-4e81-b129-25f840c6d9b3",
+        "isReserve": false,
         "number": 1311,
         "size": {
           "id": "fbbfe5-d485-48a0-b139-7493e3b4dbfa",
@@ -248,10 +248,10 @@ exports[`returns correct data 1`] = `
         },
       },
       {
-        "active": true,
         "comment": "",
         "generation": null,
         "id": "5c66e8-aa09-429d-a8d9-8481dcbe9d90",
+        "isReserve": false,
         "number": 1312,
         "size": {
           "id": "fbbfe5-d485-48a0-b139-7493e3b4dbfa",
@@ -269,10 +269,10 @@ exports[`returns correct data 1`] = `
         },
       },
       {
-        "active": true,
         "comment": "",
         "generation": null,
         "id": "b70c27-f13c-4290-9a63-a2272d27ea45",
+        "isReserve": false,
         "number": 1313,
         "size": {
           "id": "81f13b-8200-48e8-8ace-b55a6732d261",
@@ -290,10 +290,10 @@ exports[`returns correct data 1`] = `
         },
       },
       {
-        "active": true,
         "comment": "",
         "generation": null,
         "id": "cadb9a-3827-4582-a503-ede29f2cca1d",
+        "isReserve": false,
         "number": 1314,
         "size": {
           "id": "81f13b-8200-48e8-8ace-b55a6732d261",
@@ -311,10 +311,10 @@ exports[`returns correct data 1`] = `
         },
       },
       {
-        "active": true,
         "comment": "",
         "generation": null,
         "id": "6edd94-942c-4ece-be85-1ba47682cb61",
+        "isReserve": false,
         "number": 1315,
         "size": {
           "id": "81f13b-8200-48e8-8ace-b55a6732d261",
@@ -332,10 +332,10 @@ exports[`returns correct data 1`] = `
         },
       },
       {
-        "active": true,
         "comment": "",
         "generation": null,
         "id": "5777d3-c175-42a1-a9a9-744c42c3faee",
+        "isReserve": false,
         "number": 1316,
         "size": {
           "id": "81f13b-8200-48e8-8ace-b55a6732d261",
@@ -363,10 +363,10 @@ exports[`returns correct data 1`] = `
     "name": "Kiste 04",
     "uniformList": [
       {
-        "active": false,
         "comment": "",
         "generation": null,
         "id": "0be1e5-888f-4dd2-9c68-8ed81e81f0f7",
+        "isReserve": true,
         "number": 1320,
         "size": {
           "id": "e8cd60-4633-45d8-bf2d-c76a6282e455",
@@ -384,10 +384,10 @@ exports[`returns correct data 1`] = `
         },
       },
       {
-        "active": false,
         "comment": "",
         "generation": null,
         "id": "55f8c2-b79c-4cb1-b41a-b5e820238295",
+        "isReserve": true,
         "number": 1321,
         "size": {
           "id": "e8cd60-4633-45d8-bf2d-c76a6282e455",
@@ -405,10 +405,10 @@ exports[`returns correct data 1`] = `
         },
       },
       {
-        "active": false,
         "comment": "",
         "generation": null,
         "id": "f7cf77-09bc-4ffb-8650-10f771f27871",
+        "isReserve": true,
         "number": 1322,
         "size": {
           "id": "e8cd60-4633-45d8-bf2d-c76a6282e455",
@@ -426,10 +426,10 @@ exports[`returns correct data 1`] = `
         },
       },
       {
-        "active": false,
         "comment": "",
         "generation": null,
         "id": "2dc108-f6e1-40fd-8344-e0dad803c1dc",
+        "isReserve": true,
         "number": 1323,
         "size": {
           "id": "e8cd60-4633-45d8-bf2d-c76a6282e455",

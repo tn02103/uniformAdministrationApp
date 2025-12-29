@@ -149,7 +149,8 @@ export const SidebarLinks = () => {
                     icon={faGear}
                     childSelected={/^\/\w{2}\/admin\//.test(pathname)}
                     requiredRole={AuthRole.materialManager}
-                    testId="btn_adminGroup">
+                    testId="btn_adminGroup"
+                >
                     <ul>
                         <NavLink
                             text={t('sidebar.links.administration.uniform')}
@@ -174,6 +175,14 @@ export const SidebarLinks = () => {
                             level={2}
                             requiredRole={AuthRole.materialManager}
                             testId="lnk_adminMaterial"
+                        />
+                        <NavLink
+                            text={t('sidebar.links.administration.dashboard')}
+                            href="/app/admin/dashboard"
+                            isRoute={pathname.endsWith("/app/admin/dashboard")}
+                            level={2}
+                            requiredRole={AuthRole.materialManager}
+                            testId="lnk_adminDashboard"
                         />
                     </ul>
                 </NavGroup>

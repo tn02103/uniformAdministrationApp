@@ -14,7 +14,7 @@ import { UniformListSearchFilter } from "./UniformListSearchFilter";
 export type FilterType = {
     generations: { [key in string]: boolean },
     sizes: { [key in string]: boolean },
-    active: boolean,
+    isActive: boolean,
     isReserve: boolean,
     issued: boolean,
     notIssued: boolean,

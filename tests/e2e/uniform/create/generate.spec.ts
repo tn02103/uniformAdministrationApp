@@ -23,7 +23,10 @@ const test = adminTest.extend<Fixture>({
         });
         await use(staticData);
         await prisma.uniform.deleteMany({
-            where: { number: { in: uniformNumbers.map(m => +m), }, }
+            where: {
+                number: { in: uniformNumbers.map(m => +m), },
+                fk_uniformType: staticData.ids.uniformTypeIds[0]
+            }
         });
     }
 });
@@ -80,7 +83,7 @@ test.describe('validate Inputs', () => {
 
         const tests = numberValidationTests({ min: 1, strict: false, testEmpty: true })
         for (const { testValue, valid } of tests) {
-            await test.step(testValue, async () => {
+            await test.step(String(testValue), async () => {
                 await generateStep1.txt_amount_default.fill(String(testValue));
                 if (valid) {
                     await expect.soft(generateStep1.err_amount_default).toBeHidden();

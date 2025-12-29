@@ -116,9 +116,9 @@ exports[`<UniformgenerationOffcanvas> with generation renders the component 1`] 
           <div>
             <label
               class="fw-bold m-0  form-label"
-              for="uniformGenerationForm_toggle-outdated"
+              for="uniformGenerationForm_toggle-isReserve"
             >
-              common.uniform.generation.outdated
+              common.uniform.generation.isReserve
             </label>
             <div
               class="form-check form-switch px-0 my-auto"
@@ -127,8 +127,8 @@ exports[`<UniformgenerationOffcanvas> with generation renders the component 1`] 
                 aria-checked="false"
                 aria-disabled="true"
                 class="form-check-input ms-0 my-2"
-                id="uniformGenerationForm_toggle-outdated"
-                name="outdated"
+                id="uniformGenerationForm_toggle-isReserve"
+                name="isReserve"
                 role="switch"
                 style="pointer-events: none; opacity: 0.5;"
                 tabindex="-1"
@@ -137,10 +137,10 @@ exports[`<UniformgenerationOffcanvas> with generation renders the component 1`] 
               />
             </div>
             <div
-              aria-label="error message outdated"
+              aria-label="error message isReserve"
               class="text-danger fs-7"
-              data-testid="err_outdated"
-              id="uniformGenerationForm_err_outdated"
+              data-testid="err_isReserve"
+              id="uniformGenerationForm_err_isReserve"
               role="alert"
             />
           </div>
@@ -294,9 +294,9 @@ exports[`<UniformgenerationOffcanvas> without generation renders in editable sta
           <div>
             <label
               class="fw-bold m-0  form-label"
-              for="uniformGenerationForm_toggle-outdated"
+              for="uniformGenerationForm_toggle-isReserve"
             >
-              common.uniform.generation.outdated
+              common.uniform.generation.isReserve
             </label>
             <div
               class="form-check form-switch px-0 my-auto"
@@ -305,8 +305,8 @@ exports[`<UniformgenerationOffcanvas> without generation renders in editable sta
                 aria-checked="false"
                 aria-disabled="false"
                 class="form-check-input ms-0 my-2"
-                id="uniformGenerationForm_toggle-outdated"
-                name="outdated"
+                id="uniformGenerationForm_toggle-isReserve"
+                name="isReserve"
                 role="switch"
                 style="cursor: pointer;"
                 tabindex="0"
@@ -315,10 +315,10 @@ exports[`<UniformgenerationOffcanvas> without generation renders in editable sta
               />
             </div>
             <div
-              aria-label="error message outdated"
+              aria-label="error message isReserve"
               class="text-danger fs-7"
-              data-testid="err_outdated"
-              id="uniformGenerationForm_err_outdated"
+              data-testid="err_isReserve"
+              id="uniformGenerationForm_err_isReserve"
               role="alert"
             />
           </div>

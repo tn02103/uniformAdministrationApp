@@ -50,7 +50,8 @@ describe('genericSAValidator', () => {
         expect(error.exceptionType).toBe(4);
     });
     it('validate typevalidation', async () => {
-        const error = await genericSAValidator(AuthRole.inspector, 983, z.string(), {})
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const error = await genericSAValidator<any>(AuthRole.inspector, 983, z.string(), {})
             .catch((error) => error);
 
         expect(error.issues[0].code).toBe('invalid_type');

@@ -45,10 +45,10 @@ const mockUniformType: UniformType = {
 const mockUniform: UniformWithOwner = {
     id: "u-1",
     number: 42,
-    active: true,
+    isReserve: false,
     comment: "Testkommentar",
     type: mockUniformType,
-    generation: { id: "gen-1", name: "Gen1", outdated: false },
+    generation: { id: "gen-1", name: "Gen1", isReserve: false },
     size: { id: "size-1", name: "M" },
     issuedEntries: [],
     storageUnit: null,
@@ -164,16 +164,36 @@ describe("CadetUniformTableItemRow", () => {
         await userEvent.click(btn);
         expect(row).not.toHaveClass("bg-primary-subtle");
     });
-    it("shows number in red if uniform is not active", () => {
-        setup({ uniform: { ...mockUniform, active: false } });
-        const numberDiv = screen.getByTestId("div_number");
-        expect(numberDiv).toHaveClass("text-danger");
-    });
 
-    it("does not show number in red if uniform is active", () => {
-        setup({ uniform: { ...mockUniform, active: true } });
-        const numberDiv = screen.getByTestId("div_number");
-        expect(numberDiv).not.toHaveClass("text-danger");
+    describe("reserve text-color and icon", () => {
+        it("uniform is reserve", () => {
+            setup({ uniform: { ...mockUniform, isReserve: true } });
+            const rowDiv = screen.getByTestId("div_uitem_u-1");
+            expect(rowDiv).toHaveClass(/text-secondary/);
+            // eslint-disable-next-line testing-library/no-node-access
+            expect(rowDiv.querySelector('svg[data-icon="registered"]')).toBeInTheDocument();
+        });
+
+        it('generation is reserve', () => {
+            setup({
+                uniform: {
+                    ...mockUniform,
+                    generation: { ...mockUniform.generation, isReserve: true }
+                }
+            });
+            const rowDiv = screen.getByTestId("div_uitem_u-1");
+            expect(rowDiv).toHaveClass(/text-secondary/);
+            // eslint-disable-next-line testing-library/no-node-access
+            expect(rowDiv.querySelector('svg[data-icon="registered"]')).toBeInTheDocument();
+        });
+
+        it("neither uniform nor generation is reserve", () => {
+            setup({ uniform: mockUniform });
+            const rowDiv = screen.getByTestId("div_uitem_u-1");
+            expect(rowDiv).not.toHaveClass("text-secondary");
+            // eslint-disable-next-line testing-library/no-node-access
+            expect(rowDiv.querySelector('svg[data-icon="registered"]')).not.toBeInTheDocument();
+        });
     });
 
     it("does not call setOpenUniformId if open button is disabled", async () => {
@@ -215,11 +235,6 @@ describe("CadetUniformTableItemRow", () => {
     it("shows correct text color for missing generation", () => {
         setup({ uniform: { ...mockUniform, generation: undefined } });
         expect(screen.getByTestId("div_generation")).toHaveClass("text-danger");
-    });
-
-    it("shows correct text color for outdated generation", () => {
-        setup({ uniform: { ...mockUniform, generation: { id: "gen-1", name: "Gen1", outdated: true } } });
-        expect(screen.getByTestId("div_generation")).toHaveClass("text-warning");
     });
 
     it("shows correct text color for missing size", () => {
