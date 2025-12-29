@@ -144,9 +144,9 @@ export default class StaticDataGenerator {
 
     storageUnits() {
         return [
-            { id: this.ids.storageUnitIds[0], assosiationId: this.ids.fk_assosiation, name: 'Kiste 01', description: 'Für Typ1 Uniformteile in isReserve', capacity: 5, isReserve: true },
-            { id: this.ids.storageUnitIds[1], assosiationId: this.ids.fk_assosiation, name: 'Kiste 02', description: 'Für Typ1 Uniformteile in isReserve', capacity: 5, isReserve: true },
-            { id: this.ids.storageUnitIds[2], assosiationId: this.ids.fk_assosiation, name: 'Kiste 03', description: 'Für Typ3 Uniformteile in isReserve', capacity: 10, isReserve: true },
+            { id: this.ids.storageUnitIds[0], assosiationId: this.ids.fk_assosiation, name: 'Kiste 01', description: 'Für Typ1 Uniformteile in Reserve', capacity: 5, isReserve: true },
+            { id: this.ids.storageUnitIds[1], assosiationId: this.ids.fk_assosiation, name: 'Kiste 02', description: 'Für Typ1 Uniformteile in Reserve', capacity: 5, isReserve: true },
+            { id: this.ids.storageUnitIds[2], assosiationId: this.ids.fk_assosiation, name: 'Kiste 03', description: 'Für Typ3 Uniformteile in Reserve', capacity: 10, isReserve: true },
             { id: this.ids.storageUnitIds[3], assosiationId: this.ids.fk_assosiation, name: 'Kiste 04', description: 'Für Typ3 aktive Uniformteile', capacity: 10, isReserve: false },
             { id: this.ids.storageUnitIds[4], assosiationId: this.ids.fk_assosiation, name: 'Kiste 05', description: 'Für Typ2 aktive Uniformteile', capacity: null, isReserve: false },
         ] satisfies StorageUnit[]

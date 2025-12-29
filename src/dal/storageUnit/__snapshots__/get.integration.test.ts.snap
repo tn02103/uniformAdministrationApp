@@ -5,7 +5,7 @@ exports[`returns correct data 1`] = `
   {
     "assosiationId": "bf2ef8-3894-47d4-ada4-e8b5cda5095c",
     "capacity": 5,
-    "description": "Für Typ1 Uniformteile in isReserve",
+    "description": "Für Typ1 Uniformteile in Reserve",
     "id": "3984d9-17ac-423d-b5d9-8f9473c225d5",
     "isReserve": true,
     "name": "Kiste 01",
@@ -25,7 +25,7 @@ exports[`returns correct data 1`] = `
           "name": "3",
         },
         "storageUnit": {
-          "description": "Für Typ1 Uniformteile in isReserve",
+          "description": "Für Typ1 Uniformteile in Reserve",
           "id": "3984d9-17ac-423d-b5d9-8f9473c225d5",
           "isReserve": true,
           "name": "Kiste 01",
@@ -50,7 +50,7 @@ exports[`returns correct data 1`] = `
           "name": "3",
         },
         "storageUnit": {
-          "description": "Für Typ1 Uniformteile in isReserve",
+          "description": "Für Typ1 Uniformteile in Reserve",
           "id": "3984d9-17ac-423d-b5d9-8f9473c225d5",
           "isReserve": true,
           "name": "Kiste 01",
@@ -65,7 +65,7 @@ exports[`returns correct data 1`] = `
   {
     "assosiationId": "bf2ef8-3894-47d4-ada4-e8b5cda5095c",
     "capacity": 5,
-    "description": "Für Typ1 Uniformteile in isReserve",
+    "description": "Für Typ1 Uniformteile in Reserve",
     "id": "c8f0d2-1e4a-4f5c-9b6d-7f0c1e8a2b3c",
     "isReserve": true,
     "name": "Kiste 02",
@@ -85,7 +85,7 @@ exports[`returns correct data 1`] = `
           "name": "4",
         },
         "storageUnit": {
-          "description": "Für Typ1 Uniformteile in isReserve",
+          "description": "Für Typ1 Uniformteile in Reserve",
           "id": "c8f0d2-1e4a-4f5c-9b6d-7f0c1e8a2b3c",
           "isReserve": true,
           "name": "Kiste 02",
@@ -110,7 +110,7 @@ exports[`returns correct data 1`] = `
           "name": "4",
         },
         "storageUnit": {
-          "description": "Für Typ1 Uniformteile in isReserve",
+          "description": "Für Typ1 Uniformteile in Reserve",
           "id": "c8f0d2-1e4a-4f5c-9b6d-7f0c1e8a2b3c",
           "isReserve": true,
           "name": "Kiste 02",
@@ -135,7 +135,7 @@ exports[`returns correct data 1`] = `
           "name": "5",
         },
         "storageUnit": {
-          "description": "Für Typ1 Uniformteile in isReserve",
+          "description": "Für Typ1 Uniformteile in Reserve",
           "id": "c8f0d2-1e4a-4f5c-9b6d-7f0c1e8a2b3c",
           "isReserve": true,
           "name": "Kiste 02",
@@ -160,7 +160,7 @@ exports[`returns correct data 1`] = `
           "name": "5",
         },
         "storageUnit": {
-          "description": "Für Typ1 Uniformteile in isReserve",
+          "description": "Für Typ1 Uniformteile in Reserve",
           "id": "c8f0d2-1e4a-4f5c-9b6d-7f0c1e8a2b3c",
           "isReserve": true,
           "name": "Kiste 02",
@@ -185,7 +185,7 @@ exports[`returns correct data 1`] = `
           "name": "0",
         },
         "storageUnit": {
-          "description": "Für Typ1 Uniformteile in isReserve",
+          "description": "Für Typ1 Uniformteile in Reserve",
           "id": "c8f0d2-1e4a-4f5c-9b6d-7f0c1e8a2b3c",
           "isReserve": true,
           "name": "Kiste 02",
@@ -200,7 +200,7 @@ exports[`returns correct data 1`] = `
   {
     "assosiationId": "bf2ef8-3894-47d4-ada4-e8b5cda5095c",
     "capacity": 10,
-    "description": "Für Typ3 Uniformteile in isReserve",
+    "description": "Für Typ3 Uniformteile in Reserve",
     "id": "c2e3d4-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
     "isReserve": true,
     "name": "Kiste 03",
@@ -216,7 +216,7 @@ exports[`returns correct data 1`] = `
           "name": "2",
         },
         "storageUnit": {
-          "description": "Für Typ3 Uniformteile in isReserve",
+          "description": "Für Typ3 Uniformteile in Reserve",
           "id": "c2e3d4-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
           "isReserve": true,
           "name": "Kiste 03",
@@ -237,7 +237,7 @@ exports[`returns correct data 1`] = `
           "name": "2",
         },
         "storageUnit": {
-          "description": "Für Typ3 Uniformteile in isReserve",
+          "description": "Für Typ3 Uniformteile in Reserve",
           "id": "c2e3d4-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
           "isReserve": true,
           "name": "Kiste 03",
@@ -258,7 +258,7 @@ exports[`returns correct data 1`] = `
           "name": "2",
         },
         "storageUnit": {
-          "description": "Für Typ3 Uniformteile in isReserve",
+          "description": "Für Typ3 Uniformteile in Reserve",
           "id": "c2e3d4-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
           "isReserve": true,
           "name": "Kiste 03",
@@ -279,7 +279,7 @@ exports[`returns correct data 1`] = `
           "name": "3",
         },
         "storageUnit": {
-          "description": "Für Typ3 Uniformteile in isReserve",
+          "description": "Für Typ3 Uniformteile in Reserve",
           "id": "c2e3d4-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
           "isReserve": true,
           "name": "Kiste 03",
@@ -300,7 +300,7 @@ exports[`returns correct data 1`] = `
           "name": "3",
         },
         "storageUnit": {
-          "description": "Für Typ3 Uniformteile in isReserve",
+          "description": "Für Typ3 Uniformteile in Reserve",
           "id": "c2e3d4-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
           "isReserve": true,
           "name": "Kiste 03",
@@ -321,7 +321,7 @@ exports[`returns correct data 1`] = `
           "name": "3",
         },
         "storageUnit": {
-          "description": "Für Typ3 Uniformteile in isReserve",
+          "description": "Für Typ3 Uniformteile in Reserve",
           "id": "c2e3d4-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
           "isReserve": true,
           "name": "Kiste 03",
@@ -342,7 +342,7 @@ exports[`returns correct data 1`] = `
           "name": "3",
         },
         "storageUnit": {
-          "description": "Für Typ3 Uniformteile in isReserve",
+          "description": "Für Typ3 Uniformteile in Reserve",
           "id": "c2e3d4-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
           "isReserve": true,
           "name": "Kiste 03",

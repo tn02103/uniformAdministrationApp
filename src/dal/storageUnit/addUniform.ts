@@ -40,6 +40,8 @@ export const addUniform = async (props: PropType): Promise<StorageUnitWithUnifor
                 }
             },
             storageUnit: true,
+            type: true,
+            generation: true,
         }
     });
     const storageUnit = await client.storageUnit.findUniqueOrThrow({
@@ -67,7 +69,7 @@ export const addUniform = async (props: PropType): Promise<StorageUnitWithUnifor
     }
 
     const data: Prisma.UniformUpdateArgs["data"] = { storageUnitId };
-    if (!uniform.isReserve && storageUnit?.isReserve) {
+    if (storageUnit?.isReserve && !(uniform.isReserve || (uniform.type.usingGenerations && uniform.generation?.isReserve))) {
         data.isReserve = true;
     }
 

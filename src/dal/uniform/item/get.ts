@@ -61,7 +61,7 @@ export const getItemLabels = async (): Promise<ItemLabel[]> => genericSANoDataVa
     id: item.id,
     number: item.number,
     label: `${item.type.name}-${item.number}`,
-    isReserve: item.isReserve || item.generation?.isReserve || false,
+    isReserve: item.isReserve || (item.type.usingGenerations && item.generation?.isReserve) || false,
     type: {
         id: item.type.id,
         name: item.type.name,
@@ -169,6 +169,12 @@ export const getListWithOwner = async (props: getListWithOwnerProps): Promise<Un
     const generationFilter = filter?.generations ? Object.entries(filter.generations).filter(([, value]) => value).map(([key,]) => key) : [];
     const sizeFilter = filter?.sizes ? Object.entries(filter.sizes).filter(([, value]) => value).map(([key,]) => key) : [];
     const andConditions: Prisma.UniformWhereInput[] = [];
+    const type = await prisma.uniformType.findUnique({
+        where: {
+            id: uniformTypeId,
+            recdelete: null,
+        },
+    });
 
     // Collect all conditions that are not null
     if (filter) {
@@ -176,19 +182,25 @@ export const getListWithOwner = async (props: getListWithOwnerProps): Promise<Un
             // only active items
             andConditions.push({
                 isReserve: false,
-                OR: [
+                OR: type?.usingGenerations ? [
                     { generation: { isReserve: false } },
                     { generation: null },
-                ]
+                ] : undefined,
             });
         } else if (!filter.isActive) {
             // only reserve items
-            andConditions.push({
-                OR: [
-                    { isReserve: true },
-                    { generation: { isReserve: true } },
-                ]
-            });
+            if (type?.usingGenerations) {
+                andConditions.push({
+                    OR: [
+                        { isReserve: true },
+                        { generation: { isReserve: true } },
+                    ],
+                });
+            } else {
+                andConditions.push({
+                    isReserve: true,
+                });
+            }
         }
 
         if (!filter.issued || !filter.notIssued || !filter.inStorageUnit) {
@@ -223,7 +235,7 @@ export const getListWithOwner = async (props: getListWithOwnerProps): Promise<Un
             });
         }
     }
-    if (generationFilter.length > 0) {
+    if (type?.usingGenerations && generationFilter.length > 0) {
         andConditions.push({
             OR: [
                 { generation: { id: { in: generationFilter } } },
@@ -231,7 +243,7 @@ export const getListWithOwner = async (props: getListWithOwnerProps): Promise<Un
             ]
         });
     }
-    if (sizeFilter.length > 0) {
+    if (type?.usingSizes && sizeFilter.length > 0) {
         andConditions.push({
             OR: [
                 { size: { id: { in: sizeFilter } } },
