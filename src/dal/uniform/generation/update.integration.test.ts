@@ -7,7 +7,7 @@ const { ids, cleanup } = new StaticData(0);
 
 const defaultData = {
     name: 'NewName',
-    outdated: false,
+    isReserve: false,
     fk_sizelist: ids.sizelistIds[2],
 }
 afterEach(async () => cleanup.uniformTypeConfiguration());

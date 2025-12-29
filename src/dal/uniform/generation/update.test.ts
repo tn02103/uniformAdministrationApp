@@ -26,7 +26,7 @@ const mockGenerationToUpdate = {
     sortOrder: 1,
     fk_uniformType: mockUniformType.id,
     fk_sizelist: mockSizeLists[0].id,
-    outdated: false,
+    isReserve: false,
     recdelete: null,
     recdeleteUser: null,
 };
@@ -60,7 +60,7 @@ const mockUniformTypeList = [mockUniformType];
 
 const defaultUpdateData = {
     name: 'Updated Generation Name',
-    outdated: true,
+    isReserve: true,
     fk_sizelist: mockSizeLists[1].id,
 };
 const defaultProps = {
@@ -119,7 +119,7 @@ describe('<UniformGeneration> update', () => {
         it('passes correct data to update operation', async () => {
             const customData = {
                 name: "Custom Generation Name",
-                outdated: false,
+                isReserve: false,
                 fk_sizelist: 'custom-sizelist-id',
             };
 

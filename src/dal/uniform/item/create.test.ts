@@ -13,7 +13,7 @@ const defaultWithSizes = {
         { sizeId: mockSizeLists[0].uniformSizes[1].id, numbers: [3001, 3002] },
     ],
     data: {
-        active: true,
+        isReserve: false,
         generationId: mockGenerationLists[0][1].id, // Generation1-2
         uniformTypeId: mockTypeList[0].id, // Typ1 (with sizes and generations)
         comment: 'just new'
@@ -32,7 +32,7 @@ const defaultWithoutSizes = {
         { sizeId: 'amount', numbers: [3000, 3001] }
     ],
     data: {
-        active: true,
+        isReserve: false,
         generationId: mockGenerationLists[1][1].id, // Generation2-2
         uniformTypeId: mockTypeList[1].id, // Typ2 (without sizes, with generations)
         comment: 'just new'
@@ -67,7 +67,7 @@ describe('<UniformItem> create', () => {
             fk_uniformType: mockTypeList[0].id,
             fk_generation: null,
             fk_size: null,
-            active: true,
+            isReserve: false,
             comment: 'just new'
         }
         it('creates with size and generation', async () => {
@@ -281,7 +281,7 @@ describe('<UniformItem> create', () => {
                 data: {
                     uniformTypeId: mockTypeList[1].id,
                     generationId: mockGenerationLists[1][0].id, // Should not have generation
-                    active: true,
+                    isReserve: false,
                     comment: 'just new'
                 }
             }

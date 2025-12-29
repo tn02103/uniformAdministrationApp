@@ -121,7 +121,7 @@ model UniformGeneration {
     name           String           @db.VarChar(20)
     fk_sizelist    String?          @db.Char(36)
     sortOrder      Int              @map("sort_order") @db.SmallInt
-    outdated       Boolean          @default(false)
+    isReserve      Boolean          @default(false)
     recdelete      DateTime?        @db.Timestamp(6)
     recdeleteUser  String?          @map("recdelete_user") @db.VarChar(10)
     uniformList    Uniform[]
@@ -170,7 +170,7 @@ model Uniform {
     fk_uniformType      String              @map("fk_uniform_type") @db.Char(36)
     fk_generation       String?             @db.Char(36)
     fk_size             String?             @db.Char(36)
-    active              Boolean             @default(true)
+    isReserve           Boolean             @default(false)
     comment             String?
     recdelete           DateTime?           @db.Timestamp(6)
     recdeleteUser       String?             @map("recdelete_user") @db.VarChar(10)

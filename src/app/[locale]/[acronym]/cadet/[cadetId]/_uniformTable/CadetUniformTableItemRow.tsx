@@ -1,15 +1,14 @@
-"use client"
-
 import TooltipIconButton, { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
 import { useGlobalData } from "@/components/globalDataProvider";
 import { useModal } from "@/components/modals/modalProvider";
+import { TooltipIcon } from "@/components/TooltipIcon";
 import { UniformOffcanvas } from "@/components/UniformOffcanvas/UniformOffcanvas";
 import { returnUniformItem } from "@/dal/uniform/item/_index";
 import { useCadetUniformMap } from "@/dataFetcher/cadet";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
 import { UniformType, UniformWithOwner } from "@/types/globalUniformTypes";
-import { faBars, faRightLeft, faRightToBracket } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faRegistered, faRightLeft, faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
@@ -59,10 +58,11 @@ export const CadetUniformTableItemRow = ({ uniform, uniformType, replaceItem, op
         });
     }
 
+    const isReserve = uniform.isReserve || uniform.generation?.isReserve;
+
     const getGenerationRowTextColor = () => {
         if (!uniformType.usingGenerations) return "text-secondary";
         if (!uniform.generation) return "text-danger";
-        if (uniform.generation.outdated) return "text-warning";
         return "";
     }
     const getSizeRowTextColor = () => {
@@ -74,9 +74,15 @@ export const CadetUniformTableItemRow = ({ uniform, uniformType, replaceItem, op
     return (
         <div className={`row border-top border-1 white m-0`}>
             <div className="col-12 p-0">
-                <div data-testid={`div_uitem_${uniform.id}`} className={`row pb-2 pt-1 m-0  justify-content-between ${selected ? "bg-primary-subtle" : "bg-white"}`} onClick={onLineClick}>
+                <div
+                    data-testid={`div_uitem_${uniform.id}`}
+                    className={`row pb-2 pt-1 m-0 gx-0 justify-content-between 
+                        ${selected ? "bg-primary-subtle" : "bg-white"} 
+                        ${isReserve ? "text-secondary" : ""}`}
+                    onClick={onLineClick}
+                >
                     {(userRole >= AuthRole.inspector) &&
-                        <div className={`d-none d-sm-block col-auto pt-1`}>
+                        <div className={`d-none d-md-block col-auto pt-1`}>
                             <TooltipIconButton
                                 variant="outline-danger"
                                 buttonSize="sm"
@@ -98,14 +104,21 @@ export const CadetUniformTableItemRow = ({ uniform, uniformType, replaceItem, op
                             />
                         </div>
                     }
-                    <Col xs={10} sm={9} md={9} lg={9} xxl={10} className="ps-md-2 pe-0">
-                        <Row className="m-0 p-0">
-                            <Col xs={3} md={2} lg={1}>
+                    <Col xs={10} sm={11} md={10} lg={9} xxl={10} className="ps-md-2 pe-0">
+                        <Row className={`m-0 p-0 `}>
+                            <Col xs={3} md={3} lg={2} xxl={2}>
                                 <Row className="fs-8 fw-bold fst-italic">
                                     {t('common.uniform.number')}
                                 </Row>
-                                <Row data-testid={"div_number"} className={`fw-bold ${uniform.active ? "" : "text-danger "} ${""}`}>
-                                    {uniform.number}
+                                <Row data-testid={"div_number"} className={`fw-bold justify-content-start`}>
+                                    <Col xs={"auto"} className="p-0">
+                                        {uniform.number}
+                                    </Col>
+                                    {isReserve &&
+                                        <Col className="d-none d-sm-inline">
+                                            <TooltipIcon icon={faRegistered} tooltipText={t('common.uniform.state.isReserve')} className="text-secondary me-1" />
+                                        </Col>
+                                    }
                                 </Row>
                             </Col>
                             <Col xs={uniformType.usingGenerations ? 6 : 0} sm={6} md={4} lg={3} xxl={2}>
@@ -127,7 +140,7 @@ export const CadetUniformTableItemRow = ({ uniform, uniformType, replaceItem, op
                                     {uniformType.usingSizes ? uniform.size?.name ?? "K.A." : "---"}
                                 </Row>
                             </Col>
-                            <Col md={4} lg={6} xl={6} xxl={8} className="d-none d-md-inline">
+                            <Col md={3} lg={5} xl={5} xxl={7} className="d-none d-md-inline">
                                 <Row className="fs-8 fw-bold fst-italic">
                                     {t('common.comment')}
                                 </Row>
@@ -140,7 +153,7 @@ export const CadetUniformTableItemRow = ({ uniform, uniformType, replaceItem, op
                         </Row>
                     </Col>
                     {(userRole >= AuthRole.inspector) &&
-                        <div className="col-2 col-sm-auto d-sm-none align-self-center">
+                        <div className="col-2 col-sm-1 d-md-none align-self-center">
                             <Dropdown drop="start">
                                 <Dropdown.Toggle variant="outline-primary" className="border-0" id={uniform.id + "-dropdown"} data-testid={"btn_menu"}>
                                     <FontAwesomeIcon icon={faBars} />
@@ -159,7 +172,7 @@ export const CadetUniformTableItemRow = ({ uniform, uniformType, replaceItem, op
                             </Dropdown>
                         </div>
                     }
-                    <Col sx="auto" className={`d-none d-sm-block col-auto ${"pt-1"}`}>
+                    <Col sx="auto" className={`d-none d-md-block col-auto ${"pt-1"}`}>
                         <TooltipActionButton
                             variantKey="open"
                             disabled={uniform.id === openUniformId}

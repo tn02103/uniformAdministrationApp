@@ -92,12 +92,38 @@ describe("UniformListTableLine", () => {
         });
     });
 
-    it("shows icon if uniform is not active", () => {
-        setup({ uniform: { ...mockUniformList[0], active: false } });
+    describe('reserve', () => {
+        it("item is reserve", () => {
+            setup({ uniform: { ...mockUniformList[0], isReserve: true } });
 
-        expect(screen.getByRole("img", { hidden: true })).toBeInTheDocument();
-        expect(screen.getByRole("img", { hidden: true })).toHaveClass("fa-registered");
-    });
+            expect(screen.getByRole("img", { hidden: true })).toBeInTheDocument();
+            expect(screen.getByRole("img", { hidden: true })).toHaveClass("fa-registered");
+            const tds = screen.getAllByRole("cell");
+            for(let i = 0; i < 4; i++) {
+                expect(tds[i]).toHaveClass("text-secondary");
+            }
+        });
+        it("generation is reserve", () => {
+            setup({ uniform: { ...mockUniformList[0], generation: { ...mockUniformList[0].generation, isReserve: true } } });
+
+            expect(screen.getByRole("img", { hidden: true })).toBeInTheDocument();
+            expect(screen.getByRole("img", { hidden: true })).toHaveClass("fa-registered");
+            const tds = screen.getAllByRole("cell");
+            for(let i = 0; i < 4; i++) {
+                expect(tds[i]).toHaveClass("text-secondary");
+            }
+        });
+        it("neither item nor generation is reserve", () => {
+            setup({ uniform: { ...mockUniformList[0] } });
+
+            expect(screen.queryByRole("img", { hidden: true })).toBeNull();
+            expect(screen.queryByRole("img", { hidden: true })).toBeNull();
+            const tds = screen.getAllByRole("cell");
+             for(let i = 0; i < 4; i++) {
+                expect(tds[i]).not.toHaveClass("text-secondary");
+            }
+        });
+    })
 
     it("does not render generation or size columns if not used by type", () => {
         setup({ uniformType: { ...mockTypeList[0], usingGenerations: false, usingSizes: false } });

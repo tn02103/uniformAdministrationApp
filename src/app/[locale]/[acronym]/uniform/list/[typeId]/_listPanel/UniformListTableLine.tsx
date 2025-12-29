@@ -22,13 +22,14 @@ export function UniformListTableLine({ uniform, uniformType, searchString, loadD
     const t = useI18n();
     const { userRole } = useGlobalData();
     const [isOffcanvasOpen, setOffcanvasOpen] = useState(false);
-    const textColor = uniform.active ? "" : "text-secondary";
+    const isReserve = uniform.isReserve || uniform.generation?.isReserve || false;
+    const textColor = isReserve ? "text-secondary" : "";
 
     return (
         <tr data-testid={`div_uitem_${uniform.id}`} className="align-middle">
             <td data-testid="div_number" className={`col-3 col-sm-1 ${textColor}`}>
                 <HighlightedText text={String(uniform.number)} highlight={String(searchString)} />
-                {!uniform.active && <TooltipIcon icon={faRegistered} tooltipText={t('common.uniform.state.reserve')} className="text-secondary my-auto ms-1" />}
+                {isReserve && <TooltipIcon icon={faRegistered} tooltipText={t('common.uniform.state.isReserve')} className="text-secondary my-auto ms-1" />}
             </td>
             {uniformType.usingGenerations &&
                 <td data-testid="div_generation" className={`d-none d-sm-table-cell col-sm-4 col-md-2 text-truncate ${textColor}`}>

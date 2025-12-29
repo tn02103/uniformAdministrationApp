@@ -9,7 +9,7 @@ export const getUniformFormSchema = (usingGeneration: boolean = false, usingSize
     generation: usingGeneration ? z.string().nonempty().uuid() : z.string().uuid().nullable().optional(),
     size: usingSizes ? z.string().nonempty().uuid() : z.string().uuid().nullable().optional(),
     comment: z.string(),
-    active: z.boolean(),
+    isReserve: z.boolean(),
 })
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const schema = getUniformFormSchema();

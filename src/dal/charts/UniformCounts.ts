@@ -23,65 +23,82 @@ export const getUniformCountBySizeForType = async (props: string): Promise<Unifo
     props,
     z.string().uuid(),
     { uniformTypeId: props }
-).then(async ([, uniformTypeId]) => prisma.uniformSize.findMany({
-    where: {
-        uniformList: {
-            some: {
-                fk_uniformType: uniformTypeId,
-                recdelete: null
-            }
-        }
-    },
-    select: {
-        id: true,
-        name: true,
-        uniformList: {
-            where: {
-                fk_uniformType: uniformTypeId,
-                recdelete: null
-            },
-            select: {
-                id: true,
-                active: true,
-                issuedEntries: {
-                    where: {
-                        dateReturned: null
-                    },
-                    select: {
-                        id: true,
-                        cadet: cadetLableArgs
-                    }
+).then(async ([, uniformTypeId]) => {
+    const type = await prisma.uniformType.findUniqueOrThrow({
+        where: {
+            id: uniformTypeId
+        },
+    });
+
+    return prisma.uniformSize.findMany({
+        where: {
+            uniformList: {
+                some: {
+                    fk_uniformType: uniformTypeId,
+                    recdelete: null
                 }
             }
+        },
+        select: {
+            id: true,
+            name: true,
+            uniformList: {
+                where: {
+                    fk_uniformType: uniformTypeId,
+                    recdelete: null
+                },
+                select: {
+                    id: true,
+                    isReserve: true,
+                    issuedEntries: {
+                        where: {
+                            dateReturned: null
+                        },
+                        select: {
+                            id: true,
+                            cadet: cadetLableArgs
+                        }
+                    },
+                    generation: {
+                        select: {
+                            isReserve: true,
+                        }
+                    },
+                }
+            }
+        },
+        orderBy: {
+            sortOrder: 'asc'
         }
-    },
-    orderBy: {
-        sortOrder: 'asc'
-    }
-}).then(sizes =>
-    sizes.map(size => {
-        const uniforms = size.uniformList;
+    }).then(sizes =>
+        sizes.map(size => {
+            const uniforms = type.usingGenerations ? size.uniformList.map((u) => ({
+                ...u,
+                isReserve: u.isReserve || u.generation?.isReserve,
+            })) : size.uniformList;
 
-        // Count uniforms in each category
-        const available = uniforms.filter(u => u.active && u.issuedEntries.length === 0).length;
-        const issued = uniforms.filter(u => u.active && u.issuedEntries.length > 0).length;
-        const reserve = uniforms.filter(u => !u.active && u.issuedEntries.length === 0).length;
-        const issuedReserves = uniforms.filter(u => !u.active && u.issuedEntries.length > 0);
-        const issuedReserveCadets = issuedReserves.map(u => u.issuedEntries[0]?.cadet);
+            // Count uniforms in each category
+            const available = uniforms.filter(u => !u.isReserve && u.issuedEntries.length === 0).length;
+            const issued = uniforms.filter(u => !u.isReserve && u.issuedEntries.length > 0).length;
+            const reserve = uniforms.filter(u => u.isReserve && u.issuedEntries.length === 0).length;
+            const issuedReserves = uniforms.filter(u => u.isReserve && u.issuedEntries.length > 0);
+            const issuedReserveCadets = issuedReserves.map(u => u.issuedEntries[0]?.cadet);
 
-        return {
-            size: size.name,
-            sizeId: size.id,
-            quantities: {
-                available,
-                issued,
-                reserves: reserve,
-                issuedReserves: issuedReserves.length,
-            },
-            issuedReserveCadets
-        };
-    })
-));
+            return {
+                size: size.name,
+                sizeId: size.id,
+                quantities: {
+                    available,
+                    issued,
+                    reserves: reserve,
+                    issuedReserves: issuedReserves.length,
+                },
+                issuedReserveCadets
+            };
+        })
+    );
+});
+
 
 export type UniformCountByTypeData = {
     name: string;
@@ -106,13 +123,14 @@ export const getUniformCountByType = async (): Promise<UniformCountByTypeData[]>
             id: true,
             name: true,
             issuedDefault: true,
+            usingGenerations: true,
             uniformList: {
                 where: {
                     recdelete: null
                 },
                 select: {
                     id: true,
-                    active: true,
+                    isReserve: true,
                     issuedEntries: {
                         where: {
                             dateReturned: null
@@ -120,6 +138,11 @@ export const getUniformCountByType = async (): Promise<UniformCountByTypeData[]>
                         select: {
                             id: true,
                             cadet: cadetLableArgs
+                        }
+                    },
+                    generation: {
+                        select: {
+                            isReserve: true,
                         }
                     }
                 }
@@ -140,13 +163,16 @@ export const getUniformCountByType = async (): Promise<UniformCountByTypeData[]>
         });
 
         return types.map(type => {
-            const uniforms = type.uniformList;
+            const uniforms = type.usingGenerations ? type.uniformList.map((u) => ({
+                ...u,
+                isReserve: u.isReserve || u.generation?.isReserve,
+            })) : type.uniformList;
 
             // Count uniforms in each category
-            const available = uniforms.filter(u => u.active && u.issuedEntries.length === 0).length;
-            const issued = uniforms.filter(u => u.active && u.issuedEntries.length > 0).length;
-            const reserves = uniforms.filter(u => !u.active && u.issuedEntries.length === 0).length;
-            const issuedReserves = uniforms.filter(u => !u.active && u.issuedEntries.length > 0);
+            const available = uniforms.filter(u => !u.isReserve && u.issuedEntries.length === 0).length;
+            const issued = uniforms.filter(u => !u.isReserve && u.issuedEntries.length > 0).length;
+            const reserves = uniforms.filter(u => u.isReserve && u.issuedEntries.length === 0).length;
+            const issuedReserves = uniforms.filter(u => u.isReserve && u.issuedEntries.length > 0);
             const issuedReserveCadets = issuedReserves.map(u => u.issuedEntries[0]?.cadet);
 
             // Calculate missing items per cadet

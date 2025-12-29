@@ -47,7 +47,7 @@ export const UniformGenerationTable = ({ uniformType }: UniformGenerationTablePr
                         <tr>
                             <th></th>
                             <th>{t('common.uniform.generation.label', { count: 1 })}</th>
-                            <th className={uniformType.usingSizes ? "d-none d-sm-table-cell" : ""}>{t('common.uniform.generation.outdated')}</th>
+                            <th className={uniformType.usingSizes ? "d-none d-sm-table-cell" : ""}>{t('common.uniform.generation.isReserve')}</th>
                             {uniformType.usingSizes && (
                                 <th>{t('common.uniform.sizelist.label')}</th>
                             )}
@@ -73,7 +73,7 @@ export const UniformGenerationTable = ({ uniformType }: UniformGenerationTablePr
                                     </td>
                                     <td className={invalid ? "text-danger" : ""}>{item.name}</td>
                                     <td className={`${invalid ? "text-danger" : ""} ${uniformType.usingSizes ? "d-none d-sm-table-cell" : ""}`}>
-                                        {item.outdated ? t('common.yes') : t('common.no')}
+                                        {item.isReserve ? t('common.yes') : t('common.no')}
                                     </td>
                                     {uniformType.usingSizes && (
                                         <td>{item.sizelist?.name}</td>
