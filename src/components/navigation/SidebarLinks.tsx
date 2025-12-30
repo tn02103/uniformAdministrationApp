@@ -147,7 +147,7 @@ export const SidebarLinks = () => {
                 <NavGroup
                     title={t('sidebar.links.administration.group')}
                     icon={faGear}
-                    childSelected={/^\/\w{2}\/admin\//.test(pathname)}
+                    childSelected={/^\/\w{2}\/app\/admin\//.test(pathname)}
                     requiredRole={AuthRole.materialManager}
                     testId="btn_adminGroup"
                 >
@@ -179,7 +179,7 @@ export const SidebarLinks = () => {
                         <NavLink
                             text={t('sidebar.links.userOverview')}
                             href={"/app/admin/user"}
-                            isRoute={pathname.startsWith("/users")}
+                            isRoute={pathname.endsWith("/app/admin/user")}
                             level={2}
                             requiredRole={AuthRole.admin}
                             testId="lnk_users" />
@@ -188,18 +188,17 @@ export const SidebarLinks = () => {
                 <NavLink
                     icon={faChartLine}
                     text={t('sidebar.links.administration.dashboard')}
-                    href="/app/admin/dashboard"
-                    isRoute={pathname.endsWith("/app/admin/dashboard")}
-                    level={2}
+                    href="/app/dashboard"
+                    isRoute={pathname.endsWith("/app/dashboard")}
                     requiredRole={AuthRole.materialManager}
-                    testId="lnk_adminDashboard"
+                    testId="lnk_adminDashboard" 
                 />
                 <NavLink
                     text={t('sidebar.links.redirects')}
                     icon={faLink}
                     href={"/app/redirects"}
                     requiredRole={AuthRole.admin}
-                    isRoute={pathname.startsWith("/redirects")}
+                    isRoute={pathname.endsWith("/redirects")}
                     testId="lnk_redirects" />
             </ul>
         </div>
