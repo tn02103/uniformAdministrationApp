@@ -3,7 +3,7 @@ import { expect } from "playwright/test";
 
 test.describe('Admin Dashboard - Charts', () => {
     test.beforeEach(async ({ page }) => {
-        await page.goto('/de/app/admin/dashboard');
+        await page.goto('/de/app/dashboard');
         // Wait for page to fully load
         await page.waitForLoadState('domcontentloaded');
     });

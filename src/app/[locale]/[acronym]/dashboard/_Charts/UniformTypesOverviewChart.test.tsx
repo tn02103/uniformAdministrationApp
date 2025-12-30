@@ -354,9 +354,9 @@ describe('UniformTypesOverviewChart', () => {
             expect(screen.getByText('45')).toBeInTheDocument(); // Combat Jacket - Available (unique)
             expect(screen.getByText('38')).toBeInTheDocument(); // Combat Trousers - Available (unique) 
             expect(screen.getByText('62')).toBeInTheDocument(); // Combat Boots - Available (unique)
-            expect(screen.getByText('102')).toBeInTheDocument(); // Combat Jacket - Total (45+32+18+5+2)
-            expect(screen.getByText('82')).toBeInTheDocument(); // Combat Trousers - Total (38+28+12+3+1)
-            expect(screen.getByText('138')).toBeInTheDocument(); // Combat Boots - Total (62+41+25+7+3)
+            expect(screen.getByText('100')).toBeInTheDocument(); // Combat Jacket - Total excl. missing (45+32+18+5)
+            expect(screen.getByText('81')).toBeInTheDocument(); // Combat Trousers - Total excl. missing (38+28+12+3)
+            expect(screen.getByText('135')).toBeInTheDocument(); // Combat Boots - Total excl. missing (62+41+25+7)
 
             // Check all category row labels
             expect(screen.getByText('Available')).toBeInTheDocument();
