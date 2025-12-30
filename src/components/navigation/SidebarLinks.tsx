@@ -3,7 +3,7 @@ import { useInspectionState } from "@/dataFetcher/inspection";
 import { AuthRole } from "@/lib/AuthRoles";
 import dayjs from "@/lib/dayjs";
 import { useI18n } from "@/lib/locales/client";
-import { faAddressCard, faBoxOpen, faClipboardCheck, faGear, faLink, faPlus, faShirt, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faBoxOpen, faChartLine, faClipboardCheck, faGear, faLink, faPlus, faShirt, faUser } from "@fortawesome/free-solid-svg-icons";
 import { useParams, usePathname } from "next/navigation";
 import { toast } from "react-toastify";
 import { mutate } from "swr";
@@ -113,7 +113,7 @@ export const SidebarLinks = () => {
                     childSelected={pathname.startsWith(`/${locale}/app/inspection`)}
                     requiredRole={AuthRole.materialManager}
                     testId="btn_inspectionGroup"
-                    >
+                >
                     <ul>
                         <NavLink
                             text={t('sidebar.links.inspection.inspection')}
@@ -147,7 +147,7 @@ export const SidebarLinks = () => {
                 <NavGroup
                     title={t('sidebar.links.administration.group')}
                     icon={faGear}
-                    childSelected={/^\/\w{2}\/admin\//.test(pathname)}
+                    childSelected={/^\/\w{2}\/app\/admin\//.test(pathname)}
                     requiredRole={AuthRole.materialManager}
                     testId="btn_adminGroup"
                 >
@@ -177,28 +177,28 @@ export const SidebarLinks = () => {
                             testId="lnk_adminMaterial"
                         />
                         <NavLink
-                            text={t('sidebar.links.administration.dashboard')}
-                            href="/app/admin/dashboard"
-                            isRoute={pathname.endsWith("/app/admin/dashboard")}
+                            text={t('sidebar.links.userOverview')}
+                            href={"/app/admin/user"}
+                            isRoute={pathname.endsWith("/app/admin/user")}
                             level={2}
-                            requiredRole={AuthRole.materialManager}
-                            testId="lnk_adminDashboard"
-                        />
+                            requiredRole={AuthRole.admin}
+                            testId="lnk_users" />
                     </ul>
                 </NavGroup>
                 <NavLink
-                    text={t('sidebar.links.userOverview')}
-                    icon={faAddressCard}
-                    href={"/app/admin/user"}
-                    requiredRole={AuthRole.admin}
-                    isRoute={pathname.startsWith("/users")}
-                    testId="lnk_users" />
+                    icon={faChartLine}
+                    text={t('sidebar.links.administration.dashboard')}
+                    href="/app/dashboard"
+                    isRoute={pathname.endsWith("/app/dashboard")}
+                    requiredRole={AuthRole.materialManager}
+                    testId="lnk_adminDashboard" 
+                />
                 <NavLink
                     text={t('sidebar.links.redirects')}
                     icon={faLink}
                     href={"/app/redirects"}
                     requiredRole={AuthRole.admin}
-                    isRoute={pathname.startsWith("/redirects")}
+                    isRoute={pathname.endsWith("/redirects")}
                     testId="lnk_redirects" />
             </ul>
         </div>
