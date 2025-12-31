@@ -461,7 +461,7 @@ export default {
         "message.inspection.stopError": "The inspection could not be stopped. Please try again later.",
         labels: {
             "stopInspection.header": "stop inspection",
-            "stopInspection.elementLabel": "Enter finishing time", 
+            "stopInspection.elementLabel": "Enter finishing time",
             "activeInspection.open": "Inspected: {controlled} / {total}",
             "activeInspection.collapsed": "{controlled} / {total}"
         },
@@ -658,6 +658,8 @@ export default {
             "header.uniformCountsByType": "Distribution by Type",
             "header.uniformCountsBySize": "Distribution by Size for {type}",
             "label.selectedType": "Selected type:",
+            "label.exporting": "Exporting...",
+            "label.export.uniformOverview": "Export Uniform Overview",
             charts: {
                 available: {
                     short: "Available",
