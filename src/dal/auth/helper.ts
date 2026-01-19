@@ -37,6 +37,8 @@ export const AuthConfig = {
         mediumRiskTime: 5000,
     },
     accessTokenAgeMinutes: 15,
+    inactiveRefreshMinAge: 120, // Minimal restlifetime when refreshing an inactive session 
+    inactiveCutoff: 30,
     sessionAgesInDays: {
         // In Days
         no2FA: 7,
@@ -103,18 +105,18 @@ export const calculateSessionLifetime = (context: {
     userRole: AuthRole;
 }): Date | null => {
     // Base lifetime in days
-    let baseDays = AuthConfig.sessionAges.no2FA; // Conservative default
+    let baseDays = AuthConfig.sessionAgesInDays.no2FA; // Conservative default
 
     // Authentication method bonus
     if (context.mfa?.type === MFAType.totp) {
-        baseDays = AuthConfig.sessionAges.totp2FA;
+        baseDays = AuthConfig.sessionAgesInDays.totp2FA;
     } else if (context.mfa?.type === 'email') {
-        baseDays = AuthConfig.sessionAges.email2FA;
+        baseDays = AuthConfig.sessionAgesInDays.email2FA;
     }
 
     // Device trust penalty
     if (context.isNewDevice) {
-        baseDays = Math.min(baseDays, AuthConfig.sessionAges.newDevice);
+        baseDays = Math.min(baseDays, AuthConfig.sessionAgesInDays.newDevice);
     }
 
     // Risk-based reduction
@@ -135,7 +137,7 @@ export const calculateSessionLifetime = (context: {
     // Hard limits based on last authentication
     const daysSincePasswordAuth = dayjs().diff(context.lastPWValidation, 'days');
 
-    if (daysSincePasswordAuth >= AuthConfig.sessionAges.requirePasswordReauthDays) {
+    if (daysSincePasswordAuth >= AuthConfig.sessionAgesInDays.requirePasswordReauth) {
         baseDays = 0; // Force password re-authentication
     }
     if (baseDays === 0) {

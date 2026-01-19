@@ -159,11 +159,13 @@ export default {
             },
             string: {
                 required: "Please fill in",
+                emailValidation: "Please enter a valid email address",
                 maxLength: "A maximum of {value} characters are allowed",
                 lengthRequired: "A length of {value} is required",
                 noSpecialChars: "No special characters may be used",
                 commentValidation: "Not all characters you have used are allowed",
                 descriptionPattern: "Only the special Chars -_ are allowed",
+                numeric: "Only numbers are allowed",
             },
             actions: {
                 changeSortorder: "An unknown error occurred while changing the order.",
@@ -839,4 +841,31 @@ export default {
             change: "change",
         },
     },
+    emails: {
+        tokenReuseDetected: {
+            subject: "Security Alert: Refresh Token Reuse Detected",
+            greeting: "Hi {name},",
+            line1: "We want to inform you that we have detected suspicious activity related to your account.",
+            line2: "It appears that a refresh token associated with your account may have been compromised.",
+            line3: "For security reasons, we have revoked all active sessions and refresh tokens for your account.",
+            line4: "If this occurs repeatedly, please contact your administrator immediately.",
+            closing: "Security Team",
+        },
+        userBlocked: {
+            user: {
+                subject: "Your UniformAdmin account has been blocked",
+                line1: "Hello {name},",
+                line2: "Your UniformAdmin account has been blocked temporarily due to suspicious activities.",
+                line3: "Please contact your administrator for more information and to restore access.",
+                closing: "Your UniformAdmin Team",
+            },
+            administrator: {
+                subject: "User account {name} has been blocked",
+                line1: "Hello Admin,",
+                line2: "The user account {name} has been blocked due to suspicious activities.",
+                line3: "Please review the account and contact the user for further information.",
+                closing: "Your UniformAdmin Team",   
+            },
+        }
+    }
 } as const;

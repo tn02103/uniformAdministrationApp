@@ -1,7 +1,8 @@
 import { AuthenticationException } from "@/errors/Authentication";
+import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
-import { Prisma } from "@prisma/client";
+import { Prisma, Session } from "@prisma/client";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { UserLoginData } from ".";
 import { AuthConfig, calculateSessionLifetime, DeviceIdsCookie, DeviceIdsCookieAccount, logSecurityAuditEntry, RiskLevel, UserAgent } from "../helper";
@@ -18,11 +19,10 @@ type HandleSuccessfulLoginProps = {
 export const handleSuccessfulLogin = async (props: HandleSuccessfulLoginProps): Promise<void> => {
     const { userLoginData, cookieList, accountCookie, mfaMethod } = props;
     const { user, organisationId, ipAddress, agent, fingerprint } = userLoginData;
-    let { account } = userLoginData;
 
     // Register new device if it does not exists
-    account = await handleDeviceUsage({
-        account,
+    const [account, dbSession] = await handleDeviceUsage({
+        account: userLoginData.account,
         accountCookie,
         organisationId: organisationId,
         userAgent: agent,
@@ -53,7 +53,7 @@ export const handleSuccessfulLogin = async (props: HandleSuccessfulLoginProps): 
         );
     }
 
-    const session = await getIronSession();
+    const ironSession = await getIronSession();
 
     await prisma.user.update({
         where: { id: user.id },
@@ -67,12 +67,18 @@ export const handleSuccessfulLogin = async (props: HandleSuccessfulLoginProps): 
         cookieList,
         userId: user.id,
         deviceId: account.deviceId,
+        sessionId: dbSession.id,
         ipAddress,
         endOfLife: sessionEOL,
         logData: userLoginData,
         mode: "new",
     });
-    await issueNewAccessToken({ session, user, organisation: userLoginData.organisation });
+    await issueNewAccessToken({
+        ironSession,
+        user,
+        organisation: userLoginData.organisation,
+        sessionId: dbSession.id
+    });
     await logSecurityAuditEntry({
         userId: user.id,
         organisationId: organisationId,
@@ -102,17 +108,14 @@ type HandleDeviceUsageProps = {
  * @param props 
  * @returns The current device account information.
  */
-const handleDeviceUsage = async (props: HandleDeviceUsageProps): Promise<DeviceIdsCookieAccount> => {
+const handleDeviceUsage = async (props: HandleDeviceUsageProps): Promise<[DeviceIdsCookieAccount, Session]> => {
     const { accountCookie, organisationId, userAgent, ipAddress, userId, cookieList, mfaUsed, riskLevel } = props;
     let { account } = props;
 
+    // ##### UPDATE OR CREATE DEVICE ENTRY #####
     const updateData = {
         lastIpAddress: ipAddress,
-        userAgent: JSON.stringify(userAgent),
         lastUsedAt: new Date(),
-        lastLoginAt: new Date(),
-        lastMFAAt: mfaUsed ? new Date() : null,
-        sessionRL: String(riskLevel),
     } satisfies Prisma.DeviceUpdateInput
     const dbDevice = await prisma.device.upsert({
         where: {
@@ -122,11 +125,54 @@ const handleDeviceUsage = async (props: HandleDeviceUsageProps): Promise<DeviceI
         update: updateData,
         create: {
             ...updateData,
-            sessionRL: "newDevice",
             userId: userId,
             name: `${userAgent.os.name} ${userAgent.os.version} - ${userAgent.browser.name}`,
         }
     });
+    const isNewDevice = !account || account.deviceId !== dbDevice.id;
+
+    // ##### VALIDATE ACTIVE SESSION #####
+    const activeSession = isNewDevice ? null : await prisma.session.findFirst({
+        where: {
+            deviceId: dbDevice.id,
+            valid: true,
+            refreshTokens: {
+                some: {
+                    status: "active",
+                    issuedAt: {
+                        gte: dayjs().subtract(AuthConfig.inactiveCutoff, "minutes").toDate()
+                    }
+                }
+            }
+        }
+    });
+    let session;
+    if (activeSession) {
+        session = await prisma.session.update({
+            where: { id: activeSession.id },
+            data: {
+                userAgent: JSON.stringify(userAgent),
+                lastLoginAt: new Date(),
+                lastMFAAt: mfaUsed ? new Date() : undefined,
+                sessionRL: String(riskLevel),
+                lastIpAddress: ipAddress,
+            }
+        });
+    } else {
+        session = await prisma.session.create({
+            data: {
+                deviceId: dbDevice.id,
+                valid: true,
+                userAgent: JSON.stringify(userAgent),
+                lastLoginAt: new Date(),
+                lastMFAAt: mfaUsed ? new Date() : null,
+                sessionRL: isNewDevice ? "newDevice" : String(riskLevel),
+                lastIpAddress: ipAddress,
+            }
+        })
+    }
+
+    // ##### UPDATE AUTH COOKIE #####
     account = {
         deviceId: dbDevice.id,
         organisationId: organisationId,
@@ -137,7 +183,7 @@ const handleDeviceUsage = async (props: HandleDeviceUsageProps): Promise<DeviceI
         cookieList.set(AuthConfig.deviceCookie, JSON.stringify({
             lastUsed: {
                 ...account,
-                lastUsedAt: new Date(),
+                lastUsedAt: new Date().toISOString(),
             },
             otherAccounts: accountCookie.otherAccounts,
         }), { httpOnly: true, secure: true, path: '/', sameSite: 'strict' });
@@ -146,11 +192,11 @@ const handleDeviceUsage = async (props: HandleDeviceUsageProps): Promise<DeviceI
         cookieList.set(AuthConfig.deviceCookie, JSON.stringify({
             lastUsed: {
                 ...account,
-                lastUsedAt: new Date(),
+                lastUsedAt: new Date().toISOString(),
             },
             otherAccounts: otherAccounts,
         }), { httpOnly: true, secure: true, path: '/', sameSite: 'strict' });
     }
 
-    return account;
+    return [account, session];
 }

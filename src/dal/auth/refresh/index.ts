@@ -9,11 +9,13 @@ import { AuthConfig, calculateSessionLifetime, getDeviceAccountFromCookies, getI
 import { LogDebugLevel } from "../LogDebugLeve.enum";
 import { verifyRefreshToken } from "./verifyRefreshToken";
 import { issueNewRefreshToken, issueNewAccessToken } from "../helper.tokens";
+import { Prisma } from "@prisma/client";
 
 type RefreshResponse = {
     success: false;
-    exceptionType: "AuthenticationFailed" | "UnknownError";
+    exceptionType: ExceptionType;
 } | { success: true };
+type ExceptionType = "AuthenticationFailed" | "TwoFactorRequired" | "UnknownError";
 
 const ipLimiter = new RateLimiterMemory({
     points: 15, // 15 failed attempts allowed
@@ -47,7 +49,6 @@ const consumeIpLimiter = async (ipAddress: string, points: number, userAgent: Us
         );
 }
 
-
 export const refreshToken = async (): Promise<RefreshResponse> => {
     try {
         // Logic to refresh the access token
@@ -61,8 +62,10 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
         const { accountCookie } = getDeviceAccountFromCookies({ cookieList });
         const account = accountCookie?.lastUsed;
 
-        if (!ipAddress)
-            throw new Error("IP Address is required");
+        if (!ipAddress) {
+            console.warn("RefreshAccessToken: IP Address is required and was not provided");
+            return { success: false, exceptionType: "UnknownError" };
+        }
 
         const limit = await ipLimiter.get(ipAddress);
         if (limit && limit.remainingPoints <= 0) {
@@ -92,14 +95,7 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
                 deviceId: account.deviceId,
                 status: "active",
             },
-            include: {
-                user: {
-                    include: {
-                        organisation: true
-                    }
-                },
-                device: true,
-            },
+            ...dbTokenInclude,
         });
         if (!dbToken) {
             await consumeIpLimiter(ipAddress, 5, agent, account?.deviceId);
@@ -108,12 +104,10 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
 
         // ##### AUTHORIZE User ####
         const fingerprintValidation = await verifyRefreshToken({
+            dbToken,
             agent,
             ipAddress: ipAddress ?? "unknown",
             sendToken: refreshToken.value,
-            dbToken,
-            user: dbToken.user,
-            device: dbToken.device,
             cookieList,
             account,
             logData
@@ -122,25 +116,14 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
             throw e;
         });
 
-        // ##### ISSUE NEW TOKENS ####
-        logSecurityAuditEntry({
-            userId: dbToken.userId,
-            organisationId: dbToken.user.organisationId,
-            success: true,
-            ipAddress,
-            details: "Refresh token valid",
-            action: "REFRESH_ACCESS_TOKEN",
-            userAgent: agent,
-            deviceId: account?.deviceId,
-            debugLevel: LogDebugLevel.SUCCESS,
-        });
-
+        // ##### CALCULATE SESSION LIFETIME ####
+        const session = dbToken.session;
         const endOfLife = calculateSessionLifetime({
-            lastPWValidation: dbToken.device.lastLoginAt,
-            mfa: (dbToken.device.lastMFAAt && dbToken.device.lastUsedMFAType)? {
-                lastValidation: dbToken.device.lastMFAAt,
-                type: dbToken.device.lastUsedMFAType,
-            }: undefined,
+            lastPWValidation: session.lastLoginAt,
+            mfa: (session.lastMFAAt && session.lastUsedMFAType) ? {
+                lastValidation: session.lastMFAAt,
+                type: session.lastUsedMFAType,
+            } : undefined,
             fingerprintRisk: fingerprintValidation.riskLevel,
             userRole: dbToken.user.role,
             isNewDevice: false,
@@ -155,10 +138,10 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
             );
         }
 
-        if (dayjs().subtract(AuthConfig.accessTokenAgeMinutes * 2, "minutes").isAfter(dbToken.issuedAt)){
+        if (dayjs().subtract(AuthConfig.inactiveCutoff, "minutes").isAfter(dbToken.issuedAt)) {
             // INACTIVE SESSION: EOL needs to be at least 4 hours, 
             // otherwise reauth required so it does not happen in the middle of the session
-            if (dayjs().add(4, "hours").isAfter(endOfLife)) {
+            if (dayjs().add(AuthConfig.inactiveRefreshMinAge, "hours").isAfter(endOfLife)) {
                 throw new AuthenticationException(
                     "Inactive Session: EOL is under 4 hours away. Reauth required",
                     "AuthenticationFailed",
@@ -167,7 +150,19 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
                 );
             }
         }
-       
+
+        // ##### ISSUE NEW TOKENS ####
+        logSecurityAuditEntry({
+            userId: dbToken.userId,
+            organisationId: dbToken.user.organisationId,
+            success: true,
+            ipAddress,
+            details: "Refresh token valid",
+            action: "REFRESH_ACCESS_TOKEN",
+            userAgent: agent,
+            deviceId: account?.deviceId,
+            debugLevel: LogDebugLevel.SUCCESS,
+        });
         await issueNewRefreshToken({
             cookieList,
             userId: dbToken.userId,
@@ -180,7 +175,7 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
             mode: "refresh",
         });
         await issueNewAccessToken({
-            session: await getIronSession(),
+            ironSession: await getIronSession(),
             user: dbToken.user,
             organisation: dbToken.user.organisation,
         });
@@ -189,7 +184,56 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
             success: true
         };
     } catch (error) {
-        console.error("Error refreshing access token:", error);
-        return { success: false, exceptionType: "UnknownError" };
-    }
+        if (error instanceof AuthenticationException) {
+            await logSecurityAuditEntry({
+                ...error.data,
+                success: false,
+                debugLevel: error.debugLevel,
+                action: "REFRESH_ACCESS_TOKEN",
+                details: error.message,
+            });
+
+            if (error.exceptionType === "AuthenticationFailed") {
+                const session = await getIronSession();
+                session.destroy();
+            } else if (error.exceptionType === "RefreshTokenReuseDetected") {
+                if (error.debugLevel === LogDebugLevel.CRITICAL) {
+                    const session = await getIronSession();
+                    session.destroy();
+                }
+            }
+
+            return {
+                success: false,
+                exceptionType: getRefreshResponseExceptionType(error.exceptionType),
+            }
+        } else {
+            console.error("Error refreshing access token:", error);
+            return { success: false, exceptionType: "UnknownError" };
+        }
+    };
 };
+
+const getRefreshResponseExceptionType = (type: AuthenticationException["exceptionType"]): ExceptionType => {
+    switch (type) {
+        case "UnknownError":
+            return "UnknownError";
+        case "TwoFactorRequired":
+            return "TwoFactorRequired";
+        default:
+            return "AuthenticationFailed";
+    }
+}
+
+const dbTokenInclude = {
+    include: {
+        user: {
+            include: {
+                organisation: true
+            }
+        },
+        device: true,
+        session: true,
+    },
+} satisfies Prisma.RefreshTokenFindFirstArgs;
+export type DBRefreshToken = Prisma.RefreshTokenGetPayload<typeof dbTokenInclude>;

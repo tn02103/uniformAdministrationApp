@@ -1,7 +1,7 @@
 import { UserAgent } from "@/dal/auth/helper";
 import { LogDebugLevel } from "@/dal/auth/LogDebugLeve.enum";
 
-export type ExceptionType = "AuthenticationFailed" | "User Blocked" | "UnknownError" | "TwoFactorRequired" | "TooManyRequests";
+export type ExceptionType = "AuthenticationFailed" | "User Blocked" | "UnknownError" | "TwoFactorRequired" | "TooManyRequests" | "RefreshTokenReuseDetected";
 export type AuthenticationExceptionData = {
     ipAddress: string;
     userAgent: UserAgent;

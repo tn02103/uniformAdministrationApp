@@ -17,12 +17,13 @@ export function sha256Hex(s: string): string {
 // ############## ISSUE Access Token ##################
 type IssueNewAccessTokenProps = {
     user: User;
-    session: IronSession;
+    sessionId: string;
+    ironSession: IronSession;
     organisation: Organisation;
 }
 export const issueNewAccessToken = async (props: IssueNewAccessTokenProps) => {
-    const { user, session, organisation } = props;
-    session.user = {
+    const { user, ironSession, organisation, sessionId } = props;
+    ironSession.user = {
         id: user.id,
         name: user.name,
         username: user.username,
@@ -30,7 +31,8 @@ export const issueNewAccessToken = async (props: IssueNewAccessTokenProps) => {
         organisationId: organisation.id,
         acronym: organisation.acronym
     };
-    await session.save();
+    ironSession.sessionId = sessionId;
+    await ironSession.save();
 }
 
 // ############## ISSUE REFRESH TOKEN ##################
@@ -38,6 +40,7 @@ type IssueNewRefreshTokenProps = {
     cookieList: ReadonlyRequestCookies;
     userId: string;
     deviceId: string;
+    sessionId: string;
     ipAddress: string;
     endOfLife?: Date;
     logData: AuthenticationExceptionData;
@@ -110,6 +113,7 @@ export const issueNewRefreshToken = async (props: IssueNewRefreshTokenProps) => 
         data: {
             userId: userId,
             deviceId: deviceId,
+            sessionId: props.sessionId,
             token: newTokenHash,
             endOfLife,
             issuerIpAddress: ipAddress,
