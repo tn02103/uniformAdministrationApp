@@ -6,7 +6,8 @@ import { prisma } from "@/lib/db";
 import { sendTokenViaEmail } from "@/lib/email/emailToken";
 import { cookies, headers } from "next/headers";
 import { userAgent } from "next/server";
-import { getDeviceAccountFromCookies, getIPAddress, LogDebugLevel, logSecurityAuditEntry, validateDeviceFingerprint } from "../helper";
+import { getDeviceAccountFromCookies, getIPAddress, logSecurityAuditEntry, RiskLevel, validateDeviceFingerprint } from "../helper";
+import { LogDebugLevel } from "../LogDebugLeve.enum";
 
 export const sendVerifyCode = async () => genericSANoDataValidator(
     AuthRole.user,
@@ -125,7 +126,7 @@ export const verifyEmailCode = async (organisationId: string, userId: string, to
             deviceId: tokenEntry.deviceId,
         }
     });
-    if (fingerprintResult.riskLevel !== "LOW") {
+    if (fingerprintResult.riskLevel !== RiskLevel.LOW) {
         const message = `
             Invalid email verification code -> Device fingerprint validation failed: 
             ${fingerprintResult.reasons.join(', ')}, 
@@ -134,7 +135,7 @@ export const verifyEmailCode = async (organisationId: string, userId: string, to
         throw new AuthenticationException(
             message,
             "AuthenticationFailed",
-            fingerprintResult.riskLevel === "SEVERE" ? LogDebugLevel.CRITICAL : LogDebugLevel.WARNING,
+            fingerprintResult.riskLevel === RiskLevel.SEVERE ? LogDebugLevel.CRITICAL : LogDebugLevel.WARNING,
             exceptionData
         );
     }

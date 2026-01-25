@@ -8,6 +8,7 @@ import { cookies, headers } from "next/headers";
 import { userAgent } from "next/server";
 import { SAReturnType } from "@/dal/_helper/testHelper";
 import dayjs from "@/lib/dayjs";
+import { LogDebugLevel } from "../LogDebugLeve.enum";
 
 const AppConfig = {
     digits: 6,
@@ -96,6 +97,7 @@ export const add = async (props: AddPropType): AddAuthAppReturnType => genericSA
         success: true,
         details: `Created new 2FA app for user ${user.username} (${user.id})`,
         userAgent: agent,
+        debugLevel: LogDebugLevel.INFO,
     });
 
     return { url: totp.toString(), appId: app.id };
@@ -148,7 +150,7 @@ export const verify = async (props: VerifyPropType): VerifyReturnType => generic
     const agent = userAgent({ headers: headerList });
     if (!accountCookie?.lastUsed) throw new Error('Device not recognized. Please login again.');
 
-    const logAudit = (success: boolean, details: string) => logSecurityAuditEntry({
+    const logAudit = (success: boolean, details: string, debugLevel: LogDebugLevel) => logSecurityAuditEntry({
         ipAddress,
         organisationId,
         userId: id,
@@ -157,6 +159,7 @@ export const verify = async (props: VerifyPropType): VerifyReturnType => generic
         success,
         details,
         userAgent: agent,
+        debugLevel,
     });
 
     const dbApp = await client.twoFactorApp.findFirst({
@@ -172,15 +175,15 @@ export const verify = async (props: VerifyPropType): VerifyReturnType => generic
         }
     });
     if (!dbApp) {
-        logAudit(false, `2FA app not found (${appId})`);
+        logAudit(false, `2FA app not found (${appId})`, LogDebugLevel.WARNING);
         return { success: false, error: 'Unknown 2FA app' };
     }
     if (dbApp.verifiedAt) {
-        logAudit(false, `2FA app already verified (${appId})`);
+        logAudit(false, `2FA app already verified (${appId})`, LogDebugLevel.INFO);
         return { success: false, error: 'App already verified' };
     }
     if (dayjs(dbApp.createdAt).isBefore(dayjs().subtract(1, 'hour'))) {
-        logAudit(false, `2FA app verification expired (${appId})`);
+        logAudit(false, `2FA app verification expired (${appId})`, LogDebugLevel.INFO);
         return { success: false, error: 'App verification expired. Please create a new one.' };
     }
 
@@ -209,6 +212,6 @@ export const verify = async (props: VerifyPropType): VerifyReturnType => generic
             }
         });
     }
-    await logAudit(true, `2FA app verified (${appId})`);
+    await logAudit(true, `2FA app verified (${appId})`, LogDebugLevel.INFO);
     return { success: true };
 }));

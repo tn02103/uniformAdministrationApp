@@ -116,6 +116,11 @@ ALTER TABLE "authentication"."organisation" RENAME CONSTRAINT "assosiation_pkey"
 -- AlterTable
 ALTER TABLE "base"."assosiation_configuration" RENAME CONSTRAINT "assosiation_configuration_pkey" TO "organisation_configuration_pkey";
 
+-- CreateEnum
+CREATE TYPE "authentication"."RefreshTokenStatus" AS ENUM ('active', 'rotated', 'revoked');
+
+-- CreateEnum
+CREATE TYPE "authentication"."MFAType" AS ENUM ('totp', 'email');
 
 -- CreateEnum
 CREATE TYPE "authentication"."OrganisationConfiguration_2FARule" AS ENUM ('optional', 'administrators', 'required');
@@ -132,15 +137,20 @@ DELETE FROM "authentication"."refresh_token";
 ALTER TABLE "authentication"."refresh_token"
 RENAME COLUMN "fk_user" TO "user_id";
 ALTER TABLE "authentication"."refresh_token" DROP CONSTRAINT "refresh_token_pkey",
+ADD COLUMN     "id" CHAR(36) NOT NULL DEFAULT gen_random_uuid(),
 ADD COLUMN     "issuer_ip_address" VARCHAR(45) NOT NULL,
-ADD COLUMN     "revoked" BOOLEAN NOT NULL DEFAULT false,
 ADD COLUMN     "used_at" TIMESTAMP(3),
 ADD COLUMN     "number_of_uses" INTEGER NOT NULL DEFAULT 0,
 ADD COLUMN     "used_ip_address" VARCHAR(45),
 ADD COLUMN     "used_user_agent" TEXT,
+ADD COLUMN     "session_id" CHAR(36) NOT NULL,
+ADD COLUMN     "status" "authentication"."RefreshTokenStatus" NOT NULL DEFAULT 'active',
+ADD COLUMN     "tokenFamilyId" CHAR(36) NOT NULL,
+ADD COLUMN     "issuedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "rotatedFromTokenId" CHAR(36),
 ALTER COLUMN "end_of_live" SET DATA TYPE TIMESTAMP(3),
-ALTER COLUMN "token" SET DATA TYPE CHAR(128),
-ADD CONSTRAINT "refresh_token_pkey" PRIMARY KEY ("token");
+ALTER COLUMN "token" SET DATA TYPE CHAR(512),
+ADD CONSTRAINT "refresh_token_pkey" PRIMARY KEY ("id");
 
 -- AlterTable
 ALTER TABLE "authentication"."user"
@@ -166,12 +176,13 @@ CREATE TABLE "authentication"."device" (
     "description" VARCHAR(100),
     "user_id" CHAR(36) NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "last_used_at" TIMESTAMP(3) NOT NULL,
-    "last_login_at" TIMESTAMP(3) NOT NULL,
-    "last_2fa_login_at" TIMESTAMP(3),
     "last_ip_address" VARCHAR(45) NOT NULL,
-    "user_agent" TEXT NOT NULL,
+    "last_mfa_login_at" TIMESTAMP(3),
+    "last_used_mfa_type" "authentication"."MFAType",
     "valid" BOOLEAN NOT NULL DEFAULT true,
+    "user_agent" TEXT NOT NULL,
 
     CONSTRAINT "device_pkey" PRIMARY KEY ("id")
 );
@@ -189,31 +200,42 @@ CREATE TABLE "authentication"."audit_log" (
     "details" TEXT,
     "ip_address" VARCHAR(45),
     "user_agent" TEXT,
+    "security_level" SMALLINT NOT NULL,
 
     CONSTRAINT "audit_log_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "authentication"."EmailVerifications" (
-    "id" CHAR(36) NOT NULL DEFAULT gen_random_uuid(),
-    "user_id" CHAR(36) NOT NULL,
-    "email" VARCHAR(100) NOT NULL,
-    "code" CHAR(36) NOT NULL,
-    "validated" BOOLEAN NOT NULL DEFAULT false,
-    "valid" BOOLEAN NOT NULL DEFAULT true,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "EmailVerifications_pkey" PRIMARY KEY ("id")
-);
 
 -- CreateTable
 CREATE TABLE "authentication"."EmailToken" (
     "id" TEXT NOT NULL DEFAULT gen_random_uuid(),
-    "token" INTEGER NOT NULL,
+    "token" CHAR(6) NOT NULL,
     "user_id" CHAR(36) NOT NULL,
     "end_of_live" TIMESTAMP(3) NOT NULL,
+    "device_id" CHAR(36) NOT NULL,
+    "ip_address" VARCHAR(45) NOT NULL,
+    "user_agent" TEXT NOT NULL,
+    "used_at" TIMESTAMP(3),
+    "used_ip_address" VARCHAR(45),
+    "used_user_agent" TEXT,
 
     CONSTRAINT "EmailToken_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "authentication"."Session" (
+    "id" CHAR(36) NOT NULL DEFAULT gen_random_uuid(),
+    "deviceId" TEXT NOT NULL,
+    "valid" BOOLEAN NOT NULL DEFAULT true,
+    "session_lifetime" TIMESTAMP(3),
+    "session_rl" CHAR(10) NOT NULL,
+    "last_login_at" TIMESTAMP(3) NOT NULL,
+    "last_ip_address" VARCHAR(45) NOT NULL,
+    "user_agent" TEXT NOT NULL,
+    "elevated_session_till" TIMESTAMP(0),
+
+    CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -221,8 +243,9 @@ CREATE TABLE "authentication"."TwoFactorApp" (
     "id" TEXT NOT NULL DEFAULT gen_random_uuid(),
     "secret" TEXT NOT NULL,
     "app_name" VARCHAR(20) NOT NULL,
-    "verified" BOOLEAN NOT NULL DEFAULT false,
     "user_id" CHAR(36) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "verified_at" TIMESTAMP(3),
 
     CONSTRAINT "TwoFactorApp_pkey" PRIMARY KEY ("id")
 );
@@ -277,8 +300,20 @@ ALTER TABLE "base"."uniform_type" ALTER COLUMN "recdelete" SET DATA TYPE TIMESTA
 -- CreateIndex
 CREATE UNIQUE INDEX "refresh_token_token_key" ON "authentication"."refresh_token"("token");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "refresh_token_rotatedFromTokenId_key" ON "authentication"."refresh_token"("rotatedFromTokenId");
+
 -- AddForeignKey
 ALTER TABLE "authentication"."refresh_token" ADD CONSTRAINT "refresh_token_device_id_fkey" FOREIGN KEY ("device_id") REFERENCES "authentication"."device"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "authentication"."refresh_token" ADD CONSTRAINT "refresh_token_rotatedFromTokenId_fkey" FOREIGN KEY ("rotatedFromTokenId") REFERENCES "authentication"."refresh_token"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "authentication"."refresh_token" ADD CONSTRAINT "refresh_token_session_id_fkey" FOREIGN KEY ("session_id") REFERENCES "authentication"."Session"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "authentication"."Session" ADD CONSTRAINT "Session_deviceId_fkey" FOREIGN KEY ("deviceId") REFERENCES "authentication"."device"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- CreateIndex
 CREATE UNIQUE INDEX "EmailToken_token_user_id_key" ON "authentication"."EmailToken"("token", "user_id");
@@ -287,10 +322,10 @@ CREATE UNIQUE INDEX "EmailToken_token_user_id_key" ON "authentication"."EmailTok
 CREATE UNIQUE INDEX "TwoFactorApp_app_name_user_id_key" ON "authentication"."TwoFactorApp"("app_name", "user_id");
 
 -- AddForeignKey
-ALTER TABLE "authentication"."EmailVerifications" ADD CONSTRAINT "EmailVerifications_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "authentication"."user"("id") ON DELETE CASCADE ON UPDATE RESTRICT;
+ALTER TABLE "authentication"."EmailToken" ADD CONSTRAINT "EmailToken_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "authentication"."user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "authentication"."EmailToken" ADD CONSTRAINT "EmailToken_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "authentication"."user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "authentication"."EmailToken" ADD CONSTRAINT "EmailToken_device_id_fkey" FOREIGN KEY ("device_id") REFERENCES "authentication"."device"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "authentication"."TwoFactorApp" ADD CONSTRAINT "TwoFactorApp_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "authentication"."user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

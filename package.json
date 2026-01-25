@@ -59,7 +59,7 @@
         "react-date-picker": "12.0.1",
         "react-dnd": "16.0.1",
         "react-dnd-html5-backend": "16.0.1",
-        "react-dom": "19.2.1",
+        "react-dom": "19.2.3",
         "react-email": "5.0.8",
         "react-error-boundary": "6.0.0",
         "react-fontawesome": "1.7.1",

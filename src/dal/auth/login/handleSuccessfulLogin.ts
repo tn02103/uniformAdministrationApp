@@ -30,7 +30,7 @@ export const handleSuccessfulLogin = async (props: HandleSuccessfulLoginProps): 
         userId: user.id,
         cookieList: cookieList,
         riskLevel: fingerprint.riskLevel,
-        mfaUsed: !!mfaMethod
+        mfaMethod,
     });
 
     const sessionEOL = calculateSessionLifetime({
@@ -100,7 +100,7 @@ type HandleDeviceUsageProps = {
     ipAddress: string;
     userId: string;
     cookieList: ReadonlyRequestCookies;
-    mfaUsed: boolean;
+    mfaMethod: null | "email" | "totp";
     riskLevel: RiskLevel;
 }
 /**
@@ -109,13 +109,16 @@ type HandleDeviceUsageProps = {
  * @returns The current device account information.
  */
 const handleDeviceUsage = async (props: HandleDeviceUsageProps): Promise<[DeviceIdsCookieAccount, Session]> => {
-    const { accountCookie, organisationId, userAgent, ipAddress, userId, cookieList, mfaUsed, riskLevel } = props;
+    const { accountCookie, organisationId, userAgent, ipAddress, userId, cookieList, mfaMethod, riskLevel } = props;
     let { account } = props;
 
     // ##### UPDATE OR CREATE DEVICE ENTRY #####
     const updateData = {
         lastIpAddress: ipAddress,
         lastUsedAt: new Date(),
+        userAgent: JSON.stringify(userAgent),
+        lastMFAAt: mfaMethod ? new Date() : undefined,
+        lastUsedMFAType: mfaMethod ? (mfaMethod === "totp" ? "totp" : "email") : undefined,
     } satisfies Prisma.DeviceUpdateInput
     const dbDevice = await prisma.device.upsert({
         where: {
@@ -153,7 +156,6 @@ const handleDeviceUsage = async (props: HandleDeviceUsageProps): Promise<[Device
             data: {
                 userAgent: JSON.stringify(userAgent),
                 lastLoginAt: new Date(),
-                lastMFAAt: mfaUsed ? new Date() : undefined,
                 sessionRL: String(riskLevel),
                 lastIpAddress: ipAddress,
             }
@@ -165,7 +167,6 @@ const handleDeviceUsage = async (props: HandleDeviceUsageProps): Promise<[Device
                 valid: true,
                 userAgent: JSON.stringify(userAgent),
                 lastLoginAt: new Date(),
-                lastMFAAt: mfaUsed ? new Date() : null,
                 sessionRL: isNewDevice ? "newDevice" : String(riskLevel),
                 lastIpAddress: ipAddress,
             }

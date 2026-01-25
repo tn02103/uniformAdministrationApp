@@ -1,3 +1,5 @@
+"use server";
+
 import { AuthenticationException, AuthenticationExceptionData, ExceptionType, TwoFactorRequiredException } from "@/errors/Authentication";
 import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
@@ -123,6 +125,9 @@ export const Login = async (props: LoginFormType): Promise<LoginReturnType> => {
             where: {
                 id: account.deviceId,
                 valid: true
+            },
+            include: {
+                sessions: true,
             }
         });
 

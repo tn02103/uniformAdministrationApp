@@ -10,7 +10,7 @@ import { handleRefreshTokenReuse } from "./handleReuse";
 
 type verificationsProp = {
     dbToken: DBRefreshToken;
-    agent: UserAgent,
+    agent: UserAgent;
     ipAddress: string;
     sendToken: string;
     cookieList: ReadonlyRequestCookies;

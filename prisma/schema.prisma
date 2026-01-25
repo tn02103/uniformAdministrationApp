@@ -52,7 +52,7 @@ enum OrganisationConfiguration_2FARule {
 }
 
 model RefreshToken {
-    id                  String             @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)  
+    id                  String             @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
     token               String             @db.Char(512)
     userId              String             @map("user_id") @db.Char(36)
     deviceId            String             @map("device_id") @db.Char(36)
@@ -125,20 +125,23 @@ model User {
 }
 
 model Device {
-    id            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    name          String         @db.VarChar(50)
-    description   String?        @db.VarChar(100)
-    userId        String         @map("user_id") @db.Char(36)
-    user          User           @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
-    createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamp(3)
-    updatedAt     DateTime       @default(now()) @map("updated_at") @db.Timestamp(3)
-    lastUsedAt    DateTime       @map("last_used_at") @db.Timestamp(3)
-    lastIpAddress String         @map("last_ip_address") @db.VarChar(45)
-    valid         Boolean        @default(true)
-    RefreshToken  RefreshToken[]
-    AuditLog      AuditLog[]
-    EmailToken    EmailToken[]
-    sessions      Session[]
+    id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    name            String         @db.VarChar(50)
+    description     String?        @db.VarChar(100)
+    userId          String         @map("user_id") @db.Char(36)
+    user            User           @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+    createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamp(3)
+    updatedAt       DateTime       @default(now()) @map("updated_at") @db.Timestamp(3)
+    lastUsedAt      DateTime       @map("last_used_at") @db.Timestamp(3)
+    lastIpAddress   String         @map("last_ip_address") @db.VarChar(45)
+    valid           Boolean        @default(true)
+    userAgent       String         @map("user_agent") @db.Text
+    lastMFAAt       DateTime?      @map("last_mfa_login_at") @db.Timestamp(3)
+    lastUsedMFAType MFAType?       @map("last_used_mfa_type")
+    RefreshToken    RefreshToken[]
+    AuditLog        AuditLog[]
+    EmailToken      EmailToken[]
+    sessions        Session[]
 
     @@index([userId])
     @@map("device")
@@ -146,18 +149,17 @@ model Device {
 }
 
 model Session {
-    id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    deviceId        String
-    device          Device         @relation(fields: [deviceId], references: [id])
-    valid           Boolean        @default(true)
-    sessionLifetime DateTime?      @map("session_lifetime") @db.Timestamp(3)
-    sessionRL       String         @map("session_rl") @db.Char(10)
-    lastLoginAt     DateTime       @map("last_login_at") @db.Timestamp(3)
-    lastMFAAt       DateTime?      @map("last_mfa_login_at") @db.Timestamp(3)
-    lastUsedMFAType MFAType?       @map("last_used_mfa_type")
-    lastIpAddress   String         @map("last_ip_address") @db.VarChar(45)
-    userAgent       String         @map("user_agent") @db.Text
-    refreshTokens   RefreshToken[]
+    id                  String         @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    deviceId            String         @map("device_id") @db.Char(36)
+    device              Device         @relation(fields: [deviceId], references: [id])
+    valid               Boolean        @default(true)
+    sessionLifetime     DateTime?      @map("session_lifetime") @db.Timestamp(3)
+    sessionRL           String         @map("session_rl") @db.Char(10)
+    lastLoginAt         DateTime       @map("last_login_at") @db.Timestamp(3)
+    lastIpAddress       String         @map("last_ip_address") @db.VarChar(45)
+    userAgent           String         @map("user_agent") @db.Text
+    elevatedSessionTill DateTime?      @map("elevated_session_till") @db.Timestamp(0)
+    refreshTokens       RefreshToken[]
 
     @@schema("authentication")
 }

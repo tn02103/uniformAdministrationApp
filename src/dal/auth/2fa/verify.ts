@@ -1,7 +1,7 @@
 import { AuthenticationException, AuthenticationExceptionData } from "@/errors/Authentication";
 import { prisma } from "@/lib/db";
 import { TOTP } from "otpauth";
-import { LogDebugLevel } from "../helper";
+import { LogDebugLevel } from "../LogDebugLeve.enum";
 
 
 export const __unsecuredVerifyTwoFactorCode = async (organisationId: string, userId: string, token: string, appId: string, logData: AuthenticationExceptionData): Promise<void> => {

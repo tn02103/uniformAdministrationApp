@@ -1,3 +1,4 @@
+"use server";
 /* eslint-disable no-console */
 import { AuthConfig, getDeviceAccountFromCookies } from "@/dal/auth/helper";
 import { prisma } from "@/lib/db";

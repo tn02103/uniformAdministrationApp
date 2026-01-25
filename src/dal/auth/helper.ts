@@ -3,7 +3,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
-import { MFAType, RefreshToken } from "@prisma/client";
+import { MFAType } from "@prisma/client";
 import { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/headers";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { userAgent } from "next/server";
@@ -268,77 +268,6 @@ export const validateDeviceFingerprint = async ({ current, expected }: {
 
     return { riskLevel, reasons };
 }
-
-type RefreshTokenReuseResult = {
-    action: 'ALLOW' | 'REQUIRE_REAUTH' | 'INVALIDATE_ALL_SESSIONS';
-    reason: string;
-    riskLevel: RiskLevel;
-}
-/**
- * Handles refresh token reuse detection and determines appropriate response
- */
-export const handleRefreshTokenReuse = async (
-    usedToken: RefreshToken,
-    currentRequest: {
-        deviceId: string;
-        ipAddress: string;
-        userAgent: UserAgent;
-    }
-): Promise<RefreshTokenReuseResult> => {
-    if (!usedToken.usedAt || !usedToken.usedIpAddress || !usedToken.usedUserAgent) {
-        // If any critical information is missing, we cannot validate the token
-        return {
-            action: 'INVALIDATE_ALL_SESSIONS',
-            reason: 'Missing token usage context - implementation error',
-            riskLevel: RiskLevel.SEVERE
-        };
-    }
-
-    // Compare the original token usage context with current request
-    const deviceFingerprint = await validateDeviceFingerprint({
-        current: {
-            deviceId: currentRequest.deviceId,
-            ipAddress: currentRequest.ipAddress,
-            userAgent: currentRequest.userAgent,
-        },
-        expected: {
-            deviceId: usedToken.deviceId,
-            ipAddress: usedToken.usedIpAddress ?? 'unknown',
-            userAgent: usedToken.usedUserAgent,
-        },
-    });
-
-
-    // Same device, same IP, same user agent = likely parallel requests
-    const isLowRiskUA = deviceFingerprint.riskLevel === RiskLevel.LOW && deviceFingerprint.reasons.length === 0;
-
-    // Time since token was used (parallel requests should be very close)
-    const timeSinceUsed = Date.now() - usedToken.usedAt!.getTime();
-    const isWithinParallelWindow = timeSinceUsed < AuthConfig.refreshTokenReuse.acceptedTime; // 2 seconds TODO - make configurable //
-    const isWithinLowRiskWindow = timeSinceUsed < AuthConfig.refreshTokenReuse.mediumRiskTime;
-    if (isLowRiskUA && isWithinParallelWindow) {
-        return {
-            action: 'ALLOW',
-            reason: 'Likely parallel request from same context',
-            riskLevel: RiskLevel.LOW
-        };
-    }
-
-    if (isLowRiskUA && !isWithinParallelWindow && isWithinLowRiskWindow) {
-        return {
-            action: 'REQUIRE_REAUTH',
-            reason: 'Same device but not in parallel request window',
-            riskLevel: RiskLevel.MEDIUM
-        };
-    }
-
-    // Different device or significant time gap = potential attack
-    return {
-        action: 'INVALIDATE_ALL_SESSIONS',
-        reason: 'Refresh token reuse from different context - possible token theft',
-        riskLevel: RiskLevel.SEVERE
-    };
-};
 
 /**
  * Invalidates all active sessions for a user across all devices

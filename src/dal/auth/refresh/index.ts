@@ -1,3 +1,5 @@
+"use server";
+
 import { AuthenticationException, AuthenticationExceptionData } from "@/errors/Authentication";
 import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
@@ -117,12 +119,12 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
         });
 
         // ##### CALCULATE SESSION LIFETIME ####
-        const session = dbToken.session;
+        const { session, device } = dbToken;
         const endOfLife = calculateSessionLifetime({
             lastPWValidation: session.lastLoginAt,
-            mfa: (session.lastMFAAt && session.lastUsedMFAType) ? {
-                lastValidation: session.lastMFAAt,
-                type: session.lastUsedMFAType,
+            mfa: (device.lastMFAAt && device.lastUsedMFAType) ? {
+                lastValidation: device.lastMFAAt,
+                type: device.lastUsedMFAType,
             } : undefined,
             fingerprintRisk: fingerprintValidation.riskLevel,
             userRole: dbToken.user.role,
@@ -173,11 +175,13 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
             userAgent: agent,
             logData,
             mode: "refresh",
+            sessionId: dbToken.sessionId,
         });
         await issueNewAccessToken({
             ironSession: await getIronSession(),
             user: dbToken.user,
             organisation: dbToken.user.organisation,
+            sessionId: dbToken.sessionId,
         });
 
         return {
