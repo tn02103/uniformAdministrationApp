@@ -1,6 +1,7 @@
 import ModalProvider from '@/components/modals/modalProvider';
 import { I18nProviderClient } from '@/lib/locales/client';
 import { getStaticParams } from '@/lib/locales/config';
+import { AuthProvider } from '@/lib/auth/AuthProvider';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import type { Metadata, Viewport } from 'next';
@@ -44,9 +45,11 @@ export default async function RootLayout({
         <html lang="en">
             <body>
                 <I18nProviderClient locale={locale}>
-                    <ModalProvider>
-                        {children}
-                    </ModalProvider>
+                    <AuthProvider>
+                        <ModalProvider>
+                            {children}
+                        </ModalProvider>
+                    </AuthProvider>
                 </I18nProviderClient>
                 <ToastContainer
                     position='top-right'

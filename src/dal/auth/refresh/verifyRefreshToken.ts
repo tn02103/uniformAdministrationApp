@@ -3,7 +3,8 @@ import { isValid } from "date-fns";
 import dayjs from "dayjs";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { DBRefreshToken } from ".";
-import { AuthConfig, DeviceIdsCookieAccount, FingerprintValidationResult, RiskLevel, UserAgent, validateDeviceFingerprint } from "../helper";
+import { DeviceIdsCookieAccount, FingerprintValidationResult, RiskLevel, UserAgent, validateDeviceFingerprint } from "../helper";
+import { AuthConfig } from "../config";
 import { sha256Hex } from "../helper.tokens";
 import { LogDebugLevel } from "../LogDebugLeve.enum";
 import { handleRefreshTokenReuse } from "./handleReuse";
@@ -22,6 +23,7 @@ export const verifyRefreshToken = async (props: verificationsProp): Promise<Fing
 
     const sendTokenHash = sha256Hex(sendToken);
     if (dbToken.token !== sendTokenHash) {
+        console.log(`Token hash mismatch. Expected: ${dbToken.token}, Received: ${sendTokenHash}`);
         throw new AuthenticationException("Refresh token hash does not match", "AuthenticationFailed", LogDebugLevel.WARNING, logData);
     }
 

@@ -6,7 +6,6 @@ import { getIronSession } from "@/lib/ironSession";
 import { LoginFormSchema, LoginFormType } from "@/zod/auth";
 import { Device, Organisation, User } from "@prisma/client";
 import { cookies, headers } from "next/headers";
-import { redirect, RedirectType } from "next/navigation";
 import { userAgent } from "next/server";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import { setTimeout } from "timers/promises";
@@ -17,17 +16,16 @@ import { verifyUser } from "./verifyUser";
 
 type LoginReturnType = {
     loginSuccessful: false;
-    exceptionType: Omit<ExceptionType, "TwoFactorRequired">;
+    exceptionType: Omit<ExceptionType, "TwoFactorRequired" | "RefreshTokenReuseDetected">;
 } | { loginSuccessful: true } | {
     loginSuccessful: false;
     exceptionType: "TwoFactorRequired";
     method: "email" | "totp";
 };
 
-
 const ipLimiter = new RateLimiterMemory({
     points: 15, // 15 failed attempts allowed
-    duration: 60 * 15, // reset after 15 minutes
+    duration: 60 * 5, // reset after 5 minutes
 });
 
 const consumeIpLimiter = async (ipAddress: string, points: number, userAgent: UserAgent, deviceId?: string) => {
@@ -183,7 +181,7 @@ export const Login = async (props: LoginFormType): Promise<LoginReturnType> => {
             mfaMethod,
         });
 
-        return redirect(`/app/cadet`, RedirectType.push);
+        return { loginSuccessful: true };
     } catch (e) {
         if (!(e instanceof AuthenticationException)) {
             console.error("Uncaught login error:", e);

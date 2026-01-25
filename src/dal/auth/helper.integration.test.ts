@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { staticData } from "../../../jest/setup-dal-integration";
-import { issueNewRefreshToken, AuthConfig, type UserAgent } from "./helper";
+import { issueNewRefreshToken, type UserAgent } from "./helper";
+import { AuthConfig } from "./config";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import crypto from 'crypto';
 import dayjs from "@/lib/dayjs";

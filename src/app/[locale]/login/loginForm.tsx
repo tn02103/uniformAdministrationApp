@@ -2,18 +2,20 @@
 
 import { Form } from "@/components/fields/Form";
 import { InputFormField } from "@/components/fields/InputFormField";
+import { NumberInputFormField } from "@/components/fields/NumberInputFormField";
 import { SelectFormField } from "@/components/fields/SelectFormField";
 import { refreshAccessToken, userLogin } from "@/dal/auth";
-import { LoginFormSchema, LoginFormType } from "@/zod/auth";
 import { useI18n } from "@/lib/locales/client";
+import { useAuth } from "@/lib/auth/AuthProvider";
+import { LoginFormSchema, LoginFormType } from "@/zod/auth";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Organisation } from "@prisma/client";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Alert, Button, Col, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { NumberInputFormField } from "@/components/fields/NumberInputFormField";
+import { LoginFormAlert } from "./LoginFormAlert";
 
 type PropType = {
     organisations: Organisation[];
@@ -23,70 +25,78 @@ type PropType = {
 
 const LoginForm = ({ organisations, lastUsedOrganisationId, ...props }: PropType) => {
     const t = useI18n();
-    const router = useRouter();
-    const params = useParams();
+    const { onLoginSuccess } = useAuth();
 
     const [tryRefreshToken, setTryRefreshToken] = useState(props.tryRefreshToken);
-    const [failedLogin, setFailedLogin] = useState(false);
-    const [userBlocked, setUserBlocked] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [loginState, setLoginState] = useState<"error" | "success" | "userBlocked" | "tooManyRequests" | "null" | "submitting">("null");
     const [step, setStep] = useState(0);
 
     async function onSubmit(data: LoginFormType) {
-        setIsSubmitting(true);
-        setUserBlocked(false);
-        setFailedLogin(false);
+        setLoginState("submitting");
 
         userLogin({
             organisationId: data.organisationId,
             email: data.email.trim(),
             password: data.password
         }).then((response) => {
-            setIsSubmitting(false);
+            console.log("loginForm response" + JSON.stringify(response));
             if (response.loginSuccessful) {
-
+                setLoginState("success");
+                
+                // Use AuthProvider's login success handler
+                const organisation = organisations.find(o => o.id === data.organisationId);
+                if (organisation) {
+                    onLoginSuccess(organisation.acronym);
+                }
             } else {
-                if (response.exceptionType === "TwoFactorRequired") {
-                    setStep(1);
-                } else if (response.exceptionType === "AuthenticationFailed") {
-                    setFailedLogin(true);
-                } else if (response.exceptionType === "UnknownError") {
-                    setFailedLogin(false);
-                    toast.error(t('login.error.unknown'));
-                } else if (response.exceptionType === "User Blocked") {
-                    setUserBlocked(true);
+                switch (response.exceptionType) {
+                    case "TwoFactorRequired":
+                        setLoginState("null");
+                        setStep(1);
+                        break;
+                    case "UnknownError":
+                        setLoginState("null");
+                        toast.error(t('login.error.unknown'));
+                        break;
+                    case "User Blocked":
+                        setLoginState("userBlocked");
+                        break;
+                    case "TooManyRequests":
+                        setLoginState("tooManyRequests");
+                        break;
+                    case "AuthenticationFailed":
+                        setLoginState("error");
+                        break;
                 }
             }
         })
     }
 
     useEffect(() => {
-        if (tryRefreshToken)
+        if (tryRefreshToken) {
             refreshAccessToken().then((result) => {
                 if (result.success) {
-                    router.push(`/${params.locale}/app/`)
+                    // Use AuthProvider's login success - find the user's organization
+                    // We don't have the organization acronym here, so we redirect to a default
+                    const firstOrg = organisations[0];
+                    if (firstOrg) {
+                        onLoginSuccess(firstOrg.acronym);
+                    }
                 } else {
                     setTryRefreshToken(false);
                 }
-            }).catch(() => setTryRefreshToken(false))
-    }, [tryRefreshToken, router, params.locale]);
+            }).catch(() => {
+                setTryRefreshToken(false);
+            });
+        }
+    }, [tryRefreshToken, organisations, onLoginSuccess]);
 
     if (tryRefreshToken)
         return null;
 
-
     return (
         <Form<LoginFormType> onSubmit={onSubmit} zodSchema={LoginFormSchema} defaultValues={{ organisationId: lastUsedOrganisationId }} >
-            {userBlocked &&
-                <Alert variant="danger" style={{ maxWidth: "400px" }} onClose={() => setUserBlocked(false)} dismissible>
-                    {t('login.error.userBlocked')}
-                </Alert>
-            }
-            {!userBlocked && failedLogin &&
-                <Alert variant="danger" style={{ maxWidth: "400px" }} onClose={() => setFailedLogin(false)} dismissible>
-                    {t('login.error.failed')}
-                </Alert>
-            }
+            <LoginFormAlert loginState={loginState} />
             {step === 0 &&
                 <div>
                     <div className="mb-3">
@@ -112,8 +122,8 @@ const LoginForm = ({ organisations, lastUsedOrganisationId, ...props }: PropType
                     </div>
                     <Row>
                         <Col>
-                            <Button variant="primary" type="submit" disabled={isSubmitting} data-testid="btn_login">
-                                {isSubmitting ?
+                            <Button variant="primary" type="submit" disabled={loginState === "submitting"} data-testid="btn_login">
+                                {(loginState === "submitting") ?
                                     <FontAwesomeIcon icon={faSpinner} className="mx-3 fa-spin-pulse" />
                                     : t('login.label.login')
                                 }

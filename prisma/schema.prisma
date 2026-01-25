@@ -53,7 +53,7 @@ enum OrganisationConfiguration_2FARule {
 
 model RefreshToken {
     id                  String             @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    token               String             @db.Char(512)
+    token               String             @db.Char(64)
     userId              String             @map("user_id") @db.Char(36)
     deviceId            String             @map("device_id") @db.Char(36)
     sessionId           String             @map("session_id") @db.Char(36)

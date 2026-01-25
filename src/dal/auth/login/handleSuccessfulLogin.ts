@@ -5,7 +5,8 @@ import { getIronSession } from "@/lib/ironSession";
 import { Prisma, Session } from "@prisma/client";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { UserLoginData } from ".";
-import { AuthConfig, calculateSessionLifetime, DeviceIdsCookie, DeviceIdsCookieAccount, logSecurityAuditEntry, RiskLevel, UserAgent } from "../helper";
+import { calculateSessionLifetime, DeviceIdsCookie, DeviceIdsCookieAccount, logSecurityAuditEntry, RiskLevel, UserAgent } from "../helper";
+import { AuthConfig } from "../config";
 import { issueNewAccessToken, issueNewRefreshToken } from "../helper.tokens";
 import { LogDebugLevel } from "../LogDebugLeve.enum";
 
@@ -122,7 +123,7 @@ const handleDeviceUsage = async (props: HandleDeviceUsageProps): Promise<[Device
     } satisfies Prisma.DeviceUpdateInput
     const dbDevice = await prisma.device.upsert({
         where: {
-            id: account?.deviceId,
+            id: account?.deviceId ?? "unknown-device-id",
             valid: true,
         },
         update: updateData,

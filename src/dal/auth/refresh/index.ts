@@ -7,7 +7,8 @@ import dayjs from "dayjs";
 import { cookies, headers } from "next/headers";
 import { userAgent } from "next/server";
 import { RateLimiterMemory } from "rate-limiter-flexible";
-import { AuthConfig, calculateSessionLifetime, getDeviceAccountFromCookies, getIPAddress, logSecurityAuditEntry, type UserAgent } from "../helper";
+import { calculateSessionLifetime, getDeviceAccountFromCookies, getIPAddress, logSecurityAuditEntry, type UserAgent } from "../helper";
+import { AuthConfig } from "../config";
 import { LogDebugLevel } from "../LogDebugLeve.enum";
 import { verifyRefreshToken } from "./verifyRefreshToken";
 import { issueNewRefreshToken, issueNewAccessToken } from "../helper.tokens";
@@ -168,7 +169,7 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
         await issueNewRefreshToken({
             cookieList,
             userId: dbToken.userId,
-            usedRefreshToken: dbToken.token,
+            usedRefreshTokenId: dbToken.id,
             deviceId: dbToken.deviceId,
             ipAddress,
             endOfLife: endOfLife,

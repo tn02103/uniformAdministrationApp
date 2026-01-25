@@ -251,6 +251,7 @@ export default {
             unknown: "Der Loginversuch ist fehlgeschlagen, bitte versuchen Sie es erneut.",
             failed: "Nutzername oder Passwort sind ungültig",
             userBlocked: "Ihr Zugang wurde gesperrt. Bitte kontaktieren Sie den Administrator.",
+            tooManyRequests: "Zu viele fehlgeschlagene Loginversuche. Bitte versuchen Sie es später erneut.",
         },
     },
     notFound: {

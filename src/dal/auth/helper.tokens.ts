@@ -5,7 +5,8 @@ import { Organisation, User } from "@prisma/client";
 import crypto, { createHash } from 'crypto';
 import dayjs from "dayjs";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
-import { AuthConfig, UserAgent } from "./helper";
+import { UserAgent } from "./helper";
+import { AuthConfig } from "./config";
 import { LogDebugLevel } from "./LogDebugLeve.enum";
 
 
@@ -46,11 +47,11 @@ type IssueNewRefreshTokenProps = {
 } & ({
     mode: "new";
     userAgent?: undefined;
-    usedRefreshToken?: undefined,
+    usedRefreshTokenId?: undefined,
 } | {
     mode: "refresh";
     userAgent: UserAgent;
-    usedRefreshToken: string;
+    usedRefreshTokenId: string;
 })
 /**
  * Issues a new refresh token for the user.
@@ -61,7 +62,7 @@ export const issueNewRefreshToken = async (props: IssueNewRefreshTokenProps) => 
         deviceId,
         userId,
         ipAddress,
-        usedRefreshToken,
+        usedRefreshTokenId,
         endOfLife = dayjs().add(3, "days").toDate(),
         userAgent,
         mode,
@@ -72,11 +73,10 @@ export const issueNewRefreshToken = async (props: IssueNewRefreshTokenProps) => 
         // Mark the used refresh token as used
         oldToken = await prisma.refreshToken.update({
             where: {
-                token: usedRefreshToken,
+                id: usedRefreshTokenId,
                 userId: userId,
                 status: "active",
                 usedAt: null,
-                endOfLife: { gt: new Date() },
             },
             data: {
                 usedAt: new Date(),
@@ -95,7 +95,6 @@ export const issueNewRefreshToken = async (props: IssueNewRefreshTokenProps) => 
             deviceId: deviceId,
             userId: userId,
             status: "active",
-            usedAt: null,
             endOfLife: { gt: new Date() },
         },
         data: {
@@ -117,7 +116,7 @@ export const issueNewRefreshToken = async (props: IssueNewRefreshTokenProps) => 
             endOfLife,
             issuerIpAddress: ipAddress,
             tokenFamilyId: oldToken ? oldToken.tokenFamilyId : crypto.randomUUID(),
-            rotatedFromTokenId: oldToken ? oldToken.token : null,
+            rotatedFromTokenId: oldToken ? oldToken.id : null,
             status: "active",
         }
     });

@@ -1,6 +1,6 @@
 
 import { refreshAccessToken } from "@/dal/auth";
-import { AuthConfig } from "@/dal/auth/helper";
+import { AuthConfig } from "@/dal/auth/config";
 import { UnauthorizedException } from "@/errors/CustomException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";

@@ -149,7 +149,7 @@ ADD COLUMN     "tokenFamilyId" CHAR(36) NOT NULL,
 ADD COLUMN     "issuedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 ADD COLUMN     "rotatedFromTokenId" CHAR(36),
 ALTER COLUMN "end_of_live" SET DATA TYPE TIMESTAMP(3),
-ALTER COLUMN "token" SET DATA TYPE CHAR(512),
+ALTER COLUMN "token" SET DATA TYPE CHAR(64),
 ADD CONSTRAINT "refresh_token_pkey" PRIMARY KEY ("id");
 
 -- AlterTable
@@ -226,7 +226,7 @@ CREATE TABLE "authentication"."EmailToken" (
 -- CreateTable
 CREATE TABLE "authentication"."Session" (
     "id" CHAR(36) NOT NULL DEFAULT gen_random_uuid(),
-    "deviceId" TEXT NOT NULL,
+    "device_id" CHAR(36) NOT NULL,
     "valid" BOOLEAN NOT NULL DEFAULT true,
     "session_lifetime" TIMESTAMP(3),
     "session_rl" CHAR(10) NOT NULL,
@@ -313,7 +313,7 @@ ALTER TABLE "authentication"."refresh_token" ADD CONSTRAINT "refresh_token_rotat
 ALTER TABLE "authentication"."refresh_token" ADD CONSTRAINT "refresh_token_session_id_fkey" FOREIGN KEY ("session_id") REFERENCES "authentication"."Session"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "authentication"."Session" ADD CONSTRAINT "Session_deviceId_fkey" FOREIGN KEY ("deviceId") REFERENCES "authentication"."device"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "authentication"."Session" ADD CONSTRAINT "Session_device_id_fkey" FOREIGN KEY ("device_id") REFERENCES "authentication"."device"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- CreateIndex
 CREATE UNIQUE INDEX "EmailToken_token_user_id_key" ON "authentication"."EmailToken"("token", "user_id");

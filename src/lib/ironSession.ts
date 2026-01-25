@@ -1,4 +1,4 @@
-import { AuthConfig } from "@/dal/auth/helper";
+import { AuthConfig } from "@/dal/auth/config";
 import { AuthRole } from "./AuthRoles";
 import { IronSession as UntypedIronSession, IronSessionData, SessionOptions, getIronSession as getSession } from "iron-session";
 import { cookies } from "next/headers";

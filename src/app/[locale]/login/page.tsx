@@ -1,6 +1,7 @@
 "use server";
-/* eslint-disable no-console */
-import { AuthConfig, getDeviceAccountFromCookies } from "@/dal/auth/helper";
+
+import { getDeviceAccountFromCookies } from "@/dal/auth/helper";
+import { AuthConfig } from "@/dal/auth/config";
 import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
 import { getI18n, getScopedI18n } from "@/lib/locales/config";
