@@ -12,7 +12,7 @@ export type ConfiguratorFormType = {
     typeId: string,
     generationId?: string,
     sizeId?: string,
-    active: boolean,
+    isReserve: boolean,
     comment: string,
 }
 
@@ -25,7 +25,7 @@ const NewUniformConfigurator = ({
 }) => {
     const t = useI18n();
     const { register, watch, handleSubmit, setValue, formState: { errors }, getValues } =
-        useForm<ConfiguratorFormType>({ defaultValues: { active: true }, mode: "onChange" });
+        useForm<ConfiguratorFormType>({ defaultValues: { isReserve: false }, mode: "onChange" });
 
     const { typeList } = useUniformTypeList();
     const { sizelistList } = useUniformSizelists();
@@ -178,7 +178,7 @@ const NewUniformConfigurator = ({
                                 <Col xs="8" sm="5">
                                     <Form.Check
                                         disabled={(step > 0)}
-                                        {...register("active")} />
+                                        {...register("isReserve")} />
                                 </Col>
                             </Row>
                             <Row className="mt-2">

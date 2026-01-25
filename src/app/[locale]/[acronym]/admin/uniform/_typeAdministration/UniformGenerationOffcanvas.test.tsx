@@ -11,7 +11,7 @@ const uniformTypeId = '2b255769-2154-479f-bfca-c6a49e523334';
 const testGeneration = {
     id: "testId",
     name: "Test Generation",
-    outdated: false,
+    isReserve: false,
     fk_sizelist: sizeListIds[0],
     sortOrder: 0,
     sizelist: {
@@ -106,7 +106,7 @@ describe('<UniformgenerationOffcanvas>', () => {
             const deleteButton = screen.getByText('common.actions.delete');
             const nameInput = screen.getByRole('textbox', { name: 'common.name' });
             const sizeSelectDiv = screen.getByRole('paragraph', { name: 'common.uniform.sizelist.label' });
-            const outdatedSwitch = screen.getByRole('switch', { name: 'common.uniform.generation.outdated' });
+            const reserveSwitch = screen.getByRole('switch', { name: 'common.uniform.generation.isReserve' });
             // get variable elements
             let saveButton = screen.queryByText('common.actions.save');
             let cancelButton = screen.queryByText('common.actions.cancel');
@@ -116,8 +116,8 @@ describe('<UniformgenerationOffcanvas>', () => {
             expect(nameInput).toBeVisible();
             expect(nameInput).toHaveClass('form-control-plaintext');
             expect(nameInput).toHaveAttribute('disabled');
-            expect(outdatedSwitch).toBeVisible();
-            expect(outdatedSwitch).toHaveAttribute('aria-disabled', 'true');
+            expect(reserveSwitch).toBeVisible();
+            expect(reserveSwitch).toHaveAttribute('aria-disabled', 'true');
             expect(sizeSelect).toBeNull();
             expect(sizeSelectDiv).toBeVisible();
 
@@ -138,7 +138,7 @@ describe('<UniformgenerationOffcanvas>', () => {
             // check form components
             expect(nameInput).toHaveClass('form-control');
             expect(nameInput).not.toHaveAttribute('disabled');
-            expect(outdatedSwitch).toHaveAttribute('aria-disabled', 'false');
+            expect(reserveSwitch).toHaveAttribute('aria-disabled', 'false');
             expect(sizeSelect).toBeVisible();
             expect(sizeSelect).not.toHaveAttribute('disabled');
             expect(sizeSelectDiv).not.toBeVisible();
@@ -169,25 +169,25 @@ describe('<UniformgenerationOffcanvas>', () => {
 
             // get elements
             const nameInput = screen.getByRole('textbox', { name: 'common.name' });
-            const outdatedSwitch = screen.getByRole('switch', { name: 'common.uniform.generation.outdated' });
+            const reserveSwitch = screen.getByRole('switch', { name: 'common.uniform.generation.isReserve' });
             const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.sizelist.label' });
             const cancelButton = screen.getByText('common.actions.cancel');
 
             // change values
             await user.clear(nameInput);
             await user.type(nameInput, 'New Name');
-            await user.click(outdatedSwitch);
+            await user.click(reserveSwitch);
             await user.selectOptions(sizeSelect, sizeListIds[1]);
 
             // check values
             expect(nameInput).toHaveValue('New Name');
-            expect(outdatedSwitch).toHaveAttribute('aria-checked', 'true');
+            expect(reserveSwitch).toHaveAttribute('aria-checked', 'true');
             expect(sizeSelect).toHaveValue(sizeListIds[1]);
 
             // cancel and check for resetet values again
             await user.click(cancelButton);
             expect(nameInput).toHaveValue(testGeneration.name);
-            expect(outdatedSwitch).toHaveAttribute('aria-checked', String(testGeneration.outdated));
+            expect(reserveSwitch).toHaveAttribute('aria-checked', String(testGeneration.isReserve));
             expect(sizeSelect).not.toBeInTheDocument();
             const sizeSelectDiv = screen.getByRole('paragraph', { name: 'common.uniform.sizelist.label' });
             expect(sizeSelectDiv).toHaveTextContent(testGeneration.sizelist.name);
@@ -319,18 +319,18 @@ describe('<UniformgenerationOffcanvas>', () => {
 
                 // get elements
                 const nameInput = screen.getByRole('textbox', { name: 'common.name' });
-                const outdatedSwitch = screen.getByRole('switch', { name: 'common.uniform.generation.outdated' });
+                const reserveSwitch = screen.getByRole('switch', { name: 'common.uniform.generation.isReserve' });
                 const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.sizelist.label' });
                 const createButton = screen.getByText('common.actions.create');
 
                 // set values
                 await user.type(nameInput, 'New Name');
-                await user.click(outdatedSwitch);
+                await user.click(reserveSwitch);
                 await user.selectOptions(sizeSelect, sizeListIds[1]);
 
                 // check values
                 expect(nameInput).toHaveValue('New Name');
-                expect(outdatedSwitch).toHaveAttribute('aria-checked', 'true');
+                expect(reserveSwitch).toHaveAttribute('aria-checked', 'true');
                 expect(sizeSelect).toHaveValue(sizeListIds[1]);
 
                 // create and validate actions
@@ -338,7 +338,7 @@ describe('<UniformgenerationOffcanvas>', () => {
                 expect(createUniformGeneration).toHaveBeenCalledTimes(1);
                 expect(createUniformGeneration).toHaveBeenCalledWith({
                     name: 'New Name',
-                    outdated: true,
+                    isReserve: true,
                     fk_sizelist: sizeListIds[1],
                     uniformTypeId: uniformTypeId,
                 });
@@ -381,7 +381,7 @@ describe('<UniformgenerationOffcanvas>', () => {
                 expect(createUniformGeneration).toHaveBeenCalledTimes(1);
                 expect(createUniformGeneration).toHaveBeenCalledWith({
                     name: 'New Name',
-                    outdated: false,
+                    isReserve: false,
                     fk_sizelist: sizeListIds[0],
                     uniformTypeId: uniformTypeId,
                 });
@@ -405,13 +405,13 @@ describe('<UniformgenerationOffcanvas>', () => {
 
                 // get elements
                 const nameInput = screen.getByRole('textbox', { name: 'common.name' });
-                const outdatedSwitch = screen.getByRole('switch', { name: 'common.uniform.generation.outdated' });
+                const reserveSwitch = screen.getByRole('switch', { name: 'common.uniform.generation.isReserve' });
                 const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.sizelist.label' });
                 const createButton = screen.getByText('common.actions.create');
 
                 // set values and create
                 await user.type(nameInput, 'New Name');
-                await user.click(outdatedSwitch);
+                await user.click(reserveSwitch);
                 await user.selectOptions(sizeSelect, sizeListIds[1]);
                 await user.click(createButton);
 
@@ -443,19 +443,19 @@ describe('<UniformgenerationOffcanvas>', () => {
 
                 // get elements
                 const nameInput = screen.getByRole('textbox', { name: 'common.name' });
-                const outdatedSwitch = screen.getByRole('switch', { name: 'common.uniform.generation.outdated' });
+                const reserveSwitch = screen.getByRole('switch', { name: 'common.uniform.generation.isReserve' });
                 const sizeSelect = screen.getByRole('combobox', { name: 'common.uniform.sizelist.label' });
                 const saveButton = screen.getByText('common.actions.save');
 
                 // change values
                 await user.clear(nameInput);
                 await user.type(nameInput, 'New Name');
-                await user.click(outdatedSwitch);
+                await user.click(reserveSwitch);
                 await user.selectOptions(sizeSelect, sizeListIds[1]);
 
                 // check values
                 expect(nameInput).toHaveValue('New Name');
-                expect(outdatedSwitch).toHaveAttribute('aria-checked', 'true');
+                expect(reserveSwitch).toHaveAttribute('aria-checked', 'true');
                 expect(sizeSelect).toHaveValue(sizeListIds[1]);
 
                 // save and validate actions
@@ -464,7 +464,7 @@ describe('<UniformgenerationOffcanvas>', () => {
                 expect(updateUniformGeneration).toHaveBeenCalledWith({
                     data: {
                         name: 'New Name',
-                        outdated: true,
+                        isReserve: true,
                         fk_sizelist: sizeListIds[1],
                     },
                     id: testGeneration.id,
@@ -512,7 +512,7 @@ describe('<UniformgenerationOffcanvas>', () => {
                 expect(updateUniformGeneration).toHaveBeenCalledWith({
                     data: {
                         name: 'New Name',
-                        outdated: false,
+                        isReserve: false,
                         fk_sizelist: sizeListIds[0],
                     },
                     id: testGeneration.id,

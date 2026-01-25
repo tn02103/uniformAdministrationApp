@@ -51,6 +51,7 @@ describe('NavGroup', () => {
         userRole: AuthRole.admin,
         useBeta: false,
         sizelists: [],
+        typeList: []
     };
 
     let user: ReturnType<typeof userEvent.setup>;
@@ -92,9 +93,8 @@ describe('NavGroup', () => {
     describe('Role-Based Access Control', () => {
         test('Hides component for insufficient user role', () => {
             mockUseGlobalData.mockReturnValue({
+                ...defaultGlobalData,
                 userRole: AuthRole.user,
-                useBeta: false,
-                sizelists: []
             });
 
             render(<NavGroup {...defaultProps} requiredRole={AuthRole.admin} />);
@@ -104,9 +104,8 @@ describe('NavGroup', () => {
 
         test('Shows component for sufficient user role', () => {
             mockUseGlobalData.mockReturnValue({
+                ...defaultGlobalData,
                 userRole: AuthRole.admin,
-                useBeta: false,
-                sizelists: []
             });
 
             render(<NavGroup {...defaultProps} requiredRole={AuthRole.user} />);
@@ -117,9 +116,8 @@ describe('NavGroup', () => {
         test('Tests different AuthRole scenarios', () => {
             // Test user role can access user-level component
             mockUseGlobalData.mockReturnValue({
+                ...defaultGlobalData,
                 userRole: AuthRole.user,
-                useBeta: false,
-                sizelists: []
             });
             const { rerender } = render(<NavGroup {...defaultProps} requiredRole={AuthRole.user} />);
             expect(screen.getByTestId('test-nav-group')).toBeInTheDocument();
@@ -130,9 +128,8 @@ describe('NavGroup', () => {
 
             // Test admin role can access all levels
             mockUseGlobalData.mockReturnValue({
+                ...defaultGlobalData,
                 userRole: AuthRole.admin,
-                useBeta: false,
-                sizelists: []
             });
             rerender(<NavGroup {...defaultProps} requiredRole={AuthRole.admin} />);
             expect(screen.getByTestId('test-nav-group')).toBeInTheDocument();

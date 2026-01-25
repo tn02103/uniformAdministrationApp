@@ -37,7 +37,7 @@ test.describe('Offcanvas - CadetOverview', () => {
         test('should allow to edit and save uniform', async ({ page, staticData: { ids } }) => {
             const cadetUniformRow = page.getByTestId(`div_uniform_typeList`).getByTestId(`div_uitem_${ids.uniformIds[0][84]}`);
             const dialog = await openOffcanvas(page, ids.uniformIds[0][84], 1184);
-            const activeField = dialog.getByLabel(/Status/i);
+            const reserveField = dialog.getByLabel(/Status/i);
             const generationField = dialog.getByLabel(/Generation/i);
             const sizeField = dialog.getByLabel(/Größe/i);
             const commentField = dialog.getByLabel(/Kommentar/i);
@@ -46,8 +46,8 @@ test.describe('Offcanvas - CadetOverview', () => {
                 const editButton = dialog.getByRole('button', { name: /Bearbeiten/i });
                 await editButton.click();
 
-                await activeField.uncheck();
-                await generationField.selectOption({ label: 'Generation1-1' });
+                await reserveField.check();
+                await generationField.selectOption({ label: 'Generation1-2' });
                 await sizeField.selectOption({ label: '1' });
                 await commentField.fill('Test comment');
 
@@ -58,17 +58,17 @@ test.describe('Offcanvas - CadetOverview', () => {
             await expect(cadetUniformRow).toBeVisible();
             await Promise.all([
                 test.step('validate dialog', async () => Promise.all([
-                    expect(activeField).toHaveText('Reserve'),
-                    expect(generationField).toHaveText('Generation1-1'),
+                    expect(reserveField).toHaveText('Reserve'),
+                    expect(generationField).toHaveText('Generation1-2'),
                     expect(sizeField).toHaveText('1'),
                     expect(commentField).toHaveText('Test comment'),
                 ])),
                 test.step('validate cadetUniformRow', async () => Promise.all([
                     expect(cadetUniformRow.getByTestId('div_number')).toHaveText('1184'),
-                    expect(cadetUniformRow.getByTestId('div_generation')).toHaveText('Generation1-1'),
+                    expect(cadetUniformRow.getByTestId('div_generation')).toHaveText('Generation1-2'),
                     expect(cadetUniformRow.getByTestId('div_size')).toHaveText('1'),
                     expect(cadetUniformRow.getByTestId('div_comment')).toHaveText('Test comment'),
-                    expect(cadetUniformRow.getByTestId('div_number')).toHaveClass(/text-danger/),
+                    expect(cadetUniformRow).toHaveClass(/text-secondary/),
                 ])),
                 test.step('validate db', async () => {
                     const cadetUniform = await prisma.uniform.findFirst({
@@ -82,9 +82,9 @@ test.describe('Offcanvas - CadetOverview', () => {
                         id: ids.uniformIds[0][84],
                         number: 1184,
                         fk_size: ids.sizeIds[1],
-                        fk_generation: ids.uniformGenerationIds[0],
+                        fk_generation: ids.uniformGenerationIds[1],
                         comment: 'Test comment',
-                        active: false,
+                        isReserve: true,
                         recdelete: null,
                         recdeleteUser: null
                     });
@@ -96,7 +96,7 @@ test.describe('Offcanvas - CadetOverview', () => {
             const uniformId = ids.uniformIds[3][3];
             const cadetUniformRow = page.getByTestId(`div_uniform_typeList`).getByTestId(`div_uitem_${uniformId}`);
             const dialog = await openOffcanvas(page, uniformId, 1403);
-            const activeField = dialog.getByLabel(/Status/i);
+            const reserveField = dialog.getByLabel(/Status/i);
             const generationField = dialog.getByLabel(/Generation/i);
             const sizeField = dialog.getByLabel(/Größe/i);
             const commentField = dialog.getByLabel(/Kommentar/i);
@@ -107,7 +107,7 @@ test.describe('Offcanvas - CadetOverview', () => {
 
                 const editButton = dialog.getByRole('button', { name: /Bearbeiten/i });
                 await editButton.click();
-                await activeField.uncheck();
+                await reserveField.check();
                 await commentField.fill('Test comment');
 
                 const saveButton = dialog.getByRole('button', { name: /Speichern/i });
@@ -117,7 +117,7 @@ test.describe('Offcanvas - CadetOverview', () => {
             await expect(cadetUniformRow).toBeVisible();
             await Promise.all([
                 test.step('validate dialog', async () => Promise.all([
-                    expect(activeField).toHaveText('Reserve'),
+                    expect(reserveField).toHaveText('Reserve'),
                     expect(commentField).toHaveText('Test comment'),
                 ])),
                 test.step('validate cadetUniformRow', async () => Promise.all([
@@ -125,7 +125,7 @@ test.describe('Offcanvas - CadetOverview', () => {
                     expect(cadetUniformRow.getByTestId('div_generation')).toHaveText('---'),
                     expect(cadetUniformRow.getByTestId('div_size')).toHaveText('---'),
                     expect(cadetUniformRow.getByTestId('div_comment')).toHaveText('Test comment'),
-                    expect(cadetUniformRow.getByTestId('div_number')).toHaveClass(/text-danger/),
+                    expect(cadetUniformRow).toHaveClass(/text-secondary/),
                 ])),
                 test.step('validate db', async () => {
                     const cadetUniform = await prisma.uniform.findFirst({
@@ -141,7 +141,7 @@ test.describe('Offcanvas - CadetOverview', () => {
                         fk_size: null,
                         fk_generation: null,
                         comment: 'Test comment',
-                        active: false,
+                        isReserve: true,
                         recdelete: null,
                         recdeleteUser: null
                     });

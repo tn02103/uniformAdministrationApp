@@ -22,7 +22,7 @@ describe('<UniformGeneration> create', () => {
         const { success } = await runServerActionTest(
             create({
                 name: 'New Test Gen',
-                outdated: false,
+                isReserve: false,
                 fk_sizelist: ids.sizelistIds[0],
                 uniformTypeId: ids.uniformTypeIds[0]
             })
@@ -38,7 +38,7 @@ describe('<UniformGeneration> create', () => {
         });
         expect(dbData).not.toBeNull();
         expect(dbData?.sortOrder).toBe(initialCount);
-        expect(dbData?.outdated).toBe(false);
+        expect(dbData?.isReserve).toBe(false);
         expect(dbData?.fk_sizelist).toBe(ids.sizelistIds[0]);
         expect(dbData?.fk_uniformType).toBe(ids.uniformTypeIds[0]);
     });
@@ -47,7 +47,7 @@ describe('<UniformGeneration> create', () => {
         const { success } = await runServerActionTest(
             create({
                 name: 'TestGen NoSizes',
-                outdated: true,
+                isReserve: true,
                 fk_sizelist: ids.sizelistIds[0], // This should be ignored
                 uniformTypeId: ids.uniformTypeIds[1] // Type that uses generations but not sizes
             })
@@ -63,6 +63,6 @@ describe('<UniformGeneration> create', () => {
         });
         expect(dbData).not.toBeNull();
         expect(dbData?.fk_sizelist).toBeNull();
-        expect(dbData?.outdated).toBe(true);
+        expect(dbData?.isReserve).toBe(true);
     });
 });

@@ -1,15 +1,13 @@
 import { prisma } from "@/lib/db";
-import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { __unsecuredGetUnitsWithUniformItems } from "./get";
 import { update } from "./update";
 
-const { data, organisationId } = new StaticData(0);
 jest.mock("@/lib/db", () => ({
     prisma: {
         $transaction: jest.fn(async (callback) => callback(prisma)),
         storageUnit: {
             findFirst: jest.fn(() => null),
-            findUniqueOrThrow: jest.fn(() => data.storageUnits[0]),
+            findUniqueOrThrow: jest.fn(() => ({ id: "b101fce1-9297-4978-bc34-ce357ab1d6d4" })),
             update: jest.fn(async () => { }),
         },
     },
@@ -20,8 +18,9 @@ jest.mock("./get", () => ({
 }));
 
 describe("update", () => {
+    const organisationId = "test-organisation-id"
     const mockProps = {
-        id: data.storageUnits[0].id,
+        id: "b101fce1-9297-4978-bc34-ce357ab1d6d4",
         data: {
             name: "New Storage Unit",
             description: "A new storage unit",

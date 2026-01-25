@@ -30,22 +30,22 @@ const getUniformLabel = (data: Partial<UniformItemLabel>): UniformItemLabel => (
     label: "Uniform-1",
     number: 1,
     owner: null,
-    active: true,
+    isReserve: false,
     storageUnit: null,
     type: { id: defaultProps.type.id, name: defaultProps.type.name, acronym: defaultProps.type.acronym },
     ...data,
 });
 const uniformLabels = [
     getUniformLabel({ id: "item-1", number: 101, owner: { id: "cadet-1", firstname: "Lucas", lastname: "Mustermann" } }),
-    getUniformLabel({ id: "item-2", number: 102, active: false }),
+    getUniformLabel({ id: "item-2", number: 102, isReserve: true }),
     getUniformLabel({ id: "item-3", number: 103, owner: { id: "cadet-2", firstname: "Max", lastname: "Mustermann" } }),
     getUniformLabel({ id: "item-4", number: 104, storageUnit: { id: "s1", name: "Lager 1" } }),
-    getUniformLabel({ id: "item-5", number: 105, active: false, owner: { id: "cadet-3", firstname: "Anna", lastname: "Musterfrau" } }),
+    getUniformLabel({ id: "item-5", number: 105, isReserve: true, owner: { id: "cadet-3", firstname: "Anna", lastname: "Musterfrau" } }),
 ] satisfies UniformItemLabel[];
 
 
 const issuedItemList = [
-    { id: "item-1", number: 101, owner: null, active: true, storageUnit: null, typeId: defaultProps.type.id },
+    { id: "item-1", number: 101, owner: null, isReserve: false, storageUnit: null, typeId: defaultProps.type.id },
 ];
 
 beforeEach(() => {
@@ -123,7 +123,7 @@ describe("CadetUniformTableIssueModal", () => {
                 uniformTypeId: defaultProps.type.id,
                 idToReplace: undefined,
                 options: {
-                    ignoreInactive: false,
+                    ignoreReserve: false,
                     force: false,
                     create: true,
                 }
@@ -145,7 +145,7 @@ describe("CadetUniformTableIssueModal", () => {
                 uniformTypeId: defaultProps.type.id,
                 idToReplace: undefined,
                 options: {
-                    ignoreInactive: false,
+                    ignoreReserve: false,
                     force: false,
                     create: false,
                 }
@@ -167,14 +167,14 @@ describe("CadetUniformTableIssueModal", () => {
                 uniformTypeId: defaultProps.type.id,
                 idToReplace: "item-2",
                 options: {
-                    ignoreInactive: false,
+                    ignoreReserve: false,
                     force: false,
                     create: false,
                 }
             });
         });
 
-        it("calls issueUniformItem with correct values for issuing an inactive (reserve) item", async () => {
+        it("calls issueUniformItem with correct values for issuing an inactive (isReserve) item", async () => {
             const { issueUniformItem } = jest.requireMock("@/dal/uniform/item/_index");
             setup();
             const input = screen.getByLabelText(/input.label/i);
@@ -189,7 +189,7 @@ describe("CadetUniformTableIssueModal", () => {
                 uniformTypeId: defaultProps.type.id,
                 idToReplace: undefined,
                 options: {
-                    ignoreInactive: true,
+                    ignoreReserve: true,
                     force: false,
                     create: false,
                 }
@@ -211,14 +211,14 @@ describe("CadetUniformTableIssueModal", () => {
                 uniformTypeId: defaultProps.type.id,
                 idToReplace: undefined,
                 options: {
-                    ignoreInactive: false,
+                    ignoreReserve: false,
                     force: true,
                     create: false,
                 }
             });
         });
 
-        it("calls issueUniformItem with correct values for issuing a reserve item with owner", async () => {
+        it("calls issueUniformItem with correct values for issuing a isReserve item with owner", async () => {
             const { issueUniformItem } = jest.requireMock("@/dal/uniform/item/_index");
             setup();
             const input = screen.getByLabelText(/input.label/i);
@@ -233,7 +233,7 @@ describe("CadetUniformTableIssueModal", () => {
                 uniformTypeId: defaultProps.type.id,
                 idToReplace: undefined,
                 options: {
-                    ignoreInactive: true,
+                    ignoreReserve: true,
                     force: true,
                     create: false,
                 }
@@ -287,12 +287,12 @@ describe("CadetUniformTableIssueModal", () => {
             expect(screen.queryByText(/cadetDetailPage.issueModal.alert.owner.1/)).not.toBeInTheDocument();
         });
 
-        it("shows warning if item is inactive (reserve)", async () => {
+        it("shows warning if item is inactive (isReserve)", async () => {
             setup();
             const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
             await userEvent.type(input, "102");
-            expect(await screen.findByText(/cadetDetailPage.issueModal.alert.reserve/)).toBeInTheDocument();
+            expect(await screen.findByText(/cadetDetailPage.issueModal.alert.isReserve/)).toBeInTheDocument();
         });
 
         it("shows alert if item is assigned to a storage unit", async () => {
@@ -316,7 +316,7 @@ describe("CadetUniformTableIssueModal", () => {
             expect(getByRole(option, "img", { hidden: true })).toHaveAttribute("class", expect.stringContaining("fa-box-open"));
         });
 
-        it("shows 'R' icon for inactive (reserve) item in option", async () => {
+        it("shows 'R' icon for inactive (isReserve) item in option", async () => {
             setup();
             const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
@@ -346,8 +346,8 @@ describe("CadetUniformTableIssueModal", () => {
             expect(option).toHaveClass("text-danger");
         });
 
-        it("shows both person and warning icons for a reserve item with an owner", async () => {
-            // Use item-5: reserve (inactive) and has an owner
+        it("shows both person and warning icons for a isReserve item with an owner", async () => {
+            // Use item-5: isReserve (inactive) and has an owner
             setup();
             const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
@@ -356,7 +356,7 @@ describe("CadetUniformTableIssueModal", () => {
             const option = screen.getByRole("option", { name: /105/i });
             expect(option).toBeVisible();
             const icons = getAllByRole(option, "img", { hidden: true });
-            // Should have fa-user and fa-registered (reserve warning)
+            // Should have fa-user and fa-registered (isReserve warning)
             const userIcon = Array.from(icons).find(icon =>
                 icon.classList.contains("fa-user")
             );

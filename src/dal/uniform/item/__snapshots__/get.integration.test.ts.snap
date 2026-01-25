@@ -3,7 +3,7 @@
 exports[`getItemLabels should return a list of uniform item labels 1`] = `
 [
   {
-    "active": true,
+    "isReserve": true,
     "label": "Typ1-1100",
     "number": 1100,
     "owner": {
@@ -18,7 +18,7 @@ exports[`getItemLabels should return a list of uniform item labels 1`] = `
     },
   },
   {
-    "active": true,
+    "isReserve": true,
     "label": "Typ1-1101",
     "number": 1101,
     "owner": {
@@ -33,7 +33,7 @@ exports[`getItemLabels should return a list of uniform item labels 1`] = `
     },
   },
   {
-    "active": true,
+    "isReserve": true,
     "label": "Typ1-1102",
     "number": 1102,
     "owner": {
@@ -48,7 +48,7 @@ exports[`getItemLabels should return a list of uniform item labels 1`] = `
     },
   },
   {
-    "active": true,
+    "isReserve": true,
     "label": "Typ1-1103",
     "number": 1103,
     "owner": null,
@@ -59,7 +59,7 @@ exports[`getItemLabels should return a list of uniform item labels 1`] = `
     },
   },
   {
-    "active": true,
+    "isReserve": true,
     "label": "Typ1-1104",
     "number": 1104,
     "owner": null,
@@ -70,7 +70,7 @@ exports[`getItemLabels should return a list of uniform item labels 1`] = `
     },
   },
   {
-    "active": false,
+    "isReserve": true,
     "label": "Typ1-1105",
     "number": 1105,
     "owner": null,
@@ -81,7 +81,7 @@ exports[`getItemLabels should return a list of uniform item labels 1`] = `
     },
   },
   {
-    "active": false,
+    "isReserve": true,
     "label": "Typ1-1106",
     "number": 1106,
     "owner": null,
@@ -92,7 +92,7 @@ exports[`getItemLabels should return a list of uniform item labels 1`] = `
     },
   },
   {
-    "active": false,
+    "isReserve": true,
     "label": "Typ1-1107",
     "number": 1107,
     "owner": null,
@@ -103,7 +103,7 @@ exports[`getItemLabels should return a list of uniform item labels 1`] = `
     },
   },
   {
-    "active": false,
+    "isReserve": true,
     "label": "Typ1-1108",
     "number": 1108,
     "owner": null,
@@ -117,7 +117,7 @@ exports[`getItemLabels should return a list of uniform item labels 1`] = `
     },
   },
   {
-    "active": false,
+    "isReserve": true,
     "label": "Typ1-1109",
     "number": 1109,
     "owner": null,

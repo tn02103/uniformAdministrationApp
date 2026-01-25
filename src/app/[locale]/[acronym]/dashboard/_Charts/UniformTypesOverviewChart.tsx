@@ -144,7 +144,13 @@ export const UniformTypesOverviewChart = ({ data }: UniformTypesOverviewChartPro
                                     <th className='bg-secondary-subtle'>{t('admin.dashboard.charts.total')}</th>
                                     {data.map(typeData => (
                                         <td key={typeData.id} className='bg-secondary-subtle'>
-                                            {barItems.reduce((sum, item) => sum + typeData.quantities[item.key], 0)}
+                                            {barItems
+                                                .filter(item => item.key !== "missing")
+                                                .reduce(
+                                                    (sum, item) => sum + typeData.quantities[item.key],
+                                                    0
+                                                )
+                                            }
                                         </td>
                                     ))}
                                 </tr>

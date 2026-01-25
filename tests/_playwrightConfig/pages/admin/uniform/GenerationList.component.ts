@@ -17,8 +17,8 @@ export class GenerationListComponent {
     div_gen_name(generationId: string) {
         return this.div_generation(generationId).getByTestId('div_name');
     }
-    div_gen_outdated(generationId: string) {
-        return this.div_generation(generationId).getByTestId('div_outdated');
+    div_gen_reserve(generationId: string) {
+        return this.div_generation(generationId).getByTestId('div_reserve');
     }
     div_gen_sizelist(generationId: string) {
         return this.div_generation(generationId).getByTestId('div_sizelist');
