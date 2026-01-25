@@ -42,12 +42,9 @@ const LoginForm = ({ organisations, lastUsedOrganisationId, ...props }: PropType
             console.log("loginForm response" + JSON.stringify(response));
             if (response.loginSuccessful) {
                 setLoginState("success");
-                
+
                 // Use AuthProvider's login success handler
-                const organisation = organisations.find(o => o.id === data.organisationId);
-                if (organisation) {
-                    onLoginSuccess(organisation.acronym);
-                }
+                onLoginSuccess();
             } else {
                 switch (response.exceptionType) {
                     case "TwoFactorRequired":
@@ -78,10 +75,7 @@ const LoginForm = ({ organisations, lastUsedOrganisationId, ...props }: PropType
                 if (result.success) {
                     // Use AuthProvider's login success - find the user's organization
                     // We don't have the organization acronym here, so we redirect to a default
-                    const firstOrg = organisations[0];
-                    if (firstOrg) {
-                        onLoginSuccess(firstOrg.acronym);
-                    }
+                    onLoginSuccess();
                 } else {
                     setTryRefreshToken(false);
                 }

@@ -499,7 +499,7 @@ export default {
             },
             userOverview: "Zugänge",
             redirects: "Weiterleitungen",
-            profile: "Profiel"
+            profile: "Profil"
         },
     },
     redirects: {
@@ -515,7 +515,7 @@ export default {
     admin: {
         uniform: {
             header: "Uniformadministration",
-            changeSizelistWarning: "Beim Ändern der ausgewählten Größenliste, kann bei Uniformteilen dieser Generation die Information der Größe verlohren gehen",
+            changeSizelistWarning: "Beim Ändern der ausgewählten Größenliste, kann bei Uniformteilen dieser Generation die Information der Größe verloren gehen",
             type: {
                 deleteModal: {
                     header: "Uniformtyp \"{type}\" löschen",

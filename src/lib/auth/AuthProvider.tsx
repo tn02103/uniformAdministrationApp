@@ -17,7 +17,7 @@ interface AuthState {
 interface AuthContextValue extends AuthState {
   refreshToken: () => Promise<void>;
   logout: () => Promise<void>;
-  onLoginSuccess: (organisationAcronym: string) => void;
+  onLoginSuccess: () => void;
 }
 
 const Config = {
@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Check if route matches pattern: /[locale]/[acronym]/... or /[locale]/login
   const pathParts = pathname.split('/').filter(Boolean);
   console.log("🚀 ~ AuthProvider ~ pathParts:", pathParts);
-  const isLoginRoute = pathParts.length >= 1 && pathParts[0] === 'login';
+  const isLoginRoute = pathParts.length >= 2 && pathParts[1] === 'login';
   const isAcronymRoute = pathParts.length >= 2 && pathParts[1] === "app"; 
   const isAuthRoute = isLoginRoute || isAcronymRoute;
   const isProtectedRoute = isAcronymRoute;
@@ -233,9 +233,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [pathname, router]);
 
-  const onLoginSuccess = useCallback((organisationAcronym: string) => {
+  const onLoginSuccess = useCallback(() => {
     const locale = pathname.split('/')[1];
-    const redirectUrl = `/${locale}/${organisationAcronym}/cadet`;
+    const redirectUrl = `/${locale}/app/cadet`;
     const now = dayjs().toISOString();
     
     const tokenState = {

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DeviceIdsCookie, DeviceIdsCookieAccount, UserAgent, getDeviceAccountFromCookies, validateDeviceFingerprint } from "./helper";
+import { DeviceIdsCookie, DeviceIdsCookieAccount, RiskLevel, UserAgent, getDeviceAccountFromCookies, validateDeviceFingerprint } from "./helper";
 
 describe('getDeviceAccountFromCookies', () => {
     const mockAccounts: DeviceIdsCookieAccount[] = [
@@ -110,7 +110,7 @@ describe('validateDeviceFingerprint', () => {
                 },
             });
 
-            expect(result.riskLevel).toBe('SEVERE');
+            expect(result.riskLevel).toBe(RiskLevel.SEVERE);
             expect(result.reasons).toEqual(['Device ID mismatch']);
         });
         it('should return SEVERE risk when stored user agent is invalid JSON', async () => {
@@ -123,7 +123,7 @@ describe('validateDeviceFingerprint', () => {
 
             });
 
-            expect(result.riskLevel).toBe('SEVERE');
+            expect(result.riskLevel).toBe(RiskLevel.SEVERE);
             expect(result.reasons).toContain('Invalid stored user agent');
         });
 
@@ -140,7 +140,7 @@ describe('validateDeviceFingerprint', () => {
                 expected: mockExpected,
             });
 
-            expect(result.riskLevel).toBe('SEVERE');
+            expect(result.riskLevel).toBe(RiskLevel.SEVERE);
             expect(result.reasons).toEqual(['OS name changed']);
         });
 
@@ -157,7 +157,7 @@ describe('validateDeviceFingerprint', () => {
                 expected: mockExpected,
             });
 
-            expect(result.riskLevel).toBe('SEVERE');
+            expect(result.riskLevel).toBe(RiskLevel.SEVERE);
             expect(result.reasons).toEqual(['Device type changed']);
         });
 
@@ -174,7 +174,7 @@ describe('validateDeviceFingerprint', () => {
                 expected: mockExpected,
             });
 
-            expect(result.riskLevel).toBe('SEVERE');
+            expect(result.riskLevel).toBe(RiskLevel.SEVERE);
             expect(result.reasons).toEqual(['Browser name changed']);
         });
 
@@ -193,7 +193,7 @@ describe('validateDeviceFingerprint', () => {
                 expected: mockExpected,
             });
 
-            expect(result.riskLevel).toBe('SEVERE');
+            expect(result.riskLevel).toBe(RiskLevel.SEVERE);
             expect(result.reasons).toEqual(['OS name changed', 'Device type changed', 'Browser name changed']);
         });
     });
@@ -212,7 +212,7 @@ describe('validateDeviceFingerprint', () => {
                 expected: mockExpected,
             });
 
-            expect(result.riskLevel).toBe('HIGH');
+            expect(result.riskLevel).toBe(RiskLevel.HIGH);
             expect(result.reasons).toEqual(['OS version updated']);
         });
 
@@ -230,7 +230,7 @@ describe('validateDeviceFingerprint', () => {
                 expected: mockExpected,
             });
 
-            expect(result.riskLevel).toBe('HIGH');
+            expect(result.riskLevel).toBe(RiskLevel.HIGH);
             expect(result.reasons).toEqual(['IP address changed', 'OS version updated']);
         });
     });
@@ -249,7 +249,7 @@ describe('validateDeviceFingerprint', () => {
                 expected: mockExpected,
             });
 
-            expect(result.riskLevel).toBe('MEDIUM');
+            expect(result.riskLevel).toBe(RiskLevel.MEDIUM);
             expect(result.reasons).toEqual(['Browser version updated']);
         });
 
@@ -267,7 +267,7 @@ describe('validateDeviceFingerprint', () => {
                 expected: mockExpected,
             });
 
-            expect(result.riskLevel).toBe('MEDIUM');
+            expect(result.riskLevel).toBe(RiskLevel.MEDIUM);
             expect(result.reasons).toEqual(['IP address changed', 'Browser version updated']);
         });
     });
@@ -279,7 +279,7 @@ describe('validateDeviceFingerprint', () => {
                 expected: mockExpected,
             });
 
-            expect(result.riskLevel).toBe('LOW');
+            expect(result.riskLevel).toBe(RiskLevel.LOW);
             expect(result.reasons).toEqual([]);
         });
 
@@ -292,7 +292,7 @@ describe('validateDeviceFingerprint', () => {
                 expected: mockExpected,
             });
 
-            expect(result.riskLevel).toBe('LOW');
+            expect(result.riskLevel).toBe(RiskLevel.LOW);
             expect(result.reasons).toEqual(['IP address changed']);
         });
     });
@@ -311,7 +311,7 @@ describe('validateDeviceFingerprint', () => {
                 },
             });
 
-            expect(result.riskLevel).toBe('SEVERE'); // Should still work with partial data
+            expect(result.riskLevel).toBe(RiskLevel.SEVERE); // Should still work with partial data
             expect(result.reasons).toEqual(["Device type changed"]);
         });
 
@@ -330,7 +330,7 @@ describe('validateDeviceFingerprint', () => {
                 expected: mockExpected,
             });
 
-            expect(result.riskLevel).toBe('SEVERE');
+            expect(result.riskLevel).toBe(RiskLevel.SEVERE);
             expect(result.reasons).toEqual(['Device type changed']);
         });
     });

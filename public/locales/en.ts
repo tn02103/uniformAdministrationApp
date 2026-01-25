@@ -241,12 +241,14 @@ export default {
             organisation: "Association",
             username: "Username",
             password: "Password",
+            twoFactorCode: "2FA Code",
             login: "Login"
         },
         error: {
             unknown: "The login attempt failed, please try again.",
             failed: "Username or password are invalid",
-            userBlocked: "The user is blocked. Please contact an administrator."
+            userBlocked: "The user is blocked. Please contact an administrator.",
+            tooManyRequests: "Too many failed login attempts. Please try again later.",
         },
     },
     notFound: {
@@ -494,6 +496,7 @@ export default {
             },
             userOverview: "Accesses",
             redirects: "Redirects",
+            profile: "Profile"
         },
     },
     redirects: {

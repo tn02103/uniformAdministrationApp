@@ -37,7 +37,7 @@ export const ProfileContent = ({ user }: ProfileContentProps) => {
             <button onClick={handleAddAppOpen}>Add 2FA App</button>
             {user.twoFactorApps.map(app => (
                 <div key={app.id}>
-                    <strong>App Name:</strong> {app.appName} - <strong>Verified:</strong> {app.verified ? 'Yes' : 'No'}
+                    <strong>App Name:</strong> {app.appName} - <strong>Verified:</strong> {app.verifiedAt ? 'Yes' : 'No'}
                 </div>
             ))}
             {user.twoFactorApps.length === 0 && <p>No 2FA apps configured.</p>}
