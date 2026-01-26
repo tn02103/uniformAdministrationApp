@@ -29,6 +29,8 @@ describe('InspectionBadge', () => {
 
     it('today', () => {
         const insp: PlannedInspectionType = { ...defaultValues, date: dayjs().format('YYYY-MM-DD'), timeStart: null, timeEnd: null }
+        render(<InspectionBadge inspection={insp} />);
+
         const comp = screen.getByTestId('lbl_badge');
         expect(comp).toHaveTextContent('inspection.planned.badge.planned');
         expect(comp).toHaveClass(/bg-secondary/);

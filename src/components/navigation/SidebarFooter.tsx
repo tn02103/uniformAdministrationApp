@@ -8,6 +8,7 @@ import { Dropdown } from "react-bootstrap";
 import { useSessionStorage } from "usehooks-ts";
 import { useModal } from "../modals/modalProvider";
 import { useSidebarContext } from "./Sidebar";
+import { userLogout } from "@/dal/auth";
 
 type SidebarFooterProps = {
     username: string;
@@ -22,6 +23,10 @@ export const SidebarFooter = ({ username, collapseButtonRef, handleCollapseButto
    
     const { collapsed, setCollapsed, isSidebarFixed, setShowSidebar } = useSidebarContext();
     const [, setSidebarFixed] = useSessionStorage("sidebarFixed", true);
+
+    const handleLogout = () => {
+        userLogout().then(logout);
+    }
 
     return (
         <div className="flex-shrink-0">
@@ -44,7 +49,7 @@ export const SidebarFooter = ({ username, collapseButtonRef, handleCollapseButto
                                 <Dropdown.Item onClick={modal?.changeLanguage} data-testid="btn_changeSize" className="text-white bg-navy-secondary my-2 my-lg-0">
                                     {t('sidebar.changeLanguage')}
                                 </Dropdown.Item>
-                                <Dropdown.Item onClick={logout} data-testid="btn_logout" className="text-white bg-navy-secondary">
+                                <Dropdown.Item onClick={handleLogout} data-testid="btn_logout" className="text-white bg-navy-secondary">
                                     {t('sidebar.logout')}
                                 </Dropdown.Item>
                             </Dropdown.Menu>

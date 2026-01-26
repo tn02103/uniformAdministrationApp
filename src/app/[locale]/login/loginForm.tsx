@@ -1,17 +1,17 @@
+/* eslint-disable no-console */
 "use client";
 
 import { Form } from "@/components/fields/Form";
 import { InputFormField } from "@/components/fields/InputFormField";
 import { NumberInputFormField } from "@/components/fields/NumberInputFormField";
 import { SelectFormField } from "@/components/fields/SelectFormField";
-import { refreshAccessToken, userLogin } from "@/dal/auth";
-import { useI18n } from "@/lib/locales/client";
+import { userLogin } from "@/dal/auth";
 import { useAuth } from "@/lib/auth/AuthProvider";
+import { useI18n } from "@/lib/locales/client";
 import { LoginFormSchema, LoginFormType } from "@/zod/auth";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Organisation } from "@prisma/client";
-import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
@@ -71,10 +71,12 @@ const LoginForm = ({ organisations, lastUsedOrganisationId, ...props }: PropType
 
     useEffect(() => {
         if (tryRefreshToken) {
-            refreshAccessToken().then((result) => {
-                if (result.success) {
+            console.debug("🚀 ~ LoginForm ~ Trying to refresh access token using refresh token");
+            fetch('/api/auth/refresh', { method: 'POST' }).then((result) => {
+                if (result.ok) {
                     // Use AuthProvider's login success - find the user's organization
                     // We don't have the organization acronym here, so we redirect to a default
+                    console.debug("🚀 ~ LoginForm ~ Token refreshed successfully, calling onLoginSuccess");
                     onLoginSuccess();
                 } else {
                     setTryRefreshToken(false);

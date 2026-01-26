@@ -1,7 +1,6 @@
 "use server";
 
 import { getDeviceAccountFromCookies } from "@/dal/auth/helper";
-import { AuthConfig } from "@/dal/auth/config";
 import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
 import { getI18n, getScopedI18n } from "@/lib/locales/config";
@@ -29,14 +28,23 @@ const LoginPage = async ({ params }: { params: Promise<{ locale: string }> }) =>
         return redirect(`/${locale}/app/`);
     }
 
-    const t = await getI18n();
-    const organisations = await prisma.organisation.findMany();
-   
-    const cookieList = await cookies();
-    const { accountCookie } = getDeviceAccountFromCookies({ cookieList }); 
+    const [t, organisations, cookieList] = await Promise.all([
+        getI18n(),
+        prisma.organisation.findMany(),
+        cookies()
+    ]);
+
+    const { accountCookie } = getDeviceAccountFromCookies({ cookieList });
     const accountOrganisationId = accountCookie?.lastUsed?.organisationId;
     const lastUsedOrganisationId = (accountOrganisationId && organisations.find(o => o.id === accountOrganisationId))
         ? accountOrganisationId : undefined;
+    const tryRefreshToken = !!(lastUsedOrganisationId && await prisma.refreshToken.findFirst({
+        where: {
+            deviceId: accountCookie?.lastUsed.deviceId,
+            status: "active",
+            endOfLife: { gt: new Date() }
+        }
+    }));
 
     return (
         <div className={styles.loginCard}>
@@ -45,7 +53,7 @@ const LoginPage = async ({ params }: { params: Promise<{ locale: string }> }) =>
                 <LoginForm
                     organisations={organisations}
                     lastUsedOrganisationId={lastUsedOrganisationId}
-                    tryRefreshToken={cookieList.has(AuthConfig.refreshTokenCookie)}
+                    tryRefreshToken={tryRefreshToken}
                 />
             </div>
         </div>

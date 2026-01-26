@@ -3,6 +3,11 @@
 export const AuthConfig = {
     deviceCookie: process.env.AUTH_DEVICE_COOKIE_NAME ?? "deviceToken",
     refreshTokenCookie: process.env.AUTH_REFRESH_COOKIE_NAME ?? "refreshToken",
+    accessToken: {
+        age: 15 * 60,
+        refreshInterval: 5 * 60,
+        keepAliveCheckInterval: 60,
+    },
     refreshTokenReuse: {
         acceptedTime: 1000,
         mediumRiskTime: 5000,

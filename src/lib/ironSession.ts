@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 const sessionOptions: SessionOptions = {
     password: process.env.IRON_SESSION_KEY as string,
     cookieName: process.env.IRON_SESSION_COOKIE_NAME as string,
-    ttl: AuthConfig.accessTokenAgeMinutes * 60,
+    ttl: AuthConfig.accessToken.age,
     cookieOptions: {
         secure: process.env.STAGE !== "DEV",
         httpOnly: true,

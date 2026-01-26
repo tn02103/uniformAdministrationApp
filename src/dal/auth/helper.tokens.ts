@@ -126,5 +126,6 @@ export const issueNewRefreshToken = async (props: IssueNewRefreshTokenProps) => 
         secure: true,
         sameSite: 'strict',
         expires: endOfLife,
+        path: '/api/auth/refresh',
     });
 }

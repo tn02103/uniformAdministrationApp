@@ -2,7 +2,7 @@ import { AuthenticationException, AuthenticationExceptionData } from "@/errors/A
 import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
 import { sendTokenReuseDetectedEmail } from "@/lib/email/tokenReuseDetected";
-import { DBRefreshToken } from ".";
+import { DBRefreshToken } from "./refreshAccessToken";
 import { FingerprintValidationResult, RiskLevel, UserAgent, validateDeviceFingerprint } from "../helper";
 import { LogDebugLevel } from "../LogDebugLeve.enum";
 

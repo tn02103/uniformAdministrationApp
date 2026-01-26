@@ -3,22 +3,21 @@
 import { AuthenticationException, AuthenticationExceptionData } from "@/errors/Authentication";
 import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
+import { Prisma } from "@prisma/client";
 import dayjs from "dayjs";
 import { cookies, headers } from "next/headers";
 import { userAgent } from "next/server";
 import { RateLimiterMemory } from "rate-limiter-flexible";
-import { calculateSessionLifetime, getDeviceAccountFromCookies, getIPAddress, logSecurityAuditEntry, type UserAgent } from "../helper";
 import { AuthConfig } from "../config";
+import { calculateSessionLifetime, getDeviceAccountFromCookies, getIPAddress, logSecurityAuditEntry, type UserAgent } from "../helper";
+import { issueNewAccessToken, issueNewRefreshToken } from "../helper.tokens";
 import { LogDebugLevel } from "../LogDebugLeve.enum";
 import { verifyRefreshToken } from "./verifyRefreshToken";
-import { issueNewRefreshToken, issueNewAccessToken } from "../helper.tokens";
-import { Prisma } from "@prisma/client";
 
 type RefreshResponse = {
-    success: false;
-    exceptionType: ExceptionType;
-} | { success: true };
-type ExceptionType = "AuthenticationFailed" | "TwoFactorRequired" | "UnknownError";
+    status: number;
+    message: string;
+}
 
 const ipLimiter = new RateLimiterMemory({
     points: 15, // 15 failed attempts allowed
@@ -67,13 +66,13 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
 
         if (!ipAddress) {
             console.warn("RefreshAccessToken: IP Address is required and was not provided");
-            return { success: false, exceptionType: "UnknownError" };
+            return { status: 400, message: "IP Address is required" };
         }
 
         const limit = await ipLimiter.get(ipAddress);
         if (limit && limit.remainingPoints <= 0) {
             console.warn("IP temporarily blocked due to too many failed login attempts", ipAddress);
-            return { success: false, exceptionType: "AuthenticationFailed" };
+            return { status: 429, message: "Too many requests. Try again later." };
         }
         const logData: AuthenticationExceptionData = {
             ipAddress,
@@ -186,7 +185,8 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
         });
 
         return {
-            success: true
+            status: 200,
+            message: "Tokens refreshed successfully"
         };
     } catch (error) {
         if (error instanceof AuthenticationException) {
@@ -208,27 +208,24 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
                 }
             }
 
-            return {
-                success: false,
-                exceptionType: getRefreshResponseExceptionType(error.exceptionType),
+            switch (error.exceptionType) {
+                case "AuthenticationFailed":
+                    return {
+                        status: 401,
+                        message: "Authentication failed"
+                    };
+                default:
+                    return {
+                        status: 500,
+                        message: "An unknown error occurred"
+                    };
             }
         } else {
             console.error("Error refreshing access token:", error);
-            return { success: false, exceptionType: "UnknownError" };
+            return { status: 500, message: "Unknown error occurred" };
         }
     };
 };
-
-const getRefreshResponseExceptionType = (type: AuthenticationException["exceptionType"]): ExceptionType => {
-    switch (type) {
-        case "UnknownError":
-            return "UnknownError";
-        case "TwoFactorRequired":
-            return "TwoFactorRequired";
-        default:
-            return "AuthenticationFailed";
-    }
-}
 
 const dbTokenInclude = {
     include: {
