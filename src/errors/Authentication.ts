@@ -23,8 +23,8 @@ export class AuthenticationException extends Error {
 }
 
 export class TwoFactorRequiredException extends AuthenticationException {
-    method: "email" | "totp";
-    constructor(message: string, method: "email" | "totp", data: AuthenticationExceptionData) {
+    method: string;
+    constructor(message: string, method: string, data: AuthenticationExceptionData) {
         super(message, "TwoFactorRequired", LogDebugLevel.SUCCESS, data);
         this.method = method;
     }

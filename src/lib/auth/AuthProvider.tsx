@@ -1,8 +1,7 @@
-/* eslint-disable no-console */
 "use client"
 
 import { createContext, useContext, useEffect, useRef, useState, ReactNode, useCallback } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import dayjs from "@/lib/dayjs";
 import { mutate } from "swr";
 import { userLogout } from "@/dal/auth";
@@ -29,16 +28,15 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const pathname = usePathname();
     const router = useRouter();
+    const params: { locale: string, acronym?: string} = useParams(); 
 
     // Determine if we need auth functionality
     // Check if route matches pattern: /[locale]/[acronym]/... or /[locale]/login
     const pathParts = pathname.split('/').filter(Boolean);
-    console.log("🚀 ~ AuthProvider ~ pathParts:", pathParts);
-    const isLoginRoute = pathParts.length >= 2 && pathParts[1] === 'login';
-    const isAcronymRoute = pathParts.length >= 2 && pathParts[1] === "app";
+     const isLoginRoute = pathParts.length >= 2 && pathParts[1] === 'login';
+    const isAcronymRoute = params.acronym !== undefined;
     const isAuthRoute = isLoginRoute || isAcronymRoute;
     const isProtectedRoute = isAcronymRoute;
-    console.log("🚀 ~ AuthProvider ~ isAuthRoute:", isAuthRoute, "isProtectedRoute:", isProtectedRoute);
 
     const [authState, setAuthState] = useState<AuthState>(() => ({
         lastAccessTokenRefresh: {
@@ -64,7 +62,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             broadcastChannelRef.current = new BroadcastChannel(channelName);
 
             broadcastChannelRef.current.onmessage = (event) => {
-                console.debug("🚀 ~ AuthProvider ~ BroadcastChannel message received:", event.data);
+                console.debug("AuthProvider ~ BroadcastChannel message received:", event.data);
                 const { type, data } = event.data;
 
                 switch (type) {
@@ -87,7 +85,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                         }
                         break;
                     case 'LOGOUT':
-                        console.debug("🚀 ~ AuthProvider ~ LOGOUT received");
                         setAuthState(prev => ({
                             ...prev,
                             isAuthenticated: false
@@ -95,8 +92,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                         mutate(() => true, null);
                         // Redirect to login if on protected route
                         if (pathname.includes('/app')) {
-                            const locale = pathname.split('/')[1];
-                            router.push(`/${locale}/login`);
+                            router.push(`/${params.locale}/login`);
                         }
                         break;
                 }
@@ -117,7 +113,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             broadcastChannelRef.current?.close();
             window.removeEventListener('storage', handleStorageChange);
         };
-    }, [isAuthRoute, pathname, router]);
+    }, [isAuthRoute, pathname, router, params.locale]);
 
     // Auto-refresh only on protected routes
     useEffect(() => {
@@ -131,7 +127,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const startAutoRefresh = () => {
             intervalRef.current = setInterval(async () => {
                 const now = dayjs();
-                console.debug("🚀 ~ AuthProvider ~ Checking if access token needs refresh", now.format("DD.MM.YYYY HH:mm:ss"));
+                console.debug("AuthProvider ~ Checking if access token needs refresh", now.format("DD.MM.YYYY HH:mm:ss"));
                 const lastSuccess = authState.lastAccessTokenRefresh.lastSuccess
                     ? dayjs(authState.lastAccessTokenRefresh.lastSuccess)
                     : null;
@@ -153,7 +149,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, [isProtectedRoute, authState.isAuthenticated, authState.lastAccessTokenRefresh]);
 
     const refreshToken = useCallback(async () => {
-        console.debug("🚀 ~ AuthProvider ~ refreshToken called");
+        console.debug("AuthProvider ~ refreshToken called");
         if (authState.isRefreshing) return;
 
         setAuthState(prev => ({ ...prev, isRefreshing: true }));
@@ -161,7 +157,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         try {
             const response = await fetch('/api/auth/refresh', { method: 'POST' });
-            console.debug("🚀 ~ AuthProvider ~ refreshToken response:", response);
+            console.debug("AuthProvider ~ refreshToken response:", response);
 
             if (response.ok) {
                 const newTokenState = {
@@ -185,9 +181,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 localStorage.setItem(storageKey, JSON.stringify({
                     lastAccessTokenRefresh: newTokenState
                 }));
-                console.debug("🚀 ~ AuthProvider ~ Token refreshed and stored in localStorage");
+                console.debug("AuthProvider ~ Token refreshed and stored in localStorage");
             } else {
-                console.debug("🚀 ~ AuthProvider ~ Token refresh failed with status:", response.status);
+                console.debug("AuthProvider ~ Token refresh failed with status:", response.status);
                 const errorState = {
                     lastSuccess: authState.lastAccessTokenRefresh.lastSuccess,
                     lastTry: now,
@@ -202,8 +198,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 }));
 
                 // Redirect to login
-                const locale = pathname.split('/')[0];
-                router.push(`/${locale}/login`);
+                router.push(`/${params.locale}/login`);
             }
         } catch (_) {
             setAuthState(prev => ({
@@ -216,7 +211,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 }
             }));
         }
-    }, [authState.isRefreshing, authState.lastAccessTokenRefresh.lastSuccess, pathname, router]);
+    }, [authState.isRefreshing, authState.lastAccessTokenRefresh.lastSuccess, router, params.locale]);
 
     const logout = useCallback(async () => {
         await userLogout().then(() => {
@@ -229,17 +224,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             broadcastChannelRef.current?.postMessage({ type: 'LOGOUT' });
             localStorage.removeItem(storageKey);
 
-            const locale = pathname.split('/')[1];
             mutate(() => true, null);
-            router.push(`/${locale}/login`);
+            router.push(`/${params.locale}/login`);
         }).catch((error) => {
             console.error('Logout failed:', error);
         });
-    }, [pathname, router]);
+    }, [router, params.locale]);
 
     const onLoginSuccess = useCallback(() => {
-        const locale = pathname.split('/')[1];
-        const redirectUrl = `/${locale}/app/cadet`;
+        const redirectUrl = `/${params.locale}/app/cadet`;
         const now = dayjs().toISOString();
 
         const tokenState = {
@@ -266,7 +259,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }));
 
         router.push(redirectUrl);
-    }, [pathname, router]);
+    }, [router, params.locale]);
 
     // Don't render context on non-auth routes
     if (!isAuthRoute) {

@@ -57,9 +57,9 @@ export const verifyUser = async (props: VerifyUserProps): Promise<{ mfaMethod: n
     // 2FA Check
     const { secondFactor } = loginFormData;
     if (secondFactor) {
-        await verifyMFAToken(secondFactor.token, secondFactor.appId, organisationId, userData);
+        await verifyMFAToken(secondFactor.token, user.id, secondFactor.method, organisationId, userData);
         return {
-            mfaMethod: secondFactor.appId === "email" ? "email" : "totp"
+            mfaMethod: secondFactor.method === "email" ? "email" : "totp"
         };
     }
 
@@ -73,7 +73,11 @@ export const verifyUser = async (props: VerifyUserProps): Promise<{ mfaMethod: n
     }
 
     if (mfaMethod === "email") {
-        await __unsecuredSendEmailVerifyCode(organisationId, user.id);
+        await __unsecuredSendEmailVerifyCode(organisationId, user.id, {
+            userAgent: userData.agent,
+            ipAddress: userData.ipAddress,
+            deviceId: userData.account?.deviceId
+        });
     }
-    throw new TwoFactorRequiredException("Two factor authentication required", mfaMethod === "email" ? "email" : "totp", userData);
+    throw new TwoFactorRequiredException("Two factor authentication required", mfaMethod, userData);
 };

@@ -17,11 +17,19 @@ export default defineConfig([
     {
         rules: {
             'no-console': ['error', {
-                allow: ['warn', 'error', 'info'],
+                allow: ['warn', 'error', 'info', "debug"],
             }],
             "@typescript-eslint/no-unused-vars": [
-                "warning",
-                { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+                "warn",
+                {
+                    "args": "all",
+                    "argsIgnorePattern": "^_",
+                    "caughtErrors": "all",
+                    "caughtErrorsIgnorePattern": "^_",
+                    "destructuredArrayIgnorePattern": "^_",
+                    "varsIgnorePattern": "^_",
+                    "ignoreRestSiblings": true
+                }
             ],
         }
     },

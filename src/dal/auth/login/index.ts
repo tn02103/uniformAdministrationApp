@@ -17,10 +17,11 @@ import { verifyUser } from "./verifyUser";
 type LoginReturnType = {
     loginSuccessful: false;
     exceptionType: Omit<ExceptionType, "TwoFactorRequired" | "RefreshTokenReuseDetected">;
+    method?: undefined;
 } | { loginSuccessful: true } | {
     loginSuccessful: false;
     exceptionType: "TwoFactorRequired";
-    method: "email" | "totp";
+    method: string;
 };
 
 const ipLimiter = new RateLimiterMemory({

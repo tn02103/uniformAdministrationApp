@@ -1,4 +1,3 @@
-/* eslint-disable no-var */
 import { AuthRole } from "@/lib/AuthRoles";
 
 declare global {

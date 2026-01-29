@@ -1,47 +1,34 @@
-import { genericSANoDataValidator } from "@/actions/validations";
 import { AuthenticationException, AuthenticationExceptionData } from "@/errors/Authentication";
-import { AuthRole } from "@/lib/AuthRoles";
 import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
 import { sendTokenViaEmail } from "@/lib/email/emailToken";
 import { cookies, headers } from "next/headers";
 import { userAgent } from "next/server";
-import { getDeviceAccountFromCookies, getIPAddress, logSecurityAuditEntry, RiskLevel, validateDeviceFingerprint } from "../helper";
+import { getDeviceAccountFromCookies, getIPAddress, logSecurityAuditEntry, RiskLevel, UserAgent, validateDeviceFingerprint } from "../helper";
 import { LogDebugLevel } from "../LogDebugLeve.enum";
 
-export const sendVerifyCode = async () => genericSANoDataValidator(
-    AuthRole.user,
-).then(async ([{ id, organisationId }]) => __unsecuredSendEmailVerifyCode(organisationId, id));
-
-export const __unsecuredSendEmailVerifyCode = async (organisationId: string, id: string) => {
-    const headerList = await headers();
-    const cookieList = await cookies();
-    const ipAddress = getIPAddress(headerList);
-    const { accountCookie } = getDeviceAccountFromCookies({ cookieList, organisationId });
-    const agent = userAgent({ headers: headerList });
-    if (!accountCookie?.lastUsed) throw new Error('Device not recognized. Please login again.');
-
+export const __unsecuredSendEmailVerifyCode = async (organisationId: string, userId: string, data: { userAgent: UserAgent, ipAddress: string, deviceId: string }) => {
     const logAudit = (success: boolean, details: string) => logSecurityAuditEntry({
-        ipAddress,
+        ipAddress: data.ipAddress,
         organisationId,
-        userId: id,
-        deviceId: accountCookie.lastUsed.deviceId,
+        userId,
+        deviceId: data.deviceId,
         action: "SEND_EMAIL_CODE",
         success,
         details,
-        userAgent: agent,
+        userAgent: data.userAgent,
         debugLevel: success ? LogDebugLevel.SUCCESS : LogDebugLevel.INFO,
     });
 
     const user = await prisma.user.findUniqueOrThrow({
         where: {
-            id: id,
+            id: userId,
         }
     });
 
     await prisma.emailToken.deleteMany({
         where: {
-            userId: id,
+            userId,
         }
     });
 
@@ -53,9 +40,9 @@ export const __unsecuredSendEmailVerifyCode = async (organisationId: string, id:
             userId: user.id,
             token: token,
             endOfLive: dayjs().add(1, 'hour').toDate(),
-            ipAddress: ipAddress,
-            userAgent: JSON.stringify(userAgent),
-            deviceId: accountCookie.lastUsed.deviceId,
+            ipAddress: data.ipAddress,
+            userAgent: JSON.stringify(data.userAgent),
+            deviceId: data.deviceId,
         },
     });
 

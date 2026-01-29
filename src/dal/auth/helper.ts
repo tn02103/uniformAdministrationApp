@@ -304,9 +304,9 @@ export const getUserMFAConfig = async (userId: string) => {
     return { enabled: false, methdo: null };
 };
 
-export const verifyMFAToken = async (token: string, appId: string, organisationId: string, logData: AuthenticationExceptionData): Promise<void> => {
+export const verifyMFAToken = async (token: string, userId: string, appId: string, organisationId: string, logData: AuthenticationExceptionData): Promise<void> => {
     if (appId === "email") {
-        return verifyEmailCode(organisationId, "", token);
+        return verifyEmailCode(organisationId, userId, token);
     }
-    return __unsecuredVerifyTwoFactorCode(organisationId, "", token, appId, logData);
+    return __unsecuredVerifyTwoFactorCode(organisationId, userId, token, appId, logData);
 }

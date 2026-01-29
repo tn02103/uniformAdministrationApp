@@ -110,7 +110,7 @@ model User {
     recDelete             DateTime?      @map("rec_delete") @db.Timestamp(3)
     recDeleteUser         String?        @map("rec_delete_user") @db.VarChar(36)
     twoFAEnabled          Boolean        @default(false) @map("two_fa_enabled")
-    default2FAMethod      String?        @map("default_2fa_method") @db.VarChar(36)
+    default2FAMethod      String?        @map("default_2fa_method") @db.VarChar(36) // "email" or the appId of the TOTP app
     refreshTokens         RefreshToken[]
     organisation          Organisation   @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
     devices               Device[]

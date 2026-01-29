@@ -3,7 +3,6 @@
 
 import { Form } from "@/components/fields/Form";
 import { InputFormField } from "@/components/fields/InputFormField";
-import { NumberInputFormField } from "@/components/fields/NumberInputFormField";
 import { SelectFormField } from "@/components/fields/SelectFormField";
 import { userLogin } from "@/dal/auth";
 import { useAuth } from "@/lib/auth/AuthProvider";
@@ -14,6 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Organisation } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
+import { UseFormReturn } from "react-hook-form";
 import { toast } from "react-toastify";
 import { LoginFormAlert } from "./LoginFormAlert";
 
@@ -31,13 +31,14 @@ const LoginForm = ({ organisations, lastUsedOrganisationId, ...props }: PropType
     const [loginState, setLoginState] = useState<"error" | "success" | "userBlocked" | "tooManyRequests" | "null" | "submitting">("null");
     const [step, setStep] = useState(0);
 
-    async function onSubmit(data: LoginFormType) {
+    async function onSubmit(data: LoginFormType, form: UseFormReturn<LoginFormType>) {
         setLoginState("submitting");
 
         userLogin({
             organisationId: data.organisationId,
             email: data.email.trim(),
-            password: data.password
+            password: data.password,
+            secondFactor: data.secondFactor ?? undefined
         }).then((response) => {
             console.log("loginForm response" + JSON.stringify(response));
             if (response.loginSuccessful) {
@@ -50,6 +51,8 @@ const LoginForm = ({ organisations, lastUsedOrganisationId, ...props }: PropType
                     case "TwoFactorRequired":
                         setLoginState("null");
                         setStep(1);
+                        form.setValue("secondFactor.token", "");
+                        form.setValue("secondFactor.method", response.method as string);
                         break;
                     case "UnknownError":
                         setLoginState("null");
@@ -116,23 +119,23 @@ const LoginForm = ({ organisations, lastUsedOrganisationId, ...props }: PropType
                             autoComplete={"off"}
                         />
                     </div>
-                    <Row>
-                        <Col>
-                            <Button variant="primary" type="submit" disabled={loginState === "submitting"} data-testid="btn_login">
-                                {(loginState === "submitting") ?
-                                    <FontAwesomeIcon icon={faSpinner} className="mx-3 fa-spin-pulse" />
-                                    : t('login.label.login')
-                                }
-                            </Button>
-                        </Col>
-                    </Row>
                 </div>
             }
             {step === 1 &&
                 <div>
-                    <NumberInputFormField name="twoFactorCode" label={t('login.label.twoFactorCode')} />
+                    <InputFormField<LoginFormType> name="secondFactor.token" label={t('login.label.twoFactorCode')} />
                 </div>
             }
+            <Row>
+                <Col>
+                    <Button variant="primary" type="submit" disabled={loginState === "submitting"} data-testid="btn_login">
+                        {(loginState === "submitting") ?
+                            <FontAwesomeIcon icon={faSpinner} className="mx-3 fa-spin-pulse" />
+                            : t('login.label.login')
+                        }
+                    </Button>
+                </Col>
+            </Row>
         </Form>
     )
 }
