@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="DAL-Login" name="DAL-Login">
-        <mxGraphModel dx="2370" dy="1945" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="2261" dy="1884" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <object label="" id="0">
                     <mxCell/>
@@ -212,26 +212,29 @@
                 </mxCell>
                 <mxCell id="104" value="" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="101" target="105" edge="1">
                     <mxGeometry relative="1" as="geometry">
-                        <mxPoint x="-352.5" y="1619.5" as="targetPoint"/>
+                        <mxPoint x="-421" y="1527.63" as="targetPoint"/>
                         <Array as="points"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="101" value="Validate Password" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fontColor=#000000;fillColor=#ffffc0;strokeColor=#ff0000;" parent="1" vertex="1">
-                    <mxGeometry x="-461.5" y="1459.75" width="120" height="60.5" as="geometry"/>
+                    <mxGeometry x="-530" y="1367.88" width="120" height="60.5" as="geometry"/>
                 </mxCell>
-                <mxCell id="113" value="" style="edgeStyle=none;html=1;" parent="1" source="105" target="112" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="141" value="" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="105" target="142" edge="1">
-                    <mxGeometry relative="1" as="geometry">
+                <mxCell id="113" value="no" style="edgeStyle=none;html=1;" parent="1" source="105" target="112" edge="1">
+                    <mxGeometry x="-0.7724" relative="1" as="geometry">
                         <Array as="points">
-                            <mxPoint x="-400" y="1689.75"/>
-                            <mxPoint x="-650" y="1688.75"/>
+                            <mxPoint x="-230" y="1500"/>
                         </Array>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="141" value="" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="288" target="142" edge="1">
+                    <mxGeometry x="0.5484" y="-40" relative="1" as="geometry">
+                        <Array as="points"/>
+                        <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="105" value="Password valid" style="rhombus;whiteSpace=wrap;html=1;fontColor=#000000;fillColor=#ffffc0;strokeColor=#ff0000;" parent="1" vertex="1">
-                    <mxGeometry x="-451.5" y="1572.25" width="100" height="55" as="geometry"/>
+                    <mxGeometry x="-520" y="1472.5" width="100" height="55" as="geometry"/>
                 </mxCell>
                 <mxCell id="118" value="" style="edgeStyle=none;html=1;" parent="1" source="112" target="114" edge="1">
                     <mxGeometry relative="1" as="geometry">
@@ -683,12 +686,13 @@
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="FL_BYZIVhe-8iz96pEu5-235" value="no" style="edgeStyle=none;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="76" target="101" edge="1">
-                    <mxGeometry relative="1" as="geometry">
+                    <mxGeometry x="-0.7917" y="1" relative="1" as="geometry">
                         <mxPoint x="-490" y="1349.75" as="targetPoint"/>
                         <Array as="points">
-                            <mxPoint x="-400" y="1259.75"/>
+                            <mxPoint x="-470" y="1260"/>
                         </Array>
                         <mxPoint x="-355" y="1309.75" as="sourcePoint"/>
+                        <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="FL_BYZIVhe-8iz96pEu5-237" value="invalid" style="edgeStyle=orthogonalEdgeStyle;html=1;verticalAlign=bottom;endArrow=open;endSize=8;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="25" target="FL_BYZIVhe-8iz96pEu5-236" edge="1">
@@ -1278,6 +1282,45 @@
                             <mxPoint x="400" y="1643"/>
                         </Array>
                     </mxGeometry>
+                </mxCell>
+                <mxCell id="286" value="yes" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="105" target="285">
+                    <mxGeometry x="-0.5627" relative="1" as="geometry">
+                        <Array as="points"/>
+                        <mxPoint x="-470" y="1535" as="sourcePoint"/>
+                        <mxPoint x="-650" y="1709" as="targetPoint"/>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="285" value="valid known Device" style="rhombus;whiteSpace=wrap;html=1;fontColor=#000000;fillColor=#ffffc0;strokeColor=#ff0000;" vertex="1" parent="1">
+                    <mxGeometry x="-520" y="1571.87" width="100" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="289" value="" style="edgeStyle=none;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="285" target="288">
+                    <mxGeometry x="-0.8607" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="-470" y="1660"/>
+                        </Array>
+                        <mxPoint x="-470" y="1627" as="sourcePoint"/>
+                        <mxPoint x="-650" y="1709" as="targetPoint"/>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="288" value="" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-666" y="1645" width="32" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="293" value="" style="group" vertex="1" connectable="0" parent="1">
+                    <mxGeometry x="-729.9999999999999" y="1380" width="145.62" height="55.25" as="geometry"/>
+                </mxCell>
+                <mxCell id="294" value="create Device" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fontColor=#000000;fillColor=#ffffc0;strokeColor=#ff0000;" vertex="1" parent="293">
+                    <mxGeometry x="6.61" y="-1.37" width="145.62" height="52" as="geometry"/>
+                </mxCell>
+                <mxCell id="295" value="" style="shape=datastore;whiteSpace=wrap;html=1;" vertex="1" parent="293">
+                    <mxGeometry width="15.851851851851853" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="296" value="" style="group" vertex="1" connectable="0" parent="1">
+                    <mxGeometry x="-729.9999999999999" y="1510" width="145.62" height="55.25" as="geometry"/>
+                </mxCell>
+                <mxCell id="297" value="save DeviceCookie" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fontColor=#000000;fillColor=#ffffc0;strokeColor=#ff0000;" vertex="1" parent="296">
+                    <mxGeometry x="6.61" y="-1.37" width="145.62" height="52" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

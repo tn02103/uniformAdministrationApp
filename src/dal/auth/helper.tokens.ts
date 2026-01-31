@@ -55,8 +55,10 @@ type IssueNewRefreshTokenProps = {
 })
 /**
  * Issues a new refresh token for the user.
+ * Uses database transaction to ensure atomic token rotation.
+ * @returns The plaintext refresh token that was created
  */
-export const issueNewRefreshToken = async (props: IssueNewRefreshTokenProps) => {
+export const issueNewRefreshToken = async (props: IssueNewRefreshTokenProps): Promise<string> => {
     const {
         cookieList,
         deviceId,
@@ -68,64 +70,97 @@ export const issueNewRefreshToken = async (props: IssueNewRefreshTokenProps) => 
         mode,
     } = props;
 
-    let oldToken;
-    if (mode === "refresh") {
-        // Mark the used refresh token as used
-        oldToken = await prisma.refreshToken.update({
-            where: {
-                id: usedRefreshTokenId,
-                userId: userId,
-                status: "active",
-                usedAt: null,
-            },
-            data: {
-                usedAt: new Date(),
-                usedIpAddress: ipAddress,
-                usedUserAgent: JSON.stringify(userAgent),
+    let newTokenPlaintext: string = '';
+
+    try {
+        await prisma.$transaction(async (tx) => {
+            let tokenFamilyId: string;
+
+            if (mode === "refresh") {
+                // Step 1: Mark old token as used (ATOMIC)
+                const oldToken = await tx.refreshToken.update({
+                    where: {
+                        id: usedRefreshTokenId,
+                        userId: userId,
+                        status: "active",
+                        usedAt: null, // Database checks this atomically
+                    },
+                    data: {
+                        usedAt: new Date(),
+                        usedIpAddress: ipAddress,
+                        usedUserAgent: JSON.stringify(userAgent),
+                        status: "rotated",
+                    }
+                });
+
+                tokenFamilyId = oldToken.tokenFamilyId;
+            } else {
+                // "new" mode - generate new family
+                tokenFamilyId = crypto.randomUUID();
             }
+
+            // Step 2: Revoke any other active tokens for this device
+            // Ensures only one valid refresh token exists per device
+            await tx.refreshToken.updateMany({
+                where: {
+                    deviceId: deviceId,
+                    userId: userId,
+                    status: "active",
+                    endOfLife: { gt: new Date() },
+                    ...(mode === "refresh" ? { id: { not: usedRefreshTokenId } } : {}),
+                },
+                data: {
+                    status: "revoked",
+                }
+            });
+
+            // Step 3: Create new token (same for both modes)
+            const newToken = crypto.randomBytes(64).toString('base64url');
+            const newTokenHash = sha256Hex(newToken);
+            newTokenPlaintext = newToken; // Capture for return
+
+            await tx.refreshToken.create({
+                data: {
+                    userId: userId,
+                    deviceId: deviceId,
+                    sessionId: props.sessionId,
+                    token: newTokenHash,
+                    endOfLife,
+                    issuerIpAddress: ipAddress,
+                    tokenFamilyId: tokenFamilyId,
+                    rotatedFromTokenId: mode === "refresh" ? usedRefreshTokenId : null,
+                    status: "active",
+                }
+            });
+
+            // Step 4: Set cookie (done after transaction commits)
+            cookieList.set(AuthConfig.refreshTokenCookie, newToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'strict',
+                expires: endOfLife,
+                path: '/api/auth/refresh',
+            });
+        }, {
+            isolationLevel: 'Serializable',
+            timeout: 5000,
         });
-        if (oldToken === null) {
-            throw new AuthenticationException("Used refresh token not found or already used", "AuthenticationFailed", LogDebugLevel.WARNING, props.logData);
+
+        return newTokenPlaintext; // Return the plaintext token
+    } catch (error) {
+        // Handle race condition
+        if (error && typeof error === 'object' && 'code' in error) {
+            const prismaError = error as { code: string };
+            if (prismaError.code === 'P2025') {
+                // Record not found = token already used
+                throw new AuthenticationException(
+                    "Refresh token was already used (race condition or replay attack)",
+                    "RefreshTokenReuseDetected",
+                    LogDebugLevel.CRITICAL,
+                    props.logData
+                );
+            }
         }
+        throw error;
     }
-
-    // Invalidate any other existing refreshTokens (should not be the case)
-    await prisma.refreshToken.updateMany({
-        where: {
-            deviceId: deviceId,
-            userId: userId,
-            status: "active",
-            endOfLife: { gt: new Date() },
-        },
-        data: {
-            status: "revoked",
-        }
-    });
-
-    // Create new refresh Token
-    const newToken = crypto.randomBytes(64).toString('base64url');
-    const newTokenHash = sha256Hex(newToken);
-
-    // Store hash of new refresh token in DB
-    await prisma.refreshToken.create({
-        data: {
-            userId: userId,
-            deviceId: deviceId,
-            sessionId: props.sessionId,
-            token: newTokenHash,
-            endOfLife,
-            issuerIpAddress: ipAddress,
-            tokenFamilyId: oldToken ? oldToken.tokenFamilyId : crypto.randomUUID(),
-            rotatedFromTokenId: oldToken ? oldToken.id : null,
-            status: "active",
-        }
-    });
-    // Set Refreshtoken cookie
-    cookieList.set(AuthConfig.refreshTokenCookie, newToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-        expires: endOfLife,
-        path: '/api/auth/refresh',
-    });
-}
+};

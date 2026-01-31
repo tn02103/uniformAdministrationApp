@@ -1,5 +1,8 @@
 import { AuthRole } from "@/lib/AuthRoles";
 
+// Mock server-only package to allow server components in Jest environment
+jest.mock('server-only', () => ({}));
+
 const prismaMock = {
     organisation: {
         updateMany: jest.fn(),

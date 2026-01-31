@@ -1,4 +1,5 @@
 import { OrganisationConfiguration, Deregistration, Inspection, Prisma, Redirect, StorageUnit, Uniform } from "@prisma/client";
+import { createHash } from "crypto";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import utc from "dayjs/plugin/utc";
@@ -889,7 +890,7 @@ export default class StaticDataGenerator {
             // Active tokens - Admin desktop
             {
                 id: refreshTokenIds[0],
-                token: refreshTokenIds[0].replace(/-/g, '').substring(0, 512), // Ensure proper token length
+                token:  createHash('sha256').update(refreshTokenIds[0], 'utf8').digest('hex'), // Hash the token
                 userId: userIds[0],
                 deviceId: deviceIds[0],
                 sessionId: sessionIds[0],
@@ -907,7 +908,7 @@ export default class StaticDataGenerator {
             // Active tokens - Admin mobile
             {
                 id: refreshTokenIds[1],
-                token: refreshTokenIds[1].replace(/-/g, '').substring(0, 512),
+                token:  createHash('sha256').update(refreshTokenIds[1], 'utf8').digest('hex'), // Hash the token
                 userId: userIds[0],
                 deviceId: deviceIds[1],
                 sessionId: sessionIds[1],
@@ -925,7 +926,7 @@ export default class StaticDataGenerator {
             // Rotated token - for testing token rotation
             {
                 id: refreshTokenIds[2],
-                token: refreshTokenIds[2].replace(/-/g, '').substring(0, 512),
+                token:  createHash('sha256').update(refreshTokenIds[2], 'utf8').digest('hex'), // Hash the token
                 userId: userIds[0],
                 deviceId: deviceIds[0],
                 sessionId: sessionIds[6], // Expired session
@@ -943,7 +944,7 @@ export default class StaticDataGenerator {
             // Active tokens - Manager laptop
             {
                 id: refreshTokenIds[3],
-                token: refreshTokenIds[3].replace(/-/g, '').substring(0, 512),
+                token:  createHash('sha256').update(refreshTokenIds[3], 'utf8').digest('hex'), // Hash the token
                 userId: userIds[1],
                 deviceId: deviceIds[2],
                 sessionId: sessionIds[2],
@@ -961,7 +962,7 @@ export default class StaticDataGenerator {
             // Active tokens - Manager tablet
             {
                 id: refreshTokenIds[4],
-                token: refreshTokenIds[4].replace(/-/g, '').substring(0, 512),
+                token:  createHash('sha256').update(refreshTokenIds[4], 'utf8').digest('hex'), // Hash the token
                 userId: userIds[1],
                 deviceId: deviceIds[3],
                 sessionId: sessionIds[3],
@@ -979,7 +980,7 @@ export default class StaticDataGenerator {
             // Revoked token - for testing
             {
                 id: refreshTokenIds[5],
-                token: refreshTokenIds[5].replace(/-/g, '').substring(0, 512),
+                token:  createHash('sha256').update(refreshTokenIds[5], 'utf8').digest('hex'), // Hash the token
                 userId: userIds[1],
                 deviceId: deviceIds[2],
                 sessionId: sessionIds[8], // Session without MFA
@@ -997,10 +998,10 @@ export default class StaticDataGenerator {
             // Expired token - for testing
             {
                 id: refreshTokenIds[6],
-                token: refreshTokenIds[6].replace(/-/g, '').substring(0, 512),
+                token:  createHash('sha256').update(refreshTokenIds[6], 'utf8').digest('hex'), // Hash the token
                 userId: userIds[2],
                 deviceId: deviceIds[4],
-                sessionId: sessionIds[4],
+                sessionId: sessionIds[7], // Using invalid session for expired token testing
                 endOfLife: baseDate.subtract(1, 'day').toDate(), // Expired
                 status: 'active' as const,
                 tokenFamilyId: uuid(),
@@ -1015,7 +1016,7 @@ export default class StaticDataGenerator {
             // Active tokens - Inspector desktop
             {
                 id: refreshTokenIds[7],
-                token: refreshTokenIds[7].replace(/-/g, '').substring(0, 512),
+                token:  createHash('sha256').update(refreshTokenIds[7], 'utf8').digest('hex'), // Hash the token
                 userId: userIds[2],
                 deviceId: deviceIds[4],
                 sessionId: sessionIds[4],
@@ -1033,7 +1034,7 @@ export default class StaticDataGenerator {
             // Active tokens - Inspector phone
             {
                 id: refreshTokenIds[8],
-                token: refreshTokenIds[8].replace(/-/g, '').substring(0, 512),
+                token:  createHash('sha256').update(refreshTokenIds[8], 'utf8').digest('hex'), // Hash the token
                 userId: userIds[2],
                 deviceId: deviceIds[5],
                 sessionId: sessionIds[5],
@@ -1051,7 +1052,7 @@ export default class StaticDataGenerator {
             // Used token - for reuse detection edge cases
             {
                 id: refreshTokenIds[9],
-                token: refreshTokenIds[9].replace(/-/g, '').substring(0, 512),
+                token:  createHash('sha256').update(refreshTokenIds[9], 'utf8').digest('hex'), // Hash the token
                 userId: userIds[2],
                 deviceId: deviceIds[5],
                 sessionId: sessionIds[9],

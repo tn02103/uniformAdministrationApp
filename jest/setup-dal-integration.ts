@@ -1,6 +1,9 @@
 import { AuthRole } from "@/lib/AuthRoles";
 import { StaticData } from "../tests/_playwrightConfig/testData/staticDataLoader";
 
+// Mock server-only package to allow server components in Jest environment
+jest.mock('server-only', () => ({}));
+
 // Setup static data for integration tests with real database
 const staticData = new StaticData(0);
 const wrongOrganisation = new StaticData(1);

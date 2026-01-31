@@ -2,17 +2,19 @@ import { AuthenticationException, AuthenticationExceptionData } from "@/errors/A
 import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
 import { sendTokenReuseDetectedEmail } from "@/lib/email/tokenReuseDetected";
-import { DBRefreshToken } from "./refreshAccessToken";
-import { FingerprintValidationResult, RiskLevel, UserAgent, validateDeviceFingerprint } from "../helper";
+import { RiskLevel, UserAgent, validateDeviceFingerprint } from "../helper";
 import { LogDebugLevel } from "../LogDebugLeve.enum";
+import { isRedisAvailable } from "../redis";
+import { DBRefreshToken } from "./refreshAccessToken";
 
 type HandleRefreshTokenReuseProps = {
     token: DBRefreshToken;
     ipAddress: string;
     agent: UserAgent;
     logData: AuthenticationExceptionData;
+    idempotencyKey?: string;
 }
-export const handleRefreshTokenReuse = async ({ token, ipAddress, agent, logData }: HandleRefreshTokenReuseProps): Promise<void> => {
+export const handleRefreshTokenReuse = async ({ token, ipAddress, agent, logData, idempotencyKey }: HandleRefreshTokenReuseProps): Promise<void> => {
     if (!token.usedAt || !token.usedIpAddress || !token.usedUserAgent) {
 
         throw new AuthenticationException(
@@ -21,6 +23,26 @@ export const handleRefreshTokenReuse = async ({ token, ipAddress, agent, logData
             LogDebugLevel.CRITICAL,
             logData
         );
+    }
+
+    // Check if this is a cached idempotent retry (Redis-based detection)
+    if (idempotencyKey && isRedisAvailable()) {
+        try {
+            const { redis } = await import("../redis");
+            const originalRequest = await redis!.get(`idempotency:${idempotencyKey}`);
+            if (originalRequest) {
+                // This request was already processed successfully - network retry
+                throw new AuthenticationException(
+                    "Idempotent network retry detected (Redis)",
+                    "NetworkRetry",
+                    LogDebugLevel.INFO,
+                    logData
+                );
+            }
+        } catch (error) {
+            if (error instanceof AuthenticationException) throw error;
+            console.warn('Redis error checking idempotency:', error);
+        }
     }
 
     const fingerprint = await validateDeviceFingerprint({
@@ -36,85 +58,92 @@ export const handleRefreshTokenReuse = async ({ token, ipAddress, agent, logData
         }
     });
 
-    const risk = getReuseRisk({ fingerprint, initialTokenUse: token.usedAt });
-    switch (risk) {
-        case "SEVERE":
-            // revoke all refresh tokens for this device
-            await prisma.refreshToken.updateMany({
-                where: {
-                    userId: token.userId,
-                    status: "active",
-                },
-                data: {
-                    status: "revoked",
-                }
-            });
-            await prisma.session.updateMany({
-                where: {
-                    device: {
-                        userId: token.userId,
-                    },
-                    valid: true,
-                },
-                data: {
-                    valid: false,
-                }
-            });
-            // Send alert to user and devs
-            await sendTokenReuseDetectedEmail(token.userId);
-            throw new AuthenticationException(
-                "Refresh token reuse detected",
-                "RefreshTokenReuseDetected",
-                LogDebugLevel.CRITICAL,
-                logData
-            );
-        case "MEDIUM":
-            // revoke this session
-            await prisma.refreshToken.updateMany({
-                where: {
-                    deviceId: token.deviceId,
-                    status: "active",
-                },
-                data: {
-                    status: "revoked",
-                }
-            });
-            await prisma.session.updateMany({
-                where: {
-                    deviceId: token.deviceId,
-                    valid: true,
-                },
-                data: {
-                    valid: false,
-                }
-            });
-            throw new AuthenticationException(
-                "Refresh token reuse detected",
-                "RefreshTokenReuseDetected",
-                LogDebugLevel.CRITICAL,
-                logData
-            );
-        case "LOW":
-            throw new AuthenticationException(
-                "Refresh token reuse detected",
-                "RefreshTokenReuseDetected",
-                LogDebugLevel.WARNING,
-                logData
-            );
-    }
-}
+    const ipChanged = token.usedIpAddress !== ipAddress;
+    const timeSinceUse = Math.abs(dayjs().diff(dayjs(token.usedAt), 'milliseconds'));
 
-const getReuseRisk = (props: { fingerprint: FingerprintValidationResult, initialTokenUse: Date }) => {
-    const minutesSinceInitialUse = Math.abs(dayjs().diff(dayjs(props.initialTokenUse), 'minutes'));
+    // SCENARIO 1: Network retry without Redis (defense in depth)
+    // Only fires if both frontend lock AND Redis idempotency failed
+    if (!isRedisAvailable() &&
+        fingerprint.riskLevel === RiskLevel.LOW &&
+        !ipChanged &&
+        timeSinceUse < 100) {
+        // Inform developers but don't spook users
+        await sendTokenReuseDetectedEmail(token.userId, false); // sendUserEmail=false
 
-    if (props.fingerprint.riskLevel >= RiskLevel.MEDIUM) {
-        return "SEVERE";
+        throw new AuthenticationException(
+            "Token already used (possible network retry - Redis unavailable)",
+            "AuthenticationFailed",
+            LogDebugLevel.WARNING,
+            logData
+        );
     }
-    if (minutesSinceInitialUse > 15) {
-        return "SEVERE";
+
+    // SCENARIO 2: Different IP (token in two locations = definite attack)
+    if (ipChanged) {
+        // Revoke device + all sessions
+        await prisma.refreshToken.updateMany({
+            where: { deviceId: token.deviceId, status: "active" },
+            data: { status: "revoked" }
+        });
+        await prisma.session.updateMany({
+            where: { deviceId: token.deviceId, valid: true },
+            data: { valid: false }
+        });
+
+        // Alert BOTH developers and user (high certainty)
+        await sendTokenReuseDetectedEmail(token.userId, true); // sendUserEmail=true
+
+        throw new AuthenticationException(
+            "Refresh token reuse detected - Different IP address",
+            "RefreshTokenReuseDetected",
+            LogDebugLevel.CRITICAL,
+            logData
+        );
     }
-    if (minutesSinceInitialUse > 5) {
-        return "MEDIUM";
+
+    // SCENARIO 3: Different device (fingerprint mismatch = likely attack)
+    if (fingerprint.riskLevel >= RiskLevel.MEDIUM) {
+        // Revoke device + all sessions
+        await prisma.refreshToken.updateMany({
+            where: { deviceId: token.deviceId, status: "active" },
+            data: { status: "revoked" }
+        });
+        await prisma.session.updateMany({
+            where: { deviceId: token.deviceId, valid: true },
+            data: { valid: false }
+        });
+
+        // Alert BOTH developers and user (high certainty)
+        await sendTokenReuseDetectedEmail(token.userId, true); // sendUserEmail=true
+
+        throw new AuthenticationException(
+            "Refresh token reuse detected - Device fingerprint mismatch",
+            "RefreshTokenReuseDetected",
+            LogDebugLevel.CRITICAL,
+            logData
+        );
     }
-    return "LOW";
+
+    // SCENARIO 4: Same device + Same IP + Slow (>100ms = suspicious but not certain)
+    // Revoke token family only (this device session chain)
+    await prisma.refreshToken.updateMany({
+        where: { tokenFamilyId: token.tokenFamilyId, status: "active" },
+        data: { status: "revoked" }
+    });
+    await prisma.session.updateMany({
+        where: {
+            refreshTokens: { some: { tokenFamilyId: token.tokenFamilyId } }
+        },
+        data: { valid: false }
+    });
+
+    // Alert developers only (not certain enough to alarm user)
+    await sendTokenReuseDetectedEmail(token.userId, false); // sendUserEmail=false
+
+    throw new AuthenticationException(
+        "Refresh token reuse detected - Token family revoked",
+        "RefreshTokenReuseDetected",
+        LogDebugLevel.CRITICAL,
+        logData
+    );
 }

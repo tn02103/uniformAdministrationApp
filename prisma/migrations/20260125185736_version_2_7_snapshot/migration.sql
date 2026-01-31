@@ -126,6 +126,10 @@ CREATE TYPE "authentication"."MFAType" AS ENUM ('totp', 'email');
 CREATE TYPE "authentication"."OrganisationConfiguration_2FARule" AS ENUM ('optional', 'administrators', 'required');
 
 -- AlterTable
+ALTER TABLE "authentication"."organisation" 
+ALTER COLUMN "acronym" SET DATA TYPE VARCHAR(6);
+
+-- AlterTable
 ALTER TABLE "base"."assosiation_configuration" RENAME TO "organisation_configuration";
 ALTER TABLE "base"."organisation_configuration" RENAME COLUMN "assosiationId" TO "organisation_id";
 ALTER TABLE "base"."organisation_configuration" 

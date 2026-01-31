@@ -6,6 +6,7 @@ import dayjs from "@/lib/dayjs";
 import { mutate } from "swr";
 import { userLogout } from "@/dal/auth";
 import { AuthConfig } from "@/dal/auth/config";
+import { RefreshLockManager } from "./RefreshLockManager";
 
 interface AuthState {
     lastAccessTokenRefresh: {
@@ -152,11 +153,43 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.debug("AuthProvider ~ refreshToken called");
         if (authState.isRefreshing) return;
 
+        const lockManager = RefreshLockManager.getInstance();
+        const processId = await lockManager.acquireLock();
+        
+        if (!processId) {
+            console.debug("Another refresh process is active, waiting for broadcast");
+            // Wait for the other process to finish and broadcast result
+            return new Promise<void>((resolve) => {
+                const timeout = setTimeout(() => {
+                    console.warn("Refresh broadcast timeout, retrying");
+                    resolve(refreshToken()); // Retry
+                }, 5000);
+                
+                const handler = (event: MessageEvent) => {
+                    if (event.data.type === 'TOKEN_REFRESHED') {
+                        clearTimeout(timeout);
+                        broadcastChannelRef.current?.removeEventListener('message', handler);
+                        resolve();
+                    }
+                };
+                
+                broadcastChannelRef.current?.addEventListener('message', handler);
+            });
+        }
+
         setAuthState(prev => ({ ...prev, isRefreshing: true }));
         const now = dayjs().toISOString();
 
         try {
-            const response = await fetch('/api/auth/refresh', { method: 'POST' });
+            // Generate idempotency key
+            const idempotencyKey = crypto.randomUUID();
+            
+            const response = await fetch('/api/auth/refresh', { 
+                method: 'POST',
+                headers: {
+                    'X-Idempotency-Key': idempotencyKey
+                }
+            });
             console.debug("AuthProvider ~ refreshToken response:", response);
 
             if (response.ok) {
@@ -210,6 +243,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                     state: "failed"
                 }
             }));
+        } finally {
+            const released = lockManager.releaseLock(processId);
+            if (!released) {
+                console.warn('Failed to release lock properly - may have been stolen by another process');
+            }
         }
     }, [authState.isRefreshing, authState.lastAccessTokenRefresh.lastSuccess, router, params.locale]);
 

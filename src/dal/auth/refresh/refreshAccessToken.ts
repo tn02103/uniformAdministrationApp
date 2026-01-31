@@ -10,9 +10,10 @@ import { userAgent } from "next/server";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import { AuthConfig } from "../config";
 import { calculateSessionLifetime, getDeviceAccountFromCookies, getIPAddress, logSecurityAuditEntry, type UserAgent } from "../helper";
-import { issueNewAccessToken, issueNewRefreshToken } from "../helper.tokens";
+import { issueNewAccessToken, issueNewRefreshToken, sha256Hex } from "../helper.tokens";
 import { LogDebugLevel } from "../LogDebugLeve.enum";
 import { verifyRefreshToken } from "./verifyRefreshToken";
+import { releaseLock, storeCachedResult, tryAcquireLockWithPolling, type CachedRefreshData } from "./idempotency.redis";
 
 type RefreshResponse = {
     status: number;
@@ -52,22 +53,44 @@ const consumeIpLimiter = async (ipAddress: string, points: number, userAgent: Us
 }
 
 export const refreshToken = async (): Promise<RefreshResponse> => {
-    try {
-        // Logic to refresh the access token
-        const headerList = await headers();
-        const cookieList = await cookies();
+    const headerList = await headers();
+    const cookieList = await cookies();
+    const userAgentStructure = { headers: headerList };
+    const agent: UserAgent = userAgent(userAgentStructure);
+    const ipAddress = getIPAddress(headerList);
+    const refreshTokenCookie = cookieList.get(AuthConfig.refreshTokenCookie);
+    const { accountCookie } = getDeviceAccountFromCookies({ cookieList });
+    const account = accountCookie?.lastUsed;
+    const idempotencyKey = headerList.get('x-idempotency-key');
 
-        const userAgentStructure = { headers: headerList }
-        const agent: UserAgent = userAgent(userAgentStructure);
-        const ipAddress = getIPAddress(headerList);
-        const refreshToken = cookieList.get(AuthConfig.refreshTokenCookie);
-        const { accountCookie } = getDeviceAccountFromCookies({ cookieList });
-        const account = accountCookie?.lastUsed;
+    if (!ipAddress) {
+        console.warn("RefreshAccessToken: IP Address is required and was not provided");
+        return { status: 400, message: "IP Address is required" };
+    }
 
-        if (!ipAddress) {
-            console.warn("RefreshAccessToken: IP Address is required and was not provided");
-            return { status: 400, message: "IP Address is required" };
+    // ===== REDIS LOCK ACQUISITION WITH POLLING =====
+    let lockAcquired = false;
+    if (idempotencyKey) {
+        const lockResult = await tryAcquireLockWithPolling(
+            idempotencyKey,
+            ipAddress,
+            agent,
+            refreshTokenCookie?.value,
+            cookieList
+        );
+
+        if (!lockResult.lockAcquired) {
+            // Another request processed this, return cached response
+            return lockResult.cachedResponse;
         }
+
+        // Lock acquired successfully
+        lockAcquired = true;
+        console.debug('Lock acquired, processing token refresh');
+    }
+
+    try {
+        // ===== EXISTING VALIDATION LOGIC =====
 
         const limit = await ipLimiter.get(ipAddress);
         if (limit && limit.remainingPoints <= 0) {
@@ -82,7 +105,7 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
         }
 
         // ##### Get Refresh Token from Cookie####
-        if (!refreshToken) {
+        if (!refreshTokenCookie) {
             await consumeIpLimiter(ipAddress, 2, agent, account?.deviceId);
             throw new AuthenticationException("Refresh token cookie is missing", "AuthenticationFailed", LogDebugLevel.WARNING, logData);
         }
@@ -109,10 +132,11 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
             dbToken,
             agent,
             ipAddress: ipAddress ?? "unknown",
-            sendToken: refreshToken.value,
+            sendToken: refreshTokenCookie.value,
             cookieList,
             account,
-            logData
+            logData,
+            idempotencyKey: idempotencyKey ?? undefined,
         }).catch(async (e) => {
             await consumeIpLimiter(ipAddress, 1, agent);
             throw e;
@@ -165,7 +189,8 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
             deviceId: account?.deviceId,
             debugLevel: LogDebugLevel.SUCCESS,
         });
-        await issueNewRefreshToken({
+        
+        const newRefreshToken = await issueNewRefreshToken({
             cookieList,
             userId: dbToken.userId,
             usedRefreshTokenId: dbToken.id,
@@ -177,6 +202,7 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
             mode: "refresh",
             sessionId: dbToken.sessionId,
         });
+        
         await issueNewAccessToken({
             ironSession: await getIronSession(),
             user: dbToken.user,
@@ -184,11 +210,35 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
             sessionId: dbToken.sessionId,
         });
 
-        return {
+        const response: RefreshResponse = {
             status: 200,
             message: "Tokens refreshed successfully"
         };
+
+        // ===== STORE METADATA WITH RESPONSE =====
+        if (idempotencyKey && lockAcquired) {
+            const cacheData: CachedRefreshData = {
+                response,
+                metadata: {
+                    ipAddress,
+                    userAgent: JSON.stringify(agent),
+                    oldRefreshTokenHash: sha256Hex(refreshTokenCookie.value),
+                    cookieExpiry: endOfLife,
+                    newRefreshTokenPlaintext: newRefreshToken,
+                }
+            };
+
+            await storeCachedResult(idempotencyKey, cacheData);
+            await releaseLock(idempotencyKey);
+        }
+
+        return response;
     } catch (error) {
+        // ===== RELEASE LOCK ON ERROR =====
+        if (idempotencyKey && lockAcquired) {
+            await releaseLock(idempotencyKey);
+            console.debug('Released lock after error');
+        }
         if (error instanceof AuthenticationException) {
             await logSecurityAuditEntry({
                 ...error.data,
