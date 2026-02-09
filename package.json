@@ -66,7 +66,7 @@
         "recharts": "^3.7.0",
         "sass": "1.97.3",
         "server-only": "0.0.1",
-        "swr": "2.3.8",
+        "swr": "2.4.0",
         "timers": "0.1.1",
         "usehooks-ts": "3.1.1",
         "uuidv4": "6.2.13",
