@@ -7,12 +7,83 @@
 
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
 import { ReadonlyHeaders } from 'next/dist/server/web/spec-extension/adapters/headers';
-import type { UserAgent } from '../helper';
+import type { DeviceIdsCookie, UserAgent } from '../helper';
 import { AuthConfig } from '../config';
 import type { AuthenticationExceptionData } from '@/errors/Authentication';
 import type { CachedRefreshData } from '../refresh/idempotency.redis';
 
 // ============ USER AGENT MOCKS ============
+
+
+
+export const getMockUserAgent = (overwrite: Partial<UserAgent> = {}): UserAgent => {
+    return {
+        browser: { name: 'Chrome', version: '120', major: '120', ...overwrite.browser },
+        device: { type: 'desktop' as const, vendor: undefined, model: undefined, ...overwrite.device },
+        os: { name: 'Windows', version: '10', ...overwrite.os },
+        engine: { name: 'Blink', version: '120', ...overwrite.engine },
+        cpu: { architecture: 'amd64', ...overwrite.cpu },
+        ua: overwrite.ua ?? 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0',
+        isBot: overwrite.isBot !== undefined ? overwrite.isBot : false,
+    }
+}
+
+export const authMockData = {
+    userAgent: getMockUserAgent(),
+    userAgentJsonString: JSON.stringify(getMockUserAgent()),
+    ipAddress: '192.168.1.1',
+    idempotencyKey: 'test-idempotency-key',
+}
+
+export const getHeaderGetMock = (overwrites?: { ipAddress?: string, ua?: string, idempotencyKey?: string }) => {
+    return (name: string) => {
+        switch (name) {
+            case "true-client-ip":
+            case "x-forwarded-for":
+                return overwrites?.ipAddress ?? authMockData.ipAddress;
+            case "user-agent":
+                return overwrites?.ua ?? authMockData.userAgent.ua;
+            case "x-idempotency-key":
+                return overwrites?.idempotencyKey ?? authMockData.idempotencyKey;
+            default:
+                return null;
+        }
+    };
+}
+
+export const getCookieGetMockFactory = (defaultValues: { deviceId: string, organisationId: string, refreshToken: string }) => {
+    const { deviceId, organisationId, refreshToken } = defaultValues;
+    const defaultDeviceCookie: DeviceIdsCookie = {
+        lastUsed: {
+            deviceId,
+            organisationId,
+            lastUsedAt: new Date().toISOString(),
+        },
+        otherAccounts: []
+    };
+    return (overwrites?: { refreshToken?: string | null; deviceCookie?: DeviceIdsCookie | null }) => {
+        return (name: string) => {
+            switch (name) {
+                case AuthConfig.refreshTokenCookie:
+                    if (overwrites?.refreshToken === null) {
+                        return undefined;
+                    }
+                    return { name, value: overwrites?.refreshToken ?? refreshToken };
+                case AuthConfig.deviceCookie:
+                    if (overwrites?.deviceCookie === null) {
+                        return undefined;
+                    }
+                    return {
+                        name,
+                        value: JSON.stringify(overwrites?.deviceCookie ?? defaultDeviceCookie)
+                    }
+                default:
+                    return undefined;
+            }
+        }
+    };
+}
+
 
 /**
  * Creates a mock UserAgent object with common browser/device configurations.
@@ -65,7 +136,7 @@ export const createMockUserAgent = (
             isBot: false,
         },
     };
-    
+
     return variants[variant] as UserAgent;
 };
 
@@ -89,7 +160,7 @@ export const createMockCookies = (options?: {
     trackSet?: boolean;
 }): ReadonlyRequestCookies & { __mockSet?: jest.Mock } => {
     const cookies = new Map<string, string>();
-    
+
     if (options?.refreshToken) {
         cookies.set(AuthConfig.refreshTokenCookie, options.refreshToken);
     }
@@ -169,7 +240,7 @@ export const createMockHeaders = (options?: {
 }): ReadonlyHeaders => {
     const ip = options?.ipAddress ?? '192.168.1.1';
     const ua = options?.userAgent ?? 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0';
-    
+
     return {
         get: (name: string) => {
             if (name === 'true-client-ip' || name === 'x-forwarded-for') return ip;
@@ -233,11 +304,11 @@ export const createMockCachedRefreshData = (
     }
 ): CachedRefreshData => {
     const userAgent = overrides?.userAgent ?? createMockUserAgent('chrome-desktop');
-    
+
     return {
-        response: { 
-            status: overrides?.status ?? 200, 
-            message: overrides?.message ?? 'Success' 
+        response: {
+            status: overrides?.status ?? 200,
+            message: overrides?.message ?? 'Success'
         },
         metadata: {
             ipAddress: overrides?.ipAddress ?? '192.168.1.1',

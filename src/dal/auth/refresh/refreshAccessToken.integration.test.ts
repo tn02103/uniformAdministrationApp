@@ -5,12 +5,14 @@
  * Uses StaticData for test data and validates concurrent requests, metadata validation, and idempotency.
  */
 
-import { refreshToken as refreshAccessToken } from './refreshAccessToken';
-import { StaticData } from '../../../../tests/_playwrightConfig/testData/staticDataLoader';
 import { prisma } from '@/lib/db';
+import { getIronSession } from '@/lib/ironSession';
+import crypto, { randomUUID } from 'crypto';
+import { StaticData } from '../../../../tests/_playwrightConfig/testData/staticDataLoader';
+import { authMockData, createMockUserAgent, getCookieGetMockFactory, getHeaderGetMock } from '../__testHelpers__';
 import { AuthConfig } from '../config';
-import crypto from 'crypto';
 import { sha256Hex } from '../helper.tokens';
+import { refreshToken as refreshAccessToken } from './refreshAccessToken';
 
 // Mock Next.js headers and cookies
 const mockCookiesGet = jest.fn();
@@ -28,69 +30,44 @@ jest.mock('next/headers', () => ({
         get: mockHeadersGet,
     })),
 }));
+jest.mock('next/server', () => ({
+    userAgent: jest.fn(() => createMockUserAgent()),
+}));
 
-// Mock iron-session
-jest.mock('@/lib/ironSession');
-
-import { getIronSession } from '@/lib/ironSession';
 const mockGetIronSession = getIronSession as jest.MockedFunction<typeof getIronSession>;
 const mockIronSessionSave = jest.fn();
 
 describe('refreshAccessToken Integration Tests', () => {
-    const staticData = new StaticData(99); // Use org index 99 for tests
+    const staticData = new StaticData(0); // Use org index 0 for tests
     let testUserId: string;
-    let testDeviceId: string;
-    let testRefreshToken: string;
-    let testRefreshTokenHash: string;
+    const testDeviceId = randomUUID();
+    const testRefreshToken = crypto.randomBytes(64).toString('base64url');
+    const testRefreshTokenHash = sha256Hex(testRefreshToken);
     let testRefreshTokenId: string;
+
+    const getCookieGetMock = getCookieGetMockFactory({
+        deviceId: testDeviceId,
+        refreshToken: testRefreshToken,
+        organisationId: staticData.organisationId,
+    });
 
     beforeAll(async () => {
         await staticData.resetData();
-        
+
         // Get test user
         const testUser = await prisma.user.findFirst({
             where: { organisationId: staticData.organisationId }
         });
         testUserId = testUser!.id;
-
-        // Create device
-        const device = await prisma.device.create({
-            data: {
-                userId: testUserId,
-                name: 'Test Device',
-                lastUsedAt: new Date(),
-                lastIpAddress: '192.168.1.1',
-                userAgent: JSON.stringify({ browser: 'Chrome' }),
-            }
-        });
-        testDeviceId = device.id;
-
-        // Create active refresh token
-        testRefreshToken = crypto.randomBytes(64).toString('base64url');
-        testRefreshTokenHash = sha256Hex(testRefreshToken);
-        
-        const refreshTokenRecord = await prisma.refreshToken.create({
-            data: {
-                userId: testUserId,
-                deviceId: testDeviceId,
-                sessionId: crypto.randomUUID(),
-                token: testRefreshTokenHash,
-                endOfLife: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3), // 3 days
-                issuerIpAddress: '192.168.1.1',
-                tokenFamilyId: crypto.randomUUID(),
-                status: 'active',
-            }
-        });
-        testRefreshTokenId = refreshTokenRecord.id;
     });
 
     afterAll(async () => {
         await staticData.cleanup.removeOrganisation();
     });
 
-    beforeEach(() => {
+    beforeEach(async () => {
         jest.clearAllMocks();
-        
+
         // Setup iron-session mock
         mockGetIronSession.mockResolvedValue({
             user: undefined,
@@ -99,27 +76,66 @@ describe('refreshAccessToken Integration Tests', () => {
             destroy: jest.fn(),
             updateConfig: jest.fn(),
         });
-        
+
         // Setup default mock behavior
-        mockHeadersGet.mockImplementation((name: string) => {
-            if (name === 'true-client-ip' || name === 'x-forwarded-for') return '192.168.1.1';
-            if (name === 'user-agent') return 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0';
-            return null;
+        mockHeadersGet.mockImplementation(getHeaderGetMock());
+        mockCookiesGet.mockImplementation(getCookieGetMock());
+
+        console.log("authMockData", authMockData);
+        // Create device
+        const device = await prisma.device.create({
+            include: { sessions: true },
+            data: {
+                id: testDeviceId,
+                userId: testUserId,
+                name: 'Test Device',
+                lastUsedAt: new Date(),
+                lastIpAddress: authMockData.ipAddress,
+                userAgent: JSON.stringify(authMockData.userAgent),
+                sessions: {
+                    create: {
+                        sessionRL: 'LOW',
+                        lastLoginAt: new Date(),
+                        lastIpAddress: authMockData.ipAddress,
+                        userAgent: JSON.stringify(authMockData.userAgent),
+                    }
+                }
+            }
         });
-        
-        mockCookiesGet.mockImplementation((name: string) => {
-            if (name === AuthConfig.refreshTokenCookie) return { name, value: '' };
-            return undefined;
+
+        const refreshTokenRecord = await prisma.refreshToken.create({
+            data: {
+                userId: testUserId,
+                deviceId: device.id,
+                sessionId: device.sessions[0].id,
+                token: testRefreshTokenHash,
+                endOfLife: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3), // 3 days
+                issuerIpAddress: authMockData.ipAddress,
+                tokenFamilyId: crypto.randomUUID(),
+                status: 'active',
+            }
         });
+        testRefreshTokenId = refreshTokenRecord.id;
     });
+
+    afterEach(async () => {
+        try {
+            await prisma.refreshToken.deleteMany({
+                where: { deviceId: testDeviceId },
+            });
+            await prisma.session.deleteMany({
+                where: { deviceId: testDeviceId },
+            })
+            await prisma.device.delete({
+                where: { id: testDeviceId },
+            });
+        } catch {
+            staticData.resetData();
+        }
+    })
 
     describe('Basic Token Refresh', () => {
         it('should successfully refresh access token with valid refresh token', async () => {
-            mockCookiesGet.mockImplementation((name: string) => {
-                if (name === AuthConfig.refreshTokenCookie) return { name, value: testRefreshToken };
-                return undefined;
-            });
-
             const result = await refreshAccessToken();
 
             expect(result.status).toBe(200);
@@ -147,53 +163,26 @@ describe('refreshAccessToken Integration Tests', () => {
         });
 
         it('should return 401 when refresh token is missing', async () => {
-            mockCookiesGet.mockImplementation((_name: string) => {
-                return undefined; // No token
-            });
+            mockCookiesGet.mockImplementation(getCookieGetMock({ refreshToken: null }));
 
             const result = await refreshAccessToken();
 
             expect(result.status).toBe(401);
-            expect(result.message).toContain('missing');
+            expect(result.message).toContain("Authentication failed");
         });
 
         it('should return 401 when refresh token is invalid', async () => {
-            mockCookiesGet.mockImplementation((name: string) => {
-                if (name === AuthConfig.refreshTokenCookie) return { name, value: 'invalid-token-123' };
-                return undefined;
-            });
+            mockCookiesGet.mockImplementation(getCookieGetMock({ refreshToken: 'invalid-token-123' }));
 
             const result = await refreshAccessToken();
 
             expect(result.status).toBe(401);
-            expect(result.message).toContain('invalid');
+            expect(result.message).toContain("Authentication failed");
         });
     });
 
     describe('Concurrent Requests (Idempotency)', () => {
         it('should handle two concurrent requests with same idempotency key', async () => {
-            // Create fresh token for this test
-            const freshToken = crypto.randomBytes(64).toString('base64url');
-            const freshTokenHash = sha256Hex(freshToken);
-            
-            const freshTokenRecord = await prisma.refreshToken.create({
-                data: {
-                    userId: testUserId,
-                    deviceId: testDeviceId,
-                    sessionId: crypto.randomUUID(),
-                    token: freshTokenHash,
-                    endOfLife: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
-                    issuerIpAddress: '192.168.1.1',
-                    tokenFamilyId: crypto.randomUUID(),
-                    status: 'active',
-                }
-            });
-
-            mockCookiesGet.mockImplementation((name: string) => {
-                if (name === AuthConfig.refreshTokenCookie) return { name, value: freshToken };
-                return undefined;
-            });
-
             // Both requests use same idempotency key
             const [result1, result2] = await Promise.all([
                 refreshAccessToken(),
@@ -208,14 +197,14 @@ describe('refreshAccessToken Integration Tests', () => {
             const newTokens = await prisma.refreshToken.findMany({
                 where: {
                     userId: testUserId,
-                    rotatedFromTokenId: freshTokenRecord.id,
+                    rotatedFromTokenId:testRefreshTokenId
                 }
             });
             expect(newTokens).toHaveLength(1);
 
             // Old token should be rotated
             const oldToken = await prisma.refreshToken.findUnique({
-                where: { id: freshTokenRecord.id }
+                where: { id: testRefreshTokenId }
             });
             expect(oldToken?.status).toBe('rotated');
         });
@@ -232,7 +221,7 @@ describe('refreshAccessToken Integration Tests', () => {
             const token1 = crypto.randomBytes(64).toString('base64url');
             const token1Hash = sha256Hex(token1);
             const familyId = crypto.randomUUID();
-            
+
             const token1Record = await prisma.refreshToken.create({
                 data: {
                     userId: testUserId,
@@ -269,7 +258,7 @@ describe('refreshAccessToken Integration Tests', () => {
         it('should detect race condition when token already used', async () => {
             const token = crypto.randomBytes(64).toString('base64url');
             const tokenHash = sha256Hex(token);
-            
+
             await prisma.refreshToken.create({
                 data: {
                     userId: testUserId,
@@ -302,7 +291,7 @@ describe('refreshAccessToken Integration Tests', () => {
         it('should return 401 when token is expired', async () => {
             const expiredToken = crypto.randomBytes(64).toString('base64url');
             const expiredTokenHash = sha256Hex(expiredToken);
-            
+
             await prisma.refreshToken.create({
                 data: {
                     userId: testUserId,
@@ -329,7 +318,7 @@ describe('refreshAccessToken Integration Tests', () => {
         it('should return 401 when token is revoked', async () => {
             const revokedToken = crypto.randomBytes(64).toString('base64url');
             const revokedTokenHash = sha256Hex(revokedToken);
-            
+
             await prisma.refreshToken.create({
                 data: {
                     userId: testUserId,

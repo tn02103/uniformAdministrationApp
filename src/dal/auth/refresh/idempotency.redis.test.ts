@@ -6,37 +6,41 @@
  */
 
 import { acquireLock, getCachedResult, releaseLock, storeCachedResult, tryAcquireLockWithPolling } from './idempotency.redis';
-import { 
-    createMockUserAgent, 
-    createSimpleMockCookies, 
+import {
+    createMockUserAgent,
+    createSimpleMockCookies,
     createMockCachedRefreshData,
-    mockConsoleWarn 
+    mockConsoleWarn
 } from '../__testHelpers__';
 
-// Mock Redis module
-const mockRedisSet = jest.fn();
-const mockRedisDel = jest.fn();
-const mockRedisSetex = jest.fn();
-const mockRedisGet = jest.fn();
-const mockIsRedisAvailable = jest.fn(() => true);
+// Mock functions - must be declared before jest.mock()
+// but jest.mock() hoists, so we need to define them in the mock factory
 
-jest.mock('../redis', () => ({
-    isRedisAvailable: mockIsRedisAvailable,
-    redis: {
-        set: mockRedisSet,
-        del: mockRedisDel,
-        setex: mockRedisSetex,
-        get: mockRedisGet,
-    }
-}));
 
-// Mock handleRetryRequest
-const mockHandleRetryRequest = jest.fn();
-jest.mock('./handleRetryRequest', () => ({
-    handleRetryRequest: mockHandleRetryRequest,
-}));
+jest.mock('../redis', () => {
+    const isRedisAvailable = jest.fn(() => true);
+    const redis = {
+        set: jest.fn(),
+        del: jest.fn(),
+        setex: jest.fn(),
+        get: jest.fn(),
+    };
+    return {
+        isRedisAvailable,
+        redis
+    };
+});
+
+jest.mock('./handleRetryRequest', () => {
+    const handleRetryRequest = jest.fn();
+    return {
+        handleRetryRequest
+    };
+});
 
 describe('Redis Idempotency Helpers', () => {
+    const { redis: mockRedis, isRedisAvailable: mockIsRedisAvailable } = jest.requireMock('../redis')
+    const { handleRetryRequest: mockHandleRetryRequest } = jest.requireMock('./handleRetryRequest');
     beforeEach(() => {
         jest.clearAllMocks();
         mockIsRedisAvailable.mockReturnValue(true);
@@ -44,12 +48,12 @@ describe('Redis Idempotency Helpers', () => {
 
     describe('acquireLock', () => {
         it('should return true when lock is acquired (SET returns OK)', async () => {
-            mockRedisSet.mockResolvedValue('OK');
+            mockRedis.set.mockResolvedValue('OK');
 
             const result = await acquireLock('test-key-123');
 
             expect(result).toBe(true);
-            expect(mockRedisSet).toHaveBeenCalledWith(
+            expect(mockRedis.set).toHaveBeenCalledWith(
                 'idempotency:test-key-123:lock',
                 'processing',
                 'EX',
@@ -59,7 +63,7 @@ describe('Redis Idempotency Helpers', () => {
         });
 
         it('should return false when lock is already held (SET returns null)', async () => {
-            mockRedisSet.mockResolvedValue(null);
+            mockRedis.set.mockResolvedValue(null);
 
             const result = await acquireLock('test-key-123');
 
@@ -72,11 +76,11 @@ describe('Redis Idempotency Helpers', () => {
             const result = await acquireLock('test-key-123');
 
             expect(result).toBe(true);
-            expect(mockRedisSet).not.toHaveBeenCalled();
+            expect(mockRedis.set).not.toHaveBeenCalled();
         });
 
         it('should handle Redis errors gracefully and return true (fail-open)', async () => {
-            mockRedisSet.mockRejectedValue(new Error('Redis connection failed'));
+            mockRedis.set.mockRejectedValue(new Error('Redis connection failed'));
             const consoleWarnSpy = mockConsoleWarn();
 
             const result = await acquireLock('test-key-123');
@@ -92,11 +96,11 @@ describe('Redis Idempotency Helpers', () => {
 
     describe('releaseLock', () => {
         it('should call DEL with correct key format', async () => {
-            mockRedisDel.mockResolvedValue(1);
+            mockRedis.del.mockResolvedValue(1);
 
             await releaseLock('test-key-123');
 
-            expect(mockRedisDel).toHaveBeenCalledWith('idempotency:test-key-123:lock');
+            expect(mockRedis.del).toHaveBeenCalledWith('idempotency:test-key-123:lock');
         });
 
         it('should handle Redis unavailable gracefully', async () => {
@@ -104,11 +108,11 @@ describe('Redis Idempotency Helpers', () => {
 
             await releaseLock('test-key-123');
 
-            expect(mockRedisDel).not.toHaveBeenCalled();
+            expect(mockRedis.del).not.toHaveBeenCalled();
         });
 
         it('should log warning on error but not throw', async () => {
-            mockRedisDel.mockRejectedValue(new Error('DEL failed'));
+            mockRedis.del.mockRejectedValue(new Error('DEL failed'));
             const consoleWarnSpy = mockConsoleWarn();
 
             await expect(releaseLock('test-key-123')).resolves.toBeUndefined();
@@ -127,11 +131,11 @@ describe('Redis Idempotency Helpers', () => {
         });
 
         it('should call setex with 30s TTL and correct JSON', async () => {
-            mockRedisSetex.mockResolvedValue('OK');
+            mockRedis.setex.mockResolvedValue('OK');
 
             await storeCachedResult('test-key-123', mockCacheData);
 
-            expect(mockRedisSetex).toHaveBeenCalledWith(
+            expect(mockRedis.setex).toHaveBeenCalledWith(
                 'idempotency:test-key-123:result',
                 30,
                 JSON.stringify(mockCacheData)
@@ -143,11 +147,11 @@ describe('Redis Idempotency Helpers', () => {
 
             await storeCachedResult('test-key-123', mockCacheData);
 
-            expect(mockRedisSetex).not.toHaveBeenCalled();
+            expect(mockRedis.setex).not.toHaveBeenCalled();
         });
 
         it('should log warning on error but not throw', async () => {
-            mockRedisSetex.mockRejectedValue(new Error('SETEX failed'));
+            mockRedis.setex.mockRejectedValue(new Error('SETEX failed'));
             const consoleWarnSpy = mockConsoleWarn();
 
             await expect(storeCachedResult('test-key-123', mockCacheData)).resolves.toBeUndefined();
@@ -166,16 +170,22 @@ describe('Redis Idempotency Helpers', () => {
         });
 
         it('should return parsed CachedRefreshData when found', async () => {
-            mockRedisGet.mockResolvedValue(JSON.stringify(mockCacheData));
+            mockRedis.get.mockResolvedValue(JSON.stringify(mockCacheData));
 
             const result = await getCachedResult('test-key-123');
 
-            expect(result).toEqual(mockCacheData);
-            expect(mockRedisGet).toHaveBeenCalledWith('idempotency:test-key-123:result');
+            expect(result).toStrictEqual({
+                ...mockCacheData,
+                metadata: {
+                    ...mockCacheData.metadata,
+                    cookieExpiry: mockCacheData.metadata.cookieExpiry.toISOString(),
+                }
+            });
+            expect(mockRedis.get).toHaveBeenCalledWith('idempotency:test-key-123:result');
         });
 
         it('should return null when not found', async () => {
-            mockRedisGet.mockResolvedValue(null);
+            mockRedis.get.mockResolvedValue(null);
 
             const result = await getCachedResult('test-key-123');
 
@@ -188,11 +198,11 @@ describe('Redis Idempotency Helpers', () => {
             const result = await getCachedResult('test-key-123');
 
             expect(result).toBeNull();
-            expect(mockRedisGet).not.toHaveBeenCalled();
+            expect(mockRedis.get).not.toHaveBeenCalled();
         });
 
         it('should return null on error', async () => {
-            mockRedisGet.mockRejectedValue(new Error('GET failed'));
+            mockRedis.get.mockRejectedValue(new Error('GET failed'));
             const consoleWarnSpy = mockConsoleWarn();
 
             const result = await getCachedResult('test-key-123');
@@ -216,7 +226,7 @@ describe('Redis Idempotency Helpers', () => {
         });
 
         it('should return {lockAcquired: true} when lock acquired immediately', async () => {
-            mockRedisSet.mockResolvedValue('OK');
+            mockRedis.set.mockResolvedValue('OK');
 
             const result = await tryAcquireLockWithPolling(
                 'test-key-123',
@@ -227,17 +237,17 @@ describe('Redis Idempotency Helpers', () => {
             );
 
             expect(result).toEqual({ lockAcquired: true });
-            expect(mockRedisSet).toHaveBeenCalled();
+            expect(mockRedis.set).toHaveBeenCalled();
         });
 
         it('should poll and return cached response when found', async () => {
-            mockRedisSet.mockResolvedValue(null); // Lock held
-            
+            mockRedis.set.mockResolvedValue(null); // Lock held
+
             const mockCacheData = createMockCachedRefreshData({
                 oldRefreshTokenHash: 'hash123',
             });
 
-            mockRedisGet
+            mockRedis.get
                 .mockResolvedValueOnce(null) // First poll - not ready
                 .mockResolvedValueOnce(null) // Second poll - not ready
                 .mockResolvedValueOnce(JSON.stringify(mockCacheData)); // Third poll - found!
@@ -261,12 +271,12 @@ describe('Redis Idempotency Helpers', () => {
                 lockAcquired: false,
                 cachedResponse: { status: 200, message: 'Cached' }
             });
-            expect(mockRedisGet).toHaveBeenCalledTimes(3);
+            expect(mockRedis.get).toHaveBeenCalledTimes(3);
         });
 
         it('should return 401 when refreshToken is missing', async () => {
-            mockRedisSet.mockResolvedValue(null);
-            mockRedisGet.mockResolvedValue(JSON.stringify({
+            mockRedis.set.mockResolvedValue(null);
+            mockRedis.get.mockResolvedValue(JSON.stringify({
                 response: { status: 200, message: 'Success' },
                 metadata: {}
             }));
@@ -290,8 +300,8 @@ describe('Redis Idempotency Helpers', () => {
         });
 
         it('should return 403 when validation fails', async () => {
-            mockRedisSet.mockResolvedValue(null);
-            mockRedisGet.mockResolvedValue(JSON.stringify({
+            mockRedis.set.mockResolvedValue(null);
+            mockRedis.get.mockResolvedValue(JSON.stringify({
                 response: { status: 200, message: 'Success' },
                 metadata: {
                     ipAddress: '192.168.1.1',
@@ -323,8 +333,8 @@ describe('Redis Idempotency Helpers', () => {
         });
 
         it('should return 503 timeout after 5 seconds', async () => {
-            mockRedisSet.mockResolvedValue(null); // Lock held
-            mockRedisGet.mockResolvedValue(null); // Never returns data
+            mockRedis.set.mockResolvedValue(null); // Lock held
+            mockRedis.get.mockResolvedValue(null); // Never returns data
             const consoleWarnSpy = mockConsoleWarn();
 
             const promise = tryAcquireLockWithPolling(
@@ -353,8 +363,8 @@ describe('Redis Idempotency Helpers', () => {
         });
 
         it('should poll approximately every 100ms', async () => {
-            mockRedisSet.mockResolvedValue(null);
-            mockRedisGet.mockResolvedValue(null);
+            mockRedis.set.mockResolvedValue(null);
+            mockRedis.get.mockResolvedValue(null);
 
             const promise = tryAcquireLockWithPolling(
                 'test-key-123',
@@ -372,8 +382,8 @@ describe('Redis Idempotency Helpers', () => {
             await promise;
 
             // Should have polled roughly 50 times (5 seconds / 100ms)
-            expect(mockRedisGet.mock.calls.length).toBeGreaterThanOrEqual(45);
-            expect(mockRedisGet.mock.calls.length).toBeLessThanOrEqual(55);
+            expect(mockRedis.get.mock.calls.length).toBeGreaterThanOrEqual(45);
+            expect(mockRedis.get.mock.calls.length).toBeLessThanOrEqual(55);
         });
     });
 });

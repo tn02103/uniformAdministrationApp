@@ -73,7 +73,7 @@ class StaticDataGetter {
     readonly deregistrations: Prisma.DeregistrationCreateManyInput[];
     readonly redirects: Prisma.RedirectCreateManyInput[];
     readonly devices: Prisma.DeviceCreateManyInput[];
-    readonly refreshTokens: Prisma.RefreshTokenCreateManyInput[];
+    readonly sessions: Prisma.SessionCreateManyInput[];
 
     constructor(i: number, ids: StaticDataIdType) {
         this.index = i;
@@ -158,7 +158,7 @@ class StaticDataGetter {
         this.deregistrations = generator.deregistrations();
         this.redirects = generator.redirects(i);
         this.devices = generator.device();
-        this.refreshTokens = generator.refreshToken();
+        this.sessions = generator.session();
     }
 
     async users() {
@@ -198,12 +198,12 @@ class StaticDataCleanup {
         await this.loader.deficienciesUniform();
     }
     async user() {
-        await this.deleteRefreshTokens();
+        await this.deleteSessions();
         await this.deleteDevices();
         await this.deleteUsers();
         await this.loader.users();
         await this.loader.devices();
-        await this.loader.refreshTokens();
+        await this.loader.sessions();
     }
     async cadet() {
         await prisma.$transaction([
@@ -325,6 +325,8 @@ class StaticDataCleanup {
         await this.deleteStorage();
 
         await this.deleteCadet();
+        await this.deleteSessions();
+        await this.deleteDevices();
         await this.deleteUsers();
         await this.deleteOrganisation();
     }
@@ -385,8 +387,8 @@ class StaticDataCleanup {
     private deleteRedirects = () => prisma.redirect.deleteMany({
         where: { organisationId: this.organisationId }
     });
-    private deleteRefreshTokens = () => prisma.refreshToken.deleteMany({
-        where: { user: { organisationId: this.organisationId } }
+    private deleteSessions = () => prisma.session.deleteMany({
+        where: { device: { user: { organisationId: this.organisationId } } }
     });
     private deleteDevices = () => prisma.device.deleteMany({
         where: { user: { organisationId: this.organisationId } }
@@ -404,7 +406,7 @@ class StaticDataLoader {
         await this.organisationConfiguration();
         await this.users();
         await this.devices();
-        await this.refreshTokens();
+        await this.sessions();
 
         await this.storageUnits();
         await this.cadets();
@@ -448,9 +450,9 @@ class StaticDataLoader {
             data: this.data.devices,
         });
     }
-    async refreshTokens() {
-        await prisma.refreshToken.createMany({
-            data: this.data.refreshTokens,
+    async sessions() {
+        await prisma.session.createMany({
+            data: this.data.sessions,
         });
     }
     async cadets() {

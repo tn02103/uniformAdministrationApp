@@ -17,10 +17,9 @@ type verificationsProp = {
     cookieList: ReadonlyRequestCookies;
     account: DeviceIdsCookieAccount;
     logData: AuthenticationExceptionData;
-    idempotencyKey?: string;
 }
 export const verifyRefreshToken = async (props: verificationsProp): Promise<FingerprintValidationResult> => {
-    const { agent, ipAddress, sendToken, dbToken, account, logData, idempotencyKey } = props;
+    const { agent, ipAddress, sendToken, dbToken, account, logData } = props;
 
     const sendTokenHash = sha256Hex(sendToken);
     if (dbToken.token !== sendTokenHash) {
@@ -37,7 +36,6 @@ export const verifyRefreshToken = async (props: verificationsProp): Promise<Fing
             ipAddress,
             agent,
             logData,
-            idempotencyKey,
         });
     }
 

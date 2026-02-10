@@ -181,7 +181,7 @@ describe('handleRetryRequest - Metadata Validation', () => {
 
             expect(mockCookies.__mockSet).toHaveBeenCalledWith(
                 'test-refresh-token',
-                'new-token-plaintext-abc',
+                'new-token-plaintext-abc123',
                 expect.objectContaining({
                     httpOnly: true,
                     secure: true,

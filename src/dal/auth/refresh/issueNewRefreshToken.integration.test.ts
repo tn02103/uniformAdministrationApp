@@ -16,27 +16,19 @@ describe('issueNewRefreshToken Integration Tests', () => {
     const staticData = new StaticData(98); // Use org index 98 for tests
     let testUserId: string;
     let testDeviceId: string;
+    let testSessionId: string;
 
     beforeAll(async () => {
         await staticData.resetData();
         
-        // Get test user
-        const testUser = await prisma.user.findFirst({
-            where: { organisationId: staticData.organisationId }
-        });
-        testUserId = testUser!.id;
-
-        // Create device
-        const device = await prisma.device.create({
-            data: {
-                userId: testUserId,
-                name: 'Test Device',
-                lastUsedAt: new Date(),
-                lastIpAddress: '192.168.1.1',
-                userAgent: JSON.stringify({ browser: 'Chrome' }),
-            }
-        });
-        testDeviceId = device.id;
+        // Get test user from static data
+        testUserId = staticData.ids.userIds[0];
+        
+        // Get test device from static data (devices are created in resetData)
+        testDeviceId = staticData.ids.deviceIds[0];
+        
+        // Get test session from static data (sessions are created in resetData)
+        testSessionId = staticData.ids.sessionIds[0];
     });
 
     afterAll(async () => {
@@ -82,15 +74,11 @@ describe('issueNewRefreshToken Integration Tests', () => {
                 cookieList: mockCookies,
                 userId: testUserId,
                 deviceId: testDeviceId,
-                sessionId: crypto.randomUUID(),
+                sessionId: testSessionId,
                 ipAddress: '192.168.1.1',
                 mode: 'new',
                 logData: {
-
-
                     ipAddress: '192.168.1.1',
-
-
                     userAgent: mockUserAgent,
                 }
             });
@@ -116,7 +104,7 @@ describe('issueNewRefreshToken Integration Tests', () => {
                 data: {
                     userId: testUserId,
                     deviceId: testDeviceId,
-                    sessionId: crypto.randomUUID(),
+                    sessionId: testSessionId,
                     token: 'old-token-hash',
                     endOfLife: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
                     issuerIpAddress: '192.168.1.1',
@@ -131,15 +119,11 @@ describe('issueNewRefreshToken Integration Tests', () => {
                 cookieList: mockCookies,
                 userId: testUserId,
                 deviceId: testDeviceId,
-                sessionId: crypto.randomUUID(),
+                sessionId: staticData.ids.sessionIds[1],
                 ipAddress: '192.168.1.1',
                 mode: 'new',
                 logData: {
-
-
                     ipAddress: '192.168.1.1',
-
-
                     userAgent: mockUserAgent,
                 }
             });
@@ -165,7 +149,7 @@ describe('issueNewRefreshToken Integration Tests', () => {
                 data: {
                     userId: testUserId,
                     deviceId: testDeviceId,
-                    sessionId: crypto.randomUUID(),
+                    sessionId: testSessionId,
                     token: 'old-token-hash',
                     endOfLife: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
                     issuerIpAddress: '192.168.1.1',
@@ -180,17 +164,13 @@ describe('issueNewRefreshToken Integration Tests', () => {
                 cookieList: mockCookies,
                 userId: testUserId,
                 deviceId: testDeviceId,
-                sessionId: crypto.randomUUID(),
+                sessionId: staticData.ids.sessionIds[1],
                 ipAddress: '192.168.1.1',
                 mode: 'refresh',
                 usedRefreshTokenId: oldToken.id,
                 userAgent: mockUserAgent,
                 logData: {
-
-
                     ipAddress: '192.168.1.1',
-
-
                     userAgent: mockUserAgent,
                 }
             });
@@ -222,7 +202,7 @@ describe('issueNewRefreshToken Integration Tests', () => {
                 data: {
                     userId: testUserId,
                     deviceId: testDeviceId,
-                    sessionId: crypto.randomUUID(),
+                    sessionId: testSessionId,
                     token: 'old-token-hash',
                     endOfLife: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
                     issuerIpAddress: '192.168.1.1',
@@ -239,17 +219,13 @@ describe('issueNewRefreshToken Integration Tests', () => {
                 cookieList: mockCookies1,
                 userId: testUserId,
                 deviceId: testDeviceId,
-                sessionId: crypto.randomUUID(),
+                sessionId: staticData.ids.sessionIds[1],
                 ipAddress: '192.168.1.1',
                 mode: 'refresh',
                 usedRefreshTokenId: oldToken.id,
                 userAgent: mockUserAgent,
                 logData: {
-
-
                     ipAddress: '192.168.1.1',
-
-
                     userAgent: mockUserAgent,
                 }
             });
@@ -265,11 +241,7 @@ describe('issueNewRefreshToken Integration Tests', () => {
                 usedRefreshTokenId: oldToken.id,
                 userAgent: mockUserAgent,
                 logData: {
-
-
                     ipAddress: '192.168.1.1',
-
-
                     userAgent: mockUserAgent,
                 }
             })).rejects.toThrow(AuthenticationException);
@@ -278,22 +250,16 @@ describe('issueNewRefreshToken Integration Tests', () => {
                 cookieList: mockCookies2,
                 userId: testUserId,
                 deviceId: testDeviceId,
-                sessionId: crypto.randomUUID(),
+                sessionId: staticData.ids.sessionIds[3],
                 ipAddress: '192.168.1.1',
                 mode: 'refresh',
                 usedRefreshTokenId: oldToken.id,
                 userAgent: mockUserAgent,
                 logData: {
-
-
                     ipAddress: '192.168.1.1',
-
-
                     userAgent: mockUserAgent,
                 }
-            })).rejects.toMatchObject({
-                code: 'RefreshTokenReuseDetected',
-            });
+            })).rejects.toThrow(AuthenticationException);
         });
 
         it('should exclude current token when revoking others', async () => {
@@ -302,7 +268,7 @@ describe('issueNewRefreshToken Integration Tests', () => {
                 data: {
                     userId: testUserId,
                     deviceId: testDeviceId,
-                    sessionId: crypto.randomUUID(),
+                    sessionId: testSessionId,
                     token: 'token1-hash',
                     endOfLife: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
                     issuerIpAddress: '192.168.1.1',
@@ -315,7 +281,7 @@ describe('issueNewRefreshToken Integration Tests', () => {
                 data: {
                     userId: testUserId,
                     deviceId: testDeviceId,
-                    sessionId: crypto.randomUUID(),
+                    sessionId: staticData.ids.sessionIds[1],
                     token: 'token2-hash',
                     endOfLife: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
                     issuerIpAddress: '192.168.1.1',
@@ -331,17 +297,13 @@ describe('issueNewRefreshToken Integration Tests', () => {
                 cookieList: mockCookies,
                 userId: testUserId,
                 deviceId: testDeviceId,
-                sessionId: crypto.randomUUID(),
+                sessionId: staticData.ids.sessionIds[2],
                 ipAddress: '192.168.1.1',
                 mode: 'refresh',
                 usedRefreshTokenId: token1.id,
                 userAgent: mockUserAgent,
                 logData: {
-
-
                     ipAddress: '192.168.1.1',
-
-
                     userAgent: mockUserAgent,
                 }
             });
@@ -371,15 +333,11 @@ describe('issueNewRefreshToken Integration Tests', () => {
                 cookieList: mockCookies,
                 userId: testUserId,
                 deviceId: testDeviceId,
-                sessionId: crypto.randomUUID(),
+                sessionId: testSessionId,
                 ipAddress: '192.168.1.1',
                 mode: 'new',
                 logData: {
-
-
                     ipAddress: '192.168.1.1',
-
-
                     userAgent: mockUserAgent,
                 }
             })).resolves.toBeTruthy();

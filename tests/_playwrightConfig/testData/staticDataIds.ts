@@ -355,18 +355,6 @@ export function getStaticDataIds(index: number) {
             `${prefix}op78qr-90st-12uv-34wx-yzabcdefghij`,
             `${prefix}st90uv-12wx-34yz-56ab-cdefgh52ijkl`,
         ],
-        refreshTokenIds: [
-            `${prefix}12a3b4-c5d6-e7f8-a9b0-c1d2e3f4a5b6`,
-            `${prefix}34c5d6-e7f8-a9b0-c1d2-e3f4a5b6c7d8`,
-            `${prefix}56e7f8-a9b0-c1d2-e3f4-a5b6c7d8e9f0`,
-            `${prefix}78a9b0-c1d2-e3f4-a5b6-c7d8e9f0a1b2`,
-            `${prefix}9ac1d2-e3f4-a5b6-c7d8-e9f0a1b2c3d4`,
-            `${prefix}bce3f4-a5b6-c7d8-e9f0-a1b2c3d4e5f6`,
-            `${prefix}dea5b6-c7d8-e9f0-a1b2-c3d4e5f6a7b8`,
-            `${prefix}f0c7d8-e9f0-a1b2-c3d4-e5f6a7b8c9d0`,
-            `${prefix}12e9f0-a1b2-c3d4-e5f6-a7b8c9d0e1f2`,
-            `${prefix}34a1b2-c3d4-e5f6-a7b8-c9d0e1f2a3b4`
-        ],
         dynamic: {
             firstInspection: {
                 id: `${prefix}cde146-9a10-4480-b665-720996118b91`,

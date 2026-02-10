@@ -12,37 +12,15 @@ type HandleRefreshTokenReuseProps = {
     ipAddress: string;
     agent: UserAgent;
     logData: AuthenticationExceptionData;
-    idempotencyKey?: string;
 }
-export const handleRefreshTokenReuse = async ({ token, ipAddress, agent, logData, idempotencyKey }: HandleRefreshTokenReuseProps): Promise<void> => {
+export const handleRefreshTokenReuse = async ({ token, ipAddress, agent, logData }: HandleRefreshTokenReuseProps): Promise<void> => {
     if (!token.usedAt || !token.usedIpAddress || !token.usedUserAgent) {
-
         throw new AuthenticationException(
             "Refresh token reuse detected but no previous usage data found",
             "AuthenticationFailed",
             LogDebugLevel.CRITICAL,
             logData
         );
-    }
-
-    // Check if this is a cached idempotent retry (Redis-based detection)
-    if (idempotencyKey && isRedisAvailable()) {
-        try {
-            const { redis } = await import("../redis");
-            const originalRequest = await redis!.get(`idempotency:${idempotencyKey}`);
-            if (originalRequest) {
-                // This request was already processed successfully - network retry
-                throw new AuthenticationException(
-                    "Idempotent network retry detected (Redis)",
-                    "NetworkRetry",
-                    LogDebugLevel.INFO,
-                    logData
-                );
-            }
-        } catch (error) {
-            if (error instanceof AuthenticationException) throw error;
-            console.warn('Redis error checking idempotency:', error);
-        }
     }
 
     const fingerprint = await validateDeviceFingerprint({

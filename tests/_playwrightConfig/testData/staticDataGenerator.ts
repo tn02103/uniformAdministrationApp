@@ -1,5 +1,4 @@
 import { OrganisationConfiguration, Deregistration, Inspection, Prisma, Redirect, StorageUnit, Uniform } from "@prisma/client";
-import { createHash } from "crypto";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import utc from "dayjs/plugin/utc";
@@ -27,7 +26,6 @@ export type StaticDataIdType = {
     redirectIds: string[];
     deviceIds: string[];
     sessionIds: string[];
-    refreshTokenIds: string[];
     dynamic: {
         firstInspection: {
             id: string;
@@ -57,7 +55,6 @@ export function getStaticDataIds(): StaticDataIdType {
         redirectIds: uuidArray(4),
         deviceIds: uuidArray(6), // 2 devices per admin (id 0), manager (id 1), and inspector (id 2) 
         sessionIds: uuidArray(10), // Sessions for each device, including some expired/invalid ones
-        refreshTokenIds: uuidArray(10), // Mix of active, expired, and used tokens
         dynamic: {
             firstInspection: {
                 id: uuid(),
@@ -775,7 +772,7 @@ export default class StaticDataGenerator {
                 deviceId: deviceIds[0],
                 valid: true,
                 sessionLifetime: baseDate.add(7, 'days').toDate(),
-                sessionRL: 'AL123456789', // 10 character session reference
+                sessionRL: 'AL12345678', // 10 character session reference
                 lastLoginAt: baseDate.subtract(1, 'hour').toDate(),
                 lastIpAddress: '192.168.1.100',
                 userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
@@ -786,7 +783,7 @@ export default class StaticDataGenerator {
                 deviceId: deviceIds[1],
                 valid: true,
                 sessionLifetime: baseDate.add(5, 'days').toDate(),
-                sessionRL: 'AM123456789',
+                sessionRL: 'AM12345678',
                 lastLoginAt: baseDate.subtract(3, 'hours').toDate(),
                 lastIpAddress: '192.168.1.150',
                 userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1'
@@ -797,7 +794,7 @@ export default class StaticDataGenerator {
                 deviceId: deviceIds[2],
                 valid: true,
                 sessionLifetime: baseDate.add(6, 'days').toDate(),
-                sessionRL: 'ML123456789',
+                sessionRL: 'ML12345678',
                 lastLoginAt: baseDate.subtract(30, 'minutes').toDate(),
                 lastIpAddress: '192.168.1.101',
                 userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:119.0) Gecko/20100101 Firefox/119.0'
@@ -808,7 +805,7 @@ export default class StaticDataGenerator {
                 deviceId: deviceIds[3],
                 valid: true,
                 sessionLifetime: baseDate.add(3, 'days').toDate(),
-                sessionRL: 'MT123456789',
+                sessionRL: 'MT12345678',
                 lastLoginAt: baseDate.subtract(2, 'hours').toDate(),
                 lastIpAddress: '192.168.1.160',
                 userAgent: 'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/119.0.6045.169 Mobile/15E148 Safari/604.1'
@@ -819,7 +816,7 @@ export default class StaticDataGenerator {
                 deviceId: deviceIds[4],
                 valid: true,
                 sessionLifetime: baseDate.add(4, 'days').toDate(),
-                sessionRL: 'ID123456789',
+                sessionRL: 'ID12345678',
                 lastLoginAt: baseDate.subtract(5, 'hours').toDate(),
                 lastIpAddress: '192.168.1.102',
                 userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0'
@@ -830,7 +827,7 @@ export default class StaticDataGenerator {
                 deviceId: deviceIds[5],
                 valid: true,
                 sessionLifetime: baseDate.add(8, 'days').toDate(),
-                sessionRL: 'IP123456789',
+                sessionRL: 'IP12345678',
                 lastLoginAt: baseDate.subtract(1, 'day').toDate(),
                 lastIpAddress: '192.168.1.170',
                 userAgent: 'Mozilla/5.0 (Linux; Android 13; SM-G973F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/537.36'
@@ -841,7 +838,7 @@ export default class StaticDataGenerator {
                 deviceId: deviceIds[0], // Same device as first session
                 valid: false,
                 sessionLifetime: baseDate.subtract(1, 'day').toDate(), // Expired
-                sessionRL: 'AE123456789',
+                sessionRL: 'AE12345678',
                 lastLoginAt: baseDate.subtract(8, 'days').toDate(),
                 lastIpAddress: '192.168.1.100',
                 userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
@@ -852,7 +849,7 @@ export default class StaticDataGenerator {
                 deviceId: deviceIds[1],
                 valid: false, // Invalid
                 sessionLifetime: baseDate.add(2, 'days').toDate(),
-                sessionRL: 'AI123456789',
+                sessionRL: 'AI12345678',
                 lastLoginAt: baseDate.subtract(15, 'days').toDate(),
                 lastIpAddress: '192.168.1.150',
                 userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15'
@@ -863,7 +860,7 @@ export default class StaticDataGenerator {
                 deviceId: deviceIds[2],
                 valid: true,
                 sessionLifetime: baseDate.add(1, 'day').toDate(),
-                sessionRL: 'MN123456789',
+                sessionRL: 'MN12345678',
                 lastLoginAt: baseDate.subtract(12, 'hours').toDate(),
                 lastIpAddress: '192.168.1.101',
                 userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:118.0) Gecko/20100101 Firefox/118.0'
@@ -874,7 +871,7 @@ export default class StaticDataGenerator {
                 deviceId: deviceIds[5],
                 valid: true,
                 sessionLifetime: baseDate.add(10, 'days').toDate(),
-                sessionRL: 'IP223456789',
+                sessionRL: 'IP22345678',
                 lastLoginAt: baseDate.subtract(6, 'hours').toDate(),
                 lastIpAddress: '192.168.1.170',
                 userAgent: 'Mozilla/5.0 (Linux; Android 13; SM-G973F) AppleWebKit/537.36'
@@ -882,193 +879,7 @@ export default class StaticDataGenerator {
         ] satisfies Prisma.SessionCreateManyInput[];
     }
 
-    refreshToken() {
-        const { userIds, deviceIds, sessionIds, refreshTokenIds } = this.ids;
-        const baseDate = dayjs();
 
-        return [
-            // Active tokens - Admin desktop
-            {
-                id: refreshTokenIds[0],
-                token:  createHash('sha256').update(refreshTokenIds[0], 'utf8').digest('hex'), // Hash the token
-                userId: userIds[0],
-                deviceId: deviceIds[0],
-                sessionId: sessionIds[0],
-                endOfLife: baseDate.add(3, 'days').toDate(),
-                status: 'active' as const,
-                tokenFamilyId: uuid(),
-                rotatedFromTokenId: null,
-                issuedAt: baseDate.subtract(1, 'hour').toDate(),
-                issuerIpAddress: '192.168.1.100',
-                usedAt: null,
-                usedIpAddress: null,
-                usedUserAgent: null,
-                numberOfUseAttempts: 0
-            },
-            // Active tokens - Admin mobile
-            {
-                id: refreshTokenIds[1],
-                token:  createHash('sha256').update(refreshTokenIds[1], 'utf8').digest('hex'), // Hash the token
-                userId: userIds[0],
-                deviceId: deviceIds[1],
-                sessionId: sessionIds[1],
-                endOfLife: baseDate.add(2, 'days').toDate(),
-                status: 'active' as const,
-                tokenFamilyId: uuid(),
-                rotatedFromTokenId: null,
-                issuedAt: baseDate.subtract(3, 'hours').toDate(),
-                issuerIpAddress: '192.168.1.150',
-                usedAt: null,
-                usedIpAddress: null,
-                usedUserAgent: null,
-                numberOfUseAttempts: 0
-            },
-            // Rotated token - for testing token rotation
-            {
-                id: refreshTokenIds[2],
-                token:  createHash('sha256').update(refreshTokenIds[2], 'utf8').digest('hex'), // Hash the token
-                userId: userIds[0],
-                deviceId: deviceIds[0],
-                sessionId: sessionIds[6], // Expired session
-                endOfLife: baseDate.add(1, 'day').toDate(),
-                status: 'rotated' as const,
-                tokenFamilyId: uuid(),
-                rotatedFromTokenId: null,
-                issuedAt: baseDate.subtract(8, 'days').toDate(),
-                issuerIpAddress: '192.168.1.100',
-                usedAt: baseDate.subtract(5, 'minutes').toDate(), // Recently used
-                usedIpAddress: '192.168.1.100',
-                usedUserAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                numberOfUseAttempts: 1
-            },
-            // Active tokens - Manager laptop
-            {
-                id: refreshTokenIds[3],
-                token:  createHash('sha256').update(refreshTokenIds[3], 'utf8').digest('hex'), // Hash the token
-                userId: userIds[1],
-                deviceId: deviceIds[2],
-                sessionId: sessionIds[2],
-                endOfLife: baseDate.add(4, 'days').toDate(),
-                status: 'active' as const,
-                tokenFamilyId: uuid(),
-                rotatedFromTokenId: null,
-                issuedAt: baseDate.subtract(30, 'minutes').toDate(),
-                issuerIpAddress: '192.168.1.101',
-                usedAt: null,
-                usedIpAddress: null,
-                usedUserAgent: null,
-                numberOfUseAttempts: 0
-            },
-            // Active tokens - Manager tablet
-            {
-                id: refreshTokenIds[4],
-                token:  createHash('sha256').update(refreshTokenIds[4], 'utf8').digest('hex'), // Hash the token
-                userId: userIds[1],
-                deviceId: deviceIds[3],
-                sessionId: sessionIds[3],
-                endOfLife: baseDate.add(1, 'day').toDate(),
-                status: 'active' as const,
-                tokenFamilyId: uuid(),
-                rotatedFromTokenId: null,
-                issuedAt: baseDate.subtract(2, 'hours').toDate(),
-                issuerIpAddress: '192.168.1.160',
-                usedAt: null,
-                usedIpAddress: null,
-                usedUserAgent: null,
-                numberOfUseAttempts: 0
-            },
-            // Revoked token - for testing
-            {
-                id: refreshTokenIds[5],
-                token:  createHash('sha256').update(refreshTokenIds[5], 'utf8').digest('hex'), // Hash the token
-                userId: userIds[1],
-                deviceId: deviceIds[2],
-                sessionId: sessionIds[8], // Session without MFA
-                endOfLife: baseDate.add(2, 'days').toDate(),
-                status: 'revoked' as const,
-                tokenFamilyId: uuid(),
-                rotatedFromTokenId: null,
-                issuedAt: baseDate.subtract(12, 'hours').toDate(),
-                issuerIpAddress: '192.168.1.101',
-                usedAt: null,
-                usedIpAddress: null,
-                usedUserAgent: null,
-                numberOfUseAttempts: 0
-            },
-            // Expired token - for testing
-            {
-                id: refreshTokenIds[6],
-                token:  createHash('sha256').update(refreshTokenIds[6], 'utf8').digest('hex'), // Hash the token
-                userId: userIds[2],
-                deviceId: deviceIds[4],
-                sessionId: sessionIds[7], // Using invalid session for expired token testing
-                endOfLife: baseDate.subtract(1, 'day').toDate(), // Expired
-                status: 'active' as const,
-                tokenFamilyId: uuid(),
-                rotatedFromTokenId: null,
-                issuedAt: baseDate.subtract(8, 'days').toDate(),
-                issuerIpAddress: '192.168.1.102',
-                usedAt: null,
-                usedIpAddress: null,
-                usedUserAgent: null,
-                numberOfUseAttempts: 0
-            },
-            // Active tokens - Inspector desktop
-            {
-                id: refreshTokenIds[7],
-                token:  createHash('sha256').update(refreshTokenIds[7], 'utf8').digest('hex'), // Hash the token
-                userId: userIds[2],
-                deviceId: deviceIds[4],
-                sessionId: sessionIds[4],
-                endOfLife: baseDate.add(3, 'days').toDate(),
-                status: 'active' as const,
-                tokenFamilyId: uuid(),
-                rotatedFromTokenId: null,
-                issuedAt: baseDate.subtract(5, 'hours').toDate(),
-                issuerIpAddress: '192.168.1.102',
-                usedAt: null,
-                usedIpAddress: null,
-                usedUserAgent: null,
-                numberOfUseAttempts: 0
-            },
-            // Active tokens - Inspector phone
-            {
-                id: refreshTokenIds[8],
-                token:  createHash('sha256').update(refreshTokenIds[8], 'utf8').digest('hex'), // Hash the token
-                userId: userIds[2],
-                deviceId: deviceIds[5],
-                sessionId: sessionIds[5],
-                endOfLife: baseDate.add(5, 'days').toDate(),
-                status: 'active' as const,
-                tokenFamilyId: uuid(),
-                rotatedFromTokenId: null,
-                issuedAt: baseDate.subtract(1, 'day').toDate(),
-                issuerIpAddress: '192.168.1.170',
-                usedAt: null,
-                usedIpAddress: null,
-                usedUserAgent: null,
-                numberOfUseAttempts: 0
-            },
-            // Used token - for reuse detection edge cases
-            {
-                id: refreshTokenIds[9],
-                token:  createHash('sha256').update(refreshTokenIds[9], 'utf8').digest('hex'), // Hash the token
-                userId: userIds[2],
-                deviceId: deviceIds[5],
-                sessionId: sessionIds[9],
-                endOfLife: baseDate.add(2, 'days').toDate(),
-                status: 'active' as const,
-                tokenFamilyId: uuid(),
-                rotatedFromTokenId: null,
-                issuedAt: baseDate.subtract(6, 'hours').toDate(),
-                issuerIpAddress: '192.168.1.170',
-                usedAt: baseDate.subtract(10, 'minutes').toDate(), // Used 10 minutes ago
-                usedIpAddress: '192.168.1.170',
-                usedUserAgent: 'Mozilla/5.0 (Linux; Android 13; SM-G973F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/537.36',
-                numberOfUseAttempts: 1
-            }
-        ] satisfies Prisma.RefreshTokenCreateManyInput[];
-    }
 
     redirects(index: number | string) {
         return [

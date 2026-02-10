@@ -136,7 +136,6 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
             cookieList,
             account,
             logData,
-            idempotencyKey: idempotencyKey ?? undefined,
         }).catch(async (e) => {
             await consumeIpLimiter(ipAddress, 1, agent);
             throw e;
@@ -165,11 +164,11 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
         }
 
         if (dayjs().subtract(AuthConfig.inactiveCutoff, "minutes").isAfter(dbToken.issuedAt)) {
-            // INACTIVE SESSION: EOL needs to be at least 4 hours, 
+            // INACTIVE SESSION: EOL needs to be at least 2 hours, 
             // otherwise reauth required so it does not happen in the middle of the session
-            if (dayjs().add(AuthConfig.inactiveRefreshMinAge, "hours").isAfter(endOfLife)) {
+            if (dayjs().add(AuthConfig.inactiveRefreshMinAge, "minutes").isAfter(endOfLife)) {
                 throw new AuthenticationException(
-                    "Inactive Session: EOL is under 4 hours away. Reauth required",
+                    `Inactive Session: EOL is under ${AuthConfig.inactiveRefreshMinAge} minutes away. Reauth required`,
                     "AuthenticationFailed",
                     LogDebugLevel.INFO,
                     logData,

@@ -28,7 +28,7 @@ afterAll(async () => {
 
 // Mock authentication for DAL integration tests
 jest.mock('@/lib/ironSession', () => ({
-    getIronSession: () => {
+    getIronSession: jest.fn(() => {
         const role = global.__ROLE__ ?? AuthRole.materialManager;
         const organisationId = global.__ORGANISATION__ ?? staticData.organisationId;
         return {
@@ -40,7 +40,7 @@ jest.mock('@/lib/ironSession', () => ({
                 role: role,
             }
         }
-    },
+    }),
 }));
 
 // Mock Next.js cache functions for DAL integration tests
