@@ -13,6 +13,7 @@ test.describe("Storage Unit Admin Overview", () => {
     test.afterEach(async ({ staticData: {cleanup} }) => {
         await cleanup.storageUnits();
     });
+
     test('shows storage unit list', async ({ page, staticData: { data } }) => {
         const storageUnitRows = await page.locator('tbody tr').all();
         expect(storageUnitRows).toHaveLength(data.storageUnits.length);
@@ -55,6 +56,7 @@ test.describe("Storage Unit Admin Overview", () => {
                 await input.fill('XX Storage Unit');
                 await input.press('Enter');
             });
+
             await test.step('check updated ui', async () => {
                 await expect(page.getByRole('heading', { name: 'XX Storage Unit' })).toBeVisible();
 
@@ -109,6 +111,7 @@ test.describe("Storage Unit Admin Overview", () => {
                 await reserveCheckbox.check();
                 await saveButton.click();
             });
+
             await test.step('check updated ui', async () => {
                 await expect(page.getByRole('heading', { name: data.storageUnits[0].name })).toBeVisible();
                 await expect(descriptionInput).toHaveValue('Updated Description');
@@ -242,6 +245,7 @@ test.describe("Storage Unit Admin Overview", () => {
                 );
             });
         });
+
         test('cancel create storageunit', async ({ page }) => {
             const offcanvas = page.getByRole('dialog');
             const createButton = page.getByRole('button', { name: /create/i });
@@ -263,6 +267,7 @@ test.describe("Storage Unit Admin Overview", () => {
         test('remove uniformItem from Storageunit', async ({ page, staticData: { ids } }) => {
             const rows = page.locator(`tbody tr`);
             const offcanvas = page.getByRole('dialog');
+
             await test.step('open offcanvas', async () => {
                 await rows.nth(0).getByRole('button', { name: /open/ }).click();
 
@@ -283,6 +288,7 @@ test.describe("Storage Unit Admin Overview", () => {
                 await expect(uniformRows.getByText(/1109/i)).toBeVisible();
                 await expect(rows.nth(0).getByRole('cell').nth(4)).toHaveText('1');
             });
+
             await test.step('check db update', async () => {
                 const uniform = await prisma.uniform.findFirst({
                     where: { id: ids.uniformIds[0][8] },
@@ -313,6 +319,7 @@ test.describe("Storage Unit Admin Overview", () => {
                 await addUniformInput.fill("1110");
                 await offcanvas.getByRole('option', { name: /1110/i }).click();
             });
+
             await test.step('validate ui', async () => {
                 await expect(uniformRows).toHaveCount(3);
                 await expect(uniformRows.getByText(/1108/i)).toBeVisible();
@@ -320,6 +327,7 @@ test.describe("Storage Unit Admin Overview", () => {
                 await expect(uniformRows.getByText(/1110/i)).toBeVisible();
                 await expect(rows.nth(0).getByRole('cell').nth(4)).toHaveText('3');
             });
+
             await test.step('check db update', async () => {
                 const uniform = await prisma.uniform.findFirst({
                     where: { id: ids.uniformIds[0][10] },
@@ -356,11 +364,13 @@ test.describe("Storage Unit Admin Overview", () => {
                 await warningMessage.getByRole('button', { name: /speichern/i }).click();
                 await expect(warningMessage).toBeHidden();
             });
+
             await test.step('validate ui', async () => {
                 await expect(uniformRows).toHaveCount(6);
                 await expect(uniformRows.getByText(/1110/i)).toBeVisible();
                 await expect(rows.nth(1).getByRole('cell').nth(4)).toHaveText('6');
             });
+
             await test.step('check db update', async () => {
                 const uniform = await prisma.uniform.findFirst({
                     where: { id: ids.uniformIds[0][10] },

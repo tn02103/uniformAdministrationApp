@@ -750,7 +750,7 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     where: {
                         active: true,
                         recdelete: null,
-                        fk_assosiation: 'test-organisation-id'
+                        organisationId: 'test-organisation-id'
                     },
                     select: {
                         id: true,

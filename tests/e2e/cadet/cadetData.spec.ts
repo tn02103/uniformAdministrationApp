@@ -85,6 +85,7 @@ test.describe(() => {
     test.beforeEach(async ({ page, staticData }) => {
         await page.goto(`/de/app/cadet/${staticData.ids.cadetIds[1]}`);
     });
+
     test.afterEach(async ({ staticData: { cleanup } }) => {
         await cleanup.cadet();
     });
@@ -99,6 +100,7 @@ test.describe(() => {
                 expect.soft(dataComponent.div_active).toHaveText(t.common.active.true),
             ]);
         });
+
         await test.step('validate elements not editable', async () => {
             await Promise.all([
                 expect.soft(dataComponent.txt_firstname).toBeDisabled(),
@@ -111,6 +113,7 @@ test.describe(() => {
 
     test('delete', async ({ page, cadetDetailPage, messagePopup, staticData: { ids } }) => {
         const listPage = new CadetListPage(page);
+
         await test.step('validate popup and save', async () => {
             await cadetDetailPage.btn_menu.click();
             await expect(cadetDetailPage.btn_menu_delete).toBeVisible();
@@ -132,6 +135,7 @@ test.describe(() => {
             await page.waitForURL(/app\/cadet$/);
             await expect.soft(listPage.div_cadet(ids.cadetIds[1])).toBeHidden();
         });
+
         await test.step('validate db', async () => {
             const date = new Date();
             date.setUTCHours(0, 0, 0, 0);
@@ -151,6 +155,7 @@ test.describe(() => {
             active: false,
             comment: 'comment for testing',
         }
+
         await test.step('check editable', async () => {
             await dataComponent.btn_edit.click();
 
@@ -165,11 +170,13 @@ test.describe(() => {
                 expect.soft(dataComponent.btn_cancel).toBeVisible(),
             ]);
         });
+
         await test.step('validate lbl_active', async () => {
             await expect.soft(dataComponent.lbl_active).toHaveText(t.common.active.true);
             await dataComponent.chk_active.click();
             await expect.soft(dataComponent.lbl_active).toHaveText(t.common.active.false);
         })
+
         await test.step('change data & cancel', async () => {
             await dataComponent.txt_firstname.fill(testData.firstname);
             await dataComponent.txt_lastname.fill(testData.lastname);
@@ -187,6 +194,7 @@ test.describe(() => {
                 expect.soft(dataComponent.div_active).toHaveText(t.common.active.true),
             ]);
         });
+
         await test.step('change data & save', async () => {
             await dataComponent.btn_edit.click();
             await dataComponent.txt_firstname.fill(testData.firstname);
@@ -206,6 +214,7 @@ test.describe(() => {
                 expect.soft(dataComponent.div_active).toHaveText(t.common.active.false),
             ]);
         });
+
         await test.step('validate db', async () => {
             const dbCadet = await prisma.cadet.findUniqueOrThrow({
                 where: { id: cadet.id }

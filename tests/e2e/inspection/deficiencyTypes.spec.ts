@@ -19,6 +19,7 @@ const test = adminTest.extend<Fixture>({
 test.beforeEach(async ({ page }) => {
     await page.goto(`/de/app/inspection/deficiencyType`);
 });
+
 test.afterEach(async ({ staticData }) => {
     await staticData.cleanup.inspection()
 });
@@ -26,6 +27,7 @@ test.afterEach(async ({ staticData }) => {
 test.describe('<DeficiencyTypeAdministrationPage />', () => {
     test('E2E060401: validate typelist', async ({ typeComponent, staticData: { data } }) => {
         await expect(typeComponent.div_typeList).toHaveCount(data.deficiencyTypes.length);
+
         await test.step('sortorder', async () => {
             await Promise.all([
                 expect.soft(typeComponent.div_typeList.nth(0)).toHaveAttribute('data-testid', `div_type_${data.deficiencyTypes[1].id}`),
@@ -139,6 +141,7 @@ test.describe('<DeficiencyTypeAdministrationPage />', () => {
                 expect.soft(rowComponent.sel_relation).toBeHidden(),
             ]);
         });
+
         await test.step('validate db', async () => {
             await expect(async () => {
                 const dbData = await prisma.deficiencyType.findUnique({
@@ -151,6 +154,7 @@ test.describe('<DeficiencyTypeAdministrationPage />', () => {
             }).toPass();
         });
     });
+
     test('E2E060403: edit used type', async ({ typeComponent, staticData }) => {
         const type = staticData.data.deficiencyTypes[0];
         const rowComponent = typeComponent.getRowComponent(type.id);
@@ -175,6 +179,7 @@ test.describe('<DeficiencyTypeAdministrationPage />', () => {
             await expect(rowComponent.txt_name).toHaveValue(type.name);
         });
     });
+
     test('E2E060404: create type', async ({ typeComponent, staticData }) => {
         const rowComponent = typeComponent.getRowComponent('new');
 
@@ -184,6 +189,7 @@ test.describe('<DeficiencyTypeAdministrationPage />', () => {
             await expect(rowComponent.div_row).toBeVisible();
             await expect.soft(rowComponent.txt_name).toBeEditable();
         });
+
         await test.step('create type', async () => {
             await rowComponent.txt_name.fill('NewType');
             await rowComponent.sel_dependent.selectOption('uniform');
@@ -192,6 +198,7 @@ test.describe('<DeficiencyTypeAdministrationPage />', () => {
             await expect(rowComponent.div_row).toBeHidden();
             await expect(typeComponent.div_typeList).toHaveCount(staticData.data.deficiencyTypes.length + 1);
         });
+
         const dbType = await prisma.deficiencyType.findFirst({
             where: {
                 name: "NewType",
@@ -199,6 +206,7 @@ test.describe('<DeficiencyTypeAdministrationPage />', () => {
             }
         });
         expect(dbType).not.toBeNull();
+
         await test.step('validate ui', async () => {
             const rowIdComponent = typeComponent.getRowComponent(dbType!.id);
             await Promise.all([
@@ -209,6 +217,7 @@ test.describe('<DeficiencyTypeAdministrationPage />', () => {
                 expect.soft(rowIdComponent.div_amount_resolved).toHaveText('0'),
             ]);
         });
+
         await test.step('validate db', async () => {
             expect(dbType).toStrictEqual(expect.objectContaining({
                 name: "NewType",
@@ -220,8 +229,10 @@ test.describe('<DeficiencyTypeAdministrationPage />', () => {
             }));
         });
     });
+
     test('E2E060405: deactivate type', async ({ typeComponent, staticData }) => {
         const rowComponent = typeComponent.getRowComponent(staticData.ids.deficiencyTypeIds[1]);
+
         await test.step('deactivate type Cadet and validate ui', async () => {
             await expect(typeComponent.div_typeList.nth(0)).toHaveAttribute('data-testid', `div_type_${rowComponent.id}`);
             await rowComponent.btn_deactivate.click();
@@ -229,6 +240,7 @@ test.describe('<DeficiencyTypeAdministrationPage />', () => {
             await expect(typeComponent.div_typeList.nth(5)).toHaveAttribute('data-testid', `div_type_${rowComponent.id}`);
             await expect(rowComponent.div_disabled).toBeVisible();
         });
+
         await test.step('validate db', async () => {
             const dbType = await prisma.deficiencyType.findUnique({
                 where: { id: rowComponent.id },
@@ -238,6 +250,7 @@ test.describe('<DeficiencyTypeAdministrationPage />', () => {
             expect(dbType!.disabledUser).toBe('test4');
         });
     });
+
     test('E2E060406: delete type', async ({ typeComponent, page, staticData }) => {
         const popup = new MessagePopupComponent(page);
         const rowComponent = typeComponent.getRowComponent(staticData.ids.deficiencyTypeIds[4]);
@@ -248,11 +261,13 @@ test.describe('<DeficiencyTypeAdministrationPage />', () => {
             await expect(popup.div_popup).toBeVisible();
             await expect(popup.div_header).toHaveClass(/bg-warning/);
         });
+
         await test.step('delete and validate ui', async () => {
             await popup.btn_save.click();
             await expect(popup.div_popup).toBeHidden();
             await expect(rowComponent.div_row).toBeHidden();
         });
+
         await test.step('validate type and def deleted', async () => {
             const [dbType, dbDeficiency] = await prisma.$transaction([
                 prisma.deficiencyType.findUnique({
@@ -266,6 +281,7 @@ test.describe('<DeficiencyTypeAdministrationPage />', () => {
             expect(dbDeficiency).toBeNull();
         });
     });
+
     test('E2E060407: reactivate type', async ({ typeComponent, staticData }) => {
         const rowComponent = typeComponent.getRowComponent(staticData.ids.deficiencyTypeIds[4]);
         rowComponent.btn_reactivate.click();
@@ -279,9 +295,11 @@ test.describe('<DeficiencyTypeAdministrationPage />', () => {
         expect(dbType!.disabledDate).toBeNull();
         expect(dbType!.disabledUser).toBeNull();
     });
+
     test('E2E060408: validate formComponents', async ({ typeComponent }) => {
         const rowComponent = typeComponent.getRowComponent('new');
         await typeComponent.btn_create.click();
+
         await test.step('name formvalidation', async () => {
             const testSets = newDescriptionValidationTests({ minLength: 1, maxLength: 20 })
             for (const set of testSets) {
@@ -304,6 +322,7 @@ test.describe('<DeficiencyTypeAdministrationPage />', () => {
             await expect(options[0]).toHaveAttribute('value', 'cadet');
             await expect(options[1]).toHaveAttribute('value', 'uniform');
         });
+
         await test.step('validate relation', async () => {
             await test.step('for dependen cadet', async () => {
                 await rowComponent.sel_dependent.selectOption('cadet');

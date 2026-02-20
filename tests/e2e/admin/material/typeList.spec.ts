@@ -19,9 +19,11 @@ const test = adminTest.extend<Fixture>({
     materialListComponent: async ({ page }, use) => use(new MaterialListComponent(page)),
     editMaterialPopup: async ({ page }, use) => use(new EditMaterialPopupComponent(page)),
 });
+
 test.beforeEach(async ({ page, staticData }) => {
     await page.goto(`/de/app/admin/material?selectedGroupId=${staticData.ids.materialGroupIds[0]}`);
 });
+
 test.afterEach(async ({ staticData: { cleanup } }) => {
     await cleanup.materialConfig();
 });
@@ -62,6 +64,7 @@ test('validate moveUp', async ({ page, materialListComponent, staticData: { ids 
         const divList = page.locator('div[data-testid^="div_material_"]');
         await expect.soft(divList.nth(0)).toHaveAttribute('data-testid', `div_material_${ids.materialIds[1]}`);
     });
+
     await test.step('validate db', async () => {
         const [initial, seccond] = await prisma.$transaction([
             prisma.material.findUnique({
@@ -79,6 +82,7 @@ test('validate moveUp', async ({ page, materialListComponent, staticData: { ids 
     });
 
 });
+
 test('validate moveDown', async ({ page, materialListComponent, staticData: { ids } }) => {
     await test.step('do action and validate ui', async () => {
         await materialListComponent.btn_material_moveDown(ids.materialIds[1]).click();
@@ -86,6 +90,7 @@ test('validate moveDown', async ({ page, materialListComponent, staticData: { id
         const divList = page.locator('div[data-testid^="div_material_"]');
         await expect.soft(divList.nth(2)).toHaveAttribute('data-testid', `div_material_${ids.materialIds[1]}`);
     });
+
     await test.step('validate db', async () => {
         const [initial, seccond] = await prisma.$transaction([
             prisma.material.findUnique({
@@ -102,6 +107,7 @@ test('validate moveDown', async ({ page, materialListComponent, staticData: { id
         expect.soft(seccond?.sortOrder).toBe(1);
     });
 });
+
 test('validate create', async ({ materialListComponent, editMaterialPopup, staticData: { ids } }) => {
     await test.step('create', async () => {
         await materialListComponent.btn_create.click();
@@ -116,12 +122,14 @@ test('validate create', async ({ materialListComponent, editMaterialPopup, stati
         await editMaterialPopup.btn_save.click();
         await expect(editMaterialPopup.div_popup).toBeHidden();
     });
+
     const dbMaterial = await prisma.material.findFirst({
         where: {
             fk_materialGroup: ids.materialGroupIds[0],
             typename: "newType",
         },
     });
+
     await test.step('validate db', async () => {
         expect(dbMaterial).not.toBeNull();
         expect(dbMaterial).toStrictEqual(expect.objectContaining({
@@ -133,6 +141,7 @@ test('validate create', async ({ materialListComponent, editMaterialPopup, stati
             recdeleteUser: null,
         }));
     });
+
     await test.step('validate ui', async () => {
         const id = dbMaterial!.id
         await expect(materialListComponent.div_material(id)).toBeVisible();
@@ -141,6 +150,7 @@ test('validate create', async ({ materialListComponent, editMaterialPopup, stati
         await expect(materialListComponent.div_material_issuedQuantity(id)).toHaveText('0');
     });
 });
+
 test('validate edit', async ({ materialListComponent, editMaterialPopup, staticData: { data } }) => {
     const material = data.materialTypes[0];
 
@@ -156,6 +166,7 @@ test('validate edit', async ({ materialListComponent, editMaterialPopup, staticD
             expect.soft(editMaterialPopup.txt_targetQuantity).toHaveValue(String(material.targetQuantity)),
         ]);
     });
+
     await test.step('change data', async () => {
         await editMaterialPopup.txt_name.fill('newName');
         await editMaterialPopup.txt_actualQuantity.fill('99');
@@ -171,6 +182,7 @@ test('validate edit', async ({ materialListComponent, editMaterialPopup, staticD
             expect.soft(materialListComponent.div_material_targetQuantity(material.id)).toHaveText('98'),
         ]);
     });
+
     await test.step('validate dbChange', async () => {
         const dbMaterial = await prisma.material.findUniqueOrThrow({ where: { id: material.id } });
         expect.soft(dbMaterial.typename).toBe('newName');
@@ -211,6 +223,7 @@ test('validate delete', async ({ page, materialListComponent, staticData: { data
 
         await expect(materialListComponent.div_material(material.id)).toBeHidden();
     });
+
     const [dbIssued, dbMaterial] = await prisma.$transaction([
         prisma.materialIssued.findFirst({
             where: {
@@ -222,6 +235,7 @@ test('validate delete', async ({ page, materialListComponent, staticData: { data
             where: { id: material.id }
         }),
     ]);
+
     await test.step('validate DB: material returned', async () => {
         expect(dbIssued).not.toBeNull();
         expect(dbIssued?.dateReturned).not.toBeNull();
@@ -234,10 +248,12 @@ test('validate delete', async ({ page, materialListComponent, staticData: { data
     });
 
 });
+
 test.describe('validate formValidation', () => {
     test.beforeEach(async ({ materialListComponent, staticData: { ids } }) => {
         await materialListComponent.btn_material_edit(ids.materialIds[0]).click();
     });
+
     test('name', async ({ page, editMaterialPopup }) => {
         const tests: ValidationTestType[] = newDescriptionValidationTests({
             minLength: 1,
@@ -254,6 +270,7 @@ test.describe('validate formValidation', () => {
                 }
             });
         }
+
         await test.step('Name duplication', async () => {
             await editMaterialPopup.txt_name.fill('Typ1-2');
             await expect(editMaterialPopup.err_name).toBeHidden();
@@ -266,6 +283,7 @@ test.describe('validate formValidation', () => {
             await expect(editMaterialPopup.div_popup).toBeHidden();
         });
     });
+
     test('actualQuantity', async ({ page, editMaterialPopup }) => {
         const tests = numberValidationTests({
             min: 0,
@@ -283,6 +301,7 @@ test.describe('validate formValidation', () => {
             });
         }
     });
+
     test('targetQuantity', async ({ page, editMaterialPopup }) => {
         const tests = numberValidationTests({
             min: 0,

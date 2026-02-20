@@ -13,6 +13,7 @@ const test = adminTest.extend<Fixture>({
     userPage: ({ page }, use) => use(new UserAdministrationPage(page)),
     users: async ({ staticData }, use) => use(await staticData.data.users() as User[]),
 });
+
 test.beforeEach(async ({ page }) => {
     await page.goto('/de/app/admin/user');
 })
@@ -21,6 +22,7 @@ managerTest('validate Manager not authorized', async ({ page }) => {
     await page.goto('/de/app/admin/user');
     await expect(page.getByTestId('div_403Page')).toBeVisible();
 });
+
 test('validate Data', async ({ userPage, users }) => {
     await Promise.all(
         users.map(async (user) =>

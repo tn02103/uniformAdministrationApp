@@ -30,6 +30,7 @@ const test = adminTest.extend<Fixture>({
         });
     }
 });
+
 test.beforeEach(async ({ page, createPage }) => {
     await page.goto(`/de/app/uniform/new`)
     await createPage.btn_tab_generateIds.click();
@@ -42,6 +43,7 @@ test.describe('validate Inputs', () => {
 
         await expect(generateStep1.txt_amount_default).toBeVisible();
     });
+
     test('with sizes Input', async ({ createPage: { configurator, generateStep1 }, staticData: { ids } }) => {
         await test.step('sizelist Liste1', async () => {
             await configurator.sel_type.selectOption(ids.uniformTypeIds[0]);
@@ -54,6 +56,7 @@ test.describe('validate Inputs', () => {
                 expect.soft(generateStep1.txt_amount_size(ids.sizeIds[16])).toBeHidden(), // Größe16
             ]);
         });
+
         await test.step('sizelist Liste2', async () => {
             await generateStep1.btn_back.click();
             await configurator.sel_generation.selectOption(ids.uniformGenerationIds[2]);
@@ -65,6 +68,7 @@ test.describe('validate Inputs', () => {
                 expect.soft(generateStep1.txt_amount_size(ids.sizeIds[16])).toBeHidden(), // Größe16
             ]);
         });
+
         await test.step('sizelist Liste3', async () => {
             await generateStep1.btn_back.click();
             await configurator.sel_generation.selectOption(ids.uniformGenerationIds[3]);
@@ -77,6 +81,7 @@ test.describe('validate Inputs', () => {
             ]);
         });
     });
+
     test('formValidation', async ({ createPage: { configurator, generateStep1 }, staticData: { ids } }) => {
         await configurator.sel_type.selectOption(ids.uniformTypeIds[3]);
         await configurator.btn_continue.click();
@@ -93,6 +98,7 @@ test.describe('validate Inputs', () => {
             });
         }
     });
+
     test('max and min Numbers', async ({ createPage: { configurator, generateStep1 }, staticData: { ids } }) => {
         await configurator.sel_type.selectOption(ids.uniformTypeIds[0]);
         await configurator.sel_generation.selectOption(ids.uniformGenerationIds[2]);
@@ -104,22 +110,26 @@ test.describe('validate Inputs', () => {
 
             await expect(generateStep1.err_itemCount).toBeHidden();
         });
+
         await test.step('under min', async () => {
             await generateStep1.txt_amount_size(ids.sizeIds[5]).fill('0'); // 5
             await expect(generateStep1.err_itemCount).toBeVisible();
         });
+
         await test.step('under max', async () => {
             await generateStep1.txt_amount_size(ids.sizeIds[5]).fill('50'); // 5
             await generateStep1.txt_amount_size(ids.sizeIds[10]).fill('49'); // 10
 
             await expect(generateStep1.err_itemCount).toBeHidden();
         });
+
         await test.step('over max', async () => {
             await generateStep1.txt_amount_size(ids.sizeIds[5]).fill('50'); // 5
             await generateStep1.txt_amount_size(ids.sizeIds[10]).fill('50'); // 10
 
             await expect(generateStep1.err_itemCount).toBeVisible();
         });
+
         await test.step('over max with negative', async () => {
             await generateStep1.txt_amount_size(ids.sizeIds[5]).fill('101'); // 5
             await generateStep1.txt_amount_size(ids.sizeIds[10]).fill('-4'); // 10
@@ -128,6 +138,7 @@ test.describe('validate Inputs', () => {
         });
     });
 });
+
 test('validate Generator nonContinuous', async ({ createPage: { configurator, generateStep1, generateStep2 }, staticData: { ids } }) => {
     await test.step('preparation', async () => {
         await configurator.sel_type.selectOption(ids.uniformTypeIds[0]);
@@ -160,6 +171,7 @@ test('validate Generator nonContinuous', async ({ createPage: { configurator, ge
         ]);
     });
 });
+
 test('validate Generator continuous', async ({ createPage: { configurator, generateStep1, generateStep2 }, staticData: { ids } }) => {
     await test.step('preparation', async () => {
         await configurator.sel_type.selectOption(ids.uniformTypeIds[0]);

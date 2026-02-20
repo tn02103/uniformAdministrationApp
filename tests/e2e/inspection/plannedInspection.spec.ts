@@ -10,7 +10,9 @@ type Fixture = {
 const test = adminTest.extend<Fixture>({
     plannedComponent: ({ page }, use) => use(new PlannedInspectionTestComponent(page)),
 });
+
 test.beforeEach(({ page }) => page.goto('/de/app/inspection'));
+
 test.afterEach(async ({ staticData: { cleanup } }) => {
     await cleanup.inspection();
 });
@@ -25,6 +27,7 @@ test.describe('Planned Inspection Overview', () => {
 
     test('create Inspection', async ({ page, staticData: { organisationId } }) => {
         const testDate = dayjs().add(30, "day").locale('de');
+
         await test.step('create Inspection', async () => {
             const row = page.getByRole('row', { name: /newInspection/i });
             const dateField = row.getByRole('textbox', { name: /datum/i });
@@ -40,6 +43,7 @@ test.describe('Planned Inspection Overview', () => {
             await page.getByRole('button', { name: /save/i }).click();
             await expect(row).toBeHidden();
         });
+
         await test.step('check ui', async () => {
             const rows = page.getByRole('row');
             await expect(rows).toHaveCount(5);
@@ -52,6 +56,7 @@ test.describe('Planned Inspection Overview', () => {
             await expect(row.getByRole('button', { name: /edit/i })).toBeVisible();
             await expect(row.getByRole('button', { name: /delete/i })).toBeVisible();
         });
+
         await test.step('check db', async () => {
             const inspection = await prisma.inspection.findFirst({
                 where: {
@@ -72,6 +77,7 @@ test.describe('Planned Inspection Overview', () => {
 
     test('edit Inspection', async ({ page, staticData: { ids, organisationId } }) => {
         const testDate = dayjs().add(30, "day").locale('de');
+
         await test.step('edit Inspection', async () => {
             const row = page.getByRole('row').nth(1);
             const dateField = row.getByRole('textbox', { name: /datum/i });
@@ -121,6 +127,7 @@ test.describe('Planned Inspection Overview', () => {
 
     test('delete Inspection', async ({ page, staticData: { ids, data } }) => {
         const row = page.getByRole('row').filter({ hasText: data.inspections[2].name }).nth(0);
+
         await test.step('delete Inspection', async () => {
             await row.getByRole('button', { name: /delete/i }).click();
             await expect(row).toBeVisible();
@@ -130,6 +137,7 @@ test.describe('Planned Inspection Overview', () => {
             await dialog.getByRole('button', { name: /Löschen/i }).click();
             await expect(row).toBeHidden();
         });
+
         await test.step('check db', async () => {
             const inspection = await prisma.inspection.findFirst({
                 where: {
@@ -142,12 +150,14 @@ test.describe('Planned Inspection Overview', () => {
 
     test('start Inpsection', async ({ page, staticData: { ids, data } }) => {
         const row = page.getByRole('row').filter({ hasText: "today" }).nth(0);
+
         await test.step('start Inspection', async () => {
             await row.getByRole('button', { name: /start/i }).click();
             await expect(row).toBeVisible();
             await expect(row.getByTestId('lbl_badge')).toHaveText(/Aktiv/i);
             await expect(row.getByRole('button', { name: /finish inspection/i })).toBeVisible();
         });
+
         await test.step('check db', async () => {
             const inspection = await prisma.inspection.findFirst({
                 where: {
@@ -235,6 +245,7 @@ test.describe('Planned Inspection Overview', () => {
                 },
             });
         });
+
         await test.step('finish expired Inspection', async () => {
             const row = page.getByRole('row').filter({ hasText: "expired" }).nth(0);
             await expect(row).toBeVisible();
@@ -289,6 +300,7 @@ test.describe('Planned Inspection Overview', () => {
                 },
             });
         });
+
         await test.step('restart todays Inspection', async () => {
             const row = page.getByRole('row').filter({ hasText: "today" }).nth(0);
             await expect(row).toBeVisible();
@@ -317,16 +329,19 @@ test.describe('Planned Inspection Overview', () => {
         });
     });
 });
+
 test.describe('Planned Inspection deregistrations', () => {
 
     test('opends Offcanvas with correct data', async ({ page, staticData: { data } }) => {
         const row = page.getByRole('row').filter({ hasText: data.inspections[4].name }).nth(0);
         const offcanvas = page.getByRole('dialog', { name: /Abmeldungen für /i });
+
         await test.step('open Ovcanvas', async () => {
             await row.getByRole('button', { name: /open deregistration list/i }).click();
             await expect(row).toBeVisible();
             await expect(offcanvas).toBeVisible();
         });
+
         await test.step('check Ovcanvas', async () => {
             const tableBody = offcanvas.getByTestId('deregistration-table-body');
             const rows = tableBody.locator('tr');
@@ -338,6 +353,7 @@ test.describe('Planned Inspection deregistrations', () => {
             await expect(rows.nth(2)).toContainText(data.cadets[6].firstname);
             await expect(rows.nth(2)).toContainText(data.cadets[6].lastname);
         });
+
         await test.step('close Ovcanvas', async () => {
             await offcanvas.getByRole('button', { name: /close/i }).click();
             await expect(offcanvas).toBeHidden();
@@ -347,11 +363,13 @@ test.describe('Planned Inspection deregistrations', () => {
     test('remove deregistration', async ({ page, staticData: { ids, data } }) => {
         const row = page.getByRole('row').filter({ hasText: data.inspections[4].name }).nth(0);
         const offcanvas = page.getByRole('dialog', { name: /Abmeldungen für /i });
+
         await test.step('open Ovcanvas', async () => {
             await row.getByRole('button', { name: /open deregistration list/i }).click();
             await expect(row).toBeVisible();
             await expect(offcanvas).toBeVisible();
         });
+
         await test.step('remove deregistration', async () => {
             const tableBody = offcanvas.getByTestId('deregistration-table-body');
             const row = tableBody.locator('tr').filter({ hasText: data.cadets[9].firstname }).nth(0);
@@ -366,6 +384,7 @@ test.describe('Planned Inspection deregistrations', () => {
             await expect(row).toBeHidden();
             await expect(tableBody.locator('tr')).toHaveCount(2);
         });
+
         await test.step('check db', async () => {
             const [deregList, cadetDereg] = await prisma.$transaction([
                 prisma.deregistration.findMany({
@@ -390,6 +409,7 @@ test.describe('Planned Inspection deregistrations', () => {
         const offcanvas = page.getByRole('dialog', { name: /Abmeldungen für /i });
         const tableBody = offcanvas.getByTestId('deregistration-table-body');
         const rows = tableBody.locator('tr');
+
         await test.step('open Ovcanvas', async () => {
             await row.getByRole('button', { name: /open deregistration list/i }).click();
             await expect(row).toBeVisible();
@@ -420,6 +440,7 @@ test.describe('Planned Inspection deregistrations', () => {
             await expect(autocompleteGroup.getByRole('listbox')).toBeHidden();
             await expect(rows).toHaveCount(4);
         });
+
         await test.step('check db', async () => {
             const [deregList, cadetDereg] = await prisma.$transaction([
                 prisma.deregistration.findMany({
