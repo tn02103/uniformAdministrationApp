@@ -27,7 +27,7 @@ exports[`<UniformGenerationTable /> renders the component 1`] = `
           <th
             class="d-none d-sm-table-cell"
           >
-            common.uniform.generation.outdated
+            common.uniform.generation.isReserve
           </th>
           <th>
             common.uniform.sizelist.label
@@ -41,7 +41,7 @@ exports[`<UniformGenerationTable /> renders the component 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-plus "
+                class="svg-inline--fa fa-plus"
                 data-icon="plus"
                 data-prefix="fas"
                 role="img"
@@ -71,7 +71,7 @@ exports[`<UniformGenerationTable /> renders the component 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-bars "
+                class="svg-inline--fa fa-bars"
                 data-icon="bars"
                 data-prefix="fas"
                 role="img"
@@ -106,7 +106,7 @@ exports[`<UniformGenerationTable /> renders the component 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-arrow-up-right-from-square "
+                class="svg-inline--fa fa-arrow-up-right-from-square"
                 data-icon="arrow-up-right-from-square"
                 data-prefix="fas"
                 role="img"
@@ -132,7 +132,7 @@ exports[`<UniformGenerationTable /> renders the component 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-bars "
+                class="svg-inline--fa fa-bars"
                 data-icon="bars"
                 data-prefix="fas"
                 role="img"
@@ -167,7 +167,7 @@ exports[`<UniformGenerationTable /> renders the component 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-arrow-up-right-from-square "
+                class="svg-inline--fa fa-arrow-up-right-from-square"
                 data-icon="arrow-up-right-from-square"
                 data-prefix="fas"
                 role="img"
@@ -193,7 +193,7 @@ exports[`<UniformGenerationTable /> renders the component 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-bars "
+                class="svg-inline--fa fa-bars"
                 data-icon="bars"
                 data-prefix="fas"
                 role="img"
@@ -228,7 +228,7 @@ exports[`<UniformGenerationTable /> renders the component 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-arrow-up-right-from-square "
+                class="svg-inline--fa fa-arrow-up-right-from-square"
                 data-icon="arrow-up-right-from-square"
                 data-prefix="fas"
                 role="img"

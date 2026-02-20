@@ -72,7 +72,7 @@ export default {
             generation: {
                 "label#one": "Generation",
                 "label#other": "Generationen",
-                outdated: "veraltet",
+                isReserve: "Reserve",
             },
             size: "Größe",
             size_other: "Sizes",
@@ -83,7 +83,7 @@ export default {
             owner: "Besitzer",
             state: {
                 active: "Aktiv",
-                reserve: "Reserve"
+                isReserve: "Reserve"
             },
             type: {
                 "type#one": "Uniformtyp",
@@ -301,7 +301,7 @@ export default {
             "alert.noItemFound": "Es existiert kein Uniformteil mit der Nummer {number}. Möchten Sie es anlegen?",
             "alert.itemAlreadyOwned": "Das ausgewählte Uniformteil ist bereits an diese Person ausgegeben.",
             "alert.storageUnit": "Das ausgewählte Uniformteil ist der Lagereinheit \"{unit}\" zugeordnet.",
-            "alert.reserve": "Das ausgewählte Uniformteil ist als Reserve markiert.",
+            "alert.isReserve": "Das ausgewählte Uniformteil ist als Reserve markiert.",
             "button.changeOwner": "Besitzer ändern",
             "button.replace": "Ersetzen",
             "button.issue": "Ausgeben",
@@ -489,6 +489,7 @@ export default {
                 uniform: "Uniform",
                 size: "Größen",
                 material: "Materialien",
+                dashboard: "Dashboard"
             },
             userOverview: "Zugänge",
             redirects: "Weiterleitungen",
@@ -653,6 +654,39 @@ export default {
                 'message#other': "Do you really want to delete the type? This will also delete all {count} existing defects. This action cannot be undone.",
             },
         },
+        dashboard: {
+            "header.page": "Dashboard",
+            "header.uniformCounts": "Anzahlen der Uniformteile",
+            "header.uniformCountsByType": "Verteilung nach Typ",
+            "header.uniformCountsBySize": "Verteilung nach Größe für {type}",
+            "label.selectedType": "Ausgewählter Typ:",
+            "label.exporting": "Exportiere...",
+            "label.export.uniformOverview": "Uniformübersicht Exportieren",
+            charts: {
+                "total": "Gesamt",
+                available: {
+                    short: "Verfügbar",
+                    long: "Verfügbar (Aktiv, Nicht Ausgegeben)"
+                },
+                issued: {
+                    short: "Ausgegeben",
+                    long: "Ausgegeben (Aktiv, Derzeit Ausgegeben)"
+                },
+                reserves: {
+                    short: "Reserven",
+                    long: "Reserven (Inaktiv, Nicht Ausgegeben)"
+                },
+                issuedReserves: {
+                    short: "Ausgegebene Reserven",
+                    long: "Ausgegebene Reserven (Inaktiv, Derzeit Ausgegeben)"
+                },
+                missing: {
+                    short: "Fehlend",
+                    long: "Fehlend (Sollte Ausgegeben Sein)"
+                },
+                count: "Anzahl"
+            }
+        }
     },
     inspection: {
         header: {
@@ -733,32 +767,7 @@ export default {
                     header: "Withdraw uniform part",
                     message: "Are you sure you want to withdraw the uniform part {type} {number}?"
                 },
-                issue: {
-                    header: "{type} ausgeben",
-                },
-                replace: {
-                    header: "{type} {number} austauschen",
-                },
-                issueUnknown: "Beim Zuordnen des Uniformteils ist ein unbekanntes Problem aufgetreten.",
-                issuedException: {
-                    header: "Uniformteil vergeben",
-                    message: "Das Uniformteil {type} {number} wurde bereit an den Kadetten {firstname} {lastname} vergeben.",
-                    ownerInactive: "Der Kadett ist nicht aktiv",
-                    option: {
-                        openCadet: "Kadetten öffnen",
-                        changeOwner: "Besitzer wecheln"
-                    }
-                },
-                inactiveException: {
-                    header: "Uniformteil Passiv",
-                    message: "Das Uniformteil {type} {number} ist passiv gesetzt und sollte aus diesem Grund nicht ausgegeben werden. \nSoll das Uniformteil trotzdem dem Kadetten ausgegeben werden?"
-                },
-                nullValueException: {
-                    header: "Uniformteil nicht gefunden",
-                    message: "Das Uniformteil {type} {number} existiert nicht. Soll das Uniformteil neu Angelegt werden?",
-                    createOption: "Uniformteil anlegen"
-                },
-            },
+            },      
         },
         dangerConfirmation: {
             confirmation: {

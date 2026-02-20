@@ -9,7 +9,7 @@ import { z } from "zod";
 export type ItemLabel = {
     id: string;
     label: string;
-    active: boolean;
+    isReserve: boolean;
     type: {
         id: string;
         name: string;
@@ -42,6 +42,7 @@ export const getItemLabels = async (): Promise<ItemLabel[]> => genericSANoDataVa
     },
     include: {
         type: true,
+        generation: true,
         storageUnit: true,
         issuedEntries: {
             where: {
@@ -60,7 +61,7 @@ export const getItemLabels = async (): Promise<ItemLabel[]> => genericSANoDataVa
     id: item.id,
     number: item.number,
     label: `${item.type.name}-${item.number}`,
-    active: item.active,
+    isReserve: item.isReserve || (item.type.usingGenerations && item.generation?.isReserve) || false,
     type: {
         id: item.type.id,
         name: item.type.name,
@@ -136,7 +137,7 @@ const getListWithOwnerPropSchema = z.object({
     orderBy: z.enum(["number", "generation", "size", "comment", "owner"]),
     asc: z.boolean(),
     filter: z.object({
-        active: z.boolean().optional(),
+        isActive: z.boolean().optional(),
         isReserve: z.boolean().optional(),
         issued: z.boolean().optional(),
         notIssued: z.boolean().optional(),
@@ -168,15 +169,38 @@ export const getListWithOwner = async (props: getListWithOwnerProps): Promise<Un
     const generationFilter = filter?.generations ? Object.entries(filter.generations).filter(([, value]) => value).map(([key,]) => key) : [];
     const sizeFilter = filter?.sizes ? Object.entries(filter.sizes).filter(([, value]) => value).map(([key,]) => key) : [];
     const andConditions: Prisma.UniformWhereInput[] = [];
+    const type = await prisma.uniformType.findUnique({
+        where: {
+            id: uniformTypeId,
+            recdelete: null,
+        },
+    });
 
     // Collect all conditions that are not null
-    if (!filter) {
-        sqlFilter["active"] = true;
-    } else {
+    if (filter) {
         if (!filter.isReserve) {
-            sqlFilter["active"] = true;
-        } else if (!filter.active) {
-            sqlFilter["active"] = false;
+            // only active items
+            andConditions.push({
+                isReserve: false,
+                OR: type?.usingGenerations ? [
+                    { generation: { isReserve: false } },
+                    { generation: null },
+                ] : undefined,
+            });
+        } else if (!filter.isActive) {
+            // only reserve items
+            if (type?.usingGenerations) {
+                andConditions.push({
+                    OR: [
+                        { isReserve: true },
+                        { generation: { isReserve: true } },
+                    ],
+                });
+            } else {
+                andConditions.push({
+                    isReserve: true,
+                });
+            }
         }
 
         if (!filter.issued || !filter.notIssued || !filter.inStorageUnit) {
@@ -211,7 +235,7 @@ export const getListWithOwner = async (props: getListWithOwnerProps): Promise<Un
             });
         }
     }
-    if (generationFilter.length > 0) {
+    if (type?.usingGenerations && generationFilter.length > 0) {
         andConditions.push({
             OR: [
                 { generation: { id: { in: generationFilter } } },
@@ -219,7 +243,7 @@ export const getListWithOwner = async (props: getListWithOwnerProps): Promise<Un
             ]
         });
     }
-    if (sizeFilter.length > 0) {
+    if (type?.usingSizes && sizeFilter.length > 0) {
         andConditions.push({
             OR: [
                 { size: { id: { in: sizeFilter } } },

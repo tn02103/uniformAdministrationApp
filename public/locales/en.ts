@@ -72,7 +72,7 @@ export default {
             generation: {
                 "label#one": "Generation",
                 "label#other": "Generations",
-                outdated: "outdated",
+                isReserve: "Reserve",
             },
             size: "Size",
             size_other: "Sizes",
@@ -83,7 +83,7 @@ export default {
             owner: "Owner",
             state: {
                 active: "Active",
-                reserve: "Reserve"
+                isReserve: "Reserve"
             },
             type: {
                 "type#one": "Uniform type",
@@ -300,7 +300,7 @@ export default {
             "alert.noItemFound": "There is no uniform part with the number {number}. Do you want to create it?",
             "alert.itemAlreadyOwned": "The selected uniform part is already issued to this person.",
             "alert.storageUnit": "The selected uniform part is assigned to the storage unit {unit}.",
-            "alert.reserve": "The selected uniform part is marked as reserve.",
+            "alert.isReserve": "The selected uniform part is marked as reserve.",
             "button.changeOwner": "Change owner",
             "button.replace": "Replace",
             "button.issue": "Issue",
@@ -465,7 +465,6 @@ export default {
             "stopInspection.elementLabel": "Enter finishing time",
             "activeInspection.open": "Inspected: {controlled} / {total}",
             "activeInspection.collapsed": "{controlled} / {total}"
-
         },
         links: {
             cadetOverview: "Staff",
@@ -489,6 +488,7 @@ export default {
                 uniform: "Uniform",
                 size: "Sizes",
                 material: "Materials",
+                dashboard: "Dashboard",
             },
             userOverview: "Accesses",
             redirects: "Redirects",
@@ -653,6 +653,39 @@ export default {
                 'message#other': "Should the type really be deleted? All {count} existing deficiencies will also be deleted. This action cannot be undone.",
             },
         },
+        dashboard: {
+            "header.page": "Dashboard",
+            "header.uniformCounts": "Uniform Item Counts",
+            "header.uniformCountsByType": "Distribution by Type",
+            "header.uniformCountsBySize": "Distribution by Size for {type}",
+            "label.selectedType": "Selected type:",
+            "label.exporting": "Exporting...",
+            "label.export.uniformOverview": "Export Uniform Overview",
+            charts: {
+                available: {
+                    short: "Available",
+                    long: "Available (Active, Not Issued)"
+                },
+                issued: {
+                    short: "Issued",
+                    long: "Issued (Active, Currently Issued)"
+                },
+                reserves: {
+                    short: "Reserves",
+                    long: "Reserves (Inactive, Not Issued)"
+                },
+                issuedReserves: {
+                    short: "Issued Reserves",
+                    long: "Issued Reserves (Inactive, Currently Issued)"
+                },
+                missing: {
+                    short: "Missing",
+                    long: "Missing (Should be Issued)"
+                },
+                count: "Count",
+                total: "Total"
+            }
+        }
     },
     inspection: {
         header: {
@@ -732,31 +765,6 @@ export default {
                 return: {
                     header: "Withdraw uniform part",
                     message: "Are you sure you want to withdraw the uniform part {type} {number}?"
-                },
-                issue: {
-                    header: "Issue {type}",
-                },
-                replace: {
-                    header: "Replace {type} {number}",
-                },
-                issueUnknown: "An unknown problem occurred when assigning the uniform part.",
-                issuedException: {
-                    header: "Uniform part assigned",
-                    message: "The uniform part {type} {number} has already been assigned to the cadet {firstname} {lastname}.",
-                    ownerInactive: "The cadet is not active",
-                    option: {
-                        openCadet: "Open cadets",
-                        changeOwner: "Change owner"
-                    }
-                },
-                inactiveException: {
-                    header: "Uniform part passive",
-                    message: "The uniform part {type} {number} is set to passive and should therefore not be issued. \nShould the uniform part still be issued to the cadet?"
-                },
-                nullValueException: {
-                    header: "Uniform part not found",
-                    message: "The uniform part {type} {number} does not exist. Should the uniform part be created new?",
-                    createOption: "Create uniform part"
                 },
             },
         },

@@ -52,6 +52,7 @@ test.describe('UniformGeneration Configuration', () => {
 
             await firstRowMove.dragTo(thirdRowMove, {
                 targetPosition: { x: 10, y: 5 }, // Adjust the `y` value to drag further up
+                steps: 100, // Add more intermediate mouse move events,
             });
 
             await expect(page.getByText(german.common.success.changeSortorder)).toBeVisible();
@@ -107,6 +108,7 @@ test.describe('UniformGeneration Configuration', () => {
 
             await thirdRowMove.dragTo(secondRowMove, {
                 targetPosition: { x: 10, y: 25 }, // Adjust the `y` value to drag further down
+                steps: 100, // Add more intermediate mouse move events
             });
 
             await expect(page.getByText(german.common.success.changeSortorder)).toBeVisible();
@@ -181,7 +183,7 @@ test.describe('UniformGeneration Configuration', () => {
             await expect(dialog.getByRole('textbox')).toBeVisible();
 
             await dialog.getByRole('textbox', { name: german.common.name }).fill('Test Generation 1');
-            await dialog.getByRole('switch', { name: german.common.uniform.generation.outdated }).check();
+            await dialog.getByRole('switch', { name: german.common.uniform.generation.isReserve }).check();
             await dialog.getByRole('combobox', { name: german.common.uniform.sizelist.label }).selectOption(data.uniformSizelists[0].id);
             await dialog.getByRole('button', { name: actionText.create }).click();
         });
@@ -210,7 +212,7 @@ test.describe('UniformGeneration Configuration', () => {
             expect(dbGeneration).toEqual(
                 expect.objectContaining({
                     name: 'Test Generation 1',
-                    outdated: true,
+                    isReserve: true,
                     fk_uniformType: types[0].id,
                     fk_sizelist: data.uniformSizelists[0].id,
                     sortOrder: 4,
@@ -243,7 +245,7 @@ test.describe('UniformGeneration Configuration', () => {
             await expect(dialog.getByRole('combobox', { name: german.common.uniform.sizelist.label })).toBeHidden();
 
             await dialog.getByRole('textbox', { name: german.common.name }).fill('Test Generation 1');
-            await dialog.getByRole('switch', { name: german.common.uniform.generation.outdated }).check();
+            await dialog.getByRole('switch', { name: german.common.uniform.generation.isReserve }).check();
             await dialog.getByRole('button', { name: actionText.create }).click();
         });
 
@@ -269,7 +271,7 @@ test.describe('UniformGeneration Configuration', () => {
             expect(dbGeneration).toEqual(
                 expect.objectContaining({
                     name: 'Test Generation 1',
-                    outdated: true,
+                    isReserve: true,
                     fk_uniformType: types[1].id,
                     fk_sizelist: null,
                     sortOrder: 2,
@@ -302,7 +304,7 @@ test.describe('UniformGeneration Configuration', () => {
             await dialog.getByRole('button', { name: actionText.edit }).click();
 
             await dialog.getByRole('textbox', { name: german.common.name }).fill('Test Generation 1');
-            await dialog.getByRole('switch', { name: german.common.uniform.generation.outdated }).uncheck();
+            await dialog.getByRole('switch', { name: german.common.uniform.generation.isReserve }).uncheck();
             await dialog.getByRole('combobox', { name: german.common.uniform.sizelist.label }).selectOption(data.uniformSizelists[2].id);
             await dialog.getByRole('button', { name: actionText.save }).click();
         });
@@ -312,12 +314,12 @@ test.describe('UniformGeneration Configuration', () => {
             await expect(dialog).toBeVisible();
 
             await expect(dialog.getByRole('textbox', { name: german.common.name })).toBeDisabled();
-            await expect(dialog.getByRole('switch', { name: german.common.uniform.generation.outdated })).toBeDisabled();
+            await expect(dialog.getByRole('switch', { name: german.common.uniform.generation.isReserve })).toBeDisabled();
             await expect(dialog.getByRole('combobox', { name: german.common.uniform.sizelist.label })).toBeHidden();
             await expect(dialog.getByLabel(german.common.uniform.sizelist.label)).toBeVisible();
 
             await expect(dialog.getByRole('textbox', { name: german.common.name })).toHaveValue('Test Generation 1');
-            await expect(dialog.getByRole('switch', { name: german.common.uniform.generation.outdated })).not.toBeChecked();
+            await expect(dialog.getByRole('switch', { name: german.common.uniform.generation.isReserve })).not.toBeChecked();
             await expect(dialog.getByLabel(german.common.uniform.sizelist.label)).toHaveText(data.uniformSizelists[2].name);
             await dialog.getByRole('button', { name: 'close' }).click();
             await expect(dialog).toBeHidden();
@@ -342,7 +344,7 @@ test.describe('UniformGeneration Configuration', () => {
             expect(dbGeneration).toEqual(
                 expect.objectContaining({
                     name: 'Test Generation 1',
-                    outdated: false,
+                    isReserve: false,
                     fk_uniformType: types[0].id,
                     fk_sizelist: data.uniformSizelists[2].id,
                     recdelete: null,
@@ -375,7 +377,7 @@ test.describe('UniformGeneration Configuration', () => {
             await dialog.getByRole('button', { name: actionText.edit }).click();
 
             await dialog.getByRole('textbox', { name: german.common.name }).fill('Test Generation 1');
-            await dialog.getByRole('switch', { name: german.common.uniform.generation.outdated }).uncheck();
+            await dialog.getByRole('switch', { name: german.common.uniform.generation.isReserve }).uncheck();
             await dialog.getByRole('button', { name: actionText.save }).click();
         });
 
@@ -384,10 +386,10 @@ test.describe('UniformGeneration Configuration', () => {
             await expect(dialog).toBeVisible();
 
             await expect(dialog.getByRole('textbox', { name: german.common.name })).toBeDisabled();
-            await expect(dialog.getByRole('switch', { name: german.common.uniform.generation.outdated })).toBeDisabled();
+            await expect(dialog.getByRole('switch', { name: german.common.uniform.generation.isReserve })).toBeDisabled();
 
             await expect(dialog.getByRole('textbox', { name: german.common.name })).toHaveValue('Test Generation 1');
-            await expect(dialog.getByRole('switch', { name: german.common.uniform.generation.outdated })).not.toBeChecked();
+            await expect(dialog.getByRole('switch', { name: german.common.uniform.generation.isReserve })).not.toBeChecked();
 
             await dialog.getByRole('button', { name: 'close' }).click();
             await expect(dialog).toBeHidden();
@@ -411,7 +413,7 @@ test.describe('UniformGeneration Configuration', () => {
             expect(dbGeneration).toEqual(
                 expect.objectContaining({
                     name: 'Test Generation 1',
-                    outdated: false,
+                    isReserve: false,
                     fk_uniformType: types[1].id,
                     fk_sizelist: null,
                     recdelete: null,

@@ -57,6 +57,7 @@ describe('NavLink', () => {
         userRole: AuthRole.admin,
         useBeta: false,
         sizelists: [],
+        typeList: []
     };
 
     let user: ReturnType<typeof userEvent.setup>;
@@ -101,9 +102,8 @@ describe('NavLink', () => {
     describe('Role-Based Access Control', () => {
         test('hides component for insufficient user role', () => {
             mockUseGlobalData.mockReturnValue({
+                ...defaultGlobalData,
                 userRole: AuthRole.user,
-                useBeta: false,
-                sizelists: []
             });
             render(<NavLink {...defaultProps} requiredRole={AuthRole.admin} />);
             expect(screen.queryByTestId('test-nav-link')).not.toBeInTheDocument();
@@ -111,9 +111,8 @@ describe('NavLink', () => {
 
         test('shows component for sufficient user role', () => {
             mockUseGlobalData.mockReturnValue({
+                ...defaultGlobalData,
                 userRole: AuthRole.admin,
-                useBeta: false,
-                sizelists: []
             });
             render(<NavLink {...defaultProps} requiredRole={AuthRole.user} />);
             expect(screen.getByTestId('test-nav-link')).toBeInTheDocument();
@@ -122,9 +121,8 @@ describe('NavLink', () => {
         test('tests different AuthRole scenarios', () => {
             // Test user role can access user-level component
             mockUseGlobalData.mockReturnValue({
+                ...defaultGlobalData,
                 userRole: AuthRole.user,
-                useBeta: false,
-                sizelists: []
             });
             const { rerender } = render(<NavLink {...defaultProps} requiredRole={AuthRole.user} />);
             expect(screen.getByTestId('test-nav-link')).toBeInTheDocument();
@@ -135,9 +133,8 @@ describe('NavLink', () => {
 
             // Test admin role can access all levels
             mockUseGlobalData.mockReturnValue({
+                ...defaultGlobalData,
                 userRole: AuthRole.admin,
-                useBeta: false,
-                sizelists: []
             });
             rerender(<NavLink {...defaultProps} requiredRole={AuthRole.admin} />);
             expect(screen.getByTestId('test-nav-link')).toBeInTheDocument();

@@ -51,7 +51,7 @@ exports[`UniformOffcanvas should render correctly 1`] = `
          
         <svg
           aria-hidden="true"
-          class="svg-inline--fa fa-pen fa-sm "
+          class="svg-inline--fa fa-pen fa-sm"
           data-icon="pen"
           data-prefix="fas"
           role="img"
@@ -71,7 +71,7 @@ exports[`UniformOffcanvas should render correctly 1`] = `
          
         <svg
           aria-hidden="true"
-          class="svg-inline--fa fa-trash fa-sm "
+          class="svg-inline--fa fa-trash fa-sm"
           data-icon="trash"
           data-prefix="fas"
           role="img"
@@ -94,11 +94,12 @@ exports[`UniformOffcanvas should render correctly 1`] = `
       >
         <div
           class="col-sm-auto col-12"
+          style="min-width: 120px;"
         >
           <div>
             <label
               class="fw-bold m-0  form-label"
-              for="uniform_toggle-active"
+              for="uniform_toggle-isReserve"
             >
               common.status
             </label>
@@ -110,10 +111,10 @@ exports[`UniformOffcanvas should render correctly 1`] = `
               common.uniform.state.active
             </p>
             <div
-              aria-label="error message active"
+              aria-label="error message isReserve"
               class="text-danger fs-7"
-              data-testid="err_active"
-              id="uniform_err_active"
+              data-testid="err_isReserve"
+              id="uniform_err_isReserve"
               role="alert"
             />
           </div>
@@ -265,7 +266,7 @@ exports[`UniformOffcanvas should render correctly 1`] = `
            
           <svg
             aria-hidden="true"
-            class="svg-inline--fa fa-plus fa-sm "
+            class="svg-inline--fa fa-plus fa-sm"
             data-icon="plus"
             data-prefix="fas"
             role="img"
@@ -339,7 +340,7 @@ exports[`UniformOffcanvas should render correctly 1`] = `
                 >
                   <svg
                     aria-hidden="true"
-                    class="svg-inline--fa fa-ellipsis-vertical "
+                    class="svg-inline--fa fa-ellipsis-vertical"
                     data-icon="ellipsis-vertical"
                     data-prefix="fas"
                     role="img"
@@ -432,7 +433,7 @@ exports[`UniformOffcanvas should render correctly 1`] = `
                 >
                   <svg
                     aria-hidden="true"
-                    class="svg-inline--fa fa-ellipsis-vertical "
+                    class="svg-inline--fa fa-ellipsis-vertical"
                     data-icon="ellipsis-vertical"
                     data-prefix="fas"
                     role="img"

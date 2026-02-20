@@ -233,6 +233,7 @@ test.describe('UniformType Configuration', () => {
             await expect(thirdRowMove).toBeVisible();
             await firstRowMove.locator('span[draggable]').dragTo(thirdRowMove, {
                 targetPosition: { x: 10, y: 26 }, // Adjust the `y` value to drag further down
+                steps: 100, // Add more intermediate mouse move events
             });
 
             await expect(page.getByText(german.common.success.changeSortorder)).toBeVisible();
@@ -283,6 +284,7 @@ test.describe('UniformType Configuration', () => {
 
             await thirdRowMove.locator('span[draggable]').dragTo(secondRowMove, {
                 targetPosition: { x: 10, y: 5 }, // Adjust the `y` value to drag further up
+                steps: 100, // Add more intermediate mouse move events
             });
 
             await expect(page.getByText(german.common.success.changeSortorder)).toBeVisible();

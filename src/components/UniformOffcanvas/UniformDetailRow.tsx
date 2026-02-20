@@ -7,9 +7,9 @@ import { useBreakpoint } from "@/lib/useBreakpoint";
 import { UniformType, UniformWithOwner } from "@/types/globalUniformTypes";
 import { getUniformFormSchema, UniformFormType } from "@/zod/uniform";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Button, Col, Row } from "react-bootstrap";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm, useFormContext, useWatch } from "react-hook-form";
 import { SelectFormField } from "../fields/SelectFormField";
 import { TextareaFormField } from "../fields/TextareaFormField";
 import { ToggleFormField } from "../fields/ToggleFormField";
@@ -22,18 +22,20 @@ export type UniformDetailRowProps = {
     setEditable: (editable: boolean) => void;
     onSave: () => void;
 }
-const getUniformFormData = (uniform: UniformWithOwner): UniformFormType => {
-    return {
-        id: uniform.id,
-        number: uniform.number,
-        generation: uniform.generation?.id,
-        size: uniform.size?.id,
-        comment: uniform.comment || "",
-        active: uniform.active,
-    }
-}
 
 export const UniformDetailRow = ({ uniform, uniformType, editable, setEditable, onSave }: UniformDetailRowProps) => {
+    const getUniformFormData = useCallback((uniform: UniformWithOwner): UniformFormType => {
+        return {
+            id: uniform.id,
+            number: uniform.number,
+            generation: uniform.generation?.id,
+            size: uniform.size?.id,
+            comment: uniform.comment || "",
+            isReserve: !!(uniform.isReserve || (uniform.generation?.isReserve && uniformType.usingGenerations)),
+        }
+    }, [uniformType.usingGenerations]);
+
+
     // HOOKS
     const t = useI18n();
     const form = useForm<UniformFormType>({
@@ -69,6 +71,7 @@ export const UniformDetailRow = ({ uniform, uniformType, editable, setEditable, 
         }
         return sizelist?.uniformSizes.map(s => ({ value: s.id, label: s.name })) || [];
     }, [sizelist, editable, uniform.size]);
+
     const generationOptions = useMemo(() => {
         return generationList?.map(g => ({ value: g.id, label: g.name })) || [];
     }, [generationList]);
@@ -78,7 +81,7 @@ export const UniformDetailRow = ({ uniform, uniformType, editable, setEditable, 
         if (!editable) {
             reset(getUniformFormData(uniform));
         }
-    }, [uniform, editable, reset]);
+    }, [uniform, editable, reset, getUniformFormData]);
 
     useEffect(() => {
         if (editable && selectedSizeId && sizeOptions) {
@@ -107,14 +110,16 @@ export const UniformDetailRow = ({ uniform, uniformType, editable, setEditable, 
         <FormProvider {...form}>
             <form noValidate autoComplete="off" onSubmit={handleSubmit(handleSave)} className="mb-4">
                 <Row className="mb-3 mt-2 justify-content-between">
-                    <Col xs={(uniformType.usingGenerations && uniformType.usingSizes) ? 12 : 5} sm={"auto"}>
-                        <ToggleFormField<UniformFormType>
-                            label={t('common.status')}
-                            name={"active"}
-                            formName="uniform"
-                            disabled={!editable}
-                            hideToggle={!editable}
-                            toggleText={t(`common.uniform.state.${form.watch('active') ? "active" : "reserve"}`)}
+                    <Col xs={(uniformType.usingGenerations && uniformType.usingSizes) ? 12 : 5} sm={"auto"} style={{ minWidth: "120px" }}>
+                        <StatusToggleField
+                            translations={{
+                                label: t('common.status'),
+                                active: t('common.uniform.state.active'),
+                                isReserve: t('common.uniform.state.isReserve'),
+                            }}
+                            uniformType={uniformType}
+                            uniform={uniform}
+                            editable={editable}
                         />
                     </Col>
                     {uniformType.usingGenerations &&
@@ -178,5 +183,55 @@ export const UniformDetailRow = ({ uniform, uniformType, editable, setEditable, 
                 }
             </form>
         </FormProvider>
+    )
+}
+
+type StatusToggleFieldProps = {
+    uniformType: UniformType;
+    uniform: UniformWithOwner;
+    editable: boolean;
+    translations: {
+        label: string;
+        active: string;
+        isReserve: string;
+    }
+}
+const StatusToggleField = ({ translations, uniformType, uniform, editable }: StatusToggleFieldProps) => {
+    const { setValue } = useFormContext<UniformFormType>();
+    const [isReserveFormValue, generationId] = useWatch({ name: ["isReserve", "generation"] });
+
+    const selectedGeneration = uniformType.usingGenerations
+        ? uniformType.uniformGenerationList.find(g => g.id === generationId)
+        : undefined;
+
+    const isReserve = useMemo(() => {
+        if (!uniformType.usingGenerations || !selectedGeneration) {
+            return isReserveFormValue;
+        }
+        return selectedGeneration.isReserve || isReserveFormValue;
+    }, [uniformType.usingGenerations, selectedGeneration, isReserveFormValue]);
+
+    const isGenerationReserve = useMemo(
+        () => !!(selectedGeneration && selectedGeneration.isReserve),
+        [selectedGeneration]
+    );
+
+    useEffect(() => {
+        if (isGenerationReserve) {
+            setValue("isReserve", true);
+        } else {
+            setValue("isReserve", uniform.isReserve);
+        }
+    }, [isGenerationReserve, uniform.isReserve, setValue]);
+
+    return (
+        <ToggleFormField<UniformFormType>
+            label={translations.label}
+            name={"isReserve"}
+            formName="uniform"
+            disabled={!editable || isGenerationReserve}
+            hideToggle={!editable}
+            toggleText={isReserve ? translations.isReserve : translations.active}
+        />
     )
 }
