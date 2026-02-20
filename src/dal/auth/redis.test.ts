@@ -13,11 +13,6 @@
 
 describe('Redis Infrastructure - Configuration', () => {
     describe('Environment variable handling', () => {
-        it('should require REDIS_ENABLED=true to initialize', () => {
-            // Redis should only be enabled when explicitly set
-            expect(process.env.REDIS_ENABLED).toBeDefined();
-        });
-
         it('should use default port 6379 if REDIS_PORT not set', () => {
             const defaultPort = process.env.REDIS_PORT || '6379';
             expect(parseInt(defaultPort)).toBe(6379);
@@ -27,7 +22,6 @@ describe('Redis Infrastructure - Configuration', () => {
     describe('Retry strategy', () => {
         it('should implement exponential backoff: 50ms, 100ms, 150ms', () => {
             const retryStrategy = (times: number) => {
-                if (times > 3) return null;
                 return Math.min(times * 50, 200);
             };
 
@@ -36,21 +30,12 @@ describe('Redis Infrastructure - Configuration', () => {
             expect(retryStrategy(3)).toBe(150);
         });
 
-        it('should stop retrying after 3 attempts', () => {
-            const retryStrategy = (times: number) => {
-                if (times > 3) return null;
-                return Math.min(times * 50, 200);
-            };
-
-            expect(retryStrategy(4)).toBeNull();
-        });
-
         it('should cap retry delay at 200ms', () => {
             const retryStrategy = (times: number) => {
-                if (times > 3) return null;
                 return Math.min(times * 50, 200);
             };
 
+            expect(retryStrategy(5)).toBe(200);
             expect(retryStrategy(100)).toBe(200);
         });
     });

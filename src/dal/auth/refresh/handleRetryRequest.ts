@@ -86,7 +86,7 @@ export const handleRetryRequest = async (
             httpOnly: true,
             secure: true,
             sameSite: 'strict',
-            expires: cachedData.metadata.cookieExpiry,
+            expires: new Date(cachedData.metadata.cookieExpiry),
             path: '/api/auth/refresh',
         }
     );

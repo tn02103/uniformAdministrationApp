@@ -5,84 +5,16 @@
  * Provides type-safe factories for UserAgent, Cookies, Headers, and other common mocks.
  */
 
-import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
-import { ReadonlyHeaders } from 'next/dist/server/web/spec-extension/adapters/headers';
-import type { DeviceIdsCookie, UserAgent } from '../helper';
-import { AuthConfig } from '../config';
 import type { AuthenticationExceptionData } from '@/errors/Authentication';
+import { ReadonlyHeaders } from 'next/dist/server/web/spec-extension/adapters/headers';
+import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
+import { AuthConfig } from '../config';
+import type { UserAgent } from '../helper';
 import type { CachedRefreshData } from '../refresh/idempotency.redis';
+
 
 // ============ USER AGENT MOCKS ============
 
-
-
-export const getMockUserAgent = (overwrite: Partial<UserAgent> = {}): UserAgent => {
-    return {
-        browser: { name: 'Chrome', version: '120', major: '120', ...overwrite.browser },
-        device: { type: 'desktop' as const, vendor: undefined, model: undefined, ...overwrite.device },
-        os: { name: 'Windows', version: '10', ...overwrite.os },
-        engine: { name: 'Blink', version: '120', ...overwrite.engine },
-        cpu: { architecture: 'amd64', ...overwrite.cpu },
-        ua: overwrite.ua ?? 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0',
-        isBot: overwrite.isBot !== undefined ? overwrite.isBot : false,
-    }
-}
-
-export const authMockData = {
-    userAgent: getMockUserAgent(),
-    userAgentJsonString: JSON.stringify(getMockUserAgent()),
-    ipAddress: '192.168.1.1',
-    idempotencyKey: 'test-idempotency-key',
-}
-
-export const getHeaderGetMock = (overwrites?: { ipAddress?: string, ua?: string, idempotencyKey?: string }) => {
-    return (name: string) => {
-        switch (name) {
-            case "true-client-ip":
-            case "x-forwarded-for":
-                return overwrites?.ipAddress ?? authMockData.ipAddress;
-            case "user-agent":
-                return overwrites?.ua ?? authMockData.userAgent.ua;
-            case "x-idempotency-key":
-                return overwrites?.idempotencyKey ?? authMockData.idempotencyKey;
-            default:
-                return null;
-        }
-    };
-}
-
-export const getCookieGetMockFactory = (defaultValues: { deviceId: string, organisationId: string, refreshToken: string }) => {
-    const { deviceId, organisationId, refreshToken } = defaultValues;
-    const defaultDeviceCookie: DeviceIdsCookie = {
-        lastUsed: {
-            deviceId,
-            organisationId,
-            lastUsedAt: new Date().toISOString(),
-        },
-        otherAccounts: []
-    };
-    return (overwrites?: { refreshToken?: string | null; deviceCookie?: DeviceIdsCookie | null }) => {
-        return (name: string) => {
-            switch (name) {
-                case AuthConfig.refreshTokenCookie:
-                    if (overwrites?.refreshToken === null) {
-                        return undefined;
-                    }
-                    return { name, value: overwrites?.refreshToken ?? refreshToken };
-                case AuthConfig.deviceCookie:
-                    if (overwrites?.deviceCookie === null) {
-                        return undefined;
-                    }
-                    return {
-                        name,
-                        value: JSON.stringify(overwrites?.deviceCookie ?? defaultDeviceCookie)
-                    }
-                default:
-                    return undefined;
-            }
-        }
-    };
-}
 
 
 /**
@@ -299,7 +231,7 @@ export const createMockCachedRefreshData = (
         ipAddress?: string;
         userAgent?: UserAgent;
         oldRefreshTokenHash?: string;
-        cookieExpiry?: Date;
+        cookieExpiry?: string;
         newRefreshTokenPlaintext?: string;
     }
 ): CachedRefreshData => {
@@ -314,7 +246,7 @@ export const createMockCachedRefreshData = (
             ipAddress: overrides?.ipAddress ?? '192.168.1.1',
             userAgent: JSON.stringify(userAgent),
             oldRefreshTokenHash: overrides?.oldRefreshTokenHash ?? 'hash-abc123',
-            cookieExpiry: overrides?.cookieExpiry ?? new Date('2026-02-01T12:00:00Z'),
+            cookieExpiry: overrides?.cookieExpiry ?? '2026-02-01T12:00:00Z',
             newRefreshTokenPlaintext: overrides?.newRefreshTokenPlaintext ?? 'new-token-plaintext-abc123',
         }
     };

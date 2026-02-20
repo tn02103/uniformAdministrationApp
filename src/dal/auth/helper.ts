@@ -127,16 +127,20 @@ export const calculateSessionLifetime = (context: {
 };
 
 
-type GetAccountProps = {
+export type GetAccountProps = {
     cookieList: ReadonlyRequestCookies;
     organisationId?: string;
+}
+export type GetDeviceAccountFromCookiesReturn = {
+    account: DeviceIdsCookieAccount | null;
+    accountCookie: DeviceIdsCookie | null;
 }
 /**
  * Gets device accounts from cookies. If organisationId is provided it will return the account for that organisation.
  * @param param0 
  * @returns 
  */
-export const getDeviceAccountFromCookies = ({ cookieList, organisationId }: GetAccountProps): ({ account: DeviceIdsCookieAccount | null; accountCookie: DeviceIdsCookie | null; }) => {
+export const getDeviceAccountFromCookies = ({ cookieList, organisationId }: GetAccountProps): GetDeviceAccountFromCookiesReturn => {
     const accountCookieString = cookieList.get(AuthConfig.deviceCookie);
     const accountCookie: DeviceIdsCookie | null = accountCookieString ?
         DeviceIdsCookieSchema.parse(JSON.parse(accountCookieString.value)) :
@@ -244,36 +248,6 @@ export const validateDeviceFingerprint = async ({ current, expected }: {
 
     return { riskLevel, reasons };
 }
-
-/**
- * Invalidates all active sessions for a user across all devices
- */
-export const invalidateAllUserSessions = async (userId: string, deviceId: string, ipAddress: string): Promise<void> => {
-    await prisma.refreshToken.updateMany({
-        where: {
-            userId: userId,
-            status: "active",
-        },
-        data: {
-            status: "revoked",
-        }
-    });
-    const session = await getIronSession();
-    session.destroy();
-
-
-    // Log this critical security event
-    await logSecurityAuditEntry({
-        userId,
-        deviceId,
-        success: false,
-        ipAddress: ipAddress,
-        userAgent: {} as UserAgent,
-        details: 'All user sessions invalidated due to refresh token reuse attack',
-        action: 'REFRESH_ACCESS_TOKEN',
-        debugLevel: LogDebugLevel.CRITICAL,
-    });
-};
 
 export const getUserMFAConfig = async (userId: string) => {
     const user = await prisma.user.findUnique({

@@ -1,4 +1,5 @@
 import { AuthRole } from "@/lib/AuthRoles";
+import { randomUUID } from "crypto";
 
 // Mock server-only package to allow server components in Jest environment
 jest.mock('server-only', () => ({}));
@@ -26,7 +27,8 @@ const prismaMock = {
         delete: jest.fn(),
         deleteMany: jest.fn(),
     },
-    twoFactorApp: { updateMany: jest.fn(),
+    twoFactorApp: {
+        updateMany: jest.fn(),
         create: jest.fn(),
         upsert: jest.fn(),
         findFirst: jest.fn(),
@@ -39,10 +41,24 @@ const prismaMock = {
     refreshToken: {
         updateMany: jest.fn(),
         create: jest.fn(),
+        findFirst: jest.fn(),
+        findMany: jest.fn(),
+        findUnique: jest.fn(),
     },
     device: {
         update: jest.fn(),
         create: jest.fn(),
+    },
+    session: {
+        updateMany: jest.fn(),
+        create: jest.fn(),
+        upsert: jest.fn(),
+        findFirst: jest.fn(),
+        findMany: jest.fn(),
+        findUnique: jest.fn(),
+        findUniqueOrThrow: jest.fn(),
+        delete: jest.fn(),
+        deleteMany: jest.fn(),
     },
     // Mock all Prisma models with common methods
     cadetInspection: {
@@ -245,3 +261,25 @@ beforeEach(() => {
     global.__USERNAME__ = 'testuser';
     global.__ORGANISATION__ = 'test-organisation-id';
 });
+
+const mockRateLimiterInstance = {
+    testId: randomUUID(),
+    consume: jest.fn(async () => ({
+        remainingPoints: 10,
+        msBeforeNext: 1000,
+    })),
+    get: jest.fn(async () => ({
+        remainingPoints: 10,
+        msBeforeNext: 1000,
+    })),
+    delete: jest.fn(async () => undefined),
+    block: jest.fn(async () => undefined),
+    penalty: jest.fn(async () => undefined),
+    reward: jest.fn(async () => undefined),
+};
+
+const RateLimiterMemory = jest.fn(() => mockRateLimiterInstance);
+// Mock rate-limiter-flexible BEFORE any imports that use it
+jest.mock('rate-limiter-flexible', () => ({
+    RateLimiterMemory
+}));

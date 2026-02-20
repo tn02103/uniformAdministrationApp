@@ -178,7 +178,7 @@ describe('Redis Idempotency Helpers', () => {
                 ...mockCacheData,
                 metadata: {
                     ...mockCacheData.metadata,
-                    cookieExpiry: mockCacheData.metadata.cookieExpiry.toISOString(),
+                    cookieExpiry: mockCacheData.metadata.cookieExpiry,
                 }
             });
             expect(mockRedis.get).toHaveBeenCalledWith('idempotency:test-key-123:result');

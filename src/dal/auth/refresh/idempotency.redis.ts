@@ -15,7 +15,7 @@ export type CachedRefreshData = {
         ipAddress: string;
         userAgent: string;  // JSON stringified
         oldRefreshTokenHash: string;
-        cookieExpiry: Date;
+        cookieExpiry: string; // ISO string
         newRefreshTokenPlaintext: string;
     };
 };

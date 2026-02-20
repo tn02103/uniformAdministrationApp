@@ -20,30 +20,30 @@ type verificationsProp = {
 }
 export const verifyRefreshToken = async (props: verificationsProp): Promise<FingerprintValidationResult> => {
     const { agent, ipAddress, sendToken, dbToken, account, logData } = props;
-
     const sendTokenHash = sha256Hex(sendToken);
     if (dbToken.token !== sendTokenHash) {
         throw new AuthenticationException("Refresh token hash does not match", "AuthenticationFailed", LogDebugLevel.WARNING, logData);
     }
-
     if (dbToken.status === 'revoked') {
         throw new AuthenticationException("Refresh token has been revoked", "AuthenticationFailed", LogDebugLevel.CRITICAL, logData);
     }
-
     if (dbToken.usedAt || dbToken.status === "rotated") {
-        handleRefreshTokenReuse({
+        await handleRefreshTokenReuse({
             token: dbToken,
             ipAddress,
             agent,
             logData,
         });
     }
-
     if (!dbToken.session.valid) {
         throw new AuthenticationException("Session is no longer valid", "AuthenticationFailed", LogDebugLevel.WARNING, logData);
     }
 
-    if (!isValid(dbToken.endOfLife) || dayjs().add(AuthConfig.inactiveRefreshMinAge, "minutes").isAfter(dbToken.endOfLife)) {
+    if (!isValid(dbToken.endOfLife)) {
+        throw new AuthenticationException("Refresh token end of life is invalid", "AuthenticationFailed", LogDebugLevel.WARNING, logData);
+    }
+
+    if (dayjs().add(AuthConfig.inactiveRefreshMinAge, "minutes").isAfter(dbToken.endOfLife)) {
         // EOL may be to short for inactive sessions. Only valid if session is active
         if (dayjs(dbToken.endOfLife).isBefore()) {
             // expired
@@ -54,6 +54,7 @@ export const verifyRefreshToken = async (props: verificationsProp): Promise<Fing
                 logData
             );
         }
+
 
         if (dayjs(dbToken.issuedAt).add(AuthConfig.inactiveCutoff, "minutes").isBefore()) {
             // inactive session
@@ -105,7 +106,7 @@ export const verifyRefreshToken = async (props: verificationsProp): Promise<Fing
     if (fingerprintValidation.riskLevel >= RiskLevel.HIGH) {
         throw new AuthenticationException(
             `Device fingerprint validation failed. 
-                 Risk level: ${fingerprintValidation.riskLevel}
+            Risk level: ${fingerprintValidation.riskLevel}
                  Reasons: ${fingerprintValidation.reasons.join(", ")}`,
             "AuthenticationFailed",
             fingerprintValidation.riskLevel === RiskLevel.SEVERE ? LogDebugLevel.CRITICAL : LogDebugLevel.INFO,

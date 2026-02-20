@@ -25,6 +25,7 @@ const ipLimiter = new RateLimiterMemory({
     duration: 60 * 15, // reset after 15 minutes
 });
 
+
 const consumeIpLimiter = async (ipAddress: string, points: number, userAgent: UserAgent, deviceId?: string) => {
     return ipLimiter.consume(ipAddress, points)
         .then((limit) => {
@@ -91,7 +92,6 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
 
     try {
         // ===== EXISTING VALIDATION LOGIC =====
-
         const limit = await ipLimiter.get(ipAddress);
         if (limit && limit.remainingPoints <= 0) {
             console.warn("IP temporarily blocked due to too many failed login attempts", ipAddress);
@@ -222,7 +222,7 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
                     ipAddress,
                     userAgent: JSON.stringify(agent),
                     oldRefreshTokenHash: sha256Hex(refreshTokenCookie.value),
-                    cookieExpiry: endOfLife,
+                    cookieExpiry: endOfLife.toISOString(),
                     newRefreshTokenPlaintext: newRefreshToken,
                 }
             };

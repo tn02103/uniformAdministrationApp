@@ -704,7 +704,7 @@ describe('UniformCounts DAL - Unit Tests', () => {
                 expect(mockPrisma.uniformType.findMany).toHaveBeenCalledWith({
                     where: {
                         recdelete: null,
-                        fk_assosiation: 'test-organisation-id'
+                        organisationId: 'test-organisation-id'
                     },
                     select: {
                         id: true,
