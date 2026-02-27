@@ -13,9 +13,9 @@ const customJestConfig: Config = { // CONFIGURATION FOR DAL INTEGRATION TESTS (W
     preset: 'ts-jest/presets/default-esm',
     extensionsToTreatAsEsm: ['.ts'],
     
-    // Disable transforms for ESM - let Node.js handle them
+    // .ts files as ESM
     transform: {
-        '^.+\\.tsx?$': ['ts-jest', {
+        '^.+\.ts$': ['ts-jest', {
             useESM: true,
         }],
     },

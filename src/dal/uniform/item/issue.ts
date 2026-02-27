@@ -113,7 +113,7 @@ export const issue = async (props: IssuePropType): Promise<CadetUniformMap | SAE
         const comment = `<<Das Uniformteil ${uniform.type.name} ${uniform.number} wurde ${cadet.firstname} ${cadet.lastname} Überschrieben>>`;
         const addcommentFeedback = await client.$executeRaw`
             UPDATE base.cadet
-               SET comment = CONCAT(comment, ${comment}) 
+               SET comment = CONCAT(comment, ${comment}::text) 
              WHERE id = ${uniform.issuedEntries[0].cadet.id}`
         if (addcommentFeedback !== 1) {
             throw new Error("Could not add comment to previous owner");
