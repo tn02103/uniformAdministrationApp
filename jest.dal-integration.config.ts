@@ -31,7 +31,7 @@ const customJestConfig: Config = { // CONFIGURATION FOR DAL INTEGRATION TESTS (W
     
     // Don't transform node_modules to allow ESM modules to work
     transformIgnorePatterns: [
-        'node_modules/(?!(@prisma)/)'
+        'node_modules/(?!(@prisma|uuid)/)'
     ],
     
     testMatch: [

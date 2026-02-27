@@ -150,8 +150,8 @@ export const UniformgenerationOffcanvas = ({ generation, uniformTypeId, usingSiz
                             </Col>
                             <Col xs={6} className="align-bottom">
                                 <ToggleFormField<UniformGenerationFormType>
-                                    name="outdated"
-                                    label={t('common.uniform.generation.outdated')}
+                                    name="isReserve"
+                                    label={t('common.uniform.generation.isReserve')}
                                     disabled={!editable}
                                     formName="uniformGenerationForm"
                                 />

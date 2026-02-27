@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PrismaClient } from "@/prisma/client";
-import { DeepMockProxy } from "jest-mock-extended";
-import { mockTypeList, mockUniformList } from "../../../../tests/_jestConfig/staticMockData";
-import { issue } from "./issue";
-import { AuthRole } from "@/lib/AuthRoles";
 import { ExceptionType } from "@/errors/CustomException";
+import { AuthRole } from "@/lib/AuthRoles";
+import { PrismaClient } from "@prisma/client";
+import { DeepMockProxy } from "jest-mock-extended";
+import { mockGenerationLists, mockTypeList, mockUniformList } from "../../../../tests/_jestConfig/staticMockData";
+import { issue } from "./issue";
 
 // Mock the dependencies
 jest.mock("./return");
@@ -29,8 +29,9 @@ const mockUniform = {
     id: mockUniformId,
     number: 2001,
     fk_uniformType: mockTypeList[0].id,
-    active: true,
+    isReserve: false,
     storageUnitId: null,
+    generation: null,
     type: {
         id: mockTypeList[0].id,
         name: mockTypeList[0].name,
@@ -38,9 +39,39 @@ const mockUniform = {
     issuedEntries: []
 };
 
-const mockInactiveUniform = {
+const mockReserveUniform = {
     ...mockUniform,
-    active: false
+    isReserve: true
+};
+
+// Use existing mock generation data from staticMockData.ts
+const mockReserveGeneration = mockGenerationLists[0][0]; // isReserve: true
+
+const mockUniformWithReserveGeneration = {
+    ...mockUniform,
+    generation: mockReserveGeneration
+};
+
+const mockUniformWithoutGeneration = {
+    ...mockUniform,
+    generation: null
+};
+
+// Use existing mock type data from staticMockData.ts
+const mockTypeWithGenerations = mockTypeList[0]; // usingGenerations: true
+const mockTypeWithoutGenerations = mockTypeList[2]; // usingGenerations: false
+
+const mockUniformWithReserveGenerationButTypeNotUsingGenerations = {
+    ...mockUniform,
+    fk_uniformType: mockTypeList[2].id,
+    type: mockTypeWithoutGenerations,
+    generation: mockReserveGeneration
+};
+
+// Update existing mocks to include type with usingGenerations info
+const mockUniformWithReserveGenerationAndType = {
+    ...mockUniformWithReserveGeneration,
+    type: mockTypeWithGenerations
 };
 
 const mockIssuedUniform = {
@@ -115,6 +146,7 @@ describe('<UniformItem> issue', () => {
                 },
                 include: {
                     type: true,
+                    generation: true,
                     issuedEntries: {
                         where: {
                             dateReturned: null,
@@ -145,7 +177,7 @@ describe('<UniformItem> issue', () => {
                 data: {
                     number: 2001,
                     fk_uniformType: mockTypeList[0].id,
-                    active: true,
+                    isReserve: false,
                     issuedEntries: {
                         create: {
                             fk_cadet: mockCadetId,
@@ -156,15 +188,48 @@ describe('<UniformItem> issue', () => {
             expect(mockPrisma.uniformIssued.create).not.toHaveBeenCalled(); // uniform.create handles this
         });
 
-        it('issues inactive uniform when ignoreInactive option is true', async () => {
-            mockPrisma.uniform.findFirst.mockResolvedValue(mockInactiveUniform as any);
+        it('issues reserve uniform when ignoreReserve option is true', async () => {
+            mockPrisma.uniform.findFirst.mockResolvedValue(mockReserveUniform as any);
 
             await expect(
                 issue({
                     ...defaultIssueProps,
-                    options: { ignoreInactive: true }
+                    options: { ignoreReserve: true }
                 })
             ).resolves.toEqual([mockUniformList[0]]);
+
+            expect(mockPrisma.uniformIssued.create).toHaveBeenCalled();
+        });
+
+        it('issues uniform with reserve generation when ignoreReserve option is true', async () => {
+            mockPrisma.uniform.findFirst.mockResolvedValue(mockUniformWithReserveGenerationAndType as any);
+
+            await expect(
+                issue({
+                    ...defaultIssueProps,
+                    options: { ignoreReserve: true }
+                })
+            ).resolves.toEqual([mockUniformList[0]]);
+
+            expect(mockPrisma.uniformIssued.create).toHaveBeenCalled();
+        });
+
+        it('issues uniform without generation when uniformtype uses generations', async () => {
+            mockPrisma.uniform.findFirst.mockResolvedValue(mockUniformWithoutGeneration as any);
+
+            await expect(issue(defaultIssueProps)).resolves.toEqual([mockUniformList[0]]);
+
+            expect(mockPrisma.uniformIssued.create).toHaveBeenCalled();
+        });
+
+        it('issues uniform with reserve generation when uniform type does not use generations', async () => {
+            // When uniformType.usingGenerations is false, generation.isReserve should be ignored
+            mockPrisma.uniform.findFirst.mockResolvedValue(mockUniformWithReserveGenerationButTypeNotUsingGenerations as any);
+
+            await expect(issue({
+                ...defaultIssueProps,
+                uniformTypeId: mockTypeList[2].id
+            })).resolves.toEqual([mockUniformList[0]]);
 
             expect(mockPrisma.uniformIssued.create).toHaveBeenCalled();
         });
@@ -262,14 +327,26 @@ describe('<UniformItem> issue', () => {
             expect(mockPrisma.uniformIssued.create).not.toHaveBeenCalled();
         });
 
-        it('throws error when uniform is inactive and ignoreInactive is false', async () => {
-            mockPrisma.uniform.findFirst.mockResolvedValue(mockInactiveUniform as any);
+        it('throws error when uniform is reserve and ignoreReserve is false', async () => {
+            mockPrisma.uniform.findFirst.mockResolvedValue(mockReserveUniform as any);
 
             await expect(issue(defaultIssueProps)).resolves.toMatchObject({
                 error: {
                     exceptionType: ExceptionType.InactiveException,
                 }
-            })
+            });
+
+            expect(mockPrisma.uniformIssued.create).not.toHaveBeenCalled();
+        });
+
+        it('throws error when generation is reserve and ignoreReserve is false', async () => {
+            mockPrisma.uniform.findFirst.mockResolvedValue(mockUniformWithReserveGenerationAndType as any);
+
+            await expect(issue(defaultIssueProps)).resolves.toMatchObject({
+                error: {
+                    exceptionType: ExceptionType.InactiveException,
+                }
+            });
 
             expect(mockPrisma.uniformIssued.create).not.toHaveBeenCalled();
         });
@@ -357,6 +434,7 @@ describe('<UniformItem> issue', () => {
                 },
                 include: {
                     type: true,
+                    generation: true,
                     issuedEntries: {
                         where: {
                             dateReturned: null,

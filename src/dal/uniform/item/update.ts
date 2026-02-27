@@ -27,11 +27,12 @@ export const update = (props: UniformFormType): Promise<UniformWithOwner> => gen
             }
         }
     });
+    let generation = null;
     if (type.usingSizes && data.size) {
         let sizelistId = type.fk_defaultSizelist;
         if (type.usingGenerations && data.generation) {
-            const generation = await client.uniformGeneration.findUniqueOrThrow({
-                where: { 
+            generation = await client.uniformGeneration.findUniqueOrThrow({
+                where: {
                     id: data.generation,
                     fk_uniformType: type.id,
                     recdelete: null,
@@ -61,7 +62,7 @@ export const update = (props: UniformFormType): Promise<UniformWithOwner> => gen
             id: data.id,
         },
         data: {
-            active: data.active,
+            isReserve: generation?.isReserve ? undefined : data.isReserve,
             comment: data.comment,
             fk_generation: type?.usingGenerations ? data.generation ?? null : undefined,
             fk_size: type?.usingSizes ? data.size ?? null : undefined,

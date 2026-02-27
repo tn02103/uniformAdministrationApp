@@ -1,5 +1,3 @@
-"use client"
-
 import { DatePicker } from "@/components/datePicker/DatePicker";
 import ErrorMessage from "@/components/errorMessage";
 import { useModal } from "@/components/modals/modalProvider";

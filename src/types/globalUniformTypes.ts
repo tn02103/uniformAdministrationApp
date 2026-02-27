@@ -4,7 +4,7 @@ const generationDescriptionArgs = {
     select: {
         id: true,
         name: true,
-        outdated: true,
+        isReserve: true,
     }
 } satisfies Prisma.UniformGenerationFindManyArgs;
 const sizeDescriptionArgs = {
@@ -40,7 +40,7 @@ export const uniformWithOwnerArgs = {
     select: {
         id: true,
         number: true,
-        active: true,
+        isReserve: true,
         comment: true,
         type: typeDescriptionArgs,
         generation: generationDescriptionArgs,
@@ -61,7 +61,7 @@ export const uniformArgs = {
     select: {
         id: true,
         number: true,
-        active: true,
+        isReserve: true,
         comment: true,
         type: typeDescriptionArgs,
         generation: generationDescriptionArgs,
@@ -94,7 +94,7 @@ export const uniformGenerationArgs = {
         id: true,
         name: true,
         fk_sizelist: true,
-        outdated: true,
+        isReserve: true,
         sortOrder: true,
         sizelist: {
             select: {

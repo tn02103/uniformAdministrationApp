@@ -34,7 +34,7 @@ describe("getUniformSizelist", () => {
                 fk_sizelist: "sizelist2",
                 name: "",
                 sortOrder: 0,
-                outdated: false,
+                isReserve: false,
                 sizelist: null
             },
             {
@@ -42,7 +42,7 @@ describe("getUniformSizelist", () => {
                 fk_sizelist: null,
                 name: "",
                 sortOrder: 0,
-                outdated: false,
+                isReserve: false,
                 sizelist: null
             },
         ],

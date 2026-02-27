@@ -72,7 +72,7 @@ export const uniformGenerationValidator = {
         uuidValidationPattern.test(gen.id)
         && descriptionValidationPattern.test(gen.name)
         && (!gen.fk_sizelist || uuidValidationPattern.test(gen.fk_sizelist))
-        && (typeof gen.outdated === "boolean")
+        && (typeof gen.isReserve === "boolean")
         && Number.isInteger(gen.sortOrder)
     )
 }

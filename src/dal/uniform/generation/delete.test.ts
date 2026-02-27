@@ -28,7 +28,7 @@ const mockGenerationToDelete = {
     sortOrder: 1,
     fk_uniformType: mockUniformTypeId,
     fk_sizelist: null,
-    outdated: false,
+    isReserve: false,
     recdelete: null,
     recdeleteUser: null,
 };

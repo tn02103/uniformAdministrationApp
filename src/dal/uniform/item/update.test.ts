@@ -26,7 +26,7 @@ const mockDefaultSizelist = mockSizeLists[2]; // For type's default sizelist
 const defaultUpdateProps: UniformFormType = {
     id: mockUniformId,
     number: 2501,
-    active: true,
+    isReserve: false,
     comment: 'Updated comment',
     generation: mockGenerationId,
     size: mockSizeId,
@@ -85,7 +85,7 @@ describe('<UniformItem> update', () => {
                     id: mockUniformId,
                 },
                 data: {
-                    active: true,
+                    isReserve: false,
                     comment: 'Updated comment',
                     fk_generation: mockGenerationId,
                     fk_size: mockSizeId,
@@ -107,7 +107,7 @@ describe('<UniformItem> update', () => {
             expect(mockPrisma.uniform.update).toHaveBeenCalledWith(
                 expect.objectContaining({
                     data: {
-                        active: true,
+                        isReserve: false,
                         comment: 'Updated comment',
                         fk_generation: undefined, // Should be undefined when type doesn't use generations
                         fk_size: mockSizeId,
@@ -127,7 +127,7 @@ describe('<UniformItem> update', () => {
             expect(mockPrisma.uniform.update).toHaveBeenCalledWith(
                 expect.objectContaining({
                     data: {
-                        active: true,
+                        isReserve: false,
                         comment: 'Updated comment',
                         fk_generation: mockGenerationId,
                         fk_size: undefined, // Should be undefined when type doesn't use sizes
@@ -146,7 +146,7 @@ describe('<UniformItem> update', () => {
             expect(mockPrisma.uniform.update).toHaveBeenCalledWith(
                 expect.objectContaining({
                     data: {
-                        active: true,
+                        isReserve: false,
                         comment: 'Updated comment',
                         fk_generation: undefined,
                         fk_size: undefined,
@@ -167,7 +167,7 @@ describe('<UniformItem> update', () => {
             expect(mockPrisma.uniform.update).toHaveBeenCalledWith(
                 expect.objectContaining({
                     data: {
-                        active: true,
+                        isReserve: false,
                         comment: 'Updated comment',
                         fk_generation: null,
                         fk_size: null,
@@ -304,6 +304,72 @@ describe('<UniformItem> update', () => {
             mockPrisma.uniform.update.mockRejectedValue(new Error('Database update failed'));
 
             await expect(update(defaultUpdateProps)).rejects.toThrow('Database update failed');
+        });
+    });
+
+    describe('reserve validation', () => {
+        it('updates isReserve if generation not a reserve', async () => {
+            // Use generation that is not reserve
+            const nonReserveGeneration = mockGenerationLists[0][1];
+            mockPrisma.uniformGeneration.findUniqueOrThrow.mockResolvedValue(nonReserveGeneration as any);
+
+            const props = {
+                ...defaultUpdateProps,
+                isReserve: false,
+            };
+
+            await expect(update(props)).resolves.toEqual(mockUniformList[0]);
+
+            expect(mockPrisma.uniform.update).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    data: expect.objectContaining({
+                        isReserve: expect.any(Boolean),
+                    })
+                })
+            );
+        });
+
+        it('updates isReserve if generation is null', async () => {
+            // Use type that doesn't use generations
+            mockPrisma.uniformType.findFirstOrThrow.mockResolvedValue(mockUniformTypeNoGenerations as any);
+
+            const props = {
+                ...defaultUpdateProps,
+                isReserve: true,
+                generation: null,
+            };
+
+            await expect(update(props)).resolves.toEqual(mockUniformList[0]);
+
+            expect(mockPrisma.uniform.update).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    data: expect.objectContaining({
+                        isReserve: expect.any(Boolean),
+                    })
+                })
+            );
+        });
+
+        it('does not update isReserve if generation is reserve', async () => {
+            // Use generation that is reserve 
+            const reserveGeneration = mockGenerationLists[0][0];
+            mockPrisma.uniformGeneration.findUniqueOrThrow.mockResolvedValue(reserveGeneration as any);
+
+            const props = {
+                ...defaultUpdateProps,
+                isReserve: false, 
+                generation: reserveGeneration.id,
+            };
+
+            await expect(update(props)).resolves.toEqual(mockUniformList[0]);
+
+            expect(mockPrisma.uniform.update).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    data: expect.not.objectContaining({
+                        isReserve: expect.any(Boolean),
+                    })
+                })
+            );
         });
     });
 

@@ -17,8 +17,8 @@ exports[`<UniformType> Integration Tests should get list with correct data struc
       {
         "fk_sizelist": "242541-baa0-4303-be44-6c54898ca869",
         "id": "5a8f39-6e54-46f7-978b-cf23c52c042c",
+        "isReserve": true,
         "name": "Generation1-1",
-        "outdated": true,
         "sizelist": {
           "id": "242541-baa0-4303-be44-6c54898ca869",
           "name": "Liste1",
@@ -28,8 +28,8 @@ exports[`<UniformType> Integration Tests should get list with correct data struc
       {
         "fk_sizelist": "242541-baa0-4303-be44-6c54898ca869",
         "id": "1e05b1-740f-4f66-beea-aa39b37a3fe8",
+        "isReserve": false,
         "name": "Generation1-2",
-        "outdated": false,
         "sizelist": {
           "id": "242541-baa0-4303-be44-6c54898ca869",
           "name": "Liste1",
@@ -39,8 +39,8 @@ exports[`<UniformType> Integration Tests should get list with correct data struc
       {
         "fk_sizelist": "598ef5-1820-4a08-992c-2c3b91e8f093",
         "id": "4095a7-ff83-4a0f-91e5-75d3dfa28079",
+        "isReserve": false,
         "name": "Generation1-3",
-        "outdated": false,
         "sizelist": {
           "id": "598ef5-1820-4a08-992c-2c3b91e8f093",
           "name": "Liste2",
@@ -50,8 +50,8 @@ exports[`<UniformType> Integration Tests should get list with correct data struc
       {
         "fk_sizelist": "41b4a1-2f60-468e-9eba-8355cb7970fb",
         "id": "2f0541-7c4c-46c1-a03f-72ac6f4246d7",
+        "isReserve": false,
         "name": "Generation1-4",
-        "outdated": false,
         "sizelist": {
           "id": "41b4a1-2f60-468e-9eba-8355cb7970fb",
           "name": "Liste3",
@@ -74,16 +74,16 @@ exports[`<UniformType> Integration Tests should get list with correct data struc
       {
         "fk_sizelist": null,
         "id": "782ba5-f4ff-4829-97e8-b8923f870827",
+        "isReserve": true,
         "name": "Generation2-1",
-        "outdated": true,
         "sizelist": null,
         "sortOrder": 0,
       },
       {
         "fk_sizelist": null,
         "id": "892f4b-631e-4e01-aee8-0b1030810114",
+        "isReserve": false,
         "name": "Generation2-2",
-        "outdated": false,
         "sizelist": null,
         "sortOrder": 1,
       },
@@ -137,8 +137,8 @@ exports[`<UniformType> Integration Tests should get single type with correct dat
     {
       "fk_sizelist": "242541-baa0-4303-be44-6c54898ca869",
       "id": "5a8f39-6e54-46f7-978b-cf23c52c042c",
+      "isReserve": true,
       "name": "Generation1-1",
-      "outdated": true,
       "sizelist": {
         "id": "242541-baa0-4303-be44-6c54898ca869",
         "name": "Liste1",
@@ -148,8 +148,8 @@ exports[`<UniformType> Integration Tests should get single type with correct dat
     {
       "fk_sizelist": "242541-baa0-4303-be44-6c54898ca869",
       "id": "1e05b1-740f-4f66-beea-aa39b37a3fe8",
+      "isReserve": false,
       "name": "Generation1-2",
-      "outdated": false,
       "sizelist": {
         "id": "242541-baa0-4303-be44-6c54898ca869",
         "name": "Liste1",
@@ -159,8 +159,8 @@ exports[`<UniformType> Integration Tests should get single type with correct dat
     {
       "fk_sizelist": "598ef5-1820-4a08-992c-2c3b91e8f093",
       "id": "4095a7-ff83-4a0f-91e5-75d3dfa28079",
+      "isReserve": false,
       "name": "Generation1-3",
-      "outdated": false,
       "sizelist": {
         "id": "598ef5-1820-4a08-992c-2c3b91e8f093",
         "name": "Liste2",
@@ -170,8 +170,8 @@ exports[`<UniformType> Integration Tests should get single type with correct dat
     {
       "fk_sizelist": "41b4a1-2f60-468e-9eba-8355cb7970fb",
       "id": "2f0541-7c4c-46c1-a03f-72ac6f4246d7",
+      "isReserve": false,
       "name": "Generation1-4",
-      "outdated": false,
       "sizelist": {
         "id": "41b4a1-2f60-468e-9eba-8355cb7970fb",
         "name": "Liste3",

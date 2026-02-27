@@ -13,7 +13,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { Arguments, mutate } from "swr";
 import { LabelIconButton } from "../Buttons/LabelIconButton";
-import { ExpandableArea } from "../ExpandableArea/ExpandableArea";
+import { ExpandableDividerArea } from "../ExpandableArea/ExpandableArea";
 
 export const UniformDeficiencyRow = ({ uniformId }: { uniformId: string }) => {
     const t = useI18n();
@@ -230,7 +230,7 @@ const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: Defici
                         </Card.Text>
                     )}
                     {deficiency &&
-                        <ExpandableArea>
+                        <ExpandableDividerArea>
                             <Col xs={6} className="mt-2">
                                 <div className="fw-bold" id={`def-${deficiency.id}-dateCreated`}>
                                     {t('uniformOffcanvas.deficiency.label.date.created')}
@@ -282,7 +282,7 @@ const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: Defici
                                     </Col>
                                 </>
                             )}
-                        </ExpandableArea>
+                        </ExpandableDividerArea>
                     }
                 </form>
             </Card.Body>

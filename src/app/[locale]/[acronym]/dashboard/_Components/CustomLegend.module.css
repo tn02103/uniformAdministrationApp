@@ -1,0 +1,60 @@
+.container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.legendItem {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: opacity 300ms ease;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: transparent;
+}
+
+.legendItem.visible {
+    opacity: 1;
+}
+
+.legendItem.hidden {
+    opacity: 0.4;
+}
+
+.legendItem.dimmed {
+    opacity: 0.6;
+}
+
+.legendItem.hovered {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.colorIndicator {
+    width: 12px;
+    height: 12px;
+    margin-right: 8px;
+    transition: opacity 300ms ease;
+}
+
+.colorIndicator.visible {
+    opacity: 1;
+}
+
+.colorIndicator.hidden {
+    opacity: 0.4;
+}
+
+.label {
+    transition: color 300ms ease;
+    font-size: 14px;
+}
+
+.label.visible {
+    color: #333;
+}
+
+.label.hidden {
+    color: #999;
+}

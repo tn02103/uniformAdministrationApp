@@ -94,11 +94,12 @@ exports[`UniformOffcanvas should render correctly 1`] = `
       >
         <div
           class="col-sm-auto col-12"
+          style="min-width: 120px;"
         >
           <div>
             <label
               class="fw-bold m-0  form-label"
-              for="uniform_toggle-active"
+              for="uniform_toggle-isReserve"
             >
               common.status
             </label>
@@ -110,10 +111,10 @@ exports[`UniformOffcanvas should render correctly 1`] = `
               common.uniform.state.active
             </p>
             <div
-              aria-label="error message active"
+              aria-label="error message isReserve"
               class="text-danger fs-7"
-              data-testid="err_active"
-              id="uniform_err_active"
+              data-testid="err_isReserve"
+              id="uniform_err_isReserve"
               role="alert"
             />
           </div>

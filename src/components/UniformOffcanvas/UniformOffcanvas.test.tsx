@@ -221,7 +221,7 @@ describe('UniformOffcanvas', () => {
                     generation: mockUniform.generation.id,
                     size: mockUniform.size.id,
                     comment: mockUniform.comment,
-                    active: mockUniform.active,
+                    isReserve: mockUniform.isReserve,
                 });
                 expect(onSaveMock).toHaveBeenCalledTimes(1);
 
