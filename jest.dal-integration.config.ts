@@ -14,6 +14,9 @@ const customJestConfig: Config = { // CONFIGURATION FOR DAL INTEGRATION TESTS (W
     transform: {
         '^.+\\.(js|jsx|ts|tsx)$': '@swc/jest',
     },
+    transformIgnorePatterns: [
+        '/node_modules/(?!(uuid)/)',
+    ],
     testMatch: [
         "**/src/dal/**/*.integration.test.[jt]s?(x)",
     ],
