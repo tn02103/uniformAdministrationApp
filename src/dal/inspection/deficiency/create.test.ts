@@ -29,17 +29,12 @@ jest.mock('@/lib/db', () => ({
 describe('createUniformDeficiency', () => {
     const { prisma } = jest.requireMock('@/lib/db');
     const date = new Date();
-    beforeAll(() => {
-        global.__ASSOSIATION__ = 'fk_assoasiation';
-    });
+
     beforeEach(() => {
+        jest.clearAllMocks();
         jest.useFakeTimers();
         jest.setSystemTime(date);
     });
-    afterEach(() => {
-        jest.clearAllMocks();
-    });
-    afterAll(() => global.__ASSOSIATION__ = undefined);
 
     it('creates a deficiency', async () => {
         // Call the function with the mock data
@@ -58,9 +53,9 @@ describe('createUniformDeficiency', () => {
                 fk_deficiencyType: '37d06077-f678-45d0-8494-75056c61b0ce',
                 comment: 'New comment',
                 description: 'UniformType-123',
-                userCreated: 'mana',
+                userCreated: 'testuser',
                 dateCreated: date,
-                userUpdated: 'mana',
+                userUpdated: 'testuser',
                 dateUpdated: date,
                 fk_inspection_created: undefined,
                 uniformDeficiency: {
@@ -121,7 +116,7 @@ describe('createUniformDeficiency', () => {
 
         expect(prisma.inspection.findFirst).toHaveBeenCalledWith({
             where: {
-                fk_assosiation: 'fk_assoasiation',
+                fk_assosiation: 'test-assosiation-id',
                 date: dayjs(date).format("YYYY-MM-DD"),
                 timeStart: { not: null },
                 timeEnd: null,
@@ -132,9 +127,9 @@ describe('createUniformDeficiency', () => {
                 fk_deficiencyType: '37d06077-f678-45d0-8494-75056c61b0ce',
                 comment: 'New comment',
                 description: 'UniformType-123',
-                userCreated: 'mana',
+                userCreated: 'testuser',
                 dateCreated: date,
-                userUpdated: 'mana',
+                userUpdated: 'testuser',
                 dateUpdated: date,
                 fk_inspection_created: '0177f740-75ee-4bb8-9875-7f10e3e6af8b',
                 uniformDeficiency: {

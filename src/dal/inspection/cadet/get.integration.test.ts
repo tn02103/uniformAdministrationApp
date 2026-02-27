@@ -19,6 +19,10 @@ describe('getCadetInspectionFormData Integration Tests', () => {
         global.__ROLE__ = AuthRole.inspector;
         global.__ASSOSIATION__ = data.assosiation.id;
     });
+    afterAll(() => {
+        global.__ROLE__ = undefined;
+        global.__ASSOSIATION__ = undefined;
+    });
 
     beforeEach(async () => {
         // Ensure inspection[4] is active for today

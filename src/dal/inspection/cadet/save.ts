@@ -2,7 +2,6 @@ import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { CadetInspectionFormSchema, cadetInspectionFormSchema } from "@/zod/deficiency";
-
 import { unsecuredGetActiveInspection } from "./get";
 import { v4 as uuid } from "uuid";
 

@@ -150,6 +150,7 @@ const MOCK_INSPECTION_WITH_ORPHANS = {
 describe("saveCadetInspection", () => {
     const mockUnsecuredGetActiveInspection = jest.requireMock("./get").unsecuredGetActiveInspection;
     beforeEach(() => {
+        jest.clearAllMocks();
         // Setup default successful mocks
         mockUnsecuredGetActiveInspection.mockResolvedValue(MOCK_INSPECTION);
 
@@ -157,6 +158,11 @@ describe("saveCadetInspection", () => {
         global.__ROLE__ = AuthRole.inspector;
         global.__USERNAME__ = TEST_USER.username;
         global.__ASSOSIATION__ = TEST_USER.assosiation;
+    });
+    afterAll(() => {
+        global.__ROLE__ = undefined;
+        global.__USERNAME__ = undefined;
+        global.__ASSOSIATION__ = undefined;
     });
 
     describe("Group 1: Pre-condition Validation", () => {
