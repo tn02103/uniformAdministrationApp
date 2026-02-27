@@ -121,6 +121,14 @@ export const genericSANoDataValidator = async (requiredRole: AuthRole) => {
     return [user];
 }
 
+/**
+ * 
+ * @deprecated use genericSAValidator instead with a zod schema that only checks the typevalidation
+ * @param requiredRole 
+ * @param typeValidation 
+ * @param assosiationValidations 
+ * @returns 
+ */
 export const genericSAValidatorV2 = async (
     requiredRole: AuthRole,
     typeValidation: boolean,
