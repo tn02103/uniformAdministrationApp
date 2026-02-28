@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: "postgres://user:password@localhost:5432/vk_uniform"
-      IRON_SESSION_KEY: "46[Hmau0uH&B]0;"m$'r1Lk;kX@I|cm@"
+      IRON_SESSION_KEY: "46[Hmau0uH&B]0;kjm$'r1Lk;kX@I|cm@"
       IRON_SESSION_COOKIE_NAME: "iron-session-cookie"
       REFRESH_TOKEN_KEY: "refresh-token"
       CI: true
@@ -106,7 +106,7 @@ jobs:
     needs: [jest-dal-unit, jest-components, jest-dal-integration, lint]
     env:
       DATABASE_URL: "postgres://user:password@localhost:5432/vk_uniform"
-      IRON_SESSION_KEY: "46[Hmau0uH&B]0;"m$'r1Lk;kX@I|cm@"
+      IRON_SESSION_KEY: "46[Hmau0uH&B]0;jjm$'r1Lk;kX@I|cm@"
       IRON_SESSION_COOKIE_NAME: "iron-session-cookie"
       REFRESH_TOKEN_KEY: "refresh-token"
       CI: true
@@ -158,7 +158,7 @@ jobs:
     needs: build
     env:
       DATABASE_URL: "postgres://user:password@localhost:5432/vk_uniform"
-      IRON_SESSION_KEY: "46[Hmau0uH&B]0;"m$'r1Lk;kX@I|cm@"
+      IRON_SESSION_KEY: "46[Hmau0uH&B]0;kjm$'r1Lk;kX@I|cm@"
       IRON_SESSION_COOKIE_NAME: "iron-session-cookie"
       REFRESH_TOKEN_KEY: "refresh-token"
       CI: true
