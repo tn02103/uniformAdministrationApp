@@ -46,7 +46,7 @@ jobs:
     name: Jest Integration Tests
     runs-on: ubuntu-latest
     env:
-      DATABASE_URL: ${{ vars.DATABASE_URL }}
+      DATABASE_URL: "postgres://user:password@localhost:5432/vk_uniform"
       IRON_SESSION_KEY: ${{ vars.IRON_SESSION_KEY }}
       IRON_SESSION_COOKIE_NAME: ${{ vars.IRON_SESSION_COOKIE_NAME }}
       REFRESH_TOKEN_KEY: ${{ vars.REFRESH_TOKEN_KEY }}
@@ -55,9 +55,9 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: ${{ vars.DATABASE_USERNAME }}
-          POSTGRES_PASSWORD: ${{ vars.DATABASE_PASSWORD }}
-          POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: vk_uniform
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
