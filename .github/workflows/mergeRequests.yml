@@ -57,6 +57,7 @@ jobs:
         env:
           POSTGRES_USER: ${{ vars.DATABASE_USERNAME }}
           POSTGRES_PASSWORD: ${{ vars.DATABASE_PASSWORD }}
+          POSTGRES_DB: ${{ vars.POSTGRES_DB }}
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
