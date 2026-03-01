@@ -22,9 +22,11 @@ const test = adminTest.extend<Fixture>({
     messageComponent: async ({ page }, use) => use(new MessagePopupComponent(page)),
     issuePopupComponent: async ({ page }, use) => use(new SimpleFormPopupComponent(page)),
 });
+
 test.afterEach(async ({ staticData }) => {
     await staticData.resetData();
 });
+
 test.describe(() => {
     const dbIssuedItemCheck = async (fk_uniform: string, fk_cadet: string) => {
         const date = new Date();
@@ -77,6 +79,7 @@ test.describe(() => {
     test.beforeEach(async ({ page, cadetId }) => {
         await page.goto(`/de/app/cadet/${cadetId}`);
     });
+
     test('return uniformItem Desktop', async ({ uniformComponent, messageComponent, cadetId, staticData: { ids } }) => {
         await test.step('open and validate modal', async () => {
             await uniformComponent.btn_uitem_withdraw(ids.uniformIds[0][84]).click();
@@ -88,15 +91,18 @@ test.describe(() => {
                 expect.soft(messageComponent.div_icon.locator('svg[data-icon="triangle-exclamation"]')).toBeVisible(),
             ]);
         });
+
         await test.step('return and verify ui', async () => {
             await messageComponent.btn_save.click();
             await expect(messageComponent.div_popup).toBeHidden();
             await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).toBeHidden();
         });
+
         await test.step('verify db', async () => {
             await dbReturnedCheck(ids.uniformIds[0][84], cadetId, new Date('2023-08-16T00:00:00.000Z'));
         });
     });
+
     test('return uniformItem mobile', async ({ page, uniformComponent, messageComponent, cadetId, staticData: { ids } }) => {
         await page.setViewportSize(viewports.xs);
 
@@ -105,11 +111,13 @@ test.describe(() => {
             await uniformComponent.btn_uitem_menu_withdraw(ids.uniformIds[0][84]).click();
             await expect(messageComponent.div_popup).toBeVisible();
         });
+
         await test.step('return and verify ui', async () => {
             await messageComponent.btn_save.click();
             await expect(messageComponent.div_popup).toBeHidden();
             await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).toBeHidden();
         });
+
         await test.step('verify db', async () => {
             await dbReturnedCheck(ids.uniformIds[0][84], cadetId, new Date('2023-08-16T00:00:00.000Z'));
         });
@@ -148,6 +156,7 @@ test.describe(() => {
             await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][25])).toBeVisible();
             await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][84])).toBeHidden();
         });
+
         await test.step('verify db', async () => {
             await Promise.all([
                 dbIssuedAmountCheck(cadetId, 6),
@@ -156,6 +165,7 @@ test.describe(() => {
             ]);
         });
     });
+
     test('Issue UniformItem', async ({ uniformComponent, page, cadetId, staticData: { ids } }) => {
         const div_popup = page.getByRole("dialog");
         const txt_autocomplete = div_popup.getByRole('textbox', { name: t.cadetDetailPage.issueModal["input.label"] });
@@ -177,10 +187,12 @@ test.describe(() => {
             await expect(btn_save).toBeEnabled();
             await btn_save.click();
         });
+
         await test.step('verify ui', async () => {
             await expect.soft(uniformComponent.div_utype_amount(ids.uniformTypeIds[0])).toHaveText(`(4 ${t.common.of} 3)`);
             await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][25])).toBeVisible();
         });
+
         await test.step('verify db', async () => {
             await Promise.all([
                 dbIssuedAmountCheck(cadetId, 7),
@@ -205,10 +217,12 @@ test.describe(() => {
             await expect(btn_save).toBeEnabled();
             await btn_save.click();
         });
+
         await test.step('verify ui', async () => {
             await expect(div_popup).toBeHidden();
             await expect.soft(uniformComponent.div_uitem(ids.uniformIds[0][0])).toBeVisible();
         });
+
         await test.step('verify db', async () => {
             await Promise.all([
                 dbIssuedAmountCheck(cadetId, 7),
@@ -314,6 +328,7 @@ test.describe(() => {
             await txt_autocomplete.fill('1100');
             await expect(txt_autocomplete).toHaveValue('1100');
         });
+
         await test.step('issued exceptionHandling & opening cadet', async () => {
             await expect(lnk_openCadet).toBeVisible();
             const page2Promise = page.waitForEvent('popup');
@@ -321,6 +336,7 @@ test.describe(() => {
             page2 = await page2Promise;
             cadet2Page = new CadetDetailPage(page2);
         });
+
         await test.step('verify opendCadetPage', async () => {
             await expect.soft(cadet2Page.page).toHaveURL(`/de/app/cadet/${ids.cadetIds[5]}`);
             await expect.soft(cadet2Page.divPageHeader).toContainText('Maik Finkel');

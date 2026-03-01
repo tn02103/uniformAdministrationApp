@@ -343,17 +343,17 @@ export function getStaticDataIds(index: number) {
             `${prefix}c1d2e3-f4a5-b6c7-d8e9-f0a1b2c3d4e5`,
             `${prefix}a7b8c9-d0e1-f2a3-b4c5-d6e7f8a9b0c1`
         ],
-        refreshTokenIds: [
-            `${prefix}12a3b4-c5d6-e7f8-a9b0-c1d2e3f4a5b6`,
-            `${prefix}34c5d6-e7f8-a9b0-c1d2-e3f4a5b6c7d8`,
-            `${prefix}56e7f8-a9b0-c1d2-e3f4-a5b6c7d8e9f0`,
-            `${prefix}78a9b0-c1d2-e3f4-a5b6-c7d8e9f0a1b2`,
-            `${prefix}9ac1d2-e3f4-a5b6-c7d8-e9f0a1b2c3d4`,
-            `${prefix}bce3f4-a5b6-c7d8-e9f0-a1b2c3d4e5f6`,
-            `${prefix}dea5b6-c7d8-e9f0-a1b2-c3d4e5f6a7b8`,
-            `${prefix}f0c7d8-e9f0-a1b2-c3d4-e5f6a7b8c9d0`,
-            `${prefix}12e9f0-a1b2-c3d4-e5f6-a7b8c9d0e1f2`,
-            `${prefix}34a1b2-c3d4-e5f6-a7b8-c9d0e1f2a3b4`
+        sessionIds: [
+            `${prefix}ab12cd-34ef-56gh-78ij-90klmnopqrst`,
+            `${prefix}uv12wx-34yz-56ab-78cd-90efghijklmn`,
+            `${prefix}op12qr-34st-56uv-78wx-90yzabcdefgh`,
+            `${prefix}ij12kl-34mn-56op-78qr-90stuvwxyzab`,
+            `${prefix}ef12gh-34ij-56kl-78mn-90opqrstuvwx`,
+            `${prefix}cd12ef-34gh-56ij-78kl-90mnopqrstuv`,
+            `${prefix}gh34ij-56kl-78mn-90op-qrstuvw15xab`,
+            `${prefix}kl56mn-78op-90qr-12st-uvwxabcdefgh`,
+            `${prefix}op78qr-90st-12uv-34wx-yzabcdefghij`,
+            `${prefix}st90uv-12wx-34yz-56ab-cdefgh52ijkl`,
         ],
         dynamic: {
             firstInspection: {

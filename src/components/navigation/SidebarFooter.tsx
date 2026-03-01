@@ -1,14 +1,14 @@
-import { userLogout } from "@/dal/auth";
+import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/locales/client";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Ref } from "react";
 import { Dropdown } from "react-bootstrap";
-import { mutate } from "swr";
 import { useSessionStorage } from "usehooks-ts";
 import { useModal } from "../modals/modalProvider";
 import { useSidebarContext } from "./Sidebar";
+import { userLogout } from "@/dal/auth";
 
 type SidebarFooterProps = {
     username: string;
@@ -19,16 +19,13 @@ type SidebarFooterProps = {
 export const SidebarFooter = ({ username, collapseButtonRef, handleCollapseButtonMouseLeave }: SidebarFooterProps) => {
     const t = useI18n();
     const modal = useModal();
-    const router = useRouter();
-
+    const {logout} = useAuth();
+   
     const { collapsed, setCollapsed, isSidebarFixed, setShowSidebar } = useSidebarContext();
     const [, setSidebarFixed] = useSessionStorage("sidebarFixed", true);
 
-    function handleLogout() {
-        userLogout().then(() => {
-            router.push('/login');
-            mutate(() => true, undefined);
-        });
+    const handleLogout = () => {
+        userLogout().then(logout);
     }
 
     return (
@@ -44,11 +41,16 @@ export const SidebarFooter = ({ username, collapseButtonRef, handleCollapseButto
                                 {username}
                             </Dropdown.Toggle>
                             <Dropdown.Menu className="bg-navy-secondary border-white text-white">
-                                <Dropdown.Item onClick={handleLogout} data-testid="btn_logout" className="text-white bg-navy-secondary">
-                                    {t('sidebar.logout')}
+                                <Dropdown.Item className="text-white bg-navy-secondary my-2 my-lg-0">
+                                    <Link href="/app/profile">
+                                        {t('sidebar.links.profile')}
+                                    </Link>
                                 </Dropdown.Item>
                                 <Dropdown.Item onClick={modal?.changeLanguage} data-testid="btn_changeSize" className="text-white bg-navy-secondary my-2 my-lg-0">
                                     {t('sidebar.changeLanguage')}
+                                </Dropdown.Item>
+                                <Dropdown.Item onClick={handleLogout} data-testid="btn_logout" className="text-white bg-navy-secondary">
+                                    {t('sidebar.logout')}
                                 </Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>

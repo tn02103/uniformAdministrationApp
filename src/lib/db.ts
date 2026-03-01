@@ -17,6 +17,9 @@ const disconnectPrisma = async () => {
     process.exit(0);
 };
 
-process.on('SIGINT', disconnectPrisma);
-process.on('SIGTERM', disconnectPrisma);
-process.on('beforeExit', disconnectPrisma);
+// Only add process listeners if we're not in Edge Runtime (middleware)
+if (typeof process !== 'undefined' && process.on && typeof process.on === 'function') {
+    process.on('SIGINT', disconnectPrisma);
+    process.on('SIGTERM', disconnectPrisma);
+    process.on('beforeExit', disconnectPrisma);
+}

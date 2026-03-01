@@ -9,6 +9,7 @@ type Fixture = {
 const test = adminTest.extend<Fixture>({
     createPage: async ({ page }, use) => use(new CreateUniformPage(page)),
 });
+
 test.beforeEach(async ({ page, createPage, staticData: { ids } }) => {
     await page.goto(`/de/app/uniform/new`)
     await createPage.btn_tab_knownIds.click();
@@ -33,6 +34,7 @@ test('formValidation', async ({ page, createPage: { numberInput } }) => {
             });
         }
     });
+
     await test.step('numberEnd', async () => {
         const tests = numberValidationTests({ max: 99999999, min: 1, strict: false });
         for (const { testValue, valid } of tests) {
@@ -50,6 +52,7 @@ test('formValidation', async ({ page, createPage: { numberInput } }) => {
         }
     });
 });
+
 test('validate special validations', async ({ page, createPage: { numberInput, configurator } }) => {
     await test.step('start smaller end', async () => {
         await numberInput.txt_numStart.fill("10");
@@ -59,6 +62,7 @@ test('validate special validations', async ({ page, createPage: { numberInput, c
         await expect(page.locator('.Toastify__toast--error')).toBeVisible();
         await page.locator('.Toastify__close-button').click();
     });
+
     await test.step('at max amount of numbers', async () => {
         await expect(page.locator('.Toastify__toast--error')).toBeHidden()
         await numberInput.btn_back.click();
@@ -70,6 +74,7 @@ test('validate special validations', async ({ page, createPage: { numberInput, c
 
         await expect(numberInput.div_number(24)).toBeVisible();
     });
+
     await test.step('over max amount of numbers', async () => {
         await expect(page.locator('.Toastify__toast--error')).toBeHidden()
         await numberInput.btn_back.click();
@@ -82,6 +87,7 @@ test('validate special validations', async ({ page, createPage: { numberInput, c
         await expect(page.locator('.Toastify__toast--error')).toBeVisible();
         await page.locator('.Toastify__close-button').click();
     });
+
     await test.step('over max amount with already added', async () => {
         await expect(page.locator('.Toastify__toast--error')).toBeHidden()
         await numberInput.btn_back.click();
@@ -109,6 +115,7 @@ test('validate input', async ({ createPage: { numberInput } }) => {
         await expect(numberInput.div_number(1)).toBeVisible();
         await expect.soft(numberInput.txt_numStart).toHaveValue("");
     });
+
     await test.step('create single number 2 using both fields', async () => {
         await numberInput.txt_numStart.fill("2");
         await numberInput.txt_numEnd.fill("2");
@@ -120,6 +127,7 @@ test('validate input', async ({ createPage: { numberInput } }) => {
             expect.soft(numberInput.txt_numEnd).toHaveValue(""),
         ]);
     });
+
     await test.step('create single number alread created', async () => {
         await numberInput.txt_numStart.fill("2");
         await numberInput.txt_numEnd.fill("");
@@ -127,6 +135,7 @@ test('validate input', async ({ createPage: { numberInput } }) => {
 
         await expect.soft(numberInput.div_number(2)).toBeVisible();
     });
+
     await test.step('create first batch of numbers', async () => {
         await numberInput.txt_numStart.fill("3");
         await numberInput.txt_numEnd.fill("6");
@@ -140,6 +149,7 @@ test('validate input', async ({ createPage: { numberInput } }) => {
             expect.soft(numberInput.txt_numEnd).toHaveValue(""),
         ]);
     });
+
     await test.step('delete number 4', async () => {
         await numberInput.div_number(4).hover();
         await expect(numberInput.btn_number_remove(4)).toBeVisible();

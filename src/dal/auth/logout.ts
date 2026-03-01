@@ -1,6 +1,7 @@
 import { getIronSession } from "@/lib/ironSession";
 import { cookies } from "next/headers";
-import { AuthConfig, getDeviceAccountFromCookies } from "./helper";
+import { getDeviceAccountFromCookies } from "./helper";
+import { AuthConfig } from "./config";
 import { prisma } from "@/lib/db";
 
 
@@ -18,7 +19,7 @@ export const logout = async () => {
                 where: {
                     token: refreshToken.value,
                 },
-                data: { revoked: true },
+                data: { status: "revoked" },
             });
             // Clear Refreshtoken cookie
             cookieList.delete(AuthConfig.refreshTokenCookie);
@@ -34,7 +35,7 @@ export const logout = async () => {
                         where: {
                             deviceId: deviceId,
                         },
-                        data: { revoked: true },
+                        data: { status: "revoked" },
                     });
                 }
             }

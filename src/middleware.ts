@@ -1,9 +1,6 @@
 import { createI18nMiddleware } from "next-international/middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { getIronSession } from "./lib/ironSession";
-import { cookies } from "next/headers";
-import { AuthConfig } from "./dal/auth/helper";
-import { refreshAccessToken } from "./dal/auth";
 
 const I18nMiddleware = createI18nMiddleware({
     locales: ['en', 'de'],

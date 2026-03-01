@@ -34,9 +34,11 @@ test.afterEach(async ({ staticData: { cleanup } }) => {
 test.describe(() => {
     const date = new Date();
     date.setUTCHours(0, 0, 0, 0);
+
     test.beforeEach(async ({ page, staticData }) => {
         await page.goto(`/de/app/cadet/${staticData.ids.cadetIds[1]}`);
     });
+
     const dbIssuedCheck = async (fk_material: string, fk_cadet: string, quantity: number) => {
         const issued = await prisma.materialIssued.findMany({
             where: { fk_material, fk_cadet }
@@ -115,6 +117,7 @@ test.describe(() => {
             await materialComponent.btn_group_issue(ids.materialGroupIds[0]).click();
             await expect(popupComponent.div_popup).toBeVisible();
         });
+
         await test.step('validate popup', async () => {
             await expect.soft(popupComponent.div_header).toHaveText(t.cadetDetailPage.issueMaterial.header.replace('{group}', 'Gruppe1'));
             await expect.soft(popupComponent.txt_issued).toBeVisible();
@@ -128,20 +131,24 @@ test.describe(() => {
             await expect.soft(popupComponent.sel_type.getByText('Typ1-4')).toBeEnabled();
         });
     });
+
     test('validate issue', async ({ materialComponent, popupComponent, staticData: { ids } }) => {
         await test.step('open Modal', async () => {
             await materialComponent.btn_group_issue(ids.materialGroupIds[0]).click();
             await expect(popupComponent.div_popup).toBeVisible();
         });
+
         await test.step('select and save', async () => {
             await popupComponent.sel_type.selectOption(ids.materialIds[1]);
             await popupComponent.txt_issued.fill('3');
             await popupComponent.btn_save.click();
         });
+
         await test.step('validate ui', async () => {
             await expect.soft(popupComponent.div_popup).toBeHidden();
             await expect.soft(materialComponent.div_material(ids.materialIds[1])).toBeVisible();
         });
+
         await test.step('validate db', async () => {
             await dbIssuedCheck(ids.materialIds[1], ids.cadetIds[1], 3);
         });
@@ -173,6 +180,7 @@ test.describe(() => {
             await expect.soft(materialComponent.div_material_issued(newMaterial)).toHaveText('2');
             await expect.soft(materialComponent.div_material_name(newMaterial)).toHaveText('Typ1-2');
         });
+
         await test.step('validate db', async () => {
             await dbIssuedCheck(newMaterial, ids.cadetIds[1], 2);
             await dbReturnedCheck(oldMaterial, ids.cadetIds[1], 1);
@@ -200,6 +208,7 @@ test.describe(() => {
             await expect.soft(materialComponent.div_material_issued(ids.materialIds[2])).toHaveText('4');
             await expect.soft(materialComponent.div_material_name(ids.materialIds[2])).toHaveText('Typ1-3');
         });
+
         await test.step('validate db', async () => {
             const dbIssued = await prisma.materialIssued.findMany({
                 where: {
@@ -228,6 +237,7 @@ test.describe(() => {
             await materialComponent.btn_material_return(ids.materialIds[2]).click();
             await expect.soft(materialComponent.div_material(ids.materialIds[2])).toBeHidden();
         });
+
         await test.step('validate db', async () => {
             await dbReturnedCheck(ids.materialIds[2], ids.cadetIds[1], 1);
         });

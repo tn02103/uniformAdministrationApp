@@ -13,6 +13,7 @@ const test = adminTest.extend<Fixture>({
     userPage: ({ page }, use) => use(new UserAdministrationPage(page)),
     users: async ({ staticData }, use) => use(await staticData.data.users() as User[]),
 });
+
 test.beforeEach(async ({ page }) => {
     await page.goto('/de/app/admin/user');
 })
@@ -21,6 +22,7 @@ managerTest('validate Manager not authorized', async ({ page }) => {
     await page.goto('/de/app/admin/user');
     await expect(page.getByTestId('div_403Page')).toBeVisible();
 });
+
 test('validate Data', async ({ userPage, users }) => {
     await Promise.all(
         users.map(async (user) =>
@@ -50,6 +52,7 @@ test('validate Displaysizes', async ({ page, userPage, users }) => {
             expect.soft(userPage.btn_user_menu(users[0].id)).toBeVisible(),
         ]);
     });
+
     await test.step('Displaysize xl', async () => {
         await page.setViewportSize({ height: 800, width: 1300 });
 
@@ -62,6 +65,7 @@ test('validate Displaysizes', async ({ page, userPage, users }) => {
             expect.soft(userPage.btn_user_menu(users[0].id)).toBeVisible(),
         ]);
     });
+
     await test.step('Displaysize lg', async () => {
         await page.setViewportSize({ height: 800, width: 1000 });
 
@@ -74,6 +78,7 @@ test('validate Displaysizes', async ({ page, userPage, users }) => {
             expect.soft(userPage.btn_user_menu(users[0].id)).toBeVisible(),
         ]);
     });
+
     await test.step('Displaysize md', async () => {
         await page.setViewportSize({ height: 800, width: 800 });
 
@@ -86,6 +91,7 @@ test('validate Displaysizes', async ({ page, userPage, users }) => {
             expect.soft(userPage.btn_user_menu(users[0].id)).toBeVisible(),
         ]);
     });
+
     await test.step('Displaysize sm', async () => {
         await page.setViewportSize({ height: 800, width: 600 });
 
@@ -98,6 +104,7 @@ test('validate Displaysizes', async ({ page, userPage, users }) => {
             expect.soft(userPage.btn_user_menu(users[0].id)).toBeVisible(),
         ]);
     });
+    
     await test.step('Displaysize xs', async () => {
         await page.setViewportSize({ height: 800, width: 500 });
 

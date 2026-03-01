@@ -12,7 +12,7 @@ describe('UniformCounts DAL - Integration Tests', () => {
         // Set test globals for authentication
         global.__ROLE__ = AuthRole.admin;
         global.__USERNAME__ = 'integrationTestUser';
-        global.__ASSOSIATION__ = staticData.fk_assosiation;
+        global.__ORGANISATION__ = staticData.organisationId;
     });
 
     describe('Database Query Validation', () => {
@@ -69,14 +69,14 @@ describe('UniformCounts DAL - Integration Tests', () => {
                 expect(result.length).toBeGreaterThan(0);
 
                 // Test with wrong association by changing global
-                const originalAssociation = global.__ASSOSIATION__;
-                global.__ASSOSIATION__ = 'wrong-association-id';
+                const originalAssociation = global.__ORGANISATION__;
+                global.__ORGANISATION__ = 'wrong-organisation-id';
 
                 try {
                     // Should throw an error due to validation failure
                     await expect(getUniformCountBySizeForType(uniformTypeId)).rejects.toThrow();
                 } finally {
-                    global.__ASSOSIATION__ = originalAssociation;
+                    global.__ORGANISATION__ = originalAssociation;
                 }
             });
         });

@@ -55,6 +55,7 @@ test.describe('Offcanvas - CadetOverview', () => {
                 await saveButton.click();
                 await expect(commentField).toBeDisabled();
             });
+
             await expect(cadetUniformRow).toBeVisible();
             await Promise.all([
                 test.step('validate dialog', async () => Promise.all([
@@ -114,6 +115,7 @@ test.describe('Offcanvas - CadetOverview', () => {
                 await saveButton.click();
                 await expect(commentField).toBeDisabled();
             });
+
             await expect(cadetUniformRow).toBeVisible();
             await Promise.all([
                 test.step('validate dialog', async () => Promise.all([
@@ -152,6 +154,7 @@ test.describe('Offcanvas - CadetOverview', () => {
         test('should allow to delete uniform', async ({ page, staticData: { ids } }) => {
             const cadetUniformRow = page.getByTestId(`div_uniform_typeList`).getByTestId(`div_uitem_${ids.uniformIds[0][84]}`);
             const dialog = await openOffcanvas(page, ids.uniformIds[0][84], 1184);
+
             await test.step('delete item', async () => {
                 const deleteButton = dialog.getByRole('button', { name: /Löschen/i });
                 await deleteButton.click();
@@ -298,12 +301,14 @@ test.describe('Offcanvas - CadetOverview', () => {
                 await saveButton.click();
                 await expect(commentField).not.toHaveRole('textbox');
             });
+
             await test.step('validate ui', async () => {
                 await expect(deficiencyList).toBeVisible();
                 await expect(firstItem).toBeVisible();
                 await expect(firstItem.getByText('Test comment')).toBeVisible();
                 await expect(firstItem.getByText('Uniform')).toBeVisible();
             });
+
             await test.step('validate db', async () => {
                 const dbDeficiency = await prisma.deficiency.findUnique({
                     where: {
@@ -343,6 +348,7 @@ test.describe('Offcanvas - CadetOverview', () => {
                 await expect(resolveButton).toBeVisible();
                 await resolveButton.click();
             });
+
             await test.step('validate ui', async () => {
                 await expect(deficiencyList.getByRole('listitem')).toHaveCount(1);
                 await showResolvedToggle.check();
@@ -353,6 +359,7 @@ test.describe('Offcanvas - CadetOverview', () => {
                 await expect(firstItem.getByText('Gelöst')).toBeVisible();
                 await expect(firstItem.getByText('Uniform Gelöst')).toBeVisible();
             });
+
             await test.step('validate db', async () => {
                 const dbDeficiency = await prisma.deficiency.findUnique({
                     where: {
@@ -410,6 +417,7 @@ test.describe('Offcanvas - CadetOverview', () => {
                 await expect(thirdItem.getByText('Test new comment')).toBeVisible();
                 await expect(thirdItem.getByText('Uniform')).toBeVisible();
             });
+
             await test.step('validate db', async () => {
                 const dbDeficiency = await prisma.deficiency.findFirst({
                     where: {

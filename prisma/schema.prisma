@@ -11,10 +11,10 @@ datasource db {
 
 // ########### AUTHENTICATION SCHEMA ###########
 model Organisation {
-    id                        String                      @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    name                      String                      @unique @db.VarChar(100)
-    acronym                   String                      @db.VarChar(5)
-    useBeta                   Boolean                     @default(false) @map("use_beta")
+    id                        String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    name                      String                     @unique @db.VarChar(100)
+    acronym                   String                     @db.VarChar(5)
+    useBeta                   Boolean                    @default(false) @map("use_beta")
     user                      User[]
     cadet                     Cadet[]
     materialGroup             MaterialGroup[]
@@ -23,10 +23,10 @@ model Organisation {
     uniformType               UniformType[]
     deficiencyType            DeficiencyType[]
     inspection                Inspection[]
-    OrganisationConfiguration OrganisationConfiguration[]
-    StorageUnit               StorageUnit[]
-    Redirect                  Redirect[]
-    AuditLog                  AuditLog[]
+    organisationConfiguration OrganisationConfiguration?
+    storageUnit               StorageUnit[]
+    redirect                  Redirect[]
+    auditLog                  AuditLog[]
 
     @@map("organisation")
     @@schema("authentication")
@@ -35,30 +35,63 @@ model Organisation {
 model OrganisationConfiguration {
     sendEmailAfterInspection Boolean
     inspectionReportEmails   String[]
-    organisationId           String       @id @map("organisation_id") @db.Char(36)
-    organisation             Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+    twoFactorAuthRule        OrganisationConfiguration_2FARule @default(optional) @map("two_factor_auth_rule")
+    organisationId           String                            @id @map("organisation_id") @db.Char(36)
+    organisation             Organisation                      @relation(fields: [organisationId], references: [id], onDelete: Cascade)
 
     @@map("organisation_configuration")
     @@schema("authentication")
 }
 
+enum OrganisationConfiguration_2FARule {
+    optional
+    administrators
+    required
+
+    @@schema("authentication")
+}
+
 model RefreshToken {
-    token               String    @id @db.Char(128)
-    userId              String    @map("user_id") @db.Char(36)
-    deviceId            String    @map("device_id") @db.Char(36)
-    endOfLife           DateTime  @map("end_of_live") @db.Timestamp(3)
-    revoked             Boolean   @default(false)
-    issuerIpAddress     String    @map("issuer_ip_address") @db.VarChar(45)
-    usedAt              DateTime? @map("used_at") @db.Timestamp(3)
-    usedIpAddress       String?   @map("used_ip_address") @db.VarChar(45)
-    usedUserAgent       String?   @map("used_user_agent") @db.Text
-    numberOfUseAttempts Int       @default(0) @map("number_of_uses")
-    user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-    device              Device    @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+    id                  String             @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    token               String             @db.Char(64)
+    userId              String             @map("user_id") @db.Char(36)
+    deviceId            String             @map("device_id") @db.Char(36)
+    sessionId           String             @map("session_id") @db.Char(36)
+    endOfLife           DateTime           @map("end_of_live") @db.Timestamp(3)
+    status              RefreshTokenStatus @default(active)
+    tokenFamilyId       String             @db.Char(36)
+    rotatedFromTokenId  String?            @db.Char(36)
+    rotatedFrom         RefreshToken?      @relation(fields: [rotatedFromTokenId], references: [id], name: "tokenRotation")
+    rotatedToTokens     RefreshToken?      @relation(name: "tokenRotation")
+    issuedAt            DateTime           @default(now())
+    issuerIpAddress     String             @map("issuer_ip_address") @db.VarChar(45)
+    usedAt              DateTime?          @map("used_at") @db.Timestamp(3)
+    usedIpAddress       String?            @map("used_ip_address") @db.VarChar(45)
+    usedUserAgent       String?            @map("used_user_agent") @db.Text
+    numberOfUseAttempts Int                @default(0) @map("number_of_uses")
+    user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+    device              Device             @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+    session             Session            @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
     @@unique([token])
+    @@unique([rotatedFromTokenId])
     @@index([userId])
     @@map("refresh_token")
+    @@schema("authentication")
+}
+
+enum RefreshTokenStatus {
+    active
+    rotated
+    revoked
+
+    @@schema("authentication")
+}
+
+enum MFAType {
+    totp
+    email
+
     @@schema("authentication")
 }
 
@@ -76,10 +109,14 @@ model User {
     lastLoginAt           DateTime?      @map("last_login_at")
     recDelete             DateTime?      @map("rec_delete") @db.Timestamp(3)
     recDeleteUser         String?        @map("rec_delete_user") @db.VarChar(36)
+    twoFAEnabled          Boolean        @default(false) @map("two_fa_enabled")
+    default2FAMethod      String?        @map("default_2fa_method") @db.VarChar(36) // "email" or the appId of the TOTP app
     refreshTokens         RefreshToken[]
     organisation          Organisation   @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
     devices               Device[]
     auditLogs             AuditLog[]
+    emailToken            EmailToken[]
+    twoFactorApps         TwoFactorApp[]
 
     @@unique([username, organisationId])
     @@index([organisationId])
@@ -88,29 +125,49 @@ model User {
 }
 
 model Device {
-    id            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    name          String         @db.VarChar(50)
-    description   String?        @db.VarChar(100)
-    userId        String         @map("user_id") @db.Char(36)
-    user          User           @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
-    createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamp(3)
-    lastUsedAt    DateTime       @map("last_used_at") @db.Timestamp(3)
-    lastLoginAt   DateTime       @map("last_login_at") @db.Timestamp(3)
-    last2FAAt     DateTime?      @map("last_2fa_login_at") @db.Timestamp(3)
-    lastIpAddress String         @map("last_ip_address") @db.VarChar(45)
-    userAgent     String         @map("user_agent") @db.Text
-    valid         Boolean        @default(true)
-    RefreshToken  RefreshToken[]
-    AuditLog      AuditLog[]
+    id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    name            String         @db.VarChar(50)
+    description     String?        @db.VarChar(100)
+    userId          String         @map("user_id") @db.Char(36)
+    user            User           @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+    createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamp(3)
+    updatedAt       DateTime       @default(now()) @map("updated_at") @db.Timestamp(3)
+    lastUsedAt      DateTime       @map("last_used_at") @db.Timestamp(3)
+    lastIpAddress   String         @map("last_ip_address") @db.VarChar(45)
+    valid           Boolean        @default(true)
+    userAgent       String         @map("user_agent") @db.Text
+    lastMFAAt       DateTime?      @map("last_mfa_login_at") @db.Timestamp(3)
+    lastUsedMFAType MFAType?       @map("last_used_mfa_type")
+    RefreshToken    RefreshToken[]
+    AuditLog        AuditLog[]
+    EmailToken      EmailToken[]
+    sessions        Session[]
 
     @@index([userId])
     @@map("device")
     @@schema("authentication")
 }
 
+model Session {
+    id                  String         @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    deviceId            String         @map("device_id") @db.Char(36)
+    device              Device         @relation(fields: [deviceId], references: [id])
+    valid               Boolean        @default(true)
+    sessionLifetime     DateTime?      @map("session_lifetime") @db.Timestamp(3)
+    sessionRL           String         @map("session_rl") @db.Char(10)
+    lastLoginAt         DateTime       @map("last_login_at") @db.Timestamp(3)
+    lastIpAddress       String         @map("last_ip_address") @db.VarChar(45)
+    userAgent           String         @map("user_agent") @db.Text
+    elevatedSessionTill DateTime?      @map("elevated_session_till") @db.Timestamp(0)
+    refreshTokens       RefreshToken[]
+
+    @@schema("authentication")
+}
+
 model AuditLog {
     id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
     organisationId String?       @map("organisation_id") @db.Char(36)
+    debugLevel     Int           @map("security_level") @db.SmallInt // 0 = Success, 1 = Info, 2 = Warning, 3 = Critical
     userId         String?       @map("user_id") @db.Char(36)
     deviceId       String?       @map("device_id") @db.Char(36)
     action         String        @db.VarChar(50)
@@ -127,6 +184,37 @@ model AuditLog {
     @@index([organisationId])
     @@index([userId])
     @@map("audit_log")
+    @@schema("authentication")
+}
+
+model EmailToken {
+    id            String    @id @default(dbgenerated("gen_random_uuid()"))
+    token         String    @db.Char(6)
+    userId        String    @map("user_id") @db.Char(36)
+    endOfLive     DateTime  @map("end_of_live")
+    user          User      @relation(fields: [userId], references: [id])
+    deviceId      String    @map("device_id") @db.Char(36)
+    device        Device    @relation(fields: [deviceId], references: [id])
+    ipAddress     String    @map("ip_address") @db.VarChar(45)
+    userAgent     String    @map("user_agent") @db.Text
+    usedAt        DateTime? @map("used_at")
+    usedIpAddress String?   @map("used_ip_address") @db.VarChar(45)
+    usedUserAgent String?   @map("used_user_agent") @db.Text
+
+    @@unique([token, userId])
+    @@schema("authentication")
+}
+
+model TwoFactorApp {
+    id         String    @id @default(dbgenerated("gen_random_uuid()"))
+    secret     String
+    appName    String    @map("app_name") @db.VarChar(20)
+    userId     String    @map("user_id") @db.Char(36)
+    user       User      @relation(fields: [userId], references: [id])
+    createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamp(3)
+    verifiedAt DateTime? @map("verified_at") @db.Timestamp(3)
+
+    @@unique([appName, userId])
     @@schema("authentication")
 }
 

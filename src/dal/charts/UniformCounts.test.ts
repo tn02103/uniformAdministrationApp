@@ -12,7 +12,7 @@ describe('UniformCounts DAL - Unit Tests', () => {
         // Set default test globals
         global.__ROLE__ = AuthRole.admin;
         global.__USERNAME__ = 'testuser';
-        global.__ASSOSIATION__ = 'test-assosiation-id';
+        global.__ORGANISATION__ = 'test-organisation-id';
 
         mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue({
             id: mockUniformTypeId,
@@ -704,7 +704,7 @@ describe('UniformCounts DAL - Unit Tests', () => {
                 expect(mockPrisma.uniformType.findMany).toHaveBeenCalledWith({
                     where: {
                         recdelete: null,
-                        fk_assosiation: 'test-assosiation-id'
+                        organisationId: 'test-organisation-id'
                     },
                     select: {
                         id: true,
@@ -750,7 +750,7 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     where: {
                         active: true,
                         recdelete: null,
-                        fk_assosiation: 'test-assosiation-id'
+                        organisationId: 'test-organisation-id'
                     },
                     select: {
                         id: true,

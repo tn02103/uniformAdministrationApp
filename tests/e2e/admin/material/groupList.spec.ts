@@ -12,9 +12,11 @@ const test = adminTest.extend<Fixture>({
     groupListComponent: async ({ page }, use) => use(new MaterialGroupListComponent(page)),
     groupDetailComponent: async ({ page }, use) => use(new MaterialGroupDetailComponent(page)),
 });
+
 test.beforeEach(async ({ page }) => {
     await page.goto('/de/app/admin/material');
 });
+
 test.afterEach(async ({ staticData: { cleanup } }) => {
     await cleanup.materialConfig();
 });
@@ -40,6 +42,7 @@ test('validate moveUp', async ({ page, groupListComponent, staticData: { ids } }
         const divList = page.locator('div[data-testid^="div_mGroup_row_"]');
         await expect.soft(divList.nth(0)).toHaveAttribute('data-testid', `div_mGroup_row_${ids.materialGroupIds[1]}`);
     });
+
     await test.step('validate db', async () => {
         const [initial, seccond] = await prisma.$transaction([
             prisma.materialGroup.findUnique({
@@ -54,6 +57,7 @@ test('validate moveUp', async ({ page, groupListComponent, staticData: { ids } }
         expect.soft(seccond?.sortOrder).toBe(1);
     });
 });
+
 test('validate moveDown', async ({ page, groupListComponent, staticData: { ids } }) => {
     await test.step('do action and validate ui', async () => {
         await groupListComponent.btn_mGroup_moveDown(ids.materialGroupIds[1]).click();
@@ -61,6 +65,7 @@ test('validate moveDown', async ({ page, groupListComponent, staticData: { ids }
         const divList = await page.locator('div[data-testid^="div_mGroup_row_"]').all();
         await expect.soft(divList[2]).toHaveAttribute('data-testid', `div_mGroup_row_${ids.materialGroupIds[1]}`);
     });
+
     await test.step('validate db', async () => {
         const [initial, seccond] = await prisma.$transaction([
             prisma.materialGroup.findUnique({
@@ -75,6 +80,7 @@ test('validate moveDown', async ({ page, groupListComponent, staticData: { ids }
         expect.soft(seccond?.sortOrder).toBe(1);
     });
 });
+
 test('validate create', async ({ page, groupListComponent, groupDetailComponent, staticData: { organisationId } }) => {
     await test.step('create and validate ui', async () => {
         await groupListComponent.btn_create.click();
@@ -91,6 +97,7 @@ test('validate create', async ({ page, groupListComponent, groupDetailComponent,
             expect.soft(groupDetailComponent.chk_multitypeAllowed).not.toBeChecked(),
         ]);
     });
+
     await test.step('validte db', async () => {
         const dbGroup = await prisma.materialGroup.findFirst({
             where: { organisationId, description: "Gruppe-1" }
@@ -105,6 +112,7 @@ test('validate create', async ({ page, groupListComponent, groupDetailComponent,
         });
     });
 });
+
 test('validate open', async ({groupListComponent, groupDetailComponent, staticData: {data: {materialGroups}}}) => {
     await expect(groupListComponent.btn_mGroup_select(materialGroups[0].id)).toBeVisible();
 

@@ -165,6 +165,7 @@ export default {
                 noSpecialChars: "Es dürfen keine Sonderzeichen genutzt werden",
                 commentValidation: "Nicht alle Zeichen die Sie genutzt haben sind erlaubt",
                 descriptionPattern: "Nur die Sonderzeichen -_ sind erlaubt",
+                numeric: "Es sind nur Zahlen erlaubt",
             },
             actions: {
                 changeSortorder: "Beim ändern der Reihnfolge ist ein unbekannter Fehler aufgetreten.",
@@ -218,6 +219,9 @@ export default {
                     code: {
                         duplication: "Der Code wird bereits von einem anderen Redirect ihrer/ oder einer anderen Organisation benutzt.",
                     },
+                },
+                auth: {
+                    "2fa.appNameNotUnique": "Der Name wird bereits von einer ihrer anderen 2FA Apps benutzt"
                 }
             },
         },
@@ -240,12 +244,14 @@ export default {
             organisation: "Verein",
             username: "Nutzername",
             password: "Password",
+            twoFactorCode: "2FA Code",
             login: "Anmelden"
         },
         error: {
             unknown: "Der Loginversuch ist fehlgeschlagen, bitte versuchen Sie es erneut.",
             failed: "Nutzername oder Passwort sind ungültig",
             userBlocked: "Ihr Zugang wurde gesperrt. Bitte kontaktieren Sie den Administrator.",
+            tooManyRequests: "Zu viele fehlgeschlagene Loginversuche. Bitte versuchen Sie es später erneut.",
         },
     },
     notFound: {
@@ -493,6 +499,7 @@ export default {
             },
             userOverview: "Zugänge",
             redirects: "Weiterleitungen",
+            profile: "Profil"
         },
     },
     redirects: {
@@ -508,7 +515,7 @@ export default {
     admin: {
         uniform: {
             header: "Uniformadministration",
-            changeSizelistWarning: "Beim Ändern der ausgewählten Größenliste, kann bei Uniformteilen dieser Generation die Information der Größe verlohren gehen",
+            changeSizelistWarning: "Beim Ändern der ausgewählten Größenliste, kann bei Uniformteilen dieser Generation die Information der Größe verloren gehen",
             type: {
                 deleteModal: {
                     header: "Uniformtyp \"{type}\" löschen",
@@ -817,4 +824,31 @@ export default {
             change: "Ändern",
         },
     },
+    emails: {
+        tokenReuseDetected: {
+            subject: "Sicherheitsbenachrichtigung: Verdächtige Aktivität erkannt",
+            greeting: "Guten Tag {name},",
+            line1: "Wir möchten dich darüber informieren, dass wir verdächtige Aktivitäten im Zusammenhang mit deinem Konto festgestellt haben.",
+            line2: "Es scheint, dass ein Refresh-Token, welcher deinem Konto zugeordnet ist, möglicherweise kompromittiert wurde.",
+            line3: "Aus Sicherheitsgründen haben wir alle aktiven Sitzungen und Refresh-Tokens für dein Konto widerrufen.",
+            line4: "Sollte dies widerholt auftreten, kontaktiere bitte umgehend deinen Administrator.",
+            closing: "Sicherheits-Team",
+        },
+        userBlocked: {
+            user: {
+                subject: "Ihr UniformAdmin Benutzerkonto wurde gesperrt",
+                line1: "Guten Tag {name},",
+                line2: "Ihr UniformAdmin Benutzerkonto wurde aufgrund von verdächtigen Aktivitäten gesperrt.",
+                line3: "Bitte kontaktieren Sie Ihren Administrator, um weitere Informationen zu erhalten und um den Zugang wiederherzustellen.",
+                closing: "Ihr UniformAdmin Team",
+            },
+            administrator: {
+                subject: "Benutzerkonto {name} wurde gesperrt",
+                line1: "Guten Tag Admin,",
+                line2: "Das Benutzerkonto {name} wurde aufgrund von verdächtigen Aktivitäten gesperrt.",
+                line3: "Bitte überprüfen Sie das Konto und kontaktieren Sie den Benutzer für weitere Informationen.",
+                closing: "Ihr UniformAdmin Team",   
+            },
+        }
+    }
 } as const;

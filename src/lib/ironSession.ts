@@ -1,3 +1,4 @@
+import { AuthConfig } from "@/dal/auth/config";
 import { AuthRole } from "./AuthRoles";
 import { IronSession as UntypedIronSession, IronSessionData, SessionOptions, getIronSession as getSession } from "iron-session";
 import { cookies } from "next/headers";
@@ -5,10 +6,10 @@ import { cookies } from "next/headers";
 const sessionOptions: SessionOptions = {
     password: process.env.IRON_SESSION_KEY as string,
     cookieName: process.env.IRON_SESSION_COOKIE_NAME as string,
+    ttl: AuthConfig.accessToken.age,
     cookieOptions: {
         secure: process.env.STAGE !== "DEV",
         httpOnly: true,
-        maxAge: 60 * 20,
         sameSite: "strict"
     }
 }
@@ -16,6 +17,7 @@ const sessionOptions: SessionOptions = {
 declare module "iron-session" {
     interface IronSessionData {
         user?: IronSessionUser
+        sessionId?: string;
     }
 }
 export type IronSessionUser = {

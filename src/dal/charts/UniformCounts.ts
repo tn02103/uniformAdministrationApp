@@ -114,10 +114,10 @@ export type UniformCountByTypeData = {
     missingCadets: CadetLabel[];
 }
 export const getUniformCountByType = async (): Promise<UniformCountByTypeData[]> => genericSANoDataValidator(AuthRole.materialManager)
-    .then(async ([{ assosiation }]) => prisma.uniformType.findMany({
+    .then(async ([{ organisationId }]) => prisma.uniformType.findMany({
         where: {
             recdelete: null,
-            fk_assosiation: assosiation
+            organisationId
         },
         select: {
             id: true,
@@ -157,7 +157,7 @@ export const getUniformCountByType = async (): Promise<UniformCountByTypeData[]>
             where: {
                 active: true,
                 recdelete: null,
-                fk_assosiation: assosiation
+                organisationId
             },
             ...cadetLableArgs,
         });

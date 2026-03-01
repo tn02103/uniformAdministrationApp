@@ -1,10 +1,11 @@
 "use client";
+
+import { useI18n } from "@/lib/locales/client";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
-import { Row, Button } from "react-bootstrap";
+import { Button, Row } from "react-bootstrap";
 import styles from "./ExpandableArea.module.css";
-import { useI18n } from "@/lib/locales/client";
 
 type ExpandableAreaProps = {
     children: React.ReactNode;
@@ -14,7 +15,6 @@ type ExpandableAreaProps = {
 }
 
 export const ExpandableArea = ({ children, header, headerClassName, defaultExpanded = false }: ExpandableAreaProps) => {
-    const t = useI18n();
     const [expanded, setExpanded] = useState(defaultExpanded);
 
     const getHeader = () => {

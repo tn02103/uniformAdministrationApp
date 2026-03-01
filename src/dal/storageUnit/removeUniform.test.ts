@@ -11,7 +11,7 @@ jest.mock('@/lib/db', () => ({
 }));
 jest.mock("@/actions/validations", () => ({
     genericSAValidator: jest.fn((_, props) =>
-        Promise.resolve([{ organisation: 'test-organisation' }, props])
+        Promise.resolve([{ organisationId: 'test-organisation' }, props])
     ),
 }));
 jest.mock("./get", () => ({
