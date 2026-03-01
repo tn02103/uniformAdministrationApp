@@ -87,8 +87,7 @@ describe('<UniformItem> Integration Tests', () => {
                 create: false,
             },
         };
-        const { success } = await runServerActionTest(issueUniformItem(issueProps));
-        expect(success).toBeTruthy();
+        await expect(issueUniformItem(issueProps)).resolves.toBeDefined();
 
         const [oldCadet, oldIssuedEntry, newIssuedEntry] = await prisma.$transaction([
             prisma.cadet.findUnique({

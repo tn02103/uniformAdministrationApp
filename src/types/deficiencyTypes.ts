@@ -1,13 +1,13 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/prisma/client";
 
-export const deficiencyTypeArgs = Prisma.validator<Prisma.DeficiencyTypeFindManyArgs>()({
+export const deficiencyTypeArgs = {
     select: {
         id: true,
         name: true,
         dependent: true,
         relation: true,
     }
-});
+} satisfies Prisma.DeficiencyTypeFindManyArgs;
 
 export type DeficiencyType = Prisma.DeficiencyTypeGetPayload<typeof deficiencyTypeArgs>;
 

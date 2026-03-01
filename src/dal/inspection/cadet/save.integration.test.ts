@@ -17,6 +17,11 @@ describe('saveCadetInspection Integration Tests', () => {
         global.__USERNAME__ = 'aabb';
         global.__ASSOSIATION__ = data.assosiation.id;
     });
+    afterAll(() => {
+        global.__ROLE__ = undefined;
+        global.__USERNAME__ = undefined;
+        global.__ASSOSIATION__ = undefined;
+    })
 
     beforeEach(async () => {
         // Make inspection active for today

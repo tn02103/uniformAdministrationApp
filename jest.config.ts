@@ -14,4 +14,4 @@ const customJestConfig: Config = {
     ],
 };
 
-module.exports = customJestConfig;
+export default customJestConfig;

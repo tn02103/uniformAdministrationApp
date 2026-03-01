@@ -3,7 +3,7 @@ import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { UniformType } from "@/types/globalUniformTypes";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/prisma/client";
 import { z } from "zod";
 import { __unsecuredGetUniformTypeList } from "../type/get";
 

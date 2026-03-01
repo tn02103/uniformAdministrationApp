@@ -1,4 +1,4 @@
-import { Redirect } from "@prisma/client";
+import { Redirect } from "@/prisma/client";
 import { getAllByRole, getByDisplayValue, getByRole, getByText, queryByText, render, } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { toast } from "react-toastify";

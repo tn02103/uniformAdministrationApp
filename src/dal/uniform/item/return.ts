@@ -5,7 +5,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
 import { CadetUniformMap } from "@/types/globalCadetTypes";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/prisma/client";
 import { z } from "zod";
 
 const propSchema = z.object({

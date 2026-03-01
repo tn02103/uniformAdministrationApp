@@ -2,7 +2,6 @@ import { DBQuery } from "@/dal/inspection/_dbQuerys";
 import { stopInspection } from "@/dal/inspection/stop";
 import { ExceptionType } from "@/errors/CustomException";
 import { prisma } from "@/lib/db";
-import { sendInspectionReviewMail } from "@/lib/email/inspectionReview";
 import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { runServerActionTest } from "../_helper/testHelper";
 
@@ -19,6 +18,7 @@ jest.mock('@/lib/email/inspectionReview', () => ({
 afterEach(() => staticData.cleanup.inspection());
 
 describe('stopInspection', () => {
+    const { sendInspectionReviewMail } = jest.requireMock('@/lib/email/inspectionReview');
     it('valid call', async () => {
         await prisma.inspection.update({
             where: { id: staticData.ids.inspectionIds[4] },

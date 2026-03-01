@@ -47,7 +47,7 @@ describe('updateUniformDeficiency', () => {
             data: {
                 comment: 'Updated comment',
                 fk_deficiencyType: '37d06077-f678-45d0-8494-75056c61b0ce',
-                userUpdated: 'mana',
+                userUpdated: 'testuser',
                 dateUpdated: date,
             },
         });
