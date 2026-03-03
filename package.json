@@ -39,6 +39,7 @@
         "@swc/core": "1.15.17",
         "@types/react-dnd": "3.0.2",
         "bcrypt": "6.0.0",
+        "better-auth": "^1.4.21",
         "bootstrap": "5.3.8",
         "clsx": "^2.1.1",
         "date-fns": "4.1.0",

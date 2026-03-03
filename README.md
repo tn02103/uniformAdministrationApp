@@ -14,14 +14,17 @@
 DATABASE_URL="postgres://{{username}}:{{password}}@{{url}}/{{database}}"
 DATABASE_URL_SHADOW=Database for prisma migrations
 STAGE={{DEV | BETA | PRO}}
-IRON_SESSION_COOKIE_NAME=name of the ironSession cookie
-IRON_SESSION_KEY=complex password at least 32 characters long
-REFRESH_TOKEN_KEY=secret to generate refreshtoken at least 32 characters long
+BETTER_AUTH_SECRET=random secret at least 32 characters long (generate with: openssl rand -base64 32)
+BETTER_AUTH_URL=base URL of the app (e.g. http://localhost:3021)
+NEXT_PUBLIC_APP_URL=same as BETTER_AUTH_URL, used by the client-side auth library
 NEXT_PUBLIC_LOCAL_AUTH_KEY=key for localstorage where authItem is placed
 USER_PASSWORD=password used in db Seed
 TEST_USER_PASSWORD=password used by tests
 TEST_WORKERS=amount of playwrigt workers
 ```
+
+> **Removed env vars** (no longer needed after migration to better-auth):
+> `IRON_SESSION_COOKIE_NAME`, `IRON_SESSION_KEY`, `REFRESH_TOKEN_KEY`
 
 ## Database/ Prisma
 ### To initialize:

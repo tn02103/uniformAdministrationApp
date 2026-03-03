@@ -1,6 +1,6 @@
 import { createI18nMiddleware } from "next-international/middleware";
 import { NextRequest, NextResponse } from "next/server";
-import { getIronSession } from "./lib/ironSession";
+import { auth } from "./lib/auth";
 
 const I18nMiddleware = createI18nMiddleware({
     locales: ['en', 'de'],
@@ -13,10 +13,13 @@ export async function middleware(request: NextRequest) {
         return response;
     }
 
-    const session = await getIronSession();
+    const session = await auth.api.getSession({ headers: request.headers });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const user = session?.user as (Record<string, any> & { acronym?: string }) | undefined;
 
     if (request.nextUrl.pathname.length < 4) {
-        if (!session.user) {
+        if (!user) {
             return NextResponse.redirect(new URL('/login', request.url));
         }
         return NextResponse.redirect(new URL('/app', request.url));
@@ -24,13 +27,16 @@ export async function middleware(request: NextRequest) {
 
     const pathnameParts = request.nextUrl.pathname.split("/");
     if (request.nextUrl.pathname.endsWith('/uniform/list')) {
-        const urlSring = `/${response.headers.get('x-next-locale')}/${session.user?.acronym}/uniform/list/null`
-        return NextResponse.rewrite(new URL(urlSring, request.url), response);
-    } else if (pathnameParts[2] === "app") {
-        if (!session.user) {
+        if (!user?.acronym) {
             return NextResponse.redirect(new URL('/login', request.url));
         }
-        return NextResponse.rewrite(new URL(request.url.replace('app', session.user.acronym)), response);
+        const urlSring = `/${response.headers.get('x-next-locale')}/${user.acronym}/uniform/list/null`
+        return NextResponse.rewrite(new URL(urlSring, request.url), response);
+    } else if (pathnameParts[2] === "app") {
+        if (!user?.acronym) {
+            return NextResponse.redirect(new URL('/login', request.url));
+        }
+        return NextResponse.rewrite(new URL(request.url.replace('app', user.acronym)), response);
     }
 
     return response;
@@ -39,3 +45,4 @@ export async function middleware(request: NextRequest) {
 export const config = {
     matcher: ['/((?!api|static|.*\\..*|_next|favicon.ico|robots.txt).*)']
 }
+

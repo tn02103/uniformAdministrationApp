@@ -30,7 +30,6 @@ export const SidebarFooter = ({ username, collapseButtonRef, handleCollapseButto
             const authItemString = localStorage.getItem(process.env.NEXT_PUBLIC_LOCAL_AUTH_KEY as string);
             if (authItemString) {
                 const item: AuthItem = JSON.parse(authItemString);
-                item.authToken = undefined;
                 item.lastLogin = undefined;
                 localStorage.setItem(process.env.NEXT_PUBLIC_LOCAL_AUTH_KEY as string, JSON.stringify(item))
             }

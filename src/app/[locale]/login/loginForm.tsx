@@ -12,7 +12,6 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { mutate } from "swr";
 import { useLocalStorage } from "usehooks-ts";
-import { uuid } from "uuidv4";
 
 type PropType = {
     assosiations: Assosiation[];
@@ -42,19 +41,15 @@ const LoginForm = ({ assosiations }: PropType) => {
     async function onSubmit(data: RegistrationFormType) {
         setIsSubmitting(true);
         data.username = data.username.trim();
-        const deviceId = authItem?.deviceId ?? uuid();
 
-        await fetch('/api/auth/login', { method: "POST", body: JSON.stringify({ ...data, deviceId }) }).then(async response => {
+        await fetch('/api/auth/login', { method: "POST", body: JSON.stringify(data) }).then(async response => {
             if (response.status === 200) {
-                const returnBody = await response.json();
-                const authItem: AuthItem = {
-                    deviceId,
+                const updatedAuthItem: AuthItem = {
                     assosiationId: data.assosiation,
-                    authToken: returnBody?.refreshToken,
                     lastLogin: new Date(),
                 }
 
-                setAuthItem(authItem);
+                setAuthItem(updatedAuthItem);
 
                 mutate(() => true, undefined, true);
                 if (searchParam.has('returnUrl')) {
@@ -73,27 +68,6 @@ const LoginForm = ({ assosiations }: PropType) => {
             setIsSubmitting(false);
         })
     }
-
-    /*
-        // Try to login with refreshToken
-        /* setHideLogin(true);
-         refreshSessionCookie()
-             .then((success) => {
-                 if (success) {
-                     mutate(() => true, undefined, true);
-                     if (router.query.returnUrl !== undefined) {
-                         router.push(router.query.returnUrl as string);
-                     } else {
-                         router.push("/cadet");
-                     }
-                 } else {
-                     setHideLogin(false);
-                     if (authItem.assosiationId) {
-                         setValue("assosiation", authItem.assosiationId);
-                     }
-                 }
-             });
-    }, []);*/
 
     return (
         <Form onSubmit={handleSubmit(onSubmit)}>

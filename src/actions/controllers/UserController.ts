@@ -6,6 +6,7 @@ import { nameValidationPattern, passwordValidationPattern, userNameValidationPat
 import { User } from "@/types/userTypes";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from 'bcrypt';
+import { randomUUID } from 'crypto';
 import { revalidatePath } from "next/cache";
 import { UserDBHandler } from "../dbHandlers/UserDBHandler";
 import { genericSAValidatorV2 } from "../validations";
@@ -24,7 +25,7 @@ export const createUser = async (data: { username: string, name: string, role: A
         && (typeof data.active === "boolean")
         && (data.role in AuthRole && typeof data.role === 'number')),
     {}
-).then(async ({ assosiation }) => {
+).then(async ({ assosiation, acronym }) => {
     await prisma.$transaction(async (client) => {
         const userList = await dbHandler.getUsersList(assosiation, client as PrismaClient);
 
@@ -32,12 +33,41 @@ export const createUser = async (data: { username: string, name: string, role: A
             throw new Error("Could not save data Username allready in use");
         }
 
-        await dbHandler.create(
+        const hashedPassword = await bcrypt.hash(password, 12);
+        const appUser = await dbHandler.create(
             data,
             assosiation,
-            await bcrypt.hash(password, 12),
+            hashedPassword,
             client as PrismaClient
         );
+
+        // Keep the better-auth shadow user in sync so the next login works.
+        const syntheticEmail = `${data.username}@${assosiation}`;
+        await (client as PrismaClient).baUser.create({
+            data: {
+                id: appUser.id,
+                name: data.name,
+                email: syntheticEmail,
+                emailVerified: true,
+                assosiationId: assosiation,
+                acronym,
+                numericRole: data.role,
+                active: data.active,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+        });
+        await (client as PrismaClient).baAccount.create({
+            data: {
+                id: randomUUID(),
+                accountId: appUser.id,
+                providerId: "credential",
+                userId: appUser.id,
+                password: hashedPassword,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+        });
     });
     revalidatePath(`/[locale]/${assosiation}/admin/users`, 'page');
 });
@@ -51,7 +81,22 @@ export const updateUser = async (data: User) => genericSAValidatorV2(
         && (data.role in AuthRole && typeof data.role === 'number')),
     { userId: data.id }
 ).then(async ({ assosiation }) => {
-    await dbHandler.update(data.id, data.name, data.role, data.active, prisma)
+    await dbHandler.update(data.id, data.name, data.role, data.active, prisma);
+
+    // Keep better-auth shadow user in sync
+    await prisma.baUser.updateMany({
+        where: { id: data.id },
+        data: {
+            name: data.name,
+            numericRole: data.role,
+            active: data.active,
+            updatedAt: new Date(),
+        },
+    });
+
+    // Revoke existing better-auth sessions for this user so role changes take effect
+    await prisma.baSession.deleteMany({ where: { userId: data.id } });
+
     revalidatePath(`/[locale]/${assosiation}/admin/users`, 'page');
 });
 
@@ -59,16 +104,33 @@ export const changeUserPassword = async (userId: string, password: string) => ge
     AuthRole.admin,
     uuidValidationPattern.test(userId) && passwordValidationPattern.test(password),
     { userId }
-).then(async () => prisma.$transaction([
-    dbHandler.setPassword(userId, await bcrypt.hash(password, 12), prisma),
-    dbHandler.removeRefreshToken(userId, prisma),
-]));
+).then(async () => {
+    const hashedPassword = await bcrypt.hash(password, 12);
+    await prisma.$transaction([
+        dbHandler.setPassword(userId, hashedPassword, prisma),
+        dbHandler.removeRefreshToken(userId, prisma),
+        // Update better-auth credential account password
+        prisma.baAccount.updateMany({
+            where: { userId, providerId: "credential" },
+            data: { password: hashedPassword, updatedAt: new Date() },
+        }),
+        // Revoke all better-auth sessions after a password change
+        prisma.baSession.deleteMany({ where: { userId } }),
+    ]);
+});
 
 export const deleteUser = async (userId: string) => genericSAValidatorV2(
     AuthRole.admin,
     uuidValidationPattern.test(userId),
     { userId }
 ).then(async ({ assosiation }) => {
-    await dbHandler.delete(userId, prisma);
+    // Delete the application user first, then clean up the better-auth shadow
+    // user.  deleteMany is intentional here: if the account was created before
+    // the better-auth migration the BaUser row may not exist yet.
+    await prisma.$transaction([
+        dbHandler.delete(userId, prisma),
+        prisma.baUser.deleteMany({ where: { id: userId } }),
+    ]);
     revalidatePath(`/[locale]/${assosiation}/admin/users`, 'page');
 });
+

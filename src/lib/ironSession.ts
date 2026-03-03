@@ -1,22 +1,7 @@
+import { headers } from "next/headers";
 import { AuthRole } from "./AuthRoles";
-import { IronSessionData, SessionOptions, getIronSession as getSession } from "iron-session";
-import { cookies } from "next/headers";
+import { auth } from "./auth";
 
-const sessionOptions: SessionOptions = {
-    password: process.env.IRON_SESSION_KEY as string,
-    cookieName: process.env.IRON_SESSION_COOKIE_NAME as string,
-    cookieOptions: {
-        secure: process.env.STAGE !== "DEV",
-        maxAge: (3600 * 6),
-        sameSite: "strict"
-    }
-}
-
-declare module "iron-session" {
-    interface IronSessionData {
-        user?: IronSessionUser
-    }
-}
 export type IronSessionUser = {
     name: string;
     username: string;
@@ -25,5 +10,41 @@ export type IronSessionUser = {
     role: AuthRole;
 }
 
+/**
+ * Reads the current better-auth session and returns it in the shape that
+ * existing server actions expect (`{ user?: IronSessionUser }`).
+ *
+ * The username is recovered by stripping the "@assosiationId" suffix from the
+ * synthetic email value stored in the better-auth user record.
+ */
+export const getIronSession = async (): Promise<{ user?: IronSessionUser; destroy: () => Promise<void> }> => {
+    const session = await auth.api.getSession({ headers: await headers() });
 
-export const getIronSession = async () => getSession<IronSessionData>(await cookies(), sessionOptions);
+    const destroy = async () => {
+        // Sign-out is handled via the better-auth client; this is a no-op shim
+        // so existing server-action code that calls session.destroy() continues
+        // to compile.
+    };
+
+    if (!session?.user) {
+        return { destroy };
+    }
+
+    const { user } = session;
+
+    // Recover the short username from the synthetic email "username@assosiationId"
+    const atIndex = user.email.indexOf("@");
+    const username = atIndex > 0 ? user.email.slice(0, atIndex) : user.email;
+
+    return {
+        user: {
+            name: user.name,
+            username,
+            assosiation: (user as unknown as { assosiationId: string }).assosiationId,
+            acronym: (user as unknown as { acronym: string }).acronym,
+            role: (user as unknown as { numericRole: number }).numericRole as AuthRole,
+        },
+        destroy,
+    };
+};
+

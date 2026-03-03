@@ -10,6 +10,123 @@ datasource db {
     schemas  = ["authentication", "base", "inspection", "public"]
 }
 
+// ─── Better-Auth tables ────────────────────────────────────────────────────
+// These tables are managed by better-auth and live in the authentication schema.
+// BaUser.email stores a synthetic value "username@assosiationId" to guarantee
+// global uniqueness while preserving organisation-scoped usernames.
+
+model BaUser {
+    id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    name          String      @db.VarChar(20)
+    email         String      @unique @db.VarChar(200)
+    emailVerified Boolean     @default(false) @map("email_verified")
+    image         String?
+    createdAt     DateTime    @default(now()) @map("created_at")
+    updatedAt     DateTime    @updatedAt @map("updated_at")
+    // Custom fields for organisation-scoped auth
+    assosiationId String      @db.Char(36) @map("assosiation_id")
+    acronym       String      @db.VarChar(5)
+    numericRole   Int         @default(1) @map("numeric_role") @db.SmallInt
+    active        Boolean     @default(true)
+    sessions      BaSession[]
+    accounts      BaAccount[]
+    memberships   BaMember[]
+
+    @@map("ba_user")
+    @@schema("authentication")
+}
+
+model BaSession {
+    id          String   @id
+    expiresAt   DateTime @map("expires_at")
+    token       String   @unique
+    createdAt   DateTime @default(now()) @map("created_at")
+    updatedAt   DateTime @updatedAt @map("updated_at")
+    ipAddress   String?  @map("ip_address")
+    userAgent   String?  @map("user_agent")
+    userId      String   @db.Char(36) @map("user_id")
+    user        BaUser   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@map("ba_session")
+    @@schema("authentication")
+}
+
+model BaAccount {
+    id                    String    @id
+    accountId             String    @map("account_id")
+    providerId            String    @map("provider_id")
+    userId                String    @db.Char(36) @map("user_id")
+    accessToken           String?   @map("access_token") @db.Text
+    refreshToken          String?   @map("refresh_token") @db.Text
+    idToken               String?   @map("id_token") @db.Text
+    accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+    refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+    scope                 String?
+    password              String?   @db.Text
+    createdAt             DateTime  @default(now()) @map("created_at")
+    updatedAt             DateTime  @updatedAt @map("updated_at")
+    user                  BaUser    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@map("ba_account")
+    @@schema("authentication")
+}
+
+model BaVerification {
+    id         String    @id
+    identifier String
+    value      String    @db.Text
+    expiresAt  DateTime  @map("expires_at")
+    createdAt  DateTime? @default(now()) @map("created_at")
+    updatedAt  DateTime? @updatedAt @map("updated_at")
+
+    @@map("ba_verification")
+    @@schema("authentication")
+}
+
+// better-auth organisation-plugin tables
+model BaOrganization {
+    id          String       @id
+    name        String
+    slug        String?      @unique
+    logo        String?
+    createdAt   DateTime     @map("created_at")
+    metadata    String?
+    members     BaMember[]
+    invitations BaInvitation[]
+
+    @@map("ba_organization")
+    @@schema("authentication")
+}
+
+model BaMember {
+    id             String         @id
+    organizationId String         @map("organization_id")
+    userId         String         @db.Char(36) @map("user_id")
+    role           String
+    createdAt      DateTime       @default(now()) @map("created_at")
+    organization   BaOrganization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    user           BaUser         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@map("ba_member")
+    @@schema("authentication")
+}
+
+model BaInvitation {
+    id             String         @id
+    organizationId String         @map("organization_id")
+    email          String
+    role           String?
+    status         String         @default("pending")
+    expiresAt      DateTime       @map("expires_at")
+    inviterId      String         @map("inviter_id")
+    organization   BaOrganization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+    @@map("ba_invitation")
+    @@schema("authentication")
+}
+
+// ─── Application tables ────────────────────────────────────────────────────
+
 model Assosiation {
     id                       String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
     name                     String                     @unique @db.VarChar(100)
