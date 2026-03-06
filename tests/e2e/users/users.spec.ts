@@ -1,4 +1,4 @@
-import { User } from "@prisma/client";
+import { User } from "@/prisma/client";
 import { expect } from "playwright/test";
 import t from "../../../public/locales/de";
 import { UserAdministrationPage } from "../../_playwrightConfig/pages/admin/user/userAdministration.page";

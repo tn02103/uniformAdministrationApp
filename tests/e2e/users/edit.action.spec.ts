@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { User } from "@prisma/client";
+import { User } from "@/prisma/client";
 import bcrypt from 'bcrypt';
 import { Page, ViewportSize, expect } from "playwright/test";
 import german from "../../../public/locales/de";

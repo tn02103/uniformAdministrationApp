@@ -192,13 +192,3 @@ jest.mock("@/actions/validations", () => ({
         username: global.__USERNAME__ ?? 'testuser'
     }])),
 }));
-
-beforeEach(() => {
-    // Reset all mocks before each test
-    jest.clearAllMocks();
-
-    // Set default global values for unit tests
-    global.__ROLE__ = AuthRole.materialManager;
-    global.__USERNAME__ = 'testuser';
-    global.__ASSOSIATION__ = 'test-assosiation-id';
-});

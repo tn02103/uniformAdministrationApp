@@ -46,17 +46,6 @@ const runSortOrderTests = () => {
 }
 
 describe('manager tests', () => {
-    jest.mock('@/lib/ironSession', () => ({
-        getIronSession: () => ({
-            user: {
-                name: 'VK Verwaltung',
-                username: 'insp',
-                assosiation: data.assosiation.id,
-                acronym: data.assosiation.acronym,
-                role: AuthRole.inspector
-            }
-        }),
-    }));
     it('manager data', async () => {
         const { success, result } = await runServerActionTest(getPersonnelListOverviewData(defaultProps));
         expect(success).toBeTruthy();

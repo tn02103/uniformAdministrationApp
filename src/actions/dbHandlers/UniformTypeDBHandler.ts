@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { uniformTypeArgs } from "@/types/globalUniformTypes";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@/prisma/client";
 
 export class UniformTypeDBHandler {
     getType = async (id: string, client?: PrismaClient) => (client ?? prisma).uniformType.findUniqueOrThrow({

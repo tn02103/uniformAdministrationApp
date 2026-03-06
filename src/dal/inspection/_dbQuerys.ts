@@ -1,6 +1,6 @@
 import dayjs from "@/lib/dayjs";
 import { InspectionReview, InspectionReviewCadet, InspectionReviewDeficiency } from "@/types/deficiencyTypes";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/prisma/client";
 
 export class DBQuery {
   getInspectionReviewData = async (fk_assosiation: string, id: string, client: Prisma.TransactionClient) => {

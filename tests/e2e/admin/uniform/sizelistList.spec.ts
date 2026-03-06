@@ -1,7 +1,7 @@
 import t from "@/../public/locales/de";
 import { prisma } from "@/lib/db";
 import { uuidValidationPattern } from "@/lib/validations";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/prisma/client";
 import { expect } from "playwright/test";
 import { newDescriptionValidationTests } from "../../../_playwrightConfig/global/testSets";
 import { SizelistDetailComponent } from "../../../_playwrightConfig/pages/admin/uniform/SizelistDetail.component";
