@@ -20,7 +20,7 @@ export const sendTokenReuseDetectedEmail = async (userId: string, sendUserEmail:
             await getMailAgend().sendMail({
                 to: user.email,
                 subject: "Ihr UniformAdmin Benutzerkonto wurde gesperrt",
-                html: await render(UserTokenReuseEmailBody({ name: user.name })),
+                html: await render(await UserTokenReuseEmailBody({ name: user.name })),
             });
         } catch (error) {
             console.error(`sendTokenReuseDetectedEmail: Failed to send email to user ${user.email}`, error);

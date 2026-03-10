@@ -36,7 +36,6 @@ export const handleRetryRequest = async (
 
     // CHECK 1: Refresh token must match (CRITICAL - prevents stolen idempotency key attacks)
     if (currentRefreshTokenHash !== cachedData.metadata.oldRefreshTokenHash) {
-        console.warn('Idempotency key reuse with different refresh token - potential attack');
         await logSecurityAuditEntry({
             success: false,
             ipAddress: currentIpAddress,
@@ -52,7 +51,6 @@ export const handleRetryRequest = async (
     const cachedUA = JSON.stringify(JSON.parse(cachedData.metadata.userAgent));
     const currentUA = JSON.stringify(currentAgent);
     if (cachedUA !== currentUA) {
-        console.warn('Idempotency key reuse with different User Agent - potential attack');
         await logSecurityAuditEntry({
             success: false,
             ipAddress: currentIpAddress,
@@ -78,7 +76,6 @@ export const handleRetryRequest = async (
     }
 
     // All checks passed - re-set the cookie with NEW refresh token
-    console.debug('Returning cached refresh response to legitimate retry');
     cookieList.set(
         AuthConfig.refreshTokenCookie,
         cachedData.metadata.newRefreshTokenPlaintext,

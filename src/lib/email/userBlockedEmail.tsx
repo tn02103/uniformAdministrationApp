@@ -26,7 +26,7 @@ export const sendUserBlockedEmail = async (userId: string) => {
         await getMailAgend().sendMail({
             to: user.email,
             subject: "Ihr UniformAdmin Benutzerkonto wurde gesperrt",
-            html: await render(UserBlockedEmailBody(user.name)),
+            html: await render(await UserBlockedEmailBody(user.name)),
         });
     } catch (error) {
         console.error(`sendUserBlockedEmail: Failed to send email to user ${user.email}`, error);
@@ -35,7 +35,7 @@ export const sendUserBlockedEmail = async (userId: string) => {
         await getMailAgend().sendMail({
             to: administrators.map(a => a.email),
             subject: "Ein Benutzerkonto Ihrer Organisation wurde gesperrt",
-            html: await render(AdministratorUserBlockedEmailBody(user.name)),
+            html: await render(await AdministratorUserBlockedEmailBody(user.name)),
         });
     } catch (error) {
         console.error(`sendUserBlockedEmail: Failed to send email to administrators`, error);

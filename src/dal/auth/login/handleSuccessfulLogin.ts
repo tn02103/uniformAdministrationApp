@@ -49,7 +49,7 @@ export const handleSuccessfulLogin = async (props: HandleSuccessfulLoginProps): 
         throw new AuthenticationException(
             "Session lifetime could not be determined, password re-authentication required",
             "AuthenticationFailed",
-            LogDebugLevel.WARNING,
+            LogDebugLevel.CRITICAL,
             userLoginData
         );
     }
@@ -78,7 +78,8 @@ export const handleSuccessfulLogin = async (props: HandleSuccessfulLoginProps): 
         ironSession,
         user,
         organisation: userLoginData.organisation,
-        sessionId: dbSession.id
+        sessionId: dbSession.id,
+        deviceId: account.deviceId,
     });
     await logSecurityAuditEntry({
         userId: user.id,

@@ -62,7 +62,7 @@ model RefreshToken {
     tokenFamilyId       String             @db.Char(36)
     rotatedFromTokenId  String?            @db.Char(36)
     rotatedFrom         RefreshToken?      @relation(fields: [rotatedFromTokenId], references: [id], name: "tokenRotation")
-    rotatedToTokens     RefreshToken?      @relation(name: "tokenRotation")
+    rotatedToToken      RefreshToken?      @relation(name: "tokenRotation")
     issuedAt            DateTime           @default(now())
     issuerIpAddress     String             @map("issuer_ip_address") @db.VarChar(45)
     usedAt              DateTime?          @map("used_at") @db.Timestamp(3)

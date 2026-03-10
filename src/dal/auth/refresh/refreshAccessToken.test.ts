@@ -522,6 +522,7 @@ describe('refreshToken - Unit Tests', () => {
                     id: 'org-id-123',
                 }),
                 sessionId: 'session-id-123',
+                deviceId: 'device-id-123',
             });
         });
 

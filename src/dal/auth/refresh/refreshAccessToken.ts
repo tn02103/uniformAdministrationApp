@@ -207,6 +207,7 @@ export const refreshToken = async (): Promise<RefreshResponse> => {
             user: dbToken.user,
             organisation: dbToken.user.organisation,
             sessionId: dbToken.sessionId,
+            deviceId: dbToken.deviceId,
         });
 
         const response: RefreshResponse = {

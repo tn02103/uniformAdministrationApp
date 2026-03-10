@@ -18,11 +18,12 @@ export function sha256Hex(s: string): string {
 type IssueNewAccessTokenProps = {
     user: User;
     sessionId: string;
+    deviceId: string;
     ironSession: IronSession;
     organisation: Organisation;
 }
 export const issueNewAccessToken = async (props: IssueNewAccessTokenProps) => {
-    const { user, ironSession, organisation, sessionId } = props;
+    const { user, ironSession, organisation, sessionId, deviceId } = props;
     ironSession.user = {
         id: user.id,
         name: user.name,
@@ -32,6 +33,7 @@ export const issueNewAccessToken = async (props: IssueNewAccessTokenProps) => {
         acronym: organisation.acronym
     };
     ironSession.sessionId = sessionId;
+    ironSession.deviceId = deviceId;
     await ironSession.save();
 }
 
@@ -73,12 +75,12 @@ export const issueNewRefreshToken = async (props: IssueNewRefreshTokenProps): Pr
     let newTokenPlaintext: string = '';
 
     try {
-        await prisma.$transaction(async (tx) => {
+        await prisma.$transaction(async (client) => {
             let tokenFamilyId: string;
 
             if (mode === "refresh") {
                 // Step 1: Mark old token as used (ATOMIC)
-                const oldToken = await tx.refreshToken.update({
+                const oldToken = await client.refreshToken.update({
                     where: {
                         id: usedRefreshTokenId,
                         userId: userId,
@@ -101,7 +103,7 @@ export const issueNewRefreshToken = async (props: IssueNewRefreshTokenProps): Pr
 
             // Step 2: Revoke any other active tokens for this device
             // Ensures only one valid refresh token exists per device
-            await tx.refreshToken.updateMany({
+            await client.refreshToken.updateMany({
                 where: {
                     deviceId: deviceId,
                     userId: userId,
@@ -119,7 +121,7 @@ export const issueNewRefreshToken = async (props: IssueNewRefreshTokenProps): Pr
             const newTokenHash = sha256Hex(newToken);
             newTokenPlaintext = newToken; // Capture for return
 
-            await tx.refreshToken.create({
+            await client.refreshToken.create({
                 data: {
                     userId: userId,
                     deviceId: deviceId,

@@ -783,10 +783,12 @@ describe('issueNewAccessToken', () => {
             acronym: string;
         };
         sessionId?: string;
+        deviceId?: string;
         save: jest.Mock;
     } = {
         user: undefined,
         sessionId: undefined,
+        deviceId: undefined,
         save: mockSave,
     };
 
@@ -808,12 +810,14 @@ describe('issueNewAccessToken', () => {
         jest.clearAllMocks();
         mockIronSession.user = undefined;
         mockIronSession.sessionId = undefined;
+        mockIronSession.deviceId = undefined;
     });
 
     it('should set ironSession.user with all required fields', async () => {
         await issueNewAccessToken({
             user: mockUser as never,
             sessionId: 'session-789',
+            deviceId: 'device-id-123',
             ironSession: mockIronSession as never,
             organisation: mockOrganisation as never,
         });
@@ -832,6 +836,7 @@ describe('issueNewAccessToken', () => {
         await issueNewAccessToken({
             user: mockUser as never,
             sessionId: 'session-xyz-123',
+            deviceId: 'device-id-123',
             ironSession: mockIronSession as never,
             organisation: mockOrganisation as never,
         });
@@ -843,6 +848,7 @@ describe('issueNewAccessToken', () => {
         await issueNewAccessToken({
             user: mockUser as never,
             sessionId: 'session-789',
+            deviceId: 'device-id-123',
             ironSession: mockIronSession as never,
             organisation: mockOrganisation as never,
         });
@@ -859,6 +865,7 @@ describe('issueNewAccessToken', () => {
         await issueNewAccessToken({
             user: mockUser as never,
             sessionId: 'session-789',
+            deviceId: 'device-id-123',
             ironSession: mockIronSession as never,
             organisation: orgWithDifferentAcronym as never,
         });
@@ -875,6 +882,7 @@ describe('issueNewAccessToken', () => {
         await issueNewAccessToken({
             user: userWithRole as never,
             sessionId: 'session-789',
+            deviceId: 'device-id-123',
             ironSession: mockIronSession as never,
             organisation: mockOrganisation as never,
         });
@@ -892,6 +900,7 @@ describe('issueNewAccessToken', () => {
         await issueNewAccessToken({
             user: mockUser as never,
             sessionId: 'session-789',
+            deviceId: 'device-id-123',
             ironSession: mockIronSession as never,
             organisation: mockOrganisation as never,
         });

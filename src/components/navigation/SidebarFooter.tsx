@@ -8,7 +8,6 @@ import { Dropdown } from "react-bootstrap";
 import { useSessionStorage } from "usehooks-ts";
 import { useModal } from "../modals/modalProvider";
 import { useSidebarContext } from "./Sidebar";
-import { userLogout } from "@/dal/auth";
 
 type SidebarFooterProps = {
     username: string;
@@ -25,7 +24,7 @@ export const SidebarFooter = ({ username, collapseButtonRef, handleCollapseButto
     const [, setSidebarFixed] = useSessionStorage("sidebarFixed", true);
 
     const handleLogout = () => {
-        userLogout().then(logout);
+        logout();
     }
 
     return (

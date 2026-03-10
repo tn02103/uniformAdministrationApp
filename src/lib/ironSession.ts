@@ -18,6 +18,7 @@ declare module "iron-session" {
     interface IronSessionData {
         user?: IronSessionUser
         sessionId?: string;
+        deviceId?: string;
     }
 }
 export type IronSessionUser = {

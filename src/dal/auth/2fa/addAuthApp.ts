@@ -117,10 +117,10 @@ export const removeUnverified = async (props: RemovedUnverifiedAuthAppType) => g
     { userId: props.userId }
 ).then(async ([{ id }, data]) => {
 
-    return prisma.twoFactorApp.deleteMany({
+    return prisma.twoFactorApp.delete({
         where: {
-            userId: data.userId || id,
             id: data.appId,
+            userId: data.userId || id,
             verifiedAt: null
         }
     });
@@ -197,7 +197,10 @@ export const verify = async (props: VerifyPropType): VerifyReturnType => generic
         token,
         window: AppConfig.window
     });
-    if (!Number.isInteger(validateResult)) throw new Error('Token is invalid');
+    if (!Number.isInteger(validateResult)) {
+        await logAudit(false, 'Invalid TOTP token provided', LogDebugLevel.WARNING);
+        return { success: false, error: 'Invalid token' };
+    }
 
     await client.twoFactorApp.update({
         where: { id: dbApp.id },
