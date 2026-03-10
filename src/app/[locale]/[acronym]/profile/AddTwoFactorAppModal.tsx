@@ -24,10 +24,8 @@ type Step0FormType = {
     appName: string;
 }
 export const AddTwoFactorAppModal = ({ onClose }: AddTwoFactorAppModalProps) => {
-
     const [step, setStep] = useState<0 | 1 | 2>(0);
     const [data, setData] = useState<AppInformation | null>(null);
-
 
     const submitStep0 = (data: { appName: string }, form: UseFormReturn<Step0FormType>) => {
         SAFormHandler(
