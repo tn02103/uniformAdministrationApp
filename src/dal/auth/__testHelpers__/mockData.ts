@@ -76,6 +76,8 @@ export const createMockDBToken = (overrides?: DeepPartial<DBRefreshToken>): DBRe
     usedAt: null,
     usedIpAddress: null,
     usedUserAgent: null,
+    rotatedFromTokenId: null,
+    numberOfUseAttempts: 0,
     ...overrides,
     session: {
         id: authMockData.sessionId,
@@ -129,8 +131,6 @@ export const createMockDBToken = (overrides?: DeepPartial<DBRefreshToken>): DBRe
         updatedAt: dayjs().subtract(20, 'days').toDate(),
         ...overrides?.device,
     },
-    rotatedFromTokenId: null,
-    numberOfUseAttempts: 0,
 });
 
 

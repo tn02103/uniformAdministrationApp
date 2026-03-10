@@ -39,6 +39,7 @@ const prismaMock = {
         deleteMany: jest.fn(),
     },
     refreshToken: {
+        update: jest.fn(),
         updateMany: jest.fn(),
         create: jest.fn(),
         findFirst: jest.fn(),

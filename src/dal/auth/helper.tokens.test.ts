@@ -13,18 +13,6 @@ import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adap
 import { AuthRole } from '@/lib/AuthRoles';
 import crypto from 'crypto';
 
-// Mock Prisma
-jest.mock('@/lib/db', () => ({
-    prisma: {
-        $transaction: jest.fn(),
-        refreshToken: {
-            update: jest.fn(),
-            updateMany: jest.fn(),
-            create: jest.fn(),
-        }
-    }
-}));
-
 // Mock AuthConfig
 jest.mock('./config', () => ({
     AuthConfig: {
@@ -52,6 +40,10 @@ const mockRandomBytes = jest.mocked(crypto.randomBytes);
 const mockRandomUUID = jest.mocked(crypto.randomUUID);
 
 const mockPrisma = prisma as jest.Mocked<typeof prisma>;
+// Typed aliases for the refresh token mock functions (avoid repeated casting)
+const mockCreate = prisma.refreshToken.create as jest.Mock;
+const mockUpdate = prisma.refreshToken.update as jest.Mock;
+const mockUpdateMany = prisma.refreshToken.updateMany as jest.Mock;
 
 describe('sha256Hex', () => {
     it('should return consistent hex hash for same input', () => {
@@ -105,6 +97,20 @@ describe('issueNewRefreshToken', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         
+        // Wire up $transaction to pass the prisma mock as the client —
+        // setup-dal-unit.ts does the same at module level, but this file
+        // has its own jest.mock('@/lib/db') override.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        mockPrisma.$transaction.mockImplementation(async (callback: any) => callback(prisma));
+
+        // Default DB mock return values
+        mockCreate.mockResolvedValue({});
+        mockUpdateMany.mockResolvedValue({ count: 0 });
+        mockUpdate.mockResolvedValue({
+            id: 'old-token-id',
+            tokenFamilyId: 'family-123',
+        });
+
         // Default crypto mocks
         mockRandomBytes.mockReturnValue(Buffer.alloc(64, 'a')); // Exactly 64 bytes
         mockRandomUUID.mockReturnValue('11111111-1111-1111-1111-111111111111');
@@ -112,17 +118,6 @@ describe('issueNewRefreshToken', () => {
 
     describe('Mode: new', () => {
         it('should create new token with new family ID', async () => {
-            const mockTx = {
-                refreshToken: {
-                    updateMany: jest.fn().mockResolvedValue({ count: 0 }),
-                    create: jest.fn().mockResolvedValue({}),
-                }
-            };
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-                return callback(mockTx);
-            });
 
             const result = await issueNewRefreshToken({
                 ...baseProps,
@@ -132,7 +127,7 @@ describe('issueNewRefreshToken', () => {
             expect(result).toBeTruthy();
             expect(result).toHaveLength(86); // base64url of 64 bytes
             expect(mockRandomUUID).toHaveBeenCalled();
-            expect(mockTx.refreshToken.create).toHaveBeenCalledWith({
+            expect(mockCreate).toHaveBeenCalledWith({
                 data: expect.objectContaining({
                     userId: 'user-123',
                     deviceId: 'device-456',
@@ -144,24 +139,13 @@ describe('issueNewRefreshToken', () => {
         });
 
         it('should revoke other active tokens for same device in new mode', async () => {
-            const mockTx = {
-                refreshToken: {
-                    updateMany: jest.fn().mockResolvedValue({ count: 2 }),
-                    create: jest.fn().mockResolvedValue({}),
-                }
-            };
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-                return callback(mockTx);
-            });
 
             await issueNewRefreshToken({
                 ...baseProps,
                 mode: 'new',
             });
 
-            expect(mockTx.refreshToken.updateMany).toHaveBeenCalledWith({
+            expect(mockUpdateMany).toHaveBeenCalledWith({
                 where: {
                     deviceId: 'device-456',
                     userId: 'user-123',
@@ -173,17 +157,6 @@ describe('issueNewRefreshToken', () => {
         });
 
         it('should set cookie with correct options', async () => {
-            const mockTx = {
-                refreshToken: {
-                    updateMany: jest.fn().mockResolvedValue({ count: 0 }),
-                    create: jest.fn().mockResolvedValue({}),
-                }
-            };
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-                return callback(mockTx);
-            });
 
             const customExpiry = new Date('2026-03-01');
             await issueNewRefreshToken({
@@ -215,25 +188,10 @@ describe('issueNewRefreshToken', () => {
         };
 
         it('should mark old token as rotated atomically', async () => {
-            const mockTx = {
-                refreshToken: {
-                    update: jest.fn().mockResolvedValue({
-                        id: 'old-token-id',
-                        tokenFamilyId: 'family-123',
-                    }),
-                    updateMany: jest.fn().mockResolvedValue({ count: 0 }),
-                    create: jest.fn().mockResolvedValue({}),
-                }
-            };
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-                return callback(mockTx);
-            });
 
             await issueNewRefreshToken(refreshProps);
 
-            expect(mockTx.refreshToken.update).toHaveBeenCalledWith({
+            expect(mockUpdate).toHaveBeenCalledWith({
                 where: {
                     id: 'old-token-id',
                     userId: 'user-123',
@@ -250,25 +208,11 @@ describe('issueNewRefreshToken', () => {
         });
 
         it('should preserve token family ID from old token', async () => {
-            const mockTx = {
-                refreshToken: {
-                    update: jest.fn().mockResolvedValue({
-                        id: 'old-token-id',
-                        tokenFamilyId: 'family-abc-456',
-                    }),
-                    updateMany: jest.fn().mockResolvedValue({ count: 0 }),
-                    create: jest.fn().mockResolvedValue({}),
-                }
-            };
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-                return callback(mockTx);
-            });
-
+            mockUpdate.mockResolvedValue({ id: 'old-token-id', tokenFamilyId: 'family-abc-456' });
             await issueNewRefreshToken(refreshProps);
 
-            expect(mockTx.refreshToken.create).toHaveBeenCalledWith({
+            expect(mockCreate).toHaveBeenCalledWith({
                 data: expect.objectContaining({
                     tokenFamilyId: 'family-abc-456',
                     rotatedFromTokenId: 'old-token-id',
@@ -290,25 +234,10 @@ describe('issueNewRefreshToken', () => {
         });
 
         it('should exclude current token when revoking others', async () => {
-            const mockTx = {
-                refreshToken: {
-                    update: jest.fn().mockResolvedValue({
-                        id: 'old-token-id',
-                        tokenFamilyId: 'family-123',
-                    }),
-                    updateMany: jest.fn().mockResolvedValue({ count: 1 }),
-                    create: jest.fn().mockResolvedValue({}),
-                }
-            };
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-                return callback(mockTx);
-            });
 
             await issueNewRefreshToken(refreshProps);
 
-            expect(mockTx.refreshToken.updateMany).toHaveBeenCalledWith({
+            expect(mockUpdateMany).toHaveBeenCalledWith({
                 where: expect.objectContaining({
                     id: { not: 'old-token-id' }, // Exclude current token
                 }),
@@ -319,17 +248,6 @@ describe('issueNewRefreshToken', () => {
 
     describe('Transaction Behavior', () => {
         it('should use Serializable isolation level', async () => {
-            const mockTx = {
-                refreshToken: {
-                    updateMany: jest.fn().mockResolvedValue({ count: 0 }),
-                    create: jest.fn().mockResolvedValue({}),
-                }
-            };
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-                return callback(mockTx);
-            });
 
             await issueNewRefreshToken({
                 ...baseProps,
@@ -346,17 +264,6 @@ describe('issueNewRefreshToken', () => {
         });
 
         it('should set 5 second timeout', async () => {
-            const mockTx = {
-                refreshToken: {
-                    updateMany: jest.fn().mockResolvedValue({ count: 0 }),
-                    create: jest.fn().mockResolvedValue({}),
-                }
-            };
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-                return callback(mockTx);
-            });
 
             await issueNewRefreshToken({
                 ...baseProps,
@@ -383,17 +290,6 @@ describe('issueNewRefreshToken', () => {
 
     describe('Return Value', () => {
         it('should return plaintext token that was created', async () => {
-            const mockTx = {
-                refreshToken: {
-                    updateMany: jest.fn().mockResolvedValue({ count: 0 }),
-                    create: jest.fn().mockResolvedValue({}),
-                }
-            };
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-                return callback(mockTx);
-            });
 
             mockRandomBytes.mockReturnValue(Buffer.from('a'.repeat(64)));
 
@@ -413,17 +309,6 @@ describe('issueNewRefreshToken', () => {
 
     describe('Token Storage and Security', () => {
         it('should store hashed token in database, not plaintext', async () => {
-            const mockTx = {
-                refreshToken: {
-                    updateMany: jest.fn().mockResolvedValue({ count: 0 }),
-                    create: jest.fn().mockResolvedValue({}),
-                }
-            };
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-                return callback(mockTx);
-            });
 
             const result = await issueNewRefreshToken({
                 ...baseProps,
@@ -431,7 +316,7 @@ describe('issueNewRefreshToken', () => {
             });
 
             // Verify the token stored in DB is a hash, not the plaintext
-            const createCall = mockTx.refreshToken.create.mock.calls[0][0];
+            const createCall = mockCreate.mock.calls[0][0];
             const storedToken = createCall.data.token;
             
             expect(storedToken).not.toBe(result); // Should NOT be plaintext
@@ -440,17 +325,6 @@ describe('issueNewRefreshToken', () => {
         });
 
         it('should use correct cookie name from AuthConfig', async () => {
-            const mockTx = {
-                refreshToken: {
-                    updateMany: jest.fn().mockResolvedValue({ count: 0 }),
-                    create: jest.fn().mockResolvedValue({}),
-                }
-            };
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-                return callback(mockTx);
-            });
 
             await issueNewRefreshToken({
                 ...baseProps,
@@ -476,17 +350,6 @@ describe('issueNewRefreshToken', () => {
         });
 
         it('should default endOfLife to 3 days from now when not provided', async () => {
-            const mockTx = {
-                refreshToken: {
-                    updateMany: jest.fn().mockResolvedValue({ count: 0 }),
-                    create: jest.fn().mockResolvedValue({}),
-                }
-            };
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-                return callback(mockTx);
-            });
 
             await issueNewRefreshToken({
                 ...baseProps,
@@ -494,7 +357,7 @@ describe('issueNewRefreshToken', () => {
                 // endOfLife NOT provided
             });
 
-            const createCall = mockTx.refreshToken.create.mock.calls[0][0];
+            const createCall = mockCreate.mock.calls[0][0];
             const storedEndOfLife = createCall.data.endOfLife;
 
             const expectedDate = new Date('2024-01-04T12:00:00.000Z'); // 3 days later
@@ -502,17 +365,6 @@ describe('issueNewRefreshToken', () => {
         });
 
         it('should use custom endOfLife when provided', async () => {
-            const mockTx = {
-                refreshToken: {
-                    updateMany: jest.fn().mockResolvedValue({ count: 0 }),
-                    create: jest.fn().mockResolvedValue({}),
-                }
-            };
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-                return callback(mockTx);
-            });
 
             const customDate = new Date('2024-02-15T10:30:00.000Z');
             await issueNewRefreshToken({
@@ -521,7 +373,7 @@ describe('issueNewRefreshToken', () => {
                 endOfLife: customDate,
             });
 
-            const createCall = mockTx.refreshToken.create.mock.calls[0][0];
+            const createCall = mockCreate.mock.calls[0][0];
             const storedEndOfLife = createCall.data.endOfLife;
 
             expect(storedEndOfLife).toBe(customDate);
@@ -546,25 +398,10 @@ describe('issueNewRefreshToken', () => {
         });
 
         it('should set usedAt timestamp to current time', async () => {
-            const mockTx = {
-                refreshToken: {
-                    update: jest.fn().mockResolvedValue({
-                        id: 'old-token-id',
-                        tokenFamilyId: 'family-123',
-                    }),
-                    updateMany: jest.fn().mockResolvedValue({ count: 0 }),
-                    create: jest.fn().mockResolvedValue({}),
-                }
-            };
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-                return callback(mockTx);
-            });
 
             await issueNewRefreshToken(refreshProps);
 
-            const updateCall = mockTx.refreshToken.update.mock.calls[0][0];
+            const updateCall = mockUpdate.mock.calls[0][0];
             const usedAt = updateCall.data.usedAt;
 
             expect(usedAt).toBeInstanceOf(Date);
@@ -572,48 +409,18 @@ describe('issueNewRefreshToken', () => {
         });
 
         it('should set usedIpAddress to provided IP address', async () => {
-            const mockTx = {
-                refreshToken: {
-                    update: jest.fn().mockResolvedValue({
-                        id: 'old-token-id',
-                        tokenFamilyId: 'family-123',
-                    }),
-                    updateMany: jest.fn().mockResolvedValue({ count: 0 }),
-                    create: jest.fn().mockResolvedValue({}),
-                }
-            };
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-                return callback(mockTx);
-            });
 
             await issueNewRefreshToken(refreshProps);
 
-            const updateCall = mockTx.refreshToken.update.mock.calls[0][0];
+            const updateCall = mockUpdate.mock.calls[0][0];
             expect(updateCall.data.usedIpAddress).toBe('192.168.1.1');
         });
 
         it('should serialize usedUserAgent as JSON string', async () => {
-            const mockTx = {
-                refreshToken: {
-                    update: jest.fn().mockResolvedValue({
-                        id: 'old-token-id',
-                        tokenFamilyId: 'family-123',
-                    }),
-                    updateMany: jest.fn().mockResolvedValue({ count: 0 }),
-                    create: jest.fn().mockResolvedValue({}),
-                }
-            };
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-                return callback(mockTx);
-            });
 
             await issueNewRefreshToken(refreshProps);
 
-            const updateCall = mockTx.refreshToken.update.mock.calls[0][0];
+            const updateCall = mockUpdate.mock.calls[0][0];
             const usedUserAgent = updateCall.data.usedUserAgent;
 
             expect(typeof usedUserAgent).toBe('string');
@@ -622,25 +429,10 @@ describe('issueNewRefreshToken', () => {
         });
 
         it('should change status from "active" to "rotated"', async () => {
-            const mockTx = {
-                refreshToken: {
-                    update: jest.fn().mockResolvedValue({
-                        id: 'old-token-id',
-                        tokenFamilyId: 'family-123',
-                    }),
-                    updateMany: jest.fn().mockResolvedValue({ count: 0 }),
-                    create: jest.fn().mockResolvedValue({}),
-                }
-            };
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-                return callback(mockTx);
-            });
 
             await issueNewRefreshToken(refreshProps);
 
-            const updateCall = mockTx.refreshToken.update.mock.calls[0][0];
+            const updateCall = mockUpdate.mock.calls[0][0];
             
             // Where clause checks it was "active"
             expect(updateCall.where.status).toBe('active');
@@ -651,17 +443,6 @@ describe('issueNewRefreshToken', () => {
 
     describe('Created token record validation', () => {
         it('should set all required fields correctly in new mode', async () => {
-            const mockTx = {
-                refreshToken: {
-                    updateMany: jest.fn().mockResolvedValue({ count: 0 }),
-                    create: jest.fn().mockResolvedValue({}),
-                }
-            };
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-                return callback(mockTx);
-            });
 
             const customEndOfLife = new Date('2024-02-01T00:00:00.000Z');
             await issueNewRefreshToken({
@@ -670,7 +451,7 @@ describe('issueNewRefreshToken', () => {
                 endOfLife: customEndOfLife,
             });
 
-            const createCall = mockTx.refreshToken.create.mock.calls[0][0];
+            const createCall = mockCreate.mock.calls[0][0];
             const data = createCall.data;
 
             expect(data.userId).toBe('user-123');
@@ -684,21 +465,6 @@ describe('issueNewRefreshToken', () => {
         });
 
         it('should set rotatedFromTokenId in refresh mode', async () => {
-            const mockTx = {
-                refreshToken: {
-                    update: jest.fn().mockResolvedValue({
-                        id: 'old-token-id',
-                        tokenFamilyId: 'family-xyz',
-                    }),
-                    updateMany: jest.fn().mockResolvedValue({ count: 0 }),
-                    create: jest.fn().mockResolvedValue({}),
-                }
-            };
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-                return callback(mockTx);
-            });
 
             await issueNewRefreshToken({
                 ...baseProps,
@@ -707,22 +473,11 @@ describe('issueNewRefreshToken', () => {
                 userAgent: mockUserAgent,
             });
 
-            const createCall = mockTx.refreshToken.create.mock.calls[0][0];
+            const createCall = mockCreate.mock.calls[0][0];
             expect(createCall.data.rotatedFromTokenId).toBe('old-token-id');
         });
 
         it('should verify token is valid base64url format', async () => {
-            const mockTx = {
-                refreshToken: {
-                    updateMany: jest.fn().mockResolvedValue({ count: 0 }),
-                    create: jest.fn().mockResolvedValue({}),
-                }
-            };
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-                return callback(mockTx);
-            });
 
             const result = await issueNewRefreshToken({
                 ...baseProps,
@@ -746,24 +501,13 @@ describe('issueNewRefreshToken', () => {
         });
 
         it('should only revoke tokens with endOfLife > now', async () => {
-            const mockTx = {
-                refreshToken: {
-                    updateMany: jest.fn().mockResolvedValue({ count: 1 }),
-                    create: jest.fn().mockResolvedValue({}),
-                }
-            };
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            mockPrisma.$transaction.mockImplementation(async (callback: any) => {
-                return callback(mockTx);
-            });
 
             await issueNewRefreshToken({
                 ...baseProps,
                 mode: 'new',
             });
 
-            const updateManyCall = mockTx.refreshToken.updateMany.mock.calls[0][0];
+            const updateManyCall = mockUpdateMany.mock.calls[0][0];
             expect(updateManyCall.where.endOfLife).toEqual({
                 gt: new Date('2024-01-15T12:00:00.000Z')
             });

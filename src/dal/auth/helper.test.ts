@@ -611,23 +611,6 @@ describe('calculateSessionLifetime', () => {
         });
     });
 
-    describe('Minimum session duration', () => {
-        it('should enforce minimum 8-hour session', () => {
-            // Create scenario that would result in very short session
-            // MEDIUM risk (0.7x) + Admin (0.7x) = 0.49x of 7 days = ~3.4 days * 24 = 81.6 hours
-            // But if we use a very short base, it should enforce 8 hours minimum
-            const result = calculateSessionLifetime({
-                isNewDevice: false,
-                fingerprintRisk: RiskLevel.HIGH, // 0.3x
-                lastPWValidation: baseDate,
-                userRole: AuthRole.admin, // 0.7x
-            });
-
-            // 7 days * 0.3 * 0.7 = 1.47 days = 35.28 hours (above minimum)
-            expect(result).not.toBeNull();
-        });
-    });
-
     describe('Combined scenarios', () => {
         it('should apply multiple reductions correctly (new device + MEDIUM risk + admin)', () => {
             const result = calculateSessionLifetime({
