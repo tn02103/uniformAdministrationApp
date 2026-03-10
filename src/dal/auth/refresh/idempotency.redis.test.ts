@@ -6,12 +6,8 @@
  */
 
 import { acquireLock, getCachedResult, releaseLock, storeCachedResult, tryAcquireLockWithPolling } from './idempotency.redis';
-import {
-    createMockUserAgent,
-    createSimpleMockCookies,
-    createMockCachedRefreshData,
-    mockConsoleWarn
-} from '../__testHelpers__';
+import { createMockCachedRefreshData, mockConsoleWarn } from '../__testHelpers__/mockFactories';
+import { authMockData, getCookieMockFactory } from '../__testHelpers__/mockData';
 
 // Mock functions - must be declared before jest.mock()
 // but jest.mock() hoists, so we need to define them in the mock factory
@@ -214,8 +210,12 @@ describe('Redis Idempotency Helpers', () => {
     });
 
     describe('tryAcquireLockWithPolling', () => {
-        const mockAgent = createMockUserAgent('chrome-desktop');
-        const mockCookies = createSimpleMockCookies();
+        const mockAgent = authMockData.userAgent;
+        const mockCookies = getCookieMockFactory({
+            deviceId: authMockData.deviceId,
+            organisationId: authMockData.organisationId,
+            refreshToken: authMockData.refreshToken,
+        }).cookieFactory();
 
         beforeEach(() => {
             jest.useFakeTimers();

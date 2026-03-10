@@ -24,11 +24,12 @@ import { prisma } from '@/lib/db';
 import { getIronSession } from '@/lib/ironSession';
 import crypto, { randomUUID } from 'crypto';
 import { StaticData } from '../../../../tests/_playwrightConfig/testData/staticDataLoader';
-import { createMockUserAgent } from '../__testHelpers__';
 import {
     authMockData,
     getCookieMockFactory,
     getHeaderGetMockImplementation,
+    getMockUserAgent,
+    mockUserAgentVariants,
 } from '../__testHelpers__/mockData';
 import { AuthConfig } from '../config';
 import { sha256Hex } from '../helper.tokens';
@@ -73,7 +74,7 @@ jest.mock('next/headers', () => ({
 }));
 
 jest.mock('next/server', () => ({
-    userAgent: jest.fn(() => createMockUserAgent('chrome-desktop')),
+    userAgent: jest.fn(() => getMockUserAgent()),
 }));
 
 // ===== IRON SESSION MOCK =====
@@ -468,7 +469,7 @@ describe('refreshAccessToken Integration Tests', () => {
                 data: {
                     usedAt: dayjs().subtract(500, 'milliseconds').toDate(),
                     usedIpAddress: '10.99.99.1', // different from IPS.tokenReuse
-                    usedUserAgent: JSON.stringify(createMockUserAgent('chrome-desktop')),
+                    usedUserAgent: JSON.stringify(getMockUserAgent()),
                 },
             });
             // Second active token to verify full revocation
@@ -507,7 +508,7 @@ describe('refreshAccessToken Integration Tests', () => {
                 data: {
                     usedAt: dayjs().subtract(500, 'milliseconds').toDate(),
                     usedIpAddress: IPS.tokenReuse, // same IP → won't trigger Scenario 2
-                    usedUserAgent: JSON.stringify(createMockUserAgent('firefox-mobile')),
+                    usedUserAgent: JSON.stringify(mockUserAgentVariants.firefoxMobile),
                 },
             });
 
@@ -619,7 +620,7 @@ describe('refreshAccessToken Integration Tests', () => {
             // 3. Second request: same key + token, different UA → 403
             const { userAgent: mockUserAgent } = await import('next/server');
             (mockUserAgent as jest.Mock).mockReturnValueOnce(
-                createMockUserAgent('firefox-mobile')
+                mockUserAgentVariants.firefoxMobile
             );
 
             const result2 = await refreshAccessToken();

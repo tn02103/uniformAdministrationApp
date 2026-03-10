@@ -1,22 +1,27 @@
 import { User } from "@prisma/client";
 import { Html } from "@react-email/html";
 import { render } from "@react-email/render";
+import { getScopedI18n } from "../locales/config";
 import { getMailAgend } from "./mailagend";
 
 
 export const sendTokenViaEmail = async (user: User, token: string) => {
+    const t = await getScopedI18n("emails.emailToken");
     await getMailAgend().sendMail({
         to: user.email!,
-        subject: 'Ihr Verifizierungscode',
-        html: await render(emailTokenBody(token)),
+        subject: t('subject'),
+        html: await render(await emailTokenBody(token)),
     });
 }
 
-const emailTokenBody = (token: string) => (
-     <Html>
-        <h1>Ihr Verifizierungscode</h1>
-        <span>Ihr Verifizierungscode lautet: <strong>{token}</strong></span>
-        <br />
-        <span>Der Code ist 1 Stunde gültig.</span>
-     </Html>
-);
+const emailTokenBody = async (token: string) => {
+    const t = await getScopedI18n("emails.emailToken");
+    return (
+         <Html>
+            <h1>{t('heading')}</h1>
+            <span>{t('body', { token })}</span>
+            <br />
+            <span>{t('validity')}</span>
+         </Html>
+    );
+};

@@ -83,7 +83,7 @@ export const verifyRefreshToken = async (props: verificationsProp): Promise<Fing
     if (account.organisationId !== dbToken.user.organisationId) {
         throw new AuthenticationException(
             "Organisation ID mismatch. The last used organisation Id in the account cookie does not match the user's organisation Id",
-            "UnknownError",
+            "AuthenticationFailed",
             LogDebugLevel.WARNING,
             logData
         );

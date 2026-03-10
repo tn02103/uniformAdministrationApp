@@ -21,7 +21,7 @@ import { DeepMockProxy } from 'jest-mock-extended';
 import { cookies, headers } from 'next/headers';
 import { userAgent } from 'next/server';
 import { LogDebugLevel } from '../LogDebugLeve.enum';
-import { createMockAuthExceptionData } from '../__testHelpers__';
+import { createMockAuthExceptionData } from '../__testHelpers__/mockFactories';
 import {
     authMockData,
     createMockDBToken,
@@ -578,7 +578,7 @@ describe('refreshToken - Unit Tests', () => {
                         ipAddress: authMockData.ipAddress,
                         userAgent: JSON.stringify(mockAgent),
                         oldRefreshTokenHash: 'hashed-old-token',
-                        cookieExpiry: calculatedEOL,
+                        cookieExpiry: calculatedEOL.toISOString(),
                         newRefreshTokenPlaintext: 'new-refresh-token-xyz',
                     },
                 }

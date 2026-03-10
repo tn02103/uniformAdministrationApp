@@ -64,7 +64,6 @@ export const handleRetryRequest = async (
 
     // CHECK 3: IP address (ALLOW but log WARNING if mismatch - mobile users switching towers)
     if (currentIpAddress !== cachedData.metadata.ipAddress) {
-        console.warn('Idempotency key reuse from different IP (allowed for mobile)');
         await logSecurityAuditEntry({
             success: true,
             ipAddress: currentIpAddress,

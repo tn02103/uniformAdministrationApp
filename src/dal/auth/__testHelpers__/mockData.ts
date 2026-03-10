@@ -18,6 +18,35 @@ export const getMockUserAgent = (overwrite: Partial<UserAgent> = {}): UserAgent 
     }
 }
 
+// Pre-built UserAgent variants for tests that need specific browser/device combinations
+export const mockUserAgentVariants = {
+    chromeDesktop: getMockUserAgent(),
+    firefoxMobile: getMockUserAgent({
+        browser: { name: 'Firefox', version: '115', major: '115' },
+        device: { type: 'mobile' as const, vendor: undefined, model: undefined },
+        os: { name: 'Android', version: '13' },
+        engine: { name: 'Gecko', version: '115' },
+        cpu: { architecture: 'arm' },
+        ua: 'Mozilla/5.0 (Android 13) Gecko/115.0 Firefox/115.0',
+    }),
+    safariDesktop: getMockUserAgent({
+        browser: { name: 'Safari', version: '16', major: '16' },
+        device: { type: 'desktop' as const, vendor: 'Apple', model: undefined },
+        os: { name: 'macOS', version: '13' },
+        engine: { name: 'WebKit', version: '16' },
+        cpu: { architecture: 'amd64' },
+        ua: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0) Safari/16.0',
+    }),
+    edgeDesktop: getMockUserAgent({
+        browser: { name: 'Edge', version: '120', major: '120' },
+        device: { type: 'desktop' as const, vendor: undefined, model: undefined },
+        os: { name: 'Windows', version: '11' },
+        engine: { name: 'Blink', version: '120' },
+        cpu: { architecture: 'amd64' },
+        ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Edge/120.0',
+    }),
+};
+
 export const authMockData = {
     deviceId: 'device-id-123',
     organisationId: 'org-id-123',

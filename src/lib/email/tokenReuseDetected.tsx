@@ -14,12 +14,14 @@ export const sendTokenReuseDetectedEmail = async (userId: string, sendUserEmail:
         return;
     }
 
+    const t = await getScopedI18n("emails.tokenReuseDetected");
+
     // Send user email only if requested (high-certainty scenarios)
     if (sendUserEmail) {
         try {
             await getMailAgend().sendMail({
                 to: user.email,
-                subject: "Ihr UniformAdmin Benutzerkonto wurde gesperrt",
+                subject: t('subject'),
                 html: await render(await UserTokenReuseEmailBody({ name: user.name })),
             });
         } catch (error) {
@@ -32,8 +34,8 @@ export const sendTokenReuseDetectedEmail = async (userId: string, sendUserEmail:
         try {
             await getMailAgend().sendMail({
                 to: process.env.DEVELOPER_NOTIFICATION_EMAILS?.split(","),
-                subject: "Ein Benutzerkonto Ihrer Organisation wurde gesperrt",
-                html: await render(DeveloperTokenReuseEmailBody(user.email, sendUserEmail)),
+                subject: t('developerSubject'),
+                html: await render(await DeveloperTokenReuseEmailBody(user.email, sendUserEmail)),
             });
         } catch (error) {
             console.error(`sendTokenReuseDetectedEmail: Failed to send email to developers`, error);
@@ -54,14 +56,15 @@ const UserTokenReuseEmailBody = async ({ name }: { name: string }) => {
     )
 }
 
-const DeveloperTokenReuseEmailBody = (userEmail: string, userNotified: boolean) => {
+const DeveloperTokenReuseEmailBody = async (userEmail: string, userNotified: boolean) => {
+    const t = await getScopedI18n("emails.tokenReuseDetected");
     return (
         <Html>
-            <h1>Benachrichtigung: Verdächtige Token-Wiederverwendung erkannt</h1>
-            <span>Das Benutzerkonto mit der E-Mail {userEmail} hat eine verdächtige Wiederverwendung eines Refresh-Tokens festgestellt.</span><br />
-            <span>Alle aktiven Sitzungen und Refresh-Tokens für dieses Konto wurden widerrufen.</span><br />
-            <span><strong>Benutzer benachrichtigt:</strong> {userNotified ? "Ja" : "Nein (niedrige Sicherheit)"}</span><br />
-            <span>Bitte überprüfen Sie die Sicherheitsprotokolle und kontaktieren Sie den Benutzer bei Bedarf.</span><br />
+            <h1>{t('developer.heading')}</h1>
+            <span>{t('developer.line1', { userEmail })}</span><br />
+            <span>{t('developer.line2')}</span><br />
+            <span><strong>{t('developer.notificationLabel')}</strong> {userNotified ? t('developer.yes') : t('developer.no')}</span><br />
+            <span>{t('developer.line4')}</span><br />
         </Html>
     )
 }

@@ -825,6 +825,12 @@ export default {
         },
     },
     emails: {
+        emailToken: {
+            subject: "Ihr Verifizierungscode",
+            heading: "Ihr Verifizierungscode",
+            body: "Ihr Verifizierungscode lautet: {token}",
+            validity: "Der Code ist 1 Stunde gültig.",
+        },
         tokenReuseDetected: {
             subject: "Sicherheitsbenachrichtigung: Verdächtige Aktivität erkannt",
             greeting: "Guten Tag {name},",
@@ -833,6 +839,16 @@ export default {
             line3: "Aus Sicherheitsgründen haben wir alle aktiven Sitzungen und Refresh-Tokens für dein Konto widerrufen.",
             line4: "Sollte dies widerholt auftreten, kontaktiere bitte umgehend deinen Administrator.",
             closing: "Sicherheits-Team",
+            developerSubject: "Sicherheitswarnung: Verdächtige Token-Wiederverwendung erkannt",
+            developer: {
+                heading: "Benachrichtigung: Verdächtige Token-Wiederverwendung erkannt",
+                line1: "Das Benutzerkonto mit der E-Mail {userEmail} hat eine verdächtige Wiederverwendung eines Refresh-Tokens festgestellt.",
+                line2: "Alle aktiven Sitzungen und Refresh-Tokens für dieses Konto wurden widerrufen.",
+                notificationLabel: "Benutzer benachrichtigt:",
+                yes: "Ja",
+                no: "Nein (niedrige Sicherheit)",
+                line4: "Bitte überprüfen Sie die Sicherheitsprotokolle und kontaktieren Sie den Benutzer bei Bedarf.",
+            },
         },
         userBlocked: {
             user: {

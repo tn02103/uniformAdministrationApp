@@ -22,10 +22,12 @@ export const sendUserBlockedEmail = async (userId: string) => {
         }
     });
 
+    const t = await getScopedI18n("emails.userBlocked");
+
     try {
         await getMailAgend().sendMail({
             to: user.email,
-            subject: "Ihr UniformAdmin Benutzerkonto wurde gesperrt",
+            subject: t('user.subject'),
             html: await render(await UserBlockedEmailBody(user.name)),
         });
     } catch (error) {
@@ -34,7 +36,7 @@ export const sendUserBlockedEmail = async (userId: string) => {
     try {
         await getMailAgend().sendMail({
             to: administrators.map(a => a.email),
-            subject: "Ein Benutzerkonto Ihrer Organisation wurde gesperrt",
+            subject: t('administrator.subject', { name: user.name }),
             html: await render(await AdministratorUserBlockedEmailBody(user.name)),
         });
     } catch (error) {

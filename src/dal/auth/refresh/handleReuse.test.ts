@@ -15,7 +15,8 @@ import { sendTokenReuseDetectedEmail } from '@/lib/email/tokenReuseDetected';
 import { PrismaClient } from '@prisma/client';
 import { DeepMockProxy } from 'jest-mock-extended';
 import { LogDebugLevel } from '../LogDebugLeve.enum';
-import { createMockAuthExceptionData, createMockUserAgent } from '../__testHelpers__';
+import { createMockAuthExceptionData } from '../__testHelpers__/mockFactories';
+import { getMockUserAgent } from '../__testHelpers__/mockData';
 import { RiskLevel, validateDeviceFingerprint } from '../helper';
 import { isRedisAvailable } from '../redis';
 import { handleRefreshTokenReuse } from './handleReuse';
@@ -46,7 +47,7 @@ const mockSendTokenReuseDetectedEmail = sendTokenReuseDetectedEmail as jest.Mock
 const mockPrisma = jest.requireMock('@/lib/db').prisma as DeepMockProxy<PrismaClient>;
 
 describe('handleRefreshTokenReuse - Unit Tests', () => {
-    const mockAgent = createMockUserAgent('chrome-desktop');
+    const mockAgent = getMockUserAgent();
     const mockLogData = createMockAuthExceptionData();
     const currentTime = new Date('2024-01-15T12:00:00.000Z');
 

@@ -3,6 +3,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { MFAType } from "@prisma/client";
 import { calculateSessionLifetime, DeviceIdsCookie, DeviceIdsCookieAccount, getIPAddress, RiskLevel, UserAgent, getDeviceAccountFromCookies, validateDeviceFingerprint, getUserMFAConfig, verifyMFAToken } from "./helper";
 import { verifyEmailCode } from "./email/verifyCode";
+import { getMockUserAgent } from './__testHelpers__/mockData';
 import { __unsecuredVerifyTwoFactorCode } from "./2fa/verify";
 
 // Mock dependencies
@@ -120,27 +121,15 @@ describe('getDeviceAccountFromCookies', () => {
 });
 
 describe('validateDeviceFingerprint', () => {
-    // Helper function to create complete UserAgent mock objects
-    const createMockUserAgent = (overrides?: Partial<UserAgent>): UserAgent => ({
-        ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        browser: { name: 'Chrome', version: '120.0.0.0', major: '120' },
-        engine: { name: 'Blink', version: '120.0.0.0' },
-        os: { name: 'Windows', version: '10' },
-        device: { vendor: undefined, model: undefined, type: 'desktop' },
-        cpu: { architecture: undefined },
-        isBot: false,
-        ...overrides
-    });
-
     const mockCurrent = {
         deviceId: 'device-123',
         ipAddress: '192.168.1.100',
-        userAgent: createMockUserAgent()
+        userAgent: getMockUserAgent()
     }
     const mockExpected = {
         deviceId: 'device-123',
         ipAddress: '192.168.1.100',
-        userAgent: JSON.stringify(createMockUserAgent()),
+        userAgent: JSON.stringify(getMockUserAgent()),
     }
 
     describe('SEVERE risk scenarios', () => {
@@ -171,7 +160,7 @@ describe('validateDeviceFingerprint', () => {
         });
 
         it('should return SEVERE risk when OS name changes', async () => {
-            const currentUAWithDifferentOS = createMockUserAgent({
+            const currentUAWithDifferentOS = getMockUserAgent({
                 os: { name: 'macOS', version: '13' } // Changed from Windows to macOS
             });
 
@@ -188,7 +177,7 @@ describe('validateDeviceFingerprint', () => {
         });
 
         it('should return SEVERE risk when device type changes', async () => {
-            const currentUAWithDifferentDeviceType = createMockUserAgent({
+            const currentUAWithDifferentDeviceType = getMockUserAgent({
                 device: { vendor: undefined, model: undefined, type: 'mobile' } // Changed from desktop to mobile
             });
 
@@ -205,7 +194,7 @@ describe('validateDeviceFingerprint', () => {
         });
 
         it('should return SEVERE risk when browser name changes', async () => {
-            const currentUAWithDifferentBrowser = createMockUserAgent({
+            const currentUAWithDifferentBrowser = getMockUserAgent({
                 browser: { name: 'Firefox', version: '120.0.0.0', major: '120' } // Changed from Chrome to Firefox
             });
 
@@ -222,7 +211,7 @@ describe('validateDeviceFingerprint', () => {
         });
 
         it('should return SEVERE risk when multiple critical properties change', async () => {
-            const currentUAWithMultipleChanges = createMockUserAgent({
+            const currentUAWithMultipleChanges = getMockUserAgent({
                 os: { name: 'Linux', version: '22.04' }, // Changed OS
                 device: { vendor: undefined, model: undefined, type: 'mobile' }, // Changed device type
                 browser: { name: 'Safari', version: '16.0', major: '16' } // Changed browser
@@ -243,7 +232,7 @@ describe('validateDeviceFingerprint', () => {
 
     describe('HIGH risk scenarios', () => {
         it('should return HIGH risk when OS version changes', async () => {
-            const currentUAWithDifferentOSVersion = createMockUserAgent({
+            const currentUAWithDifferentOSVersion = getMockUserAgent({
                 os: { name: 'Windows', version: '11' } // Changed from version 10 to 11
             });
 
@@ -260,7 +249,7 @@ describe('validateDeviceFingerprint', () => {
         });
 
         it('should return HIGH risk when OS version changes with IP address change', async () => {
-            const currentUAWithDifferentOSVersion = createMockUserAgent({
+            const currentUAWithDifferentOSVersion = getMockUserAgent({
                 os: { name: 'Windows', version: '11' }
             });
 
@@ -280,7 +269,7 @@ describe('validateDeviceFingerprint', () => {
 
     describe('MEDIUM risk scenarios', () => {
         it('should return MEDIUM risk when browser version changes', async () => {
-            const currentUAWithDifferentBrowserVersion = createMockUserAgent({
+            const currentUAWithDifferentBrowserVersion = getMockUserAgent({
                 browser: { name: 'Chrome', version: '121.0.0.0', major: '121' } // Updated browser version
             });
 
@@ -297,7 +286,7 @@ describe('validateDeviceFingerprint', () => {
         });
 
         it('should return MEDIUM risk when browser version changes with IP address change', async () => {
-            const currentUAWithDifferentBrowserVersion = createMockUserAgent({
+            const currentUAWithDifferentBrowserVersion = getMockUserAgent({
                 browser: { name: 'Chrome', version: '121.0.0.0', major: '121' }
             });
 
@@ -359,8 +348,8 @@ describe('validateDeviceFingerprint', () => {
         });
 
         it('should handle current user agent with missing properties gracefully', async () => {
-            const incompleteCurrentUA = createMockUserAgent({
-                os: { name: 'Windows' }, // Missing version
+            const incompleteCurrentUA = getMockUserAgent({
+                os: { name: 'Windows', version: null as unknown as string }, // Missing version
                 device: { vendor: undefined, model: undefined, type: undefined }, // Missing type
                 browser: { name: 'Chrome', version: undefined, major: undefined } // Missing version
             });

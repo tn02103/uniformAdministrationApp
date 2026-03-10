@@ -220,6 +220,9 @@ export default {
                         duplication: "The code is already used by another redirect of this or another association",
                     },
                 },
+                auth: {
+                    "2fa.appNameNotUnique": "The name is already used by one of your other 2FA apps",
+                },
             },
         },
         success: {
@@ -822,6 +825,12 @@ export default {
         },
     },
     emails: {
+        emailToken: {
+            subject: "Your verification code",
+            heading: "Your verification code",
+            body: "Your verification code is: {token}",
+            validity: "The code is valid for 1 hour.",
+        },
         tokenReuseDetected: {
             subject: "Security Alert: Refresh Token Reuse Detected",
             greeting: "Hi {name},",
@@ -830,6 +839,16 @@ export default {
             line3: "For security reasons, we have revoked all active sessions and refresh tokens for your account.",
             line4: "If this occurs repeatedly, please contact your administrator immediately.",
             closing: "Security Team",
+            developerSubject: "Security Alert: Suspicious Token Reuse Detected",
+            developer: {
+                heading: "Notification: Suspicious Token Reuse Detected",
+                line1: "The user account with email {userEmail} has triggered a suspicious refresh token reuse detection.",
+                line2: "All active sessions and refresh tokens for this account have been revoked.",
+                notificationLabel: "User notified:",
+                yes: "Yes",
+                no: "No (low-confidence scenario)",
+                line4: "Please review the security logs and contact the user if necessary.",
+            },
         },
         userBlocked: {
             user: {

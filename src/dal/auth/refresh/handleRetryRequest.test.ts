@@ -10,11 +10,8 @@ import { sha256Hex } from '../helper.tokens';
 import { logSecurityAuditEntry } from '../helper';
 import { LogDebugLevel } from '../LogDebugLeve.enum';
 import type { CachedRefreshData } from './idempotency.redis';
-import { 
-    createMockUserAgent, 
-    createSimpleMockCookies, 
-    createMockCachedRefreshData 
-} from '../__testHelpers__';
+import { createMockCachedRefreshData } from '../__testHelpers__/mockFactories';
+import { authMockData, getCookieMockFactory, getMockUserAgent, mockUserAgentVariants } from '../__testHelpers__/mockData';
 
 // Mock dependencies
 jest.mock('../helper.tokens', () => ({
@@ -35,10 +32,16 @@ const mockSha256Hex = sha256Hex as jest.MockedFunction<typeof sha256Hex>;
 const mockLogSecurityAuditEntry = logSecurityAuditEntry as jest.MockedFunction<typeof logSecurityAuditEntry>;
 
 describe('handleRetryRequest - Metadata Validation', () => {
-    const mockAgent = createMockUserAgent('chrome-desktop');
-    const mockCookies = createSimpleMockCookies();
+    const mockAgent = getMockUserAgent();
+    const { cookieFactory, mockCookieInstance } = getCookieMockFactory({
+        deviceId: authMockData.deviceId,
+        organisationId: authMockData.organisationId,
+        refreshToken: authMockData.refreshToken,
+    });
+    const mockCookies = cookieFactory();
     const baseCachedData = createMockCachedRefreshData({
         oldRefreshTokenHash: 'correct-hash-123',
+        userAgent: mockAgent,
     });
 
     beforeEach(() => {
@@ -67,7 +70,7 @@ describe('handleRetryRequest - Metadata Validation', () => {
                 userAgent: mockAgent,
                 debugLevel: LogDebugLevel.CRITICAL,
             });
-            expect(mockCookies.__mockSet).not.toHaveBeenCalled();
+            expect(mockCookieInstance.set).not.toHaveBeenCalled();
         });
 
         it('should pass validation when token hash matches', async () => {
@@ -82,7 +85,7 @@ describe('handleRetryRequest - Metadata Validation', () => {
             );
 
             expect(result).toEqual({ status: 200, message: 'Success' });
-            expect(mockCookies.__mockSet).toHaveBeenCalled();
+            expect(mockCookieInstance.set).toHaveBeenCalled();
         });
     });
 
@@ -90,7 +93,7 @@ describe('handleRetryRequest - Metadata Validation', () => {
         it('should return 403 and log CRITICAL when User Agent does not match', async () => {
             mockSha256Hex.mockReturnValue('correct-hash-123');
 
-            const differentAgent = createMockUserAgent('firefox-mobile');
+            const differentAgent = mockUserAgentVariants.firefoxMobile;
 
             const result = await handleRetryRequest(
                 baseCachedData,
@@ -109,7 +112,7 @@ describe('handleRetryRequest - Metadata Validation', () => {
                 userAgent: differentAgent,
                 debugLevel: LogDebugLevel.CRITICAL,
             });
-            expect(mockCookies.__mockSet).not.toHaveBeenCalled();
+            expect(mockCookieInstance.set).not.toHaveBeenCalled();
         });
 
         it('should pass validation when User Agent matches exactly', async () => {
@@ -148,7 +151,7 @@ describe('handleRetryRequest - Metadata Validation', () => {
                 userAgent: mockAgent,
                 debugLevel: LogDebugLevel.WARNING,
             });
-            expect(mockCookies.__mockSet).toHaveBeenCalled();
+            expect(mockCookieInstance.set).toHaveBeenCalled();
         });
 
         it('should not log when IP address matches', async () => {
@@ -179,14 +182,14 @@ describe('handleRetryRequest - Metadata Validation', () => {
                 mockCookies
             );
 
-            expect(mockCookies.__mockSet).toHaveBeenCalledWith(
+            expect(mockCookieInstance.set).toHaveBeenCalledWith(
                 'test-refresh-token',
                 'new-token-plaintext-abc123',
                 expect.objectContaining({
                     httpOnly: true,
                     secure: true,
                     sameSite: 'strict',
-                    expires: baseCachedData.metadata.cookieExpiry,
+                    expires: new Date(baseCachedData.metadata.cookieExpiry),
                     path: '/api/auth/refresh',
                 })
             );
@@ -203,12 +206,12 @@ describe('handleRetryRequest - Metadata Validation', () => {
                 mockCookies
             );
 
-            const cookieOptions = mockCookies.__mockSet.mock.calls[0][2];
+            const cookieOptions = mockCookieInstance.set.mock.calls[0][2];
             expect(cookieOptions).toEqual({
                 httpOnly: true,
                 secure: true,
                 sameSite: 'strict',
-                expires: baseCachedData.metadata.cookieExpiry,
+                expires: new Date(baseCachedData.metadata.cookieExpiry),
                 path: '/api/auth/refresh',
             });
         });
@@ -224,7 +227,7 @@ describe('handleRetryRequest - Metadata Validation', () => {
                 mockCookies
             );
 
-            expect(mockCookies.__mockSet).not.toHaveBeenCalled();
+            expect(mockCookieInstance.set).not.toHaveBeenCalled();
         });
     });
 
@@ -246,7 +249,7 @@ describe('handleRetryRequest - Metadata Validation', () => {
         it('should fail on second check (UA) even if token matches', async () => {
             mockSha256Hex.mockReturnValue('correct-hash-123');
 
-            const differentAgent = createMockUserAgent('safari-desktop');
+            const differentAgent = mockUserAgentVariants.safariDesktop;
 
             const result = await handleRetryRequest(
                 baseCachedData,
@@ -271,7 +274,7 @@ describe('handleRetryRequest - Metadata Validation', () => {
             );
 
             expect(result).toEqual({ status: 200, message: 'Success' });
-            expect(mockCookies.__mockSet).toHaveBeenCalled();
+            expect(mockCookieInstance.set).toHaveBeenCalled();
         });
     });
 
@@ -305,7 +308,7 @@ describe('handleRetryRequest - Metadata Validation', () => {
                     ipAddress: '',
                     userAgent: '{}',
                     oldRefreshTokenHash: '',
-                    cookieExpiry: new Date(),
+                    cookieExpiry: new Date().toISOString(),
                     newRefreshTokenPlaintext: '',
                 }
             };

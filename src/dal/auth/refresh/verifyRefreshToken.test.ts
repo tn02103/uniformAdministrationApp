@@ -20,13 +20,9 @@ import { handleRefreshTokenReuse } from './handleReuse';
 import { validateDeviceFingerprint } from '../helper';
 import { isValid } from 'date-fns';
 import dayjs from 'dayjs';
-import {
-    createMockUserAgent,
-    createSimpleMockCookies,
-    createMockAuthExceptionData,
-} from '../__testHelpers__';
+import { createMockAuthExceptionData } from '../__testHelpers__/mockFactories';
 import { AuthConfig } from '../config';
-import { authMockData, createMockDBToken } from '../__testHelpers__/mockData';
+import { authMockData, createMockDBToken, getCookieMockFactory, getMockUserAgent } from '../__testHelpers__/mockData';
 
 // Mock dependencies
 jest.mock('../helper.tokens', () => ({
@@ -58,8 +54,12 @@ const mockValidateDeviceFingerprint = validateDeviceFingerprint as jest.MockedFu
 const mockIsValid = isValid as jest.MockedFunction<typeof isValid>;
 
 describe('verifyRefreshToken - Unit Tests', () => {
-    const mockAgent = createMockUserAgent('chrome-desktop');
-    const mockCookies = createSimpleMockCookies();
+    const mockAgent = getMockUserAgent();
+    const mockCookies = getCookieMockFactory({
+        deviceId: authMockData.deviceId,
+        organisationId: authMockData.organisationId,
+        refreshToken: authMockData.refreshToken,
+    }).cookieFactory();
     const mockLogData = createMockAuthExceptionData();
 
     const mockAccount = {
@@ -506,7 +506,7 @@ describe('verifyRefreshToken - Unit Tests', () => {
                 })
             ).rejects.toMatchObject({
                 message: expect.stringContaining('Organisation ID mismatch'),
-                exceptionType: 'UnknownError',
+                exceptionType: 'AuthenticationFailed',
                 debugLevel: LogDebugLevel.WARNING,
             });
         });
