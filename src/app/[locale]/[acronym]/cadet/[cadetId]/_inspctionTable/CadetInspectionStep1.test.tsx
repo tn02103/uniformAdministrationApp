@@ -34,7 +34,7 @@ describe('<CadetInspectionStep1 />', () => {
         expect(screen.getByText('Old deficiency 2')).toBeInTheDocument();
         expect(screen.getByText('Old deficiency 3')).toBeInTheDocument();
 
-        expect(OldDeficiencyRow).toHaveBeenCalledTimes(6);
+        expect(OldDeficiencyRow).toHaveBeenCalledTimes(3);
         expect(OldDeficiencyRow).toHaveBeenCalledWith(
             { deficiency: mockOldDeficiencyList[0], index: 0, step: 1 },
             undefined

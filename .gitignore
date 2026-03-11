@@ -46,3 +46,4 @@ node_modules/
 /playwright/.cache/
 tests/_playwrightConfig/testData/staticDataIds.json
 test-report.html
+prisma/generated/

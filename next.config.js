@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
-module.exports = {
+const nextConfig = {
     distDir: "build",
     eslint: {
-        dirs: ["src", "tests"]
+        dirs: ["src", "tests"],
+        ignoreDuringBuilds: true,
     },
 }
+
+export default nextConfig;

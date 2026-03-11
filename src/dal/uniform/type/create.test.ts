@@ -1,5 +1,5 @@
 import { uniformTypeArgs } from "@/types/globalUniformTypes";
-import { PrismaClient, UniformType } from "@prisma/client";
+import { PrismaClient, UniformType } from "@/prisma/client";
 import { DeepMockProxy } from "jest-mock-extended";
 import { create } from "./create";
 

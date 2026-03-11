@@ -7,13 +7,17 @@ const customJestConfig: Config = { // CONFIGURATION FOR DAL UNIT TESTS (MOCKED)
     ],
     testEnvironment: 'node',
     moduleNameMapper: {
-        '^uuid$': require.resolve('uuid'),
+        '^uuid$': 'uuid',
         '^@/components/(.*)$': '<rootDir>/src/components/$1',
+        '^@/prisma/(.*)$': '<rootDir>/prisma/generated/$1',
         '^@/(.*)$': '<rootDir>/src/$1',
     },
     transform: {
         '^.+\\.(js|jsx|ts|tsx)$': '@swc/jest',
     },
+    transformIgnorePatterns: [
+        '/node_modules/(?!(uuid)/)',
+    ],
     testMatch: [
         "**/src/dal/**/*.test.[jt]s?(x)",
         "**/src/dal/**/*.unit.test.[jt]s?(x)",

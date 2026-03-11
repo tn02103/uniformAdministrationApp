@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { UniformType } from "@prisma/client";
+import { UniformType } from "@/prisma/client";
 import { expect } from "playwright/test";
 import german from "../../../../public/locales/de";
 import { DangerConfirmationModal } from "../../../_playwrightConfig/pages/popups/DangerConfirmationPopup.component";

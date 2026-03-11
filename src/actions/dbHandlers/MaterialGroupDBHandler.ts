@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { materialGroupArgs } from "@/types/globalMaterialTypes";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/prisma/client";
 
 export class MaterialGroupDBHandler {
 

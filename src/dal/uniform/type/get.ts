@@ -2,7 +2,7 @@ import { genericSANoDataValidator, genericSAValidator } from "@/actions/validati
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { UniformType, uniformTypeArgs } from "@/types/globalUniformTypes";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/prisma/client";
 import { z } from "zod";
 
 export const getType = (props: string) => genericSAValidator(

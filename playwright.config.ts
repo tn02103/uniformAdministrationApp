@@ -1,6 +1,7 @@
 
 import { defineConfig, devices } from 'playwright/test';
 import { viewports } from './tests/_playwrightConfig/global/helper';
+import 'dotenv/config';
 
 /**
  * See https://playwright.dev/docs/test-configuration.

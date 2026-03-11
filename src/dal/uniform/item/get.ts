@@ -3,7 +3,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { Deficiency } from "@/types/deficiencyTypes";
 import { uniformHistoryArgs, UniformHistroyEntry, UniformWithOwner, uniformWithOwnerArgs } from "@/types/globalUniformTypes";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/prisma/client";
 import { z } from "zod";
 
 export type ItemLabel = {

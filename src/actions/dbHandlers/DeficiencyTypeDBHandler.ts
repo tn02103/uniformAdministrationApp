@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 import { AdminDeficiencyType } from "@/types/deficiencyTypes";
 import { AdminDeficiencytypeFormSchema } from "@/zod/deficiency";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/prisma/client";
 
 export class DeficiencyTypeDBHandler {
 

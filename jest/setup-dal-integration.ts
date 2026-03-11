@@ -1,3 +1,5 @@
+import 'dotenv/config';
+import { jest, beforeAll, afterAll } from '@jest/globals';
 import { AuthRole } from "@/lib/AuthRoles";
 import { StaticData } from "../tests/_playwrightConfig/testData/staticDataLoader";
 
@@ -26,9 +28,9 @@ afterAll(async () => {
     }
 });
 
-// Mock authentication for DAL integration tests
-jest.mock('@/lib/ironSession', () => ({
-    getIronSession: jest.fn(() => {
+// Mock authentication for DAL integration tests using ESM mocking
+jest.unstable_mockModule('@/lib/ironSession', () => ({
+    getIronSession: () => {
         const role = global.__ROLE__ ?? AuthRole.materialManager;
         const organisationId = global.__ORGANISATION__ ?? staticData.organisationId;
         return {
@@ -40,11 +42,11 @@ jest.mock('@/lib/ironSession', () => ({
                 role: role,
             }
         }
-    }),
+    },
 }));
 
-// Mock Next.js cache functions for DAL integration tests
-jest.mock('next/cache', () => ({
+// Mock Next.js cache functions for DAL integration tests using ESM mocking
+jest.unstable_mockModule('next/cache', () => ({
     unstable_cache: jest.fn((fn) => fn),
     revalidateTag: jest.fn(),
     revalidatePath: jest.fn(),

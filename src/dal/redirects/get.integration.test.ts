@@ -8,9 +8,6 @@ describe('getRedirects', () => {
     beforeAll(() => {
         global.__ROLE__ = AuthRole.admin;
     });
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
     afterAll(() => {
         delete global.__ROLE__;
     });

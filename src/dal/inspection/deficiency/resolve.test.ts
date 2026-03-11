@@ -18,9 +18,6 @@ jest.mock('@/lib/db', () => ({
 describe('resolveDeficiency', () => {
     const { prisma } = jest.requireMock('@/lib/db');
     const date = new Date();
-    beforeAll(() => {
-        global.__ORGANISATION__ = 'fk_assoasiation';
-    })
     beforeEach(() => {
         jest.useFakeTimers();
         jest.setSystemTime(date);
@@ -28,7 +25,6 @@ describe('resolveDeficiency', () => {
     afterEach(() => {
         jest.clearAllMocks();
     });
-    afterAll(() => global.__ORGANISATION__ = undefined)
 
     it('resolves the deficiency', async () => {
         prisma.inspection.findFirst.mockResolvedValueOnce(null);
@@ -43,7 +39,7 @@ describe('resolveDeficiency', () => {
             },
             data: {
                 dateResolved: date,
-                userResolved: 'mana',
+                userResolved: 'testuser',
                 fk_inspection_resolved: undefined,
             },
         });
@@ -77,7 +73,7 @@ describe('resolveDeficiency', () => {
 
         expect(prisma.inspection.findFirst).toHaveBeenCalledWith({
             where: {
-                organisationId: 'fk_assoasiation',
+                fk_assosiation: 'test-assosiation-id',
                 date: dayjs(date).format("YYYY-MM-DD"),
                 timeStart: { not: null },
                 timeEnd: null,
@@ -90,7 +86,7 @@ describe('resolveDeficiency', () => {
             },
             data: {
                 dateResolved: date,
-                userResolved: 'mana',
+                userResolved: 'testuser',
                 fk_inspection_resolved: '0177f740-75ee-4bb8-9875-7f10e3e6af8b',
             },
         });

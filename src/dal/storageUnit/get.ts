@@ -2,9 +2,9 @@ import { genericSANoDataValidator } from '@/actions/validations';
 import { AuthRole } from '@/lib/AuthRoles';
 import { prisma } from '@/lib/db';
 import { uniformArgs } from '@/types/globalUniformTypes';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@/prisma/client';
 
-const StorageUnitWithUniformItemsArgs = Prisma.validator<Prisma.StorageUnitFindManyArgs>()({
+const StorageUnitWithUniformItemsArgs = {
     include: {
         uniformList: {
             ...uniformArgs,
@@ -16,7 +16,7 @@ const StorageUnitWithUniformItemsArgs = Prisma.validator<Prisma.StorageUnitFindM
             }
         },
     },
-});
+} satisfies Prisma.StorageUnitFindManyArgs;
 
 export type StorageUnitWithUniformItems = Prisma.StorageUnitGetPayload<typeof StorageUnitWithUniformItemsArgs>;
 

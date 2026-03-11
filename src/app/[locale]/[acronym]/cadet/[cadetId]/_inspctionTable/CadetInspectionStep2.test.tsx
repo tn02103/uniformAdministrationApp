@@ -65,7 +65,7 @@ describe('<CadetInspectionStep2 />', () => {
         expect(screen.getByText('Old deficiency 2')).toBeInTheDocument();
         expect(screen.getByText('Old deficiency 3')).toBeInTheDocument();
 
-        expect(OldDeficiencyRow).toHaveBeenCalledTimes(6);
+        expect(OldDeficiencyRow).toHaveBeenCalledTimes(3);
         expect(OldDeficiencyRow).toHaveBeenCalledWith(
             { deficiency: mockFormData.oldDeficiencyList[0], step: 2, index: 0 },
             undefined
@@ -97,7 +97,7 @@ describe('<CadetInspectionStep2 />', () => {
         expect(screen.getByText("New deficiency 1")).toBeInTheDocument();
         expect(screen.getByText("New deficiency 2")).toBeInTheDocument();
 
-        expect(NewDeficiencyRow).toHaveBeenCalledTimes(4);
+        expect(NewDeficiencyRow).toHaveBeenCalledTimes(2);
         expect(NewDeficiencyRow).toHaveBeenCalledWith(
             { index: 0, remove: expect.any(Function) },
             undefined
