@@ -18,7 +18,7 @@ jest.mock("./get", () => ({
 }));
 
 describe("update", () => {
-    const assosiationId = "test-assosiation-id"
+    const organisationId = "test-organisation-id"
     const mockProps = {
         id: "b101fce1-9297-4978-bc34-ce357ab1d6d4",
         data: {

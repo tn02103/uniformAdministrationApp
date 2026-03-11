@@ -34,9 +34,11 @@ const test = adminTest.extend<Fixture>({
         use(new SimpleFormPopupComponent(page, 'input[name="input"]', 'err_input'));
     }
 });
+
 test.beforeEach(async ({ page }) => {
     await page.goto('/de/app/admin/uniform');
 });
+
 test.afterEach(async ({ staticData: { cleanup } }) => {
     await cleanup.uniformSizeConfiguration();
 });
@@ -54,8 +56,10 @@ test.describe('sizeList Configuration', () => {
                 .toHaveText(sizelists[i].name);
         }
     });
+
     test('validate create sizelist', async ({ page, listComponent, detailComponent, editListPopup, staticData }) => {
         const name = 'newListUnique';
+
         await test.step('create and validate ui', async () => {
             await listComponent.btn_create.click();
 
@@ -66,6 +70,7 @@ test.describe('sizeList Configuration', () => {
             await expect(page.locator('div[data-testid^="div_sizelist_list_"]').getByText(name)).toBeVisible();
             await expect(detailComponent.div_header).toHaveText(name);
         });
+
         await test.step('validate db', async () => {
             const list = await prisma.uniformSizelist.findFirst({
                 where: {
@@ -92,6 +97,7 @@ test.describe('sizeList Configuration', () => {
             await expect(detailComponent.div_selectedSize(sizeIdArray[i])).toBeVisible();
         }
     });
+
     // TODO write component tests
     test.skip('validate namePopup formVaidation', async ({ page, listComponent, editListPopup }) => {
         const tests = newDescriptionValidationTests({
@@ -146,11 +152,13 @@ test.describe('sizeList Configuration', () => {
                 expect.soft(detailComponent.btn_backupSize(ids.sizeIds[16])).toBeHidden(),
             ]);
         });
+
         await test.step('validate save', async () => {
             await detailComponent.btn_save.click();
             await expect.soft(detailComponent.div_selectedSize(ids.sizeIds[0])).toBeHidden();
             await expect.soft(detailComponent.div_selectedSize(ids.sizeIds[16])).toBeVisible();
         });
+
         await test.step('validate db', async () => {
             const data = await prisma.uniformSizelist.findUniqueOrThrow({
                 where: { id: ids.sizelistIds[0] },
@@ -161,6 +169,7 @@ test.describe('sizeList Configuration', () => {
             expect(data.uniformSizes.map(s => s.id)).not.toEqual(expect.arrayContaining([ids.sizeIds[0]]));
         });
     });
+
     test('validate rename', async ({ page, listComponent, detailComponent, editListPopup, staticData: { ids } }) => {
         await test.step('rename', async () => {
 
@@ -184,6 +193,7 @@ test.describe('sizeList Configuration', () => {
             expect(data.name).toEqual('newListName');
         });
     });
+
     test('validate delete inUseError', async ({ page, listComponent, detailComponent, staticData: { ids } }) => {
         const messageModal = new MessagePopupComponent(page);
         const inUseError = t.admin.uniform.sizelist.deleteFailure;
@@ -202,6 +212,7 @@ test.describe('sizeList Configuration', () => {
 
         await expect.soft(listComponent.div_sizelist(ids.sizelistIds[0])).toBeVisible();
     });
+
     test('validate delete warning', async ({ page, listComponent, detailComponent, staticData: { ids } }) => {
         const messageModal = new MessagePopupComponent(page);
         const deleteWarning = t.admin.uniform.sizelist.deleteWarning

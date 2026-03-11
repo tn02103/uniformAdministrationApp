@@ -25,7 +25,7 @@ export type StaticDataIdType = {
     storageUnitIds: string[];
     redirectIds: string[];
     deviceIds: string[];
-    refreshTokenIds: string[];
+    sessionIds: string[];
     dynamic: {
         firstInspection: {
             id: string;
@@ -54,7 +54,7 @@ export function getStaticDataIds(): StaticDataIdType {
         inspectionIds: uuidArray(6),
         redirectIds: uuidArray(4),
         deviceIds: uuidArray(6), // 2 devices per admin (id 0), manager (id 1), and inspector (id 2) 
-        refreshTokenIds: uuidArray(10), // Mix of active, expired, and used tokens
+        sessionIds: uuidArray(10), // Sessions for each device, including some expired/invalid ones
         dynamic: {
             firstInspection: {
                 id: uuid(),
@@ -78,6 +78,7 @@ export default class StaticDataGenerator {
             organisationId: this.ids.organisationId,
             sendEmailAfterInspection: true,
             inspectionReportEmails: [process.env.EMAIL_ADRESS_TESTS ?? 'admin@example.com'],
+            twoFactorAuthRule: "optional",
         } satisfies OrganisationConfiguration
     }
 
@@ -668,7 +669,7 @@ export default class StaticDataGenerator {
     device() {
         const { userIds, deviceIds } = this.ids;
         const baseDate = dayjs();
-        
+
         return [
             // Admin user (userIds[0]) devices
             {
@@ -677,17 +678,13 @@ export default class StaticDataGenerator {
                 name: 'Admin Desktop Chrome',
                 description: 'Primary work desktop',
                 createdAt: baseDate.subtract(30, 'days').toDate(),
+                updatedAt: baseDate.subtract(1, 'hour').toDate(),
                 lastUsedAt: baseDate.subtract(1, 'hour').toDate(),
-                lastLoginAt: baseDate.subtract(1, 'hour').toDate(),
-                last2FAAt: baseDate.subtract(7, 'days').toDate(),
+                lastMFAAt: baseDate.subtract(7, 'days').toDate(),
+                lastUsedMFAType: 'totp' as const,
                 lastIpAddress: '192.168.1.100',
-                userAgent: JSON.stringify({
-                    browser: { name: 'Chrome', version: '120.0.0.0' },
-                    os: { name: 'Windows', version: '10' },
-                    device: { type: 'desktop' },
-                    ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-                }),
-                valid: true
+                valid: true,
+                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             },
             {
                 id: deviceIds[1],
@@ -695,17 +692,13 @@ export default class StaticDataGenerator {
                 name: 'Admin Mobile Safari',
                 description: 'iPhone for mobile access',
                 createdAt: baseDate.subtract(15, 'days').toDate(),
+                updatedAt: baseDate.subtract(3, 'hours').toDate(),
                 lastUsedAt: baseDate.subtract(3, 'hours').toDate(),
-                lastLoginAt: baseDate.subtract(3, 'hours').toDate(),
-                last2FAAt: baseDate.subtract(3, 'days').toDate(),
+                lastMFAAt: baseDate.subtract(3, 'days').toDate(),
+                lastUsedMFAType: 'email' as const,
                 lastIpAddress: '192.168.1.150',
-                userAgent: JSON.stringify({
-                    browser: { name: 'Safari', version: '17.0' },
-                    os: { name: 'iOS', version: '17.1' },
-                    device: { type: 'mobile' },
-                    ua: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_1 like Mac OS X) AppleWebKit/605.1.15'
-                }),
-                valid: true
+                valid: true,
+                userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1'
             },
             // Manager user (userIds[1]) devices  
             {
@@ -714,17 +707,13 @@ export default class StaticDataGenerator {
                 name: 'Manager Laptop Firefox',
                 description: 'Work laptop',
                 createdAt: baseDate.subtract(25, 'days').toDate(),
+                updatedAt: baseDate.subtract(30, 'minutes').toDate(),
                 lastUsedAt: baseDate.subtract(30, 'minutes').toDate(),
-                lastLoginAt: baseDate.subtract(30, 'minutes').toDate(),
-                last2FAAt: baseDate.subtract(10, 'days').toDate(),
+                lastMFAAt: baseDate.subtract(10, 'days').toDate(),
+                lastUsedMFAType: 'totp' as const,
                 lastIpAddress: '192.168.1.101',
-                userAgent: JSON.stringify({
-                    browser: { name: 'Firefox', version: '119.0' },
-                    os: { name: 'Windows', version: '11' },
-                    device: { type: 'desktop' },
-                    ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:119.0) Gecko/20100101 Firefox/119.0'
-                }),
-                valid: true
+                valid: true,
+                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:119.0) Gecko/20100101 Firefox/119.0'
             },
             {
                 id: deviceIds[3],
@@ -732,17 +721,13 @@ export default class StaticDataGenerator {
                 name: 'Manager Tablet Chrome',
                 description: 'iPad for meetings',
                 createdAt: baseDate.subtract(20, 'days').toDate(),
+                updatedAt: baseDate.subtract(2, 'hours').toDate(),
                 lastUsedAt: baseDate.subtract(2, 'hours').toDate(),
-                lastLoginAt: baseDate.subtract(2, 'hours').toDate(),
-                last2FAAt: baseDate.subtract(5, 'days').toDate(),
+                lastMFAAt: baseDate.subtract(5, 'days').toDate(),
+                lastUsedMFAType: 'email' as const,
                 lastIpAddress: '192.168.1.160',
-                userAgent: JSON.stringify({
-                    browser: { name: 'Chrome', version: '119.0.0.0' },
-                    os: { name: 'iOS', version: '17.0' },
-                    device: { type: 'tablet' },
-                    ua: 'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15'
-                }),
-                valid: true
+                valid: true,
+                userAgent: 'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/119.0.6045.169 Mobile/15E148 Safari/604.1'
             },
             // Inspector user (userIds[2]) devices
             {
@@ -751,17 +736,13 @@ export default class StaticDataGenerator {
                 name: 'Inspector Desktop Edge',
                 description: 'Office computer',
                 createdAt: baseDate.subtract(40, 'days').toDate(),
+                updatedAt: baseDate.subtract(5, 'hours').toDate(),
                 lastUsedAt: baseDate.subtract(5, 'hours').toDate(),
-                lastLoginAt: baseDate.subtract(5, 'hours').toDate(),
-                last2FAAt: baseDate.subtract(15, 'days').toDate(),
+                lastMFAAt: baseDate.subtract(15, 'days').toDate(),
+                lastUsedMFAType: 'totp' as const,
                 lastIpAddress: '192.168.1.102',
-                userAgent: JSON.stringify({
-                    browser: { name: 'Edge', version: '119.0.0.0' },
-                    os: { name: 'Windows', version: '10' },
-                    device: { type: 'desktop' },
-                    ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0'
-                }),
-                valid: true
+                valid: true,
+                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0'
             },
             {
                 id: deviceIds[5],
@@ -769,166 +750,136 @@ export default class StaticDataGenerator {
                 name: 'Inspector Phone Chrome',
                 description: 'Android phone',
                 createdAt: baseDate.subtract(35, 'days').toDate(),
+                updatedAt: baseDate.subtract(1, 'day').toDate(),
                 lastUsedAt: baseDate.subtract(1, 'day').toDate(),
-                lastLoginAt: baseDate.subtract(1, 'day').toDate(),
-                last2FAAt: baseDate.subtract(12, 'days').toDate(),
+                lastMFAAt: baseDate.subtract(12, 'days').toDate(),
+                lastUsedMFAType: 'email' as const,
                 lastIpAddress: '192.168.1.170',
-                userAgent: JSON.stringify({
-                    browser: { name: 'Chrome', version: '119.0.0.0' },
-                    os: { name: 'Android', version: '13' },
-                    device: { type: 'mobile' },
-                    ua: 'Mozilla/5.0 (Linux; Android 13; SM-G973F) AppleWebKit/537.36'
-                }),
-                valid: true
+                valid: true,
+                userAgent: 'Mozilla/5.0 (Linux; Android 13; SM-G973F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/537.36'
             }
         ] satisfies Prisma.DeviceCreateManyInput[];
     }
 
-    refreshToken() {
-        const { userIds, deviceIds, refreshTokenIds } = this.ids;
+    session() {
+        const { deviceIds, sessionIds } = this.ids;
         const baseDate = dayjs();
-        
+
         return [
-            // Active tokens - Admin desktop
+            // Admin desktop sessions
             {
-                token: refreshTokenIds[0].replace(/-/g, ''), // Remove hyphens to make it look more like a proper token
-                userId: userIds[0],
+                id: sessionIds[0],
                 deviceId: deviceIds[0],
-                endOfLife: baseDate.add(3, 'days').toDate(),
-                revoked: false,
-                issuerIpAddress: '192.168.1.100',
-                usedAt: null,
-                usedIpAddress: null,
-                usedUserAgent: null,
-                numberOfUseAttempts: 0
+                valid: true,
+                sessionLifetime: baseDate.add(7, 'days').toDate(),
+                sessionRL: 'AL12345678', // 10 character session reference
+                lastLoginAt: baseDate.subtract(1, 'hour').toDate(),
+                lastIpAddress: '192.168.1.100',
+                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             },
-            // Active tokens - Admin mobile
+            // Admin mobile session
             {
-                token: refreshTokenIds[1].replace(/-/g, ''),
-                userId: userIds[0],
+                id: sessionIds[1],
                 deviceId: deviceIds[1],
-                endOfLife: baseDate.add(2, 'days').toDate(),
-                revoked: false,
-                issuerIpAddress: '192.168.1.150',
-                usedAt: null,
-                usedIpAddress: null,
-                usedUserAgent: null,
-                numberOfUseAttempts: 0
+                valid: true,
+                sessionLifetime: baseDate.add(5, 'days').toDate(),
+                sessionRL: 'AM12345678',
+                lastLoginAt: baseDate.subtract(3, 'hours').toDate(),
+                lastIpAddress: '192.168.1.150',
+                userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1'
             },
-            // Used token - for testing token reuse scenarios
+            // Manager laptop session
             {
-                token: refreshTokenIds[2].replace(/-/g, ''),
-                userId: userIds[0],
-                deviceId: deviceIds[0],
-                endOfLife: baseDate.add(1, 'day').toDate(),
-                revoked: false,
-                issuerIpAddress: '192.168.1.100',
-                usedAt: baseDate.subtract(5, 'minutes').toDate(), // Recently used
-                usedIpAddress: '192.168.1.100',
-                usedUserAgent: JSON.stringify({
-                    browser: { name: 'Chrome', version: '120.0.0.0' },
-                    os: { name: 'Windows', version: '10' },
-                    device: { type: 'desktop' }
-                }),
-                numberOfUseAttempts: 1
-            },
-            // Active tokens - Manager laptop
-            {
-                token: refreshTokenIds[3].replace(/-/g, ''),
-                userId: userIds[1],
+                id: sessionIds[2],
                 deviceId: deviceIds[2],
-                endOfLife: baseDate.add(4, 'days').toDate(),
-                revoked: false,
-                issuerIpAddress: '192.168.1.101',
-                usedAt: null,
-                usedIpAddress: null,
-                usedUserAgent: null,
-                numberOfUseAttempts: 0
+                valid: true,
+                sessionLifetime: baseDate.add(6, 'days').toDate(),
+                sessionRL: 'ML12345678',
+                lastLoginAt: baseDate.subtract(30, 'minutes').toDate(),
+                lastIpAddress: '192.168.1.101',
+                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:119.0) Gecko/20100101 Firefox/119.0'
             },
-            // Active tokens - Manager tablet
+            // Manager tablet session
             {
-                token: refreshTokenIds[4].replace(/-/g, ''),
-                userId: userIds[1],
+                id: sessionIds[3],
                 deviceId: deviceIds[3],
-                endOfLife: baseDate.add(1, 'day').toDate(),
-                revoked: false,
-                issuerIpAddress: '192.168.1.160',
-                usedAt: null,
-                usedIpAddress: null,
-                usedUserAgent: null,
-                numberOfUseAttempts: 0
+                valid: true,
+                sessionLifetime: baseDate.add(3, 'days').toDate(),
+                sessionRL: 'MT12345678',
+                lastLoginAt: baseDate.subtract(2, 'hours').toDate(),
+                lastIpAddress: '192.168.1.160',
+                userAgent: 'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/119.0.6045.169 Mobile/15E148 Safari/604.1'
             },
-            // Revoked token - for testing
+            // Inspector desktop session
             {
-                token: refreshTokenIds[5].replace(/-/g, ''),
-                userId: userIds[1],
-                deviceId: deviceIds[2],
-                endOfLife: baseDate.add(2, 'days').toDate(),
-                revoked: true, // Revoked
-                issuerIpAddress: '192.168.1.101',
-                usedAt: null,
-                usedIpAddress: null,
-                usedUserAgent: null,
-                numberOfUseAttempts: 0
-            },
-            // Expired token - for testing
-            {
-                token: refreshTokenIds[6].replace(/-/g, ''),
-                userId: userIds[2],
+                id: sessionIds[4],
                 deviceId: deviceIds[4],
-                endOfLife: baseDate.subtract(1, 'day').toDate(), // Expired
-                revoked: false,
-                issuerIpAddress: '192.168.1.102',
-                usedAt: null,
-                usedIpAddress: null,
-                usedUserAgent: null,
-                numberOfUseAttempts: 0
+                valid: true,
+                sessionLifetime: baseDate.add(4, 'days').toDate(),
+                sessionRL: 'ID12345678',
+                lastLoginAt: baseDate.subtract(5, 'hours').toDate(),
+                lastIpAddress: '192.168.1.102',
+                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0'
             },
-            // Active tokens - Inspector desktop
+            // Inspector phone session
             {
-                token: refreshTokenIds[7].replace(/-/g, ''),
-                userId: userIds[2],
-                deviceId: deviceIds[4],
-                endOfLife: baseDate.add(3, 'days').toDate(),
-                revoked: false,
-                issuerIpAddress: '192.168.1.102',
-                usedAt: null,
-                usedIpAddress: null,
-                usedUserAgent: null,
-                numberOfUseAttempts: 0
-            },
-            // Active tokens - Inspector phone
-            {
-                token: refreshTokenIds[8].replace(/-/g, ''),
-                userId: userIds[2],
+                id: sessionIds[5],
                 deviceId: deviceIds[5],
-                endOfLife: baseDate.add(5, 'days').toDate(),
-                revoked: false,
-                issuerIpAddress: '192.168.1.170',
-                usedAt: null,
-                usedIpAddress: null,
-                usedUserAgent: null,
-                numberOfUseAttempts: 0
+                valid: true,
+                sessionLifetime: baseDate.add(8, 'days').toDate(),
+                sessionRL: 'IP12345678',
+                lastLoginAt: baseDate.subtract(1, 'day').toDate(),
+                lastIpAddress: '192.168.1.170',
+                userAgent: 'Mozilla/5.0 (Linux; Android 13; SM-G973F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/537.36'
             },
-            // Old used token - for reuse detection edge cases
+            // Expired session for testing
             {
-                token: refreshTokenIds[9].replace(/-/g, ''),
-                userId: userIds[0],
-                deviceId: deviceIds[0],
-                endOfLife: baseDate.add(2, 'days').toDate(),
-                revoked: false,
-                issuerIpAddress: '192.168.1.100',
-                usedAt: baseDate.subtract(10, 'minutes').toDate(), // Used 10 minutes ago
-                usedIpAddress: '192.168.1.100',
-                usedUserAgent: JSON.stringify({
-                    browser: { name: 'Chrome', version: '119.0.0.0' }, // Different version
-                    os: { name: 'Windows', version: '10' },
-                    device: { type: 'desktop' }
-                }),
-                numberOfUseAttempts: 1
+                id: sessionIds[6],
+                deviceId: deviceIds[0], // Same device as first session
+                valid: false,
+                sessionLifetime: baseDate.subtract(1, 'day').toDate(), // Expired
+                sessionRL: 'AE12345678',
+                lastLoginAt: baseDate.subtract(8, 'days').toDate(),
+                lastIpAddress: '192.168.1.100',
+                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
+            },
+            // Invalid session for testing
+            {
+                id: sessionIds[7],
+                deviceId: deviceIds[1],
+                valid: false, // Invalid
+                sessionLifetime: baseDate.add(2, 'days').toDate(),
+                sessionRL: 'AI12345678',
+                lastLoginAt: baseDate.subtract(15, 'days').toDate(),
+                lastIpAddress: '192.168.1.150',
+                userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15'
+            },
+            // Session without MFA
+            {
+                id: sessionIds[8],
+                deviceId: deviceIds[2],
+                valid: true,
+                sessionLifetime: baseDate.add(1, 'day').toDate(),
+                sessionRL: 'MN12345678',
+                lastLoginAt: baseDate.subtract(12, 'hours').toDate(),
+                lastIpAddress: '192.168.1.101',
+                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:118.0) Gecko/20100101 Firefox/118.0'
+            },
+            // Additional session for edge case testing
+            {
+                id: sessionIds[9],
+                deviceId: deviceIds[5],
+                valid: true,
+                sessionLifetime: baseDate.add(10, 'days').toDate(),
+                sessionRL: 'IP22345678',
+                lastLoginAt: baseDate.subtract(6, 'hours').toDate(),
+                lastIpAddress: '192.168.1.170',
+                userAgent: 'Mozilla/5.0 (Linux; Android 13; SM-G973F) AppleWebKit/537.36'
             }
-        ] satisfies Prisma.RefreshTokenCreateManyInput[];
+        ] satisfies Prisma.SessionCreateManyInput[];
     }
+
+
 
     redirects(index: number | string) {
         return [

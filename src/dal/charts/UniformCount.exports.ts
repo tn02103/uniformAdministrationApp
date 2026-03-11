@@ -7,8 +7,8 @@ import { getUniformCountBySizeForType, getUniformCountByType } from "./UniformCo
 import { generateUniformCountXLSX } from "@/lib/fileCreations/uniformCount";
 
 export const exportUniformCount = async (): Promise<{ buffer: number[]; filename: string }> =>
-    genericSANoDataValidator(AuthRole.materialManager).then(async ([{ assosiation }]) => {
-        const uniformTypeList = (await __unsecuredGetUniformTypeList(assosiation)).filter(type => type.usingSizes);
+    genericSANoDataValidator(AuthRole.materialManager).then(async ([{ organisationId }]) => {
+        const uniformTypeList = (await __unsecuredGetUniformTypeList(organisationId)).filter(type => type.usingSizes);
 
         const [byTypeData, bySizeDataArrays] = await Promise.all([
             getUniformCountByType(),

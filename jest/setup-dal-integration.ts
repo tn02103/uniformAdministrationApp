@@ -1,6 +1,9 @@
 import { AuthRole } from "@/lib/AuthRoles";
 import { StaticData } from "../tests/_playwrightConfig/testData/staticDataLoader";
 
+// Mock server-only package to allow server components in Jest environment
+jest.mock('server-only', () => ({}));
+
 // Setup static data for integration tests with real database
 const staticData = new StaticData(0);
 const wrongOrganisation = new StaticData(1);
@@ -25,7 +28,7 @@ afterAll(async () => {
 
 // Mock authentication for DAL integration tests
 jest.mock('@/lib/ironSession', () => ({
-    getIronSession: () => {
+    getIronSession: jest.fn(() => {
         const role = global.__ROLE__ ?? AuthRole.materialManager;
         const organisationId = global.__ORGANISATION__ ?? staticData.organisationId;
         return {
@@ -37,7 +40,7 @@ jest.mock('@/lib/ironSession', () => ({
                 role: role,
             }
         }
-    },
+    }),
 }));
 
 // Mock Next.js cache functions for DAL integration tests

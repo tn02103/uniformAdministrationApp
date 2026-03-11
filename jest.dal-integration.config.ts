@@ -7,6 +7,7 @@ const customJestConfig: Config = { // CONFIGURATION FOR DAL INTEGRATION TESTS (W
     ],
     testEnvironment: 'node',
     moduleNameMapper: {
+        '^ioredis$': '<rootDir>/node_modules/ioredis-mock',
         '^uuid$': require.resolve('uuid'),
         '^@/components/(.*)$': '<rootDir>/src/components/$1',
         '^@/(.*)$': '<rootDir>/src/$1',

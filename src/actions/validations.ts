@@ -1,11 +1,8 @@
 
-import { refreshAccessToken } from "@/dal/auth";
-import { AuthConfig } from "@/dal/auth/helper";
 import { UnauthorizedException } from "@/errors/CustomException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { IronSessionUser, getIronSession } from "@/lib/ironSession";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -16,7 +13,7 @@ type OrganisationValidationDataType = {
     uniformTypeId?: string | string[],
     uniformGenerationId?: string | string[],
     uniformSizelistId?: string | string[] | null,
-    uniformSizeId?: string | string[],
+    uniformSizeId?: string | string[], 
     materialId?: string | (string | undefined)[],
     materialGroupId?: string | string[],
     deficiencytypeId?: string | string[],
@@ -107,24 +104,10 @@ export const genericSAValidator = async <T>(
     return [user, zodResult.data];
 }
 
-export const genericSANoDataValidator = async (requiredRole: AuthRole) => {
-    let { user } = await getIronSession();
+export const genericSANoDataValidator = async (requiredRole: AuthRole): Promise<[IronSessionUser]> => {
+    const { user } = await getIronSession();
     if (!user) {
-        const cookieList = await cookies();
-        if (!cookieList.has(AuthConfig.refreshTokenCookie)) {
-            return redirect('/login');
-        }
-
-        const refreshResponse = await refreshAccessToken().catch(() => ({ success: false }))
-
-        if (!refreshResponse.success) {
-            return redirect('/login');
-        }
-        const newSession = await getIronSession();
-        user = newSession.user;
-        if (!user) {
-            return redirect('/login');
-        }
+        return redirect('/login');
     } else if (user.role < requiredRole) {
         throw new UnauthorizedException(`user does not have required role ${requiredRole}`);
     }
@@ -137,7 +120,7 @@ export const genericSAValidatorV2 = async (
     typeValidation: boolean,
     organisationValidations: OrganisationValidationDataType,
 ): Promise<IronSessionUser> => {
-   const [user] = await genericSANoDataValidator(requiredRole);
+    const [user] = await genericSANoDataValidator(requiredRole);
 
     if (!typeValidation) {
         throw new Error("Typevalidation failed");

@@ -32,7 +32,6 @@ describe('InspectionBadge', () => {
         render(<InspectionBadge inspection={insp} />);
 
         const comp = screen.getByTestId('lbl_badge');
-        expect(comp).toBeInTheDocument();
         expect(comp).toHaveTextContent('inspection.planned.badge.planned');
         expect(comp).toHaveClass(/bg-secondary/);
     });

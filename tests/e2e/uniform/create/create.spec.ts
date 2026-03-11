@@ -10,7 +10,9 @@ type Fixture = {
 const test = adminTest.extend<Fixture>({
     createPage: async ({ page }, use) => use(new CreateUniformPage(page)),
 });
+
 test.beforeEach(async ({ page }) => await page.goto(`/de/app/uniform/new`));
+
 test.afterEach(async ({ staticData: { cleanup } }) => cleanup.uniform());
 
 test('validate knownIds', async ({ page, createPage, staticData: { ids, organisationId } }) => {
@@ -24,6 +26,7 @@ test('validate knownIds', async ({ page, createPage, staticData: { ids, organisa
         await createPage.configurator.chk_isReserve.setChecked(true);
         await createPage.configurator.btn_continue.click();
     });
+
     await test.step('add ids', async () => {
         await createPage.numberInput.txt_numStart.fill('9980');
         await createPage.numberInput.txt_numEnd.fill('9990');
@@ -53,8 +56,10 @@ test('validate knownIds', async ({ page, createPage, staticData: { ids, organisa
         expect.soft(uniformItems[0].fk_size).toBe(ids.sizeIds[8]);
     });
 });
+
 test('validate generate Ids', async ({ page, createPage, staticData: { ids, organisationId } }) => {
     const year = (+(new Date().getFullYear()) % 100);
+
     await test.step('configuration', async () => {
         await createPage.btn_tab_generateIds.click();
         await createPage.configurator.sel_type.selectOption(ids.uniformTypeIds[0]);

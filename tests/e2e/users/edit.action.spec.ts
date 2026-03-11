@@ -17,15 +17,18 @@ const test = adminTest.extend<Fixture>({
     userPage: ({ page }, use) => use(new UserAdministrationPage(page)),
     users: async ({ staticData }, use) => use(await staticData.data.users() as User[]),
 });
+
 test.beforeEach(async ({ page }) => {
     await page.goto('de/app/admin/user');
 })
+
 test.afterEach(async ({ staticData: { cleanup } }) => {
     await cleanup.user();
 });
 
 test('validate visibleItems', async ({ page, userPage, staticData: { ids } }) => {
     const userId = ids.userIds[0]
+
     await test.step('normal', async () => {
         await Promise.all([
             expect(userPage.txt_user_username(userId)).toBeVisible(),
@@ -45,6 +48,7 @@ test('validate visibleItems', async ({ page, userPage, staticData: { ids } }) =>
             expect(userPage.btn_user_menu(userId)).toBeVisible(),
         ]);
     });
+
     await test.step('editable', async () => {
         await userPage.btn_user_menu(userId).click();
         await userPage.btn_user_menu_edit(userId).click();
@@ -67,6 +71,7 @@ test('validate visibleItems', async ({ page, userPage, staticData: { ids } }) =>
             expect(userPage.btn_user_menu(userId)).toBeHidden(),
         ]);
     });
+
     await test.step('editable mobile', async () => {
         await page.setViewportSize(viewports.xs);
 
@@ -77,6 +82,7 @@ test('validate visibleItems', async ({ page, userPage, staticData: { ids } }) =>
             expect(userPage.sel_user_active(userId)).toBeVisible(),
         ]);
     });
+
     await test.step('new', async () => {
         await userPage.btn_create.click();
         await Promise.all([
@@ -102,6 +108,7 @@ test('user formValidations', async ({ page, userPage }) => {
     for (const [mobile, view] of [[false, viewports.xxl], [true, viewports.xs]]) {
         await page.setViewportSize(view as ViewportSize);
         const title = `username ${mobile ? "mobile" : "desktop"}`;
+
         await test.step(title, async () => {
             for (const set of usernameTests) {
                 await test.step(String(set.testValue), async () => {
@@ -115,6 +122,7 @@ test('user formValidations', async ({ page, userPage }) => {
                 });
             }
         });
+
         await test.step(`name ${mobile ? "mobile" : "desktop"}`, async () => {
             const testSets = newNameValidationTests({ minLength: 1, maxLength: 20 });
             for (const set of testSets) {
@@ -131,6 +139,7 @@ test('user formValidations', async ({ page, userPage }) => {
         });
     }
 });
+
 test('password formValidation', async ({ userPage, staticData: { ids } }) => {
     await userPage.openUserPasswordModal(ids.userIds[0]);
     for (const set of passwordTests) {
@@ -161,6 +170,7 @@ test('password formValidation', async ({ userPage, staticData: { ids } }) => {
         await expect.soft(userPage.passwordPopup.err_confirmation).toBeVisible();
     });
 });
+
 test('cancel function', async ({ userPage, staticData: { ids, index } }) => {
     await test.step('change data and cancel', async () => {
         await userPage.btn_user_menu(ids.userIds[0]).click();
@@ -218,6 +228,7 @@ test.describe('save function', () => {
 
         await validateDBStep(ids.userIds[0]);
     });
+
     test('desktop', async ({ page, userPage, staticData: { ids } }) => {
         await page.setViewportSize(viewports.xxl);
         await changeDataStep(userPage, ids, page);
@@ -231,6 +242,7 @@ test.describe('save function', () => {
         await validateDBStep(ids.userIds[0]);
     });
 });
+
 test('changePassword', async ({ userPage, staticData: { ids, index } }) => {
     await test.step('change Password', async () => {
         await userPage.openUserPasswordModal(ids.userIds[0]);
@@ -242,6 +254,7 @@ test('changePassword', async ({ userPage, staticData: { ids, index } }) => {
         await userPage.passwordPopup.btn_save.click();
         await expect(userPage.passwordPopup.div_popup).toBeHidden();
     });
+
     await test.step('validate db', async () => {
         const dbUser = await prisma.user.findUniqueOrThrow({
             where: { id: ids.userIds[0] }
@@ -250,6 +263,7 @@ test('changePassword', async ({ userPage, staticData: { ids, index } }) => {
         expect(await bcrypt.compare("newPassword123", dbUser.password)).toBeTruthy();
     });
 });
+
 test('create new user', async ({ userPage, staticData: { organisationId } }) => {
     await test.step('fill Data', async () => {
         await userPage.btn_create.click();
