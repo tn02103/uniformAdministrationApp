@@ -1,6 +1,7 @@
+import { vi } from 'vitest';
 import { uniformTypeArgs } from "@/types/globalUniformTypes";
 import { PrismaClient, UniformType } from "@/prisma/client";
-import { DeepMockProxy } from "jest-mock-extended";
+import { prismaMock } from '@test-utils/prisma-mock';
 import { create } from "./create";
 
 
@@ -16,10 +17,10 @@ const defaultProps = {
 }
 
 describe('<UniformType> create', () => {
-    const mockPrisma = jest.requireMock("@/lib/db").prisma as DeepMockProxy<PrismaClient>;
+    const mockPrisma = prismaMock;
     
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         // Reset all mock implementations to their default state
         mockPrisma.uniformType.findFirst.mockReset();
         mockPrisma.uniformType.count.mockReset();

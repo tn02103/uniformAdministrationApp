@@ -1,21 +1,24 @@
+import { vi } from 'vitest';
+import { prismaMock } from '@test-utils/prisma-mock';
+import { __unsecuredGetUniformTypeList } from "./get";
 import { changeSortOrder } from "./sortOrder";
 
 
-jest.mock("./get", () => ({
-    __unsecuredGetUniformTypeList: jest.fn(() => Promise.resolve('ReturnedList')),
+vi.mock("./get", () => ({
+    __unsecuredGetUniformTypeList: vi.fn(() => Promise.resolve('ReturnedList')),
 }));
 
 describe('<UniformType> sortOrder', () => {
-    const mockPrisma = jest.requireMock("@/lib/db").prisma;
+    const mockPrisma = prismaMock;
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue({ sortOrder: 2, fk_uniformType: '1' });
         mockPrisma.uniformType.update.mockResolvedValue({ sortOrder: 1 });
         mockPrisma.uniformType.updateMany.mockResolvedValue({ count: 2 });
         mockPrisma.uniformType.count.mockResolvedValue({ });
     });
-    afterEach(jest.clearAllMocks);
+    afterEach(vi.clearAllMocks);
     
     afterAll(() => {
         mockPrisma.uniformType.update.mockReset();
@@ -102,7 +105,6 @@ describe('<UniformType> sortOrder', () => {
         expect(mockPrisma.uniformType.update).not.toHaveBeenCalled();
     });
     it('calls __unsecuredGetUniformTypeList', async () => {
-        const { __unsecuredGetUniformTypeList } = jest.requireMock("./get");
         const result = await changeSortOrder({ typeId: 'SomeTypeId', newPosition: 4 });
         
         expect(__unsecuredGetUniformTypeList).toHaveBeenCalledWith('test-assosiation-id', expect.anything());

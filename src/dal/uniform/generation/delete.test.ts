@@ -1,21 +1,22 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { PrismaClient } from "@/prisma/client";
-import { DeepMockProxy } from "jest-mock-extended";
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+import { vi } from 'vitest';
+import { prismaMock } from '@test-utils/prisma-mock';
+import { prisma } from "@/lib/db";
 import { markDeleted } from "./delete";
 import { __unsecuredGetUniformTypeList } from "../type/get";
 import { mockTypeList } from "../../../../tests/_jestConfig/staticMockData";
 import { checkDateTolerance } from "../../../../jest/helpers/test-utils";
 
 // Mock dependencies
-jest.mock("../type/get", () => ({
-    __unsecuredGetUniformTypeList: jest.fn(),
+vi.mock("../type/get", () => ({
+    __unsecuredGetUniformTypeList: vi.fn(),
 }));
 
 // Get mocked functions
-const mockGetUniformTypeList = __unsecuredGetUniformTypeList as jest.MockedFunction<typeof __unsecuredGetUniformTypeList>;
+const mockGetUniformTypeList = vi.mocked(__unsecuredGetUniformTypeList);
 
 // Get the mocked prisma client
-const mockPrisma = jest.requireMock("@/lib/db").prisma as DeepMockProxy<PrismaClient>;
+const mockPrisma = prismaMock;
 
 // Mock data
 const mockGenerationId = 'generation-to-delete-id';
@@ -37,26 +38,25 @@ const mockUniformTypeList = [mockTypeList[0]];
 
 describe('<UniformGeneration> markDeleted', () => {
 
-    const { prisma } = jest.requireMock("@/lib/db");
 
     afterEach(() => {
-        jest.clearAllMocks();
-        prisma.uniformGeneration.findUniqueOrThrow.mockReset();
-        prisma.uniformGeneration.update.mockReset();
-        prisma.uniformGeneration.updateMany.mockReset();
-        prisma.uniform.updateMany.mockReset();
+        vi.clearAllMocks();
+        mockPrisma.uniformGeneration.findUniqueOrThrow.mockReset();
+        mockPrisma.uniformGeneration.update.mockReset();
+        mockPrisma.uniformGeneration.updateMany.mockReset();
+        mockPrisma.uniform.updateMany.mockReset();
     });
 
     beforeEach(() => {
         // Setup default successful mocks for the transaction client
-        prisma.uniformGeneration.findUniqueOrThrow.mockResolvedValue(mockGenerationToDelete as any);
-        prisma.uniform.updateMany.mockResolvedValue({ count: 3 } as any);
-        prisma.uniformGeneration.update.mockResolvedValue({
+        mockPrisma.uniformGeneration.findUniqueOrThrow.mockResolvedValue(mockGenerationToDelete as any);
+        mockPrisma.uniform.updateMany.mockResolvedValue({ count: 3 } as any);
+        mockPrisma.uniformGeneration.update.mockResolvedValue({
             ...mockGenerationToDelete,
             recdelete: new Date(),
             recdeleteUser: mockSession.username,
         } as any);
-        prisma.uniformGeneration.updateMany.mockResolvedValue({ count: 2 } as any);
+        mockPrisma.uniformGeneration.updateMany.mockResolvedValue({ count: 2 } as any);
         mockGetUniformTypeList.mockResolvedValue(mockUniformTypeList as any);
     });
 
@@ -88,7 +88,7 @@ describe('<UniformGeneration> markDeleted', () => {
                     recdeleteUser: mockSession.username,
                 }
             });
-            expect(checkDateTolerance(prisma.uniformGeneration.update.mock.calls[0][0].data.recdelete)).toBeLessThan(5000);
+            expect(checkDateTolerance(mockPrisma.uniformGeneration.update.mock.calls[0][0].data.recdelete)).toBeLessThan(5000);
 
             // Verify sort order update for generations with higher sortOrder
             expect(prisma.uniformGeneration.updateMany).toHaveBeenCalledWith({

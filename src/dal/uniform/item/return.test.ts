@@ -1,20 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PrismaClient } from "@/prisma/client";
-import { DeepMockProxy } from "jest-mock-extended";
+import { vi } from 'vitest';
+import type { PrismaClient } from '@/prisma/client';
+import { prismaMock as mockPrisma } from '@test-utils/prisma-mock';
 import { returnItem, __unsecuredReturnUniformitem } from "./return";
 import { mockUniformList } from "../../../../tests/_jestConfig/staticMockData";
 import { __unsecuredGetCadetUniformMap } from "@/dal/cadet/uniformMap";
 
 // Mock the dependencies
-jest.mock("@/dal/cadet/uniformMap", () => ({
-    __unsecuredGetCadetUniformMap: jest.fn().mockResolvedValue([]),
+vi.mock("@/dal/cadet/uniformMap", () => ({
+    __unsecuredGetCadetUniformMap: vi.fn().mockResolvedValue([]),
 }));
 
 // Get the mocked functions
-const mockGetCadetUniformMap = __unsecuredGetCadetUniformMap as jest.MockedFunction<typeof __unsecuredGetCadetUniformMap>;
-
-// Get the mocked prisma client
-const mockPrisma = jest.requireMock("@/lib/db").prisma as DeepMockProxy<PrismaClient>;
+const mockGetCadetUniformMap = vi.mocked(__unsecuredGetCadetUniformMap);
 
 // Mock data
 const mockCadetId = 'cadet-123';
@@ -60,12 +58,12 @@ describe('<UniformItem> return', () => {
         mockPrisma.uniformIssued.delete.mockResolvedValue(mockIssuedEntry as any);
 
         // Mock system time to MOCK_TODAY
-        jest.useFakeTimers();
-        jest.setSystemTime(MOCK_TODAY);
+        vi.useFakeTimers();
+        vi.setSystemTime(MOCK_TODAY);
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         // Reset all mock implementations to their default state
         if (mockPrisma.uniformIssued?.findFirst?.mockReset) {
             mockPrisma.uniformIssued.findFirst.mockReset();
@@ -76,7 +74,7 @@ describe('<UniformItem> return', () => {
             mockPrisma.$transaction.mockReset();
         }
         // Restore real time
-        jest.useRealTimers();
+        vi.useRealTimers();
     });
 
     describe('successful return scenarios', () => {
@@ -179,13 +177,13 @@ describe('<UniformItem> return', () => {
 describe('<UniformItem> __unsecuredReturnUniformitem', () => {
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         if (mockPrisma.uniformIssued?.update?.mockReset) {
             mockPrisma.uniformIssued.update.mockReset();
             mockPrisma.uniformIssued.delete.mockReset();
         }
         // Restore real time
-        jest.useRealTimers();
+        vi.useRealTimers();
     });
 
     beforeEach(() => {
@@ -193,8 +191,8 @@ describe('<UniformItem> __unsecuredReturnUniformitem', () => {
         mockPrisma.uniformIssued.delete.mockResolvedValue(mockIssuedEntry as any);
 
         // Mock system time to MOCK_TODAY
-        jest.useFakeTimers();
-        jest.setSystemTime(MOCK_TODAY);
+        vi.useFakeTimers();
+        vi.setSystemTime(MOCK_TODAY);
     });
 
     describe('date-based behavior', () => {
@@ -225,7 +223,7 @@ describe('<UniformItem> __unsecuredReturnUniformitem', () => {
             // Set system time to midnight in German timezone (UTC+1/+2)
             // June 27, 2025 00:00:00 in German time = June 26, 2025 22:00:00 UTC (during DST)
             const midnightGermanTime = new Date('2025-06-26T22:00:00.000Z'); // UTC equivalent of German midnight
-            jest.setSystemTime(midnightGermanTime);
+            vi.setSystemTime(midnightGermanTime);
 
             // Issue date is also the same day in German timezone
             const issueDateGermanTime = new Date('2025-06-26T23:30:00.000Z'); // UTC equivalent of 01:30 German time
@@ -239,7 +237,7 @@ describe('<UniformItem> __unsecuredReturnUniformitem', () => {
         it('handles edge case: different days in German timezone', async () => {
             // Set system time to German timezone day
             const currentGermanDay = new Date('2025-06-27T12:00:00.000Z'); // 14:00 German time
-            jest.setSystemTime(currentGermanDay);
+            vi.setSystemTime(currentGermanDay);
 
             // Issue date is previous day in German timezone
             const previousGermanDay = new Date('2025-06-26T12:00:00.000Z'); // 14:00 German time previous day
@@ -273,8 +271,8 @@ describe('<UniformItem> __unsecuredReturnUniformitem', () => {
         it('uses provided transaction client', async () => {
             const customClient = {
                 uniformIssued: {
-                    delete: jest.fn(),
-                    update: jest.fn(),
+                    delete: vi.fn(),
+                    update: vi.fn(),
                 },
             } as unknown as PrismaClient;
 

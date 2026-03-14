@@ -1,11 +1,14 @@
+﻿import { vi, type Mock } from 'vitest';
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
+import { prismaMock } from '@test-utils/prisma-mock';
 import { CadetInspectionFormSchema } from "@/zod/deficiency";
 import { saveCadetInspection } from "./save";
+import { unsecuredGetActiveInspection } from "./get";
 
 // Mock the get module
-jest.mock("./get", () => ({
-    unsecuredGetActiveInspection: jest.fn(),
+vi.mock("./get", () => ({
+    unsecuredGetActiveInspection: vi.fn(),
 }));
 
 // Global test data sets
@@ -148,9 +151,9 @@ const MOCK_INSPECTION_WITH_ORPHANS = {
 };
 
 describe("saveCadetInspection", () => {
-    const mockUnsecuredGetActiveInspection = jest.requireMock("./get").unsecuredGetActiveInspection;
+    const mockUnsecuredGetActiveInspection = vi.mocked(unsecuredGetActiveInspection) as unknown as Mock;
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         // Setup default successful mocks
         mockUnsecuredGetActiveInspection.mockResolvedValue(MOCK_INSPECTION);
 
@@ -270,7 +273,7 @@ describe("saveCadetInspection", () => {
 
             // Assert
             // Verify TWO separate updateMany calls are made for deficiency resolution
-            const updateManyCalls = (prisma.deficiency.updateMany as jest.Mock).mock.calls;
+            const updateManyCalls = prismaMock.deficiency.updateMany.mock.calls;
             const resolutionCalls = updateManyCalls.filter(call =>
                 call[0].where.dateResolved !== undefined
             );
@@ -281,7 +284,7 @@ describe("saveCadetInspection", () => {
                 call[0].where.dateResolved === null
             );
             expect(resolvingCall).toBeDefined();
-            expect(resolvingCall[0]).toMatchObject({
+            expect(resolvingCall![0]).toMatchObject({
                 where: {
                     id: { in: [TEST_IDS.deficiency1, TEST_IDS.deficiency3] },
                     type: { fk_assosiation: TEST_USER.assosiation },
@@ -299,7 +302,7 @@ describe("saveCadetInspection", () => {
                 call[0].where.dateResolved && typeof call[0].where.dateResolved === 'object' && call[0].where.dateResolved.not === null
             );
             expect(unresolvingCall).toBeDefined();
-            expect(unresolvingCall[0]).toMatchObject({
+            expect(unresolvingCall![0]).toMatchObject({
                 where: {
                     id: { in: [TEST_IDS.deficiency2] },
                     type: { fk_assosiation: TEST_USER.assosiation },
@@ -348,7 +351,7 @@ describe("saveCadetInspection", () => {
             // Assert
             expect(prisma.deficiency.updateMany).toHaveBeenCalledTimes(1);
             // Should only call updateMany once (for resolving)
-            const updateManyCalls = (prisma.deficiency.updateMany as jest.Mock).mock.calls;
+            const updateManyCalls = prismaMock.deficiency.updateMany.mock.calls;
             const resolutionCalls = updateManyCalls.filter(call =>
                 call[0].where.dateResolved !== undefined
             );
@@ -372,7 +375,7 @@ describe("saveCadetInspection", () => {
             // Assert
             expect(prisma.deficiency.updateMany).toHaveBeenCalledTimes(1);
             // Should only call updateMany once (for unresolving)
-            const updateManyCalls = (prisma.deficiency.updateMany as jest.Mock).mock.calls;
+            const updateManyCalls = prismaMock.deficiency.updateMany.mock.calls;
             const resolutionCalls = updateManyCalls.filter(call =>
                 call[0].where.dateResolved !== undefined
             );
@@ -398,7 +401,7 @@ describe("saveCadetInspection", () => {
             };
 
             // Mock findUniqueOrThrow to throw
-            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockRejectedValue(
+            (prisma.deficiencyType.findUniqueOrThrow as ReturnType<typeof vi.fn>).mockRejectedValue(
                 new Error("Record not found")
             );
 
@@ -428,7 +431,7 @@ describe("saveCadetInspection", () => {
                 newDeficiencyList: [newDeficiency],
             };
 
-            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.uniform);
+            prismaMock.deficiencyType.findUniqueOrThrow.mockResolvedValue(MOCK_DEFICIENCY_TYPES.uniform);
 
             // Act & Assert
             await expect(saveCadetInspection(propsWithNewDeficiency)).rejects.toThrow(
@@ -448,7 +451,7 @@ describe("saveCadetInspection", () => {
                 newDeficiencyList: [newDeficiency],
             };
 
-            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithUniformRelation);
+            prismaMock.deficiencyType.findUniqueOrThrow.mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithUniformRelation);
 
             // Act & Assert
             await expect(saveCadetInspection(propsWithNewDeficiency)).rejects.toThrow(
@@ -468,7 +471,7 @@ describe("saveCadetInspection", () => {
                 newDeficiencyList: [newDeficiency],
             };
 
-            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithMaterialRelation);
+            prismaMock.deficiencyType.findUniqueOrThrow.mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithMaterialRelation);
 
             // Act & Assert
             await expect(saveCadetInspection(propsWithNewDeficiency)).rejects.toThrow(
@@ -488,8 +491,8 @@ describe("saveCadetInspection", () => {
                 newDeficiencyList: [newDeficiency],
             };
 
-            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
-            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+            prismaMock.deficiencyType.findUniqueOrThrow.mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
+            prismaMock.deficiency.upsert.mockResolvedValue(MOCK_DB_RETURNS.deficiency);
 
             // Act
             await saveCadetInspection(propsWithNewDeficiency);
@@ -535,9 +538,9 @@ describe("saveCadetInspection", () => {
                 newDeficiencyList: [newDeficiency],
             };
 
-            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithMaterialRelation);
-            (prisma.material.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_OTHER_MATERIAL);
-            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+            prismaMock.deficiencyType.findUniqueOrThrow.mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithMaterialRelation);
+            prismaMock.material.findUniqueOrThrow.mockResolvedValue(MOCK_OTHER_MATERIAL);
+            prismaMock.deficiency.upsert.mockResolvedValue(MOCK_DB_RETURNS.deficiency);
 
             // Act
             await saveCadetInspection(propsWithNewDeficiency);
@@ -576,9 +579,9 @@ describe("saveCadetInspection", () => {
                 newDeficiencyList: [newDeficiency],
             };
 
-            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.uniform);
-            (prisma.uniform.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_UNIFORM);
-            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+            prismaMock.deficiencyType.findUniqueOrThrow.mockResolvedValue(MOCK_DEFICIENCY_TYPES.uniform);
+            prismaMock.uniform.findUniqueOrThrow.mockResolvedValue(MOCK_UNIFORM);
+            prismaMock.deficiency.upsert.mockResolvedValue(MOCK_DB_RETURNS.deficiency);
 
             // Act
             await saveCadetInspection(propsWithNewDeficiency);
@@ -615,9 +618,9 @@ describe("saveCadetInspection", () => {
                 newDeficiencyList: [newDeficiency],
             };
 
-            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithUniformRelation);
-            (prisma.uniform.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_UNIFORM);
-            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+            prismaMock.deficiencyType.findUniqueOrThrow.mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithUniformRelation);
+            prismaMock.uniform.findUniqueOrThrow.mockResolvedValue(MOCK_UNIFORM);
+            prismaMock.deficiency.upsert.mockResolvedValue(MOCK_DB_RETURNS.deficiency);
 
             // Act
             await saveCadetInspection(propsWithNewDeficiency);
@@ -659,9 +662,9 @@ describe("saveCadetInspection", () => {
                 newDeficiencyList: [newDeficiency],
             };
 
-            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithMaterialRelation);
-            (prisma.material.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_MATERIAL);
-            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+            prismaMock.deficiencyType.findUniqueOrThrow.mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithMaterialRelation);
+            prismaMock.material.findUniqueOrThrow.mockResolvedValue(MOCK_MATERIAL);
+            prismaMock.deficiency.upsert.mockResolvedValue(MOCK_DB_RETURNS.deficiency);
 
             // Act
             await saveCadetInspection(propsWithNewDeficiency);
@@ -696,7 +699,7 @@ describe("saveCadetInspection", () => {
                 newDeficiencyList: [newDeficiency],
             };
 
-            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
+            prismaMock.deficiencyType.findUniqueOrThrow.mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
 
             // Act & Assert
             await expect(saveCadetInspection(propsWithNewDeficiency)).rejects.toThrow(
@@ -716,8 +719,8 @@ describe("saveCadetInspection", () => {
                 newDeficiencyList: [manualDescriptionDeficiency],
             };
 
-            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
-            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+            prismaMock.deficiencyType.findUniqueOrThrow.mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
+            prismaMock.deficiency.upsert.mockResolvedValue(MOCK_DB_RETURNS.deficiency);
 
             // Act
             await saveCadetInspection(propsWithNewDeficiency);
@@ -798,8 +801,8 @@ describe("saveCadetInspection", () => {
                 newDeficiencyList: [newDeficiency],
             };
 
-            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
-            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+            prismaMock.deficiencyType.findUniqueOrThrow.mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
+            prismaMock.deficiency.upsert.mockResolvedValue(MOCK_DB_RETURNS.deficiency);
 
             // Act
             await saveCadetInspection(propsWithNewDeficiency);
@@ -841,8 +844,8 @@ describe("saveCadetInspection", () => {
                 newDeficiencyList: [existingDeficiency],
             };
 
-            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
-            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.existingDeficiency);
+            prismaMock.deficiencyType.findUniqueOrThrow.mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
+            prismaMock.deficiency.upsert.mockResolvedValue(MOCK_DB_RETURNS.existingDeficiency);
 
             // Act
             await saveCadetInspection(propsWithExistingDeficiency);
@@ -882,9 +885,9 @@ describe("saveCadetInspection", () => {
                 newDeficiencyList: [newDeficiency],
             };
 
-            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.uniform);
-            (prisma.uniform.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_UNIFORM);
-            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+            prismaMock.deficiencyType.findUniqueOrThrow.mockResolvedValue(MOCK_DEFICIENCY_TYPES.uniform);
+            prismaMock.uniform.findUniqueOrThrow.mockResolvedValue(MOCK_UNIFORM);
+            prismaMock.deficiency.upsert.mockResolvedValue(MOCK_DB_RETURNS.deficiency);
 
             // Act
             await saveCadetInspection(propsWithNewDeficiency);
@@ -917,8 +920,8 @@ describe("saveCadetInspection", () => {
                 newDeficiencyList: [newDeficiency],
             };
 
-            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
-            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+            prismaMock.deficiencyType.findUniqueOrThrow.mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
+            prismaMock.deficiency.upsert.mockResolvedValue(MOCK_DB_RETURNS.deficiency);
 
             // Act
             await saveCadetInspection(propsWithNewDeficiency);
@@ -954,9 +957,9 @@ describe("saveCadetInspection", () => {
                 newDeficiencyList: [newDeficiency],
             };
 
-            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithMaterialRelation);
-            (prisma.material.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_MATERIAL);
-            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+            prismaMock.deficiencyType.findUniqueOrThrow.mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithMaterialRelation);
+            prismaMock.material.findUniqueOrThrow.mockResolvedValue(MOCK_MATERIAL);
+            prismaMock.deficiency.upsert.mockResolvedValue(MOCK_DB_RETURNS.deficiency);
 
             // Act
             await saveCadetInspection(propsWithNewDeficiency);
@@ -1040,8 +1043,8 @@ describe("saveCadetInspection", () => {
                 newDeficiencyList: [minimalDeficiency],
             };
 
-            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
-            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+            prismaMock.deficiencyType.findUniqueOrThrow.mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
+            prismaMock.deficiency.upsert.mockResolvedValue(MOCK_DB_RETURNS.deficiency);
 
             // Act
             await saveCadetInspection(propsWithMinimalDeficiency);
@@ -1138,8 +1141,8 @@ describe("saveCadetInspection", () => {
             };
 
             mockUnsecuredGetActiveInspection.mockResolvedValue(mockInspectionWithDeficiencies);
-            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
-            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue({ id: "def-to-process" });
+            prismaMock.deficiencyType.findUniqueOrThrow.mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
+            prismaMock.deficiency.upsert.mockResolvedValue({ id: "def-to-process" });
 
             // Act
             await saveCadetInspection(propsWithExistingDeficiency);
@@ -1170,8 +1173,8 @@ describe("saveCadetInspection", () => {
                 newDeficiencyList: [newDeficiency],
             };
 
-            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
-            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+            prismaMock.deficiencyType.findUniqueOrThrow.mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
+            prismaMock.deficiency.upsert.mockResolvedValue(MOCK_DB_RETURNS.deficiency);
 
             // Act
             await saveCadetInspection(propsWithNewDeficiency);
@@ -1213,8 +1216,8 @@ describe("saveCadetInspection", () => {
                 newDeficiencyList: [existingDeficiency],
             };
 
-            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
-            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue({ id: "existing-deficiency-id" });
+            prismaMock.deficiencyType.findUniqueOrThrow.mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
+            prismaMock.deficiency.upsert.mockResolvedValue({ id: "existing-deficiency-id" });
 
             // Act
             await saveCadetInspection(propsWithExistingDeficiency);
@@ -1292,9 +1295,9 @@ describe("saveCadetInspection", () => {
                 newDeficiencyList: [newDeficiency],
             };
 
-            (prisma.deficiencyType.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithMaterialRelation);
-            (prisma.material.findUniqueOrThrow as jest.Mock).mockResolvedValue(MOCK_MATERIAL);
-            (prisma.deficiency.upsert as jest.Mock).mockResolvedValue(MOCK_DB_RETURNS.deficiency);
+            prismaMock.deficiencyType.findUniqueOrThrow.mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithMaterialRelation);
+            prismaMock.material.findUniqueOrThrow.mockResolvedValue(MOCK_MATERIAL);
+            prismaMock.deficiency.upsert.mockResolvedValue(MOCK_DB_RETURNS.deficiency);
 
             // Act
             await saveCadetInspection(propsWithAssociationTest);

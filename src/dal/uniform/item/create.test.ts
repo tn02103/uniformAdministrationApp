@@ -1,11 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PrismaClient } from "@/prisma/client";
-import { DeepMockProxy } from "jest-mock-extended";
+import { vi } from 'vitest';
+import { prismaMock as mockPrisma } from '@test-utils/prisma-mock';
 import { create } from "./create";
 import { mockTypeList, mockGenerationLists, mockSizeLists } from "../../../../tests/_jestConfig/staticMockData";
-
-// Get the mocked prisma client
-const mockPrisma = jest.requireMock("@/lib/db").prisma as DeepMockProxy<PrismaClient>;
 
 const defaultWithSizes = {
     numberMap: [
@@ -55,7 +52,7 @@ describe('<UniformItem> create', () => {
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         // Reset all mock implementations to their default state
         mockPrisma.uniform.findMany.mockReset();
         mockPrisma.uniform.createMany.mockReset();

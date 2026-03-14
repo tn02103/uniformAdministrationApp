@@ -9,7 +9,6 @@ const customJestConfig: Config = {
     maxWorkers: 1,
     projects: [
         "<rootDir>/jest.dal-unit.config.ts",
-        "<rootDir>/jest.frontend.config.ts",
     ],
 };
 
