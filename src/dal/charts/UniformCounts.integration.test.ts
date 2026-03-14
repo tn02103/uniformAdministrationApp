@@ -1,7 +1,7 @@
 /* eslint-disable jest/no-conditional-expect */
 import { getUniformCountBySizeForType, getUniformCountByType } from './UniformCounts';
 import { AuthRole } from '@/lib/AuthRoles';
-import { staticData } from '../../../jest/setup-dal-integration';
+import { staticData } from '../../../vitest/setup-dal-integration';
 import type { UniformType } from '@prisma/client';
 
 // Integration tests use real database and static test data

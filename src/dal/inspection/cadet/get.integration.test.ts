@@ -2,7 +2,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import dayjs from "@/lib/dayjs";
 import { Deficiency } from "@/types/deficiencyTypes";
-import { staticData, wrongAssosiation } from "../../../../jest/setup-dal-integration";
+import { staticData, wrongAssosiation } from "../../../../vitest/setup-dal-integration";
 import { getCadetInspectionFormData, getUnresolvedByCadet, unsecuredGetActiveInspection, unsecuredGetPreviouslyUnresolvedDeficiencies } from "./get";
 
 // Type for the view result that includes the cadet relationship fields
