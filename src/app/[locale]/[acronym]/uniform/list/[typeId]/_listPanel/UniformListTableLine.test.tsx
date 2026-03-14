@@ -5,14 +5,15 @@ import { UniformListTableLine, UniformListTableLineProps } from "./UniformListTa
 import { mockTypeList, mockUniformList } from "../../../../../../../../tests/_jestConfig/staticMockData";
 import { AuthRole } from "@/lib/AuthRoles";
 import dayjs from "@/lib/dayjs";
+import { vi } from "vitest";
 
 // Mock useGlobalData
-jest.mock("@/components/globalDataProvider", () => ({
+vi.mock("@/components/globalDataProvider", () => ({
     useGlobalData: () => ({ userRole: AuthRole.admin }),
 }));
 
 // Mock UniformOffcanvas
-jest.mock("@/components/UniformOffcanvas/UniformOffcanvas", () => ({
+vi.mock("@/components/UniformOffcanvas/UniformOffcanvas", () => ({
     UniformOffcanvas: ({ onClose }: { onClose: () => void }) => (
         <div data-testid="offcanvas">
             Offcanvas
@@ -22,7 +23,7 @@ jest.mock("@/components/UniformOffcanvas/UniformOffcanvas", () => ({
 }));
 
 // Mock TooltipActionButton
-jest.mock("@/components/Buttons/TooltipIconButton", () => ({
+vi.mock("@/components/Buttons/TooltipIconButton", () => ({
     TooltipActionButton: (props: { onClick: () => void }) => (
         <button data-testid="tooltip-action-btn" onClick={props.onClick}>Open</button>
     ),
@@ -36,7 +37,7 @@ const setup = (props?: Partial<UniformListTableLineProps>) => {
                     uniform={mockUniformList[0]}
                     uniformType={mockTypeList[0]}
                     searchString=""
-                    loadData={jest.fn()}
+                    loadData={vi.fn()}
                     {...props}
                 />
             </tbody>
@@ -99,7 +100,7 @@ describe("UniformListTableLine", () => {
             expect(screen.getByRole("img", { hidden: true })).toBeInTheDocument();
             expect(screen.getByRole("img", { hidden: true })).toHaveClass("fa-registered");
             const tds = screen.getAllByRole("cell");
-            for(let i = 0; i < 4; i++) {
+            for (let i = 0; i < 4; i++) {
                 expect(tds[i]).toHaveClass("text-secondary");
             }
         });
@@ -109,7 +110,7 @@ describe("UniformListTableLine", () => {
             expect(screen.getByRole("img", { hidden: true })).toBeInTheDocument();
             expect(screen.getByRole("img", { hidden: true })).toHaveClass("fa-registered");
             const tds = screen.getAllByRole("cell");
-            for(let i = 0; i < 4; i++) {
+            for (let i = 0; i < 4; i++) {
                 expect(tds[i]).toHaveClass("text-secondary");
             }
         });
@@ -119,7 +120,7 @@ describe("UniformListTableLine", () => {
             expect(screen.queryByRole("img", { hidden: true })).toBeNull();
             expect(screen.queryByRole("img", { hidden: true })).toBeNull();
             const tds = screen.getAllByRole("cell");
-             for(let i = 0; i < 4; i++) {
+            for (let i = 0; i < 4; i++) {
                 expect(tds[i]).not.toHaveClass("text-secondary");
             }
         });

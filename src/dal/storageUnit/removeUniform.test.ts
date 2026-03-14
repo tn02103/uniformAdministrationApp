@@ -1,35 +1,29 @@
+
 import { removeUniform } from "./removeUniform";
 import { prisma } from "@/lib/db";
+import { __unsecuredGetUnitsWithUniformItems } from "./get";
 
-jest.mock('@/lib/db', () => ({
-    prisma: {
-        uniform: {
-            updateMany: jest.fn(),
-        },
-        $transaction: jest.fn((fn) => fn(prisma)),
-    }
-}));
-jest.mock("@/actions/validations", () => ({
-    genericSAValidator: jest.fn((_, props) =>
-        Promise.resolve([{ organisationId: 'test-organisation' }, props])
+vi.mock("@/actions/validations", () => ({
+    genericSAValidator: vi.fn((_, props) =>
+        Promise.resolve([{ organisationId: 'test-organisation-id' }, props])
     ),
 }));
-jest.mock("./get", () => ({
-    __unsecuredGetUnitsWithUniformItems: jest.fn(),
+vi.mock("./get", () => ({
+    __unsecuredGetUnitsWithUniformItems: vi.fn(),
 }));
 
 const uniformIds = ['u1', 'u2', 'u3'];
 const storageUnitId = 's1';
 
 describe('<storageUnit> removeUniform', () => {
-    afterEach(jest.clearAllMocks);
+    afterEach(vi.clearAllMocks);
 
-    const prismaUpdateMany = prisma.uniform.updateMany as jest.Mock;
-    const getUnitsWithUniformItems = jest.requireMock("./get").__unsecuredGetUnitsWithUniformItems as jest.Mock;
+    const prismaUpdateMany = vi.mocked(prisma.uniform.updateMany);
+    const getUnitsWithUniformItems = vi.mocked(__unsecuredGetUnitsWithUniformItems);
 
     it("should remove the uniform from the storage unit and return updated units", async () => {
         prismaUpdateMany.mockResolvedValueOnce({ count: uniformIds.length });
-        getUnitsWithUniformItems.mockResolvedValueOnce(['TestReturnValue']);
+        getUnitsWithUniformItems.mockResolvedValueOnce(['TestReturnValue'] as any);
 
         const result = await removeUniform({ uniformIds, storageUnitId });
 
@@ -42,13 +36,13 @@ describe('<storageUnit> removeUniform', () => {
                 storageUnitId: null
             }
         });
-        expect(getUnitsWithUniformItems).toHaveBeenCalledWith('test-organisation');
+        expect(getUnitsWithUniformItems).toHaveBeenCalledWith('test-organisation-id');
         expect(result).toEqual(['TestReturnValue']);
     });
 
     it('should throw if not all uniforms are updated', async () => {
         prismaUpdateMany.mockResolvedValueOnce({ count: 2 }); // less than uniformIds.length
-        getUnitsWithUniformItems.mockResolvedValueOnce(['TestReturnValue']);
+        getUnitsWithUniformItems.mockResolvedValueOnce(['TestReturnValue'] as any);
 
         await expect(removeUniform({ uniformIds, storageUnitId })).rejects.toThrow("Failed to update uniforms");
         expect(getUnitsWithUniformItems).not.toHaveBeenCalled();

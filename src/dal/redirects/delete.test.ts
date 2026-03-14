@@ -1,10 +1,13 @@
+﻿
 import { AuthRole } from "@/lib/AuthRoles";
 import { revalidatePath } from "next/cache";
 import z from "zod";
 import { deleteRedirect } from "./index";
+import { prismaMock } from '@test-utils/prisma-mock';
+import { genericSAValidator } from "@/actions/validations";
 
 describe("deleteRedirect", () => {
-    const { prisma } = jest.requireMock('@/lib/db');
+    const mockPrisma = prismaMock;
 
     const mockOrganisation = "test-organisation-id";
     const mockId = "961a294a-8ac3-4329-a844-af6b85af5d68";
@@ -13,13 +16,13 @@ describe("deleteRedirect", () => {
         global.__ROLE__ = AuthRole.admin;
     })
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
 
-        prisma.redirect.findUnique.mockResolvedValue({
+        mockPrisma.redirect.findUnique.mockResolvedValue({
             id: mockId,
             organisationId: mockOrganisation,
         });
-        prisma.redirect.delete.mockResolvedValue({});
+        mockPrisma.redirect.delete.mockResolvedValue({});
     });
     afterAll(() => {
         delete global.__ROLE__;
@@ -28,10 +31,10 @@ describe("deleteRedirect", () => {
     it("should delete a redirect successfully", async () => {
         const result = await deleteRedirect(mockId);
 
-        expect(prisma.redirect.findUnique).toHaveBeenCalledWith({
+        expect(mockPrisma.redirect.findUnique).toHaveBeenCalledWith({
             where: { id: mockId },
         });
-        expect(prisma.redirect.delete).toHaveBeenCalledWith({
+        expect(mockPrisma.redirect.delete).toHaveBeenCalledWith({
             where: { id: mockId },
         });
         expect(revalidatePath).toHaveBeenCalledWith(
@@ -42,14 +45,14 @@ describe("deleteRedirect", () => {
     });
 
     it("should throw an error if the redirect is not found", async () => {
-        prisma.redirect.findUnique.mockResolvedValue(null);
+        mockPrisma.redirect.findUnique.mockResolvedValue(null);
 
         await expect(deleteRedirect(mockId)).rejects.toThrow("Redirect not found");
-        expect(prisma.redirect.delete).not.toHaveBeenCalled();
+        expect(mockPrisma.redirect.delete).not.toHaveBeenCalled();
     });
 
     it("should throw an error if the redirect does not belong to the association", async () => {
-        prisma.redirect.findUnique.mockResolvedValue({
+        mockPrisma.redirect.findUnique.mockResolvedValue({
             id: mockId,
             organisationId: "different-association-id",
         });
@@ -57,15 +60,13 @@ describe("deleteRedirect", () => {
         await expect(deleteRedirect(mockId)).rejects.toThrow(
             "Redirect not found in this association"
         );
-        expect(prisma.redirect.delete).not.toHaveBeenCalled();
+        expect(mockPrisma.redirect.delete).not.toHaveBeenCalled();
     });
 
     it("should call genericSAValidator with correct parameters", async () => {
-        const { genericSAValidator } = jest.requireMock('@/actions/validations');
-
         await deleteRedirect(mockId);
 
-        expect(genericSAValidator).toHaveBeenCalledWith(
+        expect(vi.mocked(genericSAValidator)).toHaveBeenCalledWith(
             AuthRole.admin,
             mockId,
             expect.any(z.ZodType),

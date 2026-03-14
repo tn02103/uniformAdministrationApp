@@ -1,7 +1,7 @@
 import { runServerActionTest } from "@/dal/_helper/testHelper";
 import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
-import { checkDateTolerance } from "../../../../jest/helpers/test-utils";
+import { checkDateTolerance } from "../../../../vitest/helpers/test-utils";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import {
     createUniformItems,

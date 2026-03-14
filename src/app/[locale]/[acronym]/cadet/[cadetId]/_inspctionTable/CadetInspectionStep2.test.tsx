@@ -2,6 +2,10 @@ import { Form } from "@/components/fields/Form";
 import { getByRole, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CadetInspectionStep2 } from "./CadetInspectionStep2";
+import { OldDeficiencyRow } from "./OldDeficiencyRow";
+import { NewDeficiencyRow } from "./NewDeficiencyRow";
+import { useCadetUniformComplete } from "@/dataFetcher/cadet";
+import { useParams } from "next/navigation";
 
 
 const mockFormData = {
@@ -16,12 +20,12 @@ const mockFormData = {
     ],
 };
 
-jest.mock('./OldDeficiencyRow', () => ({
-    OldDeficiencyRow: jest.fn(({ deficiency }) => <div>{deficiency.description}</div>)
+vi.mock('./OldDeficiencyRow', () => ({
+    OldDeficiencyRow: vi.fn(({ deficiency }) => <div>{deficiency.description}</div>)
 }));
 
-jest.mock('./NewDeficiencyRow', () => ({
-    NewDeficiencyRow: jest.fn(({ index, remove }) => (
+vi.mock('./NewDeficiencyRow', () => ({
+    NewDeficiencyRow: vi.fn(({ index, remove }) => (
         <div data-testid={`new-deficiency-${index}`}>
             <p>{`New deficiency ${index + 1}`}</p>
             <button onClick={remove}>remove</button>
@@ -29,32 +33,27 @@ jest.mock('./NewDeficiencyRow', () => ({
     ))
 }));
 
-jest.mock('@/dataFetcher/cadet', () => ({
-    useCadetUniformComplete: jest.fn(),
+vi.mock('@/dataFetcher/cadet', () => ({
+    useCadetUniformComplete: vi.fn(),
 }))
 
 const TestFormWrapper = ({ setStep, onSubmit, defaultValues }: { setStep?: (step: number) => void, onSubmit?: () => void, defaultValues?: object }) => {
 
     return (
-        <Form onSubmit={onSubmit ?? jest.fn()} defaultValues={{ ...mockFormData, ...defaultValues }}>
+        <Form onSubmit={onSubmit ?? vi.fn()} defaultValues={{ ...mockFormData, ...defaultValues }}>
             <CadetInspectionStep2
-                setStep={setStep ?? jest.fn()}
+                setStep={setStep ?? vi.fn()}
             />
         </Form>
     );
 };
 
 describe('<CadetInspectionStep2 />', () => {
-    const { OldDeficiencyRow } = jest.requireMock('./OldDeficiencyRow');
-    const { NewDeficiencyRow } = jest.requireMock('./NewDeficiencyRow');
-    const { useCadetUniformComplete } = jest.requireMock('@/dataFetcher/cadet');
-    const { useParams } = jest.requireMock('next/navigation');
-
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
 
-        useCadetUniformComplete.mockReturnValue(true);
-        useParams.mockReturnValue({ cadetId: '123' });
+        vi.mocked(useCadetUniformComplete).mockReturnValue(true);
+        vi.mocked(useParams).mockReturnValue({ cadetId: '123' });
     })
 
     it('renders unresolved oldDeficiencyList', () => {
@@ -81,12 +80,12 @@ describe('<CadetInspectionStep2 />', () => {
     });
 
     it('renders uniform complete, incomplete', () => {
-        useCadetUniformComplete.mockReturnValue(true);
+        vi.mocked(useCadetUniformComplete).mockReturnValue(true);
         const { rerender } = render(<TestFormWrapper />);
         expect(screen.getByText(/uniformComplete.true/)).toBeInTheDocument();
         expect(screen.getByText(/uniformComplete.true/)).toHaveClass('text-success');
 
-        useCadetUniformComplete.mockReturnValue(false);
+        vi.mocked(useCadetUniformComplete).mockReturnValue(false);
         rerender(<TestFormWrapper />);
         expect(screen.getByText(/uniformComplete.false/)).toBeInTheDocument();
         expect(screen.getByText(/uniformComplete.false/)).toHaveClass('text-danger');
@@ -139,7 +138,7 @@ describe('<CadetInspectionStep2 />', () => {
 
     describe('footer buttons', () => {
         it('returns to step 0 with no oldDeficiencies', async () => {
-            const setStep = jest.fn();
+            const setStep = vi.fn();
             render(<TestFormWrapper setStep={setStep} defaultValues={{ oldDeficiencyList: [] }} />);
 
             const cancelButton = screen.getByRole('button', { name: /cancel/i });
@@ -151,7 +150,7 @@ describe('<CadetInspectionStep2 />', () => {
         });
 
         it('returns to step 1 with oldDeficiencies', async () => {
-            const setStep = jest.fn();
+            const setStep = vi.fn();
             render(<TestFormWrapper setStep={setStep} />);
 
             const returnButton = screen.getByRole('button', { name: /prevStep/i });
@@ -163,7 +162,7 @@ describe('<CadetInspectionStep2 />', () => {
         });
 
         it('submits the form', async () => {
-            const onSubmit = jest.fn();
+            const onSubmit = vi.fn();
             render(<TestFormWrapper onSubmit={onSubmit} />);
             const submitButton = screen.getByRole('button', { name: /save/i });
             expect(submitButton).toBeInTheDocument();

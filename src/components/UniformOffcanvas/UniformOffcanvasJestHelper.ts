@@ -3,78 +3,77 @@ import { mockGenerationLists, mockSizeLists, mockTypeList } from "../../../tests
 import { AuthRole } from "@/lib/AuthRoles";
 import { UniformHistroyEntry, UniformWithOwner } from "@/types/globalUniformTypes";
 
-
 // ------------- MOCKS FOR DEFICIENCY -------------
-jest.mock('@/dal/inspection/deficiency', () => ({
-    createUniformDeficiency: jest.fn(async () => "created successfully"),
-    resolveDeficiency: jest.fn(async () => "resolved successfully"),
-    updateUniformDeficiency: jest.fn(async () => "updated successfully"),
+vi.mock('@/dal/inspection/deficiency', () => ({
+    createUniformDeficiency: vi.fn(async () => "created successfully"),
+    resolveDeficiency: vi.fn(async () => "resolved successfully"),
+    updateUniformDeficiency: vi.fn(async () => "updated successfully"),
 }));
 
-jest.mock('@/dataFetcher/deficiency', () => ({
-    useDeficienciesByUniformId: jest.fn((_, includeResolved) => {
+vi.mock('@/dataFetcher/deficiency', () => ({
+    useDeficienciesByUniformId: vi.fn((_, includeResolved) => {
         if (includeResolved) {
             return { deficiencies: mockDeficiencyList };
         } else {
             return { deficiencies: mockDeficiencyList.slice(0, 2) };
         }
     }),
-    useDeficiencyTypes: jest.fn(() => ({ deficiencyTypeList: mockDeficiencyTypeList })),
+    useDeficiencyTypes: vi.fn(() => ({ deficiencyTypeList: mockDeficiencyTypeList })),
 }));
 
 // ------------- MOCKS FOR UNIFORM -------------
 
-jest.mock('@/dataFetcher/uniformAdmin', () => ({
-    useUniformGenerationListByType: jest.fn(() => ({
+vi.mock('@/dataFetcher/uniformAdmin', () => ({
+    useUniformGenerationListByType: vi.fn(() => ({
         generationList: mockGenerationLists[0]
     })),
-    useUniformTypeList: jest.fn(() => ({
+    useUniformTypeList: vi.fn(() => ({
         typeList: mockTypeList
     })),
 }));
-jest.mock("@/dal/uniform/item/_index", () => ({
-    updateUniformItem: jest.fn(() => Promise.resolve('Saved item')),
-    deleteUniformItem: jest.fn(() => Promise.resolve('Deleted item')),
-    issueUniformItem: jest.fn(),
-    createUniformItems: jest.fn(),
-    getUniformItemDeficiencies: jest.fn(),
+vi.mock("@/dal/uniform/item/_index", () => ({
+    updateUniformItem: vi.fn(() => Promise.resolve('Saved item')),
+    deleteUniformItem: vi.fn(() => Promise.resolve('Deleted item')),
+    issueUniformItem: vi.fn(),
+    createUniformItems: vi.fn(),
+    getUniformItemDeficiencies: vi.fn(),
 }));
-jest.mock('../globalDataProvider', () => ({
-    useGlobalData: jest.fn(() => ({
+vi.mock('../globalDataProvider', () => ({
+    useGlobalData: vi.fn(() => ({
         sizelists: mockSizeLists,
         userRole: global.__ROLE__ ?? AuthRole.admin,
     })),
 }));
-jest.mock('@/dataFetcher/uniform', () => ({
-    useUniformItemHistory: jest.fn(() => ({
+vi.mock('@/dataFetcher/uniform', () => ({
+    useUniformItemHistory: vi.fn(() => ({
         history: mockUniformHistory,
     })),
 }));
 
 // ------------- STORAGE UNIT MOCKS -------------
-jest.mock("@/dataFetcher/storage", () => ({
+vi.mock("@/dataFetcher/storage", () => ({
     useStorageUnitsWithUniformItemList: () => ({
         storageUnits: mockStorageUnits,
     }),
 }));
 
-jest.mock("@/dal/storageUnit/_index", () => ({
-    addUniformItemToStorageUnit: jest.fn(() => Promise.resolve()),
-    removeUniformFromStorageUnit: jest.fn(() => Promise.resolve()),
+vi.mock("@/dal/storageUnit/_index", () => ({
+    addUniformItemToStorageUnit: vi.fn(() => Promise.resolve()),
+    removeUniformFromStorageUnit: vi.fn(() => Promise.resolve()),
 }));
 
 // ------------- OTHER MOCKS -------------
-jest.mock("swr", () => ({
-    mutate: jest.fn(async () => { }),
+vi.mock("swr", () => ({
+    mutate: vi.fn(async () => { }),
 }));
 
-jest.mock('react-toastify', () => ({
+vi.mock('react-toastify', () => ({
     toast: {
-        error: jest.fn(),
-        success: jest.fn(),
+        error: vi.fn(),
+        success: vi.fn(),
     },
 }));
-jest.mock("next/navigation", () => ({
+vi.mock("next/navigation", () => ({
     usePathname: () => "/de/app/uniform/list/81ff8e9b-a097-4879-a0b2-352e54d41e6c",
 }));
 

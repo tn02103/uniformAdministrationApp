@@ -2,25 +2,26 @@ import { StorageUnitWithUniformItems } from "@/dal/storageUnit/get";
 import { mockUniformList } from "../../../../../../tests/_jestConfig/staticMockData";
 import { UniformItemLabel } from "@/dal/uniform/item/_index";
 
-jest.mock("@/dal/storageUnit/_index", () => ({
-    addUniformItemToStorageUnit: jest.fn().mockResolvedValue(mockStorageUnitWithItems),
-    deleteStorageUnit: jest.fn().mockResolvedValue(mockStorageUnitWithItems),
-    removeUniformFromStorageUnit: jest.fn().mockResolvedValue(mockStorageUnitWithItems),
-    createStorageUnit: jest.fn().mockResolvedValue(mockStorageUnitWithItems),
-    updateStorageUnit: jest.fn().mockResolvedValue(mockStorageUnitWithItems),
+
+vi.mock("@/dal/storageUnit/_index", () => ({
+    addUniformItemToStorageUnit: vi.fn().mockResolvedValue(mockStorageUnitWithItems),
+    deleteStorageUnit: vi.fn().mockResolvedValue(mockStorageUnitWithItems),
+    removeUniformFromStorageUnit: vi.fn().mockResolvedValue(mockStorageUnitWithItems),
+    createStorageUnit: vi.fn().mockResolvedValue(mockStorageUnitWithItems),
+    updateStorageUnit: vi.fn().mockResolvedValue(mockStorageUnitWithItems),
 }));
 
-jest.mock("@/dataFetcher/storage", () => ({
-    useStorageUnitsWithUniformItemList: jest.fn(() => ({
-        mutate: jest.fn(),
+vi.mock("@/dataFetcher/storage", () => ({
+    useStorageUnitsWithUniformItemList: vi.fn(() => ({
+        mutate: vi.fn(),
         storageUnits: mockStorageUnitWithItems,
     })),
 }));
 
-jest.mock("@/dataFetcher/uniform", () => ({
-    useUniformLabels: jest.fn(() => ({
+vi.mock("@/dataFetcher/uniform", () => ({
+    useUniformLabels: vi.fn(() => ({
         uniformLabels: mockUniformLabels,
-        mutate: jest.fn(),
+        mutate: vi.fn(),
     })),
 }));
 

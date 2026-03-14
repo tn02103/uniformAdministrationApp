@@ -1,17 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ExceptionType } from "@/errors/CustomException";
 import { AuthRole } from "@/lib/AuthRoles";
-import { PrismaClient } from "@/prisma/client";
-import { DeepMockProxy } from "jest-mock-extended";
+import { prismaMock as mockPrisma } from '@test-utils/prisma-mock';
+import { genericSAValidator } from "@/actions/validations";
+import { __unsecuredReturnUniformitem } from "./return";
+import { __unsecuredGetCadetUniformMap } from "@/dal/cadet/uniformMap";
 import { mockGenerationLists, mockTypeList, mockUniformList } from "../../../../tests/_jestConfig/staticMockData";
 import { issue } from "./issue";
 
 // Mock the dependencies
-jest.mock("./return");
-jest.mock("@/dal/cadet/uniformMap");
-
-// Get the mocked prisma client
-const mockPrisma = jest.requireMock("@/lib/db").prisma as DeepMockProxy<PrismaClient>;
+vi.mock("./return");
+vi.mock("@/dal/cadet/uniformMap");
 
 const mockCadetId = 'cadet-123';
 const mockUniformId = 'uniform-456';
@@ -103,12 +101,12 @@ const mockIssuedEntry = {
 describe('<UniformItem> issue', () => {
 
     // Get the mocked functions from the modules mocked above
-    const mockUnsecuredReturnUniformitem = jest.requireMock("./return").__unsecuredReturnUniformitem;
-    const mockUnsecuredGetCadetUniformMap = jest.requireMock("@/dal/cadet/uniformMap").__unsecuredGetCadetUniformMap;
+    const mockUnsecuredReturnUniformitem = vi.mocked(__unsecuredReturnUniformitem);
+    const mockUnsecuredGetCadetUniformMap = vi.mocked(__unsecuredGetCadetUniformMap);
 
     beforeAll(() => {
         // Set up mock return values that depend on imported data
-        mockUnsecuredGetCadetUniformMap.mockResolvedValue([mockUniformList[0]]);
+        mockUnsecuredGetCadetUniformMap.mockResolvedValue([mockUniformList[0]] as any);
     });
 
     beforeEach(() => {
@@ -122,7 +120,7 @@ describe('<UniformItem> issue', () => {
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         mockPrisma.uniform.findFirst.mockReset();
         mockPrisma.uniform.create.mockReset();
         mockPrisma.uniform.update.mockReset();
@@ -389,11 +387,10 @@ describe('<UniformItem> issue', () => {
 
     describe('validation scenarios', () => {
         it('calls genericSAValidator with correct parameters', async () => {
-            const { genericSAValidator } = jest.requireMock("@/actions/validations");
             await expect(issue(defaultIssueProps)).resolves.toEqual([mockUniformList[0]]);
 
             expect(mockPrisma.uniformIssued.create).toHaveBeenCalled();
-            expect(genericSAValidator).toHaveBeenCalledWith(
+            expect(vi.mocked(genericSAValidator)).toHaveBeenCalledWith(
                 AuthRole.inspector,
                 defaultIssueProps,
                 expect.anything(),

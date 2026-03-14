@@ -1,19 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { prisma } from "@/lib/db";
 import { __unsecuredGetUniformTypeList } from "./get";
 import { UniformTypeUpdateProps, update } from "./update";
+import { UniformType } from '@/prisma/client';
 
-jest.mock('./get', () => ({
-    __unsecuredGetUniformTypeList: jest.fn(() => Promise.resolve('UpdatedList')),
+vi.mock('./get', () => ({
+    __unsecuredGetUniformTypeList: vi.fn(() => Promise.resolve('UpdatedList')),
 }));
 
 describe('<UniformType> update', () => {
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
-    const mockFindMany = prisma.uniformType.findMany as jest.Mock;
-    const mockUpdate = prisma.uniformType.update as jest.Mock;
-    const mockGetList = __unsecuredGetUniformTypeList as jest.Mock;
+    const mockFindMany = vi.mocked(prisma.uniformType.findMany);
+    const mockUpdate = vi.mocked(prisma.uniformType.update);
+    const mockGetList = vi.mocked(__unsecuredGetUniformTypeList);
 
     const defaultProps = {
         id: 'test-id-123',
@@ -42,9 +45,9 @@ describe('<UniformType> update', () => {
     ];
 
     beforeEach(() => {
-        mockFindMany.mockResolvedValue(existingTypes);
-        mockUpdate.mockResolvedValue({});
-        mockGetList.mockResolvedValue('UpdatedList');
+        mockFindMany.mockResolvedValue(existingTypes as unknown as UniformType[]);
+        mockUpdate.mockResolvedValue({} as unknown as UniformType);
+        mockGetList.mockResolvedValue('UpdatedList' as any);
     });
 
     it('should update uniform type successfully', async () => {

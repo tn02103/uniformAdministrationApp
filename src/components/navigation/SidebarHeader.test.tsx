@@ -1,19 +1,23 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { SidebarHeader } from "./SidebarHeader";
+import { useSidebarContext } from './Sidebar';
+import { useInspectionState } from '@/dataFetcher/inspection';
+import { useScopedI18n } from '@/lib/locales/client';
+
 
 // Mock all dependencies
-jest.mock('./Sidebar', () => ({
-    useSidebarContext: jest.fn(),
+vi.mock('./Sidebar', () => ({
+    useSidebarContext: vi.fn(),
 }));
 
-jest.mock('@/dataFetcher/inspection', () => ({
-    useInspectionState: jest.fn(),
+vi.mock('@/dataFetcher/inspection', () => ({
+    useInspectionState: vi.fn(),
 }));
 
-const useScopedI18nFn = jest.fn();
-jest.mock('@/lib/locales/client', () => {
+const useScopedI18nFn = vi.hoisted(() => vi.fn());
+vi.mock('@/lib/locales/client', () => {
     return {
-        useScopedI18n: jest.fn((scope: string) => {
+        useScopedI18n: vi.fn((scope: string) => {
             useScopedI18nFn.mockImplementation((key: string) => `${scope}.${key}`);
             return useScopedI18nFn;
         }),
@@ -30,27 +34,22 @@ const defaultSidebarContext = {
     isMobile: false,
     collapsed: false,
     isSidebarFixed: true,
-    setShowSidebar: jest.fn(),
-    setCollapsed: jest.fn(),
+    setShowSidebar: vi.fn(),
+    setCollapsed: vi.fn(),
 };
 
 describe('SidebarHeader', () => {
-    const { useSidebarContext } = jest.requireMock('./Sidebar');
-    const { useInspectionState } = jest.requireMock('@/dataFetcher/inspection');
-    const { useScopedI18n } = jest.requireMock('@/lib/locales/client');
 
     beforeEach(() => {
-        useSidebarContext.mockReturnValue({
+        vi.mocked(useSidebarContext).mockReturnValue({
             ...defaultSidebarContext,
             isSidebarFixed: true,
-            setShowSidebar: jest.fn(),
+            setShowSidebar: vi.fn(),
         });
-        useInspectionState.mockReturnValue({
+        vi.mocked(useInspectionState).mockReturnValue({
             inspectionState: {
                 active: false,
-                inspectedCadets: 0,
-                activeCadets: 0,
-                deregistrations: 0,
+                state: 'planned',
             },
         });
 
@@ -69,7 +68,7 @@ describe('SidebarHeader', () => {
     });
 
     it('renders collapsed', () => {
-        useSidebarContext.mockReturnValue({
+        vi.mocked(useSidebarContext).mockReturnValue({
             ...defaultSidebarContext,
             collapsed: true,
             isSidebarFixed: false,
@@ -87,9 +86,12 @@ describe('SidebarHeader', () => {
 
     it('renders inspection active opend sidebar', () => {
         const t = useScopedI18n('sidebar.labels');
-        useInspectionState.mockReturnValue({
+        vi.mocked(useInspectionState).mockReturnValue({
             inspectionState: {
                 active: true,
+                id: "inspection-1",
+                date: "2024-01-01",
+                state: 'active',
                 inspectedCadets: 5,
                 activeCadets: 10,
                 deregistrations: 2,
@@ -106,14 +108,17 @@ describe('SidebarHeader', () => {
     });
     it('renders inspection active collapsed sidebar', () => {
         const t = useScopedI18n('sidebar.labels');
-        useSidebarContext.mockReturnValue({
+        vi.mocked(useSidebarContext).mockReturnValue({
             ...defaultSidebarContext,
             collapsed: true,
             isSidebarFixed: false,
         });
-        useInspectionState.mockReturnValue({
+        vi.mocked(useInspectionState).mockReturnValue({
             inspectionState: {
                 active: true,
+                state: 'active',
+                id: 'test-inspection-id',
+                date: '2024-01-01',
                 inspectedCadets: 3,
                 activeCadets: 7,
                 deregistrations: 1,
@@ -130,8 +135,8 @@ describe('SidebarHeader', () => {
     });
 
     it('prevents default on link click when collapsed', async () => {
-        const setCollapsed = jest.fn();
-        useSidebarContext.mockReturnValue({
+        const setCollapsed = vi.fn();
+        vi.mocked(useSidebarContext).mockReturnValue({
             ...defaultSidebarContext,
             collapsed: true,
             isSidebarFixed: false,
@@ -140,8 +145,8 @@ describe('SidebarHeader', () => {
         render(<SidebarHeader organisation={testOrganisation} />);
 
         const clickEvent = new MouseEvent('click', { bubbles: true });
-        const preventDefaultSpy = jest.spyOn(clickEvent, 'preventDefault');
-        const stopPropagationSpy = jest.spyOn(clickEvent, 'stopPropagation');
+        const preventDefaultSpy = vi.spyOn(clickEvent, 'preventDefault');
+        const stopPropagationSpy = vi.spyOn(clickEvent, 'stopPropagation');
 
         const link = screen.getByRole('link', { name: /homepage/i })
         fireEvent(link, clickEvent);
@@ -152,8 +157,8 @@ describe('SidebarHeader', () => {
     });
 
     it('allows link click when not collapsed', async () => {
-        const setCollapsed = jest.fn();
-        useSidebarContext.mockReturnValue({
+        const setCollapsed = vi.fn();
+        vi.mocked(useSidebarContext).mockReturnValue({
             ...defaultSidebarContext,
             collapsed: false,
             isSidebarFixed: true,
@@ -162,8 +167,8 @@ describe('SidebarHeader', () => {
         render(<SidebarHeader organisation={testOrganisation} />);
 
         const clickEvent = new MouseEvent('click', { bubbles: true });
-        const preventDefaultSpy = jest.spyOn(clickEvent, 'preventDefault');
-        const stopPropagationSpy = jest.spyOn(clickEvent, 'stopPropagation');
+        const preventDefaultSpy = vi.spyOn(clickEvent, 'preventDefault');
+        const stopPropagationSpy = vi.spyOn(clickEvent, 'stopPropagation');
 
         const link = screen.getByRole('link', { name: /homepage/i });
         fireEvent(link, clickEvent);

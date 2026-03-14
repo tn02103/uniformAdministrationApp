@@ -1,29 +1,11 @@
+﻿import { vi, type Mock } from 'vitest';
+import { prismaMock } from '@test-utils/prisma-mock';
 import { create } from "./create";
 import { prisma } from "@/lib/db";
+import { __unsecuredGetUnitsWithUniformItems } from "./get";
 
-jest.mock('@/lib/db', () => ({
-    prisma: {
-        storageUnit: {
-            findFirst: jest.fn(),
-            create: jest.fn(),
-        },
-        organisation: {
-            create: jest.fn(),
-            delete: jest.fn(),
-        },
-        uniformType: {
-            deleteMany: jest.fn(),
-        },
-        $transaction: jest.fn((fn) => fn(prisma)),
-    }
-}));
-jest.mock("@/actions/validations", () => ({
-    genericSAValidator: jest.fn((_, props) =>
-        Promise.resolve([{ organisationId: 'test-organisation' }, props])
-    ),
-}));
-jest.mock("./get", () => ({
-    __unsecuredGetUnitsWithUniformItems: jest.fn(() => "unitsWithUniformItems"),
+vi.mock("./get", () => ({
+    __unsecuredGetUnitsWithUniformItems: vi.fn(() => "unitsWithUniformItems"),
 }));
 
 const testUnit = {
@@ -34,11 +16,11 @@ const testUnit = {
 };
 
 describe('<StorageUnit> create', () => {
-    afterEach(jest.clearAllMocks);
+    afterEach(vi.clearAllMocks);
 
-    const prismafindFirst = prisma.storageUnit.findFirst as jest.Mock;
-    const prismaCreate = prisma.storageUnit.create as jest.Mock;
-    const getUnitsWithUniformItems = jest.requireMock("./get").__unsecuredGetUnitsWithUniformItems as jest.Mock;
+    const prismafindFirst = prismaMock.storageUnit.findFirst;
+    const prismaCreate = prismaMock.storageUnit.create;
+    const getUnitsWithUniformItems = vi.mocked(__unsecuredGetUnitsWithUniformItems) as unknown as Mock;
 
     it('should create storage unit', async () => {
         prismafindFirst.mockResolvedValueOnce(null);
@@ -52,15 +34,15 @@ describe('<StorageUnit> create', () => {
             expect.objectContaining(testUnit)
         ]);
         expect(prismafindFirst).toHaveBeenCalledWith({
-            where: { organisationId: 'test-organisation', name: testUnit.name }
+            where: { organisationId: 'test-organisation-id', name: testUnit.name }
         });
         expect(prismaCreate).toHaveBeenCalledWith({
             data: {
-                organisationId: 'test-organisation',
+                organisationId: 'test-organisation-id',
                 ...testUnit,
             }
         });
-        expect(getUnitsWithUniformItems).toHaveBeenCalledWith('test-organisation', prisma);
+        expect(getUnitsWithUniformItems).toHaveBeenCalledWith('test-organisation-id', prisma);
     });
 
     it('throws soft error if name is duplicated', async () => {

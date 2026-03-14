@@ -7,6 +7,7 @@ import { CadetInspectionFormSchema } from '@/zod/deficiency';
 import { Deficiency } from '@/types/deficiencyTypes';
 import { OldDeficiencyRow } from './OldDeficiencyRow';
 
+
 // Mock data for testing
 const mockDeficiency: Deficiency = {
     id: '123e4567-e89b-12d3-a456-426614174000',
@@ -93,7 +94,7 @@ const defaultProps = {
 describe('OldDeficiencyRow', () => {
     beforeEach(() => {
         // Clear any previous mocks between tests
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     describe('Basic Rendering', () => {

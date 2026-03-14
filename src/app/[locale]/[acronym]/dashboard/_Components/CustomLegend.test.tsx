@@ -3,8 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { CustomLegend, LegendItem, CustomLegendProps } from './CustomLegend';
 
 describe('CustomLegend', () => {
-    const mockOnVisibilityChange = jest.fn();
-    const mockOnItemHover = jest.fn();
+    const mockOnVisibilityChange = vi.fn();
+    const mockOnItemHover = vi.fn();
 
     const defaultItems: LegendItem[] = [
         { key: 'available', color: '#16a34a', description: 'Available' },
@@ -22,7 +22,7 @@ describe('CustomLegend', () => {
     };
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     // Group 1: Rendering Tests
@@ -647,24 +647,20 @@ describe('CustomLegend', () => {
         describe('Callback Edge Cases', () => {
             it('handles missing onVisibilityChange callback', () => {
                 const propsWithoutCallback = { ...defaultProps };
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 delete (propsWithoutCallback as any).onVisibilityChange;
 
                 // Should not crash
                 expect(() => {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     render(<CustomLegend {...propsWithoutCallback} onVisibilityChange={undefined as any} />);
                 }).not.toThrow();
             });
 
             it('handles missing onItemHover callback', () => {
                 const propsWithoutCallback = { ...defaultProps };
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 delete (propsWithoutCallback as any).onItemHover;
 
                 // Should not crash
                 expect(() => {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     render(<CustomLegend {...propsWithoutCallback} onItemHover={undefined as any} />);
                 }).not.toThrow();
             });
@@ -675,8 +671,8 @@ describe('CustomLegend', () => {
                 render(
                     <CustomLegend
                         {...defaultProps}
-                        onVisibilityChange={jest.fn()}
-                        onItemHover={jest.fn()}
+                        onVisibilityChange={vi.fn()}
+                        onItemHover={vi.fn()}
                     />
                 );
 

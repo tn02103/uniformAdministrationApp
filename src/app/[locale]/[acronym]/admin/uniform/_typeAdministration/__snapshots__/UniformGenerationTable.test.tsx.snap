@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`<UniformGenerationTable /> renders the component 1`] = `
+exports[`<UniformGenerationTable /> > renders the component 1`] = `
 <div
   data-testid="uniform-generation-table"
 >
@@ -56,9 +56,7 @@ exports[`<UniformGenerationTable /> renders the component 1`] = `
           </th>
         </tr>
       </thead>
-      <tbody
-        data-testid="reorderable-table-body"
-      >
+      <tbody>
         <tr
           aria-label="Test Generation 1"
         >
@@ -68,6 +66,7 @@ exports[`<UniformGenerationTable /> renders the component 1`] = `
             <span
               aria-label="drag item"
               class="p-2 drag-handler"
+              draggable="true"
             >
               <svg
                 aria-hidden="true"
@@ -129,6 +128,7 @@ exports[`<UniformGenerationTable /> renders the component 1`] = `
             <span
               aria-label="drag item"
               class="p-2 drag-handler"
+              draggable="true"
             >
               <svg
                 aria-hidden="true"
@@ -190,6 +190,7 @@ exports[`<UniformGenerationTable /> renders the component 1`] = `
             <span
               aria-label="drag item"
               class="p-2 drag-handler"
+              draggable="true"
             >
               <svg
                 aria-hidden="true"

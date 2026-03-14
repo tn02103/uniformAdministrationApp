@@ -1,20 +1,19 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { PrismaClient } from "@/prisma/client";
-import { DeepMockProxy } from "jest-mock-extended";
-import { create } from "./create";
-import { __unsecuredGetUniformTypeList } from "../type/get";
-import { mockTypeList, mockSizeLists } from "../../../../tests/_jestConfig/staticMockData";
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+import { prismaMock } from '@test-utils/prisma-mock';
 
+import { mockSizeLists, mockTypeList } from "../../../../tests/_jestConfig/staticMockData";
+import { __unsecuredGetUniformTypeList } from "../type/get";
+import { create } from "./create";
 // Mock dependencies
-jest.mock("../type/get", () => ({
-    __unsecuredGetUniformTypeList: jest.fn(),
+vi.mock("../type/get", () => ({
+    __unsecuredGetUniformTypeList: vi.fn(),
 }));
 
 // Get mocked functions
-const mockGetUniformTypeList = __unsecuredGetUniformTypeList as jest.MockedFunction<typeof __unsecuredGetUniformTypeList>;
+const mockGetUniformTypeList = vi.mocked(__unsecuredGetUniformTypeList);
 
 // Get the mocked prisma client
-const mockPrisma = jest.requireMock("@/lib/db").prisma as DeepMockProxy<PrismaClient>;
+const mockPrisma = prismaMock;
 
 // Mock data
 const mockUniformType = mockTypeList[0]; // Type with sizes and generations
@@ -66,7 +65,7 @@ describe('<UniformGeneration> create', () => {
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         mockPrisma.uniformType.findUniqueOrThrow.mockReset();
         mockPrisma.uniformGeneration.findMany.mockReset();
         mockPrisma.uniformGeneration.create.mockReset();

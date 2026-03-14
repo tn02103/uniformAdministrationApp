@@ -1,32 +1,21 @@
+﻿
 import { updateUniform } from "./update";
-
-jest.mock('@/lib/db', () => ({
-    prisma: {
-        deficiency: {
-            update: jest.fn(),
-            findUnique: jest.fn(),
-            findUniqueOrThrow: jest.fn(),
-        },
-        deficiencyType: {
-            findUnique: jest.fn(),
-            findUniqueOrThrow: jest.fn(),
-        },
-    },
-}));
+import { prismaMock } from '@test-utils/prisma-mock';
 
 describe('updateUniformDeficiency', () => {
-    const { prisma } = jest.requireMock('@/lib/db');
+    const mockPrisma = prismaMock;
     const date = new Date();
     beforeEach(() => {
-        jest.useFakeTimers();
-        jest.setSystemTime(date);
+        vi.useFakeTimers();
+        vi.setSystemTime(date);
+        mockPrisma.deficiency.update.mockResolvedValue(undefined);
     })
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('updates the deficiency', async () => {
-        prisma.deficiencyType.findUnique.mockResolvedValueOnce({
+        mockPrisma.deficiencyType.findUnique.mockResolvedValueOnce({
             id: 'typeId',
             dependent: 'uniform',
         });
@@ -40,7 +29,7 @@ describe('updateUniformDeficiency', () => {
         });
         await expect(result).resolves.toBeUndefined();
 
-        expect(prisma.deficiency.update).toHaveBeenCalledWith({
+        expect(mockPrisma.deficiency.update).toHaveBeenCalledWith({
             where: {
                 id: '5f09250d-23cb-45f8-a7d0-d0f6d3896f34',
             },
@@ -54,7 +43,7 @@ describe('updateUniformDeficiency', () => {
     });
 
     it('throws exception if dependend is not uniform', async () => {
-        prisma.deficiencyType.findUnique.mockResolvedValueOnce({
+        mockPrisma.deficiencyType.findUnique.mockResolvedValueOnce({
             id: 'typeId',
             dependent: 'cadet',
         });

@@ -1,36 +1,41 @@
 import { UniformGeneration, UniformType } from "@/types/globalUniformTypes";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { testTypes } from "./testTypes";
 import { UniformGenerationTable } from "./UniformGenerationTable";
+import { UniformgenerationOffcanvas } from "./UniformGenerationOffcanvas";
+import { changeUniformGenerationSortOrder } from "@/dal/uniform/generation/_index";
+import { useUniformTypeList } from "@/dataFetcher/uniformAdmin";
+import { toast } from "react-toastify";
+import { vi, type Mock } from 'vitest';
 
 const testType = testTypes[0];
 
 // ################## MOCKS ##################
-jest.mock("@/dataFetcher/uniformAdmin", () => {
-    const typeListMutate = jest.fn(async (a) => { return a; });
+vi.mock("@/dataFetcher/uniformAdmin", () => {
+    const typeListMutate = vi.fn(async (a) => { return a; });
     return {
-        useUniformTypeList: jest.fn(() => ({
+        useUniformTypeList: vi.fn(() => ({
             mutate: typeListMutate,
         })),
     };
 });
-jest.mock("@/dal/uniform/generation/_index", () => {
+vi.mock("@/dal/uniform/generation/_index", () => {
     return {
-        changeUniformGenerationSortOrder: jest.fn(() => "uniform generation sortOrder changed"),
+        changeUniformGenerationSortOrder: vi.fn(() => "uniform generation sortOrder changed"),
     };
 });
-jest.mock("./UniformGenerationOffcanvas", () => {
-    const mock = jest.fn(({ onHide }) => <div data-testid="generationOffcanvasMock" onClick={onHide}>Generation Offcanvas</div>);
+vi.mock("./UniformGenerationOffcanvas", () => {
+    const mock = vi.fn(({ onHide }) => <div data-testid="generationOffcanvasMock" onClick={onHide}>Generation Offcanvas</div>);
     return {
         UniformgenerationOffcanvas: mock,
     };
 });
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let onDragEndFunction: undefined | ((newArray: UniformGeneration[], itemId: string) => Promise<any>) = undefined;
-jest.mock("@/components/reorderDnD/ReorderableTableBody", () => {
+vi.mock("@/components/reorderDnD/ReorderableTableBody", () => {
     return {
-        ReorderableTableBody: jest.fn(({ items, onDragEnd, children }) => {
+        ReorderableTableBody: vi.fn(({ items, onDragEnd, children }) => {
             onDragEndFunction = onDragEnd;
             return (
                 <tbody data-testid="reorderable-table-body">
@@ -44,12 +49,8 @@ jest.mock("@/components/reorderDnD/ReorderableTableBody", () => {
 
 // ################## TESTS ##################
 describe('<UniformGenerationTable />', () => {
-    const { UniformgenerationOffcanvas } = jest.requireMock("./UniformGenerationOffcanvas");
-    const { changeUniformGenerationSortOrder } = jest.requireMock("@/dal/uniform/generation/_index");
-    const { useUniformTypeList } = jest.requireMock("@/dataFetcher/uniformAdmin");
-
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('renders the component', () => {
@@ -81,14 +82,14 @@ describe('<UniformGenerationTable />', () => {
         expect(invalidGenerationRow?.childNodes[0]).toHaveClass("text-danger");
         expect(invalidGenerationRow?.childNodes[1]).toHaveClass("text-danger");
         expect(invalidGenerationRow?.childNodes[2]).toHaveClass("text-danger");
-        expect(invalidGenerationRow?.getElementsByTagName("button")[0]).toHaveClass("text-danger");
+        expect(within(invalidGenerationRow).getByRole("button")).toHaveClass("text-danger");
 
         // validate valid generation row
         const validGenerationRow = screen.getByRole("row", testType.uniformGenerationList[0]);
         expect(validGenerationRow?.childNodes[0]).not.toHaveClass("text-danger");
         expect(validGenerationRow?.childNodes[1]).not.toHaveClass("text-danger");
         expect(validGenerationRow?.childNodes[2]).not.toHaveClass("text-danger");
-        expect(validGenerationRow?.getElementsByTagName("button")[0]).not.toHaveClass("text-danger");
+        expect(within(validGenerationRow).getByRole("button")).not.toHaveClass("text-danger");
     });
 
     it('opens the generation offcanvas when clicking the open button', async () => {
@@ -96,7 +97,7 @@ describe('<UniformGenerationTable />', () => {
         render(<UniformGenerationTable uniformType={testType} />);
 
         // open generation offcanvas
-        const openButton = screen.getByRole("row", { name: "Test Generation 1" }).getElementsByTagName("button")[0];
+        const openButton = within(screen.getByRole("row", { name: "Test Generation 1" })).getByRole("button");
         expect(openButton).toBeDefined();
         expect(openButton).not.toBeNull();
         await user.click(openButton!);
@@ -144,7 +145,6 @@ describe('<UniformGenerationTable />', () => {
     });
 
     it('changes sortOrder when onDragEnd is triggered', async () => {
-        const { toast } = jest.requireMock("react-toastify");
         render(<UniformGenerationTable uniformType={testType} />);
 
         // trigger onDragEnd
@@ -170,8 +170,7 @@ describe('<UniformGenerationTable />', () => {
     });
 
     it('catches error when sortOrder function fails', async () => {
-        const { toast } = jest.requireMock("react-toastify");
-        changeUniformGenerationSortOrder.mockImplementationOnce(async () => { throw new Error("Error") });
+        (changeUniformGenerationSortOrder as Mock).mockImplementationOnce(async () => { throw new Error("Error") });
         render(<UniformGenerationTable uniformType={testType} />);
 
         // trigger onDragEnd

@@ -1,13 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PrismaClient } from "@/prisma/client";
-import { DeepMockProxy } from "jest-mock-extended";
+
+import { prismaMock as mockPrisma } from '@test-utils/prisma-mock';
 import { update } from "./update";
 import { mockUniformList, mockTypeList, mockGenerationLists, mockSizeLists } from "../../../../tests/_jestConfig/staticMockData";
 import { UniformFormType } from "@/zod/uniform";
 import { uniformWithOwnerArgs } from "@/types/globalUniformTypes";
-
-// Get the mocked prisma client
-const mockPrisma = jest.requireMock("@/lib/db").prisma as DeepMockProxy<PrismaClient>;
 
 // Mock data
 const mockUniformId = 'c227ac23-93d4-42b5-be2e-956ea35c2db9';
@@ -35,7 +32,7 @@ const defaultUpdateProps: UniformFormType = {
 describe('<UniformItem> update', () => {
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         // Reset all mock implementations to their default state
         mockPrisma.uniformType.findFirstOrThrow.mockReset();
         mockPrisma.uniformGeneration.findUniqueOrThrow.mockReset();
