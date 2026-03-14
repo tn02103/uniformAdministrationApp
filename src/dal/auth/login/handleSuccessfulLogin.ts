@@ -2,7 +2,7 @@ import { AuthenticationException } from "@/errors/Authentication";
 import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
-import { Prisma, Session } from "@prisma/client";
+import { Prisma, Session } from "@/prisma/client";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { UserLoginData } from ".";
 import { calculateSessionLifetime, DeviceIdsCookie, DeviceIdsCookieAccount, logSecurityAuditEntry, RiskLevel, UserAgent } from "../helper";

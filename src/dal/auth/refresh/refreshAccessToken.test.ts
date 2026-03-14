@@ -16,7 +16,7 @@
 import { AuthenticationException } from '@/errors/Authentication';
 import dayjs from '@/lib/dayjs';
 import { getIronSession } from '@/lib/ironSession';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/prisma/client';
 import { DeepMockProxy } from 'jest-mock-extended';
 import { cookies, headers } from 'next/headers';
 import { userAgent } from 'next/server';

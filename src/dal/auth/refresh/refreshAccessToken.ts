@@ -3,7 +3,7 @@
 import { AuthenticationException, AuthenticationExceptionData } from "@/errors/Authentication";
 import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/prisma/client";
 import dayjs from "dayjs";
 import { cookies, headers } from "next/headers";
 import { userAgent } from "next/server";

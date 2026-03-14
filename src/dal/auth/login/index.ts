@@ -4,7 +4,7 @@ import { AuthenticationException, AuthenticationExceptionData, ExceptionType, Tw
 import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
 import { LoginFormSchema, LoginFormType } from "@/zod/auth";
-import { Device, Organisation, User } from "@prisma/client";
+import { Device, Organisation, User } from "@/prisma/client";
 import { cookies, headers } from "next/headers";
 import { userAgent } from "next/server";
 import { RateLimiterMemory } from "rate-limiter-flexible";

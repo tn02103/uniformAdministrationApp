@@ -2,16 +2,15 @@ import { AuthenticationExceptionData } from "@/errors/Authentication";
 import { AuthRole } from "@/lib/AuthRoles";
 import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
-import { getIronSession } from "@/lib/ironSession";
-import { MFAType } from "@prisma/client";
+import { MFAType } from "@/prisma/client";
 import { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/headers";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { userAgent } from "next/server";
 import z from "zod";
 import { __unsecuredVerifyTwoFactorCode } from "./2fa/verify";
+import { AuthConfig } from "./config";
 import { verifyEmailCode } from "./email/verifyCode";
 import { LogDebugLevel } from "./LogDebugLeve.enum";
-import { AuthConfig } from "./config";
 
 
 // ########## SCHEMAS AND TYPES ##########

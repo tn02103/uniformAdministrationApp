@@ -1,4 +1,4 @@
-import { Device } from "@prisma/client";
+import { Device } from "@/prisma/client";
 import dayjs from "dayjs";
 import { RiskLevel, getUserMFAConfig } from "../helper";
 

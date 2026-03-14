@@ -27,6 +27,9 @@ const customJestConfig = {
         "**/src/app/**/*.test.[jt]s?(x)",
         "**/src/lib/**/*.test.[jt]s?(x)",
     ],
+     transformIgnorePatterns: [
+        '/node_modules/(?!(uuid)/)',
+    ],
 };
 
 export default createJestConfig(customJestConfig);

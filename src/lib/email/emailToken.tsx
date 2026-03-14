@@ -1,4 +1,4 @@
-import { User } from "@prisma/client";
+import { User } from "@/prisma/client";
 import { Html } from "@react-email/html";
 import { render } from "@react-email/render";
 import { getScopedI18n } from "../locales/config";

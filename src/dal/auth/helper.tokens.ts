@@ -1,7 +1,7 @@
 import { AuthenticationException, AuthenticationExceptionData } from "@/errors/Authentication";
 import { prisma } from "@/lib/db";
 import { IronSession } from "@/lib/ironSession";
-import { Organisation, User } from "@prisma/client";
+import { Organisation, User } from "@/prisma/client";
 import crypto, { createHash } from 'crypto';
 import dayjs from "dayjs";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";

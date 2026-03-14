@@ -1,6 +1,6 @@
 "use client";
 
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/prisma/client";
 import { useState } from "react";
 import { AddTwoFactorAppModal } from "./AddTwoFactorAppModal";
 

@@ -19,6 +19,7 @@
  *      RateLimiterMemory state between test groups.
  */
 
+import { jest } from '@jest/globals';
 import dayjs from '@/lib/dayjs';
 import { prisma } from '@/lib/db';
 import { getIronSession } from '@/lib/ironSession';

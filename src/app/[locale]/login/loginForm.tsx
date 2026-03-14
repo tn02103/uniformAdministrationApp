@@ -10,7 +10,7 @@ import { useI18n } from "@/lib/locales/client";
 import { LoginFormSchema, LoginFormType } from "@/zod/auth";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Organisation } from "@prisma/client";
+import { Organisation } from "@/prisma/client";
 import { useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { UseFormReturn } from "react-hook-form";

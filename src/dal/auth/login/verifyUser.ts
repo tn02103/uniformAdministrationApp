@@ -76,7 +76,7 @@ export const verifyUser = async (props: VerifyUserProps): Promise<{ mfaMethod: n
         await __unsecuredSendEmailVerifyCode(organisationId, user.id, {
             userAgent: userData.agent,
             ipAddress: userData.ipAddress,
-            deviceId: userData.account?.deviceId
+            deviceId: userData.account?.deviceId?? "unknown", // TODO - device needs to allready be created at this point, need to refactor to ensure this
         });
     }
     throw new TwoFactorRequiredException("Two factor authentication required", mfaMethod, userData);

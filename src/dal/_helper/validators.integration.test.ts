@@ -10,7 +10,7 @@ describe('genericSAValidatorV2', () => {
         expect(result).toEqual({
             name: 'VK Verwaltung',
             username: 'mana',
-            organisation: staticData.data.organisation.id,
+            organisationId: staticData.data.organisation.id,
             acronym: staticData.data.organisation.acronym,
             role: AuthRole.materialManager
         });
@@ -36,7 +36,7 @@ describe('genericSAValidator', () => {
         expect(result[0]).toEqual({
             name: 'VK Verwaltung',
             username: 'mana',
-            organisation: staticData.data.organisation.id,
+            organisationId: staticData.data.organisation.id,
             acronym: staticData.data.organisation.acronym,
             role: AuthRole.materialManager
         });

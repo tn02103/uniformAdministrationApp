@@ -115,7 +115,7 @@ describe('createUniformDeficiency', () => {
 
         expect(prisma.inspection.findFirst).toHaveBeenCalledWith({
             where: {
-                organisationId: 'test-assosiation-id',
+                organisationId: 'test-organisation-id',
                 date: dayjs(date).format("YYYY-MM-DD"),
                 timeStart: { not: null },
                 timeEnd: null,

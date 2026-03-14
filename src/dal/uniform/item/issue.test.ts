@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ExceptionType } from "@/errors/CustomException";
 import { AuthRole } from "@/lib/AuthRoles";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/prisma/client";
 import { DeepMockProxy } from "jest-mock-extended";
 import { mockGenerationLists, mockTypeList, mockUniformList } from "../../../../tests/_jestConfig/staticMockData";
 import { issue } from "./issue";

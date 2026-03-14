@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AuthRole } from "@/lib/AuthRoles";
-import { MFAType } from "@prisma/client";
+import { MFAType } from "@/prisma/client";
 import { calculateSessionLifetime, DeviceIdsCookie, DeviceIdsCookieAccount, getIPAddress, RiskLevel, UserAgent, getDeviceAccountFromCookies, validateDeviceFingerprint, getUserMFAConfig, verifyMFAToken } from "./helper";
 import { verifyEmailCode } from "./email/verifyCode";
 import { getMockUserAgent } from './__testHelpers__/mockData';

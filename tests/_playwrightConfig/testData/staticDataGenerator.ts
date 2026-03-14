@@ -1,4 +1,4 @@
-import { OrganisationConfiguration, Deregistration, Inspection, Prisma, Redirect, StorageUnit, Uniform } from "@prisma/client";
+import { OrganisationConfiguration, Deregistration, Inspection, Prisma, Redirect, StorageUnit, Uniform } from "@/prisma/client";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat.js";
 import utc from "dayjs/plugin/utc.js";

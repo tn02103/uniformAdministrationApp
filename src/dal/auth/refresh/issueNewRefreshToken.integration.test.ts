@@ -5,6 +5,7 @@
  * Validates atomic operations, transaction isolation, and race condition handling.
  */
 
+import { jest } from '@jest/globals';
 import { issueNewRefreshToken } from '../helper.tokens';
 import { StaticData } from '../../../../tests/_playwrightConfig/testData/staticDataLoader';
 import { prisma } from '@/lib/db';
@@ -44,7 +45,7 @@ describe('issueNewRefreshToken Integration Tests', () => {
 
     const createMockCookies = (): ReadonlyRequestCookies => {
         const cookies = new Map<string, string>();
-        const mockSet = jest.fn((name, value) => {
+        const mockSet = jest.fn((name: string, value: string) => {
             cookies.set(name, value);
         });
 

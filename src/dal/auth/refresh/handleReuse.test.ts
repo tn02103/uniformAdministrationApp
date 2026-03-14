@@ -12,7 +12,7 @@
 
 import { AuthenticationException } from '@/errors/Authentication';
 import { sendTokenReuseDetectedEmail } from '@/lib/email/tokenReuseDetected';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/prisma/client';
 import { DeepMockProxy } from 'jest-mock-extended';
 import { LogDebugLevel } from '../LogDebugLeve.enum';
 import { createMockAuthExceptionData } from '../__testHelpers__/mockFactories';
