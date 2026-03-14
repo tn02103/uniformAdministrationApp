@@ -4,7 +4,6 @@ import CadetInspectionCardHeader from './CadetInspectionCardHeader';
 import { useInspectionState, useInspectedCadetIdList } from '@/dataFetcher/inspection';
 import { TooltipIconButton } from '@/components/Buttons/TooltipIconButton';
 import { useParams } from 'next/navigation';
-import { vi } from 'vitest';
 
 // Mock dataFetcher hooks
 vi.mock('@/dataFetcher/inspection', () => ({

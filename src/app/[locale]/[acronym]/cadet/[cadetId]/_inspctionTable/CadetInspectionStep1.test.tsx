@@ -3,7 +3,6 @@ import { Form } from "@/components/fields/Form";
 import { render, screen } from "@testing-library/react";
 import { CadetInspectionStep1, CadetInspectionStep1Props } from "./CadetInspectionStep1";
 import { OldDeficiencyRow } from "./OldDeficiencyRow";
-import { vi } from 'vitest';
 
 const mockOldDeficiencyList = [
     { id: '1', description: 'Old deficiency 1' },
