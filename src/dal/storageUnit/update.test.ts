@@ -25,7 +25,7 @@ describe("update", () => {
         vi.clearAllMocks();
         vi.mocked(prisma.storageUnit.findFirst).mockResolvedValue(null);
         prismaMock.storageUnit.findUniqueOrThrow.mockResolvedValue({ id: "b101fce1-9297-4978-bc34-ce357ab1d6d4" });
-        vi.mocked(prisma.storageUnit.update).mockResolvedValue({ id: "b101fce1-9297-4978-bc34-ce357ab1d6d4", ...mockProps.data });
+        vi.mocked(prisma.storageUnit.update).mockResolvedValue({ id: "b101fce1-9297-4978-bc34-ce357ab1d6d4", ...mockProps.data } as any);
     });
 
     it("should update the storage unit successfully", async () => {

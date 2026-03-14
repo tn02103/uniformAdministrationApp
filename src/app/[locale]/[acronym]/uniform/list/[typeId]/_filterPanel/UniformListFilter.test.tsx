@@ -1,12 +1,14 @@
+import * as usehooks from 'usehooks-ts';
 import { UniformSize, UniformType } from "@/types/globalUniformTypes";
 import { getByLabelText, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { mockSizeLists, mockTypeList } from "../../../../../../../../tests/_jestConfig/staticMockData";
 import { UniformListFilter } from "./UniformListFilter";
+import { vi } from 'vitest';
 
 // Mock useSessionStorage
-const setFilterMock = jest.fn();
-jest.mock("usehooks-ts", () => ({
+const setFilterMock = vi.fn();
+vi.mock("usehooks-ts", () => ({
     useSessionStorage: () => [null, setFilterMock],
 }));
 
@@ -183,8 +185,7 @@ describe("UniformListFilter", () => {
         };
 
         // Spy on useSessionStorage to return the stored filter for this test
-        const usehooks = jest.requireMock("usehooks-ts");
-        const spy = jest.spyOn(usehooks, "useSessionStorage").mockImplementation(() => [storedFilter, setFilterMock]);
+        const spy = vi.spyOn(usehooks, "useSessionStorage").mockImplementation(() => [storedFilter, setFilterMock, vi.fn()]);
 
         render(
             <UniformListFilter

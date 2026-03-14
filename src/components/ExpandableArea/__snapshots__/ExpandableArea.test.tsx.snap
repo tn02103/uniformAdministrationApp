@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`ExpandableArea renders area closed 1`] = `
+exports[`ExpandableArea > renders area closed 1`] = `
 <div>
   <div
     class="align-items-center justify-content-center row"
@@ -40,7 +40,7 @@ exports[`ExpandableArea renders area closed 1`] = `
 </div>
 `;
 
-exports[`ExpandableArea renders area open 1`] = `
+exports[`ExpandableArea > renders area open 1`] = `
 <div>
   <div
     class="align-items-center justify-content-center row"
@@ -61,7 +61,7 @@ exports[`ExpandableArea renders area open 1`] = `
         >
           <svg
             aria-hidden="true"
-            class="svg-inline--fa fa-chevron-down text-dark me-2 open"
+            class="svg-inline--fa fa-chevron-down text-dark me-2 _open_62a9cb"
             data-icon="chevron-down"
             data-prefix="fas"
             role="img"

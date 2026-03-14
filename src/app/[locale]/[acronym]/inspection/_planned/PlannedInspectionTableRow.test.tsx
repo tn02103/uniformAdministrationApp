@@ -7,11 +7,16 @@ import { format } from "date-fns";
 import { toast } from "react-toastify";
 import { mockInspectionList } from "./jestHelper";
 import { PlannedInspectionTableRow } from "./PlannedInspectionTableRow";
+import { createInspection, deleteInspection, startInspection, stopInspection, updatePlannedInspection } from "@/dal/inspection";
+import { usePlannedInspectionList } from "@/dataFetcher/inspection";
+import { useModal } from "@/components/modals/modalProvider";
+import { vi } from 'vitest';
 
 describe('<PlannedInspectionTableRow />', () => {
+    const mockMutate = vi.mocked(usePlannedInspectionList)().mutate;
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('should render the component with inspection data', () => {
@@ -25,7 +30,7 @@ describe('<PlannedInspectionTableRow />', () => {
     });
 
     it('should open deregistration offcanvas', async () => {
-        const openOffcanvas = jest.fn();
+        const openOffcanvas = vi.fn();
         const inspection = mockInspectionList[0];
         const user = userEvent.setup();
         render(
@@ -40,9 +45,6 @@ describe('<PlannedInspectionTableRow />', () => {
     });
     describe('edit inspection', () => {
         it('should update the inspection', async () => {
-            const { updatePlannedInspection } = jest.requireMock("@/dal/inspection");
-            const { mutate } = jest.requireMock("@/dataFetcher/inspection").usePlannedInspectionList();
-
             const user = userEvent.setup();
             render(
                 <PlannedInspectionTableRow
@@ -82,7 +84,7 @@ describe('<PlannedInspectionTableRow />', () => {
                     date: newDate.format("YYYY-MM-DD"),
                 }
             });
-            expect(mutate).toHaveBeenCalled();
+            expect(mockMutate).toHaveBeenCalled();
         });
         it('should cancel editing and reset data', async () => {
             const user = userEvent.setup();
@@ -119,9 +121,6 @@ describe('<PlannedInspectionTableRow />', () => {
         });
 
         it('should catch nameDuplication error before submit', async () => {
-            const { updatePlannedInspection } = jest.requireMock("@/dal/inspection");
-            const { mutate } = jest.requireMock("@/dataFetcher/inspection").usePlannedInspectionList();
-
             const user = userEvent.setup();
             render(
                 <PlannedInspectionTableRow
@@ -146,7 +145,7 @@ describe('<PlannedInspectionTableRow />', () => {
             // trying to save
             await user.click(screen.getByRole('button', { name: /save/i }));
             expect(updatePlannedInspection).not.toHaveBeenCalled();
-            expect(mutate).not.toHaveBeenCalled();
+            expect(mockMutate).not.toHaveBeenCalled();
 
             // ORIGINAL
             // edit name to original
@@ -161,13 +160,10 @@ describe('<PlannedInspectionTableRow />', () => {
             // trying to save
             await user.click(screen.getByRole('button', { name: /save/i }));
             expect(updatePlannedInspection).toHaveBeenCalled();
-            expect(mutate).toHaveBeenCalled();
+            expect(mockMutate).toHaveBeenCalled();
         });
 
         it('should catch dateDuplication error before submit', async () => {
-            const { updatePlannedInspection } = jest.requireMock("@/dal/inspection");
-            const { mutate } = jest.requireMock("@/dataFetcher/inspection").usePlannedInspectionList();
-
             const user = userEvent.setup();
             render(
                 <PlannedInspectionTableRow
@@ -189,7 +185,7 @@ describe('<PlannedInspectionTableRow />', () => {
             // trying to save
             await user.click(screen.getByRole('button', { name: /save/i }));
             expect(updatePlannedInspection).not.toHaveBeenCalled();
-            expect(mutate).not.toHaveBeenCalled();
+            expect(mockMutate).not.toHaveBeenCalled();
 
             // ORIGINAL
             // edit name to original
@@ -204,11 +200,9 @@ describe('<PlannedInspectionTableRow />', () => {
             // trying to save
             await user.click(screen.getByRole('button', { name: /save/i }));
             expect(updatePlannedInspection).toHaveBeenCalled();
-            expect(mutate).toHaveBeenCalled();
+            expect(mockMutate).toHaveBeenCalled();
         });
         it('should not allow date before today', async () => {
-            const { updatePlannedInspection } = jest.requireMock("@/dal/inspection");
-            const { mutate } = jest.requireMock("@/dataFetcher/inspection").usePlannedInspectionList();
             const testDay = dayjs().subtract(1, "day").format("DD.MM.YYYY");
 
             const user = userEvent.setup();
@@ -227,13 +221,11 @@ describe('<PlannedInspectionTableRow />', () => {
 
             await user.click(screen.getByRole('button', { name: /save/i }));
             expect(updatePlannedInspection).not.toHaveBeenCalled();
-            expect(mutate).not.toHaveBeenCalled();
+            expect(mockMutate).not.toHaveBeenCalled();
         });
 
         it('should catch exception from dal-method', async () => {
-            const { updatePlannedInspection } = jest.requireMock("@/dal/inspection");
-            const { mutate } = jest.requireMock("@/dataFetcher/inspection").usePlannedInspectionList();
-            updatePlannedInspection.mockRejectedValueOnce(new Error("error"));
+            vi.mocked(updatePlannedInspection).mockRejectedValueOnce(new Error("error"));
 
             const user = userEvent.setup();
             render(
@@ -246,18 +238,15 @@ describe('<PlannedInspectionTableRow />', () => {
 
             expect(updatePlannedInspection).toHaveBeenCalledTimes(1);
             expect(toast.error).toHaveBeenCalled();
-            expect(mutate).toHaveBeenCalled();
+            expect(mockMutate).toHaveBeenCalled();
             expect(screen.getByText(/actions.save/i)).toBeInTheDocument();
         });
     });
 
     describe('create inspection', () => {
         it('should create a new inspection', async () => {
-            const { createInspection } = jest.requireMock("@/dal/inspection");
-            const { mutate } = jest.requireMock("@/dataFetcher/inspection").usePlannedInspectionList();
-
             const user = userEvent.setup();
-            const closeNewLine = jest.fn();
+            const closeNewLine = vi.fn();
             render(
                 <PlannedInspectionTableRow
                     inspection={null}
@@ -285,13 +274,13 @@ describe('<PlannedInspectionTableRow />', () => {
                 name: 'New Inspection',
                 date: newDate.format("YYYY-MM-DD"),
             });
-            expect(mutate).toHaveBeenCalled();
+            expect(mockMutate).toHaveBeenCalled();
             expect(closeNewLine).toHaveBeenCalled();
         });
 
         it('should close new line on cancel', async () => {
             const user = userEvent.setup();
-            const closeNewLine = jest.fn();
+            const closeNewLine = vi.fn();
             render(
                 <PlannedInspectionTableRow
                     inspection={null}
@@ -306,14 +295,11 @@ describe('<PlannedInspectionTableRow />', () => {
         });
 
         it('should catch nameDuplication error before submit', async () => {
-            const { createInspection } = jest.requireMock("@/dal/inspection");
-            const { mutate } = jest.requireMock("@/dataFetcher/inspection").usePlannedInspectionList();
-
             const user = userEvent.setup();
             render(
                 <PlannedInspectionTableRow
                     inspection={null}
-                    closeNewLine={jest.fn()}
+                    closeNewLine={vi.fn()}
                 />
             );
 
@@ -333,17 +319,14 @@ describe('<PlannedInspectionTableRow />', () => {
 
             await user.click(saveButton);
             expect(createInspection).not.toHaveBeenCalled();
-            expect(mutate).not.toHaveBeenCalled();
+            expect(mockMutate).not.toHaveBeenCalled();
         });
         it('should catch dateDuplication error before submit', async () => {
-            const { createInspection } = jest.requireMock("@/dal/inspection");
-            const { mutate } = jest.requireMock("@/dataFetcher/inspection").usePlannedInspectionList();
-
             const user = userEvent.setup();
             render(
                 <PlannedInspectionTableRow
                     inspection={null}
-                    closeNewLine={jest.fn()}
+                    closeNewLine={vi.fn()}
                 />
             );
 
@@ -361,17 +344,16 @@ describe('<PlannedInspectionTableRow />', () => {
 
             await user.click(saveButton);
             expect(createInspection).not.toHaveBeenCalled();
-            expect(mutate).not.toHaveBeenCalled();
+            expect(mockMutate).not.toHaveBeenCalled();
         });
         it('should catch exception from dal-method', async () => {
-            const { createInspection } = jest.requireMock("@/dal/inspection");
-            createInspection.mockRejectedValueOnce(new Error("error"));
+            vi.mocked(createInspection).mockRejectedValueOnce(new Error("error"));
 
             const user = userEvent.setup();
             render(
                 <PlannedInspectionTableRow
                     inspection={null}
-                    closeNewLine={jest.fn()}
+                    closeNewLine={vi.fn()}
                 />
             );
             const dateField = screen.getByRole('textbox', { name: /date/i });
@@ -391,9 +373,7 @@ describe('<PlannedInspectionTableRow />', () => {
     });
     describe('delete inspection', () => {
         it('should delete the inspection', async () => {
-            const { deleteInspection } = jest.requireMock("@/dal/inspection");
-            const { mutate } = jest.requireMock("@/dataFetcher/inspection").usePlannedInspectionList();
-            const { simpleWarningModal } = jest.requireMock("@/components/modals/modalProvider").useModal();
+            const { simpleWarningModal } = vi.mocked(useModal)();
 
             const user = userEvent.setup();
             render(
@@ -404,20 +384,19 @@ describe('<PlannedInspectionTableRow />', () => {
 
             await user.click(screen.getByTestId('btn_delete'));
             expect(deleteInspection).not.toHaveBeenCalled();
-            expect(mutate).not.toHaveBeenCalled();
+            expect(mockMutate).not.toHaveBeenCalled();
 
             expect(simpleWarningModal).toHaveBeenCalledTimes(1);
             act(() => {
-                simpleWarningModal.mock.calls[0][0].primaryFunction();
+                vi.mocked(simpleWarningModal).mock.calls[0][0].primaryFunction();
             });
 
             expect(deleteInspection).toHaveBeenCalledWith(mockInspectionList[0].id);
-            expect(mutate).toHaveBeenCalled();
+            expect(mockMutate).toHaveBeenCalled();
         });
         it('should catch DAL-Exception', async () => {
-            const { deleteInspection } = jest.requireMock("@/dal/inspection");
-            const { simpleWarningModal } = jest.requireMock("@/components/modals/modalProvider").useModal();
-            deleteInspection.mockRejectedValueOnce(new Error("error"));
+            const { simpleWarningModal } = vi.mocked(useModal)();
+            vi.mocked(deleteInspection).mockRejectedValueOnce(new Error("error"));
 
             const user = userEvent.setup();
             render(
@@ -431,7 +410,7 @@ describe('<PlannedInspectionTableRow />', () => {
 
             expect(simpleWarningModal).toHaveBeenCalledTimes(1);
             await act(async () => {
-                await simpleWarningModal.mock.calls[0][0].primaryFunction();
+                await vi.mocked(simpleWarningModal).mock.calls[0][0].primaryFunction();
             });
 
             expect(deleteInspection).toHaveBeenCalledWith(mockInspectionList[0].id);
@@ -440,9 +419,6 @@ describe('<PlannedInspectionTableRow />', () => {
     });
     describe('start inspection', () => {
         it('should start the inspection', async () => {
-            const { startInspection } = jest.requireMock("@/dal/inspection");
-            const { mutate } = jest.requireMock("@/dataFetcher/inspection").usePlannedInspectionList();
-
             const user = userEvent.setup();
             render(
                 <PlannedInspectionTableRow
@@ -452,16 +428,13 @@ describe('<PlannedInspectionTableRow />', () => {
 
             await user.click(screen.getByTestId('btn_start'));
             expect(startInspection).toHaveBeenCalled();
-            expect(mutate).toHaveBeenCalled();
+            expect(mockMutate).toHaveBeenCalled();
         });
 
         it('should not start inspection if other hasnt finished', async () => {
-            const { startInspection } = jest.requireMock("@/dal/inspection");
-            const { usePlannedInspectionList } = jest.requireMock("@/dataFetcher/inspection");
-            const { simpleErrorModal } = jest.requireMock("@/components/modals/modalProvider").useModal();
-            const mutate = usePlannedInspectionList().mutate;
+            const { simpleErrorModal } = vi.mocked(useModal)();
             try {
-                usePlannedInspectionList.mockReturnValue({
+                vi.mocked(usePlannedInspectionList).mockReturnValue({
                     inspectionList: [
                         mockInspectionList[0], mockInspectionList[1],
                         {
@@ -469,7 +442,7 @@ describe('<PlannedInspectionTableRow />', () => {
                             timeStart: "10:00",
                         }
                     ],
-                    mutate,
+                    mutate: mockMutate,
                 });
 
                 const user = userEvent.setup();
@@ -481,26 +454,24 @@ describe('<PlannedInspectionTableRow />', () => {
 
                 await user.click(screen.getByTestId('btn_start'));
                 expect(startInspection).not.toHaveBeenCalled();
-                expect(mutate).not.toHaveBeenCalled();
+                expect(mockMutate).not.toHaveBeenCalled();
                 expect(simpleErrorModal).toHaveBeenCalledTimes(1);
 
-                usePlannedInspectionList.mockReturnValue({
+                vi.mocked(usePlannedInspectionList).mockReturnValue({
                     inspectionList: mockInspectionList,
-                    mutate,
+                    mutate: mockMutate,
                 });
             } catch (error) {
-                usePlannedInspectionList.mockReturnValue({
+                vi.mocked(usePlannedInspectionList).mockReturnValue({
                     inspectionList: mockInspectionList,
-                    mutate,
+                    mutate: mockMutate,
                 });
                 throw error;
             }
         });
 
         it('should catch exception from dal-method', async () => {
-            const { startInspection } = jest.requireMock("@/dal/inspection");
-            const { mutate } = jest.requireMock("@/dataFetcher/inspection").usePlannedInspectionList();
-            startInspection.mockRejectedValueOnce(new Error("error"));
+            vi.mocked(startInspection).mockRejectedValueOnce(new Error("error"));
 
             const user = userEvent.setup();
             render(
@@ -510,18 +481,15 @@ describe('<PlannedInspectionTableRow />', () => {
             );
             await user.click(screen.getByTestId('btn_start'));
             expect(startInspection).toHaveBeenCalledTimes(1);
-            expect(mutate).not.toHaveBeenCalled();
+            expect(mockMutate).not.toHaveBeenCalled();
             expect(toast.error).toHaveBeenCalled();
         });
     });
     describe('stop inspection', () => {
-        const { stopInspection } = jest.requireMock("@/dal/inspection");
-        const { usePlannedInspectionList } = jest.requireMock("@/dataFetcher/inspection");
-        const { simpleFormModal } = jest.requireMock("@/components/modals/modalProvider").useModal();
-        const { mutate } = usePlannedInspectionList();
+        const { simpleFormModal } = vi.mocked(useModal)();
 
         it('should stop passed inspection', async () => {
-            usePlannedInspectionList.mockReturnValueOnce({
+            vi.mocked(usePlannedInspectionList).mockReturnValueOnce({
                 inspectionList: [
                     mockInspectionList[0], mockInspectionList[1],
                     {
@@ -529,7 +497,7 @@ describe('<PlannedInspectionTableRow />', () => {
                         timeStart: "07:00",
                     }
                 ],
-                mutate,
+                mutate: mockMutate,
             });
 
             const mockInspection = {
@@ -558,27 +526,27 @@ describe('<PlannedInspectionTableRow />', () => {
                 })
             );
             expect(stopInspection).not.toHaveBeenCalled();
-            expect(mutate).not.toHaveBeenCalled();
+            expect(mockMutate).not.toHaveBeenCalled();
 
-            const validate = simpleFormModal.mock.calls[0][0].elementValidation.validate;
+            const validate = vi.mocked(simpleFormModal).mock.calls[0][0].elementValidation.validate as (value: string) => unknown;
             expect(validate('6:59')).toEqual("inspection.planned.errors.endBeforStart");
             expect(validate('7:00')).toEqual("inspection.planned.errors.endBeforStart");
             expect(validate('7:01')).toBeTruthy();
 
             await act(async () => {
-                await simpleFormModal.mock.calls[0][0].save({ input: "12:00" });
+                await vi.mocked(simpleFormModal).mock.calls[0][0].save({ input: "12:00" });
             });
             expect(stopInspection).toHaveBeenCalledWith({
                 id: mockInspection.id,
                 time: "12:00",
             });
-            expect(mutate).toHaveBeenCalled();
+            expect(mockMutate).toHaveBeenCalled();
         });
         it('should stop active inspection', async () => {
             const newDate = dayjs().hour(14).minute(10).toDate();
-            jest.useFakeTimers({ advanceTimers: true, now: newDate });
+            vi.useFakeTimers({ now: newDate });
 
-            usePlannedInspectionList.mockReturnValueOnce({
+            vi.mocked(usePlannedInspectionList).mockReturnValueOnce({
                 inspectionList: [
                     {
                         ...mockInspectionList[0],
@@ -587,7 +555,7 @@ describe('<PlannedInspectionTableRow />', () => {
                     mockInspectionList[1],
                     mockInspectionList[2],
                 ],
-                mutate,
+                mutate: mockMutate,
             });
             const mockInspection = {
                 ...mockInspectionList[0],
@@ -616,25 +584,25 @@ describe('<PlannedInspectionTableRow />', () => {
                     defaultValue: { input: "14:10" },
                 })
             );
-            const validate = simpleFormModal.mock.calls[0][0].elementValidation.validate;
+            const validate = vi.mocked(simpleFormModal).mock.calls[0][0].elementValidation.validate as (value: string) => unknown;
             expect(validate('6:59')).toEqual("inspection.planned.errors.endBeforStart");
             expect(validate('7:00')).toEqual("inspection.planned.errors.endBeforStart");
             expect(validate('7:01')).toBeTruthy();
 
             await act(async () => {
-                await simpleFormModal.mock.calls[0][0].save({ input: "12:00" });
+                await vi.mocked(simpleFormModal).mock.calls[0][0].save({ input: "12:00" });
             });
             expect(stopInspection).toHaveBeenCalledWith({
                 id: mockInspectionList[0].id,
                 time: "12:00",
             });
-            expect(mutate).toHaveBeenCalled();
+            expect(mockMutate).toHaveBeenCalled();
 
-            jest.useRealTimers();
+            vi.useRealTimers();
         });
         it('should catch exception from dal-method', async () => {
-            stopInspection.mockRejectedValueOnce(new Error("error"));
-            usePlannedInspectionList.mockReturnValueOnce({
+            vi.mocked(stopInspection).mockRejectedValueOnce(new Error("error"));
+            vi.mocked(usePlannedInspectionList).mockReturnValueOnce({
                 inspectionList: [
                     {
                         ...mockInspectionList[0],
@@ -643,7 +611,7 @@ describe('<PlannedInspectionTableRow />', () => {
                     mockInspectionList[1],
                     mockInspectionList[2],
                 ],
-                mutate,
+                mutate: mockMutate,
             });
             const mockInspection = {
                 ...mockInspectionList[0],
@@ -657,10 +625,10 @@ describe('<PlannedInspectionTableRow />', () => {
             );
             await user.click(screen.getByTestId('btn_complete'));
             await act(async () => {
-                await simpleFormModal.mock.calls[0][0].save({ input: "12:00" });
+                await vi.mocked(simpleFormModal).mock.calls[0][0].save({ input: "12:00" });
             });
             expect(stopInspection).toHaveBeenCalledTimes(1);
-            expect(mutate).not.toHaveBeenCalled();
+            expect(mockMutate).not.toHaveBeenCalled();
             expect(toast.error).toHaveBeenCalled();
         });
     });

@@ -6,15 +6,20 @@ import userEvent from "@testing-library/user-event";
 import { mockTypeList } from "../../../tests/_jestConfig/staticMockData";
 import { UniformOffcanvas } from "./UniformOffcanvas";
 import { mockUniform } from "./UniformOffcanvasJestHelper";
+import * as modalProvider from '../modals/modalProvider';
+import * as dalUniformItem from '@/dal/uniform/item/_index';
+import * as toastify from 'react-toastify';
+import * as uniformFetcher from '@/dataFetcher/uniform';
+import { vi, type Mock } from 'vitest';
 
 describe('UniformOffcanvas', () => {
-    const { useModal } = jest.requireMock('../modals/modalProvider');
-    const { simpleWarningModal } = useModal();
-    const { deleteUniformItem, updateUniformItem } = jest.requireMock('@/dal/uniform/item/_index');
-    const { toast } = jest.requireMock('react-toastify');
+    const { useModal } = modalProvider;
+    const { simpleWarningModal } = useModal()!;
+    const { deleteUniformItem, updateUniformItem } = dalUniformItem;
+    const { toast } = toastify;
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('should render correctly', () => {
@@ -174,9 +179,10 @@ describe('UniformOffcanvas', () => {
         });
 
         it('should render empty history', () => {
-            const { useUniformItemHistory } = jest.requireMock('@/dataFetcher/uniform');
-            useUniformItemHistory.mockReturnValue({
+            const { useUniformItemHistory } = uniformFetcher;
+            vi.mocked(useUniformItemHistory).mockReturnValue({
                 history: [],
+                mutate: vi.fn(),
             });
 
             render(
@@ -232,7 +238,7 @@ describe('UniformOffcanvas', () => {
             it('should catch exception', async () => {
                 const user = userEvent.setup();
                 const onSaveMock = jest.fn();
-                updateUniformItem.mockRejectedValueOnce(new Error('Failed to save item'));
+                (updateUniformItem as unknown as Mock).mockRejectedValueOnce(new Error('Failed to save item'));
 
                 const { getByRole } = render(
                     <UniformOffcanvas
@@ -290,8 +296,8 @@ describe('UniformOffcanvas', () => {
                 );
                 expect(deleteUniformItem).toHaveBeenCalledTimes(0);
 
-                expect(simpleWarningModal.mock.calls[0][0].primaryFunction).toBeDefined();
-                await simpleWarningModal.mock.calls[0][0].primaryFunction!();
+                expect((simpleWarningModal as unknown as Mock).mock.calls[0][0].primaryFunction).toBeDefined();
+                await (simpleWarningModal as unknown as Mock).mock.calls[0][0].primaryFunction!();
 
                 expect(deleteUniformItem).toHaveBeenCalledTimes(1);
                 expect(deleteUniformItem).toHaveBeenCalledWith(mockUniform.id);
@@ -303,7 +309,7 @@ describe('UniformOffcanvas', () => {
             it('should catch exception', async () => {
                 const onCloseMock = jest.fn();
                 const onSaveMock = jest.fn();
-                deleteUniformItem.mockRejectedValueOnce(new Error('Failed to delete item'));
+                (deleteUniformItem as unknown as Mock).mockRejectedValueOnce(new Error('Failed to delete item'));
 
                 const user = userEvent.setup();
                 const { getByRole } = render(
@@ -319,7 +325,7 @@ describe('UniformOffcanvas', () => {
                 await user.click(deleteButton);
                 expect(simpleWarningModal).toHaveBeenCalledTimes(1);
 
-                await simpleWarningModal.mock.calls[0][0].primaryFunction!();
+                await (simpleWarningModal as unknown as Mock).mock.calls[0][0].primaryFunction!();
                 expect(deleteUniformItem).toHaveBeenCalledTimes(1);
                 expect(deleteUniformItem).toHaveBeenCalledWith(mockUniform.id);
                 expect(onCloseMock).toHaveBeenCalledTimes(0);

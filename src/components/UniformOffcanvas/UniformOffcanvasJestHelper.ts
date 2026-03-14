@@ -2,51 +2,51 @@ import { Deficiency } from "@/types/deficiencyTypes";
 import { mockGenerationLists, mockSizeLists, mockTypeList } from "../../../tests/_jestConfig/staticMockData";
 import { AuthRole } from "@/lib/AuthRoles";
 import { UniformHistroyEntry, UniformWithOwner } from "@/types/globalUniformTypes";
-
+import { vi } from 'vitest';
 
 // ------------- MOCKS FOR DEFICIENCY -------------
 jest.mock('@/dal/inspection/deficiency', () => ({
-    createUniformDeficiency: jest.fn(async () => "created successfully"),
-    resolveDeficiency: jest.fn(async () => "resolved successfully"),
-    updateUniformDeficiency: jest.fn(async () => "updated successfully"),
+    createUniformDeficiency: vi.fn(async () => "created successfully"),
+    resolveDeficiency: vi.fn(async () => "resolved successfully"),
+    updateUniformDeficiency: vi.fn(async () => "updated successfully"),
 }));
 
 jest.mock('@/dataFetcher/deficiency', () => ({
-    useDeficienciesByUniformId: jest.fn((_, includeResolved) => {
+    useDeficienciesByUniformId: vi.fn((_, includeResolved) => {
         if (includeResolved) {
             return { deficiencies: mockDeficiencyList };
         } else {
             return { deficiencies: mockDeficiencyList.slice(0, 2) };
         }
     }),
-    useDeficiencyTypes: jest.fn(() => ({ deficiencyTypeList: mockDeficiencyTypeList })),
+    useDeficiencyTypes: vi.fn(() => ({ deficiencyTypeList: mockDeficiencyTypeList })),
 }));
 
 // ------------- MOCKS FOR UNIFORM -------------
 
 jest.mock('@/dataFetcher/uniformAdmin', () => ({
-    useUniformGenerationListByType: jest.fn(() => ({
+    useUniformGenerationListByType: vi.fn(() => ({
         generationList: mockGenerationLists[0]
     })),
-    useUniformTypeList: jest.fn(() => ({
+    useUniformTypeList: vi.fn(() => ({
         typeList: mockTypeList
     })),
 }));
 jest.mock("@/dal/uniform/item/_index", () => ({
-    updateUniformItem: jest.fn(() => Promise.resolve('Saved item')),
-    deleteUniformItem: jest.fn(() => Promise.resolve('Deleted item')),
-    issueUniformItem: jest.fn(),
-    createUniformItems: jest.fn(),
-    getUniformItemDeficiencies: jest.fn(),
+    updateUniformItem: vi.fn(() => Promise.resolve('Saved item')),
+    deleteUniformItem: vi.fn(() => Promise.resolve('Deleted item')),
+    issueUniformItem: vi.fn(),
+    createUniformItems: vi.fn(),
+    getUniformItemDeficiencies: vi.fn(),
 }));
 jest.mock('../globalDataProvider', () => ({
-    useGlobalData: jest.fn(() => ({
+    useGlobalData: vi.fn(() => ({
         sizelists: mockSizeLists,
         userRole: global.__ROLE__ ?? AuthRole.admin,
     })),
 }));
 jest.mock('@/dataFetcher/uniform', () => ({
-    useUniformItemHistory: jest.fn(() => ({
+    useUniformItemHistory: vi.fn(() => ({
         history: mockUniformHistory,
     })),
 }));
@@ -59,19 +59,19 @@ jest.mock("@/dataFetcher/storage", () => ({
 }));
 
 jest.mock("@/dal/storageUnit/_index", () => ({
-    addUniformItemToStorageUnit: jest.fn(() => Promise.resolve()),
-    removeUniformFromStorageUnit: jest.fn(() => Promise.resolve()),
+    addUniformItemToStorageUnit: vi.fn(() => Promise.resolve()),
+    removeUniformFromStorageUnit: vi.fn(() => Promise.resolve()),
 }));
 
 // ------------- OTHER MOCKS -------------
 jest.mock("swr", () => ({
-    mutate: jest.fn(async () => { }),
+    mutate: vi.fn(async () => { }),
 }));
 
 jest.mock('react-toastify', () => ({
     toast: {
-        error: jest.fn(),
-        success: jest.fn(),
+        error: vi.fn(),
+        success: vi.fn(),
     },
 }));
 jest.mock("next/navigation", () => ({

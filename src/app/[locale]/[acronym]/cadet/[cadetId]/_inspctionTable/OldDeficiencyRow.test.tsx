@@ -6,6 +6,7 @@ import { FormProvider, useForm, UseFormReturn } from 'react-hook-form';
 import { CadetInspectionFormSchema } from '@/zod/deficiency';
 import { Deficiency } from '@/types/deficiencyTypes';
 import { OldDeficiencyRow } from './OldDeficiencyRow';
+import { vi } from 'vitest';
 
 // Mock data for testing
 const mockDeficiency: Deficiency = {
@@ -93,7 +94,7 @@ const defaultProps = {
 describe('OldDeficiencyRow', () => {
     beforeEach(() => {
         // Clear any previous mocks between tests
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     describe('Basic Rendering', () => {

@@ -3,12 +3,15 @@ import { render, screen, waitForElementToBeRemoved } from "@testing-library/reac
 import userEvent from "@testing-library/user-event";
 import { mockTypeList, mockUniformList } from "../../../../../../../../tests/_jestConfig/staticMockData";
 import { UniformListTable } from "./UniformListTable";
+import { getUniformListWithOwner } from "@/dal/uniform/item/_index";
+import { vi } from 'vitest';
+import { useI18n } from "@/lib/locales/client";
 
 // Mock next/navigation
-const pushMock = jest.fn();
-const paramsGet = jest.fn().mockReturnValue(null);
-const paramsHas = jest.fn().mockReturnValue(false);
-jest.mock("next/navigation", () => ({
+const pushMock = vi.fn();
+const paramsGet = vi.fn().mockReturnValue(null);
+const paramsHas = vi.fn().mockReturnValue(false);
+vi.mock("next/navigation", () => ({
     useRouter: () => ({ push: pushMock }),
     useSearchParams: () => ({
         get: paramsGet,
@@ -18,17 +21,17 @@ jest.mock("next/navigation", () => ({
 }));
 
 // Mock useSessionStorage
-jest.mock("usehooks-ts", () => ({
-    useSessionStorage: () => [null, jest.fn()],
+vi.mock("usehooks-ts", () => ({
+    useSessionStorage: () => [null, vi.fn()],
 }));
 
 // Mock getUniformListWithOwner
-jest.mock("@/dal/uniform/item/_index", () => ({
-    getUniformListWithOwner: jest.fn().mockResolvedValue(mockUniformList),
+vi.mock("@/dal/uniform/item/_index", () => ({
+    getUniformListWithOwner: vi.fn().mockResolvedValue(mockUniformList),
 }));
 
 // Mock UniformListTableLine
-jest.mock("./UniformListTableLine", () => ({
+vi.mock("./UniformListTableLine", () => ({
     UniformListTableLine: ({ uniform }: { uniform: UniformWithOwner }) => (
         <tr data-testid={`div_uitem_${uniform.id}`}>
             <td>{uniform.number}</td>
@@ -40,12 +43,11 @@ describe("UniformListTable", () => {
     const uniformType = mockTypeList[0];
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it("renders table headers and no data row if no uniforms", async () => {
-        const { getUniformListWithOwner } = jest.requireMock("@/dal/uniform/item/_index");
-        getUniformListWithOwner.mockResolvedValueOnce([]);
+        vi.mocked(getUniformListWithOwner).mockResolvedValueOnce([]);
 
         render(<UniformListTable uniformType={uniformType} />);
         expect(await screen.findByText("common.uniform.number")).toBeInTheDocument();
@@ -62,7 +64,7 @@ describe("UniformListTable", () => {
     });
 
     it("shows correct count in header", async () => {
-        const t = jest.requireMock("@/lib/locales/client").useI18n();
+        const t = vi.mocked(useI18n());
 
         render(<UniformListTable uniformType={uniformType} />);
         await waitForElementToBeRemoved(() => screen.queryByText("uniformList.noData"));

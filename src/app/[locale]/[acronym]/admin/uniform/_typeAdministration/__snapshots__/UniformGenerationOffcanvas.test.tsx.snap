@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`<UniformgenerationOffcanvas> with generation renders the component 1`] = `
+exports[`<UniformgenerationOffcanvas> > with generation > renders the component 1`] = `
 <div
   aria-labelledby="generation-offcanvas-header"
   aria-modal="true"
@@ -160,7 +160,7 @@ exports[`<UniformgenerationOffcanvas> with generation renders the component 1`] 
               aria-readonly="true"
               class="py-2 m-0"
             >
-              Test Size List
+              e667d674-7df8-436b-a2b8-77b06e063d36
             </p>
             <div
               aria-label="error message fk_sizelist"
@@ -177,7 +177,7 @@ exports[`<UniformgenerationOffcanvas> with generation renders the component 1`] 
 </div>
 `;
 
-exports[`<UniformgenerationOffcanvas> without generation renders in editable state if no generation is passed 1`] = `
+exports[`<UniformgenerationOffcanvas> > without generation > renders in editable state if no generation is passed 1`] = `
 <div
   aria-labelledby="generation-offcanvas-header"
   aria-modal="true"
@@ -344,21 +344,6 @@ exports[`<UniformgenerationOffcanvas> without generation renders in editable sta
                 value=""
               >
                 common.error.pleaseSelect
-              </option>
-              <option
-                value="e667d674-7df8-436b-a2b8-77b06e063d36"
-              >
-                Test Size List
-              </option>
-              <option
-                value="a961545b-28a7-409e-9200-1d85ccd53522"
-              >
-                Test Size List 2
-              </option>
-              <option
-                value="07de1d59-4fc6-447b-98a6-da916e5792ef"
-              >
-                Test Size List 3
               </option>
             </select>
             <div

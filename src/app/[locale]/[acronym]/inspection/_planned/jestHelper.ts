@@ -1,6 +1,6 @@
 import dayjs from "@/lib/dayjs";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
-
+import { vi } from 'vitest';
 
 export const mockCadetList = [
     { id: "1", firstname: "Jack", lastname: "Doe" },
@@ -57,22 +57,22 @@ export const mockInspectionList: PlannedInspectionType[] = [
     }
 ];
 
-jest.mock("@/dal/inspection", () => ({
-    createInspection: jest.fn().mockResolvedValue("createInspection"),
-    deleteInspection: jest.fn().mockResolvedValue("deleteInspection"),
-    updatePlannedInspection: jest.fn().mockResolvedValue("updateInspection"),
-    updateCadetRegistrationForInspection: jest.fn().mockResolvedValue("updateCadetRegistrationForInspection"),
+vi.mock("@/dal/inspection", () => ({
+    createInspection: vi.fn().mockResolvedValue("createInspection"),
+    deleteInspection: vi.fn().mockResolvedValue("deleteInspection"),
+    updatePlannedInspection: vi.fn().mockResolvedValue("updateInspection"),
+    updateCadetRegistrationForInspection: vi.fn().mockResolvedValue("updateCadetRegistrationForInspection"),
 
-    startInspection: jest.fn().mockResolvedValue("startInspection"),
-    stopInspection: jest.fn().mockResolvedValue("stopInspection"),
+    startInspection: vi.fn().mockResolvedValue("startInspection"),
+    stopInspection: vi.fn().mockResolvedValue("stopInspection"),
 }));
-jest.mock("@/dataFetcher/inspection", () => ({
-    usePlannedInspectionList: jest.fn().mockReturnValue({
+vi.mock("@/dataFetcher/inspection", () => ({
+    usePlannedInspectionList: vi.fn().mockReturnValue({
         inspectionList: mockInspectionList,
-        mutate: jest.fn(async (promise: Promise<void>) => { await promise; return mockInspectionList; }),
+        mutate: vi.fn(async (promise: Promise<void>) => { await promise; return mockInspectionList; }),
     }),
-    useInspectionState: jest.fn().mockReturnValue({
+    useInspectionState: vi.fn().mockReturnValue({
         inspectionState: { active: false },
-        mutate: jest.fn(async (promise: Promise<void>) => { await promise; return { active: false }; }),
+        mutate: vi.fn(async (promise: Promise<void>) => { await promise; return { active: false }; }),
     }),
 }));

@@ -3,21 +3,26 @@ import userEvent from "@testing-library/user-event";
 import { mockTypeList } from "../../../../../../../tests/_jestConfig/staticMockData";
 import { CadetUniformTableIssueModal, CadetUniformTableIssueModalProps } from "./CadetUniformTableIssueModal";
 import { UniformItemLabel } from "@/dal/uniform/item/_index";
+import { useCadetUniformMap } from "@/dataFetcher/cadet";
+import { useUniformLabels } from "@/dataFetcher/uniform";
+import { issueUniformItem } from "@/dal/uniform/item/_index";
+import { toast } from "react-toastify";
+import { vi } from 'vitest';
 
 // Mocks
-jest.mock("@/dataFetcher/cadet", () => ({
-    useCadetUniformMap: jest.fn(),
+vi.mock("@/dataFetcher/cadet", () => ({
+    useCadetUniformMap: vi.fn(),
 }));
-jest.mock("@/dataFetcher/uniform", () => ({
-    useUniformLabels: jest.fn(),
-}));
-
-jest.mock("@/dal/uniform/item/_index", () => ({
-    issueUniformItem: jest.fn(() => Promise.resolve({})),
+vi.mock("@/dataFetcher/uniform", () => ({
+    useUniformLabels: vi.fn(),
 }));
 
-const mockMutate = jest.fn();
-const mockOnClose = jest.fn();
+vi.mock("@/dal/uniform/item/_index", () => ({
+    issueUniformItem: vi.fn(() => Promise.resolve({})),
+}));
+
+const mockMutate = vi.fn();
+const mockOnClose = vi.fn();
 
 const defaultProps: CadetUniformTableIssueModalProps = {
     cadetId: "cadet-1",
@@ -45,17 +50,30 @@ const uniformLabels = [
 
 
 const issuedItemList = [
-    { id: "item-1", number: 101, owner: null, isReserve: false, storageUnit: null, typeId: defaultProps.type.id },
+    {
+        id: "item-1",
+        number: 101,
+        isReserve: false,
+        comment: null,
+        storageUnit: null,
+        type: { id: defaultProps.type.id, name: defaultProps.type.name },
+        generation: null,
+        size: null,
+        issuedEntries: [],
+    },
 ];
 
 beforeEach(() => {
-    jest.clearAllMocks();
-    jest.requireMock("@/dataFetcher/cadet").useCadetUniformMap.mockReturnValue({
+    vi.clearAllMocks();
+    vi.mocked(useCadetUniformMap).mockReturnValue({
         map: { [defaultProps.type.id]: issuedItemList },
         mutate: mockMutate,
+        error: undefined,
     });
-    jest.requireMock("@/dataFetcher/uniform").useUniformLabels.mockReturnValue({
+    vi.mocked(useUniformLabels).mockReturnValue({
         uniformLabels,
+        isLoading: false,
+        mutate: vi.fn(),
     });
 });
 
@@ -109,7 +127,6 @@ describe("CadetUniformTableIssueModal", () => {
 
     describe("issue uniform item", () => {
         it("calls issueUniformItem with correct values for issuing a new item (not in options)", async () => {
-            const { issueUniformItem } = jest.requireMock("@/dal/uniform/item/_index");
             setup();
             const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
@@ -131,7 +148,6 @@ describe("CadetUniformTableIssueModal", () => {
         });
 
         it("calls issueUniformItem with correct values for issuing an available item", async () => {
-            const { issueUniformItem } = jest.requireMock("@/dal/uniform/item/_index");
             setup();
             const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
@@ -153,7 +169,6 @@ describe("CadetUniformTableIssueModal", () => {
         });
 
         it("calls issueUniformItem with correct values for replacing an item", async () => {
-            const { issueUniformItem } = jest.requireMock("@/dal/uniform/item/_index");
             setup({ itemToReplace: { id: "item-2", number: 102 } });
             const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
@@ -175,7 +190,6 @@ describe("CadetUniformTableIssueModal", () => {
         });
 
         it("calls issueUniformItem with correct values for issuing an inactive (isReserve) item", async () => {
-            const { issueUniformItem } = jest.requireMock("@/dal/uniform/item/_index");
             setup();
             const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
@@ -197,7 +211,6 @@ describe("CadetUniformTableIssueModal", () => {
         });
 
         it("calls issueUniformItem with correct values for changing owner (item owned by another cadet)", async () => {
-            const { issueUniformItem } = jest.requireMock("@/dal/uniform/item/_index");
             setup();
             const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
@@ -219,7 +232,6 @@ describe("CadetUniformTableIssueModal", () => {
         });
 
         it("calls issueUniformItem with correct values for issuing a isReserve item with owner", async () => {
-            const { issueUniformItem } = jest.requireMock("@/dal/uniform/item/_index");
             setup();
             const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
@@ -241,9 +253,7 @@ describe("CadetUniformTableIssueModal", () => {
         });
 
         it('catches error when issueUniform fails', async () => {
-            const { toast } = jest.requireMock("react-toastify");
-            const { issueUniformItem } = jest.requireMock("@/dal/uniform/item/_index");
-            issueUniformItem.mockRejectedValue(new Error("Issue failed"));
+            vi.mocked(issueUniformItem).mockRejectedValue(new Error("Issue failed"));
 
             setup();
             const input = screen.getByLabelText(/input.label/i);

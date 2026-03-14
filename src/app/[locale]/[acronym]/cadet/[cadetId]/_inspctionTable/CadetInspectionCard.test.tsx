@@ -6,26 +6,27 @@ import * as dataFetcherInspection from '@/dataFetcher/inspection';
 import * as nextNavigation from 'next/navigation';
 import * as swr from 'swr';
 import * as reactToastify from 'react-toastify';
+import { vi } from 'vitest';
 
 // Mock the DAL functions
-jest.mock('@/dal/inspection', () => ({
-    getCadetInspectionFormData: jest.fn(),
-    saveCadetInspection: jest.fn(),
+vi.mock('@/dal/inspection', () => ({
+    getCadetInspectionFormData: vi.fn(),
+    saveCadetInspection: vi.fn(),
 }));
 
 // Mock the data fetcher
-jest.mock('@/dataFetcher/inspection', () => ({
-    useUnresolvedDeficienciesByCadet: jest.fn(),
+vi.mock('@/dataFetcher/inspection', () => ({
+    useUnresolvedDeficienciesByCadet: vi.fn(),
 }));
 
 // Mock SWR mutate
-jest.mock('swr', () => ({
-    mutate: jest.fn(),
+vi.mock('swr', () => ({
+    mutate: vi.fn(),
 }));
 
 // Mock the child components
-jest.mock('./CadetInspectionCardHeader', () => {
-    return function MockCadetInspectionCardHeader({ step, startInspecting }: { step: number; startInspecting: () => void }) {
+vi.mock('./CadetInspectionCardHeader', () => ({
+    default: function MockCadetInspectionCardHeader({ step, startInspecting }: { step: number; startInspecting: () => void }) {
         return (
             <div data-testid="mock-header">
                 <span>Step: {step}</span>
@@ -34,10 +35,10 @@ jest.mock('./CadetInspectionCardHeader', () => {
                 </button>
             </div>
         );
-    };
-});
+    },
+}));
 
-jest.mock('./CadetInspectionStep1', () => ({
+vi.mock('./CadetInspectionStep1', () => ({
     CadetInspectionStep1: function MockCadetInspectionStep1({ setNextStep, cancel }: { setNextStep: () => void; cancel: () => void }) {
         return (
             <div data-testid="mock-step1">
@@ -48,7 +49,7 @@ jest.mock('./CadetInspectionStep1', () => ({
     },
 }));
 
-jest.mock('./CadetInspectionStep2', () => ({
+vi.mock('./CadetInspectionStep2', () => ({
     CadetInspectionStep2: function MockCadetInspectionStep2({ setStep }: { setStep: (step: number) => void }) {
         return (
             <div data-testid="mock-step2">
@@ -59,7 +60,7 @@ jest.mock('./CadetInspectionStep2', () => ({
     },
 }));
 
-jest.mock('./OldDeficiencyRow', () => ({
+vi.mock('./OldDeficiencyRow', () => ({
     OldDeficiencyRow: function MockOldDeficiencyRow({ deficiency, index, step }: { 
         deficiency: { description: string }; 
         index: number; 
@@ -75,12 +76,12 @@ jest.mock('./OldDeficiencyRow', () => ({
 
 describe('CadetInspectionCard', () => {
     // Get mocked functions
-    const mockGetCadetInspectionFormData = jest.mocked(dalInspection.getCadetInspectionFormData);
-    const mockSaveCadetInspection = jest.mocked(dalInspection.saveCadetInspection);
-    const mockUseUnresolvedDeficienciesByCadet = jest.mocked(dataFetcherInspection.useUnresolvedDeficienciesByCadet);
-    const mockUseParams = jest.mocked(nextNavigation.useParams);
-    const mockMutate = jest.mocked(swr.mutate);
-    const mockToast = jest.mocked(reactToastify.toast);
+    const mockGetCadetInspectionFormData = vi.mocked(dalInspection.getCadetInspectionFormData);
+    const mockSaveCadetInspection = vi.mocked(dalInspection.saveCadetInspection);
+    const mockUseUnresolvedDeficienciesByCadet = vi.mocked(dataFetcherInspection.useUnresolvedDeficienciesByCadet);
+    const mockUseParams = vi.mocked(nextNavigation.useParams);
+    const mockMutate = vi.mocked(swr.mutate);
+    const mockToast = vi.mocked(reactToastify.toast);
 
     const mockCadetId = 'test-cadet-id-123';
     const mockUnresolvedDeficiencies = [
@@ -132,7 +133,7 @@ describe('CadetInspectionCard', () => {
     };
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         
         // Default mock implementations
         mockUseParams.mockReturnValue({ cadetId: mockCadetId });
@@ -262,7 +263,7 @@ describe('CadetInspectionCard', () => {
             unmount();
 
             // Test error handling - setup mock error before render
-            const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
             mockGetCadetInspectionFormData.mockRejectedValueOnce(new Error('Failed to load data'));
 
             render(<CadetInspectionCard />);
@@ -306,7 +307,7 @@ describe('CadetInspectionCard', () => {
             const testCadetIds = ['cadet-123', 'cadet-456', 'cadet-789'];
             
             testCadetIds.forEach((cadetId) => {
-                jest.clearAllMocks();
+                vi.clearAllMocks();
                 mockUseParams.mockReturnValue({ cadetId });
                 
                 render(<CadetInspectionCard />);
@@ -365,9 +366,7 @@ describe('CadetInspectionCard', () => {
     describe('Error Scenarios and Edge Cases', () => {
         it('should handle various error conditions and edge cases gracefully', async () => {
             const user = userEvent.setup();
-            const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-            
-            // Test with undefined deficiencies
+            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
             mockUseUnresolvedDeficienciesByCadet.mockReturnValue({
                 unresolvedDeficiencies: undefined,
             });

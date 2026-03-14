@@ -23,7 +23,7 @@ describe('<storageUnit> removeUniform', () => {
 
     it("should remove the uniform from the storage unit and return updated units", async () => {
         prismaUpdateMany.mockResolvedValueOnce({ count: uniformIds.length });
-        getUnitsWithUniformItems.mockResolvedValueOnce(['TestReturnValue']);
+        getUnitsWithUniformItems.mockResolvedValueOnce(['TestReturnValue'] as any);
 
         const result = await removeUniform({ uniformIds, storageUnitId });
 
@@ -42,7 +42,7 @@ describe('<storageUnit> removeUniform', () => {
 
     it('should throw if not all uniforms are updated', async () => {
         prismaUpdateMany.mockResolvedValueOnce({ count: 2 }); // less than uniformIds.length
-        getUnitsWithUniformItems.mockResolvedValueOnce(['TestReturnValue']);
+        getUnitsWithUniformItems.mockResolvedValueOnce(['TestReturnValue'] as any);
 
         await expect(removeUniform({ uniformIds, storageUnitId })).rejects.toThrow("Failed to update uniforms");
         expect(getUnitsWithUniformItems).not.toHaveBeenCalled();

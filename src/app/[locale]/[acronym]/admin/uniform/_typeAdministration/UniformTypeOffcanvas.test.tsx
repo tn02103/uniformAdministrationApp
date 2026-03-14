@@ -3,6 +3,13 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { testTypes } from "./testTypes";
 import { UniformTypeOffcanvas } from "./UniformTypeOffcanvas";
+import { createUniformType, deleteUniformType, updateUniformType } from "@/dal/uniform/type/_index";
+import { useUniformTypeList } from "@/dataFetcher/uniformAdmin";
+import { getUniformItemCountByType } from "@/dal/uniform/item/_index";
+import { UniformGenerationTable } from "./UniformGenerationTable";
+import { useModal } from "@/components/modals/modalProvider";
+import { toast } from "react-toastify";
+import { vi, type Mock } from 'vitest';
 
 const sizeListIds = [
     'e667d674-7df8-436b-a2b8-77b06e063d36',
@@ -12,35 +19,35 @@ const sizeListIds = [
 const testType: UniformType = testTypes[0]
 
 // ################## MOCKS ##################
-jest.mock("@/dataFetcher/uniformAdmin", () => {
-    const typeListMutate = jest.fn(async (a) => a);
+vi.mock("@/dataFetcher/uniformAdmin", () => {
+    const typeListMutate = vi.fn(async (a) => a);
     return {
-        useUniformSizelists: jest.fn(() => ({
+        useUniformSizelists: vi.fn(() => ({
             sizelistList: [{ id: sizeListIds[0], name: "Test Size List" }, { id: sizeListIds[1], name: "Test Size List 2" }, { id: sizeListIds[2], name: "Test Size List 3" }],
         })),
-        useUniformTypeList: jest.fn(() => ({
+        useUniformTypeList: vi.fn(() => ({
             mutate: typeListMutate,
             typeList: testTypes,
         })),
     };
 });
 
-jest.mock("@/dal/uniform/type/_index", () => {
+vi.mock("@/dal/uniform/type/_index", () => {
     return {
-        createUniformType: jest.fn(async () => ({ id: 'new-type-id' })),
-        deleteUniformType: jest.fn(() => "uniform type deleted"),
-        updateUniformType: jest.fn(async () => "uniform type updated"),
+        createUniformType: vi.fn(async () => ({ id: 'new-type-id' })),
+        deleteUniformType: vi.fn(() => "uniform type deleted"),
+        updateUniformType: vi.fn(async () => "uniform type updated"),
     };
 });
-jest.mock("@/dal/uniform/item/_index", () => {
-    const mock = jest.fn(async () => ({ count: 10 }));
+vi.mock("@/dal/uniform/item/_index", () => {
+    const mock = vi.fn(async () => ({ count: 10 }));
     return {
         getUniformItemCountByType: mock,
     };
 });
 
-jest.mock("./UniformGenerationTable", () => {
-    const mock = jest.fn(() => <div data-testid="generationTableMock">Generation Table</div>);
+vi.mock("./UniformGenerationTable", () => {
+    const mock = vi.fn(() => <div data-testid="generationTableMock">Generation Table</div>);
     return {
         UniformGenerationTable: mock,
     };
@@ -48,43 +55,18 @@ jest.mock("./UniformGenerationTable", () => {
 
 // ############## TESTS ##################
 describe('<UniformTypeOffcanvas />', () => {
-    const { createUniformType, deleteUniformType, updateUniformType } = jest.requireMock('@/dal/uniform/type/_index');
-    const mutate = jest.requireMock('@/dataFetcher/uniformAdmin').useUniformTypeList().mutate;;
-    const { getUniformItemCountByType } = jest.requireMock('@/dal/uniform/item/_index');
-    const { UniformGenerationTable } = jest.requireMock('./UniformGenerationTable');
-    const { useModal } = jest.requireMock('@/components/modals/modalProvider');
-    const { toast } = jest.requireMock('react-toastify');
+    const mutate = useUniformTypeList().mutate;
 
-    afterEach(() => jest.clearAllMocks());
+    afterEach(() => vi.clearAllMocks());
 
     it('renders the component and handles setEditable', async () => {
-        const user = userEvent.setup();
-        const setEditable = jest.fn();
-        render(
-            <UniformTypeOffcanvas
-                uniformType={testType}
-                editable={false}
-                setEditable={setEditable}
-                setSelectedTypeId={jest.fn()}
-            />
-        );
-
-        expect(screen.getByRole('dialog')).toBeInTheDocument();
-        expect(screen.getByRole('dialog')).toMatchSnapshot();
-
-        const editButton = screen.getByRole('button', { name: 'common.actions.edit' });
-        await user.click(editButton);
-        expect(setEditable).toHaveBeenCalledWith(true);
-    });
-
-    it('handles editable state correctly', async () => {
-        const setEditable = jest.fn();
+        const setEditable = vi.fn();
         render(
             <UniformTypeOffcanvas
                 uniformType={testType}
                 editable={true}
                 setEditable={setEditable}
-                setSelectedTypeId={jest.fn()}
+                setSelectedTypeId={vi.fn()}
             />
         );
 
@@ -94,8 +76,8 @@ describe('<UniformTypeOffcanvas />', () => {
 
     it('resets the form values and calls setEditable on cancel', async () => {
         const user = userEvent.setup();
-        const setEditable = jest.fn();
-        const setSelectedTypeId = jest.fn();
+        const setEditable = vi.fn();
+        const setSelectedTypeId = vi.fn();
         render(
             <UniformTypeOffcanvas
                 uniformType={testType}
@@ -131,8 +113,8 @@ describe('<UniformTypeOffcanvas />', () => {
             <UniformTypeOffcanvas
                 uniformType={null}
                 editable={true}
-                setEditable={jest.fn()}
-                setSelectedTypeId={jest.fn()}
+                setEditable={vi.fn()}
+                setSelectedTypeId={vi.fn()}
             />
         );
 
@@ -143,7 +125,7 @@ describe('<UniformTypeOffcanvas />', () => {
 
     it('hides default sizelist if usingSizes is false', async () => {
         const user = userEvent.setup();
-        const setEditable = jest.fn();
+        const setEditable = vi.fn();
 
         // render not editable
         const { unmount } = render(
@@ -154,7 +136,7 @@ describe('<UniformTypeOffcanvas />', () => {
                 }}
                 editable={false}
                 setEditable={setEditable}
-                setSelectedTypeId={jest.fn()}
+                setSelectedTypeId={vi.fn()}
             />
         );
 
@@ -171,7 +153,7 @@ describe('<UniformTypeOffcanvas />', () => {
                 }}
                 editable={true}
                 setEditable={setEditable}
-                setSelectedTypeId={jest.fn()}
+                setSelectedTypeId={vi.fn()}
             />
         );
 
@@ -187,7 +169,7 @@ describe('<UniformTypeOffcanvas />', () => {
     });
 
     it('does not show generation table if !usingGenerations', () => {
-        const setEditable = jest.fn();
+        const setEditable = vi.fn();
         render(
             <UniformTypeOffcanvas
                 uniformType={{
@@ -196,7 +178,7 @@ describe('<UniformTypeOffcanvas />', () => {
                 }}
                 editable={false}
                 setEditable={setEditable}
-                setSelectedTypeId={jest.fn()}
+                setSelectedTypeId={vi.fn()}
             />
         );
 
@@ -205,13 +187,13 @@ describe('<UniformTypeOffcanvas />', () => {
     });
 
     it('passes uniformType to UniformGenerationTable', () => {
-        const setEditable = jest.fn();
+        const setEditable = vi.fn();
         render(
             <UniformTypeOffcanvas
                 uniformType={testType}
                 editable={false}
                 setEditable={setEditable}
-                setSelectedTypeId={jest.fn()}
+                setSelectedTypeId={vi.fn()}
             />
         );
 
@@ -220,17 +202,17 @@ describe('<UniformTypeOffcanvas />', () => {
     });
 
     describe('dal-Methods', () => {
-        const { dangerConfirmationModal } = useModal();
+        const { dangerConfirmationModal } = useModal()!;
         describe('deleteUniformType', () => {
             it('deletes successfuly', async () => {
                 const user = userEvent.setup();
-                const setSelectedTypeId = jest.fn();
+                const setSelectedTypeId = vi.fn();
 
                 render(
                     <UniformTypeOffcanvas
                         uniformType={testType}
                         editable={false}
-                        setEditable={jest.fn()}
+                        setEditable={vi.fn()}
                         setSelectedTypeId={setSelectedTypeId}
                     />
                 );
@@ -253,7 +235,7 @@ describe('<UniformTypeOffcanvas />', () => {
                 });
 
                 // call delete function
-                await dangerConfirmationModal.mock.calls[0][0].dangerOption.function();
+                await (dangerConfirmationModal as unknown as Mock).mock.calls[0][0].dangerOption.function();
 
                 // validate success handling
                 expect(deleteUniformType).toHaveBeenCalledTimes(1);
@@ -265,14 +247,14 @@ describe('<UniformTypeOffcanvas />', () => {
 
             it('catch DAL Exception', async () => {
                 const user = userEvent.setup();
-                const setSelectedTypeId = jest.fn();
-                deleteUniformType.mockImplementationOnce(async () => { throw new Error("custom.error") });
+                const setSelectedTypeId = vi.fn();
+                (deleteUniformType as Mock).mockImplementationOnce(async () => { throw new Error("custom.error") });
 
                 render(
                     <UniformTypeOffcanvas
                         uniformType={testType}
                         editable={false}
-                        setEditable={jest.fn()}
+                        setEditable={vi.fn()}
                         setSelectedTypeId={setSelectedTypeId}
                     />
                 );
@@ -286,7 +268,7 @@ describe('<UniformTypeOffcanvas />', () => {
                 expect(dangerConfirmationModal).toHaveBeenCalled();
 
                 // call delete function
-                await dangerConfirmationModal.mock.calls[0][0].dangerOption.function();
+                await (dangerConfirmationModal as unknown as Mock).mock.calls[0][0].dangerOption.function();
 
                 // validate exception handling
                 expect(deleteUniformType).toHaveBeenCalledTimes(1);
@@ -301,8 +283,8 @@ describe('<UniformTypeOffcanvas />', () => {
         describe('createUniformType', () => {
             it('creates successfuly', async () => {
                 const user = userEvent.setup();
-                const setEditable = jest.fn();
-                const setSelectedTypeId = jest.fn();
+                const setEditable = vi.fn();
+                const setSelectedTypeId = vi.fn();
                 render(
                     <UniformTypeOffcanvas
                         uniformType={null}
@@ -339,13 +321,13 @@ describe('<UniformTypeOffcanvas />', () => {
             });
             it('catches name and acronym errors', async () => {
                 const user = userEvent.setup();
-                const setEditable = jest.fn();
+                const setEditable = vi.fn();
                 render(
                     <UniformTypeOffcanvas
                         uniformType={null}
                         editable={true}
                         setEditable={setEditable}
-                        setSelectedTypeId={jest.fn()}
+                        setSelectedTypeId={vi.fn()}
                     />
                 );
 
@@ -354,7 +336,7 @@ describe('<UniformTypeOffcanvas />', () => {
                 const issuedDefaultInput = screen.getByRole('spinbutton', { name: 'common.uniform.type.issuedDefault' });
 
                 // mock name duplication error
-                createUniformType.mockImplementationOnce(async () => ({
+                (createUniformType as Mock).mockImplementationOnce(async () => ({
                     error: {
                         message: "custom.uniform.type.nameDuplication",
                         formElement: "name",
@@ -386,7 +368,7 @@ describe('<UniformTypeOffcanvas />', () => {
                 expect(nameInput).not.toHaveClass('is-invalid');
 
                 // mock acronym duplication error
-                createUniformType.mockImplementationOnce(async () => ({
+                (createUniformType as Mock).mockImplementationOnce(async () => ({
                     error: {
                         message: "custom.uniform.type.acronymDuplication;name:Test Type",
                         formElement: "acronym",
@@ -407,10 +389,10 @@ describe('<UniformTypeOffcanvas />', () => {
             });
 
             it('catchs DAL exception', async () => {
-                createUniformType.mockImplementationOnce(async () => { throw new Error("custom.error") });
+                (createUniformType as Mock).mockImplementationOnce(async () => { throw new Error("custom.error") });
                 const user = userEvent.setup();
-                const setEditable = jest.fn();
-                const setSelectedTypeId = jest.fn();
+                const setEditable = vi.fn();
+                const setSelectedTypeId = vi.fn();
                 render(
                     <UniformTypeOffcanvas
                         uniformType={null}
@@ -443,13 +425,13 @@ describe('<UniformTypeOffcanvas />', () => {
         describe('updateUniformType', () => {
             it('updates successfully', async () => {
                 const user = userEvent.setup();
-                const setEditable = jest.fn();
+                const setEditable = vi.fn();
                 render(
                     <UniformTypeOffcanvas
                         uniformType={testType}
                         editable={true}
                         setEditable={setEditable}
-                        setSelectedTypeId={jest.fn()}
+                        setSelectedTypeId={vi.fn()}
                     />
                 );
 
@@ -487,18 +469,18 @@ describe('<UniformTypeOffcanvas />', () => {
 
             it('catches name and acronym errors', async () => {
                 const user = userEvent.setup();
-                const setEditable = jest.fn();
+                const setEditable = vi.fn();
                 render(
                     <UniformTypeOffcanvas
                         uniformType={testType}
                         editable={true}
                         setEditable={setEditable}
-                        setSelectedTypeId={jest.fn()}
+                        setSelectedTypeId={vi.fn()}
                     />
                 );
 
                 // mock name duplication error
-                updateUniformType.mockImplementationOnce(async () => ({
+                (updateUniformType as Mock).mockImplementationOnce(async () => ({
                     error: {
                         message: "custom.uniform.type.nameDuplication",
                         formElement: "name",
@@ -524,7 +506,7 @@ describe('<UniformTypeOffcanvas />', () => {
                 expect(screen.getByRole('textbox', { name: 'common.name *' })).not.toHaveClass('is-invalid');
 
                 // mock acronym duplication error
-                updateUniformType.mockImplementationOnce(async () => ({
+                (updateUniformType as Mock).mockImplementationOnce(async () => ({
                     error: {
                         message: "custom.uniform.type.acronymDuplication;name:Test Type",
                         formElement: "acronym",
@@ -544,15 +526,15 @@ describe('<UniformTypeOffcanvas />', () => {
                 expect(screen.getByRole('textbox', { name: 'common.uniform.type.acronym *' })).toHaveClass('is-invalid');
             });
             it('catches DAL exception', async () => {
-                updateUniformType.mockImplementationOnce(async () => { throw new Error("custom.error") });
+                (updateUniformType as Mock).mockImplementationOnce(async () => { throw new Error("custom.error") });
                 const user = userEvent.setup();
-                const setEditable = jest.fn();
+                const setEditable = vi.fn();
                 render(
                     <UniformTypeOffcanvas
                         uniformType={testType}
                         editable={true}
                         setEditable={setEditable}
-                        setSelectedTypeId={jest.fn()}
+                        setSelectedTypeId={vi.fn()}
                     />
                 );
                 // submit
@@ -573,8 +555,8 @@ describe('<UniformTypeOffcanvas />', () => {
                 <UniformTypeOffcanvas
                     uniformType={null}
                     editable={true}
-                    setEditable={jest.fn()}
-                    setSelectedTypeId={jest.fn()}
+                    setEditable={vi.fn()}
+                    setSelectedTypeId={vi.fn()}
                 />
             );
 

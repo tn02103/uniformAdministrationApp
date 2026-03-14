@@ -1,35 +1,35 @@
 import { render, screen } from '@testing-library/react';
 import { Button } from 'react-bootstrap';
 import CadetInspectionCardHeader from './CadetInspectionCardHeader';
+import { useInspectionState, useInspectedCadetIdList } from '@/dataFetcher/inspection';
+import { TooltipIconButton } from '@/components/Buttons/TooltipIconButton';
+import { useParams } from 'next/navigation';
+import { vi } from 'vitest';
 
 // Mock dataFetcher hooks
-jest.mock('@/dataFetcher/inspection', () => ({
-    useInspectionState: jest.fn(),
-    useInspectedCadetIdList: jest.fn()
+vi.mock('@/dataFetcher/inspection', () => ({
+    useInspectionState: vi.fn(),
+    useInspectedCadetIdList: vi.fn()
 }));
 
-jest.mock('@/components/Buttons/TooltipIconButton', () => ({
-    TooltipIconButton: jest.fn().mockImplementation((props) => {
+vi.mock('@/components/Buttons/TooltipIconButton', () => ({
+    TooltipIconButton: vi.fn().mockImplementation((props) => {
         return <Button variant={props.variant} disabled={props.disabled} onClick={props.onClick} data-testid={props.dataTestId} />;
     })
 }))
 
 describe('<CadetInspectionCardHeader />', () => {
-    const { useInspectionState, useInspectedCadetIdList } = jest.requireMock('@/dataFetcher/inspection');
-    const { TooltipIconButton } = jest.requireMock('@/components/Buttons/TooltipIconButton');
-    const { useParams } = jest.requireMock('next/navigation');
-
-    const mockStartInspecting = jest.fn();
+    const mockStartInspecting = vi.fn();
     const defaultProps = {
         step: 0,
         startInspecting: mockStartInspecting
     };
 
     beforeEach(() => {
-        jest.clearAllMocks();
-        useParams.mockReturnValue({ cadetId: '123' });
-        useInspectionState.mockReturnValue({ inspectionState: { active: true } });
-        useInspectedCadetIdList.mockReturnValue({ inspectedIdList: ['234', '23'] });
+        vi.clearAllMocks();
+        vi.mocked(useParams).mockReturnValue({ cadetId: '123' });
+        vi.mocked(useInspectionState).mockReturnValue({ inspectionState: { active: true, state: 'active', id: 'test-inspection-id', date: '2024-01-01', inspectedCadets: 0, activeCadets: 0, deregistrations: 0 } });
+        vi.mocked(useInspectedCadetIdList).mockReturnValue({ inspectedIdList: ['234', '23'] });
     });
 
     /*
@@ -38,7 +38,7 @@ describe('<CadetInspectionCardHeader />', () => {
        Step: 0 | 1 | 2
     */
     it('shows correct header for inactive inspection', () => {
-        useInspectionState.mockReturnValue({ active: false });
+        vi.mocked(useInspectionState).mockReturnValue({ inspectionState: { active: false, state: 'planned' } });
 
         render(<CadetInspectionCardHeader {...defaultProps} />);
 
@@ -69,17 +69,17 @@ describe('<CadetInspectionCardHeader />', () => {
         it('changes button when cadet is inspected', () => {
             const { rerender } = render(<CadetInspectionCardHeader {...defaultProps} />);
 
-            expect(TooltipIconButton).toHaveBeenLastCalledWith(expect.objectContaining({
+            expect(vi.mocked(TooltipIconButton)).toHaveBeenLastCalledWith(expect.objectContaining({
                 variant: "outline-warning",
                 disabled: false,
                 tooltipText: expect.stringMatching(/tooltip.notInspected/i),
                 icon: expect.objectContaining({ iconName: "clipboard-question" }),
             }), undefined);
 
-            useInspectedCadetIdList.mockReturnValue({ inspectedIdList: ['234', '23', '123'] });
+            vi.mocked(useInspectedCadetIdList).mockReturnValue({ inspectedIdList: ['234', '23', '123'] });
             rerender(<CadetInspectionCardHeader {...defaultProps} />);
 
-            expect(TooltipIconButton).toHaveBeenLastCalledWith(expect.objectContaining({
+            expect(vi.mocked(TooltipIconButton)).toHaveBeenLastCalledWith(expect.objectContaining({
                 variant: "outline-success",
                 disabled: false,
                 tooltipText: expect.stringMatching(/tooltip.inspected/i),

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`<UniformTypeTable /> renders the component 1`] = `
+exports[`<UniformTypeTable /> > renders the component 1`] = `
 <div>
   <table
     aria-label="common.uniform.type.type"
@@ -64,9 +64,7 @@ exports[`<UniformTypeTable /> renders the component 1`] = `
         </th>
       </tr>
     </thead>
-    <tbody
-      data-testid="reorderable-table-body"
-    >
+    <tbody>
       <tr
         aria-label="Test Type"
         style="padding: 10px; margin: 0px;"
@@ -75,6 +73,7 @@ exports[`<UniformTypeTable /> renders the component 1`] = `
           <span
             aria-label="move Item"
             class="p-2"
+            draggable="true"
           >
             <svg
               aria-hidden="true"
@@ -153,6 +152,7 @@ exports[`<UniformTypeTable /> renders the component 1`] = `
           <span
             aria-label="move Item"
             class="p-2"
+            draggable="true"
           >
             <svg
               aria-hidden="true"
@@ -231,6 +231,7 @@ exports[`<UniformTypeTable /> renders the component 1`] = `
           <span
             aria-label="move Item"
             class="p-2"
+            draggable="true"
           >
             <svg
               aria-hidden="true"
@@ -309,6 +310,7 @@ exports[`<UniformTypeTable /> renders the component 1`] = `
           <span
             aria-label="move Item"
             class="p-2"
+            draggable="true"
           >
             <svg
               aria-hidden="true"

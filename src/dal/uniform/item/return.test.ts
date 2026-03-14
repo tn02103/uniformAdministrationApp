@@ -198,7 +198,7 @@ describe('<UniformItem> __unsecuredReturnUniformitem', () => {
     describe('date-based behavior', () => {
         it('deletes entry when issued today', async () => {
             // Issue date is the same as current system time (MOCK_TODAY)
-            await __unsecuredReturnUniformitem(mockIssuedEntryId, MOCK_TODAY, mockPrisma);
+            await __unsecuredReturnUniformitem(mockIssuedEntryId, MOCK_TODAY, mockPrisma as unknown as PrismaClient);
 
             expect(mockPrisma.uniformIssued.delete).toHaveBeenCalledWith({
                 where: { id: mockIssuedEntryId }
@@ -208,7 +208,7 @@ describe('<UniformItem> __unsecuredReturnUniformitem', () => {
 
         it('updates entry with return date when not issued today', async () => {
             // Issue date is different from current system time
-            await __unsecuredReturnUniformitem(mockIssuedEntryId, MOCK_PAST_DATE, mockPrisma);
+            await __unsecuredReturnUniformitem(mockIssuedEntryId, MOCK_PAST_DATE, mockPrisma as unknown as PrismaClient);
 
             expect(mockPrisma.uniformIssued.update).toHaveBeenCalledWith({
                 where: { id: mockIssuedEntryId },
@@ -228,7 +228,7 @@ describe('<UniformItem> __unsecuredReturnUniformitem', () => {
             // Issue date is also the same day in German timezone
             const issueDateGermanTime = new Date('2025-06-26T23:30:00.000Z'); // UTC equivalent of 01:30 German time
 
-            await __unsecuredReturnUniformitem(mockIssuedEntryId, issueDateGermanTime, mockPrisma);
+            await __unsecuredReturnUniformitem(mockIssuedEntryId, issueDateGermanTime, mockPrisma as unknown as PrismaClient);
 
             expect(mockPrisma.uniformIssued.delete).toHaveBeenCalled();
             expect(mockPrisma.uniformIssued.update).not.toHaveBeenCalled();
@@ -242,7 +242,7 @@ describe('<UniformItem> __unsecuredReturnUniformitem', () => {
             // Issue date is previous day in German timezone
             const previousGermanDay = new Date('2025-06-26T12:00:00.000Z'); // 14:00 German time previous day
 
-            await __unsecuredReturnUniformitem(mockIssuedEntryId, previousGermanDay, mockPrisma);
+            await __unsecuredReturnUniformitem(mockIssuedEntryId, previousGermanDay, mockPrisma as unknown as PrismaClient);
 
             expect(mockPrisma.uniformIssued.update).toHaveBeenCalledWith({
                 where: { id: mockIssuedEntryId },
@@ -258,7 +258,7 @@ describe('<UniformItem> __unsecuredReturnUniformitem', () => {
         it('uses correct issued entry ID', async () => {
             const customEntryId = 'custom-entry-123';
 
-            await __unsecuredReturnUniformitem(customEntryId, MOCK_PAST_DATE, mockPrisma);
+            await __unsecuredReturnUniformitem(customEntryId, MOCK_PAST_DATE, mockPrisma as unknown as PrismaClient);
 
             expect(mockPrisma.uniformIssued.update).toHaveBeenCalledWith({
                 where: { id: customEntryId },

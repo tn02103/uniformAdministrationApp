@@ -1,6 +1,11 @@
 import { UniformgenerationOffcanvas } from "@/app/[locale]/[acronym]/admin/uniform/_typeAdministration/UniformGenerationOffcanvas";
+import { useModal } from "@/components/modals/modalProvider";
+import { createUniformGeneration, deleteUniformGeneration, updateUniformGeneration } from "@/dal/uniform/generation/_index";
+import { useUniformTypeList } from "@/dataFetcher/uniformAdmin";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { toast } from "react-toastify";
+import { vi, type Mock } from 'vitest';
 
 const sizeListIds = [
     'e667d674-7df8-436b-a2b8-77b06e063d36',
@@ -21,34 +26,31 @@ const testGeneration = {
 }
 
 // ################## MOCKS ##################
-jest.mock("@/dataFetcher/uniformAdmin", () => {
-    const typeListMutate = jest.fn(async (a) => a);
+vi.mock("@/dataFetcher/uniformAdmin", () => {
+    const typeListMutate = vi.fn(async (a) => a);
     return {
-        useUniformSizelists: jest.fn(() => ({
+        useUniformSizelists: vi.fn(() => ({
             sizelistList: [{ id: sizeListIds[0], name: "Test Size List" }, { id: sizeListIds[1], name: "Test Size List 2" }, { id: sizeListIds[2], name: "Test Size List 3" }],
         })),
-        useUniformTypeList: jest.fn(() => ({
+        useUniformTypeList: vi.fn(() => ({
             mutate: typeListMutate,
         })),
     };
 });
-jest.mock("@/dal/uniform/generation/_index", () => {
+vi.mock("@/dal/uniform/generation/_index", () => {
     return {
-        createUniformGeneration: jest.fn(async () => "uniform generation created"),
-        deleteUniformGeneration: jest.fn(async () => "uniform generation deleted"),
-        updateUniformGeneration: jest.fn(async () => "uniform generation updated"),
+        createUniformGeneration: vi.fn(async () => "uniform generation created"),
+        deleteUniformGeneration: vi.fn(async () => "uniform generation deleted"),
+        updateUniformGeneration: vi.fn(async () => "uniform generation updated"),
     };
 });
 
 // ################## TESTS ##################
 describe('<UniformgenerationOffcanvas>', () => {
-    const { updateUniformGeneration, createUniformGeneration, deleteUniformGeneration } = jest.requireMock('@/dal/uniform/generation/_index');
-    const { mutate } = jest.requireMock('@/dataFetcher/uniformAdmin').useUniformTypeList();
-    const { useModal } = jest.requireMock('@/components/modals/modalProvider');
-    const { dangerConfirmationModal } = useModal();
-    const { toast } = jest.requireMock('react-toastify');
+    const { mutate } = useUniformTypeList();
+    const { dangerConfirmationModal } = useModal()!;
 
-    afterEach(() => jest.clearAllMocks());
+    afterEach(() => vi.clearAllMocks());
 
     describe('with generation', () => {
         it('renders the component', async () => {
@@ -209,7 +211,7 @@ describe('<UniformgenerationOffcanvas>', () => {
 
         it('hides on Cancel', async () => {
             const user = userEvent.setup();
-            const onHide = jest.fn();
+            const onHide = vi.fn();
             render(
                 <UniformgenerationOffcanvas
                     generation={null}
@@ -228,10 +230,10 @@ describe('<UniformgenerationOffcanvas>', () => {
     describe('dal methods', () => {
         describe('delete', () => {
             it('deletes generation', async () => {
-                const { dangerConfirmationModal } = useModal();
+                const { dangerConfirmationModal } = useModal()!;
                 // change mocks
-                deleteUniformGeneration.mockReturnValue('uniform generation deleted');
-                const onHide = jest.fn();
+                (deleteUniformGeneration as Mock).mockReturnValue('uniform generation deleted');
+                const onHide = vi.fn();
 
                 // render component
                 const user = userEvent.setup();
@@ -261,7 +263,7 @@ describe('<UniformgenerationOffcanvas>', () => {
                 });
 
                 // call delete function and validate actions
-                await dangerConfirmationModal.mock.calls[0][0].dangerOption.function();
+                await (dangerConfirmationModal as unknown as Mock).mock.calls[0][0].dangerOption.function();
                 expect(deleteUniformGeneration).toHaveBeenCalledTimes(1);
                 expect(deleteUniformGeneration).toHaveBeenCalledWith(testGeneration.id);
                 expect(mutate).toHaveBeenCalledTimes(1);
@@ -271,8 +273,8 @@ describe('<UniformgenerationOffcanvas>', () => {
             it('catches DAL-Exceptions', async () => {
 
                 // set mocks
-                deleteUniformGeneration.mockImplementationOnce(async () => { throw new Error("custom.error") });
-                const onHide = jest.fn();
+                (deleteUniformGeneration as Mock).mockImplementationOnce(async () => { throw new Error("custom.error") });
+                const onHide = vi.fn();
 
                 // render component
                 const user = userEvent.setup();
@@ -293,7 +295,7 @@ describe('<UniformgenerationOffcanvas>', () => {
                 expect(dangerConfirmationModal).toHaveBeenCalledTimes(1);
 
                 // call delete function and validate actions                
-                await dangerConfirmationModal.mock.calls[0][0].dangerOption.function();
+                await (dangerConfirmationModal as unknown as Mock).mock.calls[0][0].dangerOption.function();
                 expect(deleteUniformGeneration).toHaveBeenCalledTimes(1);
                 expect(mutate).toHaveBeenCalledTimes(1);
                 expect(onHide).not.toHaveBeenCalled();
@@ -306,7 +308,7 @@ describe('<UniformgenerationOffcanvas>', () => {
         describe('create', () => {
             it('creates succefully', async () => {
                 const user = userEvent.setup();
-                const onHide = jest.fn();
+                const onHide = vi.fn();
 
                 render(
                     <UniformgenerationOffcanvas
@@ -349,7 +351,7 @@ describe('<UniformgenerationOffcanvas>', () => {
             });
             it('catches form-errors', async () => {
                 const user = userEvent.setup();
-                createUniformGeneration.mockImplementationOnce(async () => {
+                (createUniformGeneration as Mock).mockImplementationOnce(async () => {
                     return {
                         error: {
                             message: "custom.uniform.generation.nameDuplication",
@@ -390,9 +392,9 @@ describe('<UniformgenerationOffcanvas>', () => {
                 expect(errorMessage).toBeInTheDocument();
             });
             it('catches DAL-Exception', async () => {
-                createUniformGeneration.mockImplementationOnce(async () => { throw new Error("custom.error") });
+                (createUniformGeneration as Mock).mockImplementationOnce(async () => { throw new Error("custom.error") });
                 const user = userEvent.setup();
-                const onHide = jest.fn();
+                const onHide = vi.fn();
 
                 render(
                     <UniformgenerationOffcanvas
@@ -426,7 +428,7 @@ describe('<UniformgenerationOffcanvas>', () => {
         describe('update', () => {
             it('updates succefully', async () => {
                 const user = userEvent.setup();
-                const onHide = jest.fn();
+                const onHide = vi.fn();
 
                 render(
                     <UniformgenerationOffcanvas
@@ -476,7 +478,7 @@ describe('<UniformgenerationOffcanvas>', () => {
             });
             it('catches form-errors', async () => {
                 const user = userEvent.setup();
-                updateUniformGeneration.mockImplementationOnce(async () => {
+                (updateUniformGeneration as Mock).mockImplementationOnce(async () => {
                     return {
                         error: {
                             message: "custom.uniform.generation.nameDuplication",
@@ -522,9 +524,9 @@ describe('<UniformgenerationOffcanvas>', () => {
                 expect(errorMessage).toBeInTheDocument();
             });
             it('catches DAL-Exceptions', async () => {
-                updateUniformGeneration.mockImplementationOnce(async () => { throw new Error("custom.error") });
+                (updateUniformGeneration as Mock).mockImplementationOnce(async () => { throw new Error("custom.error") });
                 const user = userEvent.setup();
-                const onHide = jest.fn();
+                const onHide = vi.fn();
 
                 render(
                     <UniformgenerationOffcanvas

@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { vi } from 'vitest';
 import { prisma } from "@/lib/db";
 import { __unsecuredGetUniformTypeList } from "./get";
 import { UniformTypeUpdateProps, update } from "./update";
+import { UniformType } from '@/prisma/client';
 
 vi.mock('./get', () => ({
     __unsecuredGetUniformTypeList: vi.fn(() => Promise.resolve('UpdatedList')),
@@ -43,9 +45,9 @@ describe('<UniformType> update', () => {
     ];
 
     beforeEach(() => {
-        mockFindMany.mockResolvedValue(existingTypes);
-        mockUpdate.mockResolvedValue({});
-        mockGetList.mockResolvedValue('UpdatedList');
+        mockFindMany.mockResolvedValue(existingTypes as unknown as UniformType[]);
+        mockUpdate.mockResolvedValue({} as unknown as UniformType);
+        mockGetList.mockResolvedValue('UpdatedList' as any);
     });
 
     it('should update uniform type successfully', async () => {

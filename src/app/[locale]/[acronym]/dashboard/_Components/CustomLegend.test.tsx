@@ -1,10 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CustomLegend, LegendItem, CustomLegendProps } from './CustomLegend';
+import { vi } from 'vitest';
 
 describe('CustomLegend', () => {
-    const mockOnVisibilityChange = jest.fn();
-    const mockOnItemHover = jest.fn();
+    const mockOnVisibilityChange = vi.fn();
+    const mockOnItemHover = vi.fn();
 
     const defaultItems: LegendItem[] = [
         { key: 'available', color: '#16a34a', description: 'Available' },
@@ -22,7 +23,7 @@ describe('CustomLegend', () => {
     };
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     // Group 1: Rendering Tests
@@ -675,8 +676,8 @@ describe('CustomLegend', () => {
                 render(
                     <CustomLegend
                         {...defaultProps}
-                        onVisibilityChange={jest.fn()}
-                        onItemHover={jest.fn()}
+                        onVisibilityChange={vi.fn()}
+                        onItemHover={vi.fn()}
                     />
                 );
 

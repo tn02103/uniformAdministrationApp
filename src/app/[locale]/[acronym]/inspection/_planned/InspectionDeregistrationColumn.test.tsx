@@ -2,15 +2,16 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { InspectionDeregistrationColumn } from "./InspectionDeregistrationColumn";
 import { mockInspectionList } from "./jestHelper";
+import { vi } from 'vitest';
 
 describe('<InspectionDeregistrationColumn />', () => {
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
     it('should render deregistration count and open offcanvas on click', async () => {
         const inspection = mockInspectionList[0]; // Use the first inspection from the mock data
 
-        const openOffcanvasMock = jest.fn();
+        const openOffcanvasMock = vi.fn();
         render(
             <InspectionDeregistrationColumn
                 inspection={inspection}
@@ -24,7 +25,7 @@ describe('<InspectionDeregistrationColumn />', () => {
     it('should call openOffcanvas when deregistration count is clicked', async () => {
         const inspection = mockInspectionList[0]; // Use the first inspection from the mock data
 
-        const openOffcanvasMock = jest.fn();
+        const openOffcanvasMock = vi.fn();
         const user = userEvent.setup();
         render(
             <InspectionDeregistrationColumn

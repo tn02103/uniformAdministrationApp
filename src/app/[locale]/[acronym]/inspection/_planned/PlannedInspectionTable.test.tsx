@@ -5,10 +5,12 @@ import { getAllByRole, getByRole, getByTestId, render, screen } from "@testing-l
 import userEvent from "@testing-library/user-event";
 import { PlannedInspectionTable } from "./PlannedInspectionTable";
 import { mockCadetList, mockInspectionList } from "./jestHelper";
+import { usePlannedInspectionList } from "@/dataFetcher/inspection";
+import { vi } from 'vitest';
 
 describe('<PlannedInspectionTable />', () => {
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('should render the table with inspections', () => {
@@ -26,10 +28,9 @@ describe('<PlannedInspectionTable />', () => {
     });
 
     it('should show "no inspections" message when there are no inspections', () => {
-        const { usePlannedInspectionList } = jest.requireMock("@/dataFetcher/inspection");
-        usePlannedInspectionList.mockReturnValueOnce({
+        vi.mocked(usePlannedInspectionList).mockReturnValueOnce({
             inspectionList: [],
-            mutate: jest.fn(),
+            mutate: vi.fn(),
         });
 
         render(
