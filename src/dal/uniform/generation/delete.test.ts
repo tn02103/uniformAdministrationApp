@@ -3,7 +3,7 @@
 import { prismaMock } from '@test-utils/prisma-mock';
 import { markDeleted } from "./delete";
 import { __unsecuredGetUniformTypeList } from "../type/get";
-import { mockTypeList } from "../../../../tests/_jestConfig/staticMockData";
+import { mockTypeList } from "../../../../vitest/staticMockData";
 import { checkDateTolerance } from "../../../../vitest/helpers/test-utils";
 
 // Mock dependencies

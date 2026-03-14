@@ -14,36 +14,36 @@ import { AuthRole } from '@/lib/AuthRoles';
 import crypto from 'crypto';
 
 // Mock AuthConfig
-jest.mock('./config', () => ({
+vi.mock('./config', () => ({
     AuthConfig: {
         refreshTokenCookie: 'refresh-token-cookie-name',
     },
 }));
 
 // Mock crypto - must use factory function that doesn't reference external variables
-jest.mock('crypto', () => {
-    const actualCrypto = jest.requireActual('crypto');
+vi.mock('crypto', async (importOriginal) => {
+    const actualCrypto = await importOriginal<typeof import('crypto')>();
     return {
         ...actualCrypto,
-        randomBytes: jest.fn(),
-        randomUUID: jest.fn(),
+        randomBytes: vi.fn(),
+        randomUUID: vi.fn(),
         default: {
-            ...actualCrypto.default,
-            randomBytes: jest.fn(),
-            randomUUID: jest.fn(),
+            ...actualCrypto,
+            randomBytes: vi.fn(),
+            randomUUID: vi.fn(),
         }
     };
 });
 
 // Get references to mocked functions
-const mockRandomBytes = jest.mocked(crypto.randomBytes);
-const mockRandomUUID = jest.mocked(crypto.randomUUID);
+const mockRandomBytes = vi.mocked(crypto.randomBytes);
+const mockRandomUUID = vi.mocked(crypto.randomUUID);
 
-const mockPrisma = prisma as jest.Mocked<typeof prisma>;
+const mockPrisma = vi.mocked(prisma);
 // Typed aliases for the refresh token mock functions (avoid repeated casting)
-const mockCreate = prisma.refreshToken.create as jest.Mock;
-const mockUpdate = prisma.refreshToken.update as jest.Mock;
-const mockUpdateMany = prisma.refreshToken.updateMany as jest.Mock;
+const mockCreate = vi.mocked(prisma.refreshToken.create);
+const mockUpdate = vi.mocked(prisma.refreshToken.update);
+const mockUpdateMany = vi.mocked(prisma.refreshToken.updateMany);
 
 describe('sha256Hex', () => {
     it('should return consistent hex hash for same input', () => {
@@ -64,7 +64,7 @@ describe('sha256Hex', () => {
 });
 
 describe('issueNewRefreshToken', () => {
-    const mockCookieSet = jest.fn();
+    const mockCookieSet = vi.fn();
     const mockCookies = {
         set: mockCookieSet,
     } as unknown as ReadonlyRequestCookies;
@@ -95,24 +95,24 @@ describe('issueNewRefreshToken', () => {
     };
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         
         // Wire up $transaction to pass the prisma mock as the client —
         // setup-dal-unit.ts does the same at module level, but this file
-        // has its own jest.mock('@/lib/db') override.
+        // has its own vi.mock('@/lib/db') override.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         mockPrisma.$transaction.mockImplementation(async (callback: any) => callback(prisma));
 
         // Default DB mock return values
-        mockCreate.mockResolvedValue({});
-        mockUpdateMany.mockResolvedValue({ count: 0 });
+        mockCreate.mockResolvedValue({} as any);
+        mockUpdateMany.mockResolvedValue({ count: 0 } as any);
         mockUpdate.mockResolvedValue({
             id: 'old-token-id',
             tokenFamilyId: 'family-123',
-        });
+        } as any);
 
         // Default crypto mocks
-        mockRandomBytes.mockReturnValue(Buffer.alloc(64, 'a')); // Exactly 64 bytes
+        mockRandomBytes.mockReturnValue(Buffer.alloc(64, 'a') as any); // Exactly 64 bytes
         mockRandomUUID.mockReturnValue('11111111-1111-1111-1111-111111111111');
     });
 
@@ -209,7 +209,7 @@ describe('issueNewRefreshToken', () => {
 
         it('should preserve token family ID from old token', async () => {
 
-            mockUpdate.mockResolvedValue({ id: 'old-token-id', tokenFamilyId: 'family-abc-456' });
+            mockUpdate.mockResolvedValue({ id: 'old-token-id', tokenFamilyId: 'family-abc-456' } as any);
             await issueNewRefreshToken(refreshProps);
 
             expect(mockCreate).toHaveBeenCalledWith({
@@ -291,7 +291,7 @@ describe('issueNewRefreshToken', () => {
     describe('Return Value', () => {
         it('should return plaintext token that was created', async () => {
 
-            mockRandomBytes.mockReturnValue(Buffer.from('a'.repeat(64)));
+            mockRandomBytes.mockReturnValue(Buffer.from('a'.repeat(64)) as any);
 
             const result = await issueNewRefreshToken({
                 ...baseProps,
@@ -341,12 +341,12 @@ describe('issueNewRefreshToken', () => {
 
     describe('Default endOfLife behavior', () => {
         beforeEach(() => {
-            jest.useFakeTimers();
-            jest.setSystemTime(new Date('2024-01-01T12:00:00.000Z'));
+            vi.useFakeTimers();
+            vi.setSystemTime(new Date('2024-01-01T12:00:00.000Z'));
         });
 
         afterEach(() => {
-            jest.useRealTimers();
+            vi.useRealTimers();
         });
 
         it('should default endOfLife to 3 days from now when not provided', async () => {
@@ -361,7 +361,7 @@ describe('issueNewRefreshToken', () => {
             const storedEndOfLife = createCall.data.endOfLife;
 
             const expectedDate = new Date('2024-01-04T12:00:00.000Z'); // 3 days later
-            expect(storedEndOfLife.getTime()).toBe(expectedDate.getTime());
+            expect((storedEndOfLife as Date).getTime()).toBe(expectedDate.getTime());
         });
 
         it('should use custom endOfLife when provided', async () => {
@@ -376,7 +376,7 @@ describe('issueNewRefreshToken', () => {
             const createCall = mockCreate.mock.calls[0][0];
             const storedEndOfLife = createCall.data.endOfLife;
 
-            expect(storedEndOfLife).toBe(customDate);
+            expect((storedEndOfLife as Date).getTime()).toBe(customDate.getTime());
         });
     });
 
@@ -389,12 +389,12 @@ describe('issueNewRefreshToken', () => {
         };
 
         beforeEach(() => {
-            jest.useFakeTimers();
-            jest.setSystemTime(new Date('2024-01-15T14:30:00.000Z'));
+            vi.useFakeTimers();
+            vi.setSystemTime(new Date('2024-01-15T14:30:00.000Z'));
         });
 
         afterEach(() => {
-            jest.useRealTimers();
+            vi.useRealTimers();
         });
 
         it('should set usedAt timestamp to current time', async () => {
@@ -405,7 +405,7 @@ describe('issueNewRefreshToken', () => {
             const usedAt = updateCall.data.usedAt;
 
             expect(usedAt).toBeInstanceOf(Date);
-            expect(usedAt.getTime()).toBe(new Date('2024-01-15T14:30:00.000Z').getTime());
+            expect((usedAt as Date).getTime()).toBe(new Date('2024-01-15T14:30:00.000Z').getTime());
         });
 
         it('should set usedIpAddress to provided IP address', async () => {
@@ -424,8 +424,8 @@ describe('issueNewRefreshToken', () => {
             const usedUserAgent = updateCall.data.usedUserAgent;
 
             expect(typeof usedUserAgent).toBe('string');
-            expect(() => JSON.parse(usedUserAgent)).not.toThrow();
-            expect(JSON.parse(usedUserAgent)).toEqual(mockUserAgent);
+            expect(() => JSON.parse(usedUserAgent as string)).not.toThrow();
+            expect(JSON.parse(usedUserAgent as string)).toEqual(mockUserAgent);
         });
 
         it('should change status from "active" to "rotated"', async () => {
@@ -492,12 +492,12 @@ describe('issueNewRefreshToken', () => {
 
     describe('Token revocation endOfLife filtering', () => {
         beforeEach(() => {
-            jest.useFakeTimers();
-            jest.setSystemTime(new Date('2024-01-15T12:00:00.000Z'));
+            vi.useFakeTimers();
+            vi.setSystemTime(new Date('2024-01-15T12:00:00.000Z'));
         });
 
         afterEach(() => {
-            jest.useRealTimers();
+            vi.useRealTimers();
         });
 
         it('should only revoke tokens with endOfLife > now', async () => {
@@ -508,7 +508,7 @@ describe('issueNewRefreshToken', () => {
             });
 
             const updateManyCall = mockUpdateMany.mock.calls[0][0];
-            expect(updateManyCall.where.endOfLife).toEqual({
+            expect(updateManyCall.where?.endOfLife).toEqual({
                 gt: new Date('2024-01-15T12:00:00.000Z')
             });
         });
@@ -516,7 +516,7 @@ describe('issueNewRefreshToken', () => {
 });
 
 describe('issueNewAccessToken', () => {
-    const mockSave = jest.fn();
+    const mockSave = vi.fn();
     const mockIronSession: {
         user?: {
             id: string;
@@ -528,7 +528,7 @@ describe('issueNewAccessToken', () => {
         };
         sessionId?: string;
         deviceId?: string;
-        save: jest.Mock;
+        save: vi.Mock;
     } = {
         user: undefined,
         sessionId: undefined,
@@ -551,7 +551,7 @@ describe('issueNewAccessToken', () => {
     };
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         mockIronSession.user = undefined;
         mockIronSession.sessionId = undefined;
         mockIronSession.deviceId = undefined;

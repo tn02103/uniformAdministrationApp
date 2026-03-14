@@ -19,13 +19,14 @@ describe('<UniformType> create', () => {
     const mockPrisma = prismaMock;
     
     afterEach(() => {
-        vi.clearAllMocks();
+        vi.restoreAllMocks();
         // Reset all mock implementations to their default state
         mockPrisma.uniformType.findFirst.mockReset();
         mockPrisma.uniformType.count.mockReset();
         mockPrisma.uniformType.create.mockReset();
     });
     it('should create a new uniform type', async () => {
+        global.__ORGANISATION__ = 'test-organisation-id';
         mockPrisma.uniformType.findFirst.mockResolvedValue(null);
         mockPrisma.uniformType.count.mockResolvedValue(4);
         mockPrisma.uniformType.create.mockResolvedValue("Created" as unknown as UniformType);

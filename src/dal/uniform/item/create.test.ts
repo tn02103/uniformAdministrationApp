@@ -2,7 +2,7 @@
 
 import { prismaMock as mockPrisma } from '@test-utils/prisma-mock';
 import { create } from "./create";
-import { mockTypeList, mockGenerationLists, mockSizeLists } from "../../../../tests/_jestConfig/staticMockData";
+import { mockTypeList, mockGenerationLists, mockSizeLists } from "../../../../vitest/staticMockData";
 
 const defaultWithSizes = {
     numberMap: [

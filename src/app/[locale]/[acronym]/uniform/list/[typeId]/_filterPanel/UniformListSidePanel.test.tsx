@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { mockTypeList, mockSizeLists } from "../../../../../../../../tests/_jestConfig/staticMockData";
+import { mockTypeList, mockSizeLists } from "../../../../../../../../vitest/staticMockData";
 import { UniformListSidePanel } from "./UniformListSidePanel";
 import { UniformType } from "@/types/globalUniformTypes";
 

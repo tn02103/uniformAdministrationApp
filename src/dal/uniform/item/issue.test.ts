@@ -4,7 +4,7 @@ import { prismaMock as mockPrisma } from '@test-utils/prisma-mock';
 import { genericSAValidator } from "@/actions/validations";
 import { __unsecuredReturnUniformitem } from "./return";
 import { __unsecuredGetCadetUniformMap } from "@/dal/cadet/uniformMap";
-import { mockGenerationLists, mockTypeList, mockUniformList } from "../../../../tests/_jestConfig/staticMockData";
+import { mockGenerationLists, mockTypeList, mockUniformList } from "../../../../vitest/staticMockData";
 import { issue } from "./issue";
 
 // Mock the dependencies

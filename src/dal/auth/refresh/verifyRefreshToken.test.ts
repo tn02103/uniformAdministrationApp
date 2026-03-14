@@ -25,16 +25,16 @@ import { AuthConfig } from '../config';
 import { authMockData, createMockDBToken, getCookieMockFactory, getMockUserAgent } from '../__testHelpers__/mockData';
 
 // Mock dependencies
-jest.mock('../helper.tokens', () => ({
-    sha256Hex: jest.fn(),
+vi.mock('../helper.tokens', () => ({
+    sha256Hex: vi.fn(),
 }));
 
-jest.mock('./handleReuse', () => ({
-    handleRefreshTokenReuse: jest.fn(),
+vi.mock('./handleReuse', () => ({
+    handleRefreshTokenReuse: vi.fn(),
 }));
 
-jest.mock('../helper', () => ({
-    validateDeviceFingerprint: jest.fn(),
+vi.mock('../helper', () => ({
+    validateDeviceFingerprint: vi.fn(),
     // Export RiskLevel enum so tests can use it
     RiskLevel: {
         LOW: 0,
@@ -44,14 +44,14 @@ jest.mock('../helper', () => ({
     },
 }));
 
-jest.mock('date-fns', () => ({
-    isValid: jest.fn(),
+vi.mock('date-fns', () => ({
+    isValid: vi.fn(),
 }));
 
-const mockSha256Hex = sha256Hex as jest.MockedFunction<typeof sha256Hex>;
-const mockHandleRefreshTokenReuse = handleRefreshTokenReuse as jest.MockedFunction<typeof handleRefreshTokenReuse>;
-const mockValidateDeviceFingerprint = validateDeviceFingerprint as jest.MockedFunction<typeof validateDeviceFingerprint>;
-const mockIsValid = isValid as jest.MockedFunction<typeof isValid>;
+const mockSha256Hex = vi.mocked(sha256Hex);
+const mockHandleRefreshTokenReuse = vi.mocked(handleRefreshTokenReuse);
+const mockValidateDeviceFingerprint = vi.mocked(validateDeviceFingerprint);
+const mockIsValid = vi.mocked(isValid);
 
 describe('verifyRefreshToken - Unit Tests', () => {
     const mockAgent = getMockUserAgent();
@@ -69,7 +69,7 @@ describe('verifyRefreshToken - Unit Tests', () => {
     };
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         
         // Default successful mocks
         mockSha256Hex.mockReturnValue(authMockData.refreshToken);

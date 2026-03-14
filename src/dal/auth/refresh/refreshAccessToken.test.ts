@@ -15,9 +15,8 @@
 
 import { AuthenticationException } from '@/errors/Authentication';
 import dayjs from '@/lib/dayjs';
+import { prisma } from '@/lib/db';
 import { getIronSession } from '@/lib/ironSession';
-import { PrismaClient } from '@/prisma/client';
-import { DeepMockProxy } from 'jest-mock-extended';
 import { cookies, headers } from 'next/headers';
 import { userAgent } from 'next/server';
 import { LogDebugLevel } from '../LogDebugLeve.enum';
@@ -49,37 +48,67 @@ import {
 import { refreshToken, type DBRefreshToken } from './refreshAccessToken';
 import { verifyRefreshToken } from './verifyRefreshToken';
 
+// Hoisted mock instance for rate-limiter-flexible (must be before vi.mock calls)
+const mockRateLimiterInstance = vi.hoisted(() => ({ get: vi.fn(), consume: vi.fn() }));
+
 // Mock all dependencies
-jest.mock('./verifyRefreshToken');
-jest.mock('./idempotency.redis');
-jest.mock('../helper');
-jest.mock('../helper.tokens');
-jest.mock('@/lib/ironSession');
-jest.mock('next/headers', () => ({
-    headers: jest.fn(),
-    cookies: jest.fn(),
+vi.mock('./verifyRefreshToken', () => ({
+    verifyRefreshToken: vi.fn(),
 }));
-jest.mock('next/server', () => ({
-    userAgent: jest.fn(),
+vi.mock('./idempotency.redis', () => ({
+    tryAcquireLockWithPolling: vi.fn(),
+    storeCachedResult: vi.fn(),
+    releaseLock: vi.fn(),
+}));
+vi.mock('../helper', () => ({
+    calculateSessionLifetime: vi.fn(),
+    getDeviceAccountFromCookies: vi.fn(),
+    getIPAddress: vi.fn(),
+    logSecurityAuditEntry: vi.fn(),
+    RiskLevel: {
+        LOW: 0,
+        MEDIUM: 1,
+        HIGH: 2,
+        SEVERE: 3,
+    },
+}));
+vi.mock('../helper.tokens', () => ({
+    issueNewAccessToken: vi.fn(),
+    issueNewRefreshToken: vi.fn(),
+    sha256Hex: vi.fn(),
+}));
+vi.mock('@/lib/ironSession', () => ({
+    getIronSession: vi.fn(),
+}));
+vi.mock('next/headers', () => ({
+    headers: vi.fn(),
+    cookies: vi.fn(),
+}));
+vi.mock('next/server', () => ({
+    userAgent: vi.fn(),
+}));
+vi.mock('rate-limiter-flexible', () => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    RateLimiterMemory: class { constructor() { return mockRateLimiterInstance as any; } },
 }));
 
-
-const mockVerifyRefreshToken = verifyRefreshToken as jest.MockedFunction<typeof verifyRefreshToken>;
-const mockTryAcquireLockWithPolling = tryAcquireLockWithPolling as jest.MockedFunction<typeof tryAcquireLockWithPolling>;
-const mockStoreCachedResult = storeCachedResult as jest.MockedFunction<typeof storeCachedResult>;
-const mockReleaseLock = releaseLock as jest.MockedFunction<typeof releaseLock>;
-const mockCalculateSessionLifetime = calculateSessionLifetime as jest.MockedFunction<typeof calculateSessionLifetime>;
-const mockLogSecurityAuditEntry = logSecurityAuditEntry as jest.MockedFunction<typeof logSecurityAuditEntry>;
-const mockGetDeviceAccountFromCookies = getDeviceAccountFromCookies as jest.MockedFunction<typeof getDeviceAccountFromCookies>;
-const mockGetIPAddress = getIPAddress as jest.MockedFunction<typeof getIPAddress>;
-const mockIssueNewAccessToken = issueNewAccessToken as jest.MockedFunction<typeof issueNewAccessToken>;
-const mockIssueNewRefreshToken = issueNewRefreshToken as jest.MockedFunction<typeof issueNewRefreshToken>;
-const mockSha256Hex = sha256Hex as jest.MockedFunction<typeof sha256Hex>;
-const mockGetIronSession = getIronSession as jest.MockedFunction<typeof getIronSession>;
-const mockHeaders = headers as jest.MockedFunction<typeof headers>;
-const mockCookies = cookies as jest.MockedFunction<typeof cookies>;
-const mockUserAgent = userAgent as jest.MockedFunction<typeof userAgent>;
-const mockPrisma = jest.requireMock('@/lib/db').prisma as DeepMockProxy<PrismaClient>;
+const mockVerifyRefreshToken = vi.mocked(verifyRefreshToken);
+const mockTryAcquireLockWithPolling = vi.mocked(tryAcquireLockWithPolling);
+const mockStoreCachedResult = vi.mocked(storeCachedResult);
+const mockReleaseLock = vi.mocked(releaseLock);
+const mockCalculateSessionLifetime = vi.mocked(calculateSessionLifetime);
+const mockLogSecurityAuditEntry = vi.mocked(logSecurityAuditEntry);
+const mockGetDeviceAccountFromCookies = vi.mocked(getDeviceAccountFromCookies);
+const mockGetIPAddress = vi.mocked(getIPAddress);
+const mockIssueNewAccessToken = vi.mocked(issueNewAccessToken);
+const mockIssueNewRefreshToken = vi.mocked(issueNewRefreshToken);
+const mockSha256Hex = vi.mocked(sha256Hex);
+const mockGetIronSession = vi.mocked(getIronSession);
+const mockHeaders = vi.mocked(headers);
+const mockCookies = vi.mocked(cookies);
+const mockUserAgent = vi.mocked(userAgent);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mockPrisma = prisma as any;
 
 describe('refreshToken - Unit Tests', () => {
     const mockAgent = getMockUserAgent()
@@ -97,15 +126,14 @@ describe('refreshToken - Unit Tests', () => {
     // Mock session
     type IronSession = Awaited<ReturnType<typeof getIronSession>>;
     const mockSession: Partial<IronSession> = {
-        destroy: jest.fn(),
-        save: jest.fn(),
+        destroy: vi.fn(),
+        save: vi.fn(),
     };
 
-    const { RateLimiterMemory } = jest.requireMock('rate-limiter-flexible');
-    const rateLimiterInstance = RateLimiterMemory();
+    const rateLimiterInstance = mockRateLimiterInstance;
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
 
         // Default mock implementations
         mockHeaders.mockResolvedValue(headerFactory());
@@ -130,6 +158,7 @@ describe('refreshToken - Unit Tests', () => {
         rateLimiterInstance.get.mockResolvedValue(({
             remainingPoints: 10,
         }));
+        rateLimiterInstance.consume.mockResolvedValue({ remainingPoints: 9 });
     });
 
     describe('Precondition Checks', () => {

@@ -8,18 +8,17 @@
 import { acquireLock, getCachedResult, releaseLock, storeCachedResult, tryAcquireLockWithPolling } from './idempotency.redis';
 import { createMockCachedRefreshData, mockConsoleWarn } from '../__testHelpers__/mockFactories';
 import { authMockData, getCookieMockFactory } from '../__testHelpers__/mockData';
+import { redis, isRedisAvailable } from '../redis';
+import { handleRetryRequest } from './handleRetryRequest';
 
-// Mock functions - must be declared before jest.mock()
-// but jest.mock() hoists, so we need to define them in the mock factory
-
-
-jest.mock('../redis', () => {
-    const isRedisAvailable = jest.fn(() => true);
+// Mock functions
+vi.mock('../redis', () => {
+    const isRedisAvailable = vi.fn(() => true);
     const redis = {
-        set: jest.fn(),
-        del: jest.fn(),
-        setex: jest.fn(),
-        get: jest.fn(),
+        set: vi.fn(),
+        del: vi.fn(),
+        setex: vi.fn(),
+        get: vi.fn(),
     };
     return {
         isRedisAvailable,
@@ -27,18 +26,17 @@ jest.mock('../redis', () => {
     };
 });
 
-jest.mock('./handleRetryRequest', () => {
-    const handleRetryRequest = jest.fn();
-    return {
-        handleRetryRequest
-    };
-});
+vi.mock('./handleRetryRequest', () => ({
+    handleRetryRequest: vi.fn(),
+}));
 
 describe('Redis Idempotency Helpers', () => {
-    const { redis: mockRedis, isRedisAvailable: mockIsRedisAvailable } = jest.requireMock('../redis')
-    const { handleRetryRequest: mockHandleRetryRequest } = jest.requireMock('./handleRetryRequest');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mockRedis = redis as any;
+    const mockIsRedisAvailable = vi.mocked(isRedisAvailable);
+    const mockHandleRetryRequest = vi.mocked(handleRetryRequest);
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         mockIsRedisAvailable.mockReturnValue(true);
     });
 
@@ -218,11 +216,11 @@ describe('Redis Idempotency Helpers', () => {
         }).cookieFactory();
 
         beforeEach(() => {
-            jest.useFakeTimers();
+            vi.useFakeTimers();
         });
 
         afterEach(() => {
-            jest.useRealTimers();
+            vi.useRealTimers();
         });
 
         it('should return {lockAcquired: true} when lock acquired immediately', async () => {
@@ -263,7 +261,7 @@ describe('Redis Idempotency Helpers', () => {
             );
 
             // Advance timers to trigger polling
-            await jest.advanceTimersByTimeAsync(250); // 3 polls at 100ms each
+            await vi.advanceTimersByTimeAsync(250); // 3 polls at 100ms each
 
             const result = await promise;
 
@@ -289,7 +287,7 @@ describe('Redis Idempotency Helpers', () => {
                 mockCookies
             );
 
-            await jest.advanceTimersByTimeAsync(100);
+            await vi.advanceTimersByTimeAsync(100);
 
             const result = await promise;
 
@@ -322,7 +320,7 @@ describe('Redis Idempotency Helpers', () => {
                 mockCookies
             );
 
-            await jest.advanceTimersByTimeAsync(100);
+            await vi.advanceTimersByTimeAsync(100);
 
             const result = await promise;
 
@@ -345,7 +343,7 @@ describe('Redis Idempotency Helpers', () => {
                 mockCookies
             );
 
-            await jest.advanceTimersByTimeAsync(5100); // Just over 5 seconds
+            await vi.advanceTimersByTimeAsync(5100); // Just over 5 seconds
 
             const result = await promise;
 
@@ -375,10 +373,10 @@ describe('Redis Idempotency Helpers', () => {
             );
 
             // Advance 1 second (should be ~10 polls)
-            await jest.advanceTimersByTimeAsync(1000);
+            await vi.advanceTimersByTimeAsync(1000);
 
             // Let it finish
-            await jest.advanceTimersByTimeAsync(5000);
+            await vi.advanceTimersByTimeAsync(5000);
             await promise;
 
             // Should have polled roughly 50 times (5 seconds / 100ms)

@@ -169,10 +169,10 @@ export const getHeaderGetMockImplementation = (overwrites?: HeaderOverwrites) =>
 
 export const getNextHeaderMockFactory = () => {
     const header = {
-        get: jest.fn(),
-        set: jest.fn(),
-        has: jest.fn(),
-        delete: jest.fn(),
+        get: vi.fn(),
+        set: vi.fn(),
+        has: vi.fn(),
+        delete: vi.fn(),
     }
     return {
         headerFactory: (overwrites?: { ipAddress?: string, ua?: string, idempotencyKey?: string }) => {
@@ -190,10 +190,10 @@ type HeaderOverwrites = {
 }
 export const getNextHeaderMock = (overwrites?: HeaderOverwrites): HeaderList => {
     return {
-        get: jest.fn(getHeaderGetMockImplementation(overwrites)),
-        set: jest.fn(),
-        has: jest.fn(),
-        delete: jest.fn(),
+        get: vi.fn(getHeaderGetMockImplementation(overwrites)),
+        set: vi.fn(),
+        has: vi.fn(),
+        delete: vi.fn(),
     } as unknown as HeaderList;
 }
 
@@ -209,12 +209,12 @@ export const getCookieMockFactory = (defaultValues: { deviceId: string, organisa
         otherAccounts: []
     };
     const mocks = {
-        set: jest.fn(),
-        has: jest.fn(),
-        delete: jest.fn(),
-        size: jest.fn(),
-        getAll: jest.fn(),
-        get: jest.fn(),
+        set: vi.fn(),
+        has: vi.fn(),
+        delete: vi.fn(),
+        size: vi.fn(),
+        getAll: vi.fn(),
+        get: vi.fn(),
     }
     return {
         cookieFactory: (overwrites?: { refreshToken?: string | null; deviceCookie?: DeviceIdsCookie | null }) => {

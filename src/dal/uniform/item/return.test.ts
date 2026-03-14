@@ -1,7 +1,7 @@
 import type { PrismaClient } from '@/prisma/client';
 import { prismaMock as mockPrisma } from '@test-utils/prisma-mock';
 import { returnItem, __unsecuredReturnUniformitem } from "./return";
-import { mockUniformList } from "../../../../tests/_jestConfig/staticMockData";
+import { mockUniformList } from "../../../../vitest/staticMockData";
 import { __unsecuredGetCadetUniformMap } from "@/dal/cadet/uniformMap";
 
 // Mock the dependencies

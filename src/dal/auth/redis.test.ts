@@ -53,7 +53,7 @@ describe('Redis Infrastructure - Configuration', () => {
         });
 
         it('should log appropriate errors but not crash', () => {
-            const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
             
             console.error('Redis: Failed to establish initial connection:', 'timeout');
             console.error('Redis: Application will continue without Redis features');

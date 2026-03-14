@@ -5,30 +5,26 @@ import { calculateSessionLifetime, DeviceIdsCookie, DeviceIdsCookieAccount, getI
 import { verifyEmailCode } from "./email/verifyCode";
 import { getMockUserAgent } from './__testHelpers__/mockData';
 import { __unsecuredVerifyTwoFactorCode } from "./2fa/verify";
+import { prisma } from "@/lib/db";
 
 // Mock dependencies
-jest.mock('@/lib/db', () => ({
+vi.mock('@/lib/db', () => ({
     prisma: {
         user: {
-            findUnique: jest.fn(),
+            findUnique: vi.fn(),
         },
     },
 }));
 
-jest.mock('./email/verifyCode', () => ({
-    verifyEmailCode: jest.fn(),
+vi.mock('./email/verifyCode', () => ({
+    verifyEmailCode: vi.fn(),
 }));
 
-jest.mock('./2fa/verify', () => ({
-    __unsecuredVerifyTwoFactorCode: jest.fn(),
+vi.mock('./2fa/verify', () => ({
+    __unsecuredVerifyTwoFactorCode: vi.fn(),
 }));
 
-jest.mock('@/lib/dayjs', () => {
-    const actualDayjs = jest.requireActual('dayjs');
-    return actualDayjs;
-});
-
-jest.mock('./config', () => ({
+vi.mock('./config', () => ({
     AuthConfig: {
         sessionAgesInDays: {
             no2FA: 7,
@@ -41,9 +37,9 @@ jest.mock('./config', () => ({
     },
 }));
 
-const mockPrisma = jest.requireMock('@/lib/db').prisma;
-const mockVerifyEmailCode = verifyEmailCode as jest.MockedFunction<typeof verifyEmailCode>;
-const mockUnsecuredVerifyTwoFactorCode = __unsecuredVerifyTwoFactorCode as jest.MockedFunction<typeof __unsecuredVerifyTwoFactorCode>;
+const mockPrisma = vi.mocked(prisma);
+const mockVerifyEmailCode = vi.mocked(verifyEmailCode);
+const mockUnsecuredVerifyTwoFactorCode = vi.mocked(__unsecuredVerifyTwoFactorCode);
 
 describe('getDeviceAccountFromCookies', () => {
     const mockAccounts: DeviceIdsCookieAccount[] = [
@@ -52,7 +48,7 @@ describe('getDeviceAccountFromCookies', () => {
         { deviceId: '0a310e23-1d1e-44d8-8bfa-cba1d35ef266', organisationId: 'bbc41e16-712f-497d-90b4-0cb17ee3784d', lastUsedAt: "2024-02-06T00:00:00.000Z" },
     ];
     const mockCookieList = {
-        get: jest.fn()
+        get: vi.fn()
     }
     beforeEach(() => {
         const mockValue = JSON.stringify(getMockValue());
@@ -371,7 +367,7 @@ describe('validateDeviceFingerprint', () => {
 describe('getIPAddress', () => {
     it('should return true-client-ip header when present', () => {
         const mockHeaders = {
-            get: jest.fn((header: string) => {
+            get: vi.fn((header: string) => {
                 if (header === 'true-client-ip') return '203.0.113.1';
                 if (header === 'x-forwarded-for') return '198.51.100.1';
                 return null;
@@ -385,7 +381,7 @@ describe('getIPAddress', () => {
 
     it('should fall back to x-forwarded-for when true-client-ip is not present', () => {
         const mockHeaders = {
-            get: jest.fn((header: string) => {
+            get: vi.fn((header: string) => {
                 if (header === 'x-forwarded-for') return '198.51.100.1';
                 return null;
             })
@@ -399,7 +395,7 @@ describe('getIPAddress', () => {
 
     it('should return "Unknown IP" when neither header is present', () => {
         const mockHeaders = {
-            get: jest.fn(() => null)
+            get: vi.fn(() => null)
         } as any;
 
         const result = getIPAddress(mockHeaders);
@@ -413,12 +409,12 @@ describe('calculateSessionLifetime', () => {
     const baseDate = new Date('2024-01-01T12:00:00.000Z');
 
     beforeEach(() => {
-        jest.useFakeTimers();
-        jest.setSystemTime(baseDate);
+        vi.useFakeTimers();
+        vi.setSystemTime(baseDate);
     });
 
     afterEach(() => {
-        jest.useRealTimers();
+        vi.useRealTimers();
     });
 
     describe('MFA-based base lifetime', () => {
@@ -649,7 +645,7 @@ describe('calculateSessionLifetime', () => {
 
 describe('getUserMFAConfig', () => {
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('should throw error when user is not found', async () => {
@@ -828,7 +824,7 @@ describe('verifyMFAToken', () => {
     };
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('should call verifyEmailCode when appId is "email"', async () => {

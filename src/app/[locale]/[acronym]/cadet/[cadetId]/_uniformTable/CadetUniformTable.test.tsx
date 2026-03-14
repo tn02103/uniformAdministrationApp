@@ -2,7 +2,7 @@ import React from "react";
 import { getByTestId, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CadetUniformTable } from "./CadetUniformTable";
-import { mockTypeList, mockUniformList } from "../../../../../../../tests/_jestConfig/staticMockData";
+import { mockTypeList, mockUniformList } from "../../../../../../../vitest/staticMockData";
 import type { CadetUniformMap } from "@/types/globalCadetTypes";
 import { CadetUniformTableItemRowProps } from "./CadetUniformTableItemRow";
 import { CadetUniformTableIssueModalProps } from "./CadetUniformTableIssueModal";

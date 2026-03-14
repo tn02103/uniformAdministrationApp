@@ -19,7 +19,6 @@
  *      RateLimiterMemory state between test groups.
  */
 
-import { jest } from '@jest/globals';
 import dayjs from '@/lib/dayjs';
 import { prisma } from '@/lib/db';
 import { getIronSession } from '@/lib/ironSession';
@@ -38,50 +37,50 @@ import { redis } from '@/dal/auth/redis';
 import { refreshToken as refreshAccessToken } from './refreshAccessToken';
 
 // ===== REDIS MOCK (ioredis-mock) =====
-// The jest.mock factory is hoisted but runs lazily on first import.
+// The vi.mock factory is hoisted but runs lazily on first import.
 // `redis` imported above will be the ioredis-mock instance because the
-// moduleNameMapper in jest.dal-integration.config.ts maps ioredis → ioredis-mock,
+// resolve.alias in vitest.dal-integration.config.ts maps ioredis → ioredis-mock,
 // and the factory here exposes that instance together with the stub helpers.
-jest.mock('@/dal/auth/redis', () => {
+vi.mock('@/dal/auth/redis', () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const IORedisMock = require('ioredis-mock');
     return {
         redis: new IORedisMock(),
-        isRedisAvailable: jest.fn().mockReturnValue(true),
-        isRedisConfiguredButUnavailable: jest.fn().mockReturnValue(false),
+        isRedisAvailable: vi.fn().mockReturnValue(true),
+        isRedisConfiguredButUnavailable: vi.fn().mockReturnValue(false),
     };
 });
 
 // ===== EMAIL MOCK =====
-jest.mock('@/lib/email/tokenReuseDetected', () => ({
-    sendTokenReuseDetectedEmail: jest.fn().mockResolvedValue(undefined),
+vi.mock('@/lib/email/tokenReuseDetected', () => ({
+    sendTokenReuseDetectedEmail: vi.fn().mockResolvedValue(undefined),
 }));
 
 // ===== NEXT.JS MOCKS =====
-const mockCookiesGet = jest.fn();
-const mockCookiesSet = jest.fn();
-const mockHeadersGet = jest.fn();
+const mockCookiesGet = vi.fn();
+const mockCookiesSet = vi.fn();
+const mockHeadersGet = vi.fn();
 
-jest.mock('next/headers', () => ({
-    cookies: jest.fn(async () => ({
+vi.mock('next/headers', () => ({
+    cookies: vi.fn(async () => ({
         get: mockCookiesGet,
         set: mockCookiesSet,
-        getAll: jest.fn(() => []),
-        has: jest.fn((name: string) => !!mockCookiesGet(name)?.value),
+        getAll: vi.fn(() => []),
+        has: vi.fn((name: string) => !!mockCookiesGet(name)?.value),
     })),
-    headers: jest.fn(async () => ({
+    headers: vi.fn(async () => ({
         get: mockHeadersGet,
     })),
 }));
 
-jest.mock('next/server', () => ({
-    userAgent: jest.fn(() => getMockUserAgent()),
+vi.mock('next/server', () => ({
+    userAgent: vi.fn(() => getMockUserAgent()),
 }));
 
 // ===== IRON SESSION MOCK =====
-const mockGetIronSession = getIronSession as jest.MockedFunction<typeof getIronSession>;
-const mockIronSessionSave = jest.fn();
-const mockIronSessionDestroy = jest.fn();
+const mockGetIronSession = vi.mocked(getIronSession);
+const mockIronSessionSave = vi.fn();
+const mockIronSessionDestroy = vi.fn();
 
 // ===== IP CONSTANTS (one per describe group — isolates RateLimiterMemory) =====
 const IPS = {
@@ -128,7 +127,7 @@ describe('refreshAccessToken Integration Tests', () => {
 
     // ===== COMMON SETUP (runs before every test) =====
     beforeEach(async () => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         await flushRedis();
 
         // Iron session spy
@@ -137,7 +136,7 @@ describe('refreshAccessToken Integration Tests', () => {
             sessionId: undefined,
             save: mockIronSessionSave,
             destroy: mockIronSessionDestroy,
-            updateConfig: jest.fn(),
+            updateConfig: vi.fn(),
         } as unknown as Awaited<ReturnType<typeof getIronSession>>);
 
         // Default headers / cookies (overridden per describe group below)
@@ -264,13 +263,13 @@ describe('refreshAccessToken Integration Tests', () => {
             expect(newTokenValue).toBeDefined();
 
             // Set up for second rotation with the new token
-            jest.clearAllMocks();
+            vi.clearAllMocks();
             mockGetIronSession.mockResolvedValue({
                 user: undefined,
                 sessionId: undefined,
                 save: mockIronSessionSave,
                 destroy: mockIronSessionDestroy,
-                updateConfig: jest.fn(),
+                updateConfig: vi.fn(),
             } as unknown as Awaited<ReturnType<typeof getIronSession>>);
 
             const { cookieFactory: newCookieFactory } = getCookieMockFactory({
@@ -620,7 +619,7 @@ describe('refreshAccessToken Integration Tests', () => {
 
             // 3. Second request: same key + token, different UA → 403
             const { userAgent: mockUserAgent } = await import('next/server');
-            (mockUserAgent as jest.Mock).mockReturnValueOnce(
+            vi.mocked(mockUserAgent).mockReturnValueOnce(
                 mockUserAgentVariants.firefoxMobile
             );
 

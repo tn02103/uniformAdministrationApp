@@ -14,22 +14,22 @@ import { createMockCachedRefreshData } from '../__testHelpers__/mockFactories';
 import { authMockData, getCookieMockFactory, getMockUserAgent, mockUserAgentVariants } from '../__testHelpers__/mockData';
 
 // Mock dependencies
-jest.mock('../helper.tokens', () => ({
-    sha256Hex: jest.fn(),
+vi.mock('../helper.tokens', () => ({
+    sha256Hex: vi.fn(),
 }));
 
-jest.mock('../helper', () => ({
-    logSecurityAuditEntry: jest.fn(),
+vi.mock('../helper', () => ({
+    logSecurityAuditEntry: vi.fn(),
 }));
 
-jest.mock('../config', () => ({
+vi.mock('../config', () => ({
     AuthConfig: {
         refreshTokenCookie: 'test-refresh-token',
     },
 }));
 
-const mockSha256Hex = sha256Hex as jest.MockedFunction<typeof sha256Hex>;
-const mockLogSecurityAuditEntry = logSecurityAuditEntry as jest.MockedFunction<typeof logSecurityAuditEntry>;
+const mockSha256Hex = vi.mocked(sha256Hex);
+const mockLogSecurityAuditEntry = vi.mocked(logSecurityAuditEntry);
 
 describe('handleRetryRequest - Metadata Validation', () => {
     const mockAgent = getMockUserAgent();
@@ -45,7 +45,7 @@ describe('handleRetryRequest - Metadata Validation', () => {
     });
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         mockLogSecurityAuditEntry.mockResolvedValue(undefined);
     });
 

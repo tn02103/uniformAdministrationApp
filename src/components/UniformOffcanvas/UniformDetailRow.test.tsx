@@ -2,7 +2,7 @@ import "./UniformOffcanvasJestHelper";
 
 import { getAllByRole, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { mockGenerationLists, mockSizeLists, mockTypeList } from "../../../tests/_jestConfig/staticMockData";
+import { mockGenerationLists, mockSizeLists, mockTypeList } from "../../../vitest/staticMockData";
 import { UniformDetailRow, UniformDetailRowProps } from "./UniformDetailRow";
 import { mockUniform } from "./UniformOffcanvasJestHelper";
 

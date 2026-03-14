@@ -2,7 +2,7 @@
 
 import { prismaMock as mockPrisma } from '@test-utils/prisma-mock';
 import { update } from "./update";
-import { mockUniformList, mockTypeList, mockGenerationLists, mockSizeLists } from "../../../../tests/_jestConfig/staticMockData";
+import { mockUniformList, mockTypeList, mockGenerationLists, mockSizeLists } from "../../../../vitest/staticMockData";
 import { UniformFormType } from "@/zod/uniform";
 import { uniformWithOwnerArgs } from "@/types/globalUniformTypes";
 

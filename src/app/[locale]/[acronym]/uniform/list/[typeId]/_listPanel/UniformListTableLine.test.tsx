@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { UniformListTableLine, UniformListTableLineProps } from "./UniformListTableLine";
-import { mockTypeList, mockUniformList } from "../../../../../../../../tests/_jestConfig/staticMockData";
+import { mockTypeList, mockUniformList } from "../../../../../../../../vitest/staticMockData";
 import { AuthRole } from "@/lib/AuthRoles";
 import dayjs from "@/lib/dayjs";
 import { vi } from "vitest";

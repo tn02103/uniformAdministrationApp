@@ -157,6 +157,21 @@ const prismaMock = {
         create: vi.fn(),
         delete: vi.fn(),
     },
+    refreshToken: {
+        create: vi.fn(),
+        update: vi.fn(),
+        updateMany: vi.fn(),
+        findFirst: vi.fn(),
+        findMany: vi.fn(),
+        findUnique: vi.fn(),
+        deleteMany: vi.fn(),
+        count: vi.fn(),
+    },
+    session: {
+        updateMany: vi.fn(),
+        findUnique: vi.fn(),
+        update: vi.fn(),
+    },
     $executeRaw: vi.fn(),
 };
 
@@ -182,7 +197,7 @@ vi.mock('@/lib/ironSession', () => ({
         user: {
             name: 'Test User',
             username: global.__USERNAME__ ?? 'testuser',
-            assosiation: global.__ASSOSIATION__ ?? 'test-assosiation-id',
+            organisationId: global.__ORGANISATION__ ?? 'test-organisation-id',
             acronym: 'TEST',
             role: global.__ROLE__ ?? AuthRole.materialManager,
         }
@@ -198,11 +213,11 @@ vi.mock('next/cache', () => ({
 
 vi.mock("@/actions/validations", () => ({
     genericSAValidator: vi.fn((_, props) => Promise.resolve([{
-        assosiation: global.__ASSOSIATION__ ?? 'test-assosiation-id',
+        organisationId: global.__ORGANISATION__ ?? 'test-organisation-id',
         username: global.__USERNAME__ ?? 'testuser',
     }, props])),
     genericSANoDataValidator: vi.fn(() => Promise.resolve([{
-        assosiation: global.__ASSOSIATION__ ?? 'test-assosiation-id',
+        organisationId: global.__ORGANISATION__ ?? 'test-organisation-id',
         username: global.__USERNAME__ ?? 'testuser'
     }])),
 }));

@@ -76,7 +76,7 @@ describe("<StorageUnit> addUniform", () => {
             where: { id: defaultProps.uniformId },
             data: { storageUnitId: defaultProps.storageUnitId }
         });
-        expect(getUnitsWithUniformItems).toHaveBeenCalledWith('test-assosiation-id', prisma);
+        expect(getUnitsWithUniformItems).toHaveBeenCalledWith('test-organisation-id', prisma);
         expect(result).toBe("unitsWithUniformItems");
     });
 

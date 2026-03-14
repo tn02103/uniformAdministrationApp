@@ -72,6 +72,6 @@ export const createMockCachedRefreshData = (
  * expect(spy).toHaveBeenCalledWith(expect.stringContaining('warning'));
  * spy.mockRestore();
  */
-export const mockConsoleWarn = (): jest.SpyInstance => {
-    return jest.spyOn(console, 'warn').mockImplementation();
+export const mockConsoleWarn = () => {
+    return vi.spyOn(console, 'warn').mockImplementation(() => {});
 };

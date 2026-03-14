@@ -1,7 +1,7 @@
 import { UniformWithOwner } from "@/types/globalUniformTypes";
 import { render, screen, waitForElementToBeRemoved } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { mockTypeList, mockUniformList } from "../../../../../../../../tests/_jestConfig/staticMockData";
+import { mockTypeList, mockUniformList } from "../../../../../../../../vitest/staticMockData";
 import { UniformListTable } from "./UniformListTable";
 import { getUniformListWithOwner } from "@/dal/uniform/item/_index";
 

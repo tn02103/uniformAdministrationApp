@@ -1,5 +1,5 @@
 import { Deficiency } from "@/types/deficiencyTypes";
-import { mockGenerationLists, mockSizeLists, mockTypeList } from "../../../tests/_jestConfig/staticMockData";
+import { mockGenerationLists, mockSizeLists, mockTypeList } from "../../../vitest/staticMockData";
 import { AuthRole } from "@/lib/AuthRoles";
 import { UniformHistroyEntry, UniformWithOwner } from "@/types/globalUniformTypes";
 

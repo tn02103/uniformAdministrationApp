@@ -1,5 +1,5 @@
 import { StorageUnitWithUniformItems } from "@/dal/storageUnit/get";
-import { mockUniformList } from "../../../../../../tests/_jestConfig/staticMockData";
+import { mockUniformList } from "../../../../../../vitest/staticMockData";
 import { UniformItemLabel } from "@/dal/uniform/item/_index";
 
 

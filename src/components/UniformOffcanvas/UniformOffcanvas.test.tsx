@@ -3,7 +3,7 @@ import "./UniformOffcanvasJestHelper";
 import { AuthRole } from "@/lib/AuthRoles";
 import { getAllByRole, getByLabelText, getByText, queryAllByRole, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { mockTypeList } from "../../../tests/_jestConfig/staticMockData";
+import { mockTypeList } from "../../../vitest/staticMockData";
 import { UniformOffcanvas } from "./UniformOffcanvas";
 import { mockUniform } from "./UniformOffcanvasJestHelper";
 import * as modalProvider from '../modals/modalProvider';

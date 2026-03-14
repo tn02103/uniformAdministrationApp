@@ -2,7 +2,7 @@ import * as usehooks from 'usehooks-ts';
 import { UniformSize, UniformType } from "@/types/globalUniformTypes";
 import { getByLabelText, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { mockSizeLists, mockTypeList } from "../../../../../../../../tests/_jestConfig/staticMockData";
+import { mockSizeLists, mockTypeList } from "../../../../../../../../vitest/staticMockData";
 import { UniformListFilter } from "./UniformListFilter";
 
 

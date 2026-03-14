@@ -1,6 +1,6 @@
 import { getAllByRole, getByRole, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { mockTypeList } from "../../../../../../../tests/_jestConfig/staticMockData";
+import { mockTypeList } from "../../../../../../../vitest/staticMockData";
 import { CadetUniformTableIssueModal, CadetUniformTableIssueModalProps } from "./CadetUniformTableIssueModal";
 import { UniformItemLabel } from "@/dal/uniform/item/_index";
 import { useCadetUniformMap } from "@/dataFetcher/cadet";

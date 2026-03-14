@@ -12,8 +12,7 @@
 
 import { AuthenticationException } from '@/errors/Authentication';
 import { sendTokenReuseDetectedEmail } from '@/lib/email/tokenReuseDetected';
-import { PrismaClient } from '@/prisma/client';
-import { DeepMockProxy } from 'jest-mock-extended';
+import { prisma } from '@/lib/db';
 import { LogDebugLevel } from '../LogDebugLeve.enum';
 import { createMockAuthExceptionData } from '../__testHelpers__/mockFactories';
 import { getMockUserAgent } from '../__testHelpers__/mockData';
@@ -23,8 +22,8 @@ import { handleRefreshTokenReuse } from './handleReuse';
 import { DBRefreshToken } from './refreshAccessToken';
 
 // Mock dependencies
-jest.mock('../helper', () => ({
-    validateDeviceFingerprint: jest.fn(),
+vi.mock('../helper', () => ({
+    validateDeviceFingerprint: vi.fn(),
     RiskLevel: {
         LOW: 0,
         MEDIUM: 1,
@@ -33,18 +32,19 @@ jest.mock('../helper', () => ({
     },
 }));
 
-jest.mock('../redis', () => ({
-    isRedisAvailable: jest.fn(),
+vi.mock('../redis', () => ({
+    isRedisAvailable: vi.fn(),
 }));
 
-jest.mock('@/lib/email/tokenReuseDetected', () => ({
-    sendTokenReuseDetectedEmail: jest.fn(),
+vi.mock('@/lib/email/tokenReuseDetected', () => ({
+    sendTokenReuseDetectedEmail: vi.fn(),
 }));
 
-const mockValidateDeviceFingerprint = validateDeviceFingerprint as jest.MockedFunction<typeof validateDeviceFingerprint>;
-const mockIsRedisAvailable = isRedisAvailable as jest.MockedFunction<typeof isRedisAvailable>;
-const mockSendTokenReuseDetectedEmail = sendTokenReuseDetectedEmail as jest.MockedFunction<typeof sendTokenReuseDetectedEmail>;
-const mockPrisma = jest.requireMock('@/lib/db').prisma as DeepMockProxy<PrismaClient>;
+const mockValidateDeviceFingerprint = vi.mocked(validateDeviceFingerprint);
+const mockIsRedisAvailable = vi.mocked(isRedisAvailable);
+const mockSendTokenReuseDetectedEmail = vi.mocked(sendTokenReuseDetectedEmail);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mockPrisma = prisma as any;
 
 describe('handleRefreshTokenReuse - Unit Tests', () => {
     const mockAgent = getMockUserAgent();
@@ -70,11 +70,11 @@ describe('handleRefreshTokenReuse - Unit Tests', () => {
     });
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
 
         // Use fake timers and set system time
-        jest.useFakeTimers();
-        jest.setSystemTime(currentTime);
+        vi.useFakeTimers();
+        vi.setSystemTime(currentTime);
 
         // Default mock implementations
         mockValidateDeviceFingerprint.mockResolvedValue({
@@ -89,7 +89,7 @@ describe('handleRefreshTokenReuse - Unit Tests', () => {
 
     afterEach(() => {
         // Restore real timers
-        jest.useRealTimers();
+        vi.useRealTimers();
     });
 
     describe('Precondition Validation', () => {
