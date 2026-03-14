@@ -5,15 +5,15 @@ import NavLink from './NavLink';
 import { AuthRole } from '../../lib/AuthRoles';
 import { useSidebarContext } from './Sidebar';
 import { useGlobalData } from '../globalDataProvider';
-import { vi, type MockedFunction } from 'vitest';
+import { MockedFunction } from 'vitest';
 
 // Mock the context hooks
-jest.mock('./Sidebar', () => ({
+vi.mock('./Sidebar', () => ({
     useSidebarContext: vi.fn(),
 }));
 
 // Mock Next.js Link component
-jest.mock('next/link', () => ({
+vi.mock('next/link', () => ({
     default: function MockLink({ children, href, className, onClick, ...props }: React.ComponentProps<'a'>) {
         return (
             <a href={href} className={className} onClick={onClick} {...props}>
@@ -24,7 +24,7 @@ jest.mock('next/link', () => ({
 }));
 
 // Mock Bootstrap components
-jest.mock('react-bootstrap', () => ({
+vi.mock('react-bootstrap', () => ({
     OverlayTrigger: ({ children, show, overlay, delay }: { children: React.ReactNode, show?: boolean | undefined, overlay?: React.ReactNode, delay?: { show: number, hide: number } }) => (
         <div data-testid="overlay-trigger" data-show={show} data-delay={JSON.stringify(delay)}>
             {children}

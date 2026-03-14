@@ -4,7 +4,7 @@ import { getByLabelText, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { mockSizeLists, mockTypeList } from "../../../../../../../../tests/_jestConfig/staticMockData";
 import { UniformListFilter } from "./UniformListFilter";
-import { vi } from 'vitest';
+
 
 // Mock useSessionStorage
 const setFilterMock = vi.fn();

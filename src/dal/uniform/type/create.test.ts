@@ -1,6 +1,5 @@
-import { vi } from 'vitest';
+import { UniformType } from "@/prisma/client";
 import { uniformTypeArgs } from "@/types/globalUniformTypes";
-import { PrismaClient, UniformType } from "@/prisma/client";
 import { prismaMock } from '@test-utils/prisma-mock';
 import { create } from "./create";
 

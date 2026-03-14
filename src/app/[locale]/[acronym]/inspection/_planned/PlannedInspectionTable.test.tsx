@@ -6,7 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { PlannedInspectionTable } from "./PlannedInspectionTable";
 import { mockCadetList, mockInspectionList } from "./jestHelper";
 import { usePlannedInspectionList } from "@/dataFetcher/inspection";
-import { vi } from 'vitest';
+
 
 describe('<PlannedInspectionTable />', () => {
     afterEach(() => {

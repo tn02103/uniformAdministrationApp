@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { CustomChartTooltip } from './CustomChartTooltip';
 import { useI18n } from '@/lib/locales/client';
-import { vi } from 'vitest';
+
 
 // Mock the i18n hook
 vi.mock('@/lib/locales/client', () => ({

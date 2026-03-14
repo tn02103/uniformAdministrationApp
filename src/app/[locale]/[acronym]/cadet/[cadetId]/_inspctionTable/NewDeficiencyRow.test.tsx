@@ -10,7 +10,7 @@ import { useDeficiencyTypes } from '@/dataFetcher/deficiency';
 import { useCadetUniformDescriptList, useCadetMaterialDescriptionList } from '@/dataFetcher/cadet';
 import { useMaterialConfiguration, useMaterialTypeList } from '@/dataFetcher/material';
 import { useParams } from 'next/navigation';
-import { vi } from 'vitest';
+
 
 // Mock all the data fetching hooks
 vi.mock('@/dataFetcher/deficiency', () => ({

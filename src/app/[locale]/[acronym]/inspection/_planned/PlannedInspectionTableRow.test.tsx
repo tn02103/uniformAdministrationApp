@@ -10,7 +10,7 @@ import { PlannedInspectionTableRow } from "./PlannedInspectionTableRow";
 import { createInspection, deleteInspection, startInspection, stopInspection, updatePlannedInspection } from "@/dal/inspection";
 import { usePlannedInspectionList } from "@/dataFetcher/inspection";
 import { useModal } from "@/components/modals/modalProvider";
-import { vi } from 'vitest';
+
 
 describe('<PlannedInspectionTableRow />', () => {
     const mockMutate = vi.mocked(usePlannedInspectionList)().mutate;

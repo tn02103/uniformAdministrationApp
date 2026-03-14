@@ -1,5 +1,5 @@
 ﻿/* eslint-disable @typescript-eslint/no-explicit-any */
-import { vi } from 'vitest';
+
 import { prismaMock } from '@test-utils/prisma-mock';
 import { prisma } from "@/lib/db";
 import { update } from "./update";

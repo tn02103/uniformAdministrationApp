@@ -6,7 +6,6 @@ import * as dataFetcherInspection from '@/dataFetcher/inspection';
 import * as nextNavigation from 'next/navigation';
 import * as swr from 'swr';
 import * as reactToastify from 'react-toastify';
-import { vi } from 'vitest';
 
 // Mock the DAL functions
 vi.mock('@/dal/inspection', () => ({

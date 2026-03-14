@@ -9,7 +9,7 @@ import { mockCadetList, mockInspectionList } from "./jestHelper";
 import { updateCadetRegistrationForInspection } from "@/dal/inspection";
 import { usePlannedInspectionList } from "@/dataFetcher/inspection";
 import { toast } from "react-toastify";
-import { vi } from 'vitest';
+
 
 describe('<DeregistrationOffcanvas/>', () => {
     const mockMutate = vi.mocked(usePlannedInspectionList)().mutate;

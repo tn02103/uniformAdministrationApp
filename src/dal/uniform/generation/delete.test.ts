@@ -1,10 +1,10 @@
 ﻿/* eslint-disable @typescript-eslint/no-explicit-any */
-import { vi } from 'vitest';
+
 import { prismaMock } from '@test-utils/prisma-mock';
 import { markDeleted } from "./delete";
 import { __unsecuredGetUniformTypeList } from "../type/get";
 import { mockTypeList } from "../../../../tests/_jestConfig/staticMockData";
-import { checkDateTolerance } from "../../../../jest/helpers/test-utils";
+import { checkDateTolerance } from "../../../../vitest/helpers/test-utils";
 
 // Mock dependencies
 vi.mock("../type/get", () => ({

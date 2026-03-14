@@ -1,6 +1,6 @@
 ﻿/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prismaMock } from '@test-utils/prisma-mock';
-import { vi } from 'vitest';
+
 import { mockSizeLists, mockTypeList } from "../../../../tests/_jestConfig/staticMockData";
 import { __unsecuredGetUniformTypeList } from "../type/get";
 import { create } from "./create";

@@ -1,7 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CustomLegend, LegendItem, CustomLegendProps } from './CustomLegend';
-import { vi } from 'vitest';
 
 describe('CustomLegend', () => {
     const mockOnVisibilityChange = vi.fn();
@@ -648,24 +647,20 @@ describe('CustomLegend', () => {
         describe('Callback Edge Cases', () => {
             it('handles missing onVisibilityChange callback', () => {
                 const propsWithoutCallback = { ...defaultProps };
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 delete (propsWithoutCallback as any).onVisibilityChange;
 
                 // Should not crash
                 expect(() => {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     render(<CustomLegend {...propsWithoutCallback} onVisibilityChange={undefined as any} />);
                 }).not.toThrow();
             });
 
             it('handles missing onItemHover callback', () => {
                 const propsWithoutCallback = { ...defaultProps };
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 delete (propsWithoutCallback as any).onItemHover;
 
                 // Should not crash
                 expect(() => {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     render(<CustomLegend {...propsWithoutCallback} onItemHover={undefined as any} />);
                 }).not.toThrow();
             });

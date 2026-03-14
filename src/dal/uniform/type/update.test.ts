@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { vi } from 'vitest';
+
 import { prisma } from "@/lib/db";
 import { __unsecuredGetUniformTypeList } from "./get";
 import { UniformTypeUpdateProps, update } from "./update";

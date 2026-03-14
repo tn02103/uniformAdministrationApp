@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { vi } from 'vitest';
 import { ExceptionType } from "@/errors/CustomException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prismaMock as mockPrisma } from '@test-utils/prisma-mock';

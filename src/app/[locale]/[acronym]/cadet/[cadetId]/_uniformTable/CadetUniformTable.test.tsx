@@ -7,7 +7,7 @@ import type { CadetUniformMap } from "@/types/globalCadetTypes";
 import { CadetUniformTableItemRowProps } from "./CadetUniformTableItemRow";
 import { CadetUniformTableIssueModalProps } from "./CadetUniformTableIssueModal";
 import { CadetUniformTableIssueModal } from "./CadetUniformTableIssueModal";
-import { vi } from 'vitest';
+
 
 // Mocks
 vi.mock("@/dataFetcher/uniformAdmin", () => ({

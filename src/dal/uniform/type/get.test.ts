@@ -1,7 +1,5 @@
-import { vi } from 'vitest';
-import { prisma } from "@/lib/db";
-import { prismaMock } from '@test-utils/prisma-mock';
 import { uniformTypeArgs } from "@/types/globalUniformTypes";
+import { prismaMock } from '@test-utils/prisma-mock';
 import { __unsecuredGetUniformTypeList, getList, getType } from "./get";
 
 describe('<UniformType> get', () => {

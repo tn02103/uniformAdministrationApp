@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { mockTypeList, mockSizeLists } from "../../../../../../../../tests/_jestConfig/staticMockData";
 import { UniformListSidePanel } from "./UniformListSidePanel";
 import { UniformType } from "@/types/globalUniformTypes";
-import { vi } from 'vitest';
+
 
 // Mock useUniformTypeList
 vi.mock("@/dataFetcher/uniformAdmin", () => ({

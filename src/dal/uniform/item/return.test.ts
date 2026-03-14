@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { vi } from 'vitest';
 import type { PrismaClient } from '@/prisma/client';
 import { prismaMock as mockPrisma } from '@test-utils/prisma-mock';
 import { returnItem, __unsecuredReturnUniformitem } from "./return";

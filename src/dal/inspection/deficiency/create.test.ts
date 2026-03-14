@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { vi } from 'vitest';
 import dayjs from "@/lib/dayjs";
 import { createUniformDef } from "./create";
 import { prismaMock } from '@test-utils/prisma-mock';

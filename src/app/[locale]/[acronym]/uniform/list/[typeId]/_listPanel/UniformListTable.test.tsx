@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { mockTypeList, mockUniformList } from "../../../../../../../../tests/_jestConfig/staticMockData";
 import { UniformListTable } from "./UniformListTable";
 import { getUniformListWithOwner } from "@/dal/uniform/item/_index";
-import { vi } from 'vitest';
+
 import { useI18n } from "@/lib/locales/client";
 
 // Mock next/navigation

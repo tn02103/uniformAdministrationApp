@@ -1,6 +1,6 @@
 import dayjs from "@/lib/dayjs";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
-import { vi } from 'vitest';
+
 
 export const mockCadetList = [
     { id: "1", firstname: "Jack", lastname: "Doe" },

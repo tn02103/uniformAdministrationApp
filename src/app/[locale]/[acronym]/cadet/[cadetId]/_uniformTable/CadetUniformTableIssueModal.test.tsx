@@ -7,7 +7,7 @@ import { useCadetUniformMap } from "@/dataFetcher/cadet";
 import { useUniformLabels } from "@/dataFetcher/uniform";
 import { issueUniformItem } from "@/dal/uniform/item/_index";
 import { toast } from "react-toastify";
-import { vi } from 'vitest';
+
 
 // Mocks
 vi.mock("@/dataFetcher/cadet", () => ({

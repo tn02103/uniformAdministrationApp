@@ -3,7 +3,7 @@ import { useI18n } from '@/lib/locales/client';
 import { getByText, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
-import { vi } from 'vitest';
+
 import { UniformCountBySizeForTypeChart } from './UniformCountBySizeForTypeChart';
 
 // Mock the i18n hook

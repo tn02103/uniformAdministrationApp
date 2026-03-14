@@ -1,7 +1,7 @@
 import { UniformgenerationOffcanvas } from "@/app/[locale]/[acronym]/admin/uniform/_typeAdministration/UniformGenerationOffcanvas";
 import { useModal } from "@/components/modals/modalProvider";
 import { createUniformGeneration, deleteUniformGeneration, updateUniformGeneration } from "@/dal/uniform/generation/_index";
-import { useUniformTypeList } from "@/dataFetcher/uniformAdmin";
+import { useUniformSizelists, useUniformTypeList } from "@/dataFetcher/uniformAdmin";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { toast } from "react-toastify";
@@ -50,6 +50,11 @@ describe('<UniformgenerationOffcanvas>', () => {
     const { mutate } = useUniformTypeList();
     const { dangerConfirmationModal } = useModal()!;
 
+    beforeEach(() => {
+        vi.mocked(useUniformSizelists).mockReturnValue({
+            sizelistList: [{ id: sizeListIds[0], name: "Test Size List" }, { id: sizeListIds[1], name: "Test Size List 2" }, { id: sizeListIds[2], name: "Test Size List 3" }],
+        } as any);
+    })
     afterEach(() => vi.clearAllMocks());
 
     describe('with generation', () => {

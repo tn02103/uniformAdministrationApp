@@ -59,7 +59,27 @@ describe('<UniformTypeOffcanvas />', () => {
 
     afterEach(() => vi.clearAllMocks());
 
-    it('renders the component and handles setEditable', async () => {
+    it('renders the component and handles setEditable', async () => { 
+        const user = userEvent.setup();
+        const setEditable = vi.fn();
+        render(
+            <UniformTypeOffcanvas
+                uniformType={testType}
+                editable={false}
+                setEditable={setEditable}
+                setSelectedTypeId={vi.fn()}
+            />
+        );
+
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+        expect(screen.getByRole('dialog')).toMatchSnapshot();
+
+        const editButton = screen.getByRole('button', { name: 'common.actions.edit' });
+        await user.click(editButton);
+        expect(setEditable).toHaveBeenCalledWith(true);
+    });
+
+    it('handles editable state correctly', async () => {
         const setEditable = vi.fn();
         render(
             <UniformTypeOffcanvas

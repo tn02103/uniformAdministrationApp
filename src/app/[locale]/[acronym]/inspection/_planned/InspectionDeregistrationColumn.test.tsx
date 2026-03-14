@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { InspectionDeregistrationColumn } from "./InspectionDeregistrationColumn";
 import { mockInspectionList } from "./jestHelper";
-import { vi } from 'vitest';
+
 
 describe('<InspectionDeregistrationColumn />', () => {
     afterEach(() => {

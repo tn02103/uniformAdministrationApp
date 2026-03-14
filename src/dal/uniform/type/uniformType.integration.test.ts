@@ -2,7 +2,7 @@
 import { cleanDataV2, runServerActionTest } from "@/dal/_helper/testHelper";
 import { prisma } from "@/lib/db";
 import { UniformType } from "@/types/globalUniformTypes";
-import { checkDateTolerance } from "../../../../jest/helpers/test-utils";
+import { checkDateTolerance } from "../../../../vitest/helpers/test-utils";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { create } from "./create";
 import { markDeleted } from "./delete";

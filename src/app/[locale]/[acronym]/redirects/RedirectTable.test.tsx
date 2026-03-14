@@ -3,7 +3,7 @@ import { getAllByRole, getByDisplayValue, getByRole, getByText, queryByText, ren
 import userEvent from "@testing-library/user-event";
 import { toast } from "react-toastify";
 import { RedirectTable } from "./RedirectTable";
-import { vi } from 'vitest';
+
 import { createRedirect, deleteRedirect, updateRedirect } from "@/dal/redirects";
 
 vi.mock("@/dal/redirects", () => ({

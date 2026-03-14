@@ -3,19 +3,19 @@ import { SidebarHeader } from "./SidebarHeader";
 import { useSidebarContext } from './Sidebar';
 import { useInspectionState } from '@/dataFetcher/inspection';
 import { useScopedI18n } from '@/lib/locales/client';
-import { vi } from 'vitest';
+
 
 // Mock all dependencies
-jest.mock('./Sidebar', () => ({
+vi.mock('./Sidebar', () => ({
     useSidebarContext: vi.fn(),
 }));
 
-jest.mock('@/dataFetcher/inspection', () => ({
+vi.mock('@/dataFetcher/inspection', () => ({
     useInspectionState: vi.fn(),
 }));
 
 const useScopedI18nFn = vi.hoisted(() => vi.fn());
-jest.mock('@/lib/locales/client', () => {
+vi.mock('@/lib/locales/client', () => {
     return {
         useScopedI18n: vi.fn((scope: string) => {
             useScopedI18nFn.mockImplementation((key: string) => `${scope}.${key}`);

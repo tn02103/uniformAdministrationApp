@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { vi } from 'vitest';
+
 import { prismaMock as mockPrisma } from '@test-utils/prisma-mock';
 import { create } from "./create";
 import { mockTypeList, mockGenerationLists, mockSizeLists } from "../../../../tests/_jestConfig/staticMockData";

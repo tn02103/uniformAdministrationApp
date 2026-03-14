@@ -6,7 +6,7 @@ import { OldDeficiencyRow } from "./OldDeficiencyRow";
 import { NewDeficiencyRow } from "./NewDeficiencyRow";
 import { useCadetUniformComplete } from "@/dataFetcher/cadet";
 import { useParams } from "next/navigation";
-import { vi } from 'vitest';
+
 
 const mockFormData = {
     oldDeficiencyList: [

@@ -2,7 +2,7 @@ import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { prisma } from "@/lib/db";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { markDeleted } from "./delete";
-import { checkDateTolerance } from "../../../../jest/helpers/test-utils";
+import { checkDateTolerance } from "../../../../vitest/helpers/test-utils";
 
 const { ids, cleanup } = new StaticData(0);
 
