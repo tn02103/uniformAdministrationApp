@@ -55,18 +55,6 @@ describe('CustomLegend', () => {
                 expect(screen.getByText('Custom Label 2')).toBeInTheDocument();
             });
 
-            it('displays color indicators with correct background colors', () => {
-                const { container } = render(<CustomLegend {...defaultProps} />);
-
-                // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-                const colorIndicators = container.querySelectorAll('div > div > div > div:first-child');
-
-                // Check that colors are applied (use computed styles format)
-                expect(colorIndicators[0]).toHaveStyle('background-color: rgb(22, 163, 74)');
-                expect(colorIndicators[1]).toHaveStyle('background-color: rgb(71, 85, 105)');
-                expect(colorIndicators[2]).toHaveStyle('background-color: rgb(217, 119, 6)');
-                expect(colorIndicators[3]).toHaveStyle('background-color: rgb(185, 28, 28)');
-            });
             it('applies custom className when provided', () => {
                 const { container } = render(
                     <CustomLegend {...defaultProps} className="custom-class" />

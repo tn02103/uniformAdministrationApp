@@ -22,7 +22,7 @@ vi.mock('@/components/ExpandableArea/ExpandableArea', () => ({
 
 vi.mock('recharts', () => {
     const exports = {
-        mockBar: vi.fn(),
+        Bar: vi.fn(),
         BarChart: vi.fn(({ children }: { children: React.ReactNode }) => <div>{children}</div>),
         CartesianGrid: vi.fn(),
         ResponsiveContainer: vi.fn(({ children }: { children: React.ReactNode }) => <div>{children}</div>),

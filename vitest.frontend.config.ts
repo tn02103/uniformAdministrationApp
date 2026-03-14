@@ -36,6 +36,13 @@ export default defineConfig({
                 classNameStrategy: 'non-scoped',
             },
         },
+        // Set a stable origin so tests that build URLs from window.location.origin
+        // get a predictable value (http://localhost without a port number).
+        environmentOptions: {
+            jsdom: {
+                url: 'http://localhost',
+            },
+        },
 
         setupFiles: [
             './vitest/setup-components.tsx',

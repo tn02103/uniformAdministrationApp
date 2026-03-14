@@ -56,7 +56,9 @@ exports[`<UniformGenerationTable /> > renders the component 1`] = `
           </th>
         </tr>
       </thead>
-      <tbody>
+      <tbody
+        data-testid="reorderable-table-body"
+      >
         <tr
           aria-label="Test Generation 1"
         >
@@ -66,7 +68,6 @@ exports[`<UniformGenerationTable /> > renders the component 1`] = `
             <span
               aria-label="drag item"
               class="p-2 drag-handler"
-              draggable="true"
             >
               <svg
                 aria-hidden="true"
@@ -128,7 +129,6 @@ exports[`<UniformGenerationTable /> > renders the component 1`] = `
             <span
               aria-label="drag item"
               class="p-2 drag-handler"
-              draggable="true"
             >
               <svg
                 aria-hidden="true"
@@ -190,7 +190,6 @@ exports[`<UniformGenerationTable /> > renders the component 1`] = `
             <span
               aria-label="drag item"
               class="p-2 drag-handler"
-              draggable="true"
             >
               <svg
                 aria-hidden="true"

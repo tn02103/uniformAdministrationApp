@@ -103,7 +103,7 @@ describe("UniformOCStorageUnitRow", () => {
         });
 
         it('calls warningMessage if storageUnit is full', async () => {
-            const { simpleWarningModal } = jest.requireMock("../modals/modalProvider").useModal();
+            const { simpleWarningModal } = jest.requireMock("@/components/modals/modalProvider").useModal();
             const { addUniformItemToStorageUnit } = jest.requireMock("@/dal/storageUnit/_index");
 
             const user = userEvent.setup();

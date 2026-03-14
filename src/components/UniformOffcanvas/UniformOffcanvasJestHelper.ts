@@ -3,14 +3,25 @@ import { mockGenerationLists, mockSizeLists, mockTypeList } from "../../../tests
 import { AuthRole } from "@/lib/AuthRoles";
 import { UniformHistroyEntry, UniformWithOwner } from "@/types/globalUniformTypes";
 
+// Registers a mock object in the global Vitest mock registry so that
+// jest.requireMock(path) — via the shim in setup-components.tsx — can find it.
+const _reg = <T>(path: string, mock: T): T => {
+    ((globalThis as Record<string, unknown>).__vitestMockRegistry as Map<string, unknown>)
+        ?.set(path, mock);
+    return mock;
+};
+
 // ------------- MOCKS FOR DEFICIENCY -------------
-vi.mock('@/dal/inspection/deficiency', () => ({
+const _dalInspectionMock = vi.hoisted(() => ({
     createUniformDeficiency: vi.fn(async () => "created successfully"),
     resolveDeficiency: vi.fn(async () => "resolved successfully"),
     updateUniformDeficiency: vi.fn(async () => "updated successfully"),
 }));
+vi.mock('@/dal/inspection/deficiency', () => _dalInspectionMock);
 
-vi.mock('@/dataFetcher/deficiency', () => ({
+// dataFetcher/deficiency references module-level constants through closures;
+// the _reg() call below runs in the module body (after the constants are defined).
+const _dataFetcherDeficiencyMock = vi.hoisted(() => ({
     useDeficienciesByUniformId: vi.fn((_, includeResolved) => {
         if (includeResolved) {
             return { deficiencies: mockDeficiencyList };
@@ -20,6 +31,7 @@ vi.mock('@/dataFetcher/deficiency', () => ({
     }),
     useDeficiencyTypes: vi.fn(() => ({ deficiencyTypeList: mockDeficiencyTypeList })),
 }));
+vi.mock('@/dataFetcher/deficiency', () => _dataFetcherDeficiencyMock);
 
 // ------------- MOCKS FOR UNIFORM -------------
 
@@ -31,13 +43,16 @@ vi.mock('@/dataFetcher/uniformAdmin', () => ({
         typeList: mockTypeList
     })),
 }));
-vi.mock("@/dal/uniform/item/_index", () => ({
+
+const _dalUniformItemMock = vi.hoisted(() => ({
     updateUniformItem: vi.fn(() => Promise.resolve('Saved item')),
     deleteUniformItem: vi.fn(() => Promise.resolve('Deleted item')),
     issueUniformItem: vi.fn(),
     createUniformItems: vi.fn(),
     getUniformItemDeficiencies: vi.fn(),
 }));
+vi.mock("@/dal/uniform/item/_index", () => _dalUniformItemMock);
+
 vi.mock('../globalDataProvider', () => ({
     useGlobalData: vi.fn(() => ({
         sizelists: mockSizeLists,
@@ -57,25 +72,40 @@ vi.mock("@/dataFetcher/storage", () => ({
     }),
 }));
 
-vi.mock("@/dal/storageUnit/_index", () => ({
+const _dalStorageUnitMock = vi.hoisted(() => ({
     addUniformItemToStorageUnit: vi.fn(() => Promise.resolve()),
     removeUniformFromStorageUnit: vi.fn(() => Promise.resolve()),
 }));
+vi.mock("@/dal/storageUnit/_index", () => _dalStorageUnitMock);
 
 // ------------- OTHER MOCKS -------------
-vi.mock("swr", () => ({
+const _swrMock = vi.hoisted(() => ({
     mutate: vi.fn(async () => { }),
 }));
+vi.mock("swr", () => _swrMock);
 
-vi.mock('react-toastify', () => ({
+// Use a separate toast mock for these tests so the component and test assertions
+// reference the same vi.fn() instances. This overrides the global setup mock.
+const _toastifyMock = vi.hoisted(() => ({
     toast: {
         error: vi.fn(),
         success: vi.fn(),
     },
 }));
+vi.mock('react-toastify', () => _toastifyMock);
+
 vi.mock("next/navigation", () => ({
     usePathname: () => "/de/app/uniform/list/81ff8e9b-a097-4879-a0b2-352e54d41e6c",
 }));
+
+// Register all hoisted mocks in the global registry after constants are defined.
+// These are read by jest.requireMock() calls in the test files.
+_reg('@/dal/inspection/deficiency', _dalInspectionMock);
+_reg('@/dataFetcher/deficiency', _dataFetcherDeficiencyMock);
+_reg('@/dal/uniform/item/_index', _dalUniformItemMock);
+_reg('@/dal/storageUnit/_index', _dalStorageUnitMock);
+_reg('swr', _swrMock);
+_reg('react-toastify', _toastifyMock);
 
 export const mockStorageUnits = [
     { id: "su1", name: "Kiste 01", description: "Desc 1", capacity: 2, uniformList: [], isReserve: false },

@@ -1,7 +1,7 @@
-import { defineConfig } from 'vitest/config';
+import { defineProject } from 'vitest/config';
 import path from 'path';
 
-export default defineConfig({
+export default defineProject({
     test: {
         name: 'DAL-Integration',
         environment: 'node',
