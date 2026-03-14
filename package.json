@@ -1,7 +1,7 @@
 {
     "name": "uniform-administration",
     "type": "module",
-    "version": "2.6.2",
+    "version": "2.6.3",
     "private": true,
     "engines": {
         "node": "^24"
