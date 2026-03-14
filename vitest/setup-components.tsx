@@ -4,19 +4,15 @@ import { AuthRole } from "@/lib/AuthRoles";
 import "@testing-library/jest-dom/vitest";
 
 // ---- Jest compatibility shim ----
-// _mockStore holds the mock objects for modules globally mocked in this setup
-// file so that jest.requireMock(path) can retrieve them synchronously.
+// _mockStore is exposed globally so that test helper files can also register
+// their vi.mock() factory results, enabling jest.requireMock() to find them.
+// Test helpers add entries via:  (globalThis as any).__vitestMockRegistry?.set(path, mockObj)
 const _mockStore = new Map<string, unknown>();
+(globalThis as Record<string, unknown>).__vitestMockRegistry = _mockStore;
 
 (globalThis as Record<string, unknown>).jest = {
     ...vi,
-    requireMock: (path: string) => {
-        // Try the global-setup store first (covers setup-file mocks)
-        const stored = _mockStore.get(path);
-        if (stored !== undefined) return stored;
-        // Fall back to Vitest's internal mock registry for test/helper-file mocks
-        return (vi as unknown as Record<string, (p: string) => unknown>)['getMockedModule']?.(path);
-    },
+    requireMock: (path: string) => _mockStore.get(path),
 };
 
 window.HTMLElement.prototype.scrollIntoView = function () { };

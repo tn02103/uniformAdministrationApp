@@ -488,6 +488,10 @@ describe('<PlannedInspectionTableRow />', () => {
     describe('stop inspection', () => {
         const { simpleFormModal } = vi.mocked(useModal)();
 
+        afterEach(() => {
+            vi.useRealTimers();
+        });
+
         it('should stop passed inspection', async () => {
             vi.mocked(usePlannedInspectionList).mockReturnValueOnce({
                 inspectionList: [
@@ -544,7 +548,9 @@ describe('<PlannedInspectionTableRow />', () => {
         });
         it('should stop active inspection', async () => {
             const newDate = dayjs().hour(14).minute(10).toDate();
-            vi.useFakeTimers({ now: newDate });
+            // Only fake Date so that Date.now() returns newDate while
+            // setTimeout/setInterval remain real (required by userEvent).
+            vi.useFakeTimers({ now: newDate, toFake: ['Date'] });
 
             vi.mocked(usePlannedInspectionList).mockReturnValueOnce({
                 inspectionList: [
