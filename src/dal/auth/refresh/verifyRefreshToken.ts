@@ -1,4 +1,5 @@
 import { AuthenticationException, AuthenticationExceptionData } from "@/errors/Authentication";
+import crypto from "crypto";
 import { isValid } from "date-fns";
 import dayjs from "dayjs";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
@@ -21,7 +22,12 @@ type verificationsProp = {
 export const verifyRefreshToken = async (props: verificationsProp): Promise<FingerprintValidationResult> => {
     const { agent, ipAddress, sendToken, dbToken, account, logData } = props;
     const sendTokenHash = sha256Hex(sendToken);
-    if (dbToken.token !== sendTokenHash) {
+    const dbHashBuffer = Buffer.from(dbToken.token, 'utf8');
+    const sendHashBuffer = Buffer.from(sendTokenHash, 'utf8');
+    const hashesMatch =
+        dbHashBuffer.length === sendHashBuffer.length &&
+        crypto.timingSafeEqual(dbHashBuffer, sendHashBuffer);
+    if (!hashesMatch) {
         throw new AuthenticationException("Refresh token hash does not match", "AuthenticationFailed", LogDebugLevel.WARNING, logData);
     }
     if (dbToken.status === 'revoked') {

@@ -133,6 +133,27 @@ describe('verifyRefreshToken - Unit Tests', () => {
                 reasons: [],
             });
         });
+
+        it('should throw AuthenticationException without crashing when hashes have different lengths', async () => {
+            const dbToken = createMockDBToken({ token: 'short' });
+            mockSha256Hex.mockReturnValue('a-much-longer-hash-value');
+
+            await expect(
+                verifyRefreshToken({
+                    dbToken,
+                    agent: mockAgent,
+                    ipAddress: authMockData.ipAddress,
+                    sendToken: authMockData.refreshToken,
+                    cookieList: mockCookies,
+                    account: mockAccount,
+                    logData: mockLogData,
+                })
+            ).rejects.toMatchObject({
+                message: 'Refresh token hash does not match',
+                exceptionType: 'AuthenticationFailed',
+                debugLevel: LogDebugLevel.WARNING,
+            });
+        });
     });
 
     describe('Token Status Validation', () => {
