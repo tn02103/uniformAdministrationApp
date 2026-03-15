@@ -242,6 +242,7 @@ export default {
         header: "Login",
         label: {
             organisation: "Association",
+            identifier: "Email or Username",
             username: "Username",
             password: "Password",
             twoFactorCode: "2FA Code",

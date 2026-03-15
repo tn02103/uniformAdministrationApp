@@ -93,15 +93,15 @@ export const Login = async (props: LoginFormType): Promise<LoginReturnType> => {
         }
 
         const formData = parsed.data!;
+        const isEmail = formData.identifier.includes('@');
         const [organisation, user] = await prisma.$transaction([
             prisma.organisation.findFirst({
                 where: { id: formData.organisationId },
             }),
             prisma.user.findFirst({
-                where: {
-                    email: formData.email,
-                    organisationId: formData.organisationId,
-                },
+                where: isEmail
+                    ? { email: formData.identifier, organisationId: formData.organisationId }
+                    : { username: formData.identifier, organisationId: formData.organisationId },
             }),
         ]);
 
@@ -116,7 +116,7 @@ export const Login = async (props: LoginFormType): Promise<LoginReturnType> => {
         loginLogData.deviceId = account?.deviceId;
         if (!user) {
             await consumeIpLimiter(ipAddress, 1, agent, account?.deviceId);
-            throw new AuthenticationException(`Failed login attempt: User with email ${formData.email} not found`, "AuthenticationFailed", LogDebugLevel.INFO, loginLogData);
+            throw new AuthenticationException(`Failed login attempt: User with identifier ${formData.identifier} not found`, "AuthenticationFailed", LogDebugLevel.INFO, loginLogData);
         }
         loginLogData.userId = user.id;
 
