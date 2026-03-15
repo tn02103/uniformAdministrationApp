@@ -3,7 +3,7 @@
     "version": "2.6.2",
     "private": true,
     "engines": {
-        "node": "22.14.0"
+        "node": "^24"
     },
     "scripts": {
         "dev": "next dev -p 3021",
