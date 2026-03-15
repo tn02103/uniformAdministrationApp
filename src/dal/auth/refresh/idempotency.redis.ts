@@ -1,4 +1,4 @@
-import { isRedisAvailable } from "../redis";
+import { isRedisAvailable, redis } from "../redis";
 import type { UserAgent } from "../helper";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { handleRetryRequest } from "./handleRetryRequest";
@@ -44,9 +44,13 @@ export const acquireLock = async (key: string): Promise<boolean> => {
     }
 
     try {
-        const { redis } = await import("../redis");
+        
         const lockKey = `idempotency:${key}:lock`;
         
+        if (!redis) {
+            console.error('Redis client not available even though Redis is configured, proceeding without lock');
+            return true;
+        }
         // SET with NX (only if not exists) and EX (expire in 5 seconds)
         const result = await redis!.set(lockKey, 'processing', 'EX', 5, 'NX');
         

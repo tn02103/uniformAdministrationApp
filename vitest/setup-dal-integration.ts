@@ -52,18 +52,5 @@ vi.mock('next/cache', () => ({
     revalidatePath: vi.fn(),
 }));
 
-/*
-// Mock Redis with in-memory ioredis-mock
-vi.mock('@/dal/auth/redis', async () => {
-    const { default: IORedisMock } = await import('ioredis-mock');
-    const redisMock = new IORedisMock();
-    return {
-        redis: redisMock,
-        isRedisAvailable: () => true,
-        isRedisConfiguredButUnavailable: () => false,
-    };
-});
-*/
-
 // Export static data for use in tests
 export { staticData, wrongOrganisation };

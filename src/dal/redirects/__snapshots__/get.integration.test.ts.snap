@@ -4,26 +4,26 @@ exports[`getRedirects > should return redirects successfully 1`] = `
 [
   {
     "active": true,
-    "organisationId": "00bf2ef8-3894-47d4-ada4-e8b5cda5095c",
     "code": "ausbildung0",
+    "organisationId": "00bf2ef8-3894-47d4-ada4-e8b5cda5095c",
     "target": "https://example.com/ausbildung",
   },
   {
     "active": true,
-    "organisationId": "00bf2ef8-3894-47d4-ada4-e8b5cda5095c",
     "code": "homepage0",
+    "organisationId": "00bf2ef8-3894-47d4-ada4-e8b5cda5095c",
     "target": "https://example.com/homepage",
   },
   {
     "active": false,
-    "organisationId": "00bf2ef8-3894-47d4-ada4-e8b5cda5095c",
     "code": "impressum0",
+    "organisationId": "00bf2ef8-3894-47d4-ada4-e8b5cda5095c",
     "target": "https://example.com/impressum",
   },
   {
     "active": true,
-    "organisationId": "00bf2ef8-3894-47d4-ada4-e8b5cda5095c",
     "code": "kontakt0",
+    "organisationId": "00bf2ef8-3894-47d4-ada4-e8b5cda5095c",
     "target": "https://example.com/kontakt",
   },
 ]

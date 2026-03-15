@@ -6,35 +6,35 @@ describe('RefreshLockManager - Frontend Lock Mechanism', () => {
 
     beforeEach(() => {
         // Reset singleton instance
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (RefreshLockManager as any).instance = undefined;
         lockManager = RefreshLockManager.getInstance();
 
         // Mock localStorage
         localStorageMock = {};
         global.localStorage = {
-            getItem: jest.fn((key: string) => localStorageMock[key] || null),
-            setItem: jest.fn((key: string, value: string) => {
+            getItem: vi.fn((key: string) => localStorageMock[key] || null),
+            setItem: vi.fn((key: string, value: string) => {
                 localStorageMock[key] = value;
             }),
-            removeItem: jest.fn((key: string) => {
+            removeItem: vi.fn((key: string) => {
                 delete localStorageMock[key];
             }),
-            clear: jest.fn(() => {
+            clear: vi.fn(() => {
                 localStorageMock = {};
             }),
             length: 0,
-            key: jest.fn(),
+            key: vi.fn(),
         } as unknown as Storage;
 
         // Mock crypto.randomUUID
+        // Use vi.stubGlobal because jsdom defines crypto as a getter-only property
         let uuidCounter = 0;
-        global.crypto = {
+        vi.stubGlobal('crypto', {
             ...global.crypto,
-            randomUUID: jest.fn(() => `process-${++uuidCounter}`),
-        } as unknown as Crypto;
+            randomUUID: vi.fn(() => `process-${++uuidCounter}`),
+        });
 
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     describe('Singleton pattern', () => {
@@ -79,22 +79,22 @@ describe('RefreshLockManager - Frontend Lock Mechanism', () => {
         });
 
         it('should handle race condition with 100ms double-check', async () => {
-            jest.useFakeTimers();
+            vi.useFakeTimers();
 
             const acquirePromise = lockManager.acquireLock();
             
             // Fast-forward 100ms
-            jest.advanceTimersByTime(100);
+            vi.advanceTimersByTime(100);
             await Promise.resolve(); // Let promises resolve
 
             const processId = await acquirePromise;
             expect(processId).not.toBeNull();
 
-            jest.useRealTimers();
+            vi.useRealTimers();
         });
 
         it('should return null if lock stolen during double-check', async () => {
-            jest.useFakeTimers();
+            vi.useFakeTimers();
 
             const acquirePromise = lockManager.acquireLock();
             
@@ -106,13 +106,13 @@ describe('RefreshLockManager - Frontend Lock Mechanism', () => {
                 });
             }, 50);
 
-            jest.advanceTimersByTime(100);
+            vi.advanceTimersByTime(100);
             await Promise.resolve();
 
             const processId = await acquirePromise;
             expect(processId).toBeNull();
 
-            jest.useRealTimers();
+            vi.useRealTimers();
         });
     });
 
@@ -166,7 +166,7 @@ describe('RefreshLockManager - Frontend Lock Mechanism', () => {
 
     describe('Error handling', () => {
         it('should handle localStorage errors gracefully', async () => {
-            (localStorage.getItem as jest.Mock).mockImplementation(() => {
+            vi.mocked(localStorage.getItem).mockImplementation(() => {
                 throw new Error('Storage error');
             });
 
@@ -176,9 +176,9 @@ describe('RefreshLockManager - Frontend Lock Mechanism', () => {
         });
 
         it('should log error when lock acquisition fails', async () => {
-            const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
             
-            (localStorage.setItem as jest.Mock).mockImplementation(() => {
+            vi.mocked(localStorage.setItem).mockImplementation(() => {
                 throw new Error('Storage error');
             });
 
@@ -193,10 +193,10 @@ describe('RefreshLockManager - Frontend Lock Mechanism', () => {
         });
 
         it('should log error when lock release fails', async () => {
-            const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
             const processId = await lockManager.acquireLock();
 
-            (localStorage.removeItem as jest.Mock).mockImplementation(() => {
+            vi.mocked(localStorage.removeItem).mockImplementation(() => {
                 throw new Error('Storage error');
             });
 

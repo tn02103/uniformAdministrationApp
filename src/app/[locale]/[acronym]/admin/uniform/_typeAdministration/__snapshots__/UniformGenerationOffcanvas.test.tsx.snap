@@ -95,6 +95,7 @@ exports[`<UniformgenerationOffcanvas> > with generation > renders the component 
               aria-invalid="false"
               class="form-control-plaintext"
               disabled=""
+              formname="uniformGenerationForm"
               id="uniformGenerationForm_input-name"
               name="name"
               type="text"
@@ -273,6 +274,7 @@ exports[`<UniformgenerationOffcanvas> > without generation > renders in editable
             <input
               aria-invalid="false"
               class="form-control"
+              formname="uniformGenerationForm"
               id="uniformGenerationForm_input-name"
               name="name"
               type="text"

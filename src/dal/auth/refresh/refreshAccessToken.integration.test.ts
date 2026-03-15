@@ -375,11 +375,7 @@ describe('refreshAccessToken Integration Tests', () => {
             mockCookiesGet.mockImplementation((name: string) => wrongOrgCookieFactory().get(name));
 
             const result = await refreshAccessToken();
-            // BUG: verifyRefreshToken throws with exceptionType "UnknownError" for org mismatch.
-            // The switch in refreshAccessToken.ts only handles "AuthenticationFailed" explicitly;
-            // "UnknownError" falls through to default and returns 500 instead of 401.
-            // Fix: add "UnknownError" to the switch or use "AuthenticationFailed" for org mismatch.
-            expect(result.status).toBe(500);
+            expect(result.status).toBe(401);
         });
     });
 
