@@ -245,13 +245,42 @@ export default {
             username: "Nutzername",
             password: "Password",
             twoFactorCode: "2FA Code",
-            login: "Anmelden"
+            login: "Anmelden",
+            forgotPassword: "Passwort vergessen?",
         },
         error: {
             unknown: "Der Loginversuch ist fehlgeschlagen, bitte versuchen Sie es erneut.",
             failed: "Nutzername oder Passwort sind ungültig",
             userBlocked: "Ihr Zugang wurde gesperrt. Bitte kontaktieren Sie den Administrator.",
             tooManyRequests: "Zu viele fehlgeschlagene Loginversuche. Bitte versuchen Sie es später erneut.",
+        },
+    },
+    forgotPassword: {
+        header: "Passwort zurücksetzen",
+        label: {
+            organisation: "Verein",
+            email: "E-Mail-Adresse",
+            submit: "Link senden",
+        },
+        success: "Falls ein Konto mit dieser E-Mail-Adresse existiert, wurde ein Reset-Link gesendet.",
+        error: {
+            unknown: "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
+        },
+    },
+    resetPassword: {
+        header: "Neues Passwort festlegen",
+        label: {
+            newPassword: "Neues Passwort",
+            confirmPassword: "Passwort bestätigen",
+            submit: "Passwort zurücksetzen",
+            login: "Zum Login",
+        },
+        success: "Passwort erfolgreich zurückgesetzt. Du kannst dich jetzt anmelden.",
+        error: {
+            tokenInvalid: "Dieser Reset-Link ist ungültig oder wurde bereits verwendet.",
+            tokenExpired: "Dieser Reset-Link ist abgelaufen. Bitte fordere einen neuen an.",
+            passwordMismatch: "Die Passwörter stimmen nicht überein.",
+            unknown: "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
         },
     },
     notFound: {
@@ -863,8 +892,14 @@ export default {
                 line1: "Guten Tag Admin,",
                 line2: "Das Benutzerkonto {name} wurde aufgrund von verdächtigen Aktivitäten gesperrt.",
                 line3: "Bitte überprüfen Sie das Konto und kontaktieren Sie den Benutzer für weitere Informationen.",
-                closing: "Ihr UniformAdmin Team",   
+                closing: "Ihr UniformAdmin Team",
             },
-        }
+        },
+        passwordReset: {
+            subject: "Passwort zurücksetzen",
+            heading: "Anfrage zum Zurücksetzen des Passworts",
+            body: "Klicke auf den folgenden Link, um dein Passwort zurückzusetzen. Der Link läuft in 1 Stunde ab.",
+            validity: "Falls du dies nicht angefordert hast, kannst du diese E-Mail ignorieren.",
+        },
     }
 } as const;

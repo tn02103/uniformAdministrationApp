@@ -10,3 +10,5 @@ export const userLogout = logout;
 export const addTwoFactorApp = add;
 export const verifyTwoFactorAuthApp = verify;
 export const removeUnverifiedTwoFactorApp = removeUnverified;
+
+export { requestPasswordReset, executePasswordReset } from "./passwordReset";

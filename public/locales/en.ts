@@ -245,13 +245,42 @@ export default {
             username: "Username",
             password: "Password",
             twoFactorCode: "2FA Code",
-            login: "Login"
+            login: "Login",
+            forgotPassword: "Forgot password?",
         },
         error: {
             unknown: "The login attempt failed, please try again.",
             failed: "Username or password are invalid",
             userBlocked: "The user is blocked. Please contact an administrator.",
             tooManyRequests: "Too many failed login attempts. Please try again later.",
+        },
+    },
+    forgotPassword: {
+        header: "Reset your password",
+        label: {
+            organisation: "Association",
+            email: "Email address",
+            submit: "Send reset link",
+        },
+        success: "If an account with that email exists, a reset link has been sent.",
+        error: {
+            unknown: "An error occurred. Please try again.",
+        },
+    },
+    resetPassword: {
+        header: "Set a new password",
+        label: {
+            newPassword: "New password",
+            confirmPassword: "Confirm password",
+            submit: "Reset password",
+            login: "Go to login",
+        },
+        success: "Password reset successfully. You can now log in.",
+        error: {
+            tokenInvalid: "This reset link is invalid or has already been used.",
+            tokenExpired: "This reset link has expired. Please request a new one.",
+            passwordMismatch: "Passwords do not match.",
+            unknown: "An error occurred. Please try again.",
         },
     },
     notFound: {
@@ -863,8 +892,14 @@ export default {
                 line1: "Hello Admin,",
                 line2: "The user account {name} has been blocked due to suspicious activities.",
                 line3: "Please review the account and contact the user for further information.",
-                closing: "Your UniformAdmin Team",   
+                closing: "Your UniformAdmin Team",
             },
-        }
+        },
+        passwordReset: {
+            subject: "Reset your password",
+            heading: "Password Reset Request",
+            body: "Click the link below to reset your password. The link expires in 1 hour.",
+            validity: "If you did not request this, you can safely ignore this email.",
+        },
     }
 } as const;
