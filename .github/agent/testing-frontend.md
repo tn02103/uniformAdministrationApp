@@ -1,11 +1,11 @@
 # Frontend / Component Testing
 
 ## Setup
-- **Config**: `jest.frontend.config.ts`
+- **Config**: `vitest.frontend.config.ts`
 - **Command**: `npm run test:components`
 - **Environment**: jsdom (browser simulation)
-- **Setup file**: `jest/setup-components.tsx`
-- **Test helpers**: `jest/helpers/test-utils.tsx`
+- **Setup file**: `vitest/setup-components.tsx`
+- **Test helpers**: `vitest/helpers/test-utils.tsx`
 
 ## File Location
 Tests live alongside the component:
@@ -36,20 +36,21 @@ src/app/[locale]/[acronym]/myPage/_myFeature/
 ## Mocking Server Actions
 DAL functions are Server Actions. Mock them at the module level:
 ```typescript
-jest.mock('@/dal/uniform/item', () => ({
-    getUniformItem: jest.fn(),
-    createUniformItem: jest.fn(),
+vi.mock('@/dal/uniform/item', () => ({
+    getUniformItem: vi.fn(),
+    createUniformItem: vi.fn(),
 }));
 ```
 Then configure mock return values per test:
 ```typescript
-(getUniformItem as jest.Mock).mockResolvedValue({ id: '...', number: 1 });
+import { getUniformItem } from '@/dal/uniform/item';
+(getUniformItem as ReturnType<typeof vi.fn>).mockResolvedValue({ id: '...', number: 1 });
 ```
 
 ## Form Testing Pattern
 Render the component, interact via `userEvent`, assert on DOM output:
 ```typescript
-import { render, screen } from 'jest/helpers/test-utils';
+import { render, screen } from 'vitest/helpers/test-utils';
 import userEvent from '@testing-library/user-event';
 
 test('shows validation error for empty required field', async () => {
@@ -60,6 +61,7 @@ test('shows validation error for empty required field', async () => {
 ```
 
 ## Key Rules
-- Use `jest/helpers/test-utils.tsx` for `render` (wraps providers)
+- Use `vitest/helpers/test-utils.tsx` for `render` (wraps providers)
 - Prefer `getByRole` and `getByLabelText` over `getByTestId` for resilient selectors
 - Do not test implementation details; test observable behaviour
+- Use `vi.fn()` / `vi.mock()` — not `jest.*` equivalents

@@ -5,12 +5,12 @@ Multi-tenant web application for managing uniform inventory and inspections for 
 
 ## Tech Stack
 - **Framework**: Next.js 15 (App Router), React 19
-- **Database**: PostgreSQL via Prisma 6
+- **Database**: PostgreSQL via Prisma 7
 - **Auth**: iron-session (cookie-based)
 - **Validation**: Zod (shared schemas in `src/zod/`)
 - **Forms**: react-hook-form + @hookform/resolvers/zod
 - **UI**: Bootstrap 5
-- **Testing**: Jest (unit + integration), Playwright (E2E)
+- **Testing**: Vitest (unit + integration), Playwright (E2E)
 
 ## Key Directories
 ```
@@ -24,7 +24,7 @@ src/types/        # Complex Prisma type definitions
 src/lib/          # Singletons: db.ts (prisma), ironSession.ts, AuthRoles.ts
 prisma/           # schema.prisma, migrations/, seed.ts
 tests/            # Playwright E2E tests and shared test data
-jest/             # Jest setup files
+vitest/           # Vitest setup files
 ```
 
 ## Architecture Rules (always apply)
