@@ -9,6 +9,9 @@
 **Tech Stack**: Next.js 15 (App Router), React 19, Prisma 6 (PostgreSQL), iron-session, react-hook-form, Zod, Bootstrap 5, Playwright, Jest
 
 ---
+## Agent Memory
+Most Information about features is saved via issues in github. 
+When creating short term files to plann features, use the `.agent-memory/` folder. These files are not committed to git and are only for temporary use during development. They can be used to plan features, store notes, or keep track of tasks without cluttering the main codebase or issue tracker.
 
 ## Architecture & Patterns
 

@@ -47,3 +47,4 @@ node_modules/
 tests/_playwrightConfig/testData/staticDataIds.json
 test-report.html
 prisma/generated/
+.agent-memory/
