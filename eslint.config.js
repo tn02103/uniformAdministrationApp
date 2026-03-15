@@ -1,5 +1,5 @@
 import { FlatCompat } from '@eslint/eslintrc';
-import jest from "eslint-plugin-jest";
+import vitest from "eslint-plugin-vitest";
 import playwright from 'eslint-plugin-playwright';
 import testingLibrary from "eslint-plugin-testing-library";
 import { defineConfig } from "eslint/config";
@@ -34,7 +34,7 @@ export default defineConfig([
         }
     },
     {
-        ...jest.configs['flat/recommended'],
+        ...vitest.configs.recommended,
         files: ['src/**/*.test.*'],
     },
     {
