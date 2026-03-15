@@ -51,7 +51,11 @@ All Zod schemas go in `src/zod/`. Reuse them in both DAL (server) and forms (cli
 - Foreign keys: prefer `objectId` suffix (legacy: `fk_` prefix)
 - Soft delete: `recdelete` (DateTime?) + `recdeleteUser` (string?)
 
+### Development Workflow — MANDATORY
+For any feature or bug fix: always follow `.github/agent/workflow.md`. This includes tickets, branches, planning, implementation, testing, commits, and PR creation. Never skip steps; always ask before pushing.
+
 ## Detailed Guidance (load when relevant)
+- **Workflow** (features & bug fixes): `.github/agent/workflow.md` — **MANDATORY**
 - Database & schema: `.github/agent/database.md`
 - DAL patterns & server actions: `.github/agent/dal.md`
 - Frontend components & forms: `.github/agent/frontend.md`
