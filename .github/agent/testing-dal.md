@@ -4,12 +4,12 @@
 
 | | Unit (`*.test.ts`) | Integration (`*.integration.test.ts`) |
 |---|---|---|
-| DB | Mocked (jest.mock) | Real PostgreSQL |
+| DB | Mocked (prisma-mock) | Real PostgreSQL |
 | Speed | ~1000× faster | Slower |
-| Parallelism | 50% max workers | maxWorkers: 1 (sequential) |
+| Parallelism | `fileParallelism: true` | `fileParallelism: false` (sequential) |
 | Command | `npm run test:dal:unit` | `npm run test:dal:integration` |
-| Config | `jest.dal-unit.config.ts` | `jest.dal-integration.config.ts` |
-| Setup file | `jest/setup-dal-unit.ts` | `jest/setup-dal-integration.ts` |
+| Config | `vitest.dal-unit.config.ts` | `vitest.dal-integration.config.ts` |
+| Setup file | `vitest/setup-dal-unit.ts` | `vitest/setup-dal-integration.ts` |
 
 ## When to Write Which
 
@@ -27,13 +27,28 @@
 - Simple CRUD with no logic may only need integration tests
 
 ## Unit Test Setup
-Prisma and iron-session are auto-mocked by `jest/setup-dal-unit.ts`.
-```typescript
-import { prisma } from '@/lib/db';
-jest.mock('@/lib/db'); // already done in setup; just cast for type hints
+Prisma and iron-session are auto-mocked by `vitest/setup-dal-unit.ts`.
+The typed mock is exported under the `@test-utils/prisma-mock` alias — import it directly in test files:
 
-(prisma.uniform.findUnique as jest.Mock).mockResolvedValue({ id: '...', ... });
+```typescript
+import { prismaMock } from '@test-utils/prisma-mock';
+
+// Access model mocks directly — no vi.mock() call needed, already done in setup
+const mockFindUnique = prismaMock.uniform.findUnique;
+
+test('returns uniform by id', async () => {
+    mockFindUnique.mockResolvedValue({ id: 'abc', number: 1 });
+
+    const result = await getUniformItem({ uniformId: 'abc' });
+
+    expect(result?.id).toBe('abc');
+    expect(mockFindUnique).toHaveBeenCalledWith(expect.objectContaining({
+        where: expect.objectContaining({ id: 'abc' }),
+    }));
+});
 ```
+
+Use `afterEach(() => vi.clearAllMocks())` to reset call counts between tests.
 
 ## Integration Test Setup
 Use the `StaticData` system (see `.github/agent/database.md` for full details).
@@ -62,6 +77,7 @@ src/dal/uniform/item/
 
 ## Key Rules
 - Every integration test must call `staticData.resetData()` in `beforeAll` — never assume DB state
-- Integration tests run sequentially (`maxWorkers: 1`) — do NOT add parallelism
+- Integration tests run sequentially (`fileParallelism: false`) — do NOT add parallelism
 - Always assert that queries scoped to org A do NOT return records from org B (use a second `StaticData` instance with a different index)
 - Session is mocked in unit tests; in integration tests, validators are bypassed via the `__unsecured` helpers or by calling Prisma directly
+- Use `vi.fn()` / `vi.mock()` / `vi.clearAllMocks()` — not `jest.*` equivalents

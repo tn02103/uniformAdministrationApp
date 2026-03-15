@@ -1,7 +1,7 @@
 # Database — Rules & Patterns
 
 ## Stack
-- **ORM**: Prisma 6
+- **ORM**: Prisma 7
 - **DB**: PostgreSQL
 - **Client**: singleton exported from `src/lib/db.ts` as `prisma`
 - **Schema**: `prisma/schema.prisma`

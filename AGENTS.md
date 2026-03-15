@@ -5,12 +5,12 @@ Multi-tenant web application for managing uniform inventory and inspections for 
 
 ## Tech Stack
 - **Framework**: Next.js 15 (App Router), React 19
-- **Database**: PostgreSQL via Prisma 6
+- **Database**: PostgreSQL via Prisma 7
 - **Auth**: iron-session (cookie-based)
 - **Validation**: Zod (shared schemas in `src/zod/`)
 - **Forms**: react-hook-form + @hookform/resolvers/zod
 - **UI**: Bootstrap 5
-- **Testing**: Jest (unit + integration), Playwright (E2E)
+- **Testing**: Vitest (unit + integration), Playwright (E2E)
 
 ## Key Directories
 ```
@@ -24,7 +24,7 @@ src/types/        # Complex Prisma type definitions
 src/lib/          # Singletons: db.ts (prisma), ironSession.ts, AuthRoles.ts
 prisma/           # schema.prisma, migrations/, seed.ts
 tests/            # Playwright E2E tests and shared test data
-jest/             # Jest setup files
+vitest/           # Vitest setup files
 ```
 
 ## Architecture Rules (always apply)
@@ -51,7 +51,11 @@ All Zod schemas go in `src/zod/`. Reuse them in both DAL (server) and forms (cli
 - Foreign keys: prefer `objectId` suffix (legacy: `fk_` prefix)
 - Soft delete: `recdelete` (DateTime?) + `recdeleteUser` (string?)
 
+### Development Workflow — MANDATORY
+For any feature or bug fix: always follow `.github/agent/workflow.md`. This includes tickets, branches, planning, implementation, testing, commits, and PR creation. Never skip steps; always ask before pushing.
+
 ## Detailed Guidance (load when relevant)
+- **Workflow** (features & bug fixes): `.github/agent/workflow.md` — **MANDATORY**
 - Database & schema: `.github/agent/database.md`
 - DAL patterns & server actions: `.github/agent/dal.md`
 - Frontend components & forms: `.github/agent/frontend.md`
