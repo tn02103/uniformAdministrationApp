@@ -1,5 +1,5 @@
 import { UniformWithOwner } from "@/types/globalUniformTypes";
-import { render, screen, waitForElementToBeRemoved } from "@testing-library/react";
+import { render, screen, waitFor, waitForElementToBeRemoved } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { mockTypeList, mockUniformList } from "../../../../../../../../vitest/staticMockData";
 import { UniformListTable } from "./UniformListTable";
@@ -11,12 +11,11 @@ import { useI18n } from "@/lib/locales/client";
 const pushMock = vi.fn();
 const paramsGet = vi.fn().mockReturnValue(null);
 const paramsHas = vi.fn().mockReturnValue(false);
+// Stable object reference — prevents useCallback from recreating loadData on every render
+const mockSearchParamsObj = { get: paramsGet, has: paramsHas };
 vi.mock("next/navigation", () => ({
     useRouter: () => ({ push: pushMock }),
-    useSearchParams: () => ({
-        get: paramsGet,
-        has: paramsHas,
-    }),
+    useSearchParams: () => mockSearchParamsObj,
     usePathname: () => "/app/uniform/list/81ff8e9b-a097-4879-a0b2-352e54d41e6c",
 }));
 
@@ -50,8 +49,11 @@ describe("UniformListTable", () => {
         vi.mocked(getUniformListWithOwner).mockResolvedValueOnce([]);
 
         render(<UniformListTable uniformType={uniformType} />);
-        expect(await screen.findByText("common.uniform.number")).toBeInTheDocument();
-        expect(await screen.findByTestId("div_nodata")).toBeInTheDocument();
+
+        // Wait until the data-fetch has been called and its resolved state has propagated
+        await waitFor(() => expect(getUniformListWithOwner).toHaveBeenCalledTimes(1));
+        expect(screen.getByText("common.uniform.number")).toBeInTheDocument();
+        expect(screen.getByTestId("div_nodata")).toBeInTheDocument();
     });
 
     it("renders correct number of table lines for uniforms", async () => {
