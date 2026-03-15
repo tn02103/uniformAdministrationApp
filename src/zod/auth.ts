@@ -1,3 +1,4 @@
+import { passwordValidationPattern } from "@/lib/validations";
 import { z } from "zod";
 
 export const LoginFormSchema = z.object({
@@ -22,3 +23,22 @@ export const TwoFactorFormSchema = z.object({
 });
 
 export type TwoFactorFormType = z.infer<typeof TwoFactorFormSchema>;
+
+const newPasswordSchema = z.string({ message: "string.required" })
+    .min(8, "string.minLength;value:8")
+    .regex(passwordValidationPattern, "string.passwordPattern");
+
+export const ChangePasswordFormSchema = z.object({
+    currentPassword: z.string({ message: "string.required" }).min(1, "string.required"),
+    newPassword: newPasswordSchema,
+    confirmPassword: z.string({ message: "string.required" }).min(1, "string.required"),
+}).superRefine((data, ctx) => {
+    if (data.newPassword !== data.confirmPassword) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "string.passwordMismatch",
+            path: ["confirmPassword"],
+        });
+    }
+});
+export type ChangePasswordFormType = z.infer<typeof ChangePasswordFormSchema>;
