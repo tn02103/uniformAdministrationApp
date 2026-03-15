@@ -27,10 +27,12 @@ vi.mock("timers/promises", () => ({
 }));
 
 vi.mock("rate-limiter-flexible", () => ({
-    RateLimiterMemory: vi.fn().mockImplementation(() => ({
-        get: vi.fn().mockResolvedValue(null),
-        consume: vi.fn().mockResolvedValue({ remainingPoints: 4 }),
-    })),
+    RateLimiterMemory: vi.fn().mockImplementation(function () {
+        return {
+            get: vi.fn().mockResolvedValue(null),
+            consume: vi.fn().mockResolvedValue({ remainingPoints: 4 }),
+        };
+    }),
 }));
 
 const mockSendPasswordResetEmail = vi.mocked(sendPasswordResetEmail);
