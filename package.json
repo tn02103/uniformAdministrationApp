@@ -91,7 +91,7 @@
         "@types/react-dom": "19.2.3",
         "@typescript-eslint/eslint-plugin": "8.57.0",
         "cross-env": "10.1.0",
-        "eslint": "9.39.3",
+        "eslint": "10.0.2",
         "eslint-config-next": "15.5.12",
         "eslint-plugin-jest": "29.15.0",
         "eslint-plugin-playwright": "2.9.0",
