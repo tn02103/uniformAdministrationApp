@@ -67,4 +67,24 @@ describe("ForgotPasswordForm", () => {
 
         expect(submitButton).toBeDisabled();
     });
+
+    it("shows error message when dal throws an exception", async () => {
+        const user = userEvent.setup();
+        mockRequestPasswordReset.mockRejectedValue(new Error("Network error"));
+
+        render(<ForgotPasswordForm organisations={mockOrganisations as Organisation[]} />);
+
+        const orgSelect = screen.getByRole("combobox", { name: /forgotPassword.label.organisation/i });
+        const emailInput = screen.getByRole("textbox", { name: /forgotPassword.label.email/i });
+        const submitButton = screen.getByRole("button", { name: /forgotPassword.label.submit/i });
+
+        await user.selectOptions(orgSelect, "00000000-0000-0000-0000-000000000001");
+        await user.type(emailInput, "user@example.com");
+        await user.click(submitButton);
+
+        await waitFor(() => {
+            expect(screen.getByTestId("error-message")).toBeInTheDocument();
+        });
+        expect(screen.getByTestId("error-message")).toHaveTextContent("forgotPassword.error.unknown");
+    });
 });

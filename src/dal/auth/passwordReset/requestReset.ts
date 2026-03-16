@@ -8,6 +8,8 @@ import { sha256Hex } from "@/dal/auth/helper.tokens";
 import { sendPasswordResetEmail } from "@/lib/email/passwordResetEmail";
 import { ForgotPasswordSchema, ForgotPasswordType } from "@/zod/auth";
 import { headers } from "next/headers";
+import { getIPAddress } from "@/dal/auth/helper";
+import { getCurrentLocale } from "@/lib/locales/config";
 import dayjs from "dayjs";
 
 const ipLimiter = new RateLimiterMemory({
@@ -17,17 +19,21 @@ const ipLimiter = new RateLimiterMemory({
 
 export const requestPasswordReset = async (data: ForgotPasswordType) => {
     const parsed = ForgotPasswordSchema.safeParse(data);
-    if (!parsed.success) return { success: false, error: "validation" as const };
+    if (!parsed.success) {
+        console.warn("requestPasswordReset: received invalid data", parsed.error.issues);
+        return { success: false };
+    }
 
     const { organisationId, email } = parsed.data;
-    const ipAddress = (await headers()).get("x-forwarded-for") ?? "unknown";
+    const locale = getCurrentLocale();
+    const ipAddress = getIPAddress(await headers());
 
-    // IP rate limiting — check before doing any DB work
-    const ipLimit = await ipLimiter.get(ipAddress);
-    if (ipLimit && ipLimit.remainingPoints <= 0) {
+    // IP rate limiting — atomic consume to prevent race between get+consume
+    try {
+        await ipLimiter.consume(ipAddress, 1);
+    } catch {
         return { success: false, error: "tooManyRequests" as const };
     }
-    await ipLimiter.consume(ipAddress, 1).catch(() => {});
 
     // Random delay to prevent timing-based user enumeration: both the
     // "user found" and "user not found" code paths are obscured behind the
@@ -43,29 +49,38 @@ export const requestPasswordReset = async (data: ForgotPasswordType) => {
         return { success: true };
     }
 
-    // Delete previous unused reset tokens for this user
-    await prisma.passwordResetToken.deleteMany({
-        where: { userId: user.id, usedAt: null },
-    });
-
-    // Generate a cryptographically random token, store only the hash
     const rawToken = crypto.randomBytes(32).toString("base64url");
     const tokenHash = sha256Hex(rawToken);
 
-    await prisma.passwordResetToken.create({
-        data: {
-            tokenHash,
-            userId: user.id,
-            organisationId,
-            endOfLive: dayjs().add(1, "hour").toDate(),
-            ipAddress,
-        },
-    });
-
     const baseUrl = (process.env.APPLICATION_URL ?? "").replace(/\/$/, "");
-    const resetLink = `${baseUrl}/de/reset-password?token=${rawToken}`;
+    const resolvedLocale = locale ?? "de";
+    const resetLink = `${baseUrl}/${resolvedLocale}/reset-password?token=${rawToken}`;
 
-    await sendPasswordResetEmail(user, resetLink);
+    // Transaction: if email delivery fails the token creation is rolled back,
+    // so the user is not left with an unreachable token in the DB.
+    try {
+        await prisma.$transaction(async (client) => {
+            // Delete previous unused reset tokens for this user
+            await client.passwordResetToken.deleteMany({
+                where: { userId: user.id, usedAt: null },
+            });
+
+            // Store only the hash — raw token is only ever in the email link
+            await client.passwordResetToken.create({
+                data: {
+                    tokenHash,
+                    userId: user.id,
+                    organisationId,
+                    endOfLive: dayjs().add(1, "hour").toDate(),
+                    ipAddress,
+                },
+            });
+
+            await sendPasswordResetEmail(user, resetLink);
+        });
+    } catch (e) {
+        console.error("requestPasswordReset: failed to create token or send email", e);
+    }
 
     return { success: true };
 };

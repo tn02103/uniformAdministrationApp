@@ -21,17 +21,21 @@ const ForgotPasswordForm = ({ organisations }: PropType) => {
     const t = useScopedI18n("forgotPassword");
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [error, setError] = useState(false);
+    const [error, setError] = useState<"unknown" | "tooManyRequests" | null>(null);
 
     async function onSubmit(data: ForgotPasswordType) {
         setSubmitting(true);
-        setError(false);
+        setError(null);
         try {
-            await requestPasswordReset(data);
+            const result = await requestPasswordReset(data);
+            if (!result.success) {
+                setError('error' in result && result.error === "tooManyRequests" ? "tooManyRequests" : "unknown");
+                return;
+            }
             // Always show success — never reveal whether an account exists
             setSubmitted(true);
         } catch {
-            setError(true);
+            setError("unknown");
         } finally {
             setSubmitting(false);
         }
@@ -49,7 +53,7 @@ const ForgotPasswordForm = ({ organisations }: PropType) => {
         <Form<ForgotPasswordType> onSubmit={onSubmit} zodSchema={ForgotPasswordSchema}>
             {error && (
                 <div className="alert alert-danger" role="alert" data-testid="error-message">
-                    {t("error.unknown")}
+                    {error === "tooManyRequests" ? t("error.tooManyRequests") : t("error.unknown")}
                 </div>
             )}
             <div className="mb-3">

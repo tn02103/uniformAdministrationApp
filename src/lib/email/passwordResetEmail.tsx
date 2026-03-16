@@ -7,11 +7,16 @@ import { getMailAgend } from "./mailagend";
 
 export const sendPasswordResetEmail = async (user: User, resetLink: string) => {
     const t = await getScopedI18n("emails.passwordReset");
-    await getMailAgend().sendMail({
-        to: user.email,
-        subject: t("subject"),
-        html: await render(await emailBody(resetLink)),
-    });
+    try {
+        await getMailAgend().sendMail({
+            to: user.email,
+            subject: t("subject"),
+            html: await render(await emailBody(resetLink)),
+        });
+    } catch (error) {
+        console.error(`sendPasswordResetEmail: Failed to send email to ${user.email}`, error);
+        throw error;
+    }
 };
 
 const emailBody = async (resetLink: string) => {
@@ -20,7 +25,7 @@ const emailBody = async (resetLink: string) => {
         <Html>
             <h1>{t("heading")}</h1>
             <p>{t("body")}</p>
-            <a href={resetLink}>{resetLink}</a>
+            <a href={resetLink}>{t("linkText")}</a>
             <br />
             <span>{t("validity")}</span>
         </Html>

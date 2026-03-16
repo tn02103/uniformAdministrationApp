@@ -265,6 +265,7 @@ export default {
         success: "If an account with that email exists, a reset link has been sent.",
         error: {
             unknown: "An error occurred. Please try again.",
+            tooManyRequests: "Too many attempts. Please try again later.",
         },
     },
     resetPassword: {
@@ -274,6 +275,7 @@ export default {
             confirmPassword: "Confirm password",
             submit: "Reset password",
             login: "Go to login",
+            requestNewLink: "Request a new reset link",
         },
         success: "Password reset successfully. You can now log in.",
         error: {
@@ -281,6 +283,7 @@ export default {
             tokenExpired: "This reset link has expired. Please request a new one.",
             passwordMismatch: "Passwords do not match.",
             unknown: "An error occurred. Please try again.",
+            tooManyRequests: "Too many attempts. Please try again later.",
         },
     },
     notFound: {
@@ -900,6 +903,7 @@ export default {
             heading: "Password Reset Request",
             body: "Click the link below to reset your password. The link expires in 1 hour.",
             validity: "If you did not request this, you can safely ignore this email.",
+            linkText: "Reset my password",
         },
     }
 } as const;

@@ -265,6 +265,7 @@ export default {
         success: "Falls ein Konto mit dieser E-Mail-Adresse existiert, wurde ein Reset-Link gesendet.",
         error: {
             unknown: "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
+            tooManyRequests: "Zu viele Versuche. Bitte versuche es später erneut.",
         },
     },
     resetPassword: {
@@ -274,6 +275,7 @@ export default {
             confirmPassword: "Passwort bestätigen",
             submit: "Passwort zurücksetzen",
             login: "Zum Login",
+            requestNewLink: "Neuen Reset-Link anfordern",
         },
         success: "Passwort erfolgreich zurückgesetzt. Du kannst dich jetzt anmelden.",
         error: {
@@ -281,6 +283,7 @@ export default {
             tokenExpired: "Dieser Reset-Link ist abgelaufen. Bitte fordere einen neuen an.",
             passwordMismatch: "Die Passwörter stimmen nicht überein.",
             unknown: "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
+            tooManyRequests: "Zu viele Versuche. Bitte versuche es später erneut.",
         },
     },
     notFound: {
@@ -900,6 +903,7 @@ export default {
             heading: "Anfrage zum Zurücksetzen des Passworts",
             body: "Klicke auf den folgenden Link, um dein Passwort zurückzusetzen. Der Link läuft in 1 Stunde ab.",
             validity: "Falls du dies nicht angefordert hast, kannst du diese E-Mail ignorieren.",
+            linkText: "Passwort zurücksetzen",
         },
     }
 } as const;
