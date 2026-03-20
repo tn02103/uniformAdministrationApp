@@ -1,15 +1,30 @@
+import { genericSAValidator } from "@/actions/validations";
 import { prismaMock } from "@test-utils/prisma-mock";
 import bcrypt from "bcrypt";
-import { changePassword, ChangePasswordProps, InvalidCurrentPasswordError } from "./changePassword";
+import { changePassword, InvalidCurrentPasswordError, TooManyRequestsError } from "./changePassword";
+
+const mockRateLimiterInstance = vi.hoisted(() => ({
+    get: vi.fn().mockResolvedValue(null),
+    consume: vi.fn().mockResolvedValue(undefined),
+}));
 
 vi.mock("bcrypt");
+vi.mock("rate-limiter-flexible", () => ({
+    RateLimiterMemory: vi.fn().mockImplementation(class {
+        get = mockRateLimiterInstance.get;
+        consume = mockRateLimiterInstance.consume;
+    }),
+}));
 
 const mockBcryptCompare = vi.mocked(bcrypt.compare);
 const mockBcryptHash = vi.mocked(bcrypt.hash);
 
+const mockGenericSAValidator = vi.mocked(genericSAValidator);
+
+const mockUserId = "user-id-123";
+
 describe("changePassword", () => {
-    const baseProps: ChangePasswordProps = {
-        userId: "user-id-123",
+    const baseProps = {
         currentPassword: "OldPassword1",
         newPassword: "NewPassword1",
     };
@@ -18,7 +33,42 @@ describe("changePassword", () => {
         password: "hashed-old-password",
     };
 
+    beforeEach(() => {
+        mockGenericSAValidator.mockResolvedValue([
+            { id: mockUserId, organisationId: "test-org-id", name: "Test User", username: "testuser", role: 1, acronym: "TEST" },
+            baseProps,
+        ] as any);
+        mockRateLimiterInstance.get.mockResolvedValue(null);
+        mockRateLimiterInstance.consume.mockResolvedValue(undefined);
+    });
+
     afterEach(() => vi.clearAllMocks());
+
+    describe("authentication & rate limiting", () => {
+        it("calls genericSAValidator with the input data", async () => {
+            prismaMock.user.findUnique.mockResolvedValue(mockUserRecord as any);
+            mockBcryptCompare.mockResolvedValue(true as any);
+            mockBcryptHash.mockResolvedValue("hashed-new-password" as any);
+            prismaMock.user.update.mockResolvedValue({} as any);
+            prismaMock.refreshToken.deleteMany.mockResolvedValue({ count: 0 } as any);
+
+            await changePassword(baseProps);
+
+            expect(mockGenericSAValidator).toHaveBeenCalledWith(
+                expect.anything(),
+                baseProps,
+                expect.anything(),
+            );
+        });
+
+        it("throws TooManyRequestsError when rate limit is exhausted", async () => {
+            mockRateLimiterInstance.get.mockResolvedValue({ remainingPoints: 0 });
+
+            await expect(changePassword(baseProps)).rejects.toThrow(TooManyRequestsError);
+
+            expect(prismaMock.user.findUnique).not.toHaveBeenCalled();
+        });
+    });
 
     describe("user lookup", () => {
         it("throws when user is not found", async () => {
@@ -32,18 +82,28 @@ describe("changePassword", () => {
 
     describe("current password verification", () => {
         it("throws InvalidCurrentPasswordError when current password is wrong", async () => {
-            prismaMock.user.findUnique.mockResolvedValue(mockUserRecord as never);
-            mockBcryptCompare.mockResolvedValue(false as never);
+            prismaMock.user.findUnique.mockResolvedValue(mockUserRecord as any);
+            mockBcryptCompare.mockResolvedValue(false as any);
 
-            await expect(changePassword(baseProps)).rejects.toThrow(InvalidCurrentPasswordError);
-            await expect(changePassword(baseProps)).rejects.toThrow("Current password is incorrect");
+            await expect(changePassword(baseProps)).rejects.toThrow(
+                expect.objectContaining({ name: "InvalidCurrentPasswordError", message: "Current password is incorrect" })
+            );
 
             expect(prismaMock.user.update).not.toHaveBeenCalled();
         });
 
+        it("consumes rate limiter point on wrong password", async () => {
+            prismaMock.user.findUnique.mockResolvedValue(mockUserRecord as any);
+            mockBcryptCompare.mockResolvedValue(false as any);
+
+            await expect(changePassword(baseProps)).rejects.toThrow(InvalidCurrentPasswordError);
+
+            expect(mockRateLimiterInstance.consume).toHaveBeenCalledWith(mockUserId);
+        });
+
         it("calls bcrypt.compare with the provided current password and stored hash", async () => {
-            prismaMock.user.findUnique.mockResolvedValue(mockUserRecord as never);
-            mockBcryptCompare.mockResolvedValue(false as never);
+            prismaMock.user.findUnique.mockResolvedValue(mockUserRecord as any);
+            mockBcryptCompare.mockResolvedValue(false as any);
 
             await expect(changePassword(baseProps)).rejects.toThrow(InvalidCurrentPasswordError);
 
@@ -56,10 +116,11 @@ describe("changePassword", () => {
 
     describe("successful password change", () => {
         beforeEach(() => {
-            prismaMock.user.findUnique.mockResolvedValue(mockUserRecord as never);
-            mockBcryptCompare.mockResolvedValue(true as never);
-            mockBcryptHash.mockResolvedValue("hashed-new-password" as never);
-            prismaMock.user.update.mockResolvedValue({} as never);
+            prismaMock.user.findUnique.mockResolvedValue(mockUserRecord as any);
+            mockBcryptCompare.mockResolvedValue(true as any);
+            mockBcryptHash.mockResolvedValue("hashed-new-password" as any);
+            prismaMock.user.update.mockResolvedValue({} as any);
+            prismaMock.refreshToken.deleteMany.mockResolvedValue({ count: 0 } as any);
         });
 
         it("returns undefined on success", async () => {
@@ -78,7 +139,7 @@ describe("changePassword", () => {
 
             expect(prismaMock.user.update).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    where: { id: baseProps.userId },
+                    where: { id: mockUserId },
                     data: expect.objectContaining({
                         password: "hashed-new-password",
                     }),
@@ -98,12 +159,20 @@ describe("changePassword", () => {
             );
         });
 
+        it("revokes all refresh tokens for the user on success", async () => {
+            await changePassword(baseProps);
+
+            expect(prismaMock.refreshToken.deleteMany).toHaveBeenCalledWith({
+                where: { userId: mockUserId },
+            });
+        });
+
         it("queries only the password field for the user", async () => {
             await changePassword(baseProps);
 
             expect(prismaMock.user.findUnique).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    where: { id: baseProps.userId },
+                    where: { id: mockUserId },
                     select: { password: true },
                 })
             );

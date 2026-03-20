@@ -29,3 +29,17 @@ export class TwoFactorRequiredException extends AuthenticationException {
         this.method = method;
     }
 }
+
+export class InvalidCurrentPasswordError extends Error {
+    constructor() {
+        super("Current password is incorrect");
+        this.name = "InvalidCurrentPasswordError";
+    }
+}
+
+export class TooManyRequestsError extends Error {
+    constructor() {
+        super("Too many failed password change attempts. Please try again later.");
+        this.name = "TooManyRequestsError";
+    }
+}

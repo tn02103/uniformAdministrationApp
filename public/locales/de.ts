@@ -866,5 +866,22 @@ export default {
                 closing: "Ihr UniformAdmin Team",   
             },
         }
-    }
+    },
+    profile: {
+        security: "Sicherheit",
+        changePassword: {
+            title: "Passwort ändern",
+            currentPassword: "Aktuelles Passwort",
+            newPassword: "Neues Passwort",
+            confirmPassword: "Passwort bestätigen",
+            submit: "Passwort ändern",
+            cancel: "Abbrechen",
+            success: "Passwort erfolgreich geändert.",
+            error: {
+                invalidCurrentPassword: "Das aktuelle Passwort ist falsch.",
+                tooManyRequests: "Zu viele Fehlversuche. Bitte versuchen Sie es später erneut.",
+                unknown: "Beim Ändern des Passworts ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+            },
+        },
+    },
 } as const;

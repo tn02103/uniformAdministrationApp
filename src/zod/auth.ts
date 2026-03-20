@@ -42,3 +42,9 @@ export const ChangePasswordFormSchema = z.object({
     }
 });
 export type ChangePasswordFormType = z.infer<typeof ChangePasswordFormSchema>;
+
+export const ChangePasswordDALSchema = z.object({
+    currentPassword: z.string({ message: "string.required" }).min(1, "string.required"),
+    newPassword: newPasswordSchema,
+});
+export type ChangePasswordDALType = z.infer<typeof ChangePasswordDALSchema>;
