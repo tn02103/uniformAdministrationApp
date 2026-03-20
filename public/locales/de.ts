@@ -902,7 +902,7 @@ export default {
             subject: "Passwort zurücksetzen",
             heading: "Anfrage zum Zurücksetzen des Passworts",
             body: "Klicke auf den folgenden Link, um dein Passwort zurückzusetzen. Der Link läuft in 1 Stunde ab.",
-            validity: "Falls du dies nicht angefordert hast, kannst du diese E-Mail ignorieren.",
+            validity: "Falls du diese Anfrage nicht gestellt hast, informiere uns bitte hierüber.",
             linkText: "Passwort zurücksetzen",
         },
     }

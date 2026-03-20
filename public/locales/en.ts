@@ -902,7 +902,7 @@ export default {
             subject: "Reset your password",
             heading: "Password Reset Request",
             body: "Click the link below to reset your password. The link expires in 1 hour.",
-            validity: "If you did not request this, you can safely ignore this email.",
+            validity: "If you did not request this password reset, please let us know right away.",
             linkText: "Reset my password",
         },
     }

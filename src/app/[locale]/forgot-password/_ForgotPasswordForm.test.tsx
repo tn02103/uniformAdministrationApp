@@ -30,7 +30,7 @@ describe("ForgotPasswordForm", () => {
         expect(screen.getByRole("button", { name: /forgotPassword.label.submit/i })).toBeInTheDocument();
     });
 
-    it("shows success message after form submission regardless of outcome", async () => {
+    it("shows success message after successfull outcome", async () => {
         const user = userEvent.setup();
         render(<ForgotPasswordForm organisations={mockOrganisations as Organisation[]} />);
 
@@ -68,23 +68,65 @@ describe("ForgotPasswordForm", () => {
         expect(submitButton).toBeDisabled();
     });
 
-    it("shows error message when dal throws an exception", async () => {
-        const user = userEvent.setup();
-        mockRequestPasswordReset.mockRejectedValue(new Error("Network error"));
+    describe("DAL response handling", () => {
+        it("shows error message when dal throws an exception", async () => {
+            const user = userEvent.setup();
+            mockRequestPasswordReset.mockRejectedValue(new Error("Network error"));
 
-        render(<ForgotPasswordForm organisations={mockOrganisations as Organisation[]} />);
+            render(<ForgotPasswordForm organisations={mockOrganisations as Organisation[]} />);
 
-        const orgSelect = screen.getByRole("combobox", { name: /forgotPassword.label.organisation/i });
-        const emailInput = screen.getByRole("textbox", { name: /forgotPassword.label.email/i });
-        const submitButton = screen.getByRole("button", { name: /forgotPassword.label.submit/i });
+            const orgSelect = screen.getByRole("combobox", { name: /forgotPassword.label.organisation/i });
+            const emailInput = screen.getByRole("textbox", { name: /forgotPassword.label.email/i });
+            const submitButton = screen.getByRole("button", { name: /forgotPassword.label.submit/i });
 
-        await user.selectOptions(orgSelect, "00000000-0000-0000-0000-000000000001");
-        await user.type(emailInput, "user@example.com");
-        await user.click(submitButton);
+            await user.selectOptions(orgSelect, "00000000-0000-0000-0000-000000000001");
+            await user.type(emailInput, "user@example.com");
+            await user.click(submitButton);
 
-        await waitFor(() => {
-            expect(screen.getByTestId("error-message")).toBeInTheDocument();
+            await waitFor(() => {
+                expect(screen.getByTestId("error-message")).toBeInTheDocument();
+            });
+            expect(screen.getByTestId("error-message")).toHaveTextContent("forgotPassword.error.unknown");
         });
-        expect(screen.getByTestId("error-message")).toHaveTextContent("forgotPassword.error.unknown");
+
+        it("shows tooManyRequests error when dal returns success:false with tooManyRequests error", async () => {
+            const user = userEvent.setup();
+            mockRequestPasswordReset.mockResolvedValue({ success: false, error: "tooManyRequests" });
+
+            render(<ForgotPasswordForm organisations={mockOrganisations as Organisation[]} />);
+
+            const orgSelect = screen.getByRole("combobox", { name: /forgotPassword.label.organisation/i });
+            const emailInput = screen.getByRole("textbox", { name: /forgotPassword.label.email/i });
+            const submitButton = screen.getByRole("button", { name: /forgotPassword.label.submit/i });
+
+            await user.selectOptions(orgSelect, "00000000-0000-0000-0000-000000000001");
+            await user.type(emailInput, "user@example.com");
+            await user.click(submitButton);
+
+            await waitFor(() => {
+                expect(screen.getByTestId("error-message")).toBeInTheDocument();
+            });
+            expect(screen.getByTestId("error-message")).toHaveTextContent("forgotPassword.error.tooManyRequests");
+        });
+
+        it("shows unknown error when dal returns success:false with a different error", async () => {
+            const user = userEvent.setup();
+            mockRequestPasswordReset.mockResolvedValue({ success: false });
+
+            render(<ForgotPasswordForm organisations={mockOrganisations as Organisation[]} />);
+
+            const orgSelect = screen.getByRole("combobox", { name: /forgotPassword.label.organisation/i });
+            const emailInput = screen.getByRole("textbox", { name: /forgotPassword.label.email/i });
+            const submitButton = screen.getByRole("button", { name: /forgotPassword.label.submit/i });
+
+            await user.selectOptions(orgSelect, "00000000-0000-0000-0000-000000000001");
+            await user.type(emailInput, "user@example.com");
+            await user.click(submitButton);
+
+            await waitFor(() => {
+                expect(screen.getByTestId("error-message")).toBeInTheDocument();
+            });
+            expect(screen.getByTestId("error-message")).toHaveTextContent("forgotPassword.error.unknown");
+        });
     });
 });

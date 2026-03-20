@@ -32,7 +32,6 @@ const ForgotPasswordForm = ({ organisations }: PropType) => {
                 setError('error' in result && result.error === "tooManyRequests" ? "tooManyRequests" : "unknown");
                 return;
             }
-            // Always show success — never reveal whether an account exists
             setSubmitted(true);
         } catch {
             setError("unknown");

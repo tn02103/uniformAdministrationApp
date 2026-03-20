@@ -56,11 +56,7 @@ const ResetPasswordForm = ({ token, locale }: PropType) => {
         );
     }
 
-    const errorKey = error === "tokenExpired" ? "error.tokenExpired"
-        : error === "tokenInvalid" ? "error.tokenInvalid"
-        : error === "tooManyRequests" ? "error.tooManyRequests"
-        : error ? "error.unknown"
-        : null;
+    const errorKey = error ? `error.${error}` : null;
 
     return (
         <Form<ResetPasswordFormType>
