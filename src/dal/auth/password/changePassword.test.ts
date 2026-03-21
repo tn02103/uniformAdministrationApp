@@ -2,6 +2,11 @@ import { genericSAValidator } from "@/actions/validations";
 import { getIronSession } from "@/lib/ironSession";
 import { prismaMock } from "@test-utils/prisma-mock";
 import bcrypt from "bcrypt";
+import { headers } from "next/headers";
+import { userAgent } from "next/server";
+import { getMockUserAgent } from "../__testHelpers__/mockData";
+import { getIPAddress, logSecurityAuditEntry } from "../helper";
+import { LogDebugLevel } from "../LogDebugLeve.enum";
 import { changePassword } from "./changePassword";
 
 const mockRateLimiterInstance = vi.hoisted(() => ({
@@ -16,14 +21,29 @@ vi.mock('rate-limiter-flexible', () => ({
 vi.mock("@/lib/ironSession", () => ({
     getIronSession: vi.fn(),
 }));
+vi.mock("next/headers", () => ({
+    headers: vi.fn(),
+}));
+vi.mock("next/server", () => ({
+    userAgent: vi.fn(),
+}));
+vi.mock("../helper", () => ({
+    getIPAddress: vi.fn(),
+    logSecurityAuditEntry: vi.fn(),
+}));
 
 const mockBcryptCompare = vi.mocked(bcrypt.compare);
 const mockBcryptHash = vi.mocked(bcrypt.hash);
 const mockGenericSAValidator = vi.mocked(genericSAValidator);
 const mockGetIronSession = vi.mocked(getIronSession);
+const mockHeaders = vi.mocked(headers);
+const mockUserAgent = vi.mocked(userAgent);
+const mockGetIPAddress = vi.mocked(getIPAddress);
+const mockLogSecurityAuditEntry = vi.mocked(logSecurityAuditEntry);
 
 const mockUserId = "user-id-123";
 const mockSessionId = "session-id-abc";
+const mockIPAddress = "1.2.3.4";
 
 describe("changePassword", () => {
     const baseProps = {
@@ -36,6 +56,7 @@ describe("changePassword", () => {
     };
 
     beforeEach(() => {
+        prismaMock.user.findUnique.mockResolvedValue(mockUserRecord as any);
         mockGenericSAValidator.mockResolvedValue([
             { id: mockUserId, organisationId: "test-org-id", name: "Test User", username: "testuser", role: 1, acronym: "TEST" },
             baseProps,
@@ -43,13 +64,16 @@ describe("changePassword", () => {
         mockRateLimiterInstance.get.mockResolvedValue(null);
         mockRateLimiterInstance.consume.mockResolvedValue(undefined);
         mockGetIronSession.mockResolvedValue({ sessionId: mockSessionId } as any);
+        mockHeaders.mockResolvedValue({} as any);
+        mockUserAgent.mockReturnValue(getMockUserAgent());
+        mockGetIPAddress.mockReturnValue(mockIPAddress);
+        mockLogSecurityAuditEntry.mockResolvedValue(undefined);
     });
 
     afterEach(() => vi.clearAllMocks());
 
     describe("authentication & rate limiting", () => {
         it("calls genericSAValidator with the input data", async () => {
-            prismaMock.user.findUnique.mockResolvedValue(mockUserRecord as any);
             mockBcryptCompare.mockResolvedValue(true as any);
             mockBcryptHash.mockResolvedValue("hashed-new-password" as any);
             prismaMock.user.update.mockResolvedValue({} as any);
@@ -86,7 +110,6 @@ describe("changePassword", () => {
 
     describe("current password verification", () => {
         it("returns currentPassword formElement error when current password is wrong", async () => {
-            prismaMock.user.findUnique.mockResolvedValue(mockUserRecord as any);
             mockBcryptCompare.mockResolvedValue(false as any);
 
             const result = await changePassword(baseProps);
@@ -101,7 +124,6 @@ describe("changePassword", () => {
         });
 
         it("consumes rate limiter point on wrong password", async () => {
-            prismaMock.user.findUnique.mockResolvedValue(mockUserRecord as any);
             mockBcryptCompare.mockResolvedValue(false as any);
 
             await changePassword(baseProps);
@@ -110,7 +132,6 @@ describe("changePassword", () => {
         });
 
         it("calls bcrypt.compare with the provided current password and stored hash", async () => {
-            prismaMock.user.findUnique.mockResolvedValue(mockUserRecord as any);
             mockBcryptCompare.mockResolvedValue(false as any);
 
             await changePassword(baseProps);
@@ -124,7 +145,6 @@ describe("changePassword", () => {
 
     describe("successful password change", () => {
         beforeEach(() => {
-            prismaMock.user.findUnique.mockResolvedValue(mockUserRecord as any);
             mockBcryptCompare.mockResolvedValue(true as any);
             mockBcryptHash.mockResolvedValue("hashed-new-password" as any);
             prismaMock.user.update.mockResolvedValue({} as any);
@@ -225,6 +245,56 @@ describe("changePassword", () => {
                     select: { password: true },
                 })
             );
+        });
+    });
+
+    describe("audit logging", () => {
+        it("logs a failed CHANGE_PASSWORD audit entry for invalid password", async () => {
+            mockBcryptCompare.mockResolvedValue(false as any);
+            await changePassword(baseProps);
+
+            expect(mockLogSecurityAuditEntry).toHaveBeenCalledTimes(1);
+            expect(mockLogSecurityAuditEntry).toHaveBeenCalledWith({
+                action: "CHANGE_PASSWORD",
+                debugLevel: LogDebugLevel.INFO,
+                userId: mockUserId,
+                success: false,
+                ipAddress: mockIPAddress,
+                userAgent: getMockUserAgent(),
+                details: "Password change failed: invalid current password",
+            });
+        });
+
+        it("logs a failed CHANGE_PASSWORD audit entry when user is not found", async () => {
+            prismaMock.user.findUnique.mockResolvedValue(null);
+            await expect(changePassword(baseProps)).rejects.toThrow("User not found");
+            
+            expect(mockLogSecurityAuditEntry).toHaveBeenCalledTimes(1);
+            expect(mockLogSecurityAuditEntry).toHaveBeenCalledWith({
+                action: "CHANGE_PASSWORD",
+                debugLevel: LogDebugLevel.WARNING,
+                userId: mockUserId,
+                success: false,
+                ipAddress: mockIPAddress,
+                userAgent: getMockUserAgent(),
+                details: "Password change failed: user not found",
+            });
+        });
+
+        it("logs a successful CHANGE_PASSWORD audit entry", async () => {
+            mockBcryptCompare.mockResolvedValue(true as any);
+            await changePassword(baseProps);
+
+            expect(mockLogSecurityAuditEntry).toHaveBeenCalledTimes(1);
+            expect(mockLogSecurityAuditEntry).toHaveBeenCalledWith({
+                action: "CHANGE_PASSWORD",
+                debugLevel: LogDebugLevel.SUCCESS,
+                userId: mockUserId,
+                success: true,
+                ipAddress: mockIPAddress,
+                userAgent: getMockUserAgent(),
+                details: "Password changed successfully",
+            });
         });
     });
 });
