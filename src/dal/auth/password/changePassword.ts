@@ -1,7 +1,7 @@
 import { genericSAValidator } from "@/actions/validations";
-import { InvalidCurrentPasswordError, TooManyRequestsError } from "@/errors/Authentication";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
+import { getIronSession } from "@/lib/ironSession";
 import { ChangePasswordDALSchema, ChangePasswordDALType } from "@/zod/auth";
 import bcrypt from "bcrypt";
 import { RateLimiterMemory } from "rate-limiter-flexible";
@@ -13,7 +13,11 @@ const userRateLimiter = new RateLimiterMemory({
     duration: 60 * 15, // 15 minutes
 });
 
-export const changePassword = async (data: ChangePasswordDALType): Promise<void> => {
+type ChangePasswordError =
+    | { error: { formElement: "currentPassword"; message: string } }
+    | { error: { tooManyRequests: true } };
+
+export const changePassword = async (data: ChangePasswordDALType): Promise<void | ChangePasswordError> => {
     const [user, { currentPassword, newPassword }] = await genericSAValidator(
         AuthRole.user,
         data,
@@ -22,7 +26,7 @@ export const changePassword = async (data: ChangePasswordDALType): Promise<void>
 
     const limit = await userRateLimiter.get(user.id);
     if (limit !== null && limit.remainingPoints <= 0) {
-        throw new TooManyRequestsError();
+        return { error: { tooManyRequests: true } };
     }
 
     const dbUser = await prisma.user.findUnique({
@@ -37,7 +41,7 @@ export const changePassword = async (data: ChangePasswordDALType): Promise<void>
     const isValid = await bcrypt.compare(currentPassword, dbUser.password);
     if (!isValid) {
         await userRateLimiter.consume(user.id);
-        throw new InvalidCurrentPasswordError();
+        return { error: { formElement: "currentPassword", message: "custom.auth.invalidCurrentPassword" } };
     }
 
     const hashedNewPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
@@ -50,7 +54,22 @@ export const changePassword = async (data: ChangePasswordDALType): Promise<void>
         },
     });
 
+    const ironSession = await getIronSession();
+    const currentSessionId = ironSession.sessionId;
+
+    await prisma.session.updateMany({
+        where: {
+            device: { userId: user.id },
+            valid: true,
+            ...(currentSessionId ? { NOT: { id: currentSessionId } } : {}),
+        },
+        data: { valid: false },
+    });
+
     await prisma.refreshToken.deleteMany({
-        where: { userId: user.id },
+        where: {
+            userId: user.id,
+            ...(currentSessionId ? { NOT: { sessionId: currentSessionId } } : {}),
+        },
     });
 };

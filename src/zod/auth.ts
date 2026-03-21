@@ -25,8 +25,8 @@ export const TwoFactorFormSchema = z.object({
 export type TwoFactorFormType = z.infer<typeof TwoFactorFormSchema>;
 
 const newPasswordSchema = z.string({ message: "string.required" })
-    .min(8, "string.minLength;value:8")
-    .regex(passwordValidationPattern, "string.passwordPattern");
+    .min(8, "custom.auth.password.requirements")
+    .regex(passwordValidationPattern, "custom.auth.password.requirements"); 
 
 export const ChangePasswordFormSchema = z.object({
     currentPassword: z.string({ message: "string.required" }).min(1, "string.required"),
@@ -36,7 +36,7 @@ export const ChangePasswordFormSchema = z.object({
     if (data.newPassword !== data.confirmPassword) {
         ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: "string.passwordMismatch",
+            message: "custom.auth.password.mismatch",
             path: ["confirmPassword"],
         });
     }

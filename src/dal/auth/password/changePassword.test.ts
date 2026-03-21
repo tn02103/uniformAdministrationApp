@@ -1,7 +1,8 @@
 import { genericSAValidator } from "@/actions/validations";
+import { getIronSession } from "@/lib/ironSession";
 import { prismaMock } from "@test-utils/prisma-mock";
 import bcrypt from "bcrypt";
-import { changePassword, InvalidCurrentPasswordError, TooManyRequestsError } from "./changePassword";
+import { changePassword } from "./changePassword";
 
 const mockRateLimiterInstance = vi.hoisted(() => ({
     get: vi.fn().mockResolvedValue(null),
@@ -9,19 +10,20 @@ const mockRateLimiterInstance = vi.hoisted(() => ({
 }));
 
 vi.mock("bcrypt");
-vi.mock("rate-limiter-flexible", () => ({
-    RateLimiterMemory: vi.fn().mockImplementation(class {
-        get = mockRateLimiterInstance.get;
-        consume = mockRateLimiterInstance.consume;
-    }),
+vi.mock('rate-limiter-flexible', () => ({
+    RateLimiterMemory: class { constructor() { return mockRateLimiterInstance as any; } },
+}));
+vi.mock("@/lib/ironSession", () => ({
+    getIronSession: vi.fn(),
 }));
 
 const mockBcryptCompare = vi.mocked(bcrypt.compare);
 const mockBcryptHash = vi.mocked(bcrypt.hash);
-
 const mockGenericSAValidator = vi.mocked(genericSAValidator);
+const mockGetIronSession = vi.mocked(getIronSession);
 
 const mockUserId = "user-id-123";
+const mockSessionId = "session-id-abc";
 
 describe("changePassword", () => {
     const baseProps = {
@@ -40,6 +42,7 @@ describe("changePassword", () => {
         ] as any);
         mockRateLimiterInstance.get.mockResolvedValue(null);
         mockRateLimiterInstance.consume.mockResolvedValue(undefined);
+        mockGetIronSession.mockResolvedValue({ sessionId: mockSessionId } as any);
     });
 
     afterEach(() => vi.clearAllMocks());
@@ -61,11 +64,12 @@ describe("changePassword", () => {
             );
         });
 
-        it("throws TooManyRequestsError when rate limit is exhausted", async () => {
+        it("returns tooManyRequests error when rate limit is exhausted", async () => {
             mockRateLimiterInstance.get.mockResolvedValue({ remainingPoints: 0 });
 
-            await expect(changePassword(baseProps)).rejects.toThrow(TooManyRequestsError);
+            const result = await changePassword(baseProps);
 
+            expect(result).toEqual({ error: { tooManyRequests: true } });
             expect(prismaMock.user.findUnique).not.toHaveBeenCalled();
         });
     });
@@ -81,14 +85,18 @@ describe("changePassword", () => {
     });
 
     describe("current password verification", () => {
-        it("throws InvalidCurrentPasswordError when current password is wrong", async () => {
+        it("returns currentPassword formElement error when current password is wrong", async () => {
             prismaMock.user.findUnique.mockResolvedValue(mockUserRecord as any);
             mockBcryptCompare.mockResolvedValue(false as any);
 
-            await expect(changePassword(baseProps)).rejects.toThrow(
-                expect.objectContaining({ name: "InvalidCurrentPasswordError", message: "Current password is incorrect" })
-            );
+            const result = await changePassword(baseProps);
 
+            expect(result).toEqual({
+                error: {
+                    formElement: "currentPassword",
+                    message: "custom.auth.invalidCurrentPassword",
+                },
+            });
             expect(prismaMock.user.update).not.toHaveBeenCalled();
         });
 
@@ -96,7 +104,7 @@ describe("changePassword", () => {
             prismaMock.user.findUnique.mockResolvedValue(mockUserRecord as any);
             mockBcryptCompare.mockResolvedValue(false as any);
 
-            await expect(changePassword(baseProps)).rejects.toThrow(InvalidCurrentPasswordError);
+            await changePassword(baseProps);
 
             expect(mockRateLimiterInstance.consume).toHaveBeenCalledWith(mockUserId);
         });
@@ -105,7 +113,7 @@ describe("changePassword", () => {
             prismaMock.user.findUnique.mockResolvedValue(mockUserRecord as any);
             mockBcryptCompare.mockResolvedValue(false as any);
 
-            await expect(changePassword(baseProps)).rejects.toThrow(InvalidCurrentPasswordError);
+            await changePassword(baseProps);
 
             expect(mockBcryptCompare).toHaveBeenCalledWith(
                 baseProps.currentPassword,
@@ -120,6 +128,7 @@ describe("changePassword", () => {
             mockBcryptCompare.mockResolvedValue(true as any);
             mockBcryptHash.mockResolvedValue("hashed-new-password" as any);
             prismaMock.user.update.mockResolvedValue({} as any);
+            prismaMock.session.updateMany.mockResolvedValue({ count: 0 } as any);
             prismaMock.refreshToken.deleteMany.mockResolvedValue({ count: 0 } as any);
         });
 
@@ -159,7 +168,47 @@ describe("changePassword", () => {
             );
         });
 
-        it("revokes all refresh tokens for the user on success", async () => {
+        it("invalidates all other sessions of the user on success", async () => {
+            await changePassword(baseProps);
+
+            expect(prismaMock.session.updateMany).toHaveBeenCalledWith({
+                where: {
+                    device: { userId: mockUserId },
+                    valid: true,
+                    NOT: { id: mockSessionId },
+                },
+                data: { valid: false },
+            });
+        });
+
+        it("invalidates all sessions when no current sessionId is available", async () => {
+            mockGetIronSession.mockResolvedValue({ sessionId: undefined } as any);
+
+            await changePassword(baseProps);
+
+            expect(prismaMock.session.updateMany).toHaveBeenCalledWith({
+                where: {
+                    device: { userId: mockUserId },
+                    valid: true,
+                },
+                data: { valid: false },
+            });
+        });
+
+        it("revokes all refresh tokens for the user except the current session", async () => {
+            await changePassword(baseProps);
+
+            expect(prismaMock.refreshToken.deleteMany).toHaveBeenCalledWith({
+                where: {
+                    userId: mockUserId,
+                    NOT: { sessionId: mockSessionId },
+                },
+            });
+        });
+
+        it("revokes all refresh tokens when no current sessionId is available", async () => {
+            mockGetIronSession.mockResolvedValue({ sessionId: undefined } as any);
+
             await changePassword(baseProps);
 
             expect(prismaMock.refreshToken.deleteMany).toHaveBeenCalledWith({

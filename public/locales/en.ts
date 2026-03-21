@@ -222,6 +222,10 @@ export default {
                 },
                 auth: {
                     "2fa.appNameNotUnique": "The name is already used by one of your other 2FA apps",
+                    invalidCurrentPassword: "The current password is incorrect.",
+                    password: {
+                        mismatch: "The passwords do not match",
+                    },
                 },
             },
         },
@@ -863,7 +867,7 @@ export default {
                 line1: "Hello Admin,",
                 line2: "The user account {name} has been blocked due to suspicious activities.",
                 line3: "Please review the account and contact the user for further information.",
-                closing: "Your UniformAdmin Team",   
+                closing: "Your UniformAdmin Team",
             },
         }
     },
@@ -881,6 +885,15 @@ export default {
                 invalidCurrentPassword: "The current password is incorrect.",
                 tooManyRequests: "Too many failed attempts. Please try again later.",
                 unknown: "An error occurred while changing your password. Please try again.",
+            },
+            newPasswordError: {
+                invalid: "The new password does not meet the requirements.",
+                rules: {
+                    minLength: "At least 8 characters",
+                    uppercase: "At least one uppercase letter",
+                    lowercase: "At least one lowercase letter",
+                    number: "At least one number",
+                },
             },
         },
     },

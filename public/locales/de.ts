@@ -221,8 +221,12 @@ export default {
                     },
                 },
                 auth: {
-                    "2fa.appNameNotUnique": "Der Name wird bereits von einer ihrer anderen 2FA Apps benutzt"
-                }
+                    "2fa.appNameNotUnique": "Der Name wird bereits von einer ihrer anderen 2FA Apps benutzt",
+                    invalidCurrentPassword: "Das aktuelle Passwort ist falsch.",
+                    password: {
+                        mismatch: "Die Passwörter stimmen nicht überein",
+                    },
+                },
             },
         },
         success: {
@@ -774,7 +778,7 @@ export default {
                     header: "Withdraw uniform part",
                     message: "Are you sure you want to withdraw the uniform part {type} {number}?"
                 },
-            },      
+            },
         },
         dangerConfirmation: {
             confirmation: {
@@ -863,7 +867,7 @@ export default {
                 line1: "Guten Tag Admin,",
                 line2: "Das Benutzerkonto {name} wurde aufgrund von verdächtigen Aktivitäten gesperrt.",
                 line3: "Bitte überprüfen Sie das Konto und kontaktieren Sie den Benutzer für weitere Informationen.",
-                closing: "Ihr UniformAdmin Team",   
+                closing: "Ihr UniformAdmin Team",
             },
         }
     },
@@ -881,6 +885,15 @@ export default {
                 invalidCurrentPassword: "Das aktuelle Passwort ist falsch.",
                 tooManyRequests: "Zu viele Fehlversuche. Bitte versuchen Sie es später erneut.",
                 unknown: "Beim Ändern des Passworts ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+            },
+            newPasswordError: {
+                invalid: "Das neue Passwort erfüllt die Anforderungen nicht.",
+                rules: {
+                    minLength: "Mindestens 8 Zeichen",
+                    uppercase: "Mindestens ein Großbuchstabe",
+                    lowercase: "Mindestens ein Kleinbuchstabe",
+                    number: "Mindestens eine Ziffer",
+                },
             },
         },
     },
