@@ -29,7 +29,7 @@ const ForgotPasswordForm = ({ organisations }: PropType) => {
         try {
             const result = await requestPasswordReset(data);
             if (!result.success) {
-                setError('error' in result && result.error === "tooManyRequests" ? "tooManyRequests" : "unknown");
+                setError(('error' in result && result.error === "tooManyRequests") ? "tooManyRequests" : "unknown");
                 return;
             }
             setSubmitted(true);

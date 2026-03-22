@@ -17,7 +17,7 @@ type PropType = {
     locale: string;
 };
 
-type ResetError = "tokenInvalid" | "tokenExpired" | "tooManyRequests" | "validation" | "unknown";
+type ResetError = "tokenInvalid" | "tooManyRequests" | "unknown";
 
 const ResetPasswordForm = ({ token, locale }: PropType) => {
     const t = useScopedI18n("resetPassword");
@@ -69,7 +69,6 @@ const ResetPasswordForm = ({ token, locale }: PropType) => {
                     {t(errorKey as Parameters<typeof t>[0])}
                 </div>
             )}
-            <input type="hidden" name="token" value={token} />
             <div className="mb-3">
                 <InputFormField
                     name="newPassword"

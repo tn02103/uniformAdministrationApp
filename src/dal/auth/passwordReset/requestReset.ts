@@ -90,8 +90,17 @@ export const requestPasswordReset = async (data: ForgotPasswordType) => {
                 },
             });
 
-            await sendPasswordResetEmail(user, resetLink);
         });
+
+        try {
+            await sendPasswordResetEmail(user, resetLink);
+        } catch (e) {
+            console.error("requestPasswordReset: failed to send email", e);
+            await prisma.passwordResetToken.delete({
+                where: { tokenHash },
+            });
+            return { success: false };
+        }
 
         await logSecurityAuditEntry({
             action: "PASSWORD_RESET_REQUEST",

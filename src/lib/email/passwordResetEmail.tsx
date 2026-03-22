@@ -1,7 +1,8 @@
+/* eslint-disable @next/next/no-head-element */
 import { User } from "@/prisma/client";
 import { Html } from "@react-email/html";
 import { render } from "@react-email/render";
-import { getScopedI18n } from "../locales/config";
+import { getCurrentLocale, getScopedI18n } from "../locales/config";
 import { getMailAgend } from "./mailagend";
 
 
@@ -22,8 +23,10 @@ export const sendPasswordResetEmail = async (user: User, resetLink: string) => {
 // Draft 2: Navy header + orange accent + bordered callout
 const emailBody = async (resetLink: string) => {
     const t = await getScopedI18n("emails.passwordReset");
+    const locale = await getCurrentLocale();
+    
     return (
-        <Html lang="de">
+        <Html lang={locale}>
             <head>
                 <meta charSet="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />

@@ -2,7 +2,7 @@
 import { prisma } from "@/lib/db";
 import { Html } from "@react-email/html";
 import { render } from "@react-email/render";
-import { getScopedI18n } from "../locales/config";
+import { getCurrentLocale, getScopedI18n } from "../locales/config";
 import { getMailAgend } from "./mailagend";
 
 export const sendPasswordChangedEmail = async (userId: string) => {
@@ -27,8 +27,9 @@ export const sendPasswordChangedEmail = async (userId: string) => {
 
 const emailBody = async (name: string) => {
     const t = await getScopedI18n("emails.passwordChanged");
+    const locale = await getCurrentLocale();
     return (
-        <Html lang="de">
+        <Html lang={locale}>
             <head>
                 <meta charSet="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />

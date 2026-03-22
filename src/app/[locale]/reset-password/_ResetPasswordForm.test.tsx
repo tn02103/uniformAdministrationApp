@@ -63,21 +63,6 @@ describe("ResetPasswordForm", () => {
         expect(screen.getByTestId("error-message")).toHaveTextContent("resetPassword.error.tokenInvalid");
     });
 
-    it("shows tokenExpired error when server returns tokenExpired", async () => {
-        mockExecutePasswordReset.mockResolvedValue({ success: false, error: "tokenExpired" });
-        const user = userEvent.setup();
-        render(<ResetPasswordForm {...defaultProps} />);
-
-        await user.type(screen.getByLabelText(/resetPassword.label.newPassword/i), "NewPass1");
-        await user.type(screen.getByLabelText(/resetPassword.label.confirmPassword/i), "NewPass1");
-        await user.click(screen.getByRole("button", { name: /resetPassword.label.submit/i }));
-
-        await waitFor(() => {
-            expect(screen.getByTestId("error-message")).toBeInTheDocument();
-        });
-        expect(screen.getByTestId("error-message")).toHaveTextContent("resetPassword.error.tokenExpired");
-    });
-
     it("blocks submit and shows field error when passwords do not match", async () => {
         const user = userEvent.setup();
         render(<ResetPasswordForm {...defaultProps} />);
