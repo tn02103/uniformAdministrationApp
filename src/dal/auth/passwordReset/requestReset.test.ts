@@ -9,10 +9,10 @@ vi.mock("@/lib/email/passwordResetEmail", () => ({
     sendPasswordResetEmail: vi.fn().mockResolvedValue(undefined),
 }));
 
-vi.mock("@/dal/auth/helper", async (importOriginal) => {
-    const actual = await importOriginal<typeof import("@/dal/auth/helper")>();
-    return { ...actual, logSecurityAuditEntry: vi.fn().mockResolvedValue(undefined) };
-});
+vi.mock("@/dal/auth/helper", () => ({
+    getIPAddress: vi.fn().mockReturnValue("192.168.1.1"),
+    logSecurityAuditEntry: vi.fn().mockResolvedValue(undefined),
+}));
 
 vi.mock("next/headers", () => ({
     headers: vi.fn().mockResolvedValue({
@@ -125,20 +125,20 @@ describe("requestPasswordReset", () => {
         vi.useRealTimers();
     });
 
-    it("returns { success: false, error: 'validation' } for invalid email", async () => {
+    it("returns { success: false } for invalid email", async () => {
         const result = await requestPasswordReset({
             organisationId: "00000000-0000-0000-0000-000000000001",
             email: "not-an-email",
         });
-        expect(result).toEqual({ success: false, error: "validation" });
+        expect(result).toEqual({ success: false });
     });
 
-    it("returns { success: false, error: 'validation' } for invalid organisationId", async () => {
+    it("returns { success: false } for invalid organisationId", async () => {
         const result = await requestPasswordReset({
             organisationId: "not-a-uuid",
             email: "test@example.com",
         });
-        expect(result).toEqual({ success: false, error: "validation" });
+        expect(result).toEqual({ success: false });
     });
 
     it("sends email with a reset link containing the raw token", async () => {

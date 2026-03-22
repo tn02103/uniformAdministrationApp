@@ -31,7 +31,7 @@ export const validatePasswordResetToken = async (
                 debugLevel: LogDebugLevel.WARNING,
                 ipAddress: logContext.ipAddress,
                 userAgent: logContext.userAgent,
-                details: record?.usedAt !== null
+                details: record !== null
                     ? "Password reset token already used"
                     : "Password reset token not found",
             });

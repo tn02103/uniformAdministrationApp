@@ -29,10 +29,10 @@ vi.mock("rate-limiter-flexible", () => ({
     }),
 }));
 
-vi.mock("@/dal/auth/helper", async (importOriginal) => {
-    const actual = await importOriginal<typeof import("@/dal/auth/helper")>();
-    return { ...actual, logSecurityAuditEntry: vi.fn().mockResolvedValue(undefined) };
-});
+vi.mock("@/dal/auth/helper", () => ({
+    getIPAddress: vi.fn().mockReturnValue("192.168.1.1"),
+    logSecurityAuditEntry: vi.fn().mockResolvedValue(undefined),
+}));
 
 const mockBcryptHash = vi.mocked(bcrypt.hash);
 const mockLogAuditEntry = vi.mocked(logSecurityAuditEntry);
