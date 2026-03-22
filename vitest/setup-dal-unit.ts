@@ -172,6 +172,24 @@ const prismaMock = {
         findUnique: vi.fn(),
         update: vi.fn(),
     },
+    user: {
+        findFirst: vi.fn(),
+        findUnique: vi.fn(),
+        findMany: vi.fn(),
+        update: vi.fn(),
+        create: vi.fn(),
+    },
+    passwordResetToken: {
+        findFirst: vi.fn(),
+        findUnique: vi.fn(),
+        create: vi.fn(),
+        update: vi.fn(),
+        updateMany: vi.fn(),
+        deleteMany: vi.fn(),
+    },
+    auditLog: {
+        create: vi.fn(),
+    },
     $executeRaw: vi.fn(),
 };
 

@@ -26,6 +26,7 @@ model Organisation {
     storageUnit               StorageUnit[]
     redirect                  Redirect[]
     auditLog                  AuditLog[]
+    passwordResetTokens       PasswordResetToken[]
 
     @@map("organisation")
     @@schema("authentication")
@@ -111,11 +112,12 @@ model User {
     twoFAEnabled          Boolean        @default(false) @map("two_fa_enabled")
     default2FAMethod      String?        @map("default_2fa_method") @db.VarChar(36) // "email" or the appId of the TOTP app
     refreshTokens         RefreshToken[]
-    organisation          Organisation   @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
+    organisation          Organisation        @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
     devices               Device[]
     auditLogs             AuditLog[]
     emailToken            EmailToken[]
     twoFactorApps         TwoFactorApp[]
+    passwordResetTokens   PasswordResetToken[]
 
     @@unique([username, organisationId])
     @@index([organisationId])
@@ -214,6 +216,24 @@ model TwoFactorApp {
     verifiedAt DateTime? @map("verified_at") @db.Timestamp(3)
 
     @@unique([appName, userId])
+    @@schema("authentication")
+}
+
+model PasswordResetToken {
+    id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    tokenHash      String       @map("token_hash") @db.Char(64)
+    userId         String       @map("user_id") @db.Char(36)
+    organisationId String       @map("organisation_id") @db.Char(36)
+    endOfLive      DateTime     @map("end_of_live") @db.Timestamp(3)
+    usedAt         DateTime?    @map("used_at") @db.Timestamp(3)
+    createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamp(3)
+    ipAddress      String       @map("ip_address") @db.VarChar(45)
+    user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+    organisation   Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+
+    @@unique([tokenHash])
+    @@index([userId])
+    @@map("password_reset_token")
     @@schema("authentication")
 }
 

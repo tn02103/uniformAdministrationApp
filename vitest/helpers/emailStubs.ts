@@ -15,3 +15,9 @@ export const sendUserBlockedEmail = async () => {};
 
 // inspectionReview.tsx stubs
 export const sendInspectionReviewEmail = async () => {};
+
+// passwordResetEmail.tsx stubs
+export const sendPasswordResetEmail = async () => {};
+
+// passwordChangedEmail.tsx stubs
+export const sendPasswordChangedEmail = async () => {};

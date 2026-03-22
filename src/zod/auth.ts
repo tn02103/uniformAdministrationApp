@@ -22,3 +22,27 @@ export const TwoFactorFormSchema = z.object({
 });
 
 export type TwoFactorFormType = z.infer<typeof TwoFactorFormSchema>;
+
+export const ForgotPasswordSchema = z.object({
+    organisationId: z.string({ message: "string.required" }).uuid(),
+    email: z.string({ message: "string.required" }).email("string.emailValidation"),
+});
+export type ForgotPasswordType = z.infer<typeof ForgotPasswordSchema>;
+
+export const ResetPasswordSchema = z.object({
+    token: z.string({ message: "string.required" }).min(1, "string.required"),
+    newPassword: z.string({ message: "string.required" })
+        .min(8, "lengthRequired:value:8")
+        .regex(/[A-Z]/, "string.uppercaseRequired")
+        .regex(/[a-z]/, "string.lowercaseRequired")
+        .regex(/[0-9]/, "string.numberRequired"),
+});
+export type ResetPasswordType = z.infer<typeof ResetPasswordSchema>;
+
+export const ResetPasswordFormSchema = ResetPasswordSchema.extend({
+    confirmPassword: z.string({ message: "string.required" }).min(1, "string.required"),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+    message: "resetPassword.error.passwordMismatch",
+    path: ["confirmPassword"],
+});
+export type ResetPasswordFormType = z.infer<typeof ResetPasswordFormSchema>;
