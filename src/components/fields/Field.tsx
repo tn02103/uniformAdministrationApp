@@ -31,7 +31,15 @@ export const Field = ({ formName = "", fieldId, name, label, required, errorMess
                     id={`${formName}_err_${name}`}
                     ariaLabel={`error message ${name}`}
                 />
-                : errorMessage
+                : (
+                    <div
+                        id={`${formName}_err_${name}`}
+                        aria-label={`error message ${name}`}
+                        data-testid={`err_${name}`}
+                    >
+                        {errorMessage}
+                    </div>
+                )
             }
         </FormGroup>
     )

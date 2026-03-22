@@ -73,31 +73,33 @@ export const changePassword = async (data: ChangePasswordDALType): Promise<void 
 
     const hashedNewPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
 
-    await prisma.user.update({
-        where: { id: user.id },
-        data: {
-            password: hashedNewPassword,
-            changePasswordOnLogin: false,
-        },
-    });
-
     const ironSession = await getIronSession();
     const currentSessionId = ironSession.sessionId;
 
-    await prisma.session.updateMany({
-        where: {
-            device: { userId: user.id },
-            valid: true,
-            ...(currentSessionId ? { NOT: { id: currentSessionId } } : {}),
-        },
-        data: { valid: false },
-    });
+    await prisma.$transaction(async (tx) => {
+        await tx.user.update({
+            where: { id: user.id },
+            data: {
+                password: hashedNewPassword,
+                changePasswordOnLogin: false,
+            },
+        });
 
-    await prisma.refreshToken.deleteMany({
-        where: {
-            userId: user.id,
-            ...(currentSessionId ? { NOT: { sessionId: currentSessionId } } : {}),
-        },
+        await tx.session.updateMany({
+            where: {
+                device: { userId: user.id },
+                valid: true,
+                ...(currentSessionId ? { NOT: { id: currentSessionId } } : {}),
+            },
+            data: { valid: false },
+        });
+
+        await tx.refreshToken.deleteMany({
+            where: {
+                userId: user.id,
+                ...(currentSessionId ? { NOT: { sessionId: currentSessionId } } : {}),
+            },
+        });
     });
 
     await logSecurityAuditEntry({
