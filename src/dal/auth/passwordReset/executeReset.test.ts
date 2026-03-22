@@ -2,6 +2,8 @@ import { executePasswordReset } from "./executeReset";
 import { prismaMock } from "@test-utils/prisma-mock";
 import bcrypt from "bcrypt";
 import { sha256Hex } from "@/dal/auth/helper.tokens";
+import { logSecurityAuditEntry } from "@/dal/auth/helper";
+import { LogDebugLevel } from "@/dal/auth/LogDebugLeve.enum";
 
 vi.mock("bcrypt", () => ({
     default: {
@@ -9,7 +11,31 @@ vi.mock("bcrypt", () => ({
     },
 }));
 
+vi.mock("next/headers", () => ({
+    headers: vi.fn().mockResolvedValue({
+        get: vi.fn().mockReturnValue("192.168.1.1"),
+    }),
+}));
+
+vi.mock("next/server", () => ({
+    userAgent: vi.fn().mockReturnValue({}),
+}));
+
+vi.mock("rate-limiter-flexible", () => ({
+    RateLimiterMemory: vi.fn().mockImplementation(function () {
+        return {
+            consume: vi.fn().mockResolvedValue({ remainingPoints: 9 }),
+        };
+    }),
+}));
+
+vi.mock("@/dal/auth/helper", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("@/dal/auth/helper")>();
+    return { ...actual, logSecurityAuditEntry: vi.fn().mockResolvedValue(undefined) };
+});
+
 const mockBcryptHash = vi.mocked(bcrypt.hash);
+const mockLogAuditEntry = vi.mocked(logSecurityAuditEntry);
 
 const validInput = {
     token: "valid-raw-token-12345",
@@ -18,6 +44,7 @@ const validInput = {
 
 const now = new Date("2026-01-15T12:00:00.000Z");
 const oneHourFromNow = new Date("2026-01-15T13:00:00.000Z");
+const twoMinutesAgo = new Date("2026-01-15T11:58:00.000Z");
 
 const buildMockRecord = () => ({
     id: "reset-record-123",
@@ -36,9 +63,11 @@ describe("executePasswordReset", () => {
 
         prismaMock.passwordResetToken.findFirst.mockResolvedValue(buildMockRecord() as never);
         prismaMock.user.update.mockResolvedValue({} as never);
-        prismaMock.passwordResetToken.update.mockResolvedValue({} as never);
+        prismaMock.passwordResetToken.updateMany.mockResolvedValue({ count: 1 });
         prismaMock.refreshToken.updateMany.mockResolvedValue({ count: 0 });
         prismaMock.session.updateMany.mockResolvedValue({ count: 0 });
+        prismaMock.auditLog.create.mockResolvedValue({} as never);
+        mockLogAuditEntry.mockResolvedValue(undefined);
     });
 
     afterEach(() => {
@@ -51,14 +80,14 @@ describe("executePasswordReset", () => {
         expect(result).toEqual({ success: false, error: "tokenInvalid" });
     });
 
-    it("returns { success: false, error: 'tokenExpired' } when token is expired", async () => {
+    it("returns { success: false, error: 'tokenInvalid' } when token is expired", async () => {
         prismaMock.passwordResetToken.findFirst.mockResolvedValue({
             ...buildMockRecord(),
-            endOfLive: new Date("2026-01-15T11:59:59.999Z"),
+            endOfLive: twoMinutesAgo,
         } as never);
 
         const result = await executePasswordReset(validInput);
-        expect(result).toEqual({ success: false, error: "tokenExpired" });
+        expect(result).toEqual({ success: false, error: "tokenInvalid" });
     });
 
     it("returns { success: false, error: 'tokenInvalid' } when token has already been used", async () => {
@@ -91,8 +120,8 @@ describe("executePasswordReset", () => {
 
     it("marks token as used with current timestamp", async () => {
         await executePasswordReset(validInput);
-        expect(prismaMock.passwordResetToken.update).toHaveBeenCalledWith({
-            where: { id: "reset-record-123" },
+        expect(prismaMock.passwordResetToken.updateMany).toHaveBeenCalledWith({
+            where: { id: "reset-record-123", usedAt: null },
             data: { usedAt: now },
         });
     });
@@ -126,5 +155,77 @@ describe("executePasswordReset", () => {
     it("returns { success: false, error: 'validation' } for weak password", async () => {
         const result = await executePasswordReset({ token: "valid-token", newPassword: "weak" });
         expect(result).toEqual({ success: false, error: "validation" });
+    });
+
+    describe("audit logging", () => {
+        it("logs WARNING when token is not found", async () => {
+            prismaMock.passwordResetToken.findFirst.mockResolvedValue(null);
+            await executePasswordReset(validInput);
+
+            expect(mockLogAuditEntry).toHaveBeenCalledWith(expect.objectContaining({
+                action: "PASSWORD_RESET_VALIDATE",
+                success: false,
+                debugLevel: LogDebugLevel.WARNING,
+                details: "Password reset token not found",
+            }));
+        });
+
+        it("logs WARNING when token has already been used", async () => {
+            prismaMock.passwordResetToken.findFirst.mockResolvedValue({
+                ...buildMockRecord(),
+                usedAt: new Date("2026-01-15T10:00:00.000Z"),
+            } as never);
+
+            await executePasswordReset(validInput);
+
+            expect(mockLogAuditEntry).toHaveBeenCalledWith(expect.objectContaining({
+                action: "PASSWORD_RESET_VALIDATE",
+                success: false,
+                debugLevel: LogDebugLevel.WARNING,
+                details: "Password reset token already used",
+            }));
+        });
+
+        it("logs INFO with seconds elapsed when token is expired", async () => {
+            prismaMock.passwordResetToken.findFirst.mockResolvedValue({
+                ...buildMockRecord(),
+                endOfLive: twoMinutesAgo,
+            } as never);
+
+            await executePasswordReset(validInput);
+
+            expect(mockLogAuditEntry).toHaveBeenCalledWith(expect.objectContaining({
+                action: "PASSWORD_RESET_VALIDATE",
+                success: false,
+                debugLevel: LogDebugLevel.INFO,
+                details: "Password reset token expired (120s ago)",
+            }));
+        });
+
+        it("logs CRITICAL when a replay attack is detected in the transaction", async () => {
+            // Pre-validation sees a valid token; the transaction finds it already used
+            prismaMock.passwordResetToken.findFirst
+                .mockResolvedValueOnce(buildMockRecord() as never)
+                .mockResolvedValueOnce({ ...buildMockRecord(), usedAt: new Date() } as never);
+
+            await executePasswordReset(validInput);
+
+            expect(mockLogAuditEntry).toHaveBeenCalledWith(expect.objectContaining({
+                action: "PASSWORD_RESET_EXECUTE",
+                success: false,
+                debugLevel: LogDebugLevel.CRITICAL,
+                details: expect.stringContaining("replay attack"),
+            }));
+        });
+
+        it("logs SUCCESS after a successful password reset", async () => {
+            await executePasswordReset(validInput);
+
+            expect(mockLogAuditEntry).toHaveBeenCalledWith(expect.objectContaining({
+                action: "PASSWORD_RESET_EXECUTE",
+                success: true,
+                debugLevel: LogDebugLevel.SUCCESS,
+            }));
+        });
     });
 });

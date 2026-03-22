@@ -8,7 +8,9 @@ import { sha256Hex } from "@/dal/auth/helper.tokens";
 import { sendPasswordResetEmail } from "@/lib/email/passwordResetEmail";
 import { ForgotPasswordSchema, ForgotPasswordType } from "@/zod/auth";
 import { headers } from "next/headers";
-import { getIPAddress } from "@/dal/auth/helper";
+import { userAgent } from "next/server";
+import { getIPAddress, logSecurityAuditEntry } from "@/dal/auth/helper";
+import { LogDebugLevel } from "@/dal/auth/LogDebugLeve.enum";
 import { getCurrentLocale } from "@/lib/locales/config";
 import dayjs from "dayjs";
 
@@ -26,12 +28,15 @@ export const requestPasswordReset = async (data: ForgotPasswordType) => {
 
     const { organisationId, email } = parsed.data;
     const locale = getCurrentLocale();
-    const ipAddress = getIPAddress(await headers());
+    const headerList = await headers();
+    const ipAddress = getIPAddress(headerList);
+    const agent = userAgent({ headers: headerList });
 
     // IP rate limiting — atomic consume to prevent race between get+consume
     try {
         await ipLimiter.consume(ipAddress, 1);
     } catch {
+        console.warn("requestPasswordReset: rate limit exceeded", { ipAddress });
         return { success: false, error: "tooManyRequests" as const };
     }
 
@@ -46,6 +51,15 @@ export const requestPasswordReset = async (data: ForgotPasswordType) => {
     });
 
     if (!user) {
+        await logSecurityAuditEntry({
+            action: "PASSWORD_RESET_REQUEST",
+            success: false,
+            debugLevel: LogDebugLevel.WARNING,
+            ipAddress,
+            userAgent: agent,
+            organisationId,
+            details: `Password reset requested for unknown email: ${email}`,
+        });
         return { success: true };
     }
 
@@ -53,7 +67,7 @@ export const requestPasswordReset = async (data: ForgotPasswordType) => {
     const tokenHash = sha256Hex(rawToken);
 
     const baseUrl = (process.env.APPLICATION_URL ?? "").replace(/\/$/, "");
-    const resolvedLocale = locale ?? "de";
+    const resolvedLocale = (await locale) ?? "de";
     const resetLink = `${baseUrl}/${resolvedLocale}/reset-password?token=${rawToken}`;
 
     // Transaction: if email delivery fails the token creation is rolled back,
@@ -78,8 +92,29 @@ export const requestPasswordReset = async (data: ForgotPasswordType) => {
 
             await sendPasswordResetEmail(user, resetLink);
         });
+
+        await logSecurityAuditEntry({
+            action: "PASSWORD_RESET_REQUEST",
+            success: true,
+            debugLevel: LogDebugLevel.SUCCESS,
+            ipAddress,
+            userAgent: agent,
+            userId: user.id,
+            organisationId,
+            details: "Password reset email sent successfully",
+        });
     } catch (e) {
         console.error("requestPasswordReset: failed to create token or send email", e);
+        await logSecurityAuditEntry({
+            action: "PASSWORD_RESET_REQUEST",
+            success: false,
+            debugLevel: LogDebugLevel.CRITICAL,
+            ipAddress,
+            userAgent: agent,
+            userId: user.id,
+            organisationId,
+            details: "Failed to create password reset token or send email",
+        });
     }
 
     return { success: true };

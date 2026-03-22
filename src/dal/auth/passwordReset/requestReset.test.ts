@@ -1,16 +1,27 @@
 import { requestPasswordReset } from "./requestReset";
 import { prismaMock } from "@test-utils/prisma-mock";
 import { sendPasswordResetEmail } from "@/lib/email/passwordResetEmail";
+import { logSecurityAuditEntry } from "@/dal/auth/helper";
+import { LogDebugLevel } from "@/dal/auth/LogDebugLeve.enum";
 import crypto from "crypto";
 
 vi.mock("@/lib/email/passwordResetEmail", () => ({
     sendPasswordResetEmail: vi.fn().mockResolvedValue(undefined),
 }));
 
+vi.mock("@/dal/auth/helper", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("@/dal/auth/helper")>();
+    return { ...actual, logSecurityAuditEntry: vi.fn().mockResolvedValue(undefined) };
+});
+
 vi.mock("next/headers", () => ({
     headers: vi.fn().mockResolvedValue({
         get: vi.fn().mockReturnValue("192.168.1.1"),
     }),
+}));
+
+vi.mock("next/server", () => ({
+    userAgent: vi.fn().mockReturnValue({}),
 }));
 
 vi.mock("crypto", async (importOriginal) => {
@@ -37,6 +48,7 @@ vi.mock("rate-limiter-flexible", () => ({
 
 const mockSendPasswordResetEmail = vi.mocked(sendPasswordResetEmail);
 const mockRandomBytes = vi.mocked(crypto.randomBytes);
+const mockLogAuditEntry = vi.mocked(logSecurityAuditEntry);
 
 const validInput = {
     organisationId: "00000000-0000-0000-0000-000000000001",
@@ -57,6 +69,8 @@ describe("requestPasswordReset", () => {
         prismaMock.user.findFirst.mockResolvedValue(mockUser as never);
         prismaMock.passwordResetToken.deleteMany.mockResolvedValue({ count: 0 });
         prismaMock.passwordResetToken.create.mockResolvedValue({} as never);
+        prismaMock.auditLog.create.mockResolvedValue({} as never);
+        mockLogAuditEntry.mockResolvedValue(undefined);
     });
 
     it("returns { success: true } when user does not exist (enumeration prevention)", async () => {
@@ -133,5 +147,43 @@ describe("requestPasswordReset", () => {
             expect.objectContaining({ id: "user-123" }),
             expect.stringContaining("/reset-password?token=")
         );
+    });
+
+    describe("audit logging", () => {
+        it("logs WARNING when the email address is not found", async () => {
+            prismaMock.user.findFirst.mockResolvedValue(null);
+            await requestPasswordReset(validInput);
+
+            expect(mockLogAuditEntry).toHaveBeenCalledWith(expect.objectContaining({
+                action: "PASSWORD_RESET_REQUEST",
+                success: false,
+                debugLevel: LogDebugLevel.WARNING,
+                organisationId: validInput.organisationId,
+            }));
+        });
+
+        it("logs SUCCESS after the reset email is sent", async () => {
+            await requestPasswordReset(validInput);
+
+            expect(mockLogAuditEntry).toHaveBeenCalledWith(expect.objectContaining({
+                action: "PASSWORD_RESET_REQUEST",
+                success: true,
+                debugLevel: LogDebugLevel.SUCCESS,
+                userId: "user-123",
+                organisationId: validInput.organisationId,
+            }));
+        });
+
+        it("logs CRITICAL when email delivery fails", async () => {
+            mockSendPasswordResetEmail.mockRejectedValueOnce(new Error("SMTP error"));
+            await requestPasswordReset(validInput);
+
+            expect(mockLogAuditEntry).toHaveBeenCalledWith(expect.objectContaining({
+                action: "PASSWORD_RESET_REQUEST",
+                success: false,
+                debugLevel: LogDebugLevel.CRITICAL,
+                userId: "user-123",
+            }));
+        });
     });
 });

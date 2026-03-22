@@ -279,8 +279,7 @@ export default {
         },
         success: "Password reset successfully. You can now log in.",
         error: {
-            tokenInvalid: "This reset link is invalid or has already been used.",
-            tokenExpired: "This reset link has expired. Please request a new one.",
+            tokenInvalid: "This reset link is invalid, has expired or has already been used.",
             passwordMismatch: "Passwords do not match.",
             unknown: "An error occurred. Please try again.",
             tooManyRequests: "Too many attempts. Please try again later.",
@@ -904,6 +903,13 @@ export default {
             body: "Click the link below to reset your password. The link expires in 1 hour.",
             validity: "If you did not request this password reset, please let us know right away.",
             linkText: "Reset my password",
+        },
+        passwordChanged: {
+            subject: "Your password has been changed",
+            heading: "Password Changed",
+            greeting: "Hello {name},",
+            body: "The password for your UniformAdmin account was just successfully changed.",
+            securityNotice: "If you did not make this change, please contact your administrator immediately or secure your email account.",
         },
     }
 } as const;

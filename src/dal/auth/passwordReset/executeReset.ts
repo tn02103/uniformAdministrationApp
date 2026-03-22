@@ -1,12 +1,16 @@
 "use server";
 
-import bcrypt from "bcrypt";
-import { RateLimiterMemory } from "rate-limiter-flexible";
-import { prisma } from "@/lib/db";
+import { getIPAddress, logSecurityAuditEntry } from "@/dal/auth/helper";
 import { sha256Hex } from "@/dal/auth/helper.tokens";
+import { LogDebugLevel } from "@/dal/auth/LogDebugLeve.enum";
+import { prisma } from "@/lib/db";
+import { sendPasswordChangedEmail } from "@/lib/email/passwordChangedEmail";
 import { ResetPasswordSchema, ResetPasswordType } from "@/zod/auth";
+import bcrypt from "bcrypt";
+import dayjs from "@/lib/dayjs";
 import { headers } from "next/headers";
-import { getIPAddress } from "@/dal/auth/helper";
+import { userAgent } from "next/server";
+import { RateLimiterMemory } from "rate-limiter-flexible";
 import { validatePasswordResetToken } from "./validateResetToken";
 
 const ipLimiter = new RateLimiterMemory({
@@ -21,25 +25,38 @@ class ResetTokenError extends Error {
 }
 
 export const executePasswordReset = async (data: ResetPasswordType) => {
-    const parsed = ResetPasswordSchema.safeParse(data);
-    if (!parsed.success) return { success: false, error: "validation" as const };
-
-    const { token, newPassword } = parsed.data;
+    const headerList = await headers();
+    const ipAddress = getIPAddress(headerList);
+    const agent = userAgent({ headers: headerList });
 
     // IP rate limiting — protects against brute-forcing tokens via the server action
     try {
-        await ipLimiter.consume(getIPAddress(await headers()), 1);
+        await ipLimiter.consume(ipAddress, 1);
     } catch {
-        return { success: false, error: "tooManyRequests" as const };
+        console.warn("executePasswordReset: rate limit exceeded", { ipAddress });
+        return { success: false, error: "tooManyRequests" };
     }
 
-    // Pre-validate for a fast early exit before the expensive bcrypt + transaction
-    const validation = await validatePasswordResetToken(token);
-    if (!validation.valid) {
-        return {
+    const parsed = ResetPasswordSchema.safeParse(data);
+    if (!parsed.success) {
+        await logSecurityAuditEntry({
+            action: "PASSWORD_RESET_EXECUTE",
             success: false,
-            error: (validation.reason === "expired" ? "tokenExpired" : "tokenInvalid") as const,
-        };
+            debugLevel: LogDebugLevel.WARNING,
+            ipAddress,
+            userAgent: agent,
+            details: "Password reset attempted with invalid schema",
+        });
+        return { success: false, error: "validation" };
+    }
+
+    const { token, newPassword } = parsed.data;
+    const logContext = { ipAddress, userAgent: agent };
+
+    // Pre-validate for a fast early exit before the expensive bcrypt + transaction
+    const validation = await validatePasswordResetToken(token, logContext);
+    if (!validation.valid) {
+        return { success: false, error: "tokenInvalid" };
     }
 
     const tokenHash = sha256Hex(token);
@@ -48,6 +65,12 @@ export const executePasswordReset = async (data: ResetPasswordType) => {
     // connection during the CPU-intensive bcrypt operation.
     const passwordHash = await bcrypt.hash(newPassword, 12);
 
+    // Capture context from within the transaction for richer log entries
+    let logUserId: string | undefined;
+    let logOrganisationId: string | undefined;
+    let logEndOfLive: Date | undefined;
+    let replayAttack = false;
+
     try {
         await prisma.$transaction(async (client) => {
             const resetRecord = await client.passwordResetToken.findFirst({
@@ -55,8 +78,16 @@ export const executePasswordReset = async (data: ResetPasswordType) => {
             });
 
             if (!resetRecord) throw new ResetTokenError("tokenInvalid");
+
+            logUserId = resetRecord.userId;
+            logOrganisationId = resetRecord.organisationId;
+            logEndOfLive = resetRecord.endOfLive;
+
             if (resetRecord.endOfLive < new Date()) throw new ResetTokenError("tokenExpired");
-            if (resetRecord.usedAt !== null) throw new ResetTokenError("tokenInvalid");
+            if (resetRecord.usedAt !== null) {
+                replayAttack = true;
+                throw new ResetTokenError("tokenInvalid");
+            }
 
             // Atomically mark as used — concurrent requests with the same token
             // get count === 0 and are rejected even inside the same transaction.
@@ -85,9 +116,71 @@ export const executePasswordReset = async (data: ResetPasswordType) => {
         });
     } catch (e) {
         if (e instanceof ResetTokenError) {
-            return { success: false, error: e.code };
+            if (replayAttack) {
+                await logSecurityAuditEntry({
+                    action: "PASSWORD_RESET_EXECUTE",
+                    success: false,
+                    debugLevel: LogDebugLevel.CRITICAL,
+                    ipAddress,
+                    userAgent: agent,
+                    userId: logUserId,
+                    organisationId: logOrganisationId,
+                    details: "Password reset possible replay attack detected: token already used",
+                });
+            } else if (e.code === "tokenExpired") {
+                const secondsExpired = logEndOfLive ? dayjs().diff(dayjs(logEndOfLive), "second") : -1;
+                await logSecurityAuditEntry({
+                    action: "PASSWORD_RESET_EXECUTE",
+                    success: false,
+                    debugLevel: LogDebugLevel.INFO,
+                    ipAddress,
+                    userAgent: agent,
+                    userId: logUserId,
+                    organisationId: logOrganisationId,
+                    details: `Password reset token expired in transaction (${secondsExpired}s ago)`,
+                });
+            } else {
+                await logSecurityAuditEntry({
+                    action: "PASSWORD_RESET_EXECUTE",
+                    success: false,
+                    debugLevel: LogDebugLevel.WARNING,
+                    ipAddress,
+                    userAgent: agent,
+                    userId: logUserId,
+                    organisationId: logOrganisationId,
+                    details: "Password reset failed: token invalid or concurrent attempt detected",
+                });
+            }
+            return { success: false, error: "tokenInvalid" };
         }
+        await logSecurityAuditEntry({
+            action: "PASSWORD_RESET_EXECUTE",
+            success: false,
+            debugLevel: LogDebugLevel.WARNING,
+            ipAddress,
+            userAgent: agent,
+            userId: logUserId,
+            organisationId: logOrganisationId,
+            details: "Unexpected error during password reset transaction",
+        });
         throw e;
+    }
+
+    await logSecurityAuditEntry({
+        action: "PASSWORD_RESET_EXECUTE",
+        success: true,
+        debugLevel: LogDebugLevel.SUCCESS,
+        ipAddress,
+        userAgent: agent,
+        userId: logUserId,
+        organisationId: logOrganisationId,
+        details: "Password reset successful: password updated, tokens revoked, sessions invalidated",
+    });
+
+    if (logUserId) {
+        void sendPasswordChangedEmail(logUserId).catch((e) =>
+            console.error("executePasswordReset: failed to send password changed notification", e)
+        );
     }
 
     return { success: true };

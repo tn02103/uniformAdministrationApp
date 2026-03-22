@@ -5,6 +5,7 @@ import { getScopedI18n } from "@/lib/locales/config";
 import { setStaticParamsLocale } from "next-international/server";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
+import { userAgent } from "next/server";
 import { getIPAddress } from "@/dal/auth/helper";
 import { validatePasswordResetToken } from "@/dal/auth/passwordReset/validateResetToken";
 import Link from "next/link";
@@ -32,10 +33,15 @@ const ResetPasswordPage = async ({
 
     const t = await getScopedI18n("resetPassword");
 
+    const headerList = await headers();
+    const ipAddress = getIPAddress(headerList);
+    const agent = userAgent({ headers: headerList });
+
     // Rate-limit page loads by IP to prevent brute-forcing tokens via repeated page requests
     try {
-        await ipLimiter.consume(getIPAddress(await headers()), 1);
+        await ipLimiter.consume(ipAddress, 1);
     } catch {
+        console.warn("reset-password page: rate limit exceeded", { ipAddress });
         return (
             <div className={styles.loginCard}>
                 <div className="bg-body-secondary p-3 rounded">
@@ -45,13 +51,12 @@ const ResetPasswordPage = async ({
         );
     }
 
-    const validation = await validatePasswordResetToken(token);
+    const validation = await validatePasswordResetToken(token, { ipAddress, userAgent: agent });
     if (!validation.valid) {
-        const errorMsg = validation.reason === "expired" ? t("error.tokenExpired") : t("error.tokenInvalid");
         return (
             <div className={styles.loginCard}>
                 <div className="bg-body-secondary p-3 rounded">
-                    <p className="text-danger">{errorMsg}</p>
+                    <p className="text-danger">{t("error.tokenInvalid")}</p>
                     <Link href={`/${locale}/forgot-password`}>{t("label.requestNewLink")}</Link>
                 </div>
             </div>

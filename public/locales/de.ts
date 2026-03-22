@@ -279,8 +279,7 @@ export default {
         },
         success: "Passwort erfolgreich zurückgesetzt. Du kannst dich jetzt anmelden.",
         error: {
-            tokenInvalid: "Dieser Reset-Link ist ungültig oder wurde bereits verwendet.",
-            tokenExpired: "Dieser Reset-Link ist abgelaufen. Bitte fordere einen neuen an.",
+            tokenInvalid: "Dieser Reset-Link ist ungültig, abgelaufen oder wurde bereits verwendet.",
             passwordMismatch: "Die Passwörter stimmen nicht überein.",
             unknown: "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
             tooManyRequests: "Zu viele Versuche. Bitte versuche es später erneut.",
@@ -904,6 +903,13 @@ export default {
             body: "Klicke auf den folgenden Link, um dein Passwort zurückzusetzen. Der Link läuft in 1 Stunde ab.",
             validity: "Falls du diese Anfrage nicht gestellt hast, informiere uns bitte hierüber.",
             linkText: "Passwort zurücksetzen",
+        },
+        passwordChanged: {
+            subject: "Ihr Passwort wurde geändert",
+            heading: "Passwort geändert",
+            greeting: "Guten Tag {name},",
+            body: "Das Passwort Ihres UniformAdmin-Kontos wurde soeben erfolgreich geändert.",
+            securityNotice: "Falls Sie diese Änderung nicht vorgenommen haben, wenden Sie sich umgehend an Ihren Administrator oder sichern Sie Ihr E-Mail-Konto.",
         },
     }
 } as const;
