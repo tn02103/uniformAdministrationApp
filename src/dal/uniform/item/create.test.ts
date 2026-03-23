@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 
 import { prismaMock as mockPrisma } from '@test-utils/prisma-mock';
 import { create } from "./create";

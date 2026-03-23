@@ -1,4 +1,4 @@
-/* eslint-disable vitest/no-conditional-expect */
+ 
 import { getUniformCountBySizeForType, getUniformCountByType } from './UniformCounts';
 import { AuthRole } from '@/lib/AuthRoles';
 import { staticData } from '../../../vitest/setup-dal-integration';

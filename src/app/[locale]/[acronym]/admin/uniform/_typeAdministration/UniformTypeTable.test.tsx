@@ -24,7 +24,7 @@ vi.mock("@/dataFetcher/uniformAdmin", () => {
         })),
     }
 });
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 let onDragEndFunction: undefined | ((newArray: UniformType[], itemId: string) => Promise<any>) = undefined;
 vi.mock("@/components/reorderDnD/ReorderableTableBody", () => {
     return {
@@ -38,7 +38,7 @@ vi.mock("@/components/reorderDnD/ReorderableTableBody", () => {
         }),
     };
 });
-/* eslint-enable @typescript-eslint/no-explicit-any */
+ 
 
 vi.mock("./UniformTypeOffcanvas", () => ({
     UniformTypeOffcanvas: vi.fn(({ setSelectedTypeId }) => (

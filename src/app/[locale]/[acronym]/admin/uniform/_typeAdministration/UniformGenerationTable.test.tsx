@@ -31,7 +31,7 @@ vi.mock("./UniformGenerationOffcanvas", () => {
         UniformgenerationOffcanvas: mock,
     };
 });
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 let onDragEndFunction: undefined | ((newArray: UniformGeneration[], itemId: string) => Promise<any>) = undefined;
 vi.mock("@/components/reorderDnD/ReorderableTableBody", () => {
     return {
@@ -39,7 +39,7 @@ vi.mock("@/components/reorderDnD/ReorderableTableBody", () => {
             onDragEndFunction = onDragEnd;
             return (
                 <tbody data-testid="reorderable-table-body">
-                    { /* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    {  }
                     {items.map(((item: any) => children({ item, draggableRef: undefined, previewRef: undefined, isDragging: false })))}
                 </tbody>
             )
