@@ -24,6 +24,9 @@ export default defineConfig([
     {
         ...vitest.configs.recommended,
         files: ['src/**/*.test.*'],
+        rules: {
+            "vitest/no-conditional-expect": "warn",
+        }
     },
     {
         ...testingLibrary.configs['flat/react'],

@@ -22,7 +22,8 @@
         "test:watch:dal:integration": "vitest --config vitest.dal-integration.config.ts --watch",
         "test:coverage:all": "npm run test:all -- --coverage",
         "test:coverage:components": "vitest run --config vitest.frontend.config.ts --coverage",
-        "lint": "eslint src tests"
+        "lint": "eslint src tests",
+        "lint:fix": "eslint src tests --fix"
     },
     "prisma": {
         "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"

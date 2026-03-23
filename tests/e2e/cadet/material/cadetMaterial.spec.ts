@@ -69,6 +69,7 @@ test.describe(() => {
             await expect.soft(divList[2]).toHaveAttribute('data-testid', `div_matGroup_${ids.materialGroupIds[2]}`);
             await expect.soft(divList[2].getByTestId('div_groupName')).toHaveText('Gruppe3');
         });
+
         await test.step('deleted', async () => {
             await expect(materialComponent.div_group(ids.materialGroupIds[3])).toBeHidden();
         });
@@ -174,6 +175,7 @@ test.describe(() => {
                 }
             }
         });
+
         await test.step('validate returned material', async () => {
             await expect.soft(materialComponent.div_material(ids.materialIds[0])).toBeHidden();
             await expect.soft(materialComponent.div_material(ids.materialIds[4])).toBeHidden();
@@ -193,6 +195,7 @@ test.describe(() => {
                     .soft(await getTextColor(materialComponent.div_material_issued(ids.materialIds[5])))
                     .toBe(defaultTextColor);
             });
+
             await test.step('to little', async () => { // Typ2-1
                 await expect
                     .soft(materialComponent.div_material(ids.materialIds[4]))
@@ -208,6 +211,7 @@ test.describe(() => {
                     .not
                     .toBe(defaultTextColor);
             });
+
             await test.step('to many', async () => { // Typ2-3
                 await expect
                     .soft(materialComponent.div_material(ids.materialIds[6]))
