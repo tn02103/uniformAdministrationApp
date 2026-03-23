@@ -1,5 +1,5 @@
 import { FlatCompat } from '@eslint/eslintrc';
-import vitest from "eslint-plugin-vitest";
+import vitest from '@vitest/eslint-plugin'
 import playwright from 'eslint-plugin-playwright';
 import testingLibrary from "eslint-plugin-testing-library";
 import { defineConfig } from "eslint/config";
