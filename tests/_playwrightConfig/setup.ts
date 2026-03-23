@@ -1,6 +1,7 @@
 import { Page, test as setup } from 'playwright/test';
 import { v4 as uuid } from "uuid";
 import { StaticData } from './testData/staticDataLoader';
+import { LoginFormType } from '@/zod/auth';
 
 setup.use({ storageState: { cookies: [], origins: [] } });
 export type authenticatedFixture = { page: Page, staticData: StaticData }
@@ -23,11 +24,10 @@ export const dataFixture = setup.extend<object, { staticData: StaticData }>({
 
 export const adminTest = dataFixture.extend<authenticatedFixture>({
     page: async ({ page, staticData }, use) => {
-        const body = {
-            username: 'test4',
+        const body: LoginFormType = {
+            email: 'test4@test.com',
             organisationId: staticData.organisationId,
-            password: process.env.TEST_USER_PASSWORD??"Test!234" as string,
-            deviceId: uuid(),
+            password: process.env.TEST_USER_PASSWORD?? "Test!234" as string,
         };
 
         const response = await page.request.post('http://localhost:3021/api/auth/login', { data: JSON.stringify(body), headers: { 'content-type': 'application/json' } });
@@ -39,11 +39,10 @@ export const adminTest = dataFixture.extend<authenticatedFixture>({
 });
 export const managerTest = dataFixture.extend<authenticatedFixture>({
     page: async ({ page, staticData }, use) => {
-        const body = {
-            username: 'test3',
+        const body: LoginFormType = {
+            email: 'test3@test.com',
             organisationId: staticData.organisationId,
-            password: process.env.TEST_USER_PASSWORD??"Test!234" as string,
-            deviceId: uuid(),
+            password: process.env.TEST_USER_PASSWORD?? "Test!234" as string,
         };
 
         const response = await page.request.post('http://localhost:3021/api/auth/login', { data: JSON.stringify(body), headers: { 'content-type': 'application/json' } });
@@ -56,11 +55,10 @@ export const managerTest = dataFixture.extend<authenticatedFixture>({
 });
 export const inspectorTest = dataFixture.extend<authenticatedFixture>({
     page: async ({ page, staticData }, use) => {
-        const body = {
-            username: 'test2',
+        const body: LoginFormType = {
+            email: 'test2@test.com',
             organisationId: staticData.organisationId,
-            password: process.env.TEST_USER_PASSWORD??"Test!234" as string,
-            deviceId: uuid(),
+            password: process.env.TEST_USER_PASSWORD?? "Test!234" as string,
         };
 
         const response = await page.request.post('http://localhost:3021/api/auth/login', { data: JSON.stringify(body), headers: { 'content-type': 'application/json' } });
@@ -73,11 +71,10 @@ export const inspectorTest = dataFixture.extend<authenticatedFixture>({
 
 export const userTest = dataFixture.extend<authenticatedFixture>({
     page: async ({ page, staticData }, use) => {
-        const body = {
-            username: 'test1',
+        const body: LoginFormType = {
+            email: 'test1@test.com',
             organisationId: staticData.organisationId,
-            password: process.env.TEST_USER_PASSWORD??"Test!234" as string,
-            deviceId: uuid(),
+            password: process.env.TEST_USER_PASSWORD?? "Test!234" as string,
         };
 
         const response = await page.request.post('http://localhost:3021/api/auth/login', { data: JSON.stringify(body), headers: { 'content-type': 'application/json' } });

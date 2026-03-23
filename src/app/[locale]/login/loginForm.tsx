@@ -6,11 +6,12 @@ import { InputFormField } from "@/components/fields/InputFormField";
 import { SelectFormField } from "@/components/fields/SelectFormField";
 import { userLogin } from "@/dal/auth";
 import { useAuth } from "@/lib/auth/AuthProvider";
-import { useI18n } from "@/lib/locales/client";
+import { useCurrentLocale, useI18n } from "@/lib/locales/client";
 import { LoginFormSchema, LoginFormType } from "@/zod/auth";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Organisation } from "@/prisma/client";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { UseFormReturn } from "react-hook-form";
@@ -25,6 +26,7 @@ type PropType = {
 
 const LoginForm = ({ organisations, lastUsedOrganisationId, ...props }: PropType) => {
     const t = useI18n();
+    const locale = useCurrentLocale();
     const { onLoginSuccess } = useAuth();
 
     const [tryRefreshToken, setTryRefreshToken] = useState(props.tryRefreshToken);
@@ -135,6 +137,13 @@ const LoginForm = ({ organisations, lastUsedOrganisationId, ...props }: PropType
                         }
                     </Button>
                 </Col>
+                {step === 0 &&
+                    <Col className="d-flex align-items-center justify-content-end">
+                        <Link href={`/${locale}/forgot-password`} className="text-muted small">
+                            {t('login.label.forgotPassword')}
+                        </Link>
+                    </Col>
+                }
             </Row>
         </Form>
     )

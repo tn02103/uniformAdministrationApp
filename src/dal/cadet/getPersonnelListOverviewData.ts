@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { PersonnelListCadet } from "@/types/globalCadetTypes";
 import { z } from "zod";
 import { getInspectionState } from "../inspection/state";
+import { CadetWhereInput } from "@/prisma/models";
 
 const getPersonnelListPropSchema = z.object({
     orderBy: z.enum(['lastname', 'firstname']),
@@ -61,51 +62,36 @@ const getRestrictedPersonnelList = (organisationId: string, orderBy: "lastname" 
 // Export to view
 const getPersonnelList = async (organisationId: string, orderBy: "lastname" | "firstname", asc: boolean, exclude?: { inspectionId: string, exclDeregistrations?: boolean, exclInspected?: boolean }): Promise<PersonnelListCadet[]> => {
     const getAsc = (asc: boolean): "asc" | "desc" => asc ? "asc" : "desc";
-    
-    let joins = "";
-    let where = "";
-    let order = "";
+
+    const cadetWhereClause: CadetWhereInput = {};
     if (exclude?.exclDeregistrations) {
-        joins += `
-            LEFT JOIN inspection.deregistration d 
-                   ON d.fk_cadet = v.id
-                  AND d.fk_inspection = '${exclude.inspectionId}'
-        `;
-        where += `
-            AND d.fk_cadet IS NULL
-        `;
+        cadetWhereClause.deregistrations = {
+            none: { fk_inspection: exclude.inspectionId }
+        };
     }
+
     if (exclude?.exclInspected) {
-        joins += `
-            LEFT JOIN inspection.cadet_inspection ci
-                   ON ci.fk_cadet = v.id
-                  AND ci.fk_inspection = '${exclude.inspectionId}'
-        `;
-        where += `
-            AND ci.id IS NULL
-        `;
-    }
-    if (orderBy === "lastname") {
-        order = `lastname ${getAsc(asc)}, firstname ${getAsc(asc)}`;
-    } else {
-        order = `firstname ${getAsc(asc)}, lastname ${getAsc(asc)}`;
+        cadetWhereClause.cadetInspection = {
+            none: { fk_inspection: exclude.inspectionId }
+        };
     }
 
+    const orderByClause = orderBy === "lastname"
+        ? [{ lastname: getAsc(asc) }, { firstname: getAsc(asc) }]
+        : [{ firstname: getAsc(asc) }, { lastname: getAsc(asc) }];
 
-    const sql = `
-        SELECT v.*
-          FROM base.v_cadet_generaloverview v
-               ${joins}
-         WHERE organisation_id = '${organisationId}'
-               ${where}
-      ORDER BY ${order}
-    `;
-
-    return prisma.$queryRawUnsafe<PersonnelListCadet[]>(sql)
-        .then((value) => value.map(
-            (line) => ({
-                ...line,
-                activeDeficiencyCount: Number(line.activeDeficiencyCount), // Parse Bigints
-            })
-        ));
+    return prisma.vCadetGeneraloverview.findMany({
+        where: {
+            organisationId,
+            Cadet: cadetWhereClause,
+        },
+        orderBy: orderByClause,
+    }).then(list => list.map(item => ({
+        id: item.id,
+        firstname: item.firstname,
+        lastname: item.lastname,
+        lastInspection: item.lastInspection ? new Date(item.lastInspection) : undefined,
+        activeDeficiencyCount: Number(item.activeDeficiencyCount),
+        uniformComplete: item.uniformComplete ?? undefined,
+    })));
 }

@@ -170,7 +170,7 @@ const GeneralOverviewTable = ({
                                             {cadet.lastInspection ? format(new Date(cadet.lastInspection), "dd.MM.yyyy") : "-"}
                                         </td>
                                         <td data-testid={`div_uniformComplete`} className="d-none d-md-table-cell">
-                                            {(cadet.uniformComplete === null) ? "-" : cadet.uniformComplete ? t('common.yes') : t('common.no')}
+                                            {(cadet.uniformComplete === undefined) ? "-" : cadet.uniformComplete ? t('common.yes') : t('common.no')}
                                         </td>
                                         <td data-testid={`div_activeDeficiencyCount`} className="d-none d-sm-table-cell">
                                             {cadet.activeDeficiencyCount}

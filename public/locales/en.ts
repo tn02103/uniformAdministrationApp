@@ -249,13 +249,44 @@ export default {
             username: "Username",
             password: "Password",
             twoFactorCode: "2FA Code",
-            login: "Login"
+            login: "Login",
+            forgotPassword: "Forgot password?",
         },
         error: {
             unknown: "The login attempt failed, please try again.",
             failed: "Username or password are invalid",
             userBlocked: "The user is blocked. Please contact an administrator.",
             tooManyRequests: "Too many failed login attempts. Please try again later.",
+        },
+    },
+    forgotPassword: {
+        header: "Reset your password",
+        label: {
+            organisation: "Association",
+            email: "Email address",
+            submit: "Send reset link",
+        },
+        success: "If an account with that email exists, a reset link has been sent.",
+        error: {
+            unknown: "An error occurred. Please try again.",
+            tooManyRequests: "Too many attempts. Please try again later.",
+        },
+    },
+    resetPassword: {
+        header: "Set a new password",
+        label: {
+            newPassword: "New password",
+            confirmPassword: "Confirm password",
+            submit: "Reset password",
+            login: "Go to login",
+            requestNewLink: "Request a new reset link",
+        },
+        success: "Password reset successfully. You can now log in.",
+        error: {
+            tokenInvalid: "This reset link is invalid, has expired or has already been used.",
+            passwordMismatch: "Passwords do not match.",
+            unknown: "An error occurred. Please try again.",
+            tooManyRequests: "Too many attempts. Please try again later.",
         },
     },
     notFound: {
@@ -869,7 +900,21 @@ export default {
                 line3: "Please review the account and contact the user for further information.",
                 closing: "Your UniformAdmin Team",
             },
-        }
+        },
+        passwordReset: {
+            subject: "Reset your password",
+            heading: "Password Reset Request",
+            body: "Click the link below to reset your password. The link expires in 1 hour.",
+            validity: "If you did not request this password reset, please let us know right away.",
+            linkText: "Reset my password",
+        },
+        passwordChanged: {
+            subject: "Your password has been changed",
+            heading: "Password Changed",
+            greeting: "Hello {name},",
+            body: "The password for your UniformAdmin account was just successfully changed.",
+            securityNotice: "If you did not make this change, please contact your administrator immediately or secure your email account.",
+        },
     },
     profile: {
         security: "Security",
