@@ -1,6 +1,7 @@
 generator client {
-    provider = "prisma-client"
-    output   = "./generated"
+    provider        = "prisma-client"
+    output          = "./generated"
+    previewFeatures = ["views"]
 }
 
 datasource db {
@@ -96,23 +97,23 @@ enum MFAType {
 }
 
 model User {
-    id                    String         @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    organisationId        String         @map("organisation_id") @db.Char(36)
-    email                 String         @db.VarChar(100)
-    username              String         @db.VarChar(10)
-    name                  String         @db.VarChar(20)
-    password              String         @db.VarChar(100)
-    role                  Int            @db.SmallInt
+    id                    String               @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    organisationId        String               @map("organisation_id") @db.Char(36)
+    email                 String               @db.VarChar(100)
+    username              String               @db.VarChar(10)
+    name                  String               @db.VarChar(20)
+    password              String               @db.VarChar(100)
+    role                  Int                  @db.SmallInt
     active                Boolean
-    failedLoginCount      Int            @default(0) @map("failed_login_count")
-    changePasswordOnLogin Boolean        @default(false) @map("change_password_on_login")
-    lastLoginAt           DateTime?      @map("last_login_at")
-    recDelete             DateTime?      @map("rec_delete") @db.Timestamp(3)
-    recDeleteUser         String?        @map("rec_delete_user") @db.VarChar(36)
-    twoFAEnabled          Boolean        @default(false) @map("two_fa_enabled")
-    default2FAMethod      String?        @map("default_2fa_method") @db.VarChar(36) // "email" or the appId of the TOTP app
+    failedLoginCount      Int                  @default(0) @map("failed_login_count")
+    changePasswordOnLogin Boolean              @default(false) @map("change_password_on_login")
+    lastLoginAt           DateTime?            @map("last_login_at")
+    recDelete             DateTime?            @map("rec_delete") @db.Timestamp(3)
+    recDeleteUser         String?              @map("rec_delete_user") @db.VarChar(36)
+    twoFAEnabled          Boolean              @default(false) @map("two_fa_enabled")
+    default2FAMethod      String?              @map("default_2fa_method") @db.VarChar(36) // "email" or the appId of the TOTP app
     refreshTokens         RefreshToken[]
-    organisation          Organisation        @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
+    organisation          Organisation         @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
     devices               Device[]
     auditLogs             AuditLog[]
     emailToken            EmailToken[]
@@ -240,20 +241,22 @@ model PasswordResetToken {
 // ########### BASE SCHEMA ###########
 
 model Cadet {
-    id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    organisationId  String            @map("organisation_id") @db.Char(36)
-    firstname       String            @db.VarChar(30)
-    lastname        String            @db.VarChar(30)
-    active          Boolean           @default(true)
-    comment         String            @default("")
-    recdelete       DateTime?         @db.Timestamp(6)
-    recdeleteUser   String?           @map("recdelete_user") @db.VarChar(10)
-    organisation    Organisation      @relation(fields: [organisationId], references: [id])
-    materialIssued  MaterialIssued[]
-    uniformIssued   UniformIssued[]
-    cadetDeficiency CadetDeficiency[]
-    cadetInspection CadetInspection[]
-    deregistrations Deregistration[]
+    id                    String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    organisationId        String                 @map("organisation_id") @db.Char(36)
+    firstname             String                 @db.VarChar(30)
+    lastname              String                 @db.VarChar(30)
+    active                Boolean                @default(true)
+    comment               String                 @default("")
+    recdelete             DateTime?              @db.Timestamp(6)
+    recdeleteUser         String?                @map("recdelete_user") @db.VarChar(10)
+    organisation          Organisation           @relation(fields: [organisationId], references: [id])
+    materialIssued        MaterialIssued[]
+    uniformIssued         UniformIssued[]
+    cadetDeficiency       CadetDeficiency[]
+    cadetInspection        CadetInspection[]
+    deregistrations        Deregistration[]
+    vcadetGeneraloverview  VCadetGeneraloverview?
+    vDeficiencyByCadet     VDeficiencyByCadet[]
 
     @@index([organisationId])
     @@map("cadet")
@@ -441,17 +444,18 @@ model MaterialIssued {
 }
 
 model Inspection {
-    id                 String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    organisationId     String            @map("organisation_id") @db.Char(36)
-    date               String            @db.Char(10)
-    name               String
-    timeStart          String?           @map("time_start") @db.Char(5)
-    timeEnd            String?           @map("time_end") @db.Char(5)
-    cadetInspection    CadetInspection[]
-    deficiencyCreated  Deficiency[]      @relation("Deficiency_InspectionCreated")
-    deficiencyResolved Deficiency[]      @relation("Deficiency_InspectionResolved")
-    organisation       Organisation      @relation(fields: [organisationId], references: [id], onDelete: Cascade, onUpdate: Restrict)
-    deregistrations    Deregistration[]
+    id                     String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    organisationId         String                  @map("organisation_id") @db.Char(36)
+    date                   String                  @db.Char(10)
+    name                   String
+    timeStart              String?                 @map("time_start") @db.Char(5)
+    timeEnd                String?                 @map("time_end") @db.Char(5)
+    cadetInspection        CadetInspection[]
+    deficiencyCreated      Deficiency[]            @relation("Deficiency_InspectionCreated")
+    deficiencyResolved     Deficiency[]            @relation("Deficiency_InspectionResolved")
+    organisation           Organisation            @relation(fields: [organisationId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+    deregistrations        Deregistration[]
+    vcadetGeneraloverviews VCadetGeneraloverview[]
 
     @@unique([date, organisationId])
     @@index([organisationId])
@@ -494,8 +498,9 @@ model DeficiencyType {
     relation       deficiencytype_relation?
     disabledDate   DateTime?                @map("disabled_date") @db.Date
     disabledUser   String?                  @map("disabled_user") @db.VarChar(10)
-    deficiencyList Deficiency[]
-    organisation   Organisation             @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
+    deficiencyList     Deficiency[]
+    vDeficiencyByCadet VDeficiencyByCadet[]
+    organisation       Organisation             @relation(fields: [organisationId], references: [id], onUpdate: Restrict)
 
     @@unique([name, organisationId])
     @@map("deficiency_type")
@@ -574,4 +579,47 @@ model Redirect {
     @@unique(code)
     @@map("redirect")
     @@schema("public")
+}
+
+// ########### VIEWS ###########
+
+view VCadetGeneraloverview {
+    id                    String      @unique @db.Char(36)
+    organisationId        String      @map("organisation_id") @db.Char(36)
+    firstname             String      @db.VarChar(30)
+    lastname              String      @db.VarChar(30)
+    fkInspection          String?     @map("fk_inspection") @db.Char(36)
+    uniformComplete       Boolean?    @map("uniformComplete")
+    lastInspection        String?     @map("lastInspection") @db.Char(10)
+    activeDeficiencyCount BigInt      @map("activeDeficiencyCount")
+    Cadet                 Cadet?      @relation(fields: [id], references: [id])
+    Inspection            Inspection? @relation(fields: [fkInspection], references: [id])
+
+    @@map("v_cadet_generaloverview")
+    @@schema("base")
+}
+
+view VDeficiencyByCadet {
+    id                   String    @unique @db.Char(36)
+    typeId               String    @map("typeId") @db.Char(36)
+    typeName             String    @map("typeName") @db.VarChar(20)
+    fkDeficiencyType     String    @map("fk_deficiencyType") @db.Char(36)
+    description          String    @db.VarChar(30)
+    comment              String
+    dateCreated          DateTime  @map("dateCreated") @db.Date
+    dateUpdated          DateTime  @map("dateUpdated") @db.Date
+    dateResolved         DateTime? @map("dateResolved") @db.Date
+    userCreated          String    @map("userCreated") @db.VarChar(10)
+    userUpdated          String    @map("userUpdated") @db.VarChar(10)
+    userResolved         String?   @map("userResolved") @db.VarChar(10)
+    fkInspectionCreated  String?   @map("fk_inspectionCreated") @db.Char(36)
+    fkInspectionResolved String?   @map("fk_inspectionResolved") @db.Char(36)
+    fkCadet              String?   @map("fk_cadet") @db.Char(36)
+    fkUniform            String?   @map("fk_uniform") @db.Char(36)
+    fkMaterial           String?   @map("fk_material") @db.Char(36)
+    cadet                Cadet?         @relation(fields: [fkCadet], references: [id])
+    deficiencyType       DeficiencyType @relation(fields: [fkDeficiencyType], references: [id])
+
+    @@map("v_deficiency_by_cadet")
+    @@schema("inspection")
 }

@@ -275,8 +275,32 @@ ALTER TABLE "authentication"."audit_log" ADD CONSTRAINT "audit_log_user_id_fkey"
 -- AddForeignKey
 ALTER TABLE "authentication"."audit_log" ADD CONSTRAINT "audit_log_device_id_fkey" FOREIGN KEY ("device_id") REFERENCES "authentication"."device"("id") ON DELETE SET NULL ON UPDATE RESTRICT;
 
--- AlterView
-ALTER VIEW base.v_cadet_generaloverview RENAME COLUMN "fk_assosiation" TO "organisation_id";
+-- Rebuild view: after renaming base.cadet.fk_assosiation → organisation_id (line 39 above),
+-- PostgreSQL automatically updates the view's internal column reference, making the old
+-- ALTER VIEW ... RENAME COLUMN approach fail. Explicitly DROP and recreate instead.
+DROP VIEW IF EXISTS base.v_cadet_generaloverview;
+CREATE OR REPLACE VIEW base.v_cadet_generaloverview AS
+ SELECT c.id,
+    c.organisation_id,
+    c.firstname,
+    c.lastname,
+    ci.fk_inspection,
+    ci.uniform_complete AS "uniformComplete",
+    i.date AS "lastInspection",
+    count(vdbc.id) AS "activeDeficiencyCount"
+   FROM base.cadet c
+     LEFT JOIN inspection.cadet_inspection ci ON c.id = ci.fk_cadet AND ci.fk_inspection = (( SELECT ii.id
+           FROM inspection.inspection ii
+             JOIN inspection.cadet_inspection ici ON ii.id = ici.fk_inspection
+          WHERE ici.fk_cadet = c.id
+          ORDER BY ii.date DESC
+         LIMIT 1))
+     LEFT JOIN inspection.inspection i ON i.id = ci.fk_inspection
+     LEFT JOIN inspection.v_deficiency_by_cadet vdbc ON vdbc.fk_cadet = c.id AND vdbc."dateResolved" IS NULL
+  WHERE c.recdelete IS NULL
+  GROUP BY c.id, ci.fk_inspection, ci.uniform_complete, i.date;
+
+ALTER TABLE base.v_cadet_generaloverview OWNER TO CURRENT_USER;
 
 /*
 -- AlterTable
