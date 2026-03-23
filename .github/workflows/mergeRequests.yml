@@ -6,7 +6,6 @@ permissions:
   contents: read
 on:
   pull_request:
-    branches: [ "develop", "release", "main" ]
 
 jobs:
   # Stage 1: Testing and Linting
