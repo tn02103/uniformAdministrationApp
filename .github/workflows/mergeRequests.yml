@@ -10,8 +10,8 @@ on:
 
 jobs:
   # Stage 1: Testing and Linting
-  jest-dal-unit:
-    name: Jest Unit Tests
+  test-dal-unit:
+    name: DAL-Unit Tests
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
@@ -26,8 +26,8 @@ jobs:
       - name: Run unit tests
         run: npm run test:dal:unit
 
-  jest-components:
-    name: Jest Frontend Tests
+  test-components:
+    name: Frontend Tests
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
@@ -42,8 +42,8 @@ jobs:
       - name: Run components tests
         run: npm run test:components
 
-  jest-dal-integration:
-    name: Jest Integration Tests
+  test-dal-integration:
+    name: DAL-Integration Tests
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: "postgres://user:password@localhost:5432/vk_uniform"
@@ -103,7 +103,7 @@ jobs:
   build:
     name: Build Application
     runs-on: ubuntu-latest
-    needs: [jest-dal-unit, jest-components, jest-dal-integration, lint]
+    needs: [test-dal-unit, test-dal-integration, test-components, lint]
     env:
       DATABASE_URL: "postgres://user:password@localhost:5432/vk_uniform"
       IRON_SESSION_KEY: "46[Hmau0uH&B]0;jjm$'r1Lk;kX@I|cm@"
