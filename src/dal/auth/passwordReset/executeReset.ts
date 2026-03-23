@@ -5,7 +5,7 @@ import { sha256Hex } from "@/dal/auth/helper.tokens";
 import { LogDebugLevel } from "@/dal/auth/LogDebugLeve.enum";
 import { prisma } from "@/lib/db";
 import { sendPasswordChangedEmail } from "@/lib/email/passwordChangedEmail";
-import { ResetPasswordSchema, ResetPasswordType } from "@/zod/auth";
+import { ResetPasswordDALSchema, ResetPasswordDALType } from "@/zod/auth";
 import bcrypt from "bcrypt";
 import dayjs from "@/lib/dayjs";
 import { headers } from "next/headers";
@@ -24,7 +24,7 @@ class ResetTokenError extends Error {
     }
 }
 
-export const executePasswordReset = async (data: ResetPasswordType) => {
+export const executePasswordReset = async (data: ResetPasswordDALType) => {
     const headerList = await headers();
     const ipAddress = getIPAddress(headerList);
     const agent = userAgent({ headers: headerList });
@@ -37,7 +37,7 @@ export const executePasswordReset = async (data: ResetPasswordType) => {
         return { success: false, error: "tooManyRequests" };
     }
 
-    const parsed = ResetPasswordSchema.safeParse(data);
+    const parsed = ResetPasswordDALSchema.safeParse(data);
     if (!parsed.success) {
         await logSecurityAuditEntry({
             action: "PASSWORD_RESET_EXECUTE",
@@ -178,7 +178,7 @@ export const executePasswordReset = async (data: ResetPasswordType) => {
     });
 
     if (logUserId) {
-        void sendPasswordChangedEmail(logUserId).catch((e) =>
+        void sendPasswordChangedEmail(logUserId, "reset").catch((e) =>
             console.error("executePasswordReset: failed to send password changed notification", e)
         );
     }

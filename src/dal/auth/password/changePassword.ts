@@ -2,7 +2,8 @@ import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
-import { ChangePasswordDALSchema, ChangePasswordDALType } from "@/zod/auth";
+import { sendPasswordChangedEmail } from "@/lib/email/passwordChangedEmail";
+import { SelfServiceChangePasswordDALSchema, SelfServiceChangePasswordDALType } from "@/zod/auth";
 import bcrypt from "bcrypt";
 import { headers } from "next/headers";
 import { userAgent } from "next/server";
@@ -21,11 +22,11 @@ type ChangePasswordError =
     | { error: { formElement: "currentPassword"; message: string } }
     | { error: { tooManyRequests: true } };
 
-export const changePassword = async (data: ChangePasswordDALType): Promise<void | ChangePasswordError> => {
+export const changePassword = async (data: SelfServiceChangePasswordDALType): Promise<void | ChangePasswordError> => {
     const [user, { currentPassword, newPassword }] = await genericSAValidator(
         AuthRole.user,
         data,
-        ChangePasswordDALSchema,
+        SelfServiceChangePasswordDALSchema,
     );
 
     const headerList = await headers();
@@ -111,4 +112,8 @@ export const changePassword = async (data: ChangePasswordDALType): Promise<void 
         userAgent: agent,
         details: "Password changed successfully",
     });
+
+    void sendPasswordChangedEmail(user.id, "change").catch((e) =>
+        console.error("changePassword: failed to send password changed notification", e)
+    );
 };

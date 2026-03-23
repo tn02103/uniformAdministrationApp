@@ -1,11 +1,12 @@
+import { NewPasswordFormComponent } from "@/components/authentication/NewPasswordFormComponent";
 import { Form } from "@/components/fields/Form";
 import { InputFormField } from "@/components/fields/InputFormField";
 import { userChangePassword } from "@/dal/auth";
 import { SAFormHandler } from "@/lib/SAFormHandler";
 import { useScopedI18n } from "@/lib/locales/client";
-import { ChangePasswordFormSchema, ChangePasswordFormType } from "@/zod/auth";
+import { SelfServiceChangePasswordFormSchema, SelfServiceChangePasswordFormType } from "@/zod/auth";
 import { Modal } from "react-bootstrap";
-import { useFormContext, UseFormReturn } from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
 import { toast } from "react-toastify";
 
 type ChangePasswordModalProps = {
@@ -16,7 +17,7 @@ export const ChangePasswordModal = ({ onClose }: ChangePasswordModalProps) => {
 
     const t = useScopedI18n("profile.changePassword");
 
-    const handleSubmit = async (data: ChangePasswordFormType, form: UseFormReturn<ChangePasswordFormType>) => {
+    const handleSubmit = async (data: SelfServiceChangePasswordFormType, form: UseFormReturn<SelfServiceChangePasswordFormType>) => {
         await SAFormHandler(
             userChangePassword({ currentPassword: data.currentPassword, newPassword: data.newPassword }),
             form.setError,
@@ -42,19 +43,14 @@ export const ChangePasswordModal = ({ onClose }: ChangePasswordModalProps) => {
             <Modal.Header closeButton>
                 <Modal.Title>{t("title")}</Modal.Title>
             </Modal.Header>
-            <Form<ChangePasswordFormType> onSubmit={handleSubmit} zodSchema={ChangePasswordFormSchema}>
+            <Form<SelfServiceChangePasswordFormType> onSubmit={handleSubmit} zodSchema={SelfServiceChangePasswordFormSchema}>
                 <Modal.Body>
                     <InputFormField
                         name="currentPassword"
                         label={t("currentPassword")}
                         type="password"
                     />
-                    <InitialPasswordInputField />
-                    <InputFormField
-                        name="confirmPassword"
-                        label={t("confirmPassword")}
-                        type="password"
-                    />
+                    <NewPasswordFormComponent />
                 </Modal.Body>
                 <Modal.Footer>
                     <button type="button" className="btn btn-secondary" onClick={onClose}>{t("cancel")}</button>
@@ -64,45 +60,3 @@ export const ChangePasswordModal = ({ onClose }: ChangePasswordModalProps) => {
         </Modal>
     );
 };
-
-const InitialPasswordInputField = () => {
-    const t = useScopedI18n("profile.changePassword");
-    const form = useFormContext<ChangePasswordFormType>();
-    const newPassword = form.watch("newPassword") ?? "";
-    const fieldState = form.getFieldState("newPassword", form.formState);
-
-    const rules = [
-        { label: t("newPasswordError.rules.minLength"), met: newPassword.length >= 8 },
-        { label: t("newPasswordError.rules.uppercase"), met: /[A-Z]/.test(newPassword) },
-        { label: t("newPasswordError.rules.lowercase"), met: /[a-z]/.test(newPassword) },
-        { label: t("newPasswordError.rules.number"), met: /[0-9]/.test(newPassword) },
-    ];
-
-    const showRequirements = fieldState.isTouched && fieldState.error?.message === "custom.auth.password.requirements";
-
-    const onChange = () => {
-        form.trigger("confirmPassword");
-    };
-
-    return (
-        <>
-            <InputFormField
-                name="newPassword"
-                label={t("newPassword")}
-                onValueChange={onChange}
-                type="password"
-                customErrorMessage={showRequirements ? () => undefined : undefined}
-            />
-            {showRequirements && (
-                <div className="fs-7" role="alert">
-                    <div>{t("newPasswordError.invalid")}</div>
-                    <ul className="mb-0 ps-3">
-                        {rules.map((rule, i) => (
-                            <li key={i} className={rule.met ? "text-success" : "text-danger"}>{rule.label}</li>
-                        ))}
-                    </ul>
-                </div>
-            )}
-        </>
-    );
-}

@@ -1,5 +1,6 @@
 import { genericSAValidator } from "@/actions/validations";
 import { getIronSession } from "@/lib/ironSession";
+import { sendPasswordChangedEmail } from "@/lib/email/passwordChangedEmail";
 import { prismaMock } from "@test-utils/prisma-mock";
 import bcrypt from "bcrypt";
 import { headers } from "next/headers";
@@ -31,6 +32,9 @@ vi.mock("../helper", () => ({
     getIPAddress: vi.fn(),
     logSecurityAuditEntry: vi.fn(),
 }));
+vi.mock("@/lib/email/passwordChangedEmail", () => ({
+    sendPasswordChangedEmail: vi.fn().mockResolvedValue(undefined),
+}));
 
 const mockBcryptCompare = vi.mocked(bcrypt.compare);
 const mockBcryptHash = vi.mocked(bcrypt.hash);
@@ -40,6 +44,7 @@ const mockHeaders = vi.mocked(headers);
 const mockUserAgent = vi.mocked(userAgent);
 const mockGetIPAddress = vi.mocked(getIPAddress);
 const mockLogSecurityAuditEntry = vi.mocked(logSecurityAuditEntry);
+const mockSendPasswordChangedEmail = vi.mocked(sendPasswordChangedEmail);
 
 const mockUserId = "user-id-123";
 const mockSessionId = "session-id-abc";
@@ -245,6 +250,12 @@ describe("changePassword", () => {
                     select: { password: true },
                 })
             );
+        });
+
+        it("sends password changed email with type 'change' on success", async () => {
+            await changePassword(baseProps);
+
+            expect(mockSendPasswordChangedEmail).toHaveBeenCalledWith(mockUserId, "change");
         });
     });
 

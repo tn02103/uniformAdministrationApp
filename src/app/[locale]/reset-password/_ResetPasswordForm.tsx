@@ -1,7 +1,7 @@
 "use client";
 
+import { NewPasswordFormComponent } from "@/components/authentication/NewPasswordFormComponent";
 import { Form } from "@/components/fields/Form";
-import { InputFormField } from "@/components/fields/InputFormField";
 import { executePasswordReset } from "@/dal/auth";
 import { useScopedI18n } from "@/lib/locales/client";
 import { ResetPasswordFormSchema, ResetPasswordFormType } from "@/zod/auth";
@@ -10,7 +10,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
-
 
 type PropType = {
     token: string;
@@ -69,22 +68,7 @@ const ResetPasswordForm = ({ token, locale }: PropType) => {
                     {t(errorKey as Parameters<typeof t>[0])}
                 </div>
             )}
-            <div className="mb-3">
-                <InputFormField
-                    name="newPassword"
-                    label={t("label.newPassword")}
-                    type="password"
-                    autoComplete="new-password"
-                />
-            </div>
-            <div className="mb-3">
-                <InputFormField
-                    name="confirmPassword"
-                    label={t("label.confirmPassword")}
-                    type="password"
-                    autoComplete="new-password"
-                />
-            </div>
+            <NewPasswordFormComponent />
             <Row>
                 <Col>
                     <Button variant="primary" type="submit" disabled={submitting} data-testid="btn_submit">

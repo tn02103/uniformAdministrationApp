@@ -910,9 +910,15 @@ export default {
         },
         passwordChanged: {
             subject: "Your password has been changed",
-            heading: "Password Changed",
+            heading: {
+                reset: "Password Reset",
+                change: "Password Changed",
+            },
             greeting: "Hello {name},",
-            body: "The password for your UniformAdmin account was just successfully changed.",
+            body: {
+                reset: "The password for your UniformAdmin account was successfully reset. If you did not initiate this action yourself, please contact your administrator immediately.",
+                change: "The password for your UniformAdmin account was just successfully changed by you.",
+            },
             securityNotice: "If you did not make this change, please contact your administrator immediately or secure your email account.",
         },
     },
