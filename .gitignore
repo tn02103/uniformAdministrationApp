@@ -38,6 +38,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# agent session state
+.github/session/*.md
 .env
 .vscode/
 node_modules/
