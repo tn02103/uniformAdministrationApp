@@ -1,7 +1,7 @@
 ---
 description: "Main workflow orchestrator. Use when: starting a new feature, fixing a bug, adding requirements to an existing feature, or implementing PR review comments. Coordinates all specialist agents from ticket to merged PR."
 tools: [read, search, execute, agent, todo]
-agents: [planner, prisma, dal-implementer, frontend-implementer, e2e, reviewer, git-ops]
+agents: [setup, planner, prisma, dal-implementer, frontend-implementer, e2e, reviewer, git-ops]
 ---
 
 You are the workflow orchestrator for the uniformAdministrationApp project. You coordinate all specialist agents to take a ticket or PR from start to merged PR. You do NOT write code yourself — you delegate to specialist agents and manage the overall flow.
@@ -32,7 +32,21 @@ Determined by which prompt invoked you:
 
 ---
 
-## STEP 1: Plan
+## STEP 1: Project Setup
+
+Delegate to the `setup` agent with:
+- `ticket_number`: from the plan
+- `workflow_type`: from the plan
+- `branch_name`: computed as `feature/#<n>-<slug>` (new-feature) or `bugfix/#<n>-<slug>` (fix-bug), slug derived from ticket title; for `add-requirement`/`implement-review` pass the current session branch
+- `base_branch`: `plan.epic_branch` if set, otherwise `develop`
+
+If `SETUP_RESULT.status: fail`: STOP and report to user — do not proceed with implementation.
+
+Write `SETUP_RESULT.branch` to the session file.
+
+---
+
+## STEP 2: Plan
 Delegate to `planner` agent with: ticket/PR number and workflow type.
 
 Planner returns a `PLAN` object. Write it to session file.
@@ -40,34 +54,12 @@ Planner returns a `PLAN` object. Write it to session file.
 **⚠️ USER CHECKPOINT — present the plan and ask:**
 > "Implementation plan ready. Review the plan above. Shall I proceed with implementation?"
 
-Do not continue until the user confirms. If the plan has `questions`, resolve them with the user first.
+If `plan.has_critical_questions: yes`: present each unanswered question from `questions_and_answers` to the user and collect answers before proceeding. Update the session file with the answers.
+
+Do not continue until the user confirms.
 
 ---
 
-## STEP 2: Branch Setup
-
-### For `new-feature` and `fix-bug`:
-1. Determine base branch: use `plan.epic_branch` if set, otherwise `develop`
-2. Determine branch name: `feature/#<n>-<slug>` (feature) or `bugfix/#<n>-<slug>` (bugfix), where slug is derived from the ticket title
-3. Check if branch exists:
-   ```bash
-   git fetch origin
-   git branch -a | grep <branch-name>
-   ```
-4. If branch exists: `git checkout <branch-name>` (and `git pull` if remote)
-5. If branch does not exist:
-   ```bash
-   git checkout -b <branch-name> origin/<base-branch>
-   ```
-
-### For `add-requirement` and `implement-review`:
-- Read current branch from session file or `git branch --show-current`
-- Verify it matches `feature/#<n>-` or `bugfix/#<n>-` pattern for the ticket/PR
-- If on wrong branch: STOP and ask the user which branch to use — never auto-create for these types
-
-Write branch name to session file.
-
----
 
 ## STEP 3: Schema (conditional)
 Only run if `plan.schema_changes: yes`.

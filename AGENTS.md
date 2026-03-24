@@ -47,6 +47,7 @@ Use slash commands to start any workflow:
 - `/add-requirement <issue-number>` - add requirements to an existing feature branch
 - `/implement-review <pr-number>` - implement PR review comments
 - `/review` - standalone review of current branch changes
+- `/project-setup <issue-number>` - branch checkout + npm install + prisma reset + seed (run manually when picking up a ticket)
 
 Coding rules auto-load from `.github/instructions/` based on which files are in context.
 Agents are in `.github/agents/`. Session state is written to `.github/session/` (gitignored).
