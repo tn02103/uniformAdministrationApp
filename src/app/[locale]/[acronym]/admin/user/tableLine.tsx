@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { changeUserPassword, createUser, deleteUser, updateUser } from "@/actions/controllers/UserController";
+import { changeUserPassword, createUser, deleteUser, updateUser } from "@/dal/user";
 import { useModal } from "@/components/modals/modalProvider";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
@@ -36,7 +36,7 @@ export default function UserAdminTableRow({
         data.active = (String(data.active) === "true");
 
         if (!user) return handleCreate(data);
-        updateUser(data)
+        updateUser({ userId: data.id, name: data.name, role: data.role, active: data.active })
             .then(() => {
                 toast.success(t('admin.user.saved'))
             }).catch((error) => {
@@ -46,7 +46,7 @@ export default function UserAdminTableRow({
     }
     async function handleCreate(data: User) {
         modal?.changeUserPasswordModal(
-            (password: string) => createUser(data, password)
+            (password: string) => createUser({ ...data, password })
                 .then(() => {
                     toast.success(t('admin.user.created'));
                 }).catch((error) => {
@@ -61,7 +61,7 @@ export default function UserAdminTableRow({
 
         modal?.changeUserPasswordModal(
             async (password: string) => {
-                await changeUserPassword(user?.id, password).catch((error) => {
+                await changeUserPassword({ userId: user?.id as string, password }).catch((error) => {
                     console.error(error);
                     toast.error(t('admin.user.error.changePassword'));
                 });
@@ -76,7 +76,7 @@ export default function UserAdminTableRow({
             header: t('admin.user.deleteWarning.header', { user: user.name }),
             message: t('admin.user.deleteWarning.message'),
             primaryOption: t('common.actions.delete'),
-            primaryFunction: () => deleteUser(user.id).catch((error) => {
+            primaryFunction: () => deleteUser({ userId: user.id }).catch((error) => {
                 console.error(error);
                 toast.error(t('common.error.actions.save'));
             }),
