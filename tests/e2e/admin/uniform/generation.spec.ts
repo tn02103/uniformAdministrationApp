@@ -64,24 +64,24 @@ test.describe('UniformGeneration Configuration', () => {
 
         await test.step('check if sortorder is changed', async () => {
             const rows = generationTable.locator('tbody').getByRole('row');
-
+            
             await expect(rows).toHaveCount(4);
-            await expect(rows[0]).toHaveAttribute('aria-label', generationList[1].name);
-            await expect(rows[1]).toHaveAttribute('aria-label', generationList[2].name);
-            await expect(rows[2]).toHaveAttribute('aria-label', generationList[0].name);
-            await expect(rows[3]).toHaveAttribute('aria-label', generationList[3].name);
+            await expect(rows.nth(0)).toHaveAttribute('aria-label', generationList[1].name);
+            await expect(rows.nth(1)).toHaveAttribute('aria-label', generationList[2].name);
+            await expect(rows.nth(2)).toHaveAttribute('aria-label', generationList[0].name);
+            await expect(rows.nth(3)).toHaveAttribute('aria-label', generationList[3].name);
         });
 
         await test.step('validate db sortorder', async () => {
             const dbGenerationList = await prisma.uniformGeneration.findMany({
-                    where: {
-                        recdelete: null,
-                        fk_uniformType: types[0].id,
-                    },
-                    orderBy: {
-                        sortOrder: 'asc',
-                    },
-                });
+                where: {
+                    recdelete: null,
+                    fk_uniformType: types[0].id,
+                },
+                orderBy: {
+                    sortOrder: 'asc',
+                },
+            });
             expect(dbGenerationList).toHaveLength(4);
             expect(dbGenerationList[0].id).toEqual(generationList[1].id);
             expect(dbGenerationList[1].id).toEqual(generationList[2].id);
@@ -126,22 +126,22 @@ test.describe('UniformGeneration Configuration', () => {
             const rows = generationTable.locator('tbody').getByRole('row');
 
             await expect(rows).toHaveCount(4);
-            await expect(rows[0]).toHaveAttribute('aria-label', generationList[0].name);
-            await expect(rows[1]).toHaveAttribute('aria-label', generationList[2].name);
-            await expect(rows[2]).toHaveAttribute('aria-label', generationList[1].name);
-            await expect(rows[3]).toHaveAttribute('aria-label', generationList[3].name);
+            await expect(rows.nth(0)).toHaveAttribute('aria-label', generationList[0].name);
+            await expect(rows.nth(1)).toHaveAttribute('aria-label', generationList[2].name);
+            await expect(rows.nth(2)).toHaveAttribute('aria-label', generationList[1].name);
+            await expect(rows.nth(3)).toHaveAttribute('aria-label', generationList[3].name);
         });
 
         await test.step('validate db sortorder', async () => {
             const dbGenerationList = await prisma.uniformGeneration.findMany({
-                    where: {
-                        recdelete: null,
-                        fk_uniformType: types[0].id,
-                    },
-                    orderBy: {
-                        sortOrder: 'asc',
-                    },
-                });
+                where: {
+                    recdelete: null,
+                    fk_uniformType: types[0].id,
+                },
+                orderBy: {
+                    sortOrder: 'asc',
+                },
+            });
             expect(dbGenerationList).toHaveLength(4);
             expect(dbGenerationList[0].id).toEqual(generationList[0].id);
             expect(dbGenerationList[1].id).toEqual(generationList[2].id);
@@ -236,7 +236,7 @@ test.describe('UniformGeneration Configuration', () => {
         });
     });
 
-    test('create generation without size', async ({ page, types, staticData: {fk_assosiation } }) => {
+    test('create generation without size', async ({ page, types, staticData: { fk_assosiation } }) => {
         await test.step('open type offcanvas', async () => {
             await expect(page.getByRole('row', { name: types[1].name })).toBeVisible();
             await page.getByRole('row', { name: types[1].name }).getByRole('button', { name: 'open' }).click();

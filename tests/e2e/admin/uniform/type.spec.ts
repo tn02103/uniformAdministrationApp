@@ -253,10 +253,10 @@ test.describe('UniformType Configuration', () => {
         await test.step('check if the order is changed', async () => {
             const rows = page.locator('tbody').getByRole('row');
             await expect(rows).toHaveCount(4);
-            await expect(rows[0]).toHaveAttribute('aria-label', types[1].name);
-            await expect(rows[1]).toHaveAttribute('aria-label', types[2].name);
-            await expect(rows[2]).toHaveAttribute('aria-label', types[0].name);
-            await expect(rows[3]).toHaveAttribute('aria-label', types[3].name);
+            await expect(rows.nth(0)).toHaveAttribute('aria-label', types[1].name);
+            await expect(rows.nth(1)).toHaveAttribute('aria-label', types[2].name);
+            await expect(rows.nth(2)).toHaveAttribute('aria-label', types[0].name);
+            await expect(rows.nth(3)).toHaveAttribute('aria-label', types[3].name);
         });
 
         await test.step('validate db data', async () => {
@@ -304,10 +304,10 @@ test.describe('UniformType Configuration', () => {
         await test.step('check if the order is changed', async () => {
             const rows = page.locator('tbody').getByRole('row');
             await expect(rows).toHaveCount(4);
-            await expect(rows[0]).toHaveAttribute('aria-label', types[0].name);
-            await expect(rows[1]).toHaveAttribute('aria-label', types[2].name);
-            await expect(rows[2]).toHaveAttribute('aria-label', types[1].name);
-            await expect(rows[3]).toHaveAttribute('aria-label', types[3].name);
+            await expect(rows.nth(0)).toHaveAttribute('aria-label', types[0].name);
+            await expect(rows.nth(1)).toHaveAttribute('aria-label', types[2].name);
+            await expect(rows.nth(2)).toHaveAttribute('aria-label', types[1].name);
+            await expect(rows.nth(3)).toHaveAttribute('aria-label', types[3].name);
         });
 
         await test.step('validate db data', async () => {
