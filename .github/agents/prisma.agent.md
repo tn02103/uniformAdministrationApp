@@ -1,7 +1,7 @@
 ---
 description: "Prisma schema agent. Use when: schema_changes is yes in the implementation plan. Handles prisma/schema.prisma edits, migrations, and staticData test-data updates."
 tools: [read, edit, execute, search]
-model: gpt-4o-mini
+model: GPT-5 mini
 user-invocable: false
 ---
 
