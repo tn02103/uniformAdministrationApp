@@ -1,3 +1,7 @@
+---
+applyTo: src/app/**, src/components/**, src/dataFetcher/**
+---
+
 # Frontend — Rules & Patterns
 
 ## App Structure
@@ -19,9 +23,10 @@ src/app/[locale]/[acronym]/   # All authenticated app pages live here
 react-hook-form + Zod via `@hookform/resolvers/zod`.
 
 ### Rules
-- Always use a Zod schema from `src/zod/` as the resolver — never define schemas inline in components
+- Always use a Zod schema from `src/zod/` as the resolver — never define schemas inline in component files
 - Input data to Server Actions (DAL calls) must match the same Zod schema used on the form
 - Use the custom field components from `src/components/fields/` — do not use raw `<input>` elements
+- Every field must have an associated label (accessibility requirement)
 
 ### Custom Field Components (`src/components/fields/`)
 ```
@@ -60,6 +65,13 @@ const MyForm = () => {
 };
 ```
 
+## Internationalisation (i18n)
+- **No hardcoded UI strings** in components — all visible text must use translation keys
+- Use `next-intl`'s `useTranslations` hook in client components
+- Translation files live in `public/locales/`
+- Never write string literals like `"Speichern"` or `"Save"` directly in JSX — always `t('save')` or equivalent
+- Error messages from DAL/Zod are handled by the field components automatically
+
 ## Data Loading
 
 ### DataFetcher layer (`src/dataFetcher/`)
@@ -90,29 +102,27 @@ return <CadetUniformTable cadetId={cadetId} initialData={initialData} />;
 const { map, mutate } = useCadetUniformMap(cadetId, initialData);
 ```
 
-After a mutation call `mutate()` from the hook. To revalidate multiple related keys use a predicate:
+After a mutation, call `mutate()` from the hook. To revalidate multiple related keys use a predicate:
 ```typescript
 mutate((key) => typeof key === 'string' && key.startsWith(`cadet.${cadetId}.`), data, options);
 ```
 
 ### Strategy 2: Server-only (rarely changed / admin pages)
-Load data exclusively in the server component. The DAL action calls `revalidatePath` on mutation to invalidate the Next.js page cache:
+Load data exclusively in the server component. The DAL action calls `revalidatePath` on mutation:
 ```typescript
 revalidatePath(`/[locale]/${acronym}/admin/uniform/sizes`, 'page');
 ```
 Do NOT use SWR for these pages.
 
 ### Strategy 3: Global data via `GlobalDataProvider`
-Application-wide reference data is loaded once in the layout server component and injected into `GlobalDataProvider` (`src/components/globalDataProvider.tsx`). It:
-- Exposes data via `useGlobalData()` React context
-- Pre-populates the SWR cache via `<SWRConfig fallback={...}>` so dataFetcher hooks for these keys resolve immediately from cache
+Application-wide reference data is loaded once in the layout server component and injected into `GlobalDataProvider` (`src/components/globalDataProvider.tsx`). It exposes data via `useGlobalData()` and pre-populates the SWR cache.
 
 Known global SWR keys (pre-seeded, no extra fetch needed):
 - `uniform.type.list` — `UniformType[]`
 - `uniform.sizelist.list` — `UniformSizelist[]`
 - `inspection.status` — `InspectionStatus | null`
 
-Do NOT re-fetch this data in child components — use `useGlobalData()` or a dataFetcher hook with the matching SWR key.
+Do NOT re-fetch this data in child components — use `useGlobalData()` or the matching hook.
 
 ### Strategy selection
 | Data type | Strategy |
@@ -126,9 +136,9 @@ Do NOT re-fetch this data in child components — use `useGlobalData()` or a dat
 ### Function names
 | Prefix | Layer | Purpose |
 |---|---|---|
-| `use*` | `src/dataFetcher/` | SWR hooks that load/subscribe to data from the backend |
-| `handle*` | Component files | Event handlers and action callbacks inside components (e.g. `handleSubmit`, `handleDelete`) |
-| `get*` / `create*` / `update*` / `delete*` | `src/dal/` | DAL server actions — reserved, do NOT use these prefixes in components or dataFetcher hooks |
+| `use*` | `src/dataFetcher/` | SWR hooks that load/subscribe to data |
+| `handle*` | Component files | Event handlers and action callbacks |
+| `get*` / `create*` / `update*` / `delete*` | `src/dal/` | DAL server actions — **reserved, do NOT use these prefixes in components** |
 
 ### Files
 - Components: PascalCase (`UniformOffcanvas.tsx`)
@@ -139,3 +149,9 @@ Do NOT re-fetch this data in child components — use `useGlobalData()` or a dat
 ## Routing
 Pages are at `src/app/[locale]/[acronym]/<domain>/page.tsx`.
 `[locale]` = i18n locale, `[acronym]` = organisation acronym (used as org identifier in URL).
+
+## Code Quality Rules
+- No `console.log` or debug statements in committed code
+- No raw `<input>`, `<select>`, or `<textarea>` elements — always use `src/components/fields/`
+- No inline Zod schema definitions in component files
+- No direct Prisma or `src/dal/` imports in components (use dataFetcher hooks for reads, call DAL server actions for mutations)

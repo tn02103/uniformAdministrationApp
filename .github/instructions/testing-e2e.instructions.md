@@ -1,3 +1,7 @@
+---
+applyTo: tests/e2e/**
+---
+
 # E2E Testing — Playwright
 
 ## Setup
@@ -10,13 +14,11 @@
 Each Playwright worker gets its own organisation in the database via `StaticData`. Workers run in parallel without interfering with each other because every organisation's data is fully isolated.
 
 ## StaticData in E2E
-Each worker is assigned an index (0–N). The worker's `StaticData` instance manages setup/teardown for that org:
+Each worker is assigned an index (0–N). The worker's `StaticData` instance manages setup/teardown:
 ```typescript
-// In a fixture or test setup
 const staticData = new StaticData(workerIndex);
 await staticData.resetData();
-
-// After all tests in the worker
+// After all tests in the worker:
 await staticData.cleanup.removeOrganisation();
 ```
 Access known IDs through `staticData.ids` for reliable selectors and assertions.
@@ -29,10 +31,14 @@ tests/_playwrightConfig/testData/
 ```
 
 ## What to Test
+E2E tests are slow — **keep the test count low**. Focus on workflows that cross multiple layers or components; do not duplicate coverage already provided by unit or component tests.
+
 - Full user workflows (login → perform action → verify outcome)
 - Role-based access (confirm lower-role users cannot access restricted pages/actions)
-- Organisation isolation (one org cannot see another's data)
 - Critical happy paths for each domain (cadet management, uniform issuance, inspection)
+- New features: add an E2E test per acceptance criterion **only if** it involves interaction between multiple layers/components. If a criterion is already fully covered by unit/component tests and has no cross-layer interaction, skip the E2E test.
+- Changed requirements: update existing E2E tests to match new expected behaviour
+- Bug fixes: add an E2E test only if the bug involves multiple layers and is reproducible at the UI level
 
 ## What NOT to Test
 - Unit-level logic (use DAL unit tests)
@@ -42,7 +48,8 @@ tests/_playwrightConfig/testData/
 Use the shared auth fixture/helper so every test starts with an authenticated session at the required role level. Avoid repeating login steps inline.
 
 ## Key Rules
-- Never hardcode UUIDs or organisation-specific data in E2E tests — always derive from `staticData.ids`
+- **Never hardcode UUIDs** — always derive from `staticData.ids`
+- **Never hardcode organisation-specific data** — always derive from `staticData`
 - Reset only the data slice you need when possible (e.g. `staticData.cleanup.cadet()`) rather than full `resetData()` for performance
-- E2E tests verify behaviour from the user's perspective; avoid asserting on internal implementation (DB state directly) unless validating side effects that have no UI representation
-- Keep test files in `tests/e2e/` organised by domain/page, one file per major workflow
+- E2E tests verify behaviour from the user's perspective; avoid asserting on internal DB state unless validating side effects with no UI representation
+- Keep test files in `tests/e2e/` organised by domain/page — one file per major workflow
