@@ -1,0 +1,3 @@
+# Session state files for the workflow orchestrator
+# These files persist across VS Code sessions but are excluded from git.
+# See .gitignore — .github/session/*.md is ignored.

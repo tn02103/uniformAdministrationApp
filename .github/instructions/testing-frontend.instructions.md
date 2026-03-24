@@ -1,3 +1,7 @@
+---
+applyTo: src/app/**/*.test.tsx, src/components/**/*.test.tsx, src/dataFetcher/**/*.test.ts
+---
+
 # Frontend / Component Testing
 
 ## Setup
@@ -20,18 +24,21 @@ src/app/[locale]/[acronym]/myPage/_myFeature/
 ```
 
 ## What to Test
-
 - UI renders correctly for different prop combinations
 - Conditional rendering (show/hide based on state or props)
 - User interactions: clicks, input changes, form submissions
 - Form validation messages appear for invalid input
-- Server Actions are called with correct arguments on submit
+- Server Actions are called with correct arguments on submit and handle responses correctly
+- New features: each acceptance criterion has at least one component-level test
+- Changed requirements: existing tests updated to reflect new expected behaviour
 
 ## What NOT to Test
-
 - DAL / server-side logic (belongs in DAL tests)
 - Prisma queries
 - Auth logic
+
+## Bug Fix Tests
+Every bug fix MUST include a new test that would have failed before the fix. Name it to describe the bug scenario.
 
 ## Mocking Server Actions
 DAL functions are Server Actions. Mock them at the module level:
@@ -41,22 +48,34 @@ vi.mock('@/dal/uniform/item', () => ({
     createUniformItem: vi.fn(),
 }));
 ```
-Then configure mock return values per test:
+Configure default mock return values in `beforeEach`. Overwrite in specific tests only when a different return value is needed:
 ```typescript
 import { getUniformItem } from '@/dal/uniform/item';
-(getUniformItem as ReturnType<typeof vi.fn>).mockResolvedValue({ id: '...', number: 1 });
+
+beforeEach(() => {
+    vi.mocked(getUniformItem).mockResolvedValue({ id: '...', number: 1 });
+});
+
+test('shows error state', async () => {
+    vi.mocked(getUniformItem).mockRejectedValue(new Error('not found'));
+    // ...
+});
 ```
 
 ## Form Testing Pattern
-Render the component, interact via `userEvent`, assert on DOM output:
+Set up `userEvent` once per describe block, then use the returned instance in each test:
 ```typescript
 import { render, screen } from 'vitest/helpers/test-utils';
 import userEvent from '@testing-library/user-event';
 
-test('shows validation error for empty required field', async () => {
-    render(<MyForm />);
-    await userEvent.click(screen.getByRole('button', { name: /submit/i }));
-    expect(screen.getByText(/required/i)).toBeInTheDocument();
+describe('MyForm', () => {
+    const user = userEvent.setup();
+
+    test('shows validation error for empty required field', async () => {
+        render(<MyForm />);
+        await user.click(screen.getByRole('button', { name: /submit/i }));
+        expect(screen.getByText(/required/i)).toBeInTheDocument();
+    });
 });
 ```
 
@@ -64,4 +83,5 @@ test('shows validation error for empty required field', async () => {
 - Use `vitest/helpers/test-utils.tsx` for `render` (wraps providers)
 - Prefer `getByRole` and `getByLabelText` over `getByTestId` for resilient selectors
 - Do not test implementation details; test observable behaviour
-- Use `vi.fn()` / `vi.mock()` — not `jest.*` equivalents
+- Use `vi.fn()` / `vi.mock()` — **never** `jest.*` equivalents
+- No `console.log` in test files
