@@ -38,7 +38,7 @@ describe("<User> updateUser", () => {
             },
         });
         expect(revalidatePath).toHaveBeenCalledWith(
-            "/[locale]/test-organisation-id/admin/users",
+            "/[locale]/test-organisation-id/admin/user",
             "page"
         );
     });
@@ -74,7 +74,7 @@ describe("<User> changeUserPassword", () => {
             where: { userId: validInput.userId },
         });
         expect(revalidatePath).toHaveBeenCalledWith(
-            "/[locale]/test-organisation-id/admin/users",
+            "/[locale]/test-organisation-id/admin/user",
             "page"
         );
     });

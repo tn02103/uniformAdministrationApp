@@ -46,7 +46,7 @@ describe("<User> createUser", () => {
             },
         });
         expect(revalidatePath).toHaveBeenCalledWith(
-            "/[locale]/test-organisation-id/admin/users",
+            "/[locale]/test-organisation-id/admin/user",
             "page"
         );
     });
