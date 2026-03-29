@@ -1,5 +1,5 @@
 import { FlatCompat } from '@eslint/eslintrc';
-import jest from "eslint-plugin-jest";
+import vitest from '@vitest/eslint-plugin'
 import playwright from 'eslint-plugin-playwright';
 import testingLibrary from "eslint-plugin-testing-library";
 import { defineConfig } from "eslint/config";
@@ -22,8 +22,11 @@ export default defineConfig([
         }
     },
     {
-        ...jest.configs['flat/recommended'],
+        ...vitest.configs.recommended,
         files: ['src/**/*.test.*'],
+        rules: {
+            "vitest/no-conditional-expect": "warn",
+        }
     },
     {
         ...testingLibrary.configs['flat/react'],
@@ -32,6 +35,7 @@ export default defineConfig([
             ...testingLibrary.configs['flat/react'].rules,
             'testing-library/prefer-screen-queries': "off",
             "testing-library/no-node-access": "warn",
+            "@typescript-eslint/no-explicit-any": "off",
         },
     },
     {

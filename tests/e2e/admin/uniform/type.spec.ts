@@ -18,9 +18,11 @@ const test = adminTest.extend<Fixture>({
         use(staticData.data.uniformTypes.filter(t => t.recdelete === null));
     },
 });
+
 test.beforeEach(async ({ page }) => {
     await page.goto('/de/app/admin/uniform');
 })
+
 test.afterEach(async ({ staticData: { cleanup } }) => {
     await cleanup.uniformTypeConfiguration();
 });
@@ -32,6 +34,7 @@ test.describe('UniformType Configuration', () => {
             await page.getByRole('button', { name: 'create' }).click();
             await expect(page.getByRole('dialog').getByRole('heading', { name: actionText.create })).toBeVisible();
         });
+
         const offcanvas = page.getByRole('dialog');
 
         await test.step('fill the form and submit', async () => {
@@ -79,12 +82,15 @@ test.describe('UniformType Configuration', () => {
 
     test('create type with sizes', async ({ page, staticData: { fk_assosiation, ids, data } }) => {
         const sizeList = data.uniformSizelists[0]
+
         await test.step('open dialog', async () => {
             await expect(page.getByRole('button', { name: 'create' })).toBeVisible();
             await page.getByRole('button', { name: 'create' }).click();
             await expect(page.getByRole('dialog').getByRole('heading', { name: actionText.create })).toBeVisible();
         });
+
         const offcanvas = page.getByRole('dialog');
+
         await test.step('fill in form', async () => {
             await offcanvas.getByRole('textbox', { name: german.common.name }).fill('New Type 2');
             await offcanvas.getByRole('textbox', { name: typeText.acronym }).fill('NB');
@@ -110,6 +116,7 @@ test.describe('UniformType Configuration', () => {
             await expect(offcanvas.getByRole('textbox', { name: typeText.acronym })).toBeDisabled();
             await expect(offcanvas.getByRole('spinbutton', { name: typeText.issuedDefault })).toBeDisabled();
         });
+
         await test.step('validate db data', async () => {
             const dbType = await prisma.uniformType.findFirst({
                 where: {
@@ -136,7 +143,9 @@ test.describe('UniformType Configuration', () => {
             await page.getByRole('row', { name: types[0].name }).getByRole('button', { name: 'open' }).click();
             await expect(page.getByRole('dialog').getByRole('heading', { name: types[0].name })).toBeVisible();
         });
+
         const dialog = page.getByRole('dialog');
+
         await test.step('change values and submit', async () => {
             await dialog.getByRole('button', { name: actionText.edit }).click();
             await dialog.getByRole('textbox', { name: typeText.name }).fill('Updated');
@@ -160,6 +169,7 @@ test.describe('UniformType Configuration', () => {
             await expect(dialog.getByRole('switch', { name: typeText.usingGenerations })).toBeChecked();
 
         });
+
         await test.step('validate db data', async () => {
             const dbType = await prisma.uniformType.findUnique({
                 where: {
@@ -181,6 +191,7 @@ test.describe('UniformType Configuration', () => {
 
     test('delete type', async ({ page, types }) => {
         const dangerDialog = new DangerConfirmationModal(page);
+
         await test.step('open type offcanvas', async () => {
             await expect(page.getByRole('row', { name: types[0].name })).toBeVisible();
             await page.getByRole('row', { name: types[0].name }).getByRole('button', { name: 'open' }).click();
@@ -240,12 +251,12 @@ test.describe('UniformType Configuration', () => {
         });
 
         await test.step('check if the order is changed', async () => {
-            const rows = await page.locator('tbody').getByRole('row').all();
-            expect(rows).toHaveLength(4);
-            await expect(rows[0]).toHaveAttribute('aria-label', types[1].name);
-            await expect(rows[1]).toHaveAttribute('aria-label', types[2].name);
-            await expect(rows[2]).toHaveAttribute('aria-label', types[0].name);
-            await expect(rows[3]).toHaveAttribute('aria-label', types[3].name);
+            const rows = page.locator('tbody').getByRole('row');
+            await expect(rows).toHaveCount(4);
+            await expect(rows.nth(0)).toHaveAttribute('aria-label', types[1].name);
+            await expect(rows.nth(1)).toHaveAttribute('aria-label', types[2].name);
+            await expect(rows.nth(2)).toHaveAttribute('aria-label', types[0].name);
+            await expect(rows.nth(3)).toHaveAttribute('aria-label', types[3].name);
         });
 
         await test.step('validate db data', async () => {
@@ -291,12 +302,12 @@ test.describe('UniformType Configuration', () => {
         });
 
         await test.step('check if the order is changed', async () => {
-            const rows = await page.locator('tbody').getByRole('row').all();
-            expect(rows).toHaveLength(4);
-            await expect(rows[0]).toHaveAttribute('aria-label', types[0].name);
-            await expect(rows[1]).toHaveAttribute('aria-label', types[2].name);
-            await expect(rows[2]).toHaveAttribute('aria-label', types[1].name);
-            await expect(rows[3]).toHaveAttribute('aria-label', types[3].name);
+            const rows = page.locator('tbody').getByRole('row');
+            await expect(rows).toHaveCount(4);
+            await expect(rows.nth(0)).toHaveAttribute('aria-label', types[0].name);
+            await expect(rows.nth(1)).toHaveAttribute('aria-label', types[2].name);
+            await expect(rows.nth(2)).toHaveAttribute('aria-label', types[1].name);
+            await expect(rows.nth(3)).toHaveAttribute('aria-label', types[3].name);
         });
 
         await test.step('validate db data', async () => {

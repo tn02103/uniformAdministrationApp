@@ -8,6 +8,7 @@ type Fixture = {
 const test = adminTest.extend<Fixture>({
     createPage: async ({ page }, use) => use(new CreateUniformPage(page)),
 });
+
 test.beforeEach(async ({ page }) => await page.goto(`/de/app/uniform/new`));
 
 
@@ -38,6 +39,7 @@ test('effect of knownIdsToggle on Configurator', async ({ createPage }) => {
         ]);
     });
 });
+
 test('formValidations', async ({ createPage, staticData: { ids } }) => {
     await test.step('initialState', async () => {
         await createPage.btn_tab_knownIds.click();
@@ -86,6 +88,7 @@ test('formValidations', async ({ createPage, staticData: { ids } }) => {
             expect.soft(createPage.configurator.sel_size).not.toHaveClass(/is-invalid/),
         ]);
     });
+
     await test.step('only size required', async () => {
         await createPage.configurator.sel_type.selectOption(ids.uniformTypeIds[2]);
 
@@ -101,6 +104,7 @@ test('formValidations', async ({ createPage, staticData: { ids } }) => {
             expect.soft(createPage.configurator.sel_size).toHaveClass(/is-invalid/),
         ]);
     });
+
     await test.step('none required', async () => {
         await createPage.configurator.sel_type.selectOption(ids.uniformTypeIds[3]);
 
@@ -121,6 +125,7 @@ test('formValidations', async ({ createPage, staticData: { ids } }) => {
 
 test('select options', async ({ createPage, staticData: { ids } }) => {
     const { configurator } = createPage
+
     await test.step('initial state', async () => {
         await createPage.btn_tab_knownIds.click();
 
@@ -150,6 +155,7 @@ test('select options', async ({ createPage, staticData: { ids } }) => {
                 expect.soft(configurator.sel_size_option(ids.sizeIds[16])).not.toBeAttached(), // Size -> Größe16 
             ]);
         });
+
         await test.step('Generation1-1', async () => {
             await configurator.sel_generation.selectOption(ids.uniformGenerationIds[0]);
 
@@ -162,6 +168,7 @@ test('select options', async ({ createPage, staticData: { ids } }) => {
 
             await configurator.sel_size.selectOption(ids.sizeIds[5]);
         });
+
         await test.step('Generation1-3', async () => {
             // sizelistChange with sameSize
             await configurator.sel_generation.selectOption(ids.uniformGenerationIds[2]);
@@ -173,6 +180,7 @@ test('select options', async ({ createPage, staticData: { ids } }) => {
                 expect.soft(configurator.sel_size).toHaveValue(ids.sizeIds[5]),
             ]);
         });
+
         await test.step('Generation1-4', async () => {
             // sizelistChange with different size
             await configurator.sel_generation.selectOption(ids.uniformGenerationIds[3]);
@@ -186,6 +194,7 @@ test('select options', async ({ createPage, staticData: { ids } }) => {
             ]);
         });
     });
+
     await test.step('Typ-2', async () => {
         await configurator.sel_type.selectOption(ids.uniformTypeIds[1]);
 
@@ -198,6 +207,7 @@ test('select options', async ({ createPage, staticData: { ids } }) => {
             expect.soft(configurator.sel_generation_option(ids.uniformGenerationIds[6])).not.toBeAttached(), // Generation2-3 (deleted)
         ]);
     });
+
     await test.step('Typ-3', async () => {
         await configurator.sel_type.selectOption(ids.uniformTypeIds[2]);
 
@@ -210,6 +220,7 @@ test('select options', async ({ createPage, staticData: { ids } }) => {
             expect.soft(configurator.sel_size_option(ids.sizeIds[16])).not.toBeAttached(), // Size -> Größe16  
         ]);
     });
+
     await test.step('Typ-4', async () => {
         await configurator.sel_type.selectOption(ids.uniformTypeIds[3]);
         await Promise.all([

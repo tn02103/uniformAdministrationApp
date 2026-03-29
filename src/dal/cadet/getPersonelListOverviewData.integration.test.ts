@@ -46,6 +46,14 @@ const runSortOrderTests = () => {
 }
 
 describe('manager tests', () => {
+    beforeAll(() => {
+        global.__ROLE__ = AuthRole.inspector;
+        global.__USERNAME__ = 'insp';
+    });
+    afterAll(() => {
+        delete global.__ROLE__;
+        delete global.__USERNAME__;
+    });
     it('manager data', async () => {
         const { success, result } = await runServerActionTest(getPersonnelListOverviewData(defaultProps));
         expect(success).toBeTruthy();

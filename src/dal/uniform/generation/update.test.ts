@@ -1,20 +1,21 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { PrismaClient } from "@/prisma/client";
-import { DeepMockProxy } from "jest-mock-extended";
+﻿ 
+
+import { prismaMock } from '@test-utils/prisma-mock';
+import { prisma } from "@/lib/db";
 import { update } from "./update";
 import { __unsecuredGetUniformTypeList } from "../type/get";
 import { mockTypeList, mockSizeLists } from "../../../../tests/_jestConfig/staticMockData";
 
 // Mock dependencies
-jest.mock("../type/get", () => ({
-    __unsecuredGetUniformTypeList: jest.fn(),
+vi.mock("../type/get", () => ({
+    __unsecuredGetUniformTypeList: vi.fn(),
 }));
 
 // Get mocked functions
-const mockGetUniformTypeList = __unsecuredGetUniformTypeList as jest.MockedFunction<typeof __unsecuredGetUniformTypeList>;
+const mockGetUniformTypeList = vi.mocked(__unsecuredGetUniformTypeList);
 
 // Get the mocked prisma client
-const mockPrisma = jest.requireMock("@/lib/db").prisma as DeepMockProxy<PrismaClient>;
+const mockPrisma = prismaMock;
 
 const mockUniformType = mockTypeList[0]; // Type with sizes and generations
 const mockUniformTypeNoSizes = mockTypeList[1]; // Type with generations but no sizes
@@ -82,7 +83,7 @@ describe('<UniformGeneration> update', () => {
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     describe('successful update scenarios', () => {

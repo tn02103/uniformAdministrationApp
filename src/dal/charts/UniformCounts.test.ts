@@ -1,13 +1,14 @@
+
 import { AuthRole } from '@/lib/AuthRoles';
+import { prismaMock as mockPrisma } from '@test-utils/prisma-mock';
 import { getUniformCountBySizeForType, getUniformCountByType } from './UniformCounts';
 
-// Mock setup is handled by jest/setup-dal-unit.ts
-const mockPrisma = jest.requireMock('@/lib/db').prisma;
+// Mock setup is handled by vitest/setup-dal-unit.ts
 
 describe('UniformCounts DAL - Unit Tests', () => {
     const mockUniformTypeId = 'uniform-type-123';
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
 
         // Set default test globals
         global.__ROLE__ = AuthRole.admin;

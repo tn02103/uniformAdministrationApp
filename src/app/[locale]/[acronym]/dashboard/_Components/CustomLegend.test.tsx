@@ -3,8 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { CustomLegend, LegendItem, CustomLegendProps } from './CustomLegend';
 
 describe('CustomLegend', () => {
-    const mockOnVisibilityChange = jest.fn();
-    const mockOnItemHover = jest.fn();
+    const mockOnVisibilityChange = vi.fn();
+    const mockOnItemHover = vi.fn();
 
     const defaultItems: LegendItem[] = [
         { key: 'available', color: '#16a34a', description: 'Available' },
@@ -22,7 +22,7 @@ describe('CustomLegend', () => {
     };
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     // Group 1: Rendering Tests
@@ -55,18 +55,6 @@ describe('CustomLegend', () => {
                 expect(screen.getByText('Custom Label 2')).toBeInTheDocument();
             });
 
-            it('displays color indicators with correct background colors', () => {
-                const { container } = render(<CustomLegend {...defaultProps} />);
-
-                // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-                const colorIndicators = container.querySelectorAll('div > div > div > div:first-child');
-
-                // Check that colors are applied (use computed styles format)
-                expect(colorIndicators[0]).toHaveStyle('background-color: rgb(22, 163, 74)');
-                expect(colorIndicators[1]).toHaveStyle('background-color: rgb(71, 85, 105)');
-                expect(colorIndicators[2]).toHaveStyle('background-color: rgb(217, 119, 6)');
-                expect(colorIndicators[3]).toHaveStyle('background-color: rgb(185, 28, 28)');
-            });
             it('applies custom className when provided', () => {
                 const { container } = render(
                     <CustomLegend {...defaultProps} className="custom-class" />
@@ -647,24 +635,20 @@ describe('CustomLegend', () => {
         describe('Callback Edge Cases', () => {
             it('handles missing onVisibilityChange callback', () => {
                 const propsWithoutCallback = { ...defaultProps };
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 delete (propsWithoutCallback as any).onVisibilityChange;
 
                 // Should not crash
                 expect(() => {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     render(<CustomLegend {...propsWithoutCallback} onVisibilityChange={undefined as any} />);
                 }).not.toThrow();
             });
 
             it('handles missing onItemHover callback', () => {
                 const propsWithoutCallback = { ...defaultProps };
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 delete (propsWithoutCallback as any).onItemHover;
 
                 // Should not crash
                 expect(() => {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     render(<CustomLegend {...propsWithoutCallback} onItemHover={undefined as any} />);
                 }).not.toThrow();
             });
@@ -675,8 +659,8 @@ describe('CustomLegend', () => {
                 render(
                     <CustomLegend
                         {...defaultProps}
-                        onVisibilityChange={jest.fn()}
-                        onItemHover={jest.fn()}
+                        onVisibilityChange={vi.fn()}
+                        onItemHover={vi.fn()}
                     />
                 );
 

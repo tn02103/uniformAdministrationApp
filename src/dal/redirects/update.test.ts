@@ -1,10 +1,14 @@
+﻿
 import { AuthRole } from "@/lib/AuthRoles";
 import { RedirectFormType } from "@/zod/redirect";
 import { revalidatePath } from "next/cache";
 import { updateRedirect } from "./index";
+import { prisma } from "@/lib/db";
+import { prismaMock } from '@test-utils/prisma-mock';
+import { genericSAValidator } from "@/actions/validations";
 
 describe("<Redirect> update", () => {
-    const { prisma } = jest.requireMock('@/lib/db');
+    const mockPrisma = prismaMock;
 
     const mockAssosiation = "test-assosiation-id";
     const mockProps = {
@@ -20,14 +24,14 @@ describe("<Redirect> update", () => {
         global.__ROLE__ = AuthRole.admin;
     })
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
 
-        prisma.redirect.findUnique.mockResolvedValue({
+        mockPrisma.redirect.findUnique.mockResolvedValue({
             id: mockProps.id,
             assosiationId: mockAssosiation,
         });
-        prisma.redirect.findFirst.mockResolvedValue(null);
-        prisma.redirect.update.mockResolvedValue({});
+        mockPrisma.redirect.findFirst.mockResolvedValue(null);
+        mockPrisma.redirect.update.mockResolvedValue({});
     });
     afterAll(() => {
         delete global.__ROLE__;
@@ -57,7 +61,7 @@ describe("<Redirect> update", () => {
     });
 
     it("should return an error if a redirect with the same code already exists", async () => {
-        prisma.redirect.findFirst.mockResolvedValue({ id: "duplicate-id" });
+        mockPrisma.redirect.findFirst.mockResolvedValue({ id: "duplicate-id" });
 
         const result = await updateRedirect(mockProps);
 
@@ -77,7 +81,7 @@ describe("<Redirect> update", () => {
     });
 
     it("should throw an error if the redirect is not found", async () => {
-        prisma.redirect.findUnique.mockResolvedValue(null);
+        mockPrisma.redirect.findUnique.mockResolvedValue(null);
 
         await expect(updateRedirect(mockProps)).rejects.toThrow("Redirect not found");
         expect(prisma.redirect.findFirst).not.toHaveBeenCalled();
@@ -85,7 +89,7 @@ describe("<Redirect> update", () => {
     });
 
     it("should throw an error if the redirect does not belong to the association", async () => {
-        prisma.redirect.findUnique.mockResolvedValue({
+        mockPrisma.redirect.findUnique.mockResolvedValue({
             id: mockProps.id,
             assosiationId: "different-association-id",
         });
@@ -98,11 +102,9 @@ describe("<Redirect> update", () => {
     });
 
     it("should only allow admin role", async () => {
-        const {genericSAValidator} = jest.requireMock("@/actions/validations");
-        
         await expect(updateRedirect(mockProps)).resolves.toBeUndefined();
 
-        await expect(genericSAValidator).toHaveBeenCalledWith(
+        await expect(vi.mocked(genericSAValidator)).toHaveBeenCalledWith(
             AuthRole.admin,
             mockProps,
             expect.anything()

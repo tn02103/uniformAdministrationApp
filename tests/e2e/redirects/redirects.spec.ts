@@ -6,6 +6,7 @@ import { adminTest as test } from "../../_playwrightConfig/setup";
 test.beforeEach(async ({ page }) => {
     await page.goto('/de/app/redirects');
 })
+
 test.afterEach(async ({ staticData: { cleanup } }) => {
     await cleanup.redirects();
 });
@@ -24,6 +25,7 @@ test.describe('Redirects Configuration', () => {
             await createRow.getByRole('button', { name: /Anlegen/i }).click();
             await expect(createRow).toBeHidden();
         });
+
         await Promise.all([
             test.step('validate ui', async () => {
                 const row = page.getByRole('row', { name: /test-e2e-create/i });
@@ -72,6 +74,7 @@ test.describe('Redirects Configuration', () => {
 
             await expect(row).toBeHidden();
         });
+
         await Promise.all([
             test.step('validate ui', async () => {
                 const row = page.getByRole('row', { name: /test-e2e-edit/i });
@@ -124,6 +127,7 @@ test.describe('Redirects Configuration', () => {
             await row.getByRole('button', { name: /Speichern/i }).click();
             await expect(row.getByRole('checkbox', { name: /Status/i })).toBeHidden();
         });
+
         await Promise.all([
             test.step('validate ui', async () => {
                 const row = page.getByRole('row', { name: data.redirects[0].code });
@@ -165,6 +169,7 @@ test.describe('Redirects Configuration', () => {
             await row.getByRole('button', { name: /delete/i }).click();
             await expect(row).toBeHidden();
         });
+
         await Promise.all([
             test.step('validate db', async () => {
                 await expect(async () => {

@@ -73,6 +73,7 @@ test.describe("<CadetInspectionCard />", () => {
             }
         });
     }
+
     test('inactive inspection state', async ({ page, staticData: { ids }, inspectionComponent, testData }) => {
         await page.goto(`/de/app/cadet/${ids.cadetIds[2]}`);
 

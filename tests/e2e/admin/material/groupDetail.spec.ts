@@ -16,9 +16,11 @@ const test = adminTest.extend<Fixture>({
     groupListComponent: async ({ page }, use) => use(new MaterialGroupListComponent(page)),
     groupDetailComponent: async ({ page }, use) => use(new MaterialGroupDetailComponent(page)),
 });
+
 test.beforeEach(async ({ page, staticData: { ids } }) => {
     await page.goto(`/de/app/admin/material?selectedGroupId=${ids.materialGroupIds[1]}`);
 });
+
 test.afterEach(async ({ staticData: { cleanup } }) => {
     await cleanup.materialConfig();
 });
@@ -40,6 +42,7 @@ test.describe('formValidation', () => {
             });
         }
     });
+
     test('issuedDefault', async ({ page, groupDetailComponent }) => {
         await groupDetailComponent.btn_edit.click();
         const testSets = numberValidationTests({ min: 0, max: 200, testEmpty: true, strict: false, emptyValid: true });
@@ -57,6 +60,7 @@ test.describe('formValidation', () => {
         }
     });
 })
+
 test('validate Data', async ({ groupDetailComponent, staticData: { data } }) => {
     const group = data.materialGroups[1];
     await Promise.all([
@@ -80,6 +84,7 @@ test('validate Data', async ({ groupDetailComponent, staticData: { data } }) => 
         expect.soft(groupDetailComponent.chk_multitypeAllowed).toBeVisible(),
     ]);
 });
+
 test('validate edit & save', async ({ page, groupDetailComponent, groupListComponent, staticData: { ids } }) => {
     await test.step('change data', async () => {
         await groupDetailComponent.btn_edit.click();
@@ -90,6 +95,7 @@ test('validate edit & save', async ({ page, groupDetailComponent, groupListCompo
         await groupDetailComponent.btn_save.click();
         await page.locator('.Toastify__toast--success').isVisible();
     });
+
     await test.step('validate ui', async () => {
         await Promise.all([
             expect.soft(groupDetailComponent.div_header).toHaveText('testName'),
@@ -108,8 +114,10 @@ test('validate edit & save', async ({ page, groupDetailComponent, groupListCompo
         expect(dbGroup!.multitypeAllowed).toBeTruthy();
     });
 });
+
 test('validate edit & cancel', async ({ groupDetailComponent, groupListComponent, staticData: { data } }) => {
     const group = data.materialGroups[1];
+
     await test.step('change data', async () => {
         await groupDetailComponent.btn_edit.click();
         await groupDetailComponent.txt_name.fill("testName");
@@ -117,6 +125,7 @@ test('validate edit & cancel', async ({ groupDetailComponent, groupListComponent
         await groupDetailComponent.chk_multitypeAllowed.click();
         await groupDetailComponent.btn_cancel.click();
     });
+
     await test.step('validate ui', async () => {
         await Promise.all([
             expect.soft(groupDetailComponent.div_header).toHaveText(group.description),
@@ -127,6 +136,7 @@ test('validate edit & cancel', async ({ groupDetailComponent, groupListComponent
         ]);
     });
 });
+
 test('validate delete', async ({ page, groupDetailComponent, groupListComponent, staticData: { ids, data } }) => {
     const group = data.materialGroups[1];
     const dangerModal = new DangerConfirmationModal(page);
@@ -146,6 +156,7 @@ test('validate delete', async ({ page, groupDetailComponent, groupListComponent,
         await expect(groupListComponent.div_mGroup(group.id)).toBeHidden();
         await expect(groupDetailComponent.div_mGroup).toBeHidden();
     });
+
     const [dbIssued, dbTypes, dbGroup, dbGroup3] = await prisma.$transaction([
         prisma.materialIssued.findFirst({
             where: {
@@ -164,6 +175,7 @@ test('validate delete', async ({ page, groupDetailComponent, groupListComponent,
             where: { id: ids.materialGroupIds[2] }
         }),
     ]);
+
     await test.step('validate DB: material returned', async () => {
         expect(dbIssued).not.toBeNull();
         expect(dbIssued?.dateReturned).not.toBeNull();
@@ -189,6 +201,7 @@ test('validate delete', async ({ page, groupDetailComponent, groupListComponent,
         expect(dbGroup.recdelete).not.toBeNull();
         expect(dbGroup.recdeleteUser).toEqual('test4');
     });
+
     await test.step('validate DB: sortorder adapted', async () => {
         expect(dbGroup3.sortOrder).toBe(1);
     });

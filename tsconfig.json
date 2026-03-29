@@ -17,6 +17,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "types": ["vitest/globals"],
     "plugins": [
       {
         "name": "next"
@@ -28,6 +29,9 @@
       ],
       "@/prisma/*": [
         "./prisma/generated/*"
+      ],
+      "@test-utils/prisma-mock": [
+        "./vitest/setup-dal-unit.ts"
       ]
     }
   },

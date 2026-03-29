@@ -2,14 +2,19 @@ import { UniformCountByTypeData } from '@/dal/charts/UniformCounts';
 import { getByText, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { UniformTypesOverviewChart } from './UniformTypesOverviewChart';
+import { useI18n } from '@/lib/locales/client';
+import { Bar, BarChart, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import { vi, type Mock } from 'vitest';
+
+const MockBar = Bar as unknown as Mock;
 
 // Mock the i18n hook
-jest.mock('@/lib/locales/client', () => ({
-    useI18n: jest.fn()
+vi.mock('@/lib/locales/client', () => ({
+    useI18n: vi.fn()
 }));
 
 // Mock ExpandableDividerArea to control expansion behavior
-jest.mock('@/components/ExpandableArea/ExpandableArea', () => ({
+vi.mock('@/components/ExpandableArea/ExpandableArea', () => ({
     ExpandableDividerArea: ({ children }: { children: React.ReactNode }) => (
         <div data-testid="expandable-area">
             {children}
@@ -17,15 +22,15 @@ jest.mock('@/components/ExpandableArea/ExpandableArea', () => ({
     )
 }));
 
-jest.mock('recharts', () => {
+vi.mock('recharts', () => {
     const exports = {
-        Bar: jest.fn(),
-        BarChart: jest.fn(({ children }: { children: React.ReactNode }) => <div>{children}</div>),
-        CartesianGrid: jest.fn(),
-        ResponsiveContainer: jest.fn(({ children }: { children: React.ReactNode }) => <div>{children}</div>),
-        Tooltip: jest.fn(),
-        XAxis: jest.fn(),
-        YAxis: jest.fn()
+        Bar: vi.fn(),
+        BarChart: vi.fn(({ children }: { children: React.ReactNode }) => <div>{children}</div>),
+        CartesianGrid: vi.fn(),
+        ResponsiveContainer: vi.fn(({ children }: { children: React.ReactNode }) => <div>{children}</div>),
+        Tooltip: vi.fn(),
+        XAxis: vi.fn(),
+        YAxis: vi.fn()
     };
     return exports;
 });
@@ -46,9 +51,8 @@ const translations: { [key: string]: string } = {
 };
 
 describe('UniformTypesOverviewChart', () => {
-    const mockUseI18n = jest.requireMock('@/lib/locales/client').useI18n;
-    const mockTranslate = jest.fn();
-    const { Bar, BarChart, XAxis, YAxis, Tooltip, CartesianGrid } = jest.requireMock('recharts');
+    const mockUseI18n = useI18n;
+    const mockTranslate = vi.fn();
 
     // Realistic test data matching actual uniform type structure
     const sampleData: UniformCountByTypeData[] = [
@@ -123,8 +127,8 @@ describe('UniformTypesOverviewChart', () => {
     const emptyData: UniformCountByTypeData[] = [];
 
     beforeEach(() => {
-        jest.clearAllMocks();
-        mockUseI18n.mockReturnValue(mockTranslate);
+        vi.clearAllMocks();
+        (mockUseI18n as ReturnType<typeof vi.fn>).mockReturnValue(mockTranslate);
 
         // Setup translation mocks
         mockTranslate.mockImplementation((key: string) => {
@@ -139,12 +143,12 @@ describe('UniformTypesOverviewChart', () => {
             expect(BarChart).toHaveBeenCalled();
             expect(BarChart).toHaveBeenCalledWith(expect.objectContaining({ data: sampleData }), undefined);
 
-            expect(Bar).toHaveBeenCalledTimes(5);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: 'quantities.available', hide: false }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: 'quantities.issued', hide: false }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: 'quantities.reserves', hide: false }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: 'quantities.issuedReserves', hide: false }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: 'quantities.missing', hide: false }), undefined);
+            expect(MockBar).toHaveBeenCalledTimes(5);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: 'quantities.available', hide: false }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: 'quantities.issued', hide: false }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: 'quantities.reserves', hide: false }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: 'quantities.issuedReserves', hide: false }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: 'quantities.missing', hide: false }), undefined);
 
             expect(XAxis).toHaveBeenCalledWith(expect.objectContaining({ 
                 dataKey: 'name',
@@ -166,37 +170,37 @@ describe('UniformTypesOverviewChart', () => {
         it('sorts bars into correct stacks', () => {
             render(<UniformTypesOverviewChart data={sampleData} />);
 
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.available", stackId: "active" }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issued", stackId: "active" }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.reserves", stackId: "reserves" }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issuedReserves", stackId: "reserves" }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.missing", stackId: "missing" }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.available", stackId: "active" }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issued", stackId: "active" }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.reserves", stackId: "reserves" }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issuedReserves", stackId: "reserves" }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.missing", stackId: "missing" }), undefined);
         });
 
         it('renders bars with correct names and colors', () => {
             render(<UniformTypesOverviewChart data={sampleData} />);
             
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ 
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ 
                 dataKey: "quantities.available", 
                 name: translations['admin.dashboard.charts.available.short'], 
                 fill: '#4dacff' 
             }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ 
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ 
                 dataKey: "quantities.issued", 
                 name: translations['admin.dashboard.charts.issued.short'], 
                 fill: '#007be6' 
             }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ 
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ 
                 dataKey: "quantities.reserves", 
                 name: translations['admin.dashboard.charts.reserves.short'], 
                 fill: '#fd9e4e' 
             }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ 
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ 
                 dataKey: "quantities.issuedReserves", 
                 name: translations['admin.dashboard.charts.issuedReserves.short'], 
                 fill: '#e46902' 
             }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ 
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ 
                 dataKey: "quantities.missing", 
                 name: translations['admin.dashboard.charts.missing.short'], 
                 fill: '#b91c1c' 
@@ -230,81 +234,81 @@ describe('UniformTypesOverviewChart', () => {
     describe('Interactive Legend Functionality', () => {
         it('changes opacity of bars on hover', async () => {
             render(<UniformTypesOverviewChart data={sampleData} />);
-            expect(Bar).not.toHaveBeenCalledWith(expect.objectContaining({ className: expect.stringContaining('hovered') }), undefined);
-            expect(Bar).not.toHaveBeenCalledWith(expect.objectContaining({ className: expect.stringContaining('dimmed') }), undefined);
+            expect(MockBar).not.toHaveBeenCalledWith(expect.objectContaining({ className: expect.stringContaining('hovered') }), undefined);
+            expect(MockBar).not.toHaveBeenCalledWith(expect.objectContaining({ className: expect.stringContaining('dimmed') }), undefined);
 
             const legend = screen.getByLabelText('legend');
-            Bar.mockClear();
-            expect(Bar).not.toHaveBeenCalled();
+            MockBar.mockClear();
+            expect(MockBar).not.toHaveBeenCalled();
             await userEvent.hover(getByText(legend, translations['admin.dashboard.charts.available.long']));
 
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.available", className: expect.stringContaining('hovered') }), undefined);
-            expect(Bar).not.toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.available", className: expect.stringContaining('dimmed') }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issued", className: expect.stringContaining('dimmed') }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.reserves", className: expect.stringContaining('dimmed') }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issuedReserves", className: expect.stringContaining('dimmed') }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.missing", className: expect.stringContaining('dimmed') }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.available", className: expect.stringContaining('hovered') }), undefined);
+            expect(MockBar).not.toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.available", className: expect.stringContaining('dimmed') }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issued", className: expect.stringContaining('dimmed') }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.reserves", className: expect.stringContaining('dimmed') }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issuedReserves", className: expect.stringContaining('dimmed') }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.missing", className: expect.stringContaining('dimmed') }), undefined);
 
-            Bar.mockClear();
+            MockBar.mockClear();
             await userEvent.hover(getByText(legend, translations['admin.dashboard.charts.missing.long']));
 
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.missing", className: expect.stringContaining('hovered') }), undefined);
-            expect(Bar).not.toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.missing", className: expect.stringContaining('dimmed') }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.available", className: expect.stringContaining('dimmed') }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issued", className: expect.stringContaining('dimmed') }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.reserves", className: expect.stringContaining('dimmed') }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issuedReserves", className: expect.stringContaining('dimmed') }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.missing", className: expect.stringContaining('hovered') }), undefined);
+            expect(MockBar).not.toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.missing", className: expect.stringContaining('dimmed') }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.available", className: expect.stringContaining('dimmed') }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issued", className: expect.stringContaining('dimmed') }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.reserves", className: expect.stringContaining('dimmed') }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issuedReserves", className: expect.stringContaining('dimmed') }), undefined);
 
-            Bar.mockClear();
+            MockBar.mockClear();
             await userEvent.unhover(getByText(legend, translations['admin.dashboard.charts.missing.long']));
 
-            expect(Bar).not.toHaveBeenCalledWith(expect.objectContaining({ className: expect.stringContaining('hovered') }), undefined);
-            expect(Bar).not.toHaveBeenCalledWith(expect.objectContaining({ className: expect.stringContaining('dimmed') }), undefined);
+            expect(MockBar).not.toHaveBeenCalledWith(expect.objectContaining({ className: expect.stringContaining('hovered') }), undefined);
+            expect(MockBar).not.toHaveBeenCalledWith(expect.objectContaining({ className: expect.stringContaining('dimmed') }), undefined);
         });
 
         it('toggles visibility on click', async () => {
             render(<UniformTypesOverviewChart data={sampleData} />);
 
             const legend = screen.getByLabelText('legend');
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.available", hide: false }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issued", hide: false }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.reserves", hide: false }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issuedReserves", hide: false }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.missing", hide: false }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.available", hide: false }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issued", hide: false }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.reserves", hide: false }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issuedReserves", hide: false }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.missing", hide: false }), undefined);
 
-            Bar.mockClear();
+            MockBar.mockClear();
             await userEvent.click(getByText(legend, translations['admin.dashboard.charts.available.long']));
 
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.available", hide: false }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issued", hide: true }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.reserves", hide: true }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issuedReserves", hide: true }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.missing", hide: true }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.available", hide: false }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issued", hide: true }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.reserves", hide: true }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issuedReserves", hide: true }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.missing", hide: true }), undefined);
 
-            Bar.mockClear();
+            MockBar.mockClear();
             await userEvent.click(getByText(legend, translations['admin.dashboard.charts.missing.long']));
 
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.available", hide: false }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issued", hide: true }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.reserves", hide: true }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issuedReserves", hide: true }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.missing", hide: false }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.available", hide: false }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issued", hide: true }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.reserves", hide: true }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issuedReserves", hide: true }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.missing", hide: false }), undefined);
 
-            Bar.mockClear();
+            MockBar.mockClear();
             await userEvent.click(getByText(legend, translations['admin.dashboard.charts.available.long']));
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.available", hide: true }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issued", hide: true }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.reserves", hide: true }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issuedReserves", hide: true }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.missing", hide: false }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.available", hide: true }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issued", hide: true }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.reserves", hide: true }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issuedReserves", hide: true }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.missing", hide: false }), undefined);
 
-            Bar.mockClear();
+            MockBar.mockClear();
             await userEvent.click(getByText(legend, translations['admin.dashboard.charts.missing.long']));
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.available", hide: false }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issued", hide: false }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.reserves", hide: false }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issuedReserves", hide: false }), undefined);
-            expect(Bar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.missing", hide: false }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.available", hide: false }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issued", hide: false }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.reserves", hide: false }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.issuedReserves", hide: false }), undefined);
+            expect(MockBar).toHaveBeenCalledWith(expect.objectContaining({ dataKey: "quantities.missing", hide: false }), undefined);
         });
 
         it('initial legend state shows all quantities', () => {
@@ -431,7 +435,7 @@ describe('UniformTypesOverviewChart', () => {
                 }
             ];
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             render(<UniformTypesOverviewChart data={malformedData as any} />);
 
             // Should not crash

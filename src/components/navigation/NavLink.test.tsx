@@ -5,25 +5,26 @@ import NavLink from './NavLink';
 import { AuthRole } from '../../lib/AuthRoles';
 import { useSidebarContext } from './Sidebar';
 import { useGlobalData } from '../globalDataProvider';
+import { MockedFunction } from 'vitest';
 
 // Mock the context hooks
-jest.mock('./Sidebar', () => ({
-    useSidebarContext: jest.fn(),
+vi.mock('./Sidebar', () => ({
+    useSidebarContext: vi.fn(),
 }));
 
 // Mock Next.js Link component
-jest.mock('next/link', () => {
-    return function MockLink({ children, href, className, onClick, ...props }: React.ComponentProps<'a'>) {
+vi.mock('next/link', () => ({
+    default: function MockLink({ children, href, className, onClick, ...props }: React.ComponentProps<'a'>) {
         return (
             <a href={href} className={className} onClick={onClick} {...props}>
                 {children}
             </a>
         );
-    };
-});
+    },
+}));
 
 // Mock Bootstrap components
-jest.mock('react-bootstrap', () => ({
+vi.mock('react-bootstrap', () => ({
     OverlayTrigger: ({ children, show, overlay, delay }: { children: React.ReactNode, show?: boolean | undefined, overlay?: React.ReactNode, delay?: { show: number, hide: number } }) => (
         <div data-testid="overlay-trigger" data-show={show} data-delay={JSON.stringify(delay)}>
             {children}
@@ -33,8 +34,8 @@ jest.mock('react-bootstrap', () => ({
     Tooltip: ({ children }: { children: React.ReactNode }) => <div data-testid="tooltip-content">{children}</div>,
 }));
 
-const mockUseSidebarContext = useSidebarContext as jest.MockedFunction<typeof useSidebarContext>;
-const mockUseGlobalData = useGlobalData as jest.MockedFunction<typeof useGlobalData>;
+const mockUseSidebarContext = useSidebarContext as MockedFunction<typeof useSidebarContext>;
+const mockUseGlobalData = useGlobalData as MockedFunction<typeof useGlobalData>;
 
 describe('NavLink', () => {
     const defaultProps = {
@@ -47,10 +48,10 @@ describe('NavLink', () => {
 
     const defaultSidebarContext = {
         collapsed: false,
-        setCollapsed: jest.fn(),
+        setCollapsed: vi.fn(),
         isSidebarFixed: false,
         isMobile: false,
-        setShowSidebar: jest.fn(),
+        setShowSidebar: vi.fn(),
     };
 
     const defaultGlobalData = {
@@ -63,7 +64,7 @@ describe('NavLink', () => {
     let user: ReturnType<typeof userEvent.setup>;
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         user = userEvent.setup();
         mockUseSidebarContext.mockReturnValue(defaultSidebarContext);
         mockUseGlobalData.mockReturnValue(defaultGlobalData);
@@ -235,7 +236,7 @@ describe('NavLink', () => {
         });
 
         test('calls setCollapsed when needed', async () => {
-            const mockSetCollapsed = jest.fn();
+            const mockSetCollapsed = vi.fn();
             mockUseSidebarContext.mockReturnValue({
                 ...defaultSidebarContext,
                 collapsed: true,
@@ -254,7 +255,7 @@ describe('NavLink', () => {
 
     describe('Click Handling', () => {
         test('handles click on collapsed non-fixed sidebar', async () => {
-            const mockSetCollapsed = jest.fn();
+            const mockSetCollapsed = vi.fn();
             mockUseSidebarContext.mockReturnValue({
                 ...defaultSidebarContext,
                 collapsed: true,
@@ -267,8 +268,8 @@ describe('NavLink', () => {
             const link = screen.getByTestId('test-nav-link');
 
             const clickEvent = new MouseEvent('click', { bubbles: true });
-            const preventDefaultSpy = jest.spyOn(clickEvent, 'preventDefault');
-            const stopPropagationSpy = jest.spyOn(clickEvent, 'stopPropagation');
+            const preventDefaultSpy = vi.spyOn(clickEvent, 'preventDefault');
+            const stopPropagationSpy = vi.spyOn(clickEvent, 'stopPropagation');
 
             fireEvent(link, clickEvent);
 
@@ -278,7 +279,7 @@ describe('NavLink', () => {
         });
 
         test('allows normal navigation on expanded sidebar', async () => {
-            const mockSetCollapsed = jest.fn();
+            const mockSetCollapsed = vi.fn();
             mockUseSidebarContext.mockReturnValue({
                 ...defaultSidebarContext,
                 collapsed: false,
@@ -289,8 +290,8 @@ describe('NavLink', () => {
             const link = screen.getByTestId('test-nav-link');
 
             const clickEvent = new MouseEvent('click', { bubbles: true });
-            const preventDefaultSpy = jest.spyOn(clickEvent, 'preventDefault');
-            const stopPropagationSpy = jest.spyOn(clickEvent, 'stopPropagation');
+            const preventDefaultSpy = vi.spyOn(clickEvent, 'preventDefault');
+            const stopPropagationSpy = vi.spyOn(clickEvent, 'stopPropagation');
 
             fireEvent(link, clickEvent);
 
@@ -300,7 +301,7 @@ describe('NavLink', () => {
         });
 
         test('allows normal navigation on fixed sidebar', async () => {
-            const mockSetCollapsed = jest.fn();
+            const mockSetCollapsed = vi.fn();
             mockUseSidebarContext.mockReturnValue({
                 ...defaultSidebarContext,
                 collapsed: true,
@@ -312,8 +313,8 @@ describe('NavLink', () => {
             const link = screen.getByTestId('test-nav-link');
 
             const clickEvent = new MouseEvent('click', { bubbles: true });
-            const preventDefaultSpy = jest.spyOn(clickEvent, 'preventDefault');
-            const stopPropagationSpy = jest.spyOn(clickEvent, 'stopPropagation');
+            const preventDefaultSpy = vi.spyOn(clickEvent, 'preventDefault');
+            const stopPropagationSpy = vi.spyOn(clickEvent, 'stopPropagation');
 
             fireEvent(link, clickEvent);
 
@@ -323,7 +324,7 @@ describe('NavLink', () => {
         });
 
         test('allows normal navigation on mobile', async () => {
-            const mockSetCollapsed = jest.fn();
+            const mockSetCollapsed = vi.fn();
             mockUseSidebarContext.mockReturnValue({
                 ...defaultSidebarContext,
                 collapsed: true,
@@ -335,8 +336,8 @@ describe('NavLink', () => {
             const link = screen.getByTestId('test-nav-link');
 
             const clickEvent = new MouseEvent('click', { bubbles: true });
-            const preventDefaultSpy = jest.spyOn(clickEvent, 'preventDefault');
-            const stopPropagationSpy = jest.spyOn(clickEvent, 'stopPropagation');
+            const preventDefaultSpy = vi.spyOn(clickEvent, 'preventDefault');
+            const stopPropagationSpy = vi.spyOn(clickEvent, 'stopPropagation');
 
             fireEvent(link, clickEvent);
 
@@ -346,7 +347,7 @@ describe('NavLink', () => {
         });
         
         test('calls preventDefault and stopPropagation correctly', () => {
-            const mockSetCollapsed = jest.fn();
+            const mockSetCollapsed = vi.fn();
             mockUseSidebarContext.mockReturnValue({
                 ...defaultSidebarContext,
                 collapsed: true,
@@ -359,8 +360,8 @@ describe('NavLink', () => {
             const link = screen.getByTestId('test-nav-link');
 
             const mockEvent = new MouseEvent('click', { bubbles: true });
-            const preventDefaultSpy = jest.spyOn(mockEvent, 'preventDefault');
-            const stopPropagationSpy = jest.spyOn(mockEvent, 'stopPropagation');
+            const preventDefaultSpy = vi.spyOn(mockEvent, 'preventDefault');
+            const stopPropagationSpy = vi.spyOn(mockEvent, 'stopPropagation');
 
             fireEvent(link, mockEvent);
 

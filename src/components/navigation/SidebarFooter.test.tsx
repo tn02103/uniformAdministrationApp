@@ -73,7 +73,7 @@ describe('SidebarFooter', () => {
         user = userEvent.setup();
         setSidebarFixed = jest.fn();
         mockUseSidebarContext.mockReturnValue(defaultSidebarContext);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         mockUseRouter.mockReturnValue(defaultRouter as any);
         mockLogout.mockResolvedValue(undefined);
         mockLocalStorage.getItem.mockReturnValue(JSON.stringify({ authToken: 'test-token', lastLogin: new Date() }));

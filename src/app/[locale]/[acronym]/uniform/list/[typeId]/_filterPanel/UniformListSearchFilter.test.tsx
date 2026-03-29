@@ -4,12 +4,13 @@ import userEvent from "@testing-library/user-event";
 import { FormProvider, useForm } from "react-hook-form";
 import { UniformListSearchFilter } from "./UniformListSearchFilter";
 
+
 // Mock useUniformTypeList
 const mockTypeList = [
     { id: "1", acronym: "AA", name: "Typ1" },
     { id: "2", acronym: "BB", name: "Typ2" }
 ];
-jest.mock("@/dataFetcher/uniformAdmin", () => ({
+vi.mock("@/dataFetcher/uniformAdmin", () => ({
     useUniformTypeList: () => ({ typeList: mockTypeList }),
 }));
 
@@ -22,7 +23,7 @@ describe("SearchFilter", () => {
     it("renders input, helptext and button", () => {
         render(
             <Wrapper>
-                <UniformListSearchFilter search={jest.fn()} />
+                <UniformListSearchFilter search={vi.fn()} />
             </Wrapper>
         );
         expect(screen.getByText("uniformList.search.label")).toBeInTheDocument();
@@ -34,7 +35,7 @@ describe("SearchFilter", () => {
     it("shows helptext for empty input", () => {
         render(
             <Wrapper>
-                <UniformListSearchFilter search={jest.fn()} />
+                <UniformListSearchFilter search={vi.fn()} />
             </Wrapper>
         );
         expect(screen.getByTestId("div_search_helptext")).toBeInTheDocument();
@@ -43,7 +44,7 @@ describe("SearchFilter", () => {
     it("shows error for invalid input", async () => {
         render(
             <Wrapper>
-                <UniformListSearchFilter search={jest.fn()} />
+                <UniformListSearchFilter search={vi.fn()} />
             </Wrapper>
         );
         const user = userEvent.setup();
@@ -54,7 +55,7 @@ describe("SearchFilter", () => {
     it("shows parsed type and number in helptext for valid input", async () => {
         render(
             <Wrapper>
-                <UniformListSearchFilter search={jest.fn()} />
+                <UniformListSearchFilter search={vi.fn()} />
             </Wrapper>
         );
         const user = userEvent.setup();
@@ -65,7 +66,7 @@ describe("SearchFilter", () => {
     it("shows only number in helptext for numeric input", async () => {
         render(
             <Wrapper>
-                <UniformListSearchFilter search={jest.fn()} />
+                <UniformListSearchFilter search={vi.fn()} />
             </Wrapper>
         );
         const user = userEvent.setup();
@@ -74,7 +75,7 @@ describe("SearchFilter", () => {
     });
 
     it("calls search with correct values for type+number", async () => {
-        const searchMock = jest.fn();
+        const searchMock = vi.fn();
         render(
             <Wrapper>
                 <UniformListSearchFilter search={searchMock} />
@@ -87,7 +88,7 @@ describe("SearchFilter", () => {
     });
 
     it("calls search with correct values for only number", async () => {
-        const searchMock = jest.fn();
+        const searchMock = vi.fn();
         render(
             <Wrapper>
                 <UniformListSearchFilter search={searchMock} />
@@ -100,7 +101,7 @@ describe("SearchFilter", () => {
     });
 
     it("does not call search for invalid input", async () => {
-        const searchMock = jest.fn();
+        const searchMock = vi.fn();
         render(
             <Wrapper>
                 <UniformListSearchFilter search={searchMock} />
