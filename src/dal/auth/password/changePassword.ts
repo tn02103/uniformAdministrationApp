@@ -22,6 +22,23 @@ type ChangePasswordError =
     | { error: { formElement: "currentPassword"; message: string } }
     | { error: { tooManyRequests: true } };
 
+/**
+ * Self-service password change for the currently authenticated user.
+ *
+ * - Requires `AuthRole.user` or higher.
+ * - Rate-limited to 5 failed attempts per 15 minutes per user.
+ * - Verifies the current password via bcrypt before accepting the change.
+ * - On success: hashes the new password, invalidates all other active sessions
+ *   and refresh tokens (keeping the caller's current session alive), and sends
+ *   a notification email asynchronously.
+ * - Writes a security audit log entry for every attempt (success or failure), with exception of rate-limited attempts.
+ *
+ * @param data - Validated payload containing `currentPassword` and `newPassword`.
+ * @returns `undefined` on success, or one of the following error shapes:
+ *   - `{ error: { formElement: "currentPassword"; message: string } }` — wrong current password
+ *   - `{ error: { tooManyRequests: true } }` — rate limit exceeded
+ * @throws {Error} If the authenticated user record cannot be found in the database.
+ */
 export const changePassword = async (data: SelfServiceChangePasswordDALType): Promise<void | ChangePasswordError> => {
     const [user, { currentPassword, newPassword }] = await genericSAValidator(
         AuthRole.user,

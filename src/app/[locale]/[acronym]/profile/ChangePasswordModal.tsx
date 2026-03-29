@@ -13,6 +13,19 @@ type ChangePasswordModalProps = {
     onClose: () => void;
 };
 
+/**
+ * Modal dialog that lets an authenticated user change their own password.
+ *
+ * Renders a Bootstrap modal containing the current-password field and the
+ * shared `NewPasswordFormComponent`. On submit it calls the `userChangePassword`
+ * server action and:
+ * - shows a success toast and closes the modal on success;
+ * - shows a "too many requests" toast when the rate limit is exceeded;
+ * - shows a generic error toast for any other failure.
+ *
+ * @param onClose - Callback invoked when the modal should be dismissed
+ *   (Cancel button click or after a successful password change).
+ */
 export const ChangePasswordModal = ({ onClose }: ChangePasswordModalProps) => {
 
     const t = useScopedI18n("profile.changePassword");
