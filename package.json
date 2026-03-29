@@ -95,7 +95,7 @@
         "eslint": "9.39.4",
         "eslint-config-next": "15.5.14",
         "eslint-plugin-playwright": "2.10.1",
-        "eslint-plugin-testing-library": "7.16.1",
+        "eslint-plugin-testing-library": "7.16.2",
         "jsdom": "28.1.0",
         "playwright": "1.58.2",
         "prisma": "7.5.0",
