@@ -65,7 +65,7 @@
         "react-hook-form": "7.71.2",
         "react-toastify": "11.0.5",
         "react-tooltip": "5.30.0",
-        "recharts": "^3.8.0",
+        "recharts": "^3.8.1",
         "sass": "1.98.0",
         "server-only": "0.0.1",
         "swr": "2.4.1",
