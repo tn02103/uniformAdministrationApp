@@ -62,7 +62,7 @@
         "react-email": "5.2.10",
         "react-error-boundary": "6.1.1",
         "react-fontawesome": "1.7.1",
-        "react-hook-form": "7.71.2",
+        "react-hook-form": "7.72.0",
         "react-toastify": "11.0.5",
         "react-tooltip": "5.30.0",
         "recharts": "^3.8.1",
