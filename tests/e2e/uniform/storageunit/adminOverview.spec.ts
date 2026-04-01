@@ -20,7 +20,7 @@ test.describe("Storage Unit Admin Overview", () => {
 
         await Promise.all(
             data.storageUnits.sort((a, b) => a.name.localeCompare(b.name)).map(async (unit, index) => {
-                const row = storageUnitRows[index];
+                const row = storageUnitRows.nth(index);
                 const cols = row.getByRole('cell')
                 const uniformCount = data.uniformList.filter(u => u.storageUnitId === unit.id).length;
 
