@@ -40,6 +40,7 @@
         "@react-email/render": "2.0.4",
         "@swc/core": "1.15.21",
         "@types/react-dnd": "3.0.2",
+        "babel-plugin-react-compiler": "^1.0.0",
         "bcrypt": "6.0.0",
         "bootstrap": "5.3.8",
         "clsx": "2.1.1",

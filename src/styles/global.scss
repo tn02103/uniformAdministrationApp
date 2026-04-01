@@ -1,4 +1,7 @@
 // Required
+// Bootstrap 5 requires @import (not @use) because its partials internally use
+// @import to load sub-files. Full migration to @use is a Bootstrap 6 feature.
+// Deprecation warnings are suppressed via sassOptions.quietDeps in next.config.js.
 @import "../../node_modules/bootstrap/scss/functions";
 @import "../../node_modules/bootstrap/scss/variables";
 @import "../../node_modules/bootstrap/scss/variables-dark";
