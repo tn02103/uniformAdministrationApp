@@ -59,7 +59,7 @@ export function UniformListSearchFilter({ search }: { search: (data: { number: n
         }
     }
     return (
-        <Form onSubmit={form.handleSubmit(onSubmit, console.debug)}>
+        <Form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="fs-5 text-center fw-bold">{t('uniformList.search.label')}</div>
             {
                 (searchedState && !searchedState.valid)
