@@ -222,6 +222,10 @@ export default {
                 },
                 auth: {
                     "2fa.appNameNotUnique": "The name is already used by one of your other 2FA apps",
+                    invalidCurrentPassword: "The current password is incorrect.",
+                    password: {
+                        mismatch: "The passwords do not match",
+                    },
                 },
             },
         },
@@ -906,10 +910,42 @@ export default {
         },
         passwordChanged: {
             subject: "Your password has been changed",
-            heading: "Password Changed",
+            heading: {
+                reset: "Password Reset",
+                change: "Password Changed",
+            },
             greeting: "Hello {name},",
-            body: "The password for your UniformAdmin account was just successfully changed.",
+            body: {
+                reset: "The password for your UniformAdmin account was successfully reset. If you did not initiate this action yourself, please contact your administrator immediately.",
+                change: "The password for your UniformAdmin account was just successfully changed by you.",
+            },
             securityNotice: "If you did not make this change, please contact your administrator immediately or secure your email account.",
         },
-    }
+    },
+    profile: {
+        security: "Security",
+        changePassword: {
+            title: "Change Password",
+            currentPassword: "Current Password",
+            newPassword: "New Password",
+            confirmPassword: "Confirm New Password",
+            submit: "Change Password",
+            cancel: "Cancel",
+            success: "Password changed successfully.",
+            error: {
+                invalidCurrentPassword: "The current password is incorrect.",
+                tooManyRequests: "Too many failed attempts. Please try again later.",
+                unknown: "An error occurred while changing your password. Please try again.",
+            },
+            newPasswordError: {
+                invalid: "The new password does not meet the requirements.",
+                rules: {
+                    minLength: "At least 8 characters",
+                    uppercase: "At least one uppercase letter",
+                    lowercase: "At least one lowercase letter",
+                    number: "At least one number",
+                },
+            },
+        },
+    },
 } as const;

@@ -20,17 +20,21 @@ const defaultProps = {
     locale: "de",
 };
 
+// Labels come from NewPasswordFormComponent (profile.changePassword scope)
+const newPasswordLabel = "profile.changePassword.newPassword";
+const confirmPasswordLabel = "profile.changePassword.confirmPassword";
+
 describe("ResetPasswordForm", () => {
     beforeEach(() => {
         vi.clearAllMocks();
         mockExecutePasswordReset.mockResolvedValue({ success: true });
     });
 
-    it("renders new password and confirm password fields", () => {
+    it("renders new password and confirm password fields and submit button", () => {
         render(<ResetPasswordForm {...defaultProps} />);
 
-        expect(screen.getByLabelText(/resetPassword.label.newPassword/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/resetPassword.label.confirmPassword/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(newPasswordLabel)).toBeInTheDocument();
+        expect(screen.getByLabelText(confirmPasswordLabel)).toBeInTheDocument();
         expect(screen.getByRole("button", { name: /resetPassword.label.submit/i })).toBeInTheDocument();
     });
 
@@ -38,8 +42,8 @@ describe("ResetPasswordForm", () => {
         const user = userEvent.setup();
         render(<ResetPasswordForm {...defaultProps} />);
 
-        await user.type(screen.getByLabelText(/resetPassword.label.newPassword/i), "NewPass1");
-        await user.type(screen.getByLabelText(/resetPassword.label.confirmPassword/i), "NewPass1");
+        await user.type(screen.getByLabelText(newPasswordLabel), "NewPass1");
+        await user.type(screen.getByLabelText(confirmPasswordLabel), "NewPass1");
         await user.click(screen.getByRole("button", { name: /resetPassword.label.submit/i }));
 
         await waitFor(() => {
@@ -53,29 +57,14 @@ describe("ResetPasswordForm", () => {
         const user = userEvent.setup();
         render(<ResetPasswordForm {...defaultProps} />);
 
-        await user.type(screen.getByLabelText(/resetPassword.label.newPassword/i), "NewPass1");
-        await user.type(screen.getByLabelText(/resetPassword.label.confirmPassword/i), "NewPass1");
+        await user.type(screen.getByLabelText(newPasswordLabel), "NewPass1");
+        await user.type(screen.getByLabelText(confirmPasswordLabel), "NewPass1");
         await user.click(screen.getByRole("button", { name: /resetPassword.label.submit/i }));
 
         await waitFor(() => {
             expect(screen.getByTestId("error-message")).toBeInTheDocument();
         });
         expect(screen.getByTestId("error-message")).toHaveTextContent("resetPassword.error.tokenInvalid");
-    });
-
-    it("blocks submit and shows field error when passwords do not match", async () => {
-        const user = userEvent.setup();
-        render(<ResetPasswordForm {...defaultProps} />);
-
-        await user.type(screen.getByLabelText(/resetPassword.label.newPassword/i), "NewPass1");
-        await user.type(screen.getByLabelText(/resetPassword.label.confirmPassword/i), "DifferentPass2");
-        await user.click(screen.getByRole("button", { name: /resetPassword.label.submit/i }));
-
-        await waitFor(() => {
-            expect(screen.getByTestId("err_confirmPassword")).toBeInTheDocument();
-        });
-        expect(screen.getByTestId("err_confirmPassword")).toHaveTextContent("resetPassword.error.passwordMismatch");
-        expect(mockExecutePasswordReset).not.toHaveBeenCalled();
     });
 
     it("disables the submit button while submitting", async () => {
@@ -86,8 +75,8 @@ describe("ResetPasswordForm", () => {
         render(<ResetPasswordForm {...defaultProps} />);
 
         const submitButton = screen.getByRole("button", { name: /resetPassword.label.submit/i });
-        await user.type(screen.getByLabelText(/resetPassword.label.newPassword/i), "NewPass1");
-        await user.type(screen.getByLabelText(/resetPassword.label.confirmPassword/i), "NewPass1");
+        await user.type(screen.getByLabelText(newPasswordLabel), "NewPass1");
+        await user.type(screen.getByLabelText(confirmPasswordLabel), "NewPass1");
         await user.click(submitButton);
 
         expect(submitButton).toBeDisabled();

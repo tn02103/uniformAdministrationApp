@@ -5,7 +5,7 @@ import { render } from "@react-email/render";
 import { getCurrentLocale, getScopedI18n } from "../locales/config";
 import { getMailAgend } from "./mailagend";
 
-export const sendPasswordChangedEmail = async (userId: string) => {
+export const sendPasswordChangedEmail = async (userId: string, type: "reset" | "change") => {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
         console.error(`sendPasswordChangedEmail: user ${userId} not found, skipping notification`);
@@ -17,7 +17,7 @@ export const sendPasswordChangedEmail = async (userId: string) => {
         await getMailAgend().sendMail({
             to: user.email,
             subject: t("subject"),
-            html: await render(await emailBody(user.name)),
+            html: await render(await emailBody(user.name, type)),
         });
     } catch (error) {
         console.error(`sendPasswordChangedEmail: failed to send email to ${user.email}`, error);
@@ -25,7 +25,7 @@ export const sendPasswordChangedEmail = async (userId: string) => {
     }
 };
 
-const emailBody = async (name: string) => {
+const emailBody = async (name: string, type: "reset" | "change") => {
     const t = await getScopedI18n("emails.passwordChanged");
     const locale = await getCurrentLocale();
     return (
@@ -52,7 +52,7 @@ const emailBody = async (name: string) => {
                                                                     UniformAdmin
                                                                 </p>
                                                                 <h1 style={{ margin: 0, color: "#ffffff", fontSize: "24px", fontWeight: "bold" }}>
-                                                                    {t("heading")}
+                                                                    {t(`heading.${type}` as Parameters<typeof t>[0])}
                                                                 </h1>
                                                             </td>
                                                             <td align="right" style={{ verticalAlign: "middle" }}>
@@ -78,7 +78,7 @@ const emailBody = async (name: string) => {
                                                     {t("greeting", { name })}
                                                 </p>
                                                 <p style={{ margin: 0, fontSize: "15px", lineHeight: "1.6", color: "#333333" }}>
-                                                    {t("body")}
+                                                    {t(`body.${type}` as Parameters<typeof t>[0])}
                                                 </p>
                                             </td>
                                         </tr>

@@ -1,7 +1,7 @@
 "use client";
 
+import { NewPasswordFormComponent } from "@/components/authentication/NewPasswordFormComponent";
 import { Form } from "@/components/fields/Form";
-import { InputFormField } from "@/components/fields/InputFormField";
 import { executePasswordReset } from "@/dal/auth";
 import { useScopedI18n } from "@/lib/locales/client";
 import { ResetPasswordFormSchema, ResetPasswordFormType } from "@/zod/auth";
@@ -11,7 +11,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 
-
 type PropType = {
     token: string;
     locale: string;
@@ -19,6 +18,18 @@ type PropType = {
 
 type ResetError = "tokenInvalid" | "tooManyRequests" | "unknown";
 
+/**
+ * Client-side form for completing a password-reset flow.
+ *
+ * Receives a one-time `token` (embedded in the reset link) and the current
+ * `locale` (used to construct the post-success login link). On submit it calls
+ * `executePasswordReset`; depending on the result it either transitions to a
+ * success view with a link to the login page, or shows an inline error alert
+ * (`tokenInvalid`, `tooManyRequests`, or `unknown`).
+ *
+ * @param token  - The password-reset token extracted from the URL search params.
+ * @param locale - BCP-47 locale string used to build the `/{locale}/login` href.
+ */
 const ResetPasswordForm = ({ token, locale }: PropType) => {
     const t = useScopedI18n("resetPassword");
     const [submitting, setSubmitting] = useState(false);
@@ -69,22 +80,7 @@ const ResetPasswordForm = ({ token, locale }: PropType) => {
                     {t(errorKey as Parameters<typeof t>[0])}
                 </div>
             )}
-            <div className="mb-3">
-                <InputFormField
-                    name="newPassword"
-                    label={t("label.newPassword")}
-                    type="password"
-                    autoComplete="new-password"
-                />
-            </div>
-            <div className="mb-3">
-                <InputFormField
-                    name="confirmPassword"
-                    label={t("label.confirmPassword")}
-                    type="password"
-                    autoComplete="new-password"
-                />
-            </div>
+            <NewPasswordFormComponent />
             <Row>
                 <Col>
                     <Button variant="primary" type="submit" disabled={submitting} data-testid="btn_submit">

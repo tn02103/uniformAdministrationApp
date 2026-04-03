@@ -157,6 +157,14 @@ const prismaMock = {
         create: vi.fn(),
         delete: vi.fn(),
     },
+    user: {
+        findUnique: vi.fn(),
+        findFirst: vi.fn(),
+        findMany: vi.fn(),
+        create: vi.fn(),
+        update: vi.fn(),
+        updateMany: vi.fn(),
+    },
     refreshToken: {
         create: vi.fn(),
         update: vi.fn(),
@@ -171,13 +179,6 @@ const prismaMock = {
         updateMany: vi.fn(),
         findUnique: vi.fn(),
         update: vi.fn(),
-    },
-    user: {
-        findFirst: vi.fn(),
-        findUnique: vi.fn(),
-        findMany: vi.fn(),
-        update: vi.fn(),
-        create: vi.fn(),
     },
     passwordResetToken: {
         findFirst: vi.fn(),

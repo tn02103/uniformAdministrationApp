@@ -221,8 +221,12 @@ export default {
                     },
                 },
                 auth: {
-                    "2fa.appNameNotUnique": "Der Name wird bereits von einer ihrer anderen 2FA Apps benutzt"
-                }
+                    "2fa.appNameNotUnique": "Der Name wird bereits von einer ihrer anderen 2FA Apps benutzt",
+                    invalidCurrentPassword: "Das aktuelle Passwort ist falsch.",
+                    password: {
+                        mismatch: "Die Passwörter stimmen nicht überein",
+                    },
+                },
             },
         },
         success: {
@@ -805,7 +809,7 @@ export default {
                     header: "Withdraw uniform part",
                     message: "Are you sure you want to withdraw the uniform part {type} {number}?"
                 },
-            },      
+            },
         },
         dangerConfirmation: {
             confirmation: {
@@ -906,10 +910,42 @@ export default {
         },
         passwordChanged: {
             subject: "Ihr Passwort wurde geändert",
-            heading: "Passwort geändert",
+            heading: {
+                reset: "Passwort zurückgesetzt",
+                change: "Passwort geändert",
+            },
             greeting: "Guten Tag {name},",
-            body: "Das Passwort Ihres UniformAdmin-Kontos wurde soeben erfolgreich geändert.",
+            body: {
+                reset: "Das Passwort Ihres UniformAdmin-Kontos wurde erfolgreich zurückgesetzt. Falls Sie diese Aktion nicht selbst initiiert haben, wenden Sie sich bitte umgehend an Ihren Administrator.",
+                change: "Das Passwort Ihres UniformAdmin-Kontos wurde soeben erfolgreich von Ihnen geändert.",
+            },
             securityNotice: "Falls Sie diese Änderung nicht vorgenommen haben, wenden Sie sich umgehend an Ihren Administrator oder sichern Sie Ihr E-Mail-Konto.",
         },
-    }
+    },
+    profile: {
+        security: "Sicherheit",
+        changePassword: {
+            title: "Passwort ändern",
+            currentPassword: "Aktuelles Passwort",
+            newPassword: "Neues Passwort",
+            confirmPassword: "Passwort bestätigen",
+            submit: "Passwort ändern",
+            cancel: "Abbrechen",
+            success: "Passwort erfolgreich geändert.",
+            error: {
+                invalidCurrentPassword: "Das aktuelle Passwort ist falsch.",
+                tooManyRequests: "Zu viele Fehlversuche. Bitte versuchen Sie es später erneut.",
+                unknown: "Beim Ändern des Passworts ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+            },
+            newPasswordError: {
+                invalid: "Das neue Passwort erfüllt die Anforderungen nicht.",
+                rules: {
+                    minLength: "Mindestens 8 Zeichen",
+                    uppercase: "Mindestens ein Großbuchstabe",
+                    lowercase: "Mindestens ein Kleinbuchstabe",
+                    number: "Mindestens eine Ziffer",
+                },
+            },
+        },
+    },
 } as const;

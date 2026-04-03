@@ -1,8 +1,10 @@
 "use client";
 
 import { Prisma } from "@/prisma/client";
+import { useScopedI18n } from "@/lib/locales/client";
 import { useState } from "react";
 import { AddTwoFactorAppModal } from "./AddTwoFactorAppModal";
+import { ChangePasswordModal } from "./ChangePasswordModal";
 
 type User = Prisma.UserGetPayload<{
     include: { organisation: true, twoFactorApps: true }
@@ -14,7 +16,10 @@ type ProfileContentProps = {
 
 export const ProfileContent = ({ user }: ProfileContentProps) => {
 
+    const t = useScopedI18n("profile");
+
     const [showAddAuthApp, setShowAddAuthApp] = useState(false);
+    const [showChangePassword, setShowChangePassword] = useState(false);
 
     const handleAddAppOpen = () => {
        setShowAddAuthApp(true);
@@ -41,8 +46,13 @@ export const ProfileContent = ({ user }: ProfileContentProps) => {
                 </div>
             ))}
             {user.twoFactorApps.length === 0 && <p>No 2FA apps configured.</p>}
+            <h2>{t("security")}</h2>
+            <button className="btn btn-secondary" onClick={() => setShowChangePassword(true)}>{t("changePassword.title")}</button>
             {showAddAuthApp && (
                 <AddTwoFactorAppModal onClose={() => setShowAddAuthApp(false)} />
+            )}
+            {showChangePassword && (
+                <ChangePasswordModal onClose={() => setShowChangePassword(false)} />
             )}
         </div>
     );

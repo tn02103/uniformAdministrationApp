@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { sha256Hex } from "@/dal/auth/helper.tokens";
 import { logSecurityAuditEntry } from "@/dal/auth/helper";
 import { LogDebugLevel } from "@/dal/auth/LogDebugLeve.enum";
+import { sendPasswordChangedEmail } from "@/lib/email/passwordChangedEmail";
 
 vi.mock("bcrypt", () => ({
     default: {
@@ -34,8 +35,13 @@ vi.mock("@/dal/auth/helper", () => ({
     logSecurityAuditEntry: vi.fn().mockResolvedValue(undefined),
 }));
 
+vi.mock("@/lib/email/passwordChangedEmail", () => ({
+    sendPasswordChangedEmail: vi.fn().mockResolvedValue(undefined),
+}));
+
 const mockBcryptHash = vi.mocked(bcrypt.hash);
 const mockLogAuditEntry = vi.mocked(logSecurityAuditEntry);
+const mockSendPasswordChangedEmail = vi.mocked(sendPasswordChangedEmail);
 
 const validInput = {
     token: "valid-raw-token-12345",
@@ -155,6 +161,12 @@ describe("executePasswordReset", () => {
     it("returns { success: false, error: 'validation' } for weak password", async () => {
         const result = await executePasswordReset({ token: "valid-token", newPassword: "weak" });
         expect(result).toEqual({ success: false, error: "validation" });
+    });
+
+    it("sends password changed email with type 'reset' on success", async () => {
+        await executePasswordReset(validInput);
+
+        expect(mockSendPasswordChangedEmail).toHaveBeenCalledWith("user-456", "reset");
     });
 
     describe("audit logging", () => {

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Unit Tests for refreshToken (refreshAccessToken)
  * 
@@ -88,7 +87,6 @@ vi.mock('next/server', () => ({
     userAgent: vi.fn(),
 }));
 vi.mock('rate-limiter-flexible', () => ({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     RateLimiterMemory: class { constructor() { return mockRateLimiterInstance as any; } },
 }));
 
@@ -107,7 +105,6 @@ const mockGetIronSession = vi.mocked(getIronSession);
 const mockHeaders = vi.mocked(headers);
 const mockCookies = vi.mocked(cookies);
 const mockUserAgent = vi.mocked(userAgent);
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockPrisma = prisma as any;
 
 describe('refreshToken - Unit Tests', () => {
