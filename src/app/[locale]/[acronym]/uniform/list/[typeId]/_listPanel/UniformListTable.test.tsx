@@ -51,7 +51,9 @@ describe("UniformListTable", () => {
 
         render(<UniformListTable uniformType={uniformType} />);
         expect(await screen.findByText("common.uniform.number")).toBeInTheDocument();
-        expect(await screen.findByTestId("div_nodata")).toBeInTheDocument();
+        await vi.waitFor(async () => {
+            expect(screen.getByTestId("div_nodata")).toBeInTheDocument();
+        })
     });
 
     it("renders correct number of table lines for uniforms", async () => {
