@@ -128,6 +128,7 @@ test('user formValidations', async ({ page, userPage }) => {
             for (const set of testSets) {
                 await test.step(String(set.testValue), async () => {
                     await userPage.txt_user_name("new").fill(String(set.testValue));
+                    await userPage.page.keyboard.press('Tab'); // trigger validation on blur
 
                     if (set.valid) {
                         await expect(userPage.err_user_name("new", mobile as boolean)).toBeHidden();

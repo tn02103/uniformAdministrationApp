@@ -17,11 +17,13 @@ export default defineConfig({
     /* Opt out of parallel tests on CI. */
     workers: process.env.CI ? 2 : undefined,
     /* amount of allowed failures */
-    maxFailures: 5,
+    maxFailures: process.env.CI ? 5: undefined,
+    fullyParallel: process.env.CI ? false : true,
     /* Reporter to use. See https://playwright.dev/docs/test-reporters */
     reporter: [
         ['dot'],
         ['html'],
+        ['json', { outputFile: 'test-results.json' }],
     ],
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
     use: {
@@ -29,9 +31,9 @@ export default defineConfig({
         baseURL: 'http://localhost:3021',
 
         /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-        trace: 'on-first-retry',
-        screenshot: 'only-on-failure',
-        video: "off",
+        trace: 'on',
+        screenshot: 'on',
+        video: "on",
     },
     // globalTeardown: require.resolve('./tests/global-teardown'),
 

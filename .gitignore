@@ -48,3 +48,4 @@ tests/_playwrightConfig/testData/staticDataIds.json
 test-report.html
 prisma/generated/
 .playwright-mcp/*
+test-results.json

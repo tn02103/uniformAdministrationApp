@@ -24,8 +24,9 @@ export function NewDeficiencyRow({
     remove: () => void;
 }) {
     const t = useI18n();
-    const { watch, setValue } = useFormContext<CadetInspectionFormSchema>();
+    const { setValue } = useFormContext<CadetInspectionFormSchema>();
     const [selectedDefType, setSelectedDefType] = useState<DeficiencyType>();
+    const materialId = useWatch({ name: `newDeficiencyList.${index}.materialId` });
 
     const { cadetId }: ParamType = useParams();
     const { deficiencyTypeList } = useDeficiencyTypes();
@@ -37,6 +38,10 @@ export function NewDeficiencyRow({
     const isCreated = !!dateCreated;
     const deficiencyTypeOptions = deficiencyTypeList?.map((type) => ({ value: type.id, label: type.name })) ?? [];
     const uniformOptions = uniformLabels?.map((item) => ({ value: item.id, label: item.description })) ?? [];
+    const showExtendedMaterialSelects = selectedDefType
+        && selectedDefType.dependent === "cadet"
+        && selectedDefType.relation === "material"
+        && materialId === "other";
 
     useEffect(() => {
         if (!deficiencyTypeList || !typeId) {
@@ -107,14 +112,12 @@ export function NewDeficiencyRow({
                     onClick={remove}
                     testId="btn_delete" />
             </Col>
-            {(selectedDefType && ((selectedDefType.dependent === "cadet") && (selectedDefType.relation === "material")))
-                && (watch(`newDeficiencyList.${index}.materialId`) === "other") &&
-                <Col xs={"10"} sm={5}>
-                    <MaterialGroupSelect index={index} />
-                </Col>
+            {showExtendedMaterialSelects &&
+            <Col xs={"10"} sm={5}>
+                <MaterialGroupSelect index={index} />
+            </Col>
             }
-            {(selectedDefType && ((selectedDefType.dependent === "cadet") && (selectedDefType.relation === "material")))
-                && (watch(`newDeficiencyList.${index}.materialId`) === "other") &&
+            {showExtendedMaterialSelects &&
                 <Col xs={"10"} sm={5}>
                     <MaterialTypeSelect index={index} />
                 </Col>
@@ -163,7 +166,7 @@ const MaterialGroupSelect = ({ index }: { index: number }) => {
     const t = useI18n();
     const { setValue, } = useFormContext<CadetInspectionFormSchema>();
     const { config } = useMaterialConfiguration();
-    
+
     if (!config) return null;
 
     const options = config.map((group) => ({ value: group.id, label: group.description }));

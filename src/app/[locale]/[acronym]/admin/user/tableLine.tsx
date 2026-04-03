@@ -1,7 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { changeUserPassword, createUser, deleteUser, updateUser } from "@/actions/controllers/UserController";
+import { InputFormField } from "@/components/fields/InputFormField";
 import { useModal } from "@/components/modals/modalProvider";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
@@ -11,7 +12,7 @@ import { faBars, faCheck, faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { Button, Dropdown, FormControl, FormGroup, FormLabel, FormSelect } from "react-bootstrap";
-import { FieldErrors, UseFormRegister, useForm } from "react-hook-form";
+import { Control, FieldErrors, FormProvider, UseFormRegister, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 export default function UserAdminTableRow({
@@ -27,7 +28,7 @@ export default function UserAdminTableRow({
     const modal = useModal();
 
     const formId = `user_${user ? user.id : "new"}`;
-    const { register, handleSubmit, reset, formState: { errors } } = useForm<User>({ defaultValues: user, mode: "onChange" });
+    const { register, control, handleSubmit, reset, formState: { errors } } = useForm<User>({ defaultValues: user, mode: "onChange" });
     const mobileForm = useForm<User>({ defaultValues: user, mode: "onChange" });
 
     const [editable, setEditable] = useState(!user);
@@ -91,19 +92,15 @@ export default function UserAdminTableRow({
                     userList={userList.filter(u => !user || u.id !== user.id)}
                     disabled={!editable || !!user}
                     plaintext={!editable}
-                    register={register}
-                    tError={tError}
-                    errors={errors}
-                    mobile={false} />
+                    control={control}
+                    tError={tError} />
             </td>
             <td className={`col-8 col-sm-5 col-md-3 ${editable ? "d-none d-md-table-cell" : ""}`}>
                 <NameControl
                     formId={formId}
                     editable={editable}
-                    register={register}
-                    tError={tError}
-                    errors={errors}
-                    mobile={false} />
+                    control={control}
+                    tError={tError} />
             </td>
             <td className={`col-2 col-md-3 ${editable ? "d-none d-md-table-cell" : "d-none d-md-table-cell"}`}>
                 {(!editable && user)
@@ -196,20 +193,16 @@ export default function UserAdminTableRow({
                             userList={userList.filter(u => !user || u.id !== user.id)}
                             plaintext={false}
                             disabled={!editable || !!user}
-                            register={mobileForm.register}
                             tError={tError}
-                            errors={mobileForm.formState.errors}
-                            mobile={true} />
+                            control={mobileForm.control} />
                     </FormGroup>
                     <FormGroup>
                         <FormLabel className="ms-1 mt-1 mb-0">{t('admin.user.header.name')}</FormLabel>
                         <NameControl
                             formId={formId + "_mobil"}
                             editable={editable}
-                            register={mobileForm.register}
-                            tError={tError}
-                            errors={mobileForm.formState.errors}
-                            mobile={true} />
+                            control={mobileForm.control}
+                            tError={tError} />
                     </FormGroup>
                     <FormGroup>
                         <FormLabel className="ms-1 mt-1 mb-0">{t('admin.user.header.role')}</FormLabel>
@@ -262,86 +255,66 @@ const UsernameControl = ({
     formId,
     disabled,
     plaintext,
-    register,
+    control,
     tError,
-    errors,
-    mobile,
 }: {
     userList: User[];
     formId: string;
     disabled: boolean;
     plaintext: boolean;
-    register: UseFormRegister<User>;
+    control: Control<User>;
     tError: any;
-    errors: FieldErrors<User>;
-    mobile: boolean;
 }) => (
     <>
-        <FormControl
-            form={formId}
-            plaintext={plaintext}
+        <InputFormField
+            name="username"
+            formName={formId}
+            label=""
             disabled={disabled}
-            {...register("username", {
-                required: {
-                    value: true,
-                    message: tError('string.required'),
-                },
+            plaintext={plaintext}
+            control={control}
+            hookFormValidation
+            required
+            maxLength={6}
+            hookFormValidationRules={{
                 pattern: {
                     value: userNameValidationPattern,
                     message: tError('user.username.pattern'),
                 },
-                maxLength: {
-                    value: 6,
-                    message: tError('string.maxLength', { value: 6 }),
-                },
                 validate: (value) => userList.every(u => u.username !== value) || tError('user.username.duplicate'),
-            })}
+            }}
         />
-        <div data-testid={`err_username${mobile ? "_mobile" : ""}`} className="text-danger fs-7">
-            {errors.username?.message}
-        </div>
     </>
 );
 
 const NameControl = ({
     formId,
     editable,
-    register,
+    control,
     tError,
-    errors,
-    mobile,
 }: {
     formId: string;
     editable: boolean;
-    register: UseFormRegister<User>;
+    control: Control<User>;
     tError: any;
-    errors: FieldErrors<User>;
-    mobile: boolean;
 }) => (
-    <>
-        <FormControl
-            form={formId}
-            plaintext={!editable}
-            disabled={!editable}
-            {...register("name", {
-                required: {
-                    value: true,
-                    message: tError('string.required'),
-                },
-                pattern: {
-                    value: nameValidationPattern,
-                    message: tError('string.noSpecialChars'),
-                },
-                maxLength: {
-                    value: 20,
-                    message: tError('string.maxLength', { value: 20 }),
-                },
-            })}
-        />
-        <div data-testid={`err_name${mobile ? "_mobile" : ""}`} className="text-danger fs-7">
-            {errors.name?.message}
-        </div>
-    </>
+    <InputFormField
+        name="name"
+        control={control}
+        formName={formId}
+        disabled={!editable}
+        plaintext={!editable}
+        label=""
+        hookFormValidation
+        required
+        maxLength={20}
+        hookFormValidationRules={{
+            pattern: {
+                value: nameValidationPattern,
+                message: tError('string.noSpecialChars'),
+            },
+        }}
+    />
 );
 const RoleSelect = ({
     formId,
