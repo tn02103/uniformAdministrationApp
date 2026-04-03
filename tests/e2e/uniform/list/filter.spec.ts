@@ -18,11 +18,13 @@ test.describe(() => {
 
     test('integration: sessionStorage filter config per uniformType', async ({ uniformListPage, staticData: { ids } }) => {
         // Change some filters and submit
-        await uniformListPage.btn_genAccordion_header.click();
+        await uniformListPage.openGenerationAccordion();
+        await expect(uniformListPage.btn_genAccordion_header).toHaveAttribute("aria-expanded", "true");
+        
         await uniformListPage.chk_genFilter(ids.uniformGenerationIds[0]).setChecked(false);
         await uniformListPage.chk_genFilter(ids.uniformGenerationIds[1]).setChecked(false);
         await uniformListPage.chk_genFilter_nullValue.setChecked(false);
-        await uniformListPage.btn_othersAccordion_header.click();
+        await uniformListPage.openOthersAccordion();
         await uniformListPage.chk_issuedFilter.setChecked(false);
         await uniformListPage.chk_isReserveFilter.setChecked(true);
         await uniformListPage.btn_load.click();
@@ -60,9 +62,11 @@ test.describe(() => {
 
     test('integration: generation filter works', async ({ uniformListPage, staticData: { ids, data } }) => {
         // Filter by generation
-        await uniformListPage.btn_genAccordion_header.click();
-        await uniformListPage.chk_genFilter_selAll.setChecked(false);
-        await uniformListPage.chk_genFilter(ids.uniformGenerationIds[0]).setChecked(true);
+        await uniformListPage.openGenerationAccordion();
+        await uniformListPage.chk_genFilter_selAll.click();
+        await uniformListPage.chk_genFilter(ids.uniformGenerationIds[0]).click();
+        await expect(uniformListPage.chk_genFilter_selAll).not.toBeChecked();
+        await expect(uniformListPage.chk_genFilter(ids.uniformGenerationIds[0])).toBeChecked();
         await uniformListPage.btn_load.click();
         // Expect only uniforms with this generation to be shown
         const count = data.uniformList.filter(u => u.fk_generation === ids.uniformGenerationIds[0] && !u.recdelete).length;
@@ -78,10 +82,16 @@ test.describe(() => {
 
     test('integration: size filter works', async ({ uniformListPage, staticData: { ids, data } }) => {
         // Filter by size
-        await uniformListPage.btn_sizeAccordion_header.click();
-        await uniformListPage.chk_sizeFilter_selAll.setChecked(false);
-        await uniformListPage.chk_sizeFilter(ids.sizeIds[0]).setChecked(true);
+        await uniformListPage.openSizeAccordion();
+        await expect(uniformListPage.chk_sizeFilter_selAll).toBeChecked();
+        
+        await uniformListPage.chk_sizeFilter_selAll.click();
+        await uniformListPage.chk_sizeFilter(ids.sizeIds[0]).click();
+
+        await expect(uniformListPage.chk_sizeFilter_selAll).not.toBeChecked();
+        await expect(uniformListPage.chk_sizeFilter(ids.sizeIds[0])).toBeChecked();
         await uniformListPage.btn_load.click();
+        
         // Expect only uniforms with this size to be shown
         const count = data.uniformList.filter(u => (
             (u.fk_uniformType === ids.uniformTypeIds[0])

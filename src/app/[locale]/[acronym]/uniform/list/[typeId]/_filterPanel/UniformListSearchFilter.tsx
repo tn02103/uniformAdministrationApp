@@ -7,7 +7,7 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import { useFormContext, useWatch } from "react-hook-form";
+import { Controller, useFormContext, useWatch } from "react-hook-form";
 
 export function UniformListSearchFilter({ search }: { search: (data: { number: number | null, typeId?: string }) => void }) {
     const form = useFormContext();
@@ -19,7 +19,7 @@ export function UniformListSearchFilter({ search }: { search: (data: { number: n
         number: number | null,
     }>();
 
-    const searchTerm = useWatch({name: "search"});
+    const searchTerm = useWatch({ name: "search" });
     useEffect(() => {
         const value = searchTerm?.replaceAll(' ', '')?.replaceAll('-', '');
         if (!value || value === "") {
@@ -59,7 +59,7 @@ export function UniformListSearchFilter({ search }: { search: (data: { number: n
         }
     }
     return (
-        <Form onSubmit={form.handleSubmit(onSubmit)}>
+        <Form onSubmit={form.handleSubmit(onSubmit, console.debug)}>
             <div className="fs-5 text-center fw-bold">{t('uniformList.search.label')}</div>
             {
                 (searchedState && !searchedState.valid)
@@ -72,8 +72,14 @@ export function UniformListSearchFilter({ search }: { search: (data: { number: n
             }
             <Row>
                 <Col className="pe-0">
-                    <Form.Control {...form.register('search')} inputMode="search" placeholder="123 | AA-123 | AA123" />
-                </Col>
+                    <Controller
+                        name="search"
+                        control={form.control}
+                        render={({ field }) => (
+                            <Form.Control {...field} inputMode="search" placeholder="123 | AA-123 | AA123" />
+                        )}
+                    />
+                  </Col>
                 <Col xs={"auto"} className="p-0 me-3">
                     <Button type="submit" variant="outline-seccondary" data-testid="btn_search_submit">
                         <FontAwesomeIcon icon={faSearch} />

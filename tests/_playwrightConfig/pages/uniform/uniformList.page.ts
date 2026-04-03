@@ -1,4 +1,4 @@
-import { Locator, Page } from "playwright/test";
+import { expect, Locator, Page } from "playwright/test";
 
 
 export class UniformListPage {
@@ -47,6 +47,7 @@ export class UniformListPage {
 
     readonly div_uitem_list: Locator;
     readonly div_nodata: Locator;
+
     div_uitem(uniformId: string) {
         return this.page.getByTestId(`div_uitem_${uniformId}`);
     }
@@ -70,6 +71,32 @@ export class UniformListPage {
     }
     btn_uitem_open(uniformId: string) {
         return this.div_uitem(uniformId).getByTestId("btn_open");
+    }
+
+    private async ensureAccordionOpen(button: Locator, visibleContent: Locator) {
+        await button.scrollIntoViewIfNeeded();
+        await expect(button).toBeVisible();
+
+        await expect(async () => {
+            if ((await button.getAttribute("aria-expanded")) !== "true") {
+                await button.click();
+            }
+
+            await expect(button).toHaveAttribute("aria-expanded", "true");
+            await expect(visibleContent).toBeVisible();
+        }).toPass();
+    }
+
+    async openGenerationAccordion() {
+        await this.ensureAccordionOpen(this.btn_genAccordion_header, this.chk_genFilter_selAll);
+    }
+
+    async openSizeAccordion() {
+        await this.ensureAccordionOpen(this.btn_sizeAccordion_header, this.chk_sizeFilter_selAll);
+    }
+
+    async openOthersAccordion() {
+        await this.ensureAccordionOpen(this.btn_othersAccordion_header, this.chk_issuedFilter);
     }
  
    
