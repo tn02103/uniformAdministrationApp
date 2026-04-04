@@ -3,7 +3,7 @@
 import { AuthenticationException, AuthenticationExceptionData, ExceptionType, TwoFactorRequiredException } from "@/errors/Authentication";
 import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
-import { LoginFormSchema, LoginFormType } from "@/zod/auth";
+import { emailSchema, LoginFormSchema, LoginFormType, userNameSchema } from "@/zod/auth";
 import { Device, Organisation, User } from "@/prisma/client";
 import { cookies, headers } from "next/headers";
 import { userAgent } from "next/server";
@@ -13,6 +13,7 @@ import { DeviceIdsCookieAccount, FingerprintValidationResult, getDeviceAccountFr
 import { LogDebugLevel } from "../LogDebugLeve.enum";
 import { handleSuccessfulLogin } from "./handleSuccessfulLogin";
 import { verifyUser } from "./verifyUser";
+import z from "zod";
 
 type LoginReturnType = {
     loginSuccessful: false;
@@ -91,7 +92,13 @@ export const Login = async (props: LoginFormType): Promise<LoginReturnType> => {
             await consumeIpLimiter(ipAddress, 2, agent);
             throw new AuthenticationException("Props could not be passed via zod schema", "UnknownError", LogDebugLevel.CRITICAL, loginLogData);
         }
-
+        
+        const identifierValid = z.union([emailSchema, userNameSchema]).safeParse(props.identifier).success;
+        if (!identifierValid) {
+            await consumeIpLimiter(ipAddress, 2, agent);
+            throw new AuthenticationException("Identifier did not match email or username schema", "AuthenticationFailed", LogDebugLevel.INFO, loginLogData);
+        }
+        
         const formData = parsed.data!;
         const isEmail = formData.identifier.includes('@');
         const [organisation, user] = await prisma.$transaction([
@@ -219,4 +226,3 @@ export const Login = async (props: LoginFormType): Promise<LoginReturnType> => {
         }
     }
 };
-

@@ -100,8 +100,8 @@ model User {
     id                    String               @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
     organisationId        String               @map("organisation_id") @db.Char(36)
     email                 String               @db.VarChar(100)
-    username              String               @db.VarChar(10)
-    name                  String               @db.VarChar(20)
+    username              String               @db.VarChar(30)
+    name                  String               @db.VarChar(100)
     password              String               @db.VarChar(100)
     role                  Int                  @db.SmallInt
     active                Boolean
