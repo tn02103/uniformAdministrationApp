@@ -25,7 +25,7 @@ export const dataFixture = setup.extend<object, { staticData: StaticData }>({
 export const adminTest = dataFixture.extend<authenticatedFixture>({
     page: async ({ page, staticData }, use) => {
         const body: LoginFormType = {
-            email: 'test4@test.com',
+            identifier: 'test4@test.com',
             organisationId: staticData.organisationId,
             password: process.env.TEST_USER_PASSWORD?? "Test!234" as string,
         };
@@ -40,7 +40,7 @@ export const adminTest = dataFixture.extend<authenticatedFixture>({
 export const managerTest = dataFixture.extend<authenticatedFixture>({
     page: async ({ page, staticData }, use) => {
         const body: LoginFormType = {
-            email: 'test3@test.com',
+            identifier: 'test3@test.com',
             organisationId: staticData.organisationId,
             password: process.env.TEST_USER_PASSWORD?? "Test!234" as string,
         };
@@ -49,14 +49,13 @@ export const managerTest = dataFixture.extend<authenticatedFixture>({
         if (response.status() !== 200)
             throw Error("Failed to authenticate");
 
-
         use(page);
     },
 });
 export const inspectorTest = dataFixture.extend<authenticatedFixture>({
     page: async ({ page, staticData }, use) => {
         const body: LoginFormType = {
-            email: 'test2@test.com',
+            identifier: 'test2@test.com',
             organisationId: staticData.organisationId,
             password: process.env.TEST_USER_PASSWORD?? "Test!234" as string,
         };
@@ -72,7 +71,7 @@ export const inspectorTest = dataFixture.extend<authenticatedFixture>({
 export const userTest = dataFixture.extend<authenticatedFixture>({
     page: async ({ page, staticData }, use) => {
         const body: LoginFormType = {
-            email: 'test1@test.com',
+            identifier: 'test1@test.com',
             organisationId: staticData.organisationId,
             password: process.env.TEST_USER_PASSWORD?? "Test!234" as string,
         };
