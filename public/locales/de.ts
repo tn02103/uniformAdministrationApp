@@ -221,8 +221,12 @@ export default {
                     },
                 },
                 auth: {
-                    "2fa.appNameNotUnique": "Der Name wird bereits von einer ihrer anderen 2FA Apps benutzt"
-                }
+                    "2fa.appNameNotUnique": "Der Name wird bereits von einer ihrer anderen 2FA Apps benutzt",
+                    invalidCurrentPassword: "Das aktuelle Passwort ist falsch.",
+                    password: {
+                        mismatch: "Die Passwörter stimmen nicht überein",
+                    },
+                },
             },
         },
         success: {
@@ -246,13 +250,44 @@ export default {
             username: "Nutzername",
             password: "Password",
             twoFactorCode: "2FA Code",
-            login: "Anmelden"
+            login: "Anmelden",
+            forgotPassword: "Passwort vergessen?",
         },
         error: {
             unknown: "Der Loginversuch ist fehlgeschlagen, bitte versuchen Sie es erneut.",
             failed: "Nutzername oder Passwort sind ungültig",
             userBlocked: "Ihr Zugang wurde gesperrt. Bitte kontaktieren Sie den Administrator.",
             tooManyRequests: "Zu viele fehlgeschlagene Loginversuche. Bitte versuchen Sie es später erneut.",
+        },
+    },
+    forgotPassword: {
+        header: "Passwort zurücksetzen",
+        label: {
+            organisation: "Verein",
+            email: "E-Mail-Adresse",
+            submit: "Link senden",
+        },
+        success: "Falls ein Konto mit dieser E-Mail-Adresse existiert, wurde ein Reset-Link gesendet.",
+        error: {
+            unknown: "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
+            tooManyRequests: "Zu viele Versuche. Bitte versuche es später erneut.",
+        },
+    },
+    resetPassword: {
+        header: "Neues Passwort festlegen",
+        label: {
+            newPassword: "Neues Passwort",
+            confirmPassword: "Passwort bestätigen",
+            submit: "Passwort zurücksetzen",
+            login: "Zum Login",
+            requestNewLink: "Neuen Reset-Link anfordern",
+        },
+        success: "Passwort erfolgreich zurückgesetzt. Du kannst dich jetzt anmelden.",
+        error: {
+            tokenInvalid: "Dieser Reset-Link ist ungültig, abgelaufen oder wurde bereits verwendet.",
+            passwordMismatch: "Die Passwörter stimmen nicht überein.",
+            unknown: "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
+            tooManyRequests: "Zu viele Versuche. Bitte versuche es später erneut.",
         },
     },
     notFound: {
@@ -775,7 +810,7 @@ export default {
                     header: "Withdraw uniform part",
                     message: "Are you sure you want to withdraw the uniform part {type} {number}?"
                 },
-            },      
+            },
         },
         dangerConfirmation: {
             confirmation: {
@@ -864,8 +899,54 @@ export default {
                 line1: "Guten Tag Admin,",
                 line2: "Das Benutzerkonto {name} wurde aufgrund von verdächtigen Aktivitäten gesperrt.",
                 line3: "Bitte überprüfen Sie das Konto und kontaktieren Sie den Benutzer für weitere Informationen.",
-                closing: "Ihr UniformAdmin Team",   
+                closing: "Ihr UniformAdmin Team",
             },
-        }
-    }
+        },
+        passwordReset: {
+            subject: "Passwort zurücksetzen",
+            heading: "Anfrage zum Zurücksetzen des Passworts",
+            body: "Klicke auf den folgenden Link, um dein Passwort zurückzusetzen. Der Link läuft in 1 Stunde ab.",
+            validity: "Falls du diese Anfrage nicht gestellt hast, informiere uns bitte hierüber.",
+            linkText: "Passwort zurücksetzen",
+        },
+        passwordChanged: {
+            subject: "Ihr Passwort wurde geändert",
+            heading: {
+                reset: "Passwort zurückgesetzt",
+                change: "Passwort geändert",
+            },
+            greeting: "Guten Tag {name},",
+            body: {
+                reset: "Das Passwort Ihres UniformAdmin-Kontos wurde erfolgreich zurückgesetzt. Falls Sie diese Aktion nicht selbst initiiert haben, wenden Sie sich bitte umgehend an Ihren Administrator.",
+                change: "Das Passwort Ihres UniformAdmin-Kontos wurde soeben erfolgreich von Ihnen geändert.",
+            },
+            securityNotice: "Falls Sie diese Änderung nicht vorgenommen haben, wenden Sie sich umgehend an Ihren Administrator oder sichern Sie Ihr E-Mail-Konto.",
+        },
+    },
+    profile: {
+        security: "Sicherheit",
+        changePassword: {
+            title: "Passwort ändern",
+            currentPassword: "Aktuelles Passwort",
+            newPassword: "Neues Passwort",
+            confirmPassword: "Passwort bestätigen",
+            submit: "Passwort ändern",
+            cancel: "Abbrechen",
+            success: "Passwort erfolgreich geändert.",
+            error: {
+                invalidCurrentPassword: "Das aktuelle Passwort ist falsch.",
+                tooManyRequests: "Zu viele Fehlversuche. Bitte versuchen Sie es später erneut.",
+                unknown: "Beim Ändern des Passworts ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+            },
+            newPasswordError: {
+                invalid: "Das neue Passwort erfüllt die Anforderungen nicht.",
+                rules: {
+                    minLength: "Mindestens 8 Zeichen",
+                    uppercase: "Mindestens ein Großbuchstabe",
+                    lowercase: "Mindestens ein Kleinbuchstabe",
+                    number: "Mindestens eine Ziffer",
+                },
+            },
+        },
+    },
 } as const;

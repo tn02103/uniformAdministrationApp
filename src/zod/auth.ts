@@ -1,24 +1,73 @@
+import { passwordValidationPattern } from "@/lib/validations";
 import { z } from "zod";
 
+// ####### BASE SCHEMAS #######
+const requiredString = z.string({ message: "string.required" }).min(1, "string.required");
+
+const newPasswordSchema = requiredString.regex(passwordValidationPattern, "custom.auth.password.requirements");
+
+const passwordConfirmationRefine = (data: { newPassword: string; confirmPassword: string }, ctx: z.RefinementCtx) => {
+    if (data.newPassword !== data.confirmPassword) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "custom.auth.password.mismatch",
+            path: ["confirmPassword"],
+        });
+    }
+};
+
+export const twoFactorAppName = z.string().min(1, "string.required").max(20, "string.max;value:20");
+export const twoFactorCodeSchema = z.string()
+    .min(6, "lengthRequired:value:6")
+    .max(6, "lengthRequired:value:6")
+    .regex(/^\d+$/, "string.numeric");
+
+// ####### EXPORT FORM-SCHEMAS #######
+// LOGIN
 export const LoginFormSchema = z.object({
-    organisationId: z.string({ message: "string.required" }).uuid(),
-    identifier: z.string({ message: "string.required" }).min(1, "string.required"),
-    password: z.string({ message: "string.required" }).min(1, "string.required"),
+    organisationId: requiredString.uuid(),
+    identifier: requiredString,
+    password: requiredString,
     secondFactor: z.object({
-        token: z.string().min(6, "lengthRequired:value:6").max(6, "lengthRequired:value:6").regex(/^\d+$/, "string.numeric"),
+        token: twoFactorCodeSchema,
         method: z.union([z.string().uuid(), z.enum(["email"])])
     }).optional(),
 });
 export type LoginFormType = z.infer<typeof LoginFormSchema>;
 
-export const twoFactorAppName = z.string().min(1, "string.required").max(20, "string.max;value:20");
+// SELF SERVICE PASSWORD CHANGE
+export const SelfServiceChangePasswordFormSchema = z.object({
+    currentPassword: requiredString,
+    newPassword: newPasswordSchema,
+    confirmPassword: requiredString,
+}).superRefine(passwordConfirmationRefine);
+export type SelfServiceChangePasswordFormType = z.infer<typeof SelfServiceChangePasswordFormSchema>;
 
-export const twoFactorCodeSchema = z.string()
-    .min(6, "lengthRequired:value:6")
-    .max(6, "lengthRequired:value:6")
-    .regex(/^\d+$/, "string.numeric");
+export const SelfServiceChangePasswordDALSchema = z.object({
+    currentPassword: requiredString,
+    newPassword: newPasswordSchema,
+});
+export type SelfServiceChangePasswordDALType = z.infer<typeof SelfServiceChangePasswordDALSchema>;
+
+// FORGOT PASSWORD & RESET PASSWORD
+export const ForgotPasswordSchema = z.object({
+    organisationId: requiredString.uuid(),
+    email: requiredString.email("string.emailValidation"),
+});
+export type ForgotPasswordType = z.infer<typeof ForgotPasswordSchema>;
+
+export const ResetPasswordDALSchema = z.object({
+    token: requiredString,
+    newPassword: newPasswordSchema,
+});
+export type ResetPasswordDALType = z.infer<typeof ResetPasswordDALSchema>;
+export const ResetPasswordFormSchema = ResetPasswordDALSchema.extend({
+    confirmPassword: requiredString,
+}).superRefine(passwordConfirmationRefine);
+export type ResetPasswordFormType = z.infer<typeof ResetPasswordFormSchema>;
+
+// TWO FACTOR AUTHENTICATION
 export const TwoFactorFormSchema = z.object({
     token: twoFactorCodeSchema,
 });
-
 export type TwoFactorFormType = z.infer<typeof TwoFactorFormSchema>;

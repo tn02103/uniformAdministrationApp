@@ -5,6 +5,7 @@ const nextConfig = {
         dirs: ["src", "tests"],
         ignoreDuringBuilds: true,
     },
+    serverExternalPackages: ['rate-limiter-flexible'],
 }
 
 export default nextConfig;

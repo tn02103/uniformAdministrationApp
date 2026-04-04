@@ -80,8 +80,8 @@ describe('manager tests', () => {
         expect(result[3].id).toBe(cadetIds[0]);
         expect(result[3].firstname).toBe(data.cadets[0].firstname);
         expect(result[3].lastname).toBe(data.cadets[0].lastname);
-        expect(result[3].lastInspection).toBeNull();
-        expect(result[3].uniformComplete).toBeNull();
+        expect(result[3].lastInspection).toBeUndefined();
+        expect(result[3].uniformComplete).toBeUndefined();
         expect(result[3].activeDeficiencyCount).toBe(0);
 
         expect(result[4].id).toBe(cadetIds[2]);

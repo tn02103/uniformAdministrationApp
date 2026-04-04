@@ -1,3 +1,7 @@
+---
+applyTo: "src/dal/**"
+---
+
 # DAL (Data Access Layer) — Rules & Patterns
 
 ## Core Rule
@@ -26,7 +30,7 @@ src/dal/
 ## Security: Every public DAL function MUST use a validator
 
 ### `genericSAValidator` — use for actions that receive input data
-Input MUST be a single object/type validated by a Zod schema. Do not use individual primitive parameters; wrap them in an object.
+Input MUST be a single typed object validated by a Zod schema. Never use individual primitive parameters — wrap them in an object.
 ```typescript
 // src/zod/uniform.ts
 export const getUniformItemSchema = z.object({ uniformId: z.string().uuid() });
@@ -57,19 +61,18 @@ export const getUniformTypeList = () =>
 ```
 
 ### Org-scoping validation keys
-Pass an object with any of these keys to have the validator confirm the IDs belong to the caller's organisation:
+Pass an object with any of these keys to have the validator confirm the IDs belong to the caller's organisation. Each accepts a single `string` or `string[]`:
 ```
 userId, cadetId, uniformId, uniformTypeId, uniformGenerationId,
 uniformSizelistId, uniformSizeId, materialId, materialGroupId,
 deficiencytypeId, deficiencyId, inspectionId, storageUnitId
 ```
-Each accepts a single string or `string[]`.
 
 ## Unsecured (internal) helpers
-Used when one DAL function needs to call another to avoid double session checks.
+Used when one DAL function needs to call another — avoids double session checks.
 - Naming: prefix with `__unsecured` (e.g. `__unsecuredGetUniformList`)
 - Parameters: accept `organisationId: string` and optionally `client?: Prisma.TransactionClient`
-- Never export from `index.ts` — internal use only
+- **Never export from `index.ts`** — internal use only, never exposed as a server action
 ```typescript
 export const __unsecuredGetUniformList = (
     organisationId: string,
@@ -86,15 +89,22 @@ export const __unsecuredGetUniformList = (
 export const createUniformSchema = z.object({ number: z.number(), typeId: z.string().uuid() });
 export type CreateUniformInput = z.infer<typeof createUniformSchema>;
 ```
-- Reuse the same schema on the frontend for form validation
+- Reuse the same schema on the frontend for form validation — one schema, two uses
+
+## Field Naming Conventions
+- **Organisation FK**: prefer `organisationId` (legacy: `fk_assosiation`, `assosiationId`)
+- **Foreign keys**: prefer `objectId` suffix (legacy: `fk_` prefix)
+- **Soft delete**: `recdelete` (DateTime?) + `recdeleteUser` (string?)
+- When touching a file that uses legacy naming, migrate that file to the new convention
 
 ## AuthRole values
 ```
-User (1)      — read-only
+User (1)      — read-only access
 Inspector (2) — CRUD cadets/uniforms/materials
 Manager (3)   — settings, inspections
 Admin (4)     — users, org config
 ```
+Set the minimum required role — never use a higher role than necessary.
 
 ## Session user object
 `genericSAValidator` resolves with `[user, validatedData]` where `user` is:
@@ -103,7 +113,11 @@ Admin (4)     — users, org config
 ```
 
 ## Transactions
-Use `prisma.$transaction([...])` or the interactive transaction form for multi-step mutations. Pass the transaction client to `__unsecured` helpers.
+Use `prisma.$transaction([...])` or the interactive transaction form for multi-step mutations. Pass the transaction client to `__unsecured` helpers as the `client` parameter.
+
+## Soft Delete
+Always add `recdelete: null` to queries on soft-deletable models unless explicitly querying deleted records.
+Soft-deletable models: `Uniform`, `UniformType`, `UniformGeneration`, `Cadet`, `Material`, `MaterialGroup`.
 
 ## Checklist for every new DAL function
 - [ ] Input wrapped in typed object, validated by Zod schema in `src/zod/`
@@ -113,4 +127,5 @@ Use `prisma.$transaction([...])` or the interactive transaction form for multi-s
 - [ ] All queries include `organisationId` filter
 - [ ] Soft-deletable models include `recdelete: null`
 - [ ] Exported via `index.ts` with domain-prefixed name
-- [ ] Unit test and/or integration test written (see `.github/agent/testing-dal.md`)
+- [ ] `__unsecured` helpers NOT in `index.ts`
+- [ ] Unit test and/or integration test written

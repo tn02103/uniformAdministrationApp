@@ -1,3 +1,7 @@
+---
+description: "Use when working with Prisma schema, creating or modifying migrations, updating seed data, or changing staticDataGenerator or staticDataLoader"
+---
+
 # Database — Rules & Patterns
 
 ## Stack
@@ -35,29 +39,30 @@ Import the args constant into Prisma queries to ensure type consistency.
 1. Edit `prisma/schema.prisma`
 2. Run `npx prisma generate` (updates Prisma Client types)
 3. Adapt `StaticData` if new/changed models affect test data (see below)
-4. Run `npx prisma migrate reset` — Prisma will display the current `DATABASE_URL` and ask for confirmation before proceeding. **Verify the URL shows `localhost`** before confirming. This command drops and recreates the DB, runs all migrations, and runs the seed.
-6. Verify with `npx prisma studio`
+4. Run `npx prisma migrate dev --name <name>` to create the migration
+5. Verify with `npx prisma studio`
 
 ### Naming convention
-- Finalized version: descriptive snake_case name, e.g. `add_storage_unit`
-- Work-in-progress / unfinished version: prefix with `snapshot_`, e.g. `snapshot_add_storage_unit`
-- Rename from `snapshot_` to a final name when the feature is complete
+- Work-in-progress: prefix with `snapshot_`, e.g. `snapshot_add_storage_unit`
+- Finalized: rename to descriptive snake_case, e.g. `add_storage_unit` (when feature is complete and PR merged)
 
 ### Commands
 ```bash
 npx prisma migrate dev --name <name>   # Create new migration
 npx prisma migrate deploy              # Apply to production
-npx prisma migrate reset               # Reset dev DB (DESTRUCTIVE — localhost only)
+npx prisma migrate reset               # ⚠️ DESTRUCTIVE — drops and recreates DB. Verify DATABASE_URL shows localhost before confirming.
 npx prisma db push                     # Push schema without migration file (prototyping only)
 npx prisma db seed                     # Run seed.ts
 npx prisma generate                    # Regenerate Prisma Client
 npx prisma studio                      # Visual DB browser
 ```
 
+**Warning**: Never run `prisma migrate reset` without confirming the `DATABASE_URL` shows `localhost`. This command is destructive.
+
 ## Static Test Data (seed for dev, integration tests, E2E)
 
 ### Files
-- `tests/_playwrightConfig/testData/staticDataGenerator.ts` — pure data generation, produces typed objects with deterministic UUIDs
+- `tests/_playwrightConfig/testData/staticDataGenerator.ts` — pure data generation, typed objects with deterministic UUIDs
 - `tests/_playwrightConfig/testData/staticDataLoader.ts` — loads data into DB, exposes `StaticData` class
 
 ### `StaticData` class
@@ -68,9 +73,9 @@ await staticData.cleanup.removeOrganisation(); // full teardown
 ```
 `staticData.ids` exposes all known UUIDs (cadetIds, uniformIds, etc.) for use in assertions.
 
-### When schema changes, StaticData must be updated
-- Add new model data to `StaticDataGenerator`
-- Add loader method to `StaticDataLoader`
-- Add cleanup method to `StaticDataCleanup`
-- Call new loader in `StaticDataLoader.all()`
-- Run `prisma migrate reset` to validate end-to-end
+### When schema changes, StaticData MUST be updated
+1. Add new model data to `StaticDataGenerator` with deterministic UUIDs
+2. Add loader method to `StaticDataLoader`
+3. Add cleanup method to `StaticDataCleanup`
+4. Call new loader in `StaticDataLoader.all()`
+5. Run `npx prisma db seed` to validate the seed works end-to-end

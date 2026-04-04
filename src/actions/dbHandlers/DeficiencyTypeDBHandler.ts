@@ -17,7 +17,7 @@ export class DeficiencyTypeDBHandler {
                     COUNT(d.date_resolved) resolved
                FROM inspection.deficiency_type dt
           LEFT JOIN inspection.deficiency d ON dt.id = d.fk_deficiency_type
-              WHERE dt.organisationId = ${organisationId}
+              WHERE dt.organisation_id = ${organisationId}
            GROUP BY dt.id
            ORDER BY dt.disabled_date DESC, dt.name ASC
         `.then((data) =>

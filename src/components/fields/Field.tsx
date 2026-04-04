@@ -1,3 +1,4 @@
+import React from "react"
 import { FormGroup, FormLabel } from "react-bootstrap"
 import ErrorMessage from "../errorMessage"
 
@@ -6,7 +7,7 @@ export type FieldProps = {
     name: string,
     label?: string,
     required?: boolean,
-    errorMessage?: string,
+    errorMessage?: string | React.ReactElement,
     children?: React.ReactNode,
     labelClassName?: string,
     fieldName?: string,
@@ -23,12 +24,23 @@ export const Field = ({ formName = "", fieldId, name, label, required, errorMess
                 </FormLabel>
             }
             {children}
-            <ErrorMessage
-                error={errorMessage}
-                testId={`err_${name}`}
-                id={`${formName}_err_${name}`}
-                ariaLabel={`error message ${name}`}
-            />
+            {typeof errorMessage === 'string' || errorMessage === undefined
+                ? <ErrorMessage
+                    error={errorMessage}
+                    testId={`err_${name}`}
+                    id={`${formName}_err_${name}`}
+                    ariaLabel={`error message ${name}`}
+                />
+                : (
+                    <div
+                        id={`${formName}_err_${name}`}
+                        aria-label={`error message ${name}`}
+                        data-testid={`err_${name}`}
+                    >
+                        {errorMessage}
+                    </div>
+                )
+            }
         </FormGroup>
     )
 }

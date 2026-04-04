@@ -108,12 +108,13 @@ export const getUnresolvedByCadet = async (props: string): Promise<Deficiency[]>
     z.string().uuid(),
     { cadetId: props }
 ).then(([, cadetId]) => {
-    return prisma.$queryRaw`
-            SELECT * FROM inspection.v_deficiency_by_cadet 
-             WHERE fk_cadet = ${cadetId}
-             AND "dateResolved" IS NULL
-          ORDER BY "dateCreated"
-        `;
+    return prisma.vDeficiencyByCadet.findMany({
+        where: {
+            fkCadet: cadetId,
+            dateResolved: null,
+        },
+        orderBy: { dateCreated: 'asc' },
+    });
 });
 
 // -----------  UNSECURED -------------

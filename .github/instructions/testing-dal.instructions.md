@@ -1,3 +1,7 @@
+---
+applyTo: src/dal/**/*.test.ts, src/dal/**/*.integration.test.ts
+---
+
 # DAL Testing — Unit & Integration
 
 ## Two Test Types for DAL
@@ -16,7 +20,7 @@
 **Unit tests** (`*.test.ts`):
 - Business logic, conditional branches, data transformations
 - Error handling paths
-- Any logic that doesn't purely delegate to a Prisma call
+- Any logic that doesn't purely delegate to a single Prisma call
 - Mock Prisma responses to control inputs/outputs
 
 **Integration tests** (`*.integration.test.ts`):
@@ -26,14 +30,19 @@
 - Soft-delete filtering
 - Simple CRUD with no logic may only need integration tests
 
+## Bug Fix Tests
+Every bug fix MUST include a new test case that:
+- Would have caught the bug before the fix (i.e., fails on the original code)
+- Passes after the fix
+- Is named to describe the bug scenario, e.g. `should not return deleted items when recdelete filter is missing`
+
 ## Unit Test Setup
 Prisma and iron-session are auto-mocked by `vitest/setup-dal-unit.ts`.
-The typed mock is exported under the `@test-utils/prisma-mock` alias — import it directly in test files:
+The typed mock is exported under the `@test-utils/prisma-mock` alias:
 
 ```typescript
 import { prismaMock } from '@test-utils/prisma-mock';
 
-// Access model mocks directly — no vi.mock() call needed, already done in setup
 const mockFindUnique = prismaMock.uniform.findUnique;
 
 test('returns uniform by id', async () => {
@@ -51,7 +60,7 @@ test('returns uniform by id', async () => {
 Use `afterEach(() => vi.clearAllMocks())` to reset call counts between tests.
 
 ## Integration Test Setup
-Use the `StaticData` system (see `.github/agent/database.md` for full details).
+Use the `StaticData` system (see `database.instructions.md` for full details).
 ```typescript
 import { StaticData } from 'tests/_playwrightConfig/testData/staticDataLoader';
 
@@ -76,8 +85,10 @@ src/dal/uniform/item/
 ```
 
 ## Key Rules
+- Use `vi.fn()`, `vi.mock()`, `vi.clearAllMocks()` — **never** `jest.*` equivalents
 - Every integration test must call `staticData.resetData()` in `beforeAll` — never assume DB state
 - Integration tests run sequentially (`fileParallelism: false`) — do NOT add parallelism
 - Always assert that queries scoped to org A do NOT return records from org B (use a second `StaticData` instance with a different index)
-- Session is mocked in unit tests; in integration tests, validators are bypassed via the `__unsecured` helpers or by calling Prisma directly
-- Use `vi.fn()` / `vi.mock()` / `vi.clearAllMocks()` — not `jest.*` equivalents
+- Session is mocked in unit and integration tests. Default role is `materialManager`, but can be overwritten via `global.__ROLE__`
+- New feature: every acceptance criterion must have at least one test
+- Changed requirement: update existing tests so they reflect the new expected behaviour

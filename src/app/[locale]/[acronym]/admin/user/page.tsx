@@ -1,4 +1,4 @@
-import { getUserList } from "@/actions/controllers/UserController";
+import { getUserList } from "@/dal/user";
 import { getI18n, getScopedI18n } from "@/lib/locales/config";
 import { Col, Row } from "react-bootstrap";
 import UserAdminTable from "./table";
