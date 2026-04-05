@@ -189,6 +189,9 @@ export default {
                     pattern: "Der Nutzername darf keine Sonder oder Leerzeichen beinhalten",
                     duplicate: "Der Nutzername wird bereits von einem anderen Nutzer benutzt",
                 },
+                name: {
+                    patter: "Der Name darf keine Sonderzeichen oder Zahlen beinhalten",
+                }
             },
             custom: {
                 nameDuplication: {
@@ -246,6 +249,7 @@ export default {
         header: "Login",
         label: {
             organisation: "Verein",
+            identifier: "E-Mail oder Nutzername",
             username: "Nutzername",
             password: "Password",
             twoFactorCode: "2FA Code",

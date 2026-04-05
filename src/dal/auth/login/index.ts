@@ -3,7 +3,7 @@
 import { AuthenticationException, AuthenticationExceptionData, ExceptionType, TwoFactorRequiredException } from "@/errors/Authentication";
 import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
-import { LoginFormSchema, LoginFormType } from "@/zod/auth";
+import { emailSchema, LoginFormSchema, LoginFormType, userNameSchema } from "@/zod/auth";
 import { Device, Organisation, User } from "@/prisma/client";
 import { cookies, headers } from "next/headers";
 import { userAgent } from "next/server";
@@ -13,6 +13,7 @@ import { DeviceIdsCookieAccount, FingerprintValidationResult, getDeviceAccountFr
 import { LogDebugLevel } from "../LogDebugLeve.enum";
 import { handleSuccessfulLogin } from "./handleSuccessfulLogin";
 import { verifyUser } from "./verifyUser";
+import z from "zod";
 
 type LoginReturnType = {
     loginSuccessful: false;
@@ -91,17 +92,23 @@ export const Login = async (props: LoginFormType): Promise<LoginReturnType> => {
             await consumeIpLimiter(ipAddress, 2, agent);
             throw new AuthenticationException("Props could not be passed via zod schema", "UnknownError", LogDebugLevel.CRITICAL, loginLogData);
         }
-
+        
+        const identifierValid = z.union([emailSchema, userNameSchema]).safeParse(props.identifier).success;
+        if (!identifierValid) {
+            await consumeIpLimiter(ipAddress, 2, agent);
+            throw new AuthenticationException("Identifier did not match email or username schema", "AuthenticationFailed", LogDebugLevel.INFO, loginLogData);
+        }
+        
         const formData = parsed.data!;
+        const isEmail = formData.identifier.includes('@');
         const [organisation, user] = await prisma.$transaction([
             prisma.organisation.findFirst({
                 where: { id: formData.organisationId },
             }),
             prisma.user.findFirst({
-                where: {
-                    email: formData.email,
-                    organisationId: formData.organisationId,
-                },
+                where: isEmail
+                    ? { email: formData.identifier, organisationId: formData.organisationId }
+                    : { username: formData.identifier, organisationId: formData.organisationId },
             }),
         ]);
 
@@ -116,7 +123,7 @@ export const Login = async (props: LoginFormType): Promise<LoginReturnType> => {
         loginLogData.deviceId = account?.deviceId;
         if (!user) {
             await consumeIpLimiter(ipAddress, 1, agent, account?.deviceId);
-            throw new AuthenticationException(`Failed login attempt: User with email ${formData.email} not found`, "AuthenticationFailed", LogDebugLevel.INFO, loginLogData);
+            throw new AuthenticationException(`Failed login attempt: User with identifier ${formData.identifier} not found`, "AuthenticationFailed", LogDebugLevel.INFO, loginLogData);
         }
         loginLogData.userId = user.id;
 
@@ -219,4 +226,3 @@ export const Login = async (props: LoginFormType): Promise<LoginReturnType> => {
         }
     }
 };
-

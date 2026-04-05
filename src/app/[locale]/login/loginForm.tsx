@@ -38,7 +38,7 @@ const LoginForm = ({ organisations, lastUsedOrganisationId, ...props }: PropType
 
         userLogin({
             organisationId: data.organisationId,
-            email: data.email.trim(),
+            identifier: data.identifier.trim(),
             password: data.password,
             secondFactor: data.secondFactor ?? undefined
         }).then((response) => {
@@ -109,8 +109,8 @@ const LoginForm = ({ organisations, lastUsedOrganisationId, ...props }: PropType
                     </div>
                     <div className="mb-3">
                         <InputFormField
-                            name="email"
-                            label={t('login.label.username')}
+                            name="identifier"
+                            label={t('login.label.identifier')}
                         />
                     </div>
                     <div className="mb-3">

@@ -1,11 +1,26 @@
 import { passwordValidationPattern } from "@/lib/validations";
 import { z } from "zod";
+import { customErrorMap } from "./customZod/customErrorMap";
+z.setErrorMap(customErrorMap);
 
 // ####### BASE SCHEMAS #######
-const requiredString = z.string({ message: "string.required" }).min(1, "string.required");
+const requiredString = z.string({ message: "string.required" }).trim().min(1, "string.required");
+
+export const userNameSchema = z.string()
+    .trim()
+    .toLowerCase()
+    .min(3)
+    .max(30)
+    .regex(/^[a-z0-9](?:[a-z0-9._-]{1,28}[a-z0-9])?$/, 'user.username.pattern');
+export const nameSchema = z.string()
+    .trim()
+    .min(1)
+    .max(100)
+    .refine(v => /^[\p{L}\p{M} \-'.]{1,100}$/u.test(v), 'user.name.pattern');
+
+export const emailSchema = z.string().min(1, "string.required").email("string.email");
 
 const newPasswordSchema = requiredString.regex(passwordValidationPattern, "custom.auth.password.requirements");
-
 const passwordConfirmationRefine = (data: { newPassword: string; confirmPassword: string }, ctx: z.RefinementCtx) => {
     if (data.newPassword !== data.confirmPassword) {
         ctx.addIssue({
@@ -26,7 +41,7 @@ export const twoFactorCodeSchema = z.string()
 // LOGIN
 export const LoginFormSchema = z.object({
     organisationId: requiredString.uuid(),
-    email: requiredString.email("string.emailValidation"),
+    identifier: requiredString,
     password: requiredString,
     secondFactor: z.object({
         token: twoFactorCodeSchema,
