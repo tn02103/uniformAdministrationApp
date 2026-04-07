@@ -1,80 +1,74 @@
 import { Locator, Page } from "playwright/test";
-import { PasswordPopupComponent } from "../../popups/PasswordPopup.component";
+import german from "../../../../../public/locales/de";
+import { DangerConfirmationModal } from "../../popups/DangerConfirmationPopup.component";
+
+const t = german;
 
 export class UserAdministrationPage {
-
     readonly page: Page;
+    readonly dangerModal: DangerConfirmationModal;
+
+    // Table
+    readonly table: Locator;
     readonly btn_create: Locator;
-    readonly passwordPopup: PasswordPopupComponent;
 
-    div_user(userId: string) {
-        return this.page.getByTestId(`div_user_${userId}`);
-    }
+    // Offcanvas panel (.offcanvas scopes to Bootstrap Offcanvas only, not Bootstrap Modal)
+    readonly offcanvas: Locator;
+    readonly oc_heading_create: Locator;
 
-    txt_user_username(userId: string) {
-        return this.div_user(userId).locator('input[name="username"]:visible');
-    }
-    err_user_username(userId: string, mobile: boolean) {
-        if (mobile) {
-            return this.div_user(userId).getByTestId('err_username_mobile');
-        } else {
-            return this.div_user(userId).getByTestId('err_username');
-        }
-    }
-    
-    txt_user_name(userId: string) {
-        return this.div_user(userId).locator('input[name="name"]:visible');
-    }
-    err_user_name(userId: string, mobile: boolean) {
-        if (mobile) {
-            return this.div_user(userId).getByTestId('err_name_mobile');
-        } else {
-            return this.div_user(userId).getByTestId('err_name');
-        }
-    }
-    
-    div_user_role(userId: string) {
-        return this.div_user(userId).getByTestId('div_role');
-    }
-    sel_user_role(userId: string) {
-        return this.div_user(userId).locator('select[name="role"]:visible');
-    }
-    
-    div_user_active(userId: string) {
-        return this.div_user(userId).getByTestId('div_active');
-    }
-    sel_user_active(userId: string) {
-        return this.div_user(userId).locator('select[name="active"]:visible');
-    }
+    // Offcanvas inputs — use input[name=] attribute selectors to avoid label-substring ambiguity
+    // (getByRole('textbox', { name: 'Name' }) would also match 'Nutzername')
+    readonly oc_inp_name: Locator;
+    readonly oc_inp_username: Locator;
+    readonly oc_inp_email: Locator;
+    readonly oc_inp_password: Locator;
 
-    btn_user_menu(userId: string) {
-        return this.div_user(userId).getByTestId('btn_menu');
-    }
-    btn_user_menu_edit(userId: string) {
-        return this.div_user(userId).getByTestId('btn_menu_edit');
-    }
-    btn_user_menu_password(userId: string) {
-        return this.div_user(userId).getByTestId('btn_menu_password');
-    }
-    btn_user_menu_delete(userId: string) {
-        return this.div_user(userId).getByTestId('btn_menu_delete');
-    }
-    btn_user_save(userId: string) {
-        return this.div_user(userId).locator(':visible').getByTestId('btn_save');
-    }
-    btn_user_cancel(userId: string) {
-        return this.div_user(userId).locator(':visible').getByTestId('btn_cancel');
-    }
+    // Offcanvas action buttons
+    readonly oc_btn_create: Locator;
+    readonly oc_btn_save: Locator;
+    readonly oc_btn_cancel: Locator;
+    readonly oc_btn_edit: Locator;
+    readonly oc_btn_delete: Locator;
+
+    // Offcanvas field-level error messages
+    readonly oc_err_username: Locator;
+    readonly oc_err_email: Locator;
 
     constructor(page: Page) {
         this.page = page;
-        this.passwordPopup = new PasswordPopupComponent(page);
+        this.dangerModal = new DangerConfirmationModal(page);
 
-        this.btn_create = page.getByTestId('btn_create');
+        this.table = page.getByRole('table', { name: t.admin.user.header.page });
+        this.btn_create = this.table.getByRole('button', { name: 'create' });
+
+        this.offcanvas = page.locator('.offcanvas');
+        this.oc_heading_create = this.offcanvas.getByRole('heading', { name: t.common.actions.create });
+
+        this.oc_inp_name     = this.offcanvas.locator('input[name="name"]');
+        this.oc_inp_username = this.offcanvas.locator('input[name="username"]');
+        this.oc_inp_email    = this.offcanvas.locator('input[name="email"]');
+        this.oc_inp_password = this.offcanvas.locator('input[name="password"]');
+
+        this.oc_btn_create = this.offcanvas.getByRole('button', { name: t.common.actions.create });
+        this.oc_btn_save   = this.offcanvas.getByRole('button', { name: t.common.actions.save });
+        this.oc_btn_cancel = this.offcanvas.getByRole('button', { name: t.common.actions.cancel });
+        this.oc_btn_edit   = this.offcanvas.getByRole('button', { name: t.common.actions.edit });
+        this.oc_btn_delete = this.offcanvas.getByRole('button', { name: t.common.actions.delete });
+
+        this.oc_err_username = this.offcanvas.getByTestId('err_username');
+        this.oc_err_email    = this.offcanvas.getByTestId('err_email');
     }
 
-    async openUserPasswordModal(userId: string) {
-        await this.btn_user_menu(userId).click();
-        await this.btn_user_menu_password(userId).click();
+    userRow(username: string): Locator {
+        return this.table.getByRole('row', { name: `user: ${username}` });
+    }
+
+    btn_openUser(username: string): Locator {
+        return this.userRow(username).getByRole('button', { name: 'open' });
+    }
+
+    /** Locator for the offcanvas heading showing the current user's name (view/edit mode). */
+    oc_heading(name: string): Locator {
+        return this.offcanvas.getByRole('heading', { name });
     }
 }

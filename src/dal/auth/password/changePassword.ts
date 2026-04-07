@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
 import { sendPasswordChangedEmail } from "@/lib/email/passwordChangedEmail";
 import { SelfServiceChangePasswordDALSchema, SelfServiceChangePasswordDALType } from "@/zod/auth";
-import bcrypt from "bcrypt";
+import { compare as passwordCompare, hash } from "bcrypt";
 import { headers } from "next/headers";
 import { userAgent } from "next/server";
 import { RateLimiterMemory } from "rate-limiter-flexible";
@@ -74,7 +74,7 @@ export const changePassword = async (data: SelfServiceChangePasswordDALType): Pr
         throw new Error("User not found");
     }
 
-    const isValid = await bcrypt.compare(currentPassword, dbUser.password);
+    const isValid = await passwordCompare(currentPassword, dbUser.password);
     if (!isValid) {
         await userRateLimiter.consume(user.id);
         await logSecurityAuditEntry({
@@ -89,7 +89,7 @@ export const changePassword = async (data: SelfServiceChangePasswordDALType): Pr
         return { error: { formElement: "currentPassword", message: "custom.auth.invalidCurrentPassword" } };
     }
 
-    const hashedNewPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
+    const hashedNewPassword = await hash(newPassword, SALT_ROUNDS);
 
     const ironSession = await getIronSession();
     const currentSessionId = ironSession.sessionId;

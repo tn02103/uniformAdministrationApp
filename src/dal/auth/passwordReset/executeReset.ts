@@ -6,7 +6,7 @@ import { LogDebugLevel } from "@/dal/auth/LogDebugLeve.enum";
 import { prisma } from "@/lib/db";
 import { sendPasswordChangedEmail } from "@/lib/email/passwordChangedEmail";
 import { ResetPasswordDALSchema, ResetPasswordDALType } from "@/zod/auth";
-import bcrypt from "bcrypt";
+import { hash } from "bcrypt";
 import dayjs from "@/lib/dayjs";
 import { headers } from "next/headers";
 import { userAgent } from "next/server";
@@ -63,7 +63,7 @@ export const executePasswordReset = async (data: ResetPasswordDALType) => {
 
     // Hash the password before opening the transaction to avoid holding a DB
     // connection during the CPU-intensive bcrypt operation.
-    const passwordHash = await bcrypt.hash(newPassword, 12);
+    const passwordHash = await hash(newPassword, 12);
 
     // Capture context from within the transaction for richer log entries
     let logUserId: string | undefined;

@@ -2,7 +2,7 @@ import { genericSAValidator } from "@/actions/validations";
 import { getIronSession } from "@/lib/ironSession";
 import { sendPasswordChangedEmail } from "@/lib/email/passwordChangedEmail";
 import { prismaMock } from "@test-utils/prisma-mock";
-import bcrypt from "bcrypt";
+import { hash, compare } from "bcrypt";
 import { headers } from "next/headers";
 import { userAgent } from "next/server";
 import { getMockUserAgent } from "../__testHelpers__/mockData";
@@ -36,8 +36,8 @@ vi.mock("@/lib/email/passwordChangedEmail", () => ({
     sendPasswordChangedEmail: vi.fn().mockResolvedValue(undefined),
 }));
 
-const mockBcryptCompare = vi.mocked(bcrypt.compare);
-const mockBcryptHash = vi.mocked(bcrypt.hash);
+const mockBcryptCompare = vi.mocked(compare);
+const mockBcryptHash = vi.mocked(hash);
 const mockGenericSAValidator = vi.mocked(genericSAValidator);
 const mockGetIronSession = vi.mocked(getIronSession);
 const mockHeaders = vi.mocked(headers);
@@ -279,7 +279,7 @@ describe("changePassword", () => {
         it("logs a failed CHANGE_PASSWORD audit entry when user is not found", async () => {
             prismaMock.user.findUnique.mockResolvedValue(null);
             await expect(changePassword(baseProps)).rejects.toThrow("User not found");
-            
+
             expect(mockLogSecurityAuditEntry).toHaveBeenCalledTimes(1);
             expect(mockLogSecurityAuditEntry).toHaveBeenCalledWith({
                 action: "CHANGE_PASSWORD",

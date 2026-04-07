@@ -159,6 +159,9 @@ ADD CONSTRAINT "refresh_token_pkey" PRIMARY KEY ("id");
 -- AlterTable
 ALTER TABLE "authentication"."user"
 RENAME COLUMN "fk_assosiation" TO "organisation_id";
+ALTER TABLE "authentication"."user"
+ALTER COLUMN "username" SET DATA TYPE VARCHAR(30),
+ALTER COLUMN "password" SET DATA TYPE VARCHAR(100);
 
 ALTER TABLE "authentication"."user" 
 ADD COLUMN     "change_password_on_login" BOOLEAN NOT NULL DEFAULT false,

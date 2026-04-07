@@ -1,7 +1,7 @@
 import { getUserList } from "@/dal/user";
 import { getI18n, getScopedI18n } from "@/lib/locales/config";
 import { Col, Row } from "react-bootstrap";
-import UserAdminTable from "./table";
+import { UserTable } from "./_userTable/UserTable";
 
 export const dynamic = 'auto';
 export async function generateMetadata() {
@@ -20,7 +20,7 @@ export default async function UserAdminPage() {
             <h1 className="text-center">{t('admin.user.header.page')}</h1>
             <Row className="justify-content-center m-0">
                 <Col xs={12} xl={10} className="p-0 p-md-4">
-                    <UserAdminTable userList={users} />
+                    <UserTable initialUserList={users} />
                 </Col>
             </Row>
         </div>

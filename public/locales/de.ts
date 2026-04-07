@@ -189,8 +189,11 @@ export default {
                     pattern: "Der Nutzername darf keine Sonder oder Leerzeichen beinhalten",
                     duplicate: "Der Nutzername wird bereits von einem anderen Nutzer benutzt",
                 },
+                email: {
+                    duplicate: "Die E-Mail Adresse wird bereits von einem anderen Nutzer benutzt",
+                },
                 name: {
-                    patter: "Der Name darf keine Sonderzeichen oder Zahlen beinhalten",
+                    pattern: "Der Name darf keine Sonderzeichen oder Zahlen beinhalten",
                 }
             },
             custom: {
@@ -229,6 +232,7 @@ export default {
                     password: {
                         mismatch: "Die Passwörter stimmen nicht überein",
                     },
+
                 },
             },
         },
@@ -654,20 +658,36 @@ export default {
         user: {
             header: {
                 page: "Nutzerübersicht",
+            },
+            label: {
+                email: "E-Mail",
                 username: "Nutzername",
                 name: "Name",
                 role: "Role",
                 status: "Status",
+                password: "Passwort",
+                activeStatus: "Aktiv",
             },
-            deleteWarning: {
-                header: "Nutzer {user} löschen",
-                message: "Soll der Nutzer wirklich gelöscht werden",
+            actions: {
+                resetPassword: "Passwort zurücksetzen",
+                reset2FA: "2FA zurücksetzen",
+                "reset2FA.notAvailable": "Noch nicht verfügbar",
+                delete: "Benutzer {user} löschen",
+                deleteWarning: {
+                    header: "Nutzer {user} löschen",
+                    message: "Soll der Nutzer wirklich gelöscht werden",
+                },
+                deleted: "Nutzer erfolgreich gelöscht",
+                passwordReset: "Passwort erfolgreich zurückgesetzt",
+                saved: "Nutzer erfolgreich aktualisiert",
+                created: "Nutzer erfolgreich erstellt",
             },
             error: {
                 changePassword: "Das Ändern des Passworts ist fehlgeschlagen",
+                delete: "Das Löschen des Nutzers ist fehlgeschlagen",
+                create: "Das Anlegen des Nutzers ist fehlgeschlagen",
+                save: "Das Aktualisieren des Nutzers ist fehlgeschlagen",
             },
-            saved: "Nutzer erfolgreich aktualisiert",
-            created: "Nutzer erfolgreich erstellt",
         },
         deficiency: {
             disabled: "deaktiviert am: ",

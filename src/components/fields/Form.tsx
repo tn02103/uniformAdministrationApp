@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createContext, useContext, useMemo } from "react";
-import { FieldErrors, FieldValues, FormProvider, useForm, UseFormProps, UseFormReturn } from "react-hook-form";
+import { createFormControl, FieldErrors, FieldValues, FormProvider, useForm, UseFormProps, UseFormReturn } from "react-hook-form";
 import { ZodTypeAny } from "zod";
 
 
@@ -15,6 +15,7 @@ export const useFormContext = () => useContext(FormContext);
 
 type FormProps<TFieldValue extends FieldValues> = {
     onSubmit: (data: TFieldValue, form: UseFormReturn<TFieldValue>) => void;
+    formReturn?: UseFormReturn<TFieldValue>;
     onSubmitError?: (errors: FieldErrors<TFieldValue>, form: UseFormReturn<TFieldValue>) => void;
     children: React.ReactNode;
     disabled?: boolean;
@@ -26,6 +27,7 @@ type FormProps<TFieldValue extends FieldValues> = {
 export const Form = <TFieldValue extends FieldValues>({
     onSubmit,
     onSubmitError,
+    formReturn,
     disabled = false,
     plaintext = false,
     formName = 'unnamedForm',
@@ -34,7 +36,7 @@ export const Form = <TFieldValue extends FieldValues>({
     children,
     ...props
 }: FormProps<TFieldValue>) => {
-    const form = useForm<TFieldValue>({
+    const form = formReturn ? formReturn : useForm<TFieldValue>({
         mode,
         reValidateMode,
         resolver: props.zodSchema ? zodResolver(props.zodSchema) : undefined,
@@ -46,7 +48,7 @@ export const Form = <TFieldValue extends FieldValues>({
         plaintext,
         formName,
     }), [disabled, plaintext, formName]);
-
+    
     return (
         <form
             noValidate

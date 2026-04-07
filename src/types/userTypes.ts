@@ -4,6 +4,7 @@ export const userArgs = {
     select: {
         id: true,
         username: true,
+        email: true,
         name: true,
         active: true,
         role: true

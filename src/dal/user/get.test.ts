@@ -7,8 +7,8 @@ describe("<User> getUserList", () => {
 
     it("should return users filtered by organisationId and recDelete: null", async () => {
         const mockUsers = [
-            { id: "user-1", username: "test1", name: "Test User 1", active: true, role: 1 },
-            { id: "user-2", username: "test2", name: "Test User 2", active: false, role: 2 },
+            { id: "user-1", username: "test1", email: "test1@example.com", name: "Test User 1", active: true, role: 1 },
+            { id: "user-2", username: "test2", email: "test2@example.com", name: "Test User 2", active: false, role: 2 },
         ];
         prismaMock.user.findMany.mockResolvedValue(mockUsers as never);
 

@@ -49,4 +49,14 @@ describe("<User> getUserList", () => {
             data: { recDelete: null },
         });
     });
+
+    it("should include email field in response", async () => {
+        const result = await getUserList();
+
+        expect(result.length).toBeGreaterThan(0);
+        result.forEach((user) => {
+            expect(user).toHaveProperty("email");
+            expect(typeof user.email).toBe("string");
+        });
+    });
 });

@@ -14,8 +14,8 @@ describe("<User> deleteUser", () => {
     });
 
     it("should throw not-implemented error", async () => {
-        const userId = staticData.ids.userIds[0];
-        await expect(deleteUser({ userId })).rejects.toThrow(
+        const id = staticData.ids.userIds[0];
+        await expect(deleteUser({ id })).rejects.toThrow(
             "deleteUser is not yet implemented (TODO-010)"
         );
     });

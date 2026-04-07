@@ -22,13 +22,14 @@ describe("<User> createUser", () => {
 
     const validInput = {
         username: "newusr",
+        email: "newuser@example.com",
         name: "New User",
         role: AuthRole.user,
         active: true,
         password: "Password1",
     };
 
-    it("should create a user in the database", async () => {
+    it("should create a user in the database with explicit email", async () => {
         const { success } = await runServerActionTest(createUser(validInput));
         expect(success).toBe(true);
 
@@ -39,18 +40,37 @@ describe("<User> createUser", () => {
             },
         });
         expect(created).not.toBeNull();
+        expect(created?.email).toBe(validInput.email);
         expect(created?.name).toBe(validInput.name);
         expect(created?.active).toBe(validInput.active);
         expect(created?.role).toBe(validInput.role);
     });
 
-    it("should return error on duplicate username", async () => {
+    it("should return error on duplicate username and email", async () => {
         // First creation should succeed
         await runServerActionTest(createUser(validInput));
 
         // Second creation with same username should fail
-        const { success, result } = await runServerActionTest(createUser(validInput));
-        expect(success).toBe(false);
-        expect((result as { error: { formElement: string } }).error.formElement).toBe("username");
+        const { success: successUsername, result: resultUsername } = await runServerActionTest(
+            createUser({ ...validInput, email: "uniqueemail@example.com" })
+        );
+        expect(successUsername).toBe(false);
+        expect(resultUsername).toEqual(expect.objectContaining({
+            error: expect.objectContaining({
+                formElement: "username",
+            }),
+        }));
+
+        // Second creation with same email should fail
+        const { success: successEmail, result: resultEmail } = await runServerActionTest(
+            createUser({ ...validInput, username: "uniqueusername" })
+        );
+        expect(successEmail).toBe(false);
+        expect(resultEmail).toEqual(expect.objectContaining({
+            error: expect.objectContaining({
+                formElement: "email",
+            }),
+        }));
+
     });
 });

@@ -3,7 +3,7 @@
 import { AuthenticationException, AuthenticationExceptionData, ExceptionType, TwoFactorRequiredException } from "@/errors/Authentication";
 import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
-import { emailSchema, LoginFormSchema, LoginFormType, userNameSchema } from "@/zod/auth";
+import { emailSchema, LoginFormSchema, LoginFormType } from "@/zod/auth";
 import { Device, Organisation, User } from "@/prisma/client";
 import { cookies, headers } from "next/headers";
 import { userAgent } from "next/server";
@@ -14,6 +14,7 @@ import { LogDebugLevel } from "../LogDebugLeve.enum";
 import { handleSuccessfulLogin } from "./handleSuccessfulLogin";
 import { verifyUser } from "./verifyUser";
 import z from "zod";
+import { userNameSchema } from "@/zod/user";
 
 type LoginReturnType = {
     loginSuccessful: false;
