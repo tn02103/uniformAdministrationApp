@@ -3,9 +3,13 @@ import { revalidatePath } from "next/cache";
 import { hash } from "bcrypt";
 import { AuthRole } from "@/lib/AuthRoles";
 import { updateUser, changeUserPassword } from "./update";
+import { unsecuredGetUserList } from "./get";
 
 vi.mock("bcrypt", () => ({
     hash: vi.fn().mockResolvedValue("$2b$12$mocked-bcrypt-hash"),
+}));
+vi.mock("./get", () => ({
+    unsecuredGetUserList: vi.fn().mockResolvedValue("mocked-user-list"),
 }));
 
 const mockBcryptHash = vi.mocked(hash);
@@ -28,7 +32,7 @@ describe("<User> updateUser", () => {
 
         const result = await updateUser(validInput);
 
-        expect(result).toBeUndefined();
+        expect(result).toEqual("mocked-user-list");
         expect(prismaMock.user.update).toHaveBeenCalledWith({
             where: { id: validInput.id, organisationId: "test-organisation-id" },
             data: {
@@ -40,6 +44,17 @@ describe("<User> updateUser", () => {
                 failedLoginCount: 0,
             },
         });
+    });
+
+    it("should return userList on success", async () => {
+        const mockUserList = [{ id: "user1" }, { id: "user2" }];
+        prismaMock.user.findFirst.mockResolvedValue(null);
+        prismaMock.user.update.mockResolvedValue({} as any);
+        vi.mocked(unsecuredGetUserList).mockResolvedValue(mockUserList as any);
+
+        const result = await updateUser(validInput);
+
+        expect(result).toEqual(mockUserList);
     });
 
     it("should propagate error when user does not exist", async () => {
@@ -101,11 +116,11 @@ describe("<User> updateUser", () => {
         it("should allow updating own record when role is unchanged", async () => {
             prismaMock.user.findUnique.mockResolvedValue({ role: validInput.role } as never);
             prismaMock.user.findFirst.mockResolvedValue(null);
-            prismaMock.user.update.mockResolvedValue({} as never);
+            prismaMock.user.update.mockResolvedValue({} as any);
 
             const result = await updateUser(validInput);
 
-            expect(result).toBeUndefined();
+            expect(result).toEqual("mocked-user-list");
             expect(prismaMock.user.update).toHaveBeenCalled();
         });
     });

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { ChangePasswordInput, ChangePasswordSchema, UpdateUserDALInput, UpdateUserDALSchema } from "@/zod/user";
 import { hash } from "bcrypt";
 import { revalidatePath } from "next/cache";
+import { unsecuredGetUserList } from "./get";
 
 /**
  * Updates an existing user's profile fields within the caller's organisation.
@@ -66,6 +67,7 @@ export const updateUser = (data: UpdateUserDALInput) =>
                 where: { id, organisationId },
                 data: { username, email, name, role, active, failedLoginCount: 0 },
             });
+            return unsecuredGetUserList(organisationId);
         });
 
 /**

@@ -16,9 +16,10 @@ import { userArgs } from "@/types/userTypes";
  */
 export const getUserList = () =>
     genericSANoDataValidator(AuthRole.admin)
-        .then(([{ organisationId }]) =>
-            prisma.user.findMany({
-                where: { organisationId, recDelete: null },
-                ...userArgs,
-            })
-        );
+        .then(([{ organisationId }]) => unsecuredGetUserList(organisationId));
+
+export const unsecuredGetUserList = (organisationId: string) =>
+    prisma.user.findMany({
+        where: { organisationId, recDelete: null },
+        ...userArgs,
+    });

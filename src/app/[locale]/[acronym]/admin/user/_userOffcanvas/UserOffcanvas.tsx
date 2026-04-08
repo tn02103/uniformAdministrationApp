@@ -113,9 +113,9 @@ export const UserOffcanvas = ({
         await SAFormHandler(
             updateUser({...data, id: user!.id}),
             form.setError,
-            () => {
+            (data) => {
                 setEditable(false);
-                mutate();
+                mutate(data);
                 toast.success(t('admin.user.actions.saved'));
             },
             t('admin.user.error.save'),
@@ -279,7 +279,7 @@ export const UserOffcanvas = ({
                                 disabled={(!editable && !isNewUser) || isOwnRecord}
                                 valueAsNumber
                             />
-                            {isOwnRecord && (
+                            {(editable && isOwnRecord) && (
                                 <p className="form-text text-muted">{t('admin.user.role.selfChange.disabled')}</p>
                             )}
                         </Col>
