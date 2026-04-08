@@ -98,7 +98,7 @@
         "eslint-plugin-playwright": "2.10.1",
         "eslint-plugin-testing-library": "7.16.2",
         "jsdom": "29.0.1",
-        "playwright": "1.58.2",
+        "playwright": "1.59.1",
         "prisma": "7.6.0",
         "ts-node": "10.9.2",
         "tsx": "4.21.0",
