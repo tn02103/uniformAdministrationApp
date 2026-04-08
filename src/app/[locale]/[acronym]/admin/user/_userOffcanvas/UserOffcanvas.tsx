@@ -25,7 +25,8 @@ export type Props = {
     editable: boolean;
     setEditable: Dispatch<SetStateAction<boolean>>;
     setSelectedUserId: (id: string | null) => void;
-    mutate: KeyedMutator<User[] | undefined>;
+    mutate: KeyedMutator<User[]>;
+    currentUserId?: string;
 }
 
 /**
@@ -68,6 +69,7 @@ export const UserOffcanvas = ({
     setEditable,
     setSelectedUserId,
     mutate,
+    currentUserId,
 }: Props) => {
     const t = useI18n();
     const modal = useModal();
@@ -95,6 +97,8 @@ export const UserOffcanvas = ({
         { value: AuthRole.materialManager, label: t('common.user.authRole.3') },
         { value: AuthRole.admin, label: t('common.user.authRole.4') },
     ];
+
+    const isOwnRecord = !isNewUser && currentUserId === user?.id;
 
     const handleSave = async (data: UserFormInput, form: UseFormReturn<UserFormInput>) => {
 
@@ -232,7 +236,7 @@ export const UserOffcanvas = ({
                 >
                     <Row>
                         <Col xs={12}>
-                            <InputFormField<any>
+                            <InputFormField<UserFormInput>
                                 name="name"
                                 label={t('admin.user.label.name')}
                                 required
@@ -243,7 +247,7 @@ export const UserOffcanvas = ({
                     </Row>
                     <Row>
                         <Col xs={12}>
-                            <InputFormField<any>
+                            <InputFormField<UserFormInput>
                                 name="username"
                                 label={t('admin.user.label.username')}
                                 required
@@ -254,7 +258,7 @@ export const UserOffcanvas = ({
                     </Row>
                     <Row>
                         <Col xs={12}>
-                            <InputFormField<any>
+                            <InputFormField<UserFormInput>
                                 name="email"
                                 label={t('admin.user.label.email')}
                                 required
@@ -266,18 +270,21 @@ export const UserOffcanvas = ({
                     </Row>
                     <Row>
                         <Col xs={6}>
-                            <SelectFormField<any>
+                            <SelectFormField<UserFormInput>
                                 name="role"
                                 label={t('admin.user.label.role')}
                                 options={roleOptions}
                                 required
                                 plaintext={!editable && !isNewUser}
-                                disabled={!editable && !isNewUser}
+                                disabled={(!editable && !isNewUser) || isOwnRecord}
                                 valueAsNumber
                             />
+                            {isOwnRecord && (
+                                <p className="form-text text-muted">{t('admin.user.role.selfChange.disabled')}</p>
+                            )}
                         </Col>
                         <Col xs={6}>
-                            <ToggleFormField<any>
+                            <ToggleFormField<UserFormInput>
                                 name="active"
                                 label={t('admin.user.label.activeStatus')}
                                 disabled={!editable && !isNewUser}
@@ -287,7 +294,7 @@ export const UserOffcanvas = ({
                     {isNewUser && (
                         <Row>
                             <Col xs={12}>
-                                <InputFormField<any>
+                                <InputFormField<UserFormInput>
                                     name="password"
                                     label={t('admin.user.label.password')}
                                     required

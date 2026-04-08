@@ -97,9 +97,8 @@ describe("<UserTable />", () => {
         render(<UserTable initialUserList={mockUsers} />);
 
         // The role labels come from i18n mock
-        mockUsers.forEach(user => {
-            const roleText = screen.queryByText(`common.user.authRole.${user.role}`);
-            expect(roleText).toBeInTheDocument();
+        mockUsers.forEach(u => {
+            expect(screen.getByText(`common.user.authRole.${u.role}`)).toBeInTheDocument();
         });
     });
 
@@ -114,10 +113,10 @@ describe("<UserTable />", () => {
 
     describe("create button behavior", () => {
         it("renders create button", () => {
-            const { container } = render(<UserTable initialUserList={mockUsers} />);
+            render(<UserTable initialUserList={mockUsers} />);
 
             // Find button with variantKey="create"
-            const buttons = container.querySelectorAll("button");
+            const buttons = screen.getAllByRole("button");
             expect(buttons.length).toBeGreaterThan(0);
         });
 

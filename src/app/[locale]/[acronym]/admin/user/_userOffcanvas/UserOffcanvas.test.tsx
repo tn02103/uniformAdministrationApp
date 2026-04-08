@@ -109,7 +109,7 @@ describe("<UserOffcanvas />", () => {
             />
         );
 
-        expect(screen.queryByDisplayValue(mockUser.name)).toBeInTheDocument();
+        expect(screen.getByDisplayValue(mockUser.name)).toBeInTheDocument();
 
         rerender(
             <UserOffcanvas
@@ -699,6 +699,85 @@ describe("<UserOffcanvas />", () => {
                     expect(mockChangeUserPassword).toHaveBeenCalled();
                     expect(toast.error).toHaveBeenCalledWith("admin.user.error.changePassword");
                 });
+            });
+        });
+    });
+
+    describe("self-role-change guard", () => {
+        const adminUser: User = {
+            ...mockUser,
+            id: "admin-1",
+            role: AuthRole.admin,
+        };
+
+        it("disables role field when current user is editing their own record", () => {
+            render(
+                <UserOffcanvas
+                    user={adminUser}
+                    editable={true}
+                    setSelectedUserId={mockSetSelectedUserId}
+                    setEditable={mocksetEditable}
+                    mutate={mockMutate}
+                    currentUserId="admin-1"
+                />
+            );
+
+            expect(screen.getByRole("combobox", { name: /label.role/ })).toBeDisabled();
+            expect(screen.getByText("admin.user.role.selfChange.disabled")).toBeInTheDocument();
+        });
+
+        it("does not disable role field when editing a different user", () => {
+            render(
+                <UserOffcanvas
+                    user={adminUser}
+                    editable={true}
+                    setSelectedUserId={mockSetSelectedUserId}
+                    setEditable={mocksetEditable}
+                    mutate={mockMutate}
+                    currentUserId="other-user-id"
+                />
+            );
+
+            expect(screen.getByRole("combobox", { name: /label.role/ })).toBeEnabled();
+            expect(screen.queryByText("admin.user.role.selfChange.disabled")).not.toBeInTheDocument();
+        });
+
+        it("does not disable role field when no currentUserId is provided", () => {
+            render(
+                <UserOffcanvas
+                    user={adminUser}
+                    editable={true}
+                    setSelectedUserId={mockSetSelectedUserId}
+                    setEditable={mocksetEditable}
+                    mutate={mockMutate}
+                />
+            );
+
+            expect(screen.getByRole("combobox", { name: /label.role/ })).toBeEnabled();
+        });
+
+        it("surfaces user.role.selfChange error from updateUser on the role field", async () => {
+            mockUpdateUser.mockResolvedValue({
+                error: { message: "user.role.selfChange", formElement: "role" },
+            });
+            const user = userEvent.setup();
+            render(
+                <UserOffcanvas
+                    editable={true}
+                    user={mockUser}
+                    setSelectedUserId={mockSetSelectedUserId}
+                    setEditable={mocksetEditable}
+                    mutate={mockMutate}
+                />
+            );
+
+            await user.click(screen.getByRole("button", { name: /actions.save/ }));
+
+            await waitFor(() => {
+                expect(mockUpdateUser).toHaveBeenCalled();
+                expect(screen.getByRole("alert", { name: "error message role" })).toHaveTextContent("user.role.selfChange");
+                expect(mocksetEditable).not.toHaveBeenCalled();
+                expect(mockMutate).not.toHaveBeenCalled();
             });
         });
     });

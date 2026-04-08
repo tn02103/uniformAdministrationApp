@@ -111,6 +111,59 @@ describe("<User> updateUser", () => {
             })
         }));
     });
+
+    describe("self-role-change guard", () => {
+        beforeEach(() => {
+            global.__USERID__ = staticData.ids.userIds[0];
+        });
+        afterEach(() => {
+            delete global.__USERID__;
+        });
+
+        it("should return selfChange error when session user tries to change their own role", async () => {
+            const id = staticData.ids.userIds[0];
+
+            const { success, result } = await runServerActionTest(
+                updateUser({
+                    id,
+                    username: "selfupd01",
+                    email: "selfupd01@example.com",
+                    name: "Test Admin",
+                    role: AuthRole.user,
+                    active: true,
+                })
+            );
+
+            expect(success).toBe(false);
+            expect(result).toEqual(expect.objectContaining({
+                error: expect.objectContaining({
+                    formElement: "role",
+                    message: "user.role.selfChange",
+                }),
+            }));
+
+            const userAfter = await prisma.user.findUnique({ where: { id } });
+            expect(userAfter?.role).toBe(AuthRole.admin);
+        });
+
+        it("should allow updating own record when role is unchanged", async () => {
+            const id = staticData.ids.userIds[0];
+            const currentUser = await prisma.user.findUnique({ where: { id } });
+
+            const { success } = await runServerActionTest(
+                updateUser({
+                    id,
+                    username: "selfupd01",
+                    email: "selfupd01@example.com",
+                    name: "Updated Own Name",
+                    role: currentUser!.role,
+                    active: true,
+                })
+            );
+
+            expect(success).toBe(true);
+        });
+    });
 });
 
 describe("<User> changeUserPassword", () => {

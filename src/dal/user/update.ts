@@ -20,11 +20,22 @@ import { revalidatePath } from "next/cache";
  * @returns `undefined` on success, or one of the following error shapes:
  *   - `{ error: { formElement: "username"; message: "user.username.duplication" } }` — username taken by another user
  *   - `{ error: { formElement: "email"; message: "user.email.duplication" } }` — email taken by another user
+ *   - `{ error: { formElement: "role"; message: "user.role.selfChange" } }` — admin tried to change their own role
  * @throws {Error} If the record does not exist or does not belong to the caller's organisation.
  */
 export const updateUser = (data: UpdateUserDALInput) =>
     genericSAValidator(AuthRole.admin, data, UpdateUserDALSchema, { userId: data.id })
-        .then(async ([{ organisationId }, { id, username, email, name, role, active }]) => {
+        .then(async ([{ organisationId, id: sessionUserId }, { id, username, email, name, role, active }]) => {
+            if (sessionUserId === id) {
+                const currentUser = await prisma.user.findUnique({
+                    where: { id, organisationId },
+                    select: { role: true },
+                });
+                if (currentUser && currentUser.role !== role) {
+                    return { error: { formElement: "role", message: "user.role.selfChange" } };
+                }
+            }
+
             const [usernameExists, emailExists] = await prisma.$transaction([
                 prisma.user.findFirst({
                     where: { organisationId, username, NOT: { id } },

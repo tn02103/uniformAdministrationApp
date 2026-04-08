@@ -10,6 +10,7 @@ import { UserOffcanvas } from "../_userOffcanvas/UserOffcanvas";
 
 type Props = {
     initialUserList: User[];
+    currentUserId?: string;
 }
 
 /**
@@ -40,7 +41,7 @@ type Props = {
  *
  * @param initialUserList - Users prefetched on the server, used as SWR fallback data.
  */
-export const UserTable = ({ initialUserList }: Props) => {
+export const UserTable = ({ initialUserList, currentUserId = "" }: Props) => {
     const t = useI18n();
     const { userList, mutate } = useUserList(initialUserList);
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -113,7 +114,8 @@ export const UserTable = ({ initialUserList }: Props) => {
                     editable={editable}
                     setEditable={setEditable}
                     setSelectedUserId={setSelectedUserId}
-                    mutate={mutate as any}
+                    mutate={mutate}
+                    currentUserId={currentUserId}
                 />
             )}
         </>

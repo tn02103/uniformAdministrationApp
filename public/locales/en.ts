@@ -667,6 +667,11 @@ export default {
                 password: "Password",
                 activeStatus: "Active",
             },
+            role: {
+                selfChange: {
+                    disabled: "You cannot change your own role. Ask another admin to do this.",
+                },
+            },
             actions: {
                 resetPassword: "Reset password",
                 reset2FA: "Reset 2FA",

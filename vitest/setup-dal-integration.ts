@@ -35,6 +35,7 @@ vi.mock('@/lib/ironSession', () => ({
         const organisationId = global.__ORGANISATION__ ?? staticData.organisationId;
         return {
             user: {
+                id: global.__USERID__ ?? staticData.ids.userIds[0],
                 name: 'VK Verwaltung',
                 username: global.__USERNAME__ ?? 'mana',
                 organisationId: organisationId,

@@ -77,6 +77,38 @@ describe("<User> updateUser", () => {
         });
         expect(prismaMock.user.update).not.toHaveBeenCalled();
     });
+
+    describe("self-role-change guard", () => {
+        beforeEach(() => {
+            global.__USERID__ = validInput.id;
+        });
+        afterEach(() => {
+            delete global.__USERID__;
+        });
+
+        it("should return selfChange error when session user tries to change their own role", async () => {
+            prismaMock.user.findUnique.mockResolvedValue({ role: AuthRole.admin } as never);
+
+            const result = await updateUser({ ...validInput, role: AuthRole.user });
+
+            expect(result).toEqual({
+                error: { formElement: "role", message: "user.role.selfChange" },
+            });
+            expect(prismaMock.user.findFirst).not.toHaveBeenCalled();
+            expect(prismaMock.user.update).not.toHaveBeenCalled();
+        });
+
+        it("should allow updating own record when role is unchanged", async () => {
+            prismaMock.user.findUnique.mockResolvedValue({ role: validInput.role } as never);
+            prismaMock.user.findFirst.mockResolvedValue(null);
+            prismaMock.user.update.mockResolvedValue({} as never);
+
+            const result = await updateUser(validInput);
+
+            expect(result).toBeUndefined();
+            expect(prismaMock.user.update).toHaveBeenCalled();
+        });
+    });
 });
 
 describe("<User> changeUserPassword", () => {

@@ -36,12 +36,13 @@ export const Form = <TFieldValue extends FieldValues>({
     children,
     ...props
 }: FormProps<TFieldValue>) => {
-    const form = formReturn ? formReturn : useForm<TFieldValue>({
+    const internalForm = useForm<TFieldValue>({
         mode,
         reValidateMode,
         resolver: props.zodSchema ? zodResolver(props.zodSchema) : undefined,
         ...props,
     });
+    const form = formReturn ?? internalForm;
 
     const formContextValue = useMemo(() => ({
         disabled,

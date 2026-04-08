@@ -668,6 +668,11 @@ export default {
                 password: "Passwort",
                 activeStatus: "Aktiv",
             },
+            role: {
+                selfChange: {
+                    disabled: "Sie können Ihre eigene Rolle nicht ändern. Bitten Sie einen anderen Administrator, dies zu tun.",
+                },
+            },
             actions: {
                 resetPassword: "Passwort zurücksetzen",
                 reset2FA: "2FA zurücksetzen",

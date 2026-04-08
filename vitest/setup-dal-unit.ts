@@ -164,6 +164,7 @@ const prismaMock = {
         create: vi.fn(),
         update: vi.fn(),
         updateMany: vi.fn(),
+        count: vi.fn(),
     },
     refreshToken: {
         create: vi.fn(),
@@ -234,10 +235,12 @@ vi.mock("@/actions/validations", () => ({
     genericSAValidator: vi.fn((_, props) => Promise.resolve([{
         organisationId: global.__ORGANISATION__ ?? 'test-organisation-id',
         username: global.__USERNAME__ ?? 'testuser',
+        id: global.__USERID__ ?? 'test-user-id',
     }, props])),
     genericSANoDataValidator: vi.fn(() => Promise.resolve([{
         organisationId: global.__ORGANISATION__ ?? 'test-organisation-id',
-        username: global.__USERNAME__ ?? 'testuser'
+        username: global.__USERNAME__ ?? 'testuser',
+        id: global.__USERID__ ?? 'test-user-id',
     }])),
 }));
 
