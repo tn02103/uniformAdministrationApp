@@ -47,7 +47,7 @@
         "date-fns": "4.1.0",
         "dayjs": "1.11.20",
         "debounce": "2.2.0",
-        "dotenv": "17.3.1",
+        "dotenv": "17.4.0",
         "exceljs": "4.4.0",
         "iron-session": "8.0.4",
         "jsonwebtoken": "9.0.3",
