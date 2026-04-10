@@ -14,6 +14,10 @@ vi.mock("./get", () => ({
 const mockBcryptHash = vi.mocked(hash);
 
 describe("<User> updateUser", () => {
+    const mockedUnsecuredGetUserList = vi.mocked(unsecuredGetUserList);
+    beforeEach(() => {
+        mockedUnsecuredGetUserList.mockResolvedValue("mocked-user-list" as any);
+    })
     afterEach(() => vi.clearAllMocks());
 
     const validInput = {

@@ -8,6 +8,7 @@ describe('genericSAValidatorV2', () => {
     it('validate correct role', async () => {
         const result = await genericSAValidatorV2(AuthRole.materialManager, true, {});
         expect(result).toEqual({
+            id: staticData.ids.userIds[0],
             name: 'VK Verwaltung',
             username: 'mana',
             organisationId: staticData.data.organisation.id,
@@ -34,6 +35,7 @@ describe('genericSAValidator', () => {
     it('validate correct role', async () => {
         const result = await genericSAValidator(AuthRole.materialManager, "somestring", z.string(), {});
         expect(result[0]).toEqual({
+            id: staticData.ids.userIds[0],
             name: 'VK Verwaltung',
             username: 'mana',
             organisationId: staticData.data.organisation.id,
