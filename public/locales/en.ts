@@ -681,6 +681,8 @@ export default {
                     header: "Delete user {user}",
                     message: "Are you sure the user should be deleted",
                 },
+            },
+            success: {
                 deleted: "User deleted successfully",
                 passwordReset: "Password reset successfully",
                 saved: "User updated successfully",
@@ -688,9 +690,9 @@ export default {
             },
             error: {
                 changePassword: "Saving of the password failed",
-                delete: "Das Löschen des Nutzers ist fehlgeschlagen",
-                create: "Das Anlegen des Nutzers ist fehlgeschlagen",
-                save: "Das Aktualisieren des Nutzers ist fehlgeschlagen",
+                delete: "Deleting the user failed",
+                create: "Creating the user failed",
+                save: "Updating the user failed",
 
             },
         },

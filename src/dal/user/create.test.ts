@@ -1,5 +1,4 @@
 import { prismaMock } from "@test-utils/prisma-mock";
-import { revalidatePath } from "next/cache";
 import { hash } from "bcrypt";
 import { AuthRole } from "@/lib/AuthRoles";
 import { createUser } from "./create";
@@ -22,7 +21,7 @@ const validInput = {
 describe("<User> createUser", () => {
     afterEach(() => vi.clearAllMocks());
 
-    it("should create a user and revalidate path on success", async () => {
+    it("should create a user on success", async () => {
         prismaMock.user.findFirst.mockResolvedValue(null);
         prismaMock.user.create.mockResolvedValue({} as never);
 

@@ -1,6 +1,5 @@
 import { AuthRole } from "@/lib/AuthRoles";
 import { z } from "zod";
-import { id } from "zod/v4/locales";
 
 export const userNameSchema = z.string()
     .trim()

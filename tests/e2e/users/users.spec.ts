@@ -2,7 +2,6 @@ import { prisma } from "@/lib/db";
 import { expect } from "playwright/test";
 import { UserAdministrationPage } from "../../_playwrightConfig/pages/admin/user/userAdministration.page";
 import { adminTest, managerTest } from "../../_playwrightConfig/setup";
-import { setTimeout } from "timers/promises";
 
 type Fixture = {
     userPage: UserAdministrationPage;
@@ -86,7 +85,7 @@ test.describe('User administration page', () => {
         });
     });
 
-    // Not Jet implemented. 
+    // Not yet implemented. 
     test.fixme('delete user', async ({ userPage, staticData }) => {
         const users = await staticData.data.users();
         const targetUser = users[3]; // test1 - role Nutzer, non-admin

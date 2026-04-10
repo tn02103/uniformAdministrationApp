@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { vi, type Mock } from "vitest";
+import { vi } from "vitest";
 import { UserTable } from "./UserTable";
 import { User } from "@/types/userTypes";
 import { Props } from "../_userOffcanvas/UserOffcanvas";
@@ -120,8 +120,8 @@ describe("<UserTable />", () => {
             expect(buttons.length).toBeGreaterThan(0);
         });
 
-        // it disables create button when editable is true
-        it("disables create and row buttons when editable is true", async () => {
+        // it disables create button when user is being created
+        it("disables create and row buttons when user is being created", async () => {
             const user = userEvent.setup();
             render(<UserTable initialUserList={mockUsers} />);
 
@@ -193,7 +193,6 @@ describe("<UserTable />", () => {
             const user = userEvent.setup();
             render(<UserTable initialUserList={mockUsers} />);
 
-            // Click create button to set editable true
             const row1 = screen.getByRole("row", { name: /johndoe/i });
             const row2 = screen.getByRole("row", { name: /janesmith/i });
             const createButton = screen.getByRole("button", { name: /create/i });

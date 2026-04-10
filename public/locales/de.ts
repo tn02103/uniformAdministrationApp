@@ -663,7 +663,7 @@ export default {
                 email: "E-Mail",
                 username: "Nutzername",
                 name: "Name",
-                role: "Role",
+                role: "Rolle",
                 status: "Status",
                 password: "Passwort",
                 activeStatus: "Aktiv",
@@ -682,6 +682,8 @@ export default {
                     header: "Nutzer {user} löschen",
                     message: "Soll der Nutzer wirklich gelöscht werden",
                 },
+            },
+            success: {
                 deleted: "Nutzer erfolgreich gelöscht",
                 passwordReset: "Passwort erfolgreich zurückgesetzt",
                 saved: "Nutzer erfolgreich aktualisiert",

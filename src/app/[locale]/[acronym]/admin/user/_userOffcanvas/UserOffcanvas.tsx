@@ -83,8 +83,6 @@ export const UserOffcanvas = ({
     });
     const { reset } = form;
 
-    // Use two separate forms to avoid union type issues
-
     useEffect(() => {
         if (!editable && !isNewUser && user) {
             reset(user, { keepDirty: false, keepTouched: false, keepValues: false });
@@ -116,7 +114,7 @@ export const UserOffcanvas = ({
             (data) => {
                 setEditable(false);
                 mutate(data);
-                toast.success(t('admin.user.actions.saved'));
+                toast.success(t('admin.user.success.saved'));
             },
             t('admin.user.error.save'),
         );
@@ -130,7 +128,7 @@ export const UserOffcanvas = ({
                 setEditable(false);
                 setSelectedUserId(null);
                 mutate();
-                toast.success(t('admin.user.actions.created'));
+                toast.success(t('admin.user.success.created'));
             },
             t('admin.user.error.create'),
         );
@@ -157,7 +155,7 @@ export const UserOffcanvas = ({
                     changeUserPassword({ id: user.id, password }),
                     null,
                     () => {
-                        toast.success(t('admin.user.actions.passwordReset'));
+                        toast.success(t('admin.user.success.passwordReset'));
                     },
                     t('admin.user.error.changePassword'),
                 );
@@ -182,7 +180,7 @@ export const UserOffcanvas = ({
                         () => {
                             setSelectedUserId(null);
                             mutate();
-                            toast.success(t('admin.user.actions.deleted'));
+                            toast.success(t('admin.user.success.deleted'));
                         },
                         t('admin.user.error.delete'),
                     );

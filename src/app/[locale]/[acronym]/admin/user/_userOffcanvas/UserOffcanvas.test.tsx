@@ -619,7 +619,7 @@ describe("<UserOffcanvas />", () => {
                     expect(mockDeleteUser).toHaveBeenCalledWith({ id: mockUser.id });
                     expect(mockSetSelectedUserId).toHaveBeenCalledWith(null);
                     expect(mockMutate).toHaveBeenCalled();
-                    expect(toast.success).toHaveBeenCalledWith("admin.user.actions.deleted");
+                    expect(toast.success).toHaveBeenCalledWith("admin.user.success.deleted");
                 });
             });
 
@@ -673,7 +673,7 @@ describe("<UserOffcanvas />", () => {
 
                 await waitFor(() => {
                     expect(mockChangeUserPassword).toHaveBeenCalledWith({ id: mockUser.id, password: "NewPassword1" });
-                    expect(toast.success).toHaveBeenCalledWith("admin.user.actions.passwordReset");
+                    expect(toast.success).toHaveBeenCalledWith("admin.user.success.passwordReset");
                 });
             });
 

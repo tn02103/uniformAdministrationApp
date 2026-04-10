@@ -3,7 +3,6 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { ChangePasswordInput, ChangePasswordSchema, UpdateUserDALInput, UpdateUserDALSchema } from "@/zod/user";
 import { hash } from "bcrypt";
-import { revalidatePath } from "next/cache";
 import { unsecuredGetUserList } from "./get";
 
 /**
@@ -15,7 +14,6 @@ import { unsecuredGetUserList } from "./get";
  *   a *different* user in the same organisation (parallel transaction). Returns a form-level
  *   error on conflict instead of throwing.
  * - On success, resets `failedLoginCount` to 0 (unlocks any login-lockout state).
- * - Revalidates `/[locale]/{organisationId}/admin/user` on success.
  *
  * @param data - Validated payload: `id`, `username`, `email`, `name`, `role`, `active`.
  * @returns `undefined` on success, or one of the following error shapes:
@@ -80,7 +78,6 @@ export const updateUser = (data: UpdateUserDALInput) =>
  *   for the target user, forcing re-authentication on their next request.
  * - Does NOT invalidate existing session records (unlike `changePassword`, which preserves
  *   the caller's own session).
- * - Revalidates `/[locale]/{organisationId}/admin/user` on success.
  *
  * @param data - Validated payload: `id` (target user UUID), `password` (new plaintext password).
  * @returns `undefined` on success.
@@ -96,7 +93,7 @@ export const changeUserPassword = (data: ChangePasswordInput) =>
                     data: { password: hashedPassword },
                 }),
                 prisma.refreshToken.deleteMany({
-                    where: { id },
+                    where: { userId: id },
                 }),
             ]);
         });

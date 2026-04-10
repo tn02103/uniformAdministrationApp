@@ -1,5 +1,4 @@
 import { prismaMock } from "@test-utils/prisma-mock";
-import { revalidatePath } from "next/cache";
 import { hash } from "bcrypt";
 import { AuthRole } from "@/lib/AuthRoles";
 import { updateUser, changeUserPassword } from "./update";
@@ -147,7 +146,7 @@ describe("<User> changeUserPassword", () => {
             data: { password: "$2b$12$mocked-bcrypt-hash" },
         });
         expect(prismaMock.refreshToken.deleteMany).toHaveBeenCalledWith({
-            where: { id: validInput.id },
+            where: { userId: validInput.id },
         });
     });
 

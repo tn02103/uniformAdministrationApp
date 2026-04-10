@@ -72,7 +72,7 @@ describe("<User> updateUser", () => {
         expect(userAfter?.email).not.toBe("hacked@example.com");
     });
 
-    it("shoule not allow updating to a duplicate username or email", async () => {
+    it("should not allow updating to a duplicate username or email", async () => {
         const id = staticData.ids.userIds[3]; // role 1, active user
         const existingUsername = "test4"
         const existingEmail = "test4@test.com";
