@@ -1,6 +1,6 @@
 ---
 description: "Git and GitHub operations agent. Use when: creating commits, pushing branches, creating pull requests, or updating ticket status in the GitHub project board."
-tools: [execute, read, mcp_github/*]
+tools: [execute, read, github/*]
 model: GPT-5 mini
 user-invocable: false
 ---

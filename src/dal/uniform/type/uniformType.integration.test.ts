@@ -3,14 +3,14 @@ import { cleanDataV2, runServerActionTest } from "@/dal/_helper/testHelper";
 import { prisma } from "@/lib/db";
 import { UniformType } from "@/types/globalUniformTypes";
 import { checkDateTolerance } from "../../../../vitest/helpers/test-utils";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData } from "../../../../vitest/setup-dal-integration";
 import { create } from "./create";
 import { markDeleted } from "./delete";
 import { getList, getType } from "./get";
 import { update } from "./update";
 import { changeSortOrder } from "./sortOrder";
 
-const { ids, cleanup, organisationId, data } = new StaticData(0);
+const { ids, cleanup, organisationId, data } = staticData;
 
 describe('<UniformType> Integration Tests', () => {
     afterEach(async () => {

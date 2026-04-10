@@ -1,10 +1,7 @@
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData, wrongOrganisation as wrongOrg } from "../../../vitest/setup-dal-integration";
 import { getUserList } from "./get";
-
-const staticData = new StaticData(0);
-const wrongOrg = new StaticData(1);
 
 describe("<User> getUserList", () => {
     beforeAll(async () => {

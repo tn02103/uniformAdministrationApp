@@ -1,6 +1,6 @@
 ---
 description: "Playwright E2E test agent. Use when: writing or updating E2E tests in tests/e2e/ after a successful build. Covers full user workflows, role-based access, and acceptance criteria validation."
-tools: [read, edit, search, execute, todo]
+tools: [read, edit, search, execute, todo, playwright/*]
 user-invocable: false
 ---
 

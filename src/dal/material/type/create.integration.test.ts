@@ -1,10 +1,10 @@
 import { runServerActionTest } from "@/dal/_helper/testHelper";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData } from "../../../../vitest/setup-dal-integration";
 import { create } from "./create";
 import { prisma } from "@/lib/db";
 import { uuidValidationPattern } from "@/lib/validations";
 
-const { ids, cleanup } = new StaticData(0);
+const { ids, cleanup } = staticData;
 const defaultProps = {
     groupId: ids.materialGroupIds[1],
     data: {

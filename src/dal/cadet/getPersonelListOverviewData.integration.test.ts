@@ -1,12 +1,12 @@
 import { getPersonnelListOverviewData } from "@/dal/cadet/getPersonnelListOverviewData";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData } from "../../../vitest/setup-dal-integration";
 import { compareDates, runServerActionTest } from "../_helper/testHelper";
 import { insertSvenKellerFirstInspection } from "../../../tests/_playwrightConfig/testData/dynamicData";
 import { PersonnelListCadet } from "@/types/globalCadetTypes";
 
-const { data, ids, cleanup } = new StaticData(0);
+const { data, ids, cleanup } = staticData;
 const { cadetIds } = ids;
 
 const defaultProps = {
@@ -98,7 +98,7 @@ describe('manager tests', () => {
                 where: { id: ids.inspectionIds[4] },
                 data: { timeStart: "10:00" }
             });
-            await insertSvenKellerFirstInspection(0);
+            await insertSvenKellerFirstInspection(staticData.index);
         });
         afterAll(() => cleanup.inspection());
         it('validate default filter on active inspection', async () => {
@@ -193,7 +193,7 @@ describe('user tests', () => {
                 where: { id: ids.inspectionIds[4] },
                 data: { timeStart: "10:00" }
             });
-            await insertSvenKellerFirstInspection(0);
+            await insertSvenKellerFirstInspection(staticData.index);
         });
         afterAll(() => cleanup.inspection());
         it('validate default filter on active inspection', async () => {

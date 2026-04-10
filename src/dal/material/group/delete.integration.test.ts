@@ -1,9 +1,7 @@
 import { isToday, runServerActionTest } from "@/dal/_helper/testHelper";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData } from "../../../../vitest/setup-dal-integration";
 import { markDeleted } from "./delete";
 import { prisma } from "@/lib/db";
-
-const staticData = new StaticData(0);
 const groupId = staticData.ids.materialGroupIds[1];
 describe('validate deletion', () => {
     afterAll(async () => staticData.cleanup.materialConfig());

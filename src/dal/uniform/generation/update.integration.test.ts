@@ -1,9 +1,9 @@
 import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { update } from "./update";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData, wrongOrganisation } from "../../../../vitest/setup-dal-integration";
 import { prisma } from "@/lib/db";
 
-const { ids, cleanup } = new StaticData(0);
+const { ids, cleanup } = staticData;
 
 const defaultData = {
     name: 'NewName',
@@ -99,7 +99,6 @@ it('should succeed with fk_sizelist null when not using sizes', async () => {
 });
 
 it('should throw error when fk_sizelist is from different organisation', async () => {
-    const wrongOrganisation = new StaticData(1);
     const { success } = await runServerActionTest(
         update({
             id: ids.uniformGenerationIds[0],

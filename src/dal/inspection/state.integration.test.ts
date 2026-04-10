@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getInspectionState } from "@/dal/inspection/state";
 import { prisma } from "@/lib/db";
-import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData } from "../../../vitest/setup-dal-integration";
 import dayjs from "@/lib/dayjs";
-
-const staticData = new StaticData(0);
 const inspectionIds = staticData.ids.inspectionIds;
 afterEach(() => staticData.cleanup.inspection());
 

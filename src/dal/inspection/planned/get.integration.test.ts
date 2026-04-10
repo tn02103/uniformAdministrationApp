@@ -1,9 +1,7 @@
 import { getPlannedInspectionList } from "@/dal/inspection/planned/get"
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData } from "../../../../vitest/setup-dal-integration";
 import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
-
-const staticData = new StaticData(0);
 describe('getPlannedInspectionList', () => {
     it('correct sortorder (expired, today, planned)', async () => {
         const result = await getPlannedInspectionList();

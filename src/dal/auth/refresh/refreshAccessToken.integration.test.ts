@@ -19,11 +19,12 @@
  *      RateLimiterMemory state between test groups.
  */
 
+import { redis } from '@/dal/auth/redis';
 import dayjs from '@/lib/dayjs';
 import { prisma } from '@/lib/db';
 import { getIronSession } from '@/lib/ironSession';
 import crypto, { randomUUID } from 'crypto';
-import { StaticData } from '../../../../tests/_playwrightConfig/testData/staticDataLoader';
+import { staticData, wrongOrganisation } from '../../../../vitest/setup-dal-integration';
 import {
     authMockData,
     getCookieMockFactory,
@@ -33,7 +34,6 @@ import {
 } from '../__testHelpers__/mockData';
 import { AuthConfig } from '../config';
 import { sha256Hex } from '../helper.tokens';
-import { redis } from '@/dal/auth/redis';
 import { refreshToken as refreshAccessToken } from './refreshAccessToken';
 
 // ===== REDIS MOCK (ioredis-mock) =====
@@ -95,7 +95,6 @@ const IPS = {
 const flushRedis = () => redis!.flushall();
 
 describe('refreshAccessToken Integration Tests', () => {
-    const staticData = new StaticData(0);
     let testUserId: string;
 
     // Stable per-run constants — device / token DB rows are recreated each beforeEach
@@ -364,9 +363,9 @@ describe('refreshAccessToken Integration Tests', () => {
         });
 
         it('C14: should return 401 when account cookie organisationId does not match the user in DB', async () => {
-            // Use StaticData(1).organisationId – this org is created by the global
-            // setup-dal-integration.ts so the FK on AuditLog.organisationId is satisfied.
-            const wrongOrgId = new StaticData(1).organisationId;
+            // Use the static wrong-org (index 0) — created by setup-dal-integration.ts
+            // so the FK on AuditLog.organisationId is satisfied.
+            const wrongOrgId = wrongOrganisation.organisationId
             const { cookieFactory: wrongOrgCookieFactory } = getCookieMockFactory({
                 deviceId: testDeviceId,
                 refreshToken: testRefreshToken,

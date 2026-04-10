@@ -1,23 +1,20 @@
 ﻿import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData, wrongOrganisation } from "../../../vitest/setup-dal-integration";
 import { runServerActionTest } from "../_helper/testHelper";
 import { changeUserPassword, updateUser } from "./update";
 import { compare } from "bcrypt";
-
-const staticData = new StaticData(0);
-const wrongOrg = new StaticData(1);
 
 describe("<User> updateUser", () => {
     beforeAll(async () => {
         global.__ROLE__ = AuthRole.admin;
         await staticData.cleanup.user();
-        await wrongOrg.cleanup.user();
+        await wrongOrganisation.cleanup.user();
     });
 
     afterEach(async () => {
         await staticData.cleanup.user();
-        await wrongOrg.cleanup.user();
+        await wrongOrganisation.cleanup.user();
     });
 
     afterAll(() => {
@@ -49,7 +46,7 @@ describe("<User> updateUser", () => {
     });
 
     it("should not allow cross-org user updates", async () => {
-        const wrongOrgUserId = wrongOrg.ids.userIds[0];
+        const wrongOrgUserId = wrongOrganisation.ids.userIds[0];
         global.__ROLE__ = AuthRole.admin;
 
         const { success } = await runServerActionTest(

@@ -1,8 +1,6 @@
 import { AuthRole } from "@/lib/AuthRoles";
-import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData } from "../../../vitest/setup-dal-integration";
 import { deleteUser } from "./delete";
-
-const staticData = new StaticData(0);
 
 describe("<User> deleteUser", () => {
     beforeAll(() => {

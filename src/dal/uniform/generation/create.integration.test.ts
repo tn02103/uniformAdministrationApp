@@ -1,9 +1,9 @@
 import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { prisma } from "@/lib/db";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData } from "../../../../vitest/setup-dal-integration";
 import { create } from "./create";
 
-const { ids, cleanup } = new StaticData(0);
+const { ids, cleanup } = staticData;
 
 // Integration tests for create function - focus on database effects only
 // Business logic, error handling, and edge cases are covered by unit tests
