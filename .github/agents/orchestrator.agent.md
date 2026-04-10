@@ -1,6 +1,6 @@
 ---
 description: "Main workflow orchestrator. Use when: starting a new feature, fixing a bug, adding requirements to an existing feature, or implementing PR review comments. Coordinates all specialist agents from ticket to merged PR."
-tools: [read, search, execute, agent, todo]
+tools: [read, search, edit, execute, agent, todo, github/*, playwright/*]
 agents: [setup, planner, prisma, dal-implementer, frontend-implementer, e2e, reviewer, git-ops]
 ---
 
@@ -38,7 +38,11 @@ Delegate to the `setup` agent with:
 - `ticket_number`: from the plan
 - `workflow_type`: from the plan
 - `branch_name`: computed as `feature/#<n>-<slug>` (new-feature) or `bugfix/#<n>-<slug>` (fix-bug), slug derived from ticket title; for `add-requirement`/`implement-review` pass the current session branch
+<<<<<<< Updated upstream
 - `base_branch`: `plan.epic_branch` if set, otherwise `develop`
+=======
+- `base_branch`: `plan.epic_branch` if set, otherwise if ticket has parent issue search for existing epic branch matching `epic/#<parent-issue-number>-*` and use it; otherwise `develop`
+>>>>>>> Stashed changes
 
 If `SETUP_RESULT.status: fail`: STOP and report to user — do not proceed with implementation.
 
@@ -159,3 +163,4 @@ Update the todo list to mark the workflow complete.
 - **Stop and ask the user** on any unrecoverable failure — never guess or silently skip steps
 - **Update the session file** after every step
 - **Maintain the todo list** throughout the workflow so progress is always visible
+  
