@@ -1,9 +1,9 @@
 import { cleanData, cleanDataV2 } from "@/dal/_helper/testHelper";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData } from "../../../../vitest/setup-dal-integration";
 import { getUniformItemCountByType, getUniformItemLabels, getUniformListWithOwner } from "./_index";
 import { getDeficiencies, getHistory } from "./get";
 
-const { ids, data } = new StaticData(0);
+const { ids, data } = staticData;
 
 it('should return a list of uniform history entries', async () => {
     const uniformId = ids.uniformIds[0][86];
@@ -69,8 +69,8 @@ describe('getItemLabels', () => {
         expect(firstItem.type).toHaveProperty('acronym');
 
         // Clean sensitive data for snapshot
-        cleanData(result, ["id", "type.id", "owner?.id", "storageUnit?.id"]);
-        expect(result.slice(0, 10)).toMatchSnapshot(); // Take first 10 for manageable snapshots
+        const cleanedResult = cleanDataV2(result);
+        expect(cleanedResult.slice(0, 10)).toMatchSnapshot(); // Take first 10 for manageable snapshots
     });
 
     it('should include owner information when uniform is issued', async () => {

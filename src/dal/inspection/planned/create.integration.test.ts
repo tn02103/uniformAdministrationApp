@@ -1,9 +1,7 @@
 import dayjs from "@/lib/dayjs";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData } from "../../../../vitest/setup-dal-integration";
 import { createInspection } from "@/dal/inspection/planned/create";
 import { prisma } from "@/lib/db";
-
-const staticData = new StaticData(0);
 
 afterEach(async () => {
     await staticData.cleanup.inspection();

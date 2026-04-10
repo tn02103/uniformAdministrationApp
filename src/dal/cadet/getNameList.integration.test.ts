@@ -1,8 +1,8 @@
 import { getPersonnelNameList } from "@/dal/cadet/getNameList"
 import { runServerActionTest } from "../_helper/testHelper"
-import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData } from "../../../vitest/setup-dal-integration";
 
-const { ids, data } = new StaticData(0);
+const { ids, data } = staticData;
 it('validate data', async () => {
     const { success, result } = await runServerActionTest(getPersonnelNameList());
     expect(success).toBeTruthy();

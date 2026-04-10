@@ -2,7 +2,7 @@ import { runServerActionTest } from "@/dal/_helper/testHelper";
 import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
 import { checkDateTolerance } from "../../../../vitest/helpers/test-utils";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData } from "../../../../vitest/setup-dal-integration";
 import {
     createUniformItems,
     deleteUniformItem,
@@ -12,7 +12,7 @@ import {
     updateUniformItem
 } from "./_index";
 
-const { ids, cleanup } = new StaticData(0);
+const { ids, cleanup } = staticData;
 
 describe('<UniformItem> Integration Tests', () => {
     afterEach(async () => await cleanup.uniform());

@@ -1,9 +1,9 @@
 import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { prisma } from "@/lib/db";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData } from "../../../../vitest/setup-dal-integration";
 import { update } from "./update";
 
-const { ids, cleanup } = new StaticData(0);
+const { ids, cleanup } = staticData;
 const materialId = ids.materialIds[5];
 const defaultProps = {
     id: materialId,

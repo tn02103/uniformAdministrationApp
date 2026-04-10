@@ -1,11 +1,9 @@
 ﻿import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData } from "../../../vitest/setup-dal-integration";
 import { runServerActionTest } from "../_helper/testHelper";
 import { changeUserPassword, updateUser } from "./update";
 import bcrypt from "bcrypt";
-
-const staticData = new StaticData(0);
 
 describe("<User> updateUser", () => {
     beforeAll(async () => {

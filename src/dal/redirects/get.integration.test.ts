@@ -1,6 +1,6 @@
 import { AuthRole } from "@/lib/AuthRoles";
 import { getRedirectsByOrganisation } from ".";
-import { cleanData } from "../_helper/testHelper";
+import { cleanData, cleanDataV2 } from "../_helper/testHelper";
 
 
 describe('getRedirects', () => {
@@ -18,6 +18,10 @@ describe('getRedirects', () => {
         expect(redirects).toBeDefined();
         expect(redirects).toHaveLength(4);
 
-        expect(cleanData(redirects, ["id"])).toMatchSnapshot();
+        const cleaned = cleanDataV2(redirects);
+        // 'code' contains the org index suffix (e.g. "homepage1") and is not a UUID;
+        // strip it so the snapshot is stable across parallel workers.
+        cleanData(cleaned, ['code']);
+        expect(cleaned).toMatchSnapshot();
     });
 });

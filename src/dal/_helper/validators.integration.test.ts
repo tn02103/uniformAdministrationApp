@@ -1,9 +1,7 @@
 import { genericSAValidatorV2, genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
-import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData } from "../../../vitest/setup-dal-integration";
 import { z } from "zod";
-
-const staticData = new StaticData(0);
 describe('genericSAValidatorV2', () => {
     it('validate correct role', async () => {
         const result = await genericSAValidatorV2(AuthRole.materialManager, true, {});

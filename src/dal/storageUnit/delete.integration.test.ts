@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/db";
-import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData } from "../../../vitest/setup-dal-integration";
 import { runServerActionTest } from "../_helper/testHelper";
 import { deleteUnit } from "./delete";
 
-const {ids, cleanup} = new StaticData(0); 
+const {ids, cleanup} = staticData;
 
 afterEach(async () => cleanup.storageUnits());
 it('deletes a storage unit', async () => {

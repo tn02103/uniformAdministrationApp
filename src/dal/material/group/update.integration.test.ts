@@ -1,9 +1,7 @@
 import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { prisma } from "@/lib/db";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData } from "../../../../vitest/setup-dal-integration";
 import { update } from "./update";
-
-const staticData = new StaticData(0);
 const defaultProps = {
     id: staticData.ids.materialGroupIds[0],
     data: {

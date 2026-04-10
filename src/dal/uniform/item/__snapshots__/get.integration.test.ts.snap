@@ -3,51 +3,58 @@
 exports[`getItemLabels > should return a list of uniform item labels 1`] = `
 [
   {
+    "id": "fb0bff-e796-4caf-92ef-c80add825ef6",
     "isReserve": true,
     "label": "Typ1-1100",
     "number": 1100,
     "owner": {
       "firstname": "Maik",
-      "id": "0081c5d0-713b-4c4f-a2c3-81ec497acb29",
+      "id": "81c5d0-713b-4c4f-a2c3-81ec497acb29",
       "lastname": "Finkel",
     },
     "storageUnit": null,
     "type": {
       "acronym": "AA",
+      "id": "659ad7-7b45-4c31-8ee0-8f8c2d385886",
       "name": "Typ1",
     },
   },
   {
+    "id": "4937ee-8861-4bee-b19f-0e2ffdd62b6a",
     "isReserve": true,
     "label": "Typ1-1101",
     "number": 1101,
     "owner": {
       "firstname": "Maik",
-      "id": "0081c5d0-713b-4c4f-a2c3-81ec497acb29",
+      "id": "81c5d0-713b-4c4f-a2c3-81ec497acb29",
       "lastname": "Finkel",
     },
     "storageUnit": null,
     "type": {
       "acronym": "AA",
+      "id": "659ad7-7b45-4c31-8ee0-8f8c2d385886",
       "name": "Typ1",
     },
   },
   {
+    "id": "947027-47e7-42ef-b09d-2068b96927c1",
     "isReserve": true,
     "label": "Typ1-1102",
     "number": 1102,
     "owner": {
       "firstname": "Maik",
-      "id": "0081c5d0-713b-4c4f-a2c3-81ec497acb29",
+      "id": "81c5d0-713b-4c4f-a2c3-81ec497acb29",
       "lastname": "Finkel",
     },
     "storageUnit": null,
     "type": {
       "acronym": "AA",
+      "id": "659ad7-7b45-4c31-8ee0-8f8c2d385886",
       "name": "Typ1",
     },
   },
   {
+    "id": "7df078-cd9e-407f-bb59-adbc5144c2b3",
     "isReserve": true,
     "label": "Typ1-1103",
     "number": 1103,
@@ -55,10 +62,12 @@ exports[`getItemLabels > should return a list of uniform item labels 1`] = `
     "storageUnit": null,
     "type": {
       "acronym": "AA",
+      "id": "659ad7-7b45-4c31-8ee0-8f8c2d385886",
       "name": "Typ1",
     },
   },
   {
+    "id": "659858-b55f-4819-9f9d-3085013d245c",
     "isReserve": true,
     "label": "Typ1-1104",
     "number": 1104,
@@ -66,10 +75,12 @@ exports[`getItemLabels > should return a list of uniform item labels 1`] = `
     "storageUnit": null,
     "type": {
       "acronym": "AA",
+      "id": "659ad7-7b45-4c31-8ee0-8f8c2d385886",
       "name": "Typ1",
     },
   },
   {
+    "id": "23bb1c-4387-4fea-8f5d-52f3a8db9b51",
     "isReserve": true,
     "label": "Typ1-1105",
     "number": 1105,
@@ -77,10 +88,12 @@ exports[`getItemLabels > should return a list of uniform item labels 1`] = `
     "storageUnit": null,
     "type": {
       "acronym": "AA",
+      "id": "659ad7-7b45-4c31-8ee0-8f8c2d385886",
       "name": "Typ1",
     },
   },
   {
+    "id": "107f3d-85f7-4162-9a13-5ccce88b4626",
     "isReserve": true,
     "label": "Typ1-1106",
     "number": 1106,
@@ -88,10 +101,12 @@ exports[`getItemLabels > should return a list of uniform item labels 1`] = `
     "storageUnit": null,
     "type": {
       "acronym": "AA",
+      "id": "659ad7-7b45-4c31-8ee0-8f8c2d385886",
       "name": "Typ1",
     },
   },
   {
+    "id": "6e9239-aebd-40ab-9c8f-942c234f7179",
     "isReserve": true,
     "label": "Typ1-1107",
     "number": 1107,
@@ -99,34 +114,39 @@ exports[`getItemLabels > should return a list of uniform item labels 1`] = `
     "storageUnit": null,
     "type": {
       "acronym": "AA",
+      "id": "659ad7-7b45-4c31-8ee0-8f8c2d385886",
       "name": "Typ1",
     },
   },
   {
+    "id": "9a453c-607e-4950-ad8b-12d8b61688fd",
     "isReserve": true,
     "label": "Typ1-1108",
     "number": 1108,
     "owner": null,
     "storageUnit": {
-      "id": "003984d9-17ac-423d-b5d9-8f9473c225d5",
+      "id": "3984d9-17ac-423d-b5d9-8f9473c225d5",
       "name": "Kiste 01",
     },
     "type": {
       "acronym": "AA",
+      "id": "659ad7-7b45-4c31-8ee0-8f8c2d385886",
       "name": "Typ1",
     },
   },
   {
+    "id": "534ca4-b5bd-4538-bdfa-7413c8b9ca36",
     "isReserve": true,
     "label": "Typ1-1109",
     "number": 1109,
     "owner": null,
     "storageUnit": {
-      "id": "003984d9-17ac-423d-b5d9-8f9473c225d5",
+      "id": "3984d9-17ac-423d-b5d9-8f9473c225d5",
       "name": "Kiste 01",
     },
     "type": {
       "acronym": "AA",
+      "id": "659ad7-7b45-4c31-8ee0-8f8c2d385886",
       "name": "Typ1",
     },
   },

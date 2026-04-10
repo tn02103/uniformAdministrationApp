@@ -1,11 +1,11 @@
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { CadetInspectionFormSchema } from "@/zod/deficiency";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData, wrongOrganisation } from "../../../../vitest/setup-dal-integration";
 import { saveCadetInspection } from "./save";
 import dayjs from "@/lib/dayjs";
 
-const { ids, data } = new StaticData(0);
+const { ids, data } = staticData;
 
 describe('saveCadetInspection Integration Tests', () => {
     // Arrange
@@ -36,7 +36,7 @@ describe('saveCadetInspection Integration Tests', () => {
     });
 
     afterEach(async () => {
-        const { cleanup } = new StaticData(0);
+        const { cleanup } = staticData;
         await cleanup.inspection();
     });
 
@@ -440,7 +440,7 @@ describe('saveCadetInspection Integration Tests', () => {
 
     // Group 4: Association Security
     describe('Association Security', () => {
-        const {data: otherData} = new StaticData(1);
+        const {data: otherData} = wrongOrganisation;
 
         const otherCadetId: string = otherData.cadets[1].id;
         const otherDeficiencyId: string = otherData.deficiencies[1].id!;

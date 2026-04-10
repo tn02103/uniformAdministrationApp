@@ -1,10 +1,8 @@
 import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { create } from "./create";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData } from "../../../../vitest/setup-dal-integration";
 import { uuidValidationPattern } from "@/lib/validations";
 import { prisma } from "@/lib/db";
-
-const staticData = new StaticData(0);
 beforeEach(() => prisma.materialGroup.update({
     where: { id: staticData.ids.materialGroupIds[1] },
     data: { description: "Gruppe-1" }

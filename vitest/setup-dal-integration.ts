@@ -1,18 +1,25 @@
 import 'dotenv/config';
 import { vi, beforeAll, afterAll } from 'vitest';
 import { AuthRole } from "@/lib/AuthRoles";
+import { prisma } from "@/lib/db";
 import { StaticData } from "../tests/_playwrightConfig/testData/staticDataLoader";
+import { MAX_FORKS, WRONG_ORG_INDEX } from "./dal-integration-constants";
 
 // Mock server-only package to allow server components in test environment
 vi.mock('server-only', () => ({}));
 
-// Setup static data for integration tests with real database
-const staticData = new StaticData(0);
-const wrongOrganisation = new StaticData(1);
+// Each fork worker gets its own isolated org.
+// VITEST_POOL_ID is stable per pool slot (always <= maxWorkers), so the same
+// slot re-uses the same org index across consecutive file runs within that slot.
+// VITEST_WORKER_ID is a global ever-increasing counter and must NOT be used here.
+// Wrong org lives at index 0 so it is static and never collides with any worker.
+const workerIndex = Number(process.env.VITEST_POOL_ID ?? '1');
+
+const staticData = new StaticData(workerIndex);
+const wrongOrganisation = new StaticData(WRONG_ORG_INDEX);
 
 beforeAll(async () => {
     await staticData.resetData();
-    await wrongOrganisation.resetData();
 });
 
 afterAll(async () => {
@@ -21,11 +28,7 @@ afterAll(async () => {
     } catch { 
         // Ignore cleanup errors
     }
-    try {
-        await wrongOrganisation.cleanup.removeOrganisation();
-    } catch { 
-        // Ignore cleanup errors
-    }
+    await prisma.$disconnect();
 });
 
 // Mock authentication for DAL integration tests
@@ -53,4 +56,4 @@ vi.mock('next/cache', () => ({
 }));
 
 // Export static data for use in tests
-export { staticData, wrongOrganisation };
+export { staticData, wrongOrganisation, MAX_FORKS, WRONG_ORG_INDEX };

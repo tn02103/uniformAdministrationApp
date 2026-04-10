@@ -1,9 +1,9 @@
 import { isToday, runServerActionTest } from "@/dal/_helper/testHelper"
 import { markDeleted } from "./delete"
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData } from "../../../../vitest/setup-dal-integration";
 import { prisma } from "@/lib/db";
 
-const {ids, cleanup} = new StaticData(0);
+const {ids, cleanup} = staticData;
 const materialId = ids.materialIds[5];
 afterEach(() => cleanup.materialConfig());
 it('validate delete', async () => {

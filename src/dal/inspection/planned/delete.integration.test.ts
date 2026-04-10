@@ -1,8 +1,6 @@
 import { deleteInspection } from "@/dal/inspection/planned/delete";
 import { prisma } from "@/lib/db";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
-
-const staticData = new StaticData(0);
+import { staticData, wrongOrganisation } from "../../../../vitest/setup-dal-integration";
 afterEach(async () => {
     await staticData.cleanup.inspection();
 });
@@ -26,7 +24,6 @@ describe('deleteInspection', () => {
         expect(result.message).toBe('Inspections that have been started once can not be deleted');
     });
     it('catches wrong organisation', async () => {
-        const wrongData = new StaticData(1);
-        await expect(deleteInspection(wrongData.ids.inspectionIds[3])).rejects.toBeDefined();
+        await expect(deleteInspection(wrongOrganisation.ids.inspectionIds[3])).rejects.toBeDefined();
     });
 });

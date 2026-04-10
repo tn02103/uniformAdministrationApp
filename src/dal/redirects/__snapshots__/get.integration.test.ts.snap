@@ -4,26 +4,26 @@ exports[`getRedirects > should return redirects successfully 1`] = `
 [
   {
     "active": true,
-    "code": "ausbildung0",
-    "organisationId": "00bf2ef8-3894-47d4-ada4-e8b5cda5095c",
+    "id": "d65d8b-22c9-42be-ae37-d35be31e7d63",
+    "organisationId": "bf2ef8-3894-47d4-ada4-e8b5cda5095c",
     "target": "https://example.com/ausbildung",
   },
   {
     "active": true,
-    "code": "homepage0",
-    "organisationId": "00bf2ef8-3894-47d4-ada4-e8b5cda5095c",
+    "id": "724b8f-0020-467e-b86e-9e21940f72e1",
+    "organisationId": "bf2ef8-3894-47d4-ada4-e8b5cda5095c",
     "target": "https://example.com/homepage",
   },
   {
     "active": false,
-    "code": "impressum0",
-    "organisationId": "00bf2ef8-3894-47d4-ada4-e8b5cda5095c",
+    "id": "d1f277-408a-4408-834f-7941624517d3",
+    "organisationId": "bf2ef8-3894-47d4-ada4-e8b5cda5095c",
     "target": "https://example.com/impressum",
   },
   {
     "active": true,
-    "code": "kontakt0",
-    "organisationId": "00bf2ef8-3894-47d4-ada4-e8b5cda5095c",
+    "id": "f6c2a0-93de-45dd-aa20-eb882f574283",
+    "organisationId": "bf2ef8-3894-47d4-ada4-e8b5cda5095c",
     "target": "https://example.com/kontakt",
   },
 ]

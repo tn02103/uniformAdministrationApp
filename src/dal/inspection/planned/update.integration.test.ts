@@ -1,9 +1,7 @@
 import { updatePlannedInspection } from "@/dal/inspection/planned/update";
 import { prisma } from "@/lib/db";
 import dayjs from "@/lib/dayjs";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
-
-const staticData = new StaticData(0);
+import { staticData } from "../../../../vitest/setup-dal-integration";
 const initialData = {
     data: {
         name: 'New Name',

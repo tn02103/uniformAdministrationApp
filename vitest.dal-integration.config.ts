@@ -1,11 +1,16 @@
 import { defineProject } from 'vitest/config';
 import path from 'path';
+import { MAX_FORKS } from './vitest/dal-integration-constants';
 
 export default defineProject({
     test: {
         name: 'DAL-Integration',
         environment: 'node',
         globals: true,
+
+        globalSetup: [
+            './vitest/setup-dal-integration-global.ts',
+        ],
 
         setupFiles: [
             'dotenv/config',
@@ -16,8 +21,8 @@ export default defineProject({
             'src/dal/**/*.integration.test.[jt]s?(x)',
         ],
 
-        // Sequential execution is required for database integrity
-        fileParallelism: false,
+        pool: 'forks',
+        maxWorkers: MAX_FORKS,
     },
     resolve: {
         alias: [

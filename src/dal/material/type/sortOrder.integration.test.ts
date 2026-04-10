@@ -1,10 +1,8 @@
 import { runServerActionTest } from "@/dal/_helper/testHelper";
 import { ExceptionType } from "@/errors/CustomException";
 import { prisma } from "@/lib/db";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { staticData } from "../../../../vitest/setup-dal-integration";
 import { changeSortOrder } from "./sortOrder";
-
-const staticData = new StaticData(0);
 const materialIds = staticData.ids.materialIds;
 afterEach(() => staticData.cleanup.materialConfig());
 function getMaterialList() {
