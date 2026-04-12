@@ -100,7 +100,7 @@ describe('issueNewRefreshToken', () => {
         // Wire up $transaction to pass the prisma mock as the client —
         // setup-dal-unit.ts does the same at module level, but this file
         // has its own vi.mock('@/lib/db') override.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         mockPrisma.$transaction.mockImplementation(async (callback: any) => callback(prisma));
 
         // Default DB mock return values

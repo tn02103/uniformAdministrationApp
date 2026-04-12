@@ -63,13 +63,13 @@ test.describe('UniformGeneration Configuration', () => {
         });
 
         await test.step('check if sortorder is changed', async () => {
-            const rows = await generationTable.locator('tbody').getByRole('row').all();
+            const rows = generationTable.locator('tbody').getByRole('row');
 
-            expect(rows).toHaveLength(4);
-            await expect(rows[0]).toHaveAttribute('aria-label', generationList[1].name);
-            await expect(rows[1]).toHaveAttribute('aria-label', generationList[2].name);
-            await expect(rows[2]).toHaveAttribute('aria-label', generationList[0].name);
-            await expect(rows[3]).toHaveAttribute('aria-label', generationList[3].name);
+            await expect(rows).toHaveCount(4);
+            await expect(rows.nth(0)).toHaveAttribute('aria-label', generationList[1].name);
+            await expect(rows.nth(1)).toHaveAttribute('aria-label', generationList[2].name);
+            await expect(rows.nth(2)).toHaveAttribute('aria-label', generationList[0].name);
+            await expect(rows.nth(3)).toHaveAttribute('aria-label', generationList[3].name);
         });
 
         await test.step('validate db sortorder', async () => {
@@ -123,13 +123,13 @@ test.describe('UniformGeneration Configuration', () => {
         });
 
         await test.step('check if sortorder is changed', async () => {
-            const rows = await generationTable.locator('tbody').getByRole('row').all();
+            const rows = generationTable.locator('tbody').getByRole('row');
 
-            expect(rows).toHaveLength(4);
-            await expect(rows[0]).toHaveAttribute('aria-label', generationList[0].name);
-            await expect(rows[1]).toHaveAttribute('aria-label', generationList[2].name);
-            await expect(rows[2]).toHaveAttribute('aria-label', generationList[1].name);
-            await expect(rows[3]).toHaveAttribute('aria-label', generationList[3].name);
+            await expect(rows).toHaveCount(4);
+            await expect(rows.nth(0)).toHaveAttribute('aria-label', generationList[0].name);
+            await expect(rows.nth(1)).toHaveAttribute('aria-label', generationList[2].name);
+            await expect(rows.nth(2)).toHaveAttribute('aria-label', generationList[1].name);
+            await expect(rows.nth(3)).toHaveAttribute('aria-label', generationList[3].name);
         });
 
         await test.step('validate db sortorder', async () => {

@@ -7,7 +7,7 @@ describe('validate deletion', () => {
     afterAll(async () => staticData.cleanup.materialConfig());
     beforeAll(async () => {
         const { success } = await runServerActionTest(markDeleted(groupId));
-        // eslint-disable-next-line vitest/no-standalone-expect
+         
         expect(success).toBeTruthy();
     });
 

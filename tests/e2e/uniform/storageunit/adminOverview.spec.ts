@@ -15,12 +15,12 @@ test.describe("Storage Unit Admin Overview", () => {
     });
 
     test('shows storage unit list', async ({ page, staticData: { data } }) => {
-        const storageUnitRows = await page.locator('tbody tr').all();
-        expect(storageUnitRows).toHaveLength(data.storageUnits.length);
+        const storageUnitRows = page.locator('tbody tr');
+        await expect(storageUnitRows).toHaveCount(data.storageUnits.length);
 
         await Promise.all(
             data.storageUnits.sort((a, b) => a.name.localeCompare(b.name)).map(async (unit, index) => {
-                const row = storageUnitRows[index];
+                const row = storageUnitRows.nth(index);
                 const cols = row.getByRole('cell')
                 const uniformCount = data.uniformList.filter(u => u.storageUnitId === unit.id).length;
 

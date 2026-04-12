@@ -257,9 +257,9 @@ describe('UniformDeficiencyRow', () => {
                 }
             });
             expect(mutateMock).toHaveBeenCalledTimes(1);
-            expect((mutateMock.mock.calls[0][0] as Function)(`uniform.${mockUniform.id}.deficiencies.true`)).toBeTruthy();
-            expect((mutateMock.mock.calls[0][0] as Function)(`uniform.${mockUniform.id}.deficiencies.false`)).toBeTruthy();
-            expect((mutateMock.mock.calls[0][0] as Function)(`uniform.${mockUniform.id}.somethingElse`)).toBeFalsy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.true`)).toBeTruthy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.false`)).toBeTruthy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.somethingElse`)).toBeFalsy();
 
             expect(screen.queryByRole('listitem', { name: /createCardLabel/i })).not.toBeInTheDocument();
         });
@@ -392,9 +392,9 @@ describe('UniformDeficiencyRow', () => {
                 }
             });
             expect(mutateMock).toHaveBeenCalledTimes(1);
-            expect((mutateMock.mock.calls[0][0] as Function)(`uniform.${mockUniform.id}.deficiencies.true`)).toBeTruthy();
-            expect((mutateMock.mock.calls[0][0] as Function)(`uniform.${mockUniform.id}.deficiencies.false`)).toBeTruthy();
-            expect((mutateMock.mock.calls[0][0] as Function)(`uniform.${mockUniform.id}.somethingElse`)).toBeFalsy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.true`)).toBeTruthy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.false`)).toBeTruthy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.somethingElse`)).toBeFalsy();
 
             // check that the card is not in edit mode
             expect(commentInput).not.toBeInTheDocument();
@@ -449,9 +449,9 @@ describe('UniformDeficiencyRow', () => {
             expect(resolveDeficiency).toHaveBeenCalledTimes(1);
             expect(resolveDeficiency).toHaveBeenCalledWith(mockDeficiencyList[0].id);
             expect(mutate).toHaveBeenCalledTimes(1);
-            expect((mutateMock.mock.calls[0][0] as Function)(`uniform.${mockUniform.id}.deficiencies.true`)).toBeTruthy();
-            expect((mutateMock.mock.calls[0][0] as Function)(`uniform.${mockUniform.id}.deficiencies.false`)).toBeTruthy();
-            expect((mutateMock.mock.calls[0][0] as Function)(`uniform.${mockUniform.id}.somethingElse`)).toBeFalsy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.true`)).toBeTruthy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.false`)).toBeTruthy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.somethingElse`)).toBeFalsy();
         });
         it('should catch exceptions on resolve', async () => {
             const user = userEvent.setup();

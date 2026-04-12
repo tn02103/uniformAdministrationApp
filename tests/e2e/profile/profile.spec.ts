@@ -55,7 +55,7 @@ test.describe("Two-factor section", () => {
         try {
             await page.goto(`/de/test${index}/profile`);
             const profilePage = new ProfilePage(page);
-            await expect(profilePage.twoFactorSection.btn_toggle).not.toBeVisible();
+            await expect(profilePage.twoFactorSection.btn_toggle).toBeHidden();
         } finally {
             // Restore the org config regardless of test outcome
             await prisma.organisationConfiguration.update({
