@@ -16,12 +16,12 @@ import { Control, FieldErrors, FormProvider, UseFormRegister, useForm } from "re
 import { toast } from "react-toastify";
 
 export default function UserAdminTableRow({
-    user, userList, onCancel
+    user, userList, onCancel, onSave
 }: {
     user: User | undefined;
     userList: User[];
     onCancel?: () => void;
-    save?: () => void;
+    onSave?: () => void;
 }) {
     const t = useI18n();
     const tError = useScopedI18n('common.error');
@@ -39,6 +39,7 @@ export default function UserAdminTableRow({
         if (!user) return handleCreate(data);
         updateUser(data)
             .then(() => {
+                setEditable(false);
                 toast.success(t('admin.user.saved'))
             }).catch((error) => {
                 console.error(error);
@@ -49,6 +50,7 @@ export default function UserAdminTableRow({
         modal?.changeUserPasswordModal(
             (password: string) => createUser(data, password)
                 .then(() => {
+                    onSave?.();
                     toast.success(t('admin.user.created'));
                 }).catch((error) => {
                     console.error(error);

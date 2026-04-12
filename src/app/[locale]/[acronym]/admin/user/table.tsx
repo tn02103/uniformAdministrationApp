@@ -43,6 +43,7 @@ export default function UserAdminTable({
                     <UserAdminTableRow
                         user={undefined}
                         userList={userList}
+                        onSave={() => setNewUserActive(false)}
                         onCancel={() => setNewUserActive(false)}
                     />
                 }
