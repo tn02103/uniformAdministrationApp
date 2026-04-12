@@ -8,7 +8,7 @@ import { Entity } from "@/lib/EntityEnum";
 import { prisma } from "@/lib/db";
 import { descriptionValidationPattern, nameValidationPattern, uuidValidationPattern } from "@/lib/validations";
 import { UniformSizelist } from "@/types/globalUniformTypes";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/prisma/client";
 import { revalidatePath } from "next/cache";
 import UniformSizeDBHandler from "../dbHandlers/UniformSizeDBHandler";
 import { genericSAValidatorV2 } from "../validations";

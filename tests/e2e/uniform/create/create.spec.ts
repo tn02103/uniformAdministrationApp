@@ -10,7 +10,9 @@ type Fixture = {
 const test = adminTest.extend<Fixture>({
     createPage: async ({ page }, use) => use(new CreateUniformPage(page)),
 });
+
 test.beforeEach(async ({ page }) => await page.goto(`/de/app/uniform/new`));
+
 test.afterEach(async ({ staticData: { cleanup } }) => cleanup.uniform());
 
 test('validate knownIds', async ({ page, createPage, staticData: { ids, fk_assosiation } }) => {
@@ -24,6 +26,7 @@ test('validate knownIds', async ({ page, createPage, staticData: { ids, fk_assos
         await createPage.configurator.chk_isReserve.setChecked(true);
         await createPage.configurator.btn_continue.click();
     });
+
     await test.step('add ids', async () => {
         await createPage.numberInput.txt_numStart.fill('9980');
         await createPage.numberInput.txt_numEnd.fill('9990');
@@ -45,7 +48,7 @@ test('validate knownIds', async ({ page, createPage, staticData: { ids, fk_assos
             }
         });
 
-        expect(uniformItems.length).toBe(10);
+        expect(uniformItems).toHaveLength(10);
         expect.soft(uniformItems[0].comment).toBe('test comment');
         expect.soft(uniformItems[0].isReserve).toBeTruthy();
         expect.soft(uniformItems[0].fk_uniformType).toBe(ids.uniformTypeIds[0]);
@@ -53,8 +56,10 @@ test('validate knownIds', async ({ page, createPage, staticData: { ids, fk_assos
         expect.soft(uniformItems[0].fk_size).toBe(ids.sizeIds[8]);
     });
 });
+
 test('validate generate Ids', async ({ page, createPage, staticData: { ids, fk_assosiation } }) => {
     const year = (+(new Date().getFullYear()) % 100);
+
     await test.step('configuration', async () => {
         await createPage.btn_tab_generateIds.click();
         await createPage.configurator.sel_type.selectOption(ids.uniformTypeIds[0]);
@@ -87,7 +92,7 @@ test('validate generate Ids', async ({ page, createPage, staticData: { ids, fk_a
             }
         });
 
-        expect(uniformItems.length).toBe(11);
+        expect(uniformItems).toHaveLength(11);
         expect.soft(uniformItems[0].comment).toBe('test comment2');
         expect.soft(uniformItems[0].isReserve).toBeFalsy();
         expect.soft(uniformItems[0].fk_uniformType).toBe(ids.uniformTypeIds[0]);

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`UniformOffcanvas should render correctly 1`] = `
+exports[`UniformOffcanvas > should render correctly 1`] = `
 <div
   aria-labelledby="offcanvas-uniform-header"
   aria-modal="true"

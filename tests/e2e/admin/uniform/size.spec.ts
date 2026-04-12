@@ -1,6 +1,6 @@
 import t from "@/../public/locales/de";
 import { prisma } from "@/lib/db";
-import { UniformSize } from "@prisma/client";
+import { UniformSize } from "@/prisma/client";
 import { expect } from "playwright/test";
 import { newNameValidationTests, numberValidationTests } from "../../../_playwrightConfig/global/testSets";
 import { UniformSizeAdministrationPage } from "../../../_playwrightConfig/pages/admin/uniform/UniformSizeAdministration.page";
@@ -25,9 +25,11 @@ const test = adminTest.extend<Fixture>({
         await use(new SimpleFormPopupComponent(page));
     }
 });
+
 test.beforeEach(async ({ page }) => {
     await page.goto('/de/app/admin/uniform/sizes');
 });
+
 test.afterEach(async ({ staticData: { cleanup } }) => {
     await cleanup.uniformSizeConfiguration();
 });
@@ -36,13 +38,14 @@ test.describe('Uniform size configuration', () => {
     test('validate Data', async ({ page, uniformSizePage, sizes }) => {
         await expect(uniformSizePage.div_size(sizes[0].id)).toBeVisible();
 
-        const divList = await page.locator('div[data-testid^="div_size_"]').all();
-        expect(divList).toHaveLength(sizes.length);
+        const divList = page.locator('div[data-testid^="div_size_"]');
+        await expect(divList).toHaveCount(sizes.length);
 
         const promises = [];
+        const divListCount = await divList.count();
         /* eslint-disable playwright/missing-playwright-await */
-        for (let i = 0; i < divList.length; i++) {
-            promises.push(expect.soft(divList[i]).toHaveAttribute("data-testid", `div_size_${sizes[i].id}`));
+        for (let i = 0; i < divListCount; i++) {
+            promises.push(expect.soft(divList.nth(i)).toHaveAttribute("data-testid", `div_size_${sizes[i].id}`));
             promises.push(expect.soft((await uniformSizePage.div_name(sizes[i].id))).toHaveText(sizes[i].name));
             promises.push(expect.soft(uniformSizePage.div_index(sizes[i].id)).toHaveText(String(i + 1)));
         }
@@ -50,6 +53,7 @@ test.describe('Uniform size configuration', () => {
         
         await Promise.all(promises);
     });
+
     test('validate SizePannel hover', async ({ uniformSizePage, sizes }) => {
         const sizeId = sizes[0].id
         await expect(uniformSizePage.div_size(sizeId)).toBeVisible();
@@ -71,6 +75,7 @@ test.describe('Uniform size configuration', () => {
             expect.soft(uniformSizePage.btn_moveDown(sizeId)).toBeVisible(),
         ]);
     });
+
     test('validate MoveUp', async ({ page, uniformSizePage, sizes, staticData }) => {
         await test.step('validate initial state', async () => {
             await expect(uniformSizePage.div_index(sizes[0].id)).toContainText('1');
@@ -78,10 +83,12 @@ test.describe('Uniform size configuration', () => {
             await expect(uniformSizePage.div_index(sizes[2].id)).toContainText('3');
             await expect(uniformSizePage.div_index(sizes[3].id)).toContainText('4');
         });
+
         await test.step('move size', async () => {
             await uniformSizePage.div_size(sizes[2].id).hover();
             await uniformSizePage.btn_moveUp(sizes[2].id).click();
         });
+
         await test.step('validate ui', async () => {
             await expect(uniformSizePage.div_index(sizes[0].id)).toContainText('1');
             await expect(uniformSizePage.div_index(sizes[1].id)).toContainText('3');
@@ -91,6 +98,7 @@ test.describe('Uniform size configuration', () => {
             const divList = await page.locator('div[data-testid^="div_size_"]').all();
             await expect.soft(divList[1]).toHaveAttribute("data-testid", `div_size_${sizes[2].id}`);
         });
+
         await test.step('validate db', async () => {
             const dbSizes = await prisma.uniformSize.findMany({
                 where: { fk_assosiation: staticData.fk_assosiation },
@@ -111,10 +119,12 @@ test.describe('Uniform size configuration', () => {
             await expect(uniformSizePage.div_index(sizes[2].id)).toContainText('3');
             await expect(uniformSizePage.div_index(sizes[3].id)).toContainText('4');
         });
+
         await test.step('move size', async () => {
             await uniformSizePage.div_size(sizes[1].id).hover();
             await uniformSizePage.btn_moveDown(sizes[1].id).click();
         });
+
         await test.step('validate ui', async () => {
             await expect(uniformSizePage.div_index(sizes[0].id)).toContainText('1');
             await expect(uniformSizePage.div_index(sizes[1].id)).toContainText('3');
@@ -124,6 +134,7 @@ test.describe('Uniform size configuration', () => {
             const divList = await page.locator('div[data-testid^="div_size_"]').all();
             await expect.soft(divList[1]).toHaveAttribute("data-testid", `div_size_${sizes[2].id}`);
         });
+
         await test.step('validate db', async () => {
             const dbSizes = await prisma.uniformSize.findMany({
                 where: { fk_assosiation: staticData.fk_assosiation },
@@ -144,10 +155,12 @@ test.describe('Uniform size configuration', () => {
             await simpleFormPopup.txt_input.fill('newSize');
             await simpleFormPopup.btn_save.click();
         });
+
         await test.step('validate ui', async () => {
             await expect(simpleFormPopup.div_popup).toBeHidden();
             await expect(page.getByText('newSize')).toBeVisible();
         });
+
         await test.step('validate db', async () => {
             const size = await prisma.uniformSize.findFirst({
                 where: {
@@ -160,6 +173,7 @@ test.describe('Uniform size configuration', () => {
             expect(size!.sortOrder).toBe(sizes.length + 1);
         });
     });
+
     // TODO write component tests
     test.skip('validate namePopup formValidation', async ({ page, uniformSizePage, simpleFormPopup }) => {
         const tests = newNameValidationTests({
@@ -182,6 +196,7 @@ test.describe('Uniform size configuration', () => {
             });
         }
     });
+
     test('validate setPosition', async ({ uniformSizePage, simpleFormPopup, sizes, staticData }) => {
         await test.step('set position', async () => {
             await uniformSizePage.div_size(sizes[10].id).hover();
@@ -192,6 +207,7 @@ test.describe('Uniform size configuration', () => {
             await simpleFormPopup.txt_input.fill('3');
             await simpleFormPopup.btn_save.click();
         });
+
         await test.step('validate ui', async () => {
             await expect(uniformSizePage.div_index(sizes[0].id)).toHaveText('1');
             await expect(uniformSizePage.div_index(sizes[1].id)).toHaveText('2');
@@ -201,6 +217,7 @@ test.describe('Uniform size configuration', () => {
             await expect(uniformSizePage.div_index(sizes[10].id)).toHaveText('3');
             await expect(uniformSizePage.div_index(sizes[11].id)).toHaveText('12');
         });
+
         await test.step('validate db', async () => {
             const dbSizes = await prisma.uniformSize.findMany({
                 where: { fk_assosiation: staticData.fk_assosiation },
@@ -216,6 +233,7 @@ test.describe('Uniform size configuration', () => {
             expect(dbSizes[11].id).toEqual(sizes[11].id);
         });
     });
+
     test('validate setPosition formValidation', async ({ page, uniformSizePage, simpleFormPopup, sizes }) => {
         const tests = numberValidationTests({
             testEmpty: true
@@ -243,6 +261,7 @@ test.describe('Uniform size configuration', () => {
     test('validate delete Size', async ({ page, uniformSizePage, sizes, staticData }) => {
         const messagePopup = new MessagePopupComponent(page);
         const deleteModal = t.admin.uniform.size.deleteModal;
+
         await test.step('delete size and validate modal', async () => {
             await uniformSizePage.div_size(sizes[16].id).hover();
             await uniformSizePage.btn_menu(sizes[16].id).click();
@@ -257,6 +276,7 @@ test.describe('Uniform size configuration', () => {
                 .toHaveText(deleteModal.message);
             await messagePopup.btn_save.click();
         });
+
         await test.step('validate ui', async () => {
             await expect(uniformSizePage.div_size(sizes[16].id)).toBeHidden();
 
@@ -264,6 +284,7 @@ test.describe('Uniform size configuration', () => {
             await expect(uniformSizePage.div_index(sizes[17].id)).toHaveText('17');
             await expect(uniformSizePage.div_index(sizes[20].id)).toHaveText('20');
         });
+
         await test.step('validate db', async () => {
             const dbSizes = await prisma.uniformSize.findMany({
                 where: { fk_assosiation: staticData.fk_assosiation },
@@ -271,7 +292,7 @@ test.describe('Uniform size configuration', () => {
             });
 
             expect(dbSizes.some(s => s.id === sizes[16].id)).toBeFalsy();
-            expect(dbSizes.length).toEqual(20);
+            expect(dbSizes).toHaveLength(20);
             expect(dbSizes[15].id).toEqual(sizes[15].id);
             expect(dbSizes[16].id).toEqual(sizes[17].id);
             expect(dbSizes[19].id).toEqual(sizes[20].id);

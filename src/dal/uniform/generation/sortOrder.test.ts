@@ -1,20 +1,20 @@
+
+import { prismaMock } from '@test-utils/prisma-mock';
 import { changeSortOrder } from "./sortOrder";
 
 describe('<UniformGeneration> sortOrder', () => {
-    const { prisma } = jest.requireMock('@/lib/db');
-
     beforeEach(() => {
-        jest.clearAllMocks();
-        prisma.uniformGeneration.update.mockResolvedValue();
-        prisma.uniformGeneration.findUniqueOrThrow.mockResolvedValue({ sortOrder: 2, fk_uniformType: 'typeId' });
-        prisma.uniformGeneration.count.mockResolvedValue(5);
-        prisma.uniformGeneration.updateMany.mockResolvedValue({ count: 2 });
-        prisma.uniformType.findMany.mockResolvedValue('ReturnedList');
+        vi.clearAllMocks();
+        prismaMock.uniformGeneration.update.mockResolvedValue(undefined);
+        prismaMock.uniformGeneration.findUniqueOrThrow.mockResolvedValue({ sortOrder: 2, fk_uniformType: 'typeId' });
+        prismaMock.uniformGeneration.count.mockResolvedValue(5);
+        prismaMock.uniformGeneration.updateMany.mockResolvedValue({ count: 2 });
+        prismaMock.uniformType.findMany.mockResolvedValue('ReturnedList');
     });
-    afterEach(jest.clearAllMocks);
+    afterEach(vi.clearAllMocks);
 
-    const prismaUpdateMany = prisma.uniformGeneration.updateMany;
-    const prismaUpdate = prisma.uniformGeneration.update;
+    const prismaUpdateMany = prismaMock.uniformGeneration.updateMany;
+    const prismaUpdate = prismaMock.uniformGeneration.update;
 
     it('should work moving up', async () => {
         prismaUpdateMany.mockResolvedValueOnce({ count: 1 });
@@ -87,7 +87,7 @@ describe('<UniformGeneration> sortOrder', () => {
         expect(prismaUpdateMany).toHaveBeenCalledTimes(1);
     });
     it('should fail if updateMany returns smaller count', async () => {
-        prisma.uniformGeneration.count.mockResolvedValue(10);
+        prismaMock.uniformGeneration.count.mockResolvedValue(10);
         await expect(
              changeSortOrder({ id: 'SomeGenerationId', newPosition: 5 })
         ).rejects.toThrow('Could not update sortOrder of other types');

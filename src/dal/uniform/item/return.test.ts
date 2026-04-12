@@ -1,20 +1,16 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { PrismaClient } from "@prisma/client";
-import { DeepMockProxy } from "jest-mock-extended";
+import type { PrismaClient } from '@/prisma/client';
+import { prismaMock } from '@test-utils/prisma-mock';
 import { returnItem, __unsecuredReturnUniformitem } from "./return";
 import { mockUniformList } from "../../../../tests/_jestConfig/staticMockData";
 import { __unsecuredGetCadetUniformMap } from "@/dal/cadet/uniformMap";
 
 // Mock the dependencies
-jest.mock("@/dal/cadet/uniformMap", () => ({
-    __unsecuredGetCadetUniformMap: jest.fn().mockResolvedValue([]),
+vi.mock("@/dal/cadet/uniformMap", () => ({
+    __unsecuredGetCadetUniformMap: vi.fn().mockResolvedValue([]),
 }));
 
 // Get the mocked functions
-const mockGetCadetUniformMap = __unsecuredGetCadetUniformMap as jest.MockedFunction<typeof __unsecuredGetCadetUniformMap>;
-
-// Get the mocked prisma client
-const mockPrisma = jest.requireMock("@/lib/db").prisma as DeepMockProxy<PrismaClient>;
+const mockGetCadetUniformMap = vi.mocked(__unsecuredGetCadetUniformMap);
 
 // Mock data
 const mockCadetId = 'cadet-123';
@@ -52,41 +48,41 @@ describe('<UniformItem> return', () => {
 
     beforeEach(() => {
         // Setup default transaction mock
-        mockPrisma.$transaction.mockImplementation((callback: any) => callback(mockPrisma));
+        prismaMock.$transaction.mockImplementation((callback: any) => callback(prismaMock));
 
         // Default mock responses
-        mockPrisma.uniformIssued.findFirst.mockResolvedValue(mockIssuedEntry as any);
-        mockPrisma.uniformIssued.update.mockResolvedValue(mockIssuedEntry as any);
-        mockPrisma.uniformIssued.delete.mockResolvedValue(mockIssuedEntry as any);
+        prismaMock.uniformIssued.findFirst.mockResolvedValue(mockIssuedEntry as any);
+        prismaMock.uniformIssued.update.mockResolvedValue(mockIssuedEntry as any);
+        prismaMock.uniformIssued.delete.mockResolvedValue(mockIssuedEntry as any);
 
         // Mock system time to MOCK_TODAY
-        jest.useFakeTimers();
-        jest.setSystemTime(MOCK_TODAY);
+        vi.useFakeTimers();
+        vi.setSystemTime(MOCK_TODAY);
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         // Reset all mock implementations to their default state
-        if (mockPrisma.uniformIssued?.findFirst?.mockReset) {
-            mockPrisma.uniformIssued.findFirst.mockReset();
-            mockPrisma.uniformIssued.update.mockReset();
-            mockPrisma.uniformIssued.delete.mockReset();
+        if (prismaMock.uniformIssued?.findFirst?.mockReset) {
+            prismaMock.uniformIssued.findFirst.mockReset();
+            prismaMock.uniformIssued.update.mockReset();
+            prismaMock.uniformIssued.delete.mockReset();
         }
-        if (mockPrisma.$transaction?.mockReset) {
-            mockPrisma.$transaction.mockReset();
+        if (prismaMock.$transaction?.mockReset) {
+            prismaMock.$transaction.mockReset();
         }
         // Restore real time
-        jest.useRealTimers();
+        vi.useRealTimers();
     });
 
     describe('successful return scenarios', () => {
         it('returns uniform item successfully when not issued today', async () => {
             // Set the issued entry to a past date (not today)
-            mockPrisma.uniformIssued.findFirst.mockResolvedValue(mockIssuedEntry as any);
+            prismaMock.uniformIssued.findFirst.mockResolvedValue(mockIssuedEntry as any);
 
             await expect(returnItem(defaultReturnProps)).resolves.toEqual([mockUniformList[0]]);
 
-            expect(mockPrisma.uniformIssued.findFirst).toHaveBeenCalledWith({
+            expect(prismaMock.uniformIssued.findFirst).toHaveBeenCalledWith({
                 where: {
                     uniform: {
                         id: mockUniformId,
@@ -99,47 +95,47 @@ describe('<UniformItem> return', () => {
                     dateReturned: null,
                 }
             });
-            expect(mockPrisma.uniformIssued.update).toHaveBeenCalledWith({
+            expect(prismaMock.uniformIssued.update).toHaveBeenCalledWith({
                 where: { id: mockIssuedEntryId },
                 data: {
                     dateReturned: expect.any(Date),
                 }
             });
-            expect(mockPrisma.uniformIssued.delete).not.toHaveBeenCalled();
-            expect(mockGetCadetUniformMap).toHaveBeenCalledWith(mockCadetId, mockPrisma);
+            expect(prismaMock.uniformIssued.delete).not.toHaveBeenCalled();
+            expect(mockGetCadetUniformMap).toHaveBeenCalledWith(mockCadetId, prismaMock);
         });
 
         it('deletes uniform issued entry when returned on same day as issued', async () => {
             // Set the issued entry to today's date
-            mockPrisma.uniformIssued.findFirst.mockResolvedValue(mockIssuedEntryToday as any);
+            prismaMock.uniformIssued.findFirst.mockResolvedValue(mockIssuedEntryToday as any);
 
             await expect(returnItem(defaultReturnProps)).resolves.toEqual([mockUniformList[0]]);
 
-            expect(mockPrisma.uniformIssued.delete).toHaveBeenCalledWith({
+            expect(prismaMock.uniformIssued.delete).toHaveBeenCalledWith({
                 where: { id: mockIssuedEntryId }
             });
-            expect(mockPrisma.uniformIssued.update).not.toHaveBeenCalled();
-            expect(mockGetCadetUniformMap).toHaveBeenCalledWith(mockCadetId, mockPrisma);
+            expect(prismaMock.uniformIssued.update).not.toHaveBeenCalled();
+            expect(mockGetCadetUniformMap).toHaveBeenCalledWith(mockCadetId, prismaMock);
         });
 
         it('verifies correct transaction usage', async () => {
             await expect(returnItem(defaultReturnProps)).resolves.toEqual([mockUniformList[0]]);
 
             // Transaction should be called with the callback function
-            expect(mockPrisma.$transaction).toHaveBeenCalledWith(expect.any(Function));
+            expect(prismaMock.$transaction).toHaveBeenCalledWith(expect.any(Function));
         });
     });
 
     describe('error scenarios', () => {
         it('throws error when issued entry is not found', async () => {
-            mockPrisma.uniformIssued.findFirst.mockResolvedValue(null);
+            prismaMock.uniformIssued.findFirst.mockResolvedValue(null);
 
             await expect(returnItem(defaultReturnProps))
                 .rejects
                 .toThrow('Could not return Uniform. Issued Entry not found: uniform-456');
 
-            expect(mockPrisma.uniformIssued.update).not.toHaveBeenCalled();
-            expect(mockPrisma.uniformIssued.delete).not.toHaveBeenCalled();
+            expect(prismaMock.uniformIssued.update).not.toHaveBeenCalled();
+            expect(prismaMock.uniformIssued.delete).not.toHaveBeenCalled();
             expect(mockGetCadetUniformMap).not.toHaveBeenCalled();
         });
     });
@@ -153,7 +149,7 @@ describe('<UniformItem> return', () => {
             // - match the cadet and uniform IDs
             // - cadet and uniform may not have been deleted
 
-            expect(mockPrisma.uniformIssued.findFirst).toHaveBeenCalledWith({
+            expect(prismaMock.uniformIssued.findFirst).toHaveBeenCalledWith({
                 where: {
                     uniform: {
                         id: mockUniformId,
@@ -171,7 +167,7 @@ describe('<UniformItem> return', () => {
         it('verifies cadet uniform map is retrieved with correct parameters', async () => {
             await expect(returnItem(defaultReturnProps)).resolves.toEqual([mockUniformList[0]]);
 
-            expect(mockGetCadetUniformMap).toHaveBeenCalledWith(mockCadetId, mockPrisma);
+            expect(mockGetCadetUniformMap).toHaveBeenCalledWith(mockCadetId, prismaMock);
         });
     });
 });
@@ -179,80 +175,80 @@ describe('<UniformItem> return', () => {
 describe('<UniformItem> __unsecuredReturnUniformitem', () => {
 
     afterEach(() => {
-        jest.clearAllMocks();
-        if (mockPrisma.uniformIssued?.update?.mockReset) {
-            mockPrisma.uniformIssued.update.mockReset();
-            mockPrisma.uniformIssued.delete.mockReset();
+        vi.clearAllMocks();
+        if (prismaMock.uniformIssued?.update?.mockReset) {
+            prismaMock.uniformIssued.update.mockReset();
+            prismaMock.uniformIssued.delete.mockReset();
         }
         // Restore real time
-        jest.useRealTimers();
+        vi.useRealTimers();
     });
 
     beforeEach(() => {
-        mockPrisma.uniformIssued.update.mockResolvedValue(mockIssuedEntry as any);
-        mockPrisma.uniformIssued.delete.mockResolvedValue(mockIssuedEntry as any);
+        prismaMock.uniformIssued.update.mockResolvedValue(mockIssuedEntry as any);
+        prismaMock.uniformIssued.delete.mockResolvedValue(mockIssuedEntry as any);
 
         // Mock system time to MOCK_TODAY
-        jest.useFakeTimers();
-        jest.setSystemTime(MOCK_TODAY);
+        vi.useFakeTimers();
+        vi.setSystemTime(MOCK_TODAY);
     });
 
     describe('date-based behavior', () => {
         it('deletes entry when issued today', async () => {
             // Issue date is the same as current system time (MOCK_TODAY)
-            await __unsecuredReturnUniformitem(mockIssuedEntryId, MOCK_TODAY, mockPrisma);
+            await __unsecuredReturnUniformitem(mockIssuedEntryId, MOCK_TODAY, prismaMock as unknown as PrismaClient);
 
-            expect(mockPrisma.uniformIssued.delete).toHaveBeenCalledWith({
+            expect(prismaMock.uniformIssued.delete).toHaveBeenCalledWith({
                 where: { id: mockIssuedEntryId }
             });
-            expect(mockPrisma.uniformIssued.update).not.toHaveBeenCalled();
+            expect(prismaMock.uniformIssued.update).not.toHaveBeenCalled();
         });
 
         it('updates entry with return date when not issued today', async () => {
             // Issue date is different from current system time
-            await __unsecuredReturnUniformitem(mockIssuedEntryId, MOCK_PAST_DATE, mockPrisma);
+            await __unsecuredReturnUniformitem(mockIssuedEntryId, MOCK_PAST_DATE, prismaMock as unknown as PrismaClient);
 
-            expect(mockPrisma.uniformIssued.update).toHaveBeenCalledWith({
+            expect(prismaMock.uniformIssued.update).toHaveBeenCalledWith({
                 where: { id: mockIssuedEntryId },
                 data: {
                     dateReturned: expect.any(Date),
                 }
             });
-            expect(mockPrisma.uniformIssued.delete).not.toHaveBeenCalled();
+            expect(prismaMock.uniformIssued.delete).not.toHaveBeenCalled();
         });
 
         it('handles edge case: midnight in German timezone (same day)', async () => {
             // Set system time to midnight in German timezone (UTC+1/+2)
             // June 27, 2025 00:00:00 in German time = June 26, 2025 22:00:00 UTC (during DST)
             const midnightGermanTime = new Date('2025-06-26T22:00:00.000Z'); // UTC equivalent of German midnight
-            jest.setSystemTime(midnightGermanTime);
+            vi.setSystemTime(midnightGermanTime);
 
             // Issue date is also the same day in German timezone
             const issueDateGermanTime = new Date('2025-06-26T23:30:00.000Z'); // UTC equivalent of 01:30 German time
 
-            await __unsecuredReturnUniformitem(mockIssuedEntryId, issueDateGermanTime, mockPrisma);
+            await __unsecuredReturnUniformitem(mockIssuedEntryId, issueDateGermanTime, prismaMock as unknown as PrismaClient);
 
-            expect(mockPrisma.uniformIssued.delete).toHaveBeenCalled();
-            expect(mockPrisma.uniformIssued.update).not.toHaveBeenCalled();
+            expect(prismaMock.uniformIssued.delete).toHaveBeenCalled();
+            expect(prismaMock.uniformIssued.update).not.toHaveBeenCalled();
         });
 
         it('handles edge case: different days in German timezone', async () => {
             // Set system time to German timezone day
             const currentGermanDay = new Date('2025-06-27T12:00:00.000Z'); // 14:00 German time
-            jest.setSystemTime(currentGermanDay);
+            vi.setSystemTime(currentGermanDay);
 
             // Issue date is previous day in German timezone
             const previousGermanDay = new Date('2025-06-26T12:00:00.000Z'); // 14:00 German time previous day
 
-            await __unsecuredReturnUniformitem(mockIssuedEntryId, previousGermanDay, mockPrisma);
+            await __unsecuredReturnUniformitem(mockIssuedEntryId, previousGermanDay, prismaMock as unknown as PrismaClient);
 
-            expect(mockPrisma.uniformIssued.update).toHaveBeenCalledWith({
+            expect(prismaMock.uniformIssued.update).toHaveBeenCalledWith({
                 where: { id: mockIssuedEntryId },
                 data: {
                     dateReturned: expect.any(Date),
                 }
             });
-            expect(mockPrisma.uniformIssued.delete).not.toHaveBeenCalled();
+            expect(prismaMock.uniformIssued.delete).not.toHaveBeenCalled();
         });
     });
 
@@ -260,9 +256,9 @@ describe('<UniformItem> __unsecuredReturnUniformitem', () => {
         it('uses correct issued entry ID', async () => {
             const customEntryId = 'custom-entry-123';
 
-            await __unsecuredReturnUniformitem(customEntryId, MOCK_PAST_DATE, mockPrisma);
+            await __unsecuredReturnUniformitem(customEntryId, MOCK_PAST_DATE, prismaMock as unknown as PrismaClient);
 
-            expect(mockPrisma.uniformIssued.update).toHaveBeenCalledWith({
+            expect(prismaMock.uniformIssued.update).toHaveBeenCalledWith({
                 where: { id: customEntryId },
                 data: {
                     dateReturned: expect.any(Date),
@@ -273,8 +269,8 @@ describe('<UniformItem> __unsecuredReturnUniformitem', () => {
         it('uses provided transaction client', async () => {
             const customClient = {
                 uniformIssued: {
-                    delete: jest.fn(),
-                    update: jest.fn(),
+                    delete: vi.fn(),
+                    update: vi.fn(),
                 },
             } as unknown as PrismaClient;
 

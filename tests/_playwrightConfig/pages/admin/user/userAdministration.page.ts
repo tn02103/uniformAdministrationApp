@@ -16,30 +16,26 @@ export class UserAdministrationPage {
     }
     err_user_username(userId: string, mobile: boolean) {
         if (mobile) {
-            return this.div_user(userId).getByTestId('err_username_mobile');
+            return this.div_user(userId).locator(`[id*="mobil_err_username"]`);
         } else {
-            return this.div_user(userId).getByTestId('err_username');
+            return this.div_user(userId).locator(`[id*="err_username"]`);
         }
     }
-    
+
     txt_user_name(userId: string) {
         return this.div_user(userId).locator('input[name="name"]:visible');
     }
     err_user_name(userId: string, mobile: boolean) {
-        if (mobile) {
-            return this.div_user(userId).getByTestId('err_name_mobile');
-        } else {
-            return this.div_user(userId).getByTestId('err_name');
-        }
+        return this.div_user(userId).locator(`[id*="${mobile? "mobil_":""}err_name"]`);
     }
-    
+
     div_user_role(userId: string) {
         return this.div_user(userId).getByTestId('div_role');
     }
     sel_user_role(userId: string) {
         return this.div_user(userId).locator('select[name="role"]:visible');
     }
-    
+
     div_user_active(userId: string) {
         return this.div_user(userId).getByTestId('div_active');
     }

@@ -1,20 +1,20 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { PrismaClient } from "@prisma/client";
-import { DeepMockProxy } from "jest-mock-extended";
+﻿ 
+
+import { prismaMock } from '@test-utils/prisma-mock';
+import { prisma } from "@/lib/db";
 import { update } from "./update";
 import { __unsecuredGetUniformTypeList } from "../type/get";
 import { mockTypeList, mockSizeLists } from "../../../../tests/_jestConfig/staticMockData";
 
 // Mock dependencies
-jest.mock("../type/get", () => ({
-    __unsecuredGetUniformTypeList: jest.fn(),
+vi.mock("../type/get", () => ({
+    __unsecuredGetUniformTypeList: vi.fn(),
 }));
 
 // Get mocked functions
-const mockGetUniformTypeList = __unsecuredGetUniformTypeList as jest.MockedFunction<typeof __unsecuredGetUniformTypeList>;
+const mockGetUniformTypeList = vi.mocked(__unsecuredGetUniformTypeList);
 
 // Get the mocked prisma client
-const mockPrisma = jest.requireMock("@/lib/db").prisma as DeepMockProxy<PrismaClient>;
 
 const mockUniformType = mockTypeList[0]; // Type with sizes and generations
 const mockUniformTypeNoSizes = mockTypeList[1]; // Type with generations but no sizes
@@ -72,9 +72,9 @@ describe('<UniformGeneration> update', () => {
 
     beforeEach(() => {
         // Setup default successful mocks
-        mockPrisma.uniformType.findFirstOrThrow.mockResolvedValue(mockUniformType as any);
-        mockPrisma.uniformGeneration.findMany.mockResolvedValue(mockExistingGenerations.filter(g => !g.recdelete) as any);
-        mockPrisma.uniformGeneration.update.mockResolvedValue({
+        prismaMock.uniformType.findFirstOrThrow.mockResolvedValue(mockUniformType as any);
+        prismaMock.uniformGeneration.findMany.mockResolvedValue(mockExistingGenerations.filter(g => !g.recdelete) as any);
+        prismaMock.uniformGeneration.update.mockResolvedValue({
             ...mockGenerationToUpdate,
             ...defaultUpdateData,
         } as any);
@@ -82,7 +82,7 @@ describe('<UniformGeneration> update', () => {
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     describe('successful update scenarios', () => {
@@ -90,7 +90,7 @@ describe('<UniformGeneration> update', () => {
             await expect(update(defaultProps)).resolves.toEqual(mockUniformTypeList);
 
             // Verify uniform type lookup
-            expect(mockPrisma.uniformType.findFirstOrThrow).toHaveBeenCalledWith({
+            expect(prismaMock.uniformType.findFirstOrThrow).toHaveBeenCalledWith({
                 where: {
                     fk_assosiation: 'test-assosiation-id',
                     uniformGenerationList: {
@@ -100,7 +100,7 @@ describe('<UniformGeneration> update', () => {
             });
 
             // Verify existing generations lookup for name validation
-            expect(mockPrisma.uniformGeneration.findMany).toHaveBeenCalledWith({
+            expect(prismaMock.uniformGeneration.findMany).toHaveBeenCalledWith({
                 where: {
                     fk_uniformType: mockUniformType.id,
                     recdelete: null,
@@ -108,7 +108,7 @@ describe('<UniformGeneration> update', () => {
             });
 
             // Verify generation update
-            expect(mockPrisma.uniformGeneration.update).toHaveBeenCalledWith({
+            expect(prismaMock.uniformGeneration.update).toHaveBeenCalledWith({
                 where: { id: mockGenerationId },
                 data: defaultUpdateData
             });
@@ -130,7 +130,7 @@ describe('<UniformGeneration> update', () => {
 
             await expect(update(props)).resolves.toEqual(mockUniformTypeList);
 
-            expect(mockPrisma.uniformGeneration.update).toHaveBeenCalledWith({
+            expect(prismaMock.uniformGeneration.update).toHaveBeenCalledWith({
                 where: { id: mockGenerationId },
                 data: customData
             });
@@ -145,7 +145,7 @@ describe('<UniformGeneration> update', () => {
 
             await expect(update(props)).resolves.toEqual(mockUniformTypeList);
 
-            expect(mockPrisma.uniformType.findFirstOrThrow).toHaveBeenCalledWith({
+            expect(prismaMock.uniformType.findFirstOrThrow).toHaveBeenCalledWith({
                 where: {
                     fk_assosiation: 'test-assosiation-id',
                     uniformGenerationList: {
@@ -169,7 +169,7 @@ describe('<UniformGeneration> update', () => {
             // Mock existing generations to include the current generation
             await expect(update(props)).resolves.toEqual(mockUniformTypeList);
 
-            expect(mockPrisma.uniformGeneration.update).toHaveBeenCalledWith({
+            expect(prismaMock.uniformGeneration.update).toHaveBeenCalledWith({
                 where: { id: mockGenerationId },
                 data: {
                     ...defaultUpdateData,
@@ -188,10 +188,10 @@ describe('<UniformGeneration> update', () => {
             };
 
             // Include deleted generation in the list to test filtering
-            mockPrisma.uniformGeneration.findMany.mockResolvedValue(mockExistingGenerations.filter(g => !g.recdelete) as any);
+            prismaMock.uniformGeneration.findMany.mockResolvedValue(mockExistingGenerations.filter(g => !g.recdelete) as any);
 
             await expect(update(props)).resolves.toEqual(mockUniformTypeList);
-            expect(mockPrisma.uniformGeneration.update).toHaveBeenCalled();
+            expect(prismaMock.uniformGeneration.update).toHaveBeenCalled();
         });
 
         it('returns soft error for name duplication with existing generation', async () => {
@@ -211,7 +211,7 @@ describe('<UniformGeneration> update', () => {
 
             await expect(update(props)).resolves.toEqual(expectedResult);
 
-            expect(mockPrisma.uniformGeneration.update).not.toHaveBeenCalled();
+            expect(prismaMock.uniformGeneration.update).not.toHaveBeenCalled();
             expect(mockGetUniformTypeList).not.toHaveBeenCalled();
         });
 
@@ -219,20 +219,20 @@ describe('<UniformGeneration> update', () => {
 
     describe('edge cases', () => {
         it('handles generation with no other generations in type', async () => {
-            mockPrisma.uniformGeneration.findMany.mockResolvedValue([mockGenerationToUpdate] as any);
+            prismaMock.uniformGeneration.findMany.mockResolvedValue([mockGenerationToUpdate] as any);
 
 
             await expect(update(defaultProps)).resolves.toEqual(mockUniformTypeList);
 
-            expect(mockPrisma.uniformGeneration.update).toHaveBeenCalled();
+            expect(prismaMock.uniformGeneration.update).toHaveBeenCalled();
         });
 
         it('handles empty generations list for type', async () => {
-            mockPrisma.uniformGeneration.findMany.mockResolvedValue([]);
+            prismaMock.uniformGeneration.findMany.mockResolvedValue([]);
 
             await expect(update(defaultProps)).resolves.toEqual(mockUniformTypeList);
 
-            expect(mockPrisma.uniformGeneration.update).toHaveBeenCalled();
+            expect(prismaMock.uniformGeneration.update).toHaveBeenCalled();
         });
     });
 
@@ -248,7 +248,7 @@ describe('<UniformGeneration> update', () => {
 
             await expect(update(props)).resolves.toEqual(mockUniformTypeList);
 
-            expect(mockPrisma.uniformGeneration.update).toHaveBeenCalledWith({
+            expect(prismaMock.uniformGeneration.update).toHaveBeenCalledWith({
                 where: { id: mockGenerationId },
                 data: expect.objectContaining({
                     fk_sizelist: mockSizeLists[1].id,
@@ -257,7 +257,7 @@ describe('<UniformGeneration> update', () => {
         });
 
         it('updates generation with null sizelist when type does not use sizes', async () => {
-            mockPrisma.uniformType.findFirstOrThrow.mockResolvedValue(mockUniformTypeNoSizes as any);
+            prismaMock.uniformType.findFirstOrThrow.mockResolvedValue(mockUniformTypeNoSizes as any);
 
             const props = {
                 ...defaultProps,
@@ -269,7 +269,7 @@ describe('<UniformGeneration> update', () => {
 
             await expect(update(props)).resolves.toEqual(mockUniformTypeList);
 
-            expect(mockPrisma.uniformGeneration.update).toHaveBeenCalledWith({
+            expect(prismaMock.uniformGeneration.update).toHaveBeenCalledWith({
                 where: { id: mockGenerationId },
                 data: {
                     ...defaultUpdateData,
@@ -279,7 +279,7 @@ describe('<UniformGeneration> update', () => {
         });
 
         it('nullifies sizelist for types that do not use sizes', async () => {
-            mockPrisma.uniformType.findFirstOrThrow.mockResolvedValue(mockUniformTypeNoSizes as any);
+            prismaMock.uniformType.findFirstOrThrow.mockResolvedValue(mockUniformTypeNoSizes as any);
 
             const props = {
                 ...defaultProps,
@@ -291,7 +291,7 @@ describe('<UniformGeneration> update', () => {
 
             await expect(update(props)).resolves.toEqual(mockUniformTypeList);
 
-            expect(mockPrisma.uniformGeneration.update).toHaveBeenCalledWith({
+            expect(prismaMock.uniformGeneration.update).toHaveBeenCalledWith({
                 where: { id: mockGenerationId },
                 data: expect.objectContaining({
                     fk_sizelist: null,

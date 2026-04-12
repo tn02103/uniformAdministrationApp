@@ -1,8 +1,9 @@
+import { vi } from "vitest";
+import { sendInspectionReviewMail } from "@/lib/email/inspectionReview";
 import { DBQuery } from "@/dal/inspection/_dbQuerys";
 import { stopInspection } from "@/dal/inspection/stop";
 import { ExceptionType } from "@/errors/CustomException";
 import { prisma } from "@/lib/db";
-import { sendInspectionReviewMail } from "@/lib/email/inspectionReview";
 import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { runServerActionTest } from "../_helper/testHelper";
 
@@ -12,8 +13,8 @@ const defaultParams = {
     time: '12:00',
     id: staticData.ids.inspectionIds[4],
 }
-jest.mock('@/lib/email/inspectionReview', () => ({
-    sendInspectionReviewMail: jest.fn(),
+vi.mock('@/lib/email/inspectionReview', () => ({
+    sendInspectionReviewMail: vi.fn(),
 }));
 
 afterEach(() => staticData.cleanup.inspection());
@@ -45,7 +46,7 @@ describe('stopInspection', () => {
 
         const email = process.env.EMAIL_ADRESS_TESTS ?? 'admin@example.com';
         const inspectionReviewData = await dbQuery.getInspectionReviewData(staticData.fk_assosiation, staticData.ids.inspectionIds[4], prisma);
-        expect(jest.isMockFunction(sendInspectionReviewMail)).toBeTruthy();
+        expect(vi.isMockFunction(sendInspectionReviewMail)).toBeTruthy();
         expect(sendInspectionReviewMail).toHaveBeenCalled();
         expect(sendInspectionReviewMail).toHaveBeenCalledWith([email], inspectionReviewData);
     });

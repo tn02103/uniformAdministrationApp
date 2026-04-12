@@ -5,15 +5,15 @@ import userEvent from "@testing-library/user-event";
 import { mockStorageUnitWithItems } from "./StorageunitOC.jestHelper";
 import { StorageunitOCHeader } from "./StorageunitOCHeader";
 import { AuthRole } from "@/lib/AuthRoles";
-
+import { updateStorageUnit } from "@/dal/storageUnit/_index";
+import { toast } from "react-toastify";
+import { vi } from 'vitest';
 
 describe("StorageunitOCHeader", () => {
     const mockStorageUnit = mockStorageUnitWithItems[0];
-    const { updateStorageUnit } = jest.requireMock("@/dal/storageUnit/_index");
-    const { toast } = jest.requireMock("react-toastify");
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('shows create new title when no storage unit is provided', () => {
@@ -72,7 +72,7 @@ describe("StorageunitOCHeader", () => {
     it("catches DAL-Exception on save", async () => {
         const user = userEvent.setup();
         const error = new Error("Database error");
-        updateStorageUnit.mockRejectedValueOnce(error);
+        vi.mocked(updateStorageUnit).mockRejectedValueOnce(error);
 
         render(<StorageunitOCHeader storageUnit={mockStorageUnit} />);
         expect(screen.getByText(mockStorageUnit.name)).toBeInTheDocument();

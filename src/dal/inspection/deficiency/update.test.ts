@@ -1,32 +1,20 @@
+﻿
 import { updateUniform } from "./update";
-
-jest.mock('@/lib/db', () => ({
-    prisma: {
-        deficiency: {
-            update: jest.fn(),
-            findUnique: jest.fn(),
-            findUniqueOrThrow: jest.fn(),
-        },
-        deficiencyType: {
-            findUnique: jest.fn(),
-            findUniqueOrThrow: jest.fn(),
-        },
-    },
-}));
+import { prismaMock } from '@test-utils/prisma-mock';
 
 describe('updateUniformDeficiency', () => {
-    const { prisma } = jest.requireMock('@/lib/db');
     const date = new Date();
     beforeEach(() => {
-        jest.useFakeTimers();
-        jest.setSystemTime(date);
+        vi.useFakeTimers();
+        vi.setSystemTime(date);
+        prismaMock.deficiency.update.mockResolvedValue(undefined);
     })
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('updates the deficiency', async () => {
-        prisma.deficiencyType.findUnique.mockResolvedValueOnce({
+        prismaMock.deficiencyType.findUnique.mockResolvedValueOnce({
             id: 'typeId',
             dependent: 'uniform',
         });
@@ -40,21 +28,21 @@ describe('updateUniformDeficiency', () => {
         });
         await expect(result).resolves.toBeUndefined();
 
-        expect(prisma.deficiency.update).toHaveBeenCalledWith({
+        expect(prismaMock.deficiency.update).toHaveBeenCalledWith({
             where: {
                 id: '5f09250d-23cb-45f8-a7d0-d0f6d3896f34',
             },
             data: {
                 comment: 'Updated comment',
                 fk_deficiencyType: '37d06077-f678-45d0-8494-75056c61b0ce',
-                userUpdated: 'mana',
+                userUpdated: 'testuser',
                 dateUpdated: date,
             },
         });
     });
 
     it('throws exception if dependend is not uniform', async () => {
-        prisma.deficiencyType.findUnique.mockResolvedValueOnce({
+        prismaMock.deficiencyType.findUnique.mockResolvedValueOnce({
             id: 'typeId',
             dependent: 'cadet',
         });

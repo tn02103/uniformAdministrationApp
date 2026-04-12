@@ -1,66 +1,49 @@
 import dayjs from "@/lib/dayjs";
 import { resolve } from "./resolve";
+import { prismaMock } from '@test-utils/prisma-mock';
 
-
-jest.mock('@/lib/db', () => ({
-    prisma: {
-        deficiency: {
-            update: jest.fn(),
-            findFirst: jest.fn(),
-            findUniqueOrThrow: jest.fn(),
-        },
-        inspection: {
-            findFirst: jest.fn(),
-        }
-    },
-}));
 
 describe('resolveDeficiency', () => {
-    const { prisma } = jest.requireMock('@/lib/db');
     const date = new Date();
-    beforeAll(() => {
-        global.__ASSOSIATION__ = 'fk_assoasiation';
-    })
+
     beforeEach(() => {
-        jest.useFakeTimers();
-        jest.setSystemTime(date);
-    })
-    afterEach(() => {
-        jest.clearAllMocks();
+        vi.useFakeTimers();
+        vi.setSystemTime(date);
+        prismaMock.deficiency.update.mockResolvedValue(undefined as any);
+        prismaMock.deficiency.findFirst.mockResolvedValue(null);
+        prismaMock.inspection.findFirst.mockResolvedValue(null);
     });
-    afterAll(() => global.__ASSOSIATION__ = undefined)
+    afterEach(() => {
+        vi.clearAllMocks();
+    });
 
     it('resolves the deficiency', async () => {
-        prisma.inspection.findFirst.mockResolvedValueOnce(null);
-        prisma.deficiency.findFirst.mockResolvedValueOnce(null);
-
         const result = resolve('5f09250d-23cb-45f8-a7d0-d0f6d3896f34');
         await expect(result).resolves.toBeUndefined();
 
-        expect(prisma.deficiency.update).toHaveBeenCalledWith({
+        expect(prismaMock.deficiency.update).toHaveBeenCalledWith({
             where: {
                 id: '5f09250d-23cb-45f8-a7d0-d0f6d3896f34',
             },
             data: {
                 dateResolved: date,
-                userResolved: 'mana',
+                userResolved: 'testuser',
                 fk_inspection_resolved: undefined,
             },
         });
     });
 
     it('throws exception if deficiency already resolved', async () => {
-        prisma.inspection.findFirst.mockResolvedValueOnce(null);
-        prisma.deficiency.findFirst.mockResolvedValueOnce({
+        prismaMock.deficiency.findFirst.mockResolvedValueOnce({
             id: '5f09250d-23cb-45f8-a7d0-d0f6d3896f34',
             dateResolved: date,
-        });
+        } as any);
 
         const result = resolve('5f09250d-23cb-45f8-a7d0-d0f6d3896f34');
         await expect(result).rejects.toThrow("Deficiency already resolved");
 
-        expect(prisma.deficiency.update).not.toHaveBeenCalled();
-        expect(prisma.deficiency.findFirst).toHaveBeenCalledWith({
+        expect(prismaMock.deficiency.update).not.toHaveBeenCalled();
+        expect(prismaMock.deficiency.findFirst).toHaveBeenCalledWith({
             where: {
                 id: '5f09250d-23cb-45f8-a7d0-d0f6d3896f34',
                 dateResolved: { not: null }
@@ -69,28 +52,27 @@ describe('resolveDeficiency', () => {
     });
 
     it('connects active inspection to deficiency', async () => {
-        prisma.inspection.findFirst.mockResolvedValueOnce({ id: '0177f740-75ee-4bb8-9875-7f10e3e6af8b' });
-        prisma.deficiency.findFirst.mockResolvedValueOnce(null);
+        prismaMock.inspection.findFirst.mockResolvedValueOnce({ id: '0177f740-75ee-4bb8-9875-7f10e3e6af8b' } as any);
 
         const result = resolve('5f09250d-23cb-45f8-a7d0-d0f6d3896f34');
         await expect(result).resolves.toBeUndefined();
 
-        expect(prisma.inspection.findFirst).toHaveBeenCalledWith({
+        expect(prismaMock.inspection.findFirst).toHaveBeenCalledWith({
             where: {
-                fk_assosiation: 'fk_assoasiation',
+                fk_assosiation: 'test-assosiation-id',
                 date: dayjs(date).format("YYYY-MM-DD"),
                 timeStart: { not: null },
                 timeEnd: null,
             }
         });
 
-        expect(prisma.deficiency.update).toHaveBeenCalledWith({
+        expect(prismaMock.deficiency.update).toHaveBeenCalledWith({
             where: {
                 id: '5f09250d-23cb-45f8-a7d0-d0f6d3896f34',
             },
             data: {
                 dateResolved: date,
-                userResolved: 'mana',
+                userResolved: 'testuser',
                 fk_inspection_resolved: '0177f740-75ee-4bb8-9875-7f10e3e6af8b',
             },
         });

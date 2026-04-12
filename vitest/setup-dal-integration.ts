@@ -1,5 +1,10 @@
+import 'dotenv/config';
+import { vi, beforeAll, afterAll } from 'vitest';
 import { AuthRole } from "@/lib/AuthRoles";
 import { StaticData } from "../tests/_playwrightConfig/testData/staticDataLoader";
+
+// Mock server-only package to allow server components in test environment
+vi.mock('server-only', () => ({}));
 
 // Setup static data for integration tests with real database
 const staticData = new StaticData(0);
@@ -13,19 +18,19 @@ beforeAll(async () => {
 afterAll(async () => {
     try {
         await staticData.cleanup.removeAssosiation();
-    } catch { 
+    } catch {
         // Ignore cleanup errors
     }
     try {
         await wrongAssosiation.cleanup.removeAssosiation();
-    } catch { 
+    } catch {
         // Ignore cleanup errors
     }
 });
 
 // Mock authentication for DAL integration tests
-jest.mock('@/lib/ironSession', () => ({
-    getIronSession: () => {
+vi.mock('@/lib/ironSession', () => ({
+    getIronSession: vi.fn(() => {
         const role = global.__ROLE__ ?? AuthRole.materialManager;
         const assosiation = global.__ASSOSIATION__ ?? staticData.fk_assosiation;
         return {
@@ -37,15 +42,28 @@ jest.mock('@/lib/ironSession', () => ({
                 role: role,
             }
         }
-    },
+    }),
 }));
 
-// Mock Next.js cache functions for DAL integration tests
-jest.mock('next/cache', () => ({
-    unstable_cache: jest.fn((fn) => fn),
-    revalidateTag: jest.fn(),
-    revalidatePath: jest.fn(),
+// Mock Next.js cache functions
+vi.mock('next/cache', () => ({
+    unstable_cache: vi.fn((fn) => fn),
+    revalidateTag: vi.fn(),
+    revalidatePath: vi.fn(),
 }));
+
+/*
+// Mock Redis with in-memory ioredis-mock
+vi.mock('@/dal/auth/redis', async () => {
+    const { default: IORedisMock } = await import('ioredis-mock');
+    const redisMock = new IORedisMock();
+    return {
+        redis: redisMock,
+        isRedisAvailable: () => true,
+        isRedisConfiguredButUnavailable: () => false,
+    };
+});
+*/
 
 // Export static data for use in tests
 export { staticData, wrongAssosiation };

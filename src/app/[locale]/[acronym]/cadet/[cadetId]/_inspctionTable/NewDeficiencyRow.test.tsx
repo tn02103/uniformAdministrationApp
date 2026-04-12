@@ -1,31 +1,37 @@
 import { MaterialGroup } from '@/types/globalMaterialTypes';
+import { deficiencytype_dependent, deficiencytype_relation } from '@/prisma/enums';
 import { CadetInspectionFormSchema } from '@/zod/deficiency';
 import { getAllByRole, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { NewDeficiencyRow } from './NewDeficiencyRow';
+import { useDeficiencyTypes } from '@/dataFetcher/deficiency';
+import { useCadetUniformDescriptList, useCadetMaterialDescriptionList } from '@/dataFetcher/cadet';
+import { useMaterialConfiguration, useMaterialTypeList } from '@/dataFetcher/material';
+import { useParams } from 'next/navigation';
+
 
 // Mock all the data fetching hooks
-jest.mock('@/dataFetcher/deficiency', jest.fn(() => ({
-    useDeficiencyTypes: jest.fn()
-})));
+vi.mock('@/dataFetcher/deficiency', () => ({
+    useDeficiencyTypes: vi.fn()
+}));
 
-jest.mock('@/dataFetcher/cadet', jest.fn(() => ({
-    useCadetUniformDescriptList: jest.fn(),
-    useCadetMaterialDescriptionList: jest.fn()
-})));
+vi.mock('@/dataFetcher/cadet', () => ({
+    useCadetUniformDescriptList: vi.fn(),
+    useCadetMaterialDescriptionList: vi.fn()
+}));
 
-jest.mock('@/dataFetcher/material', jest.fn(() => ({
-    useMaterialConfiguration: jest.fn(),
-    useMaterialTypeList: jest.fn()
-})));
+vi.mock('@/dataFetcher/material', () => ({
+    useMaterialConfiguration: vi.fn(),
+    useMaterialTypeList: vi.fn()
+}));
 
 const mockDeficiencyTypeList = [
-    { id: 'type1', name: 'Uniform Issue', dependent: 'uniform', relation: null },
-    { id: 'type2', name: 'Cadet Issue', dependent: 'cadet', relation: null },
-    { id: 'type3', name: 'Material Issue', dependent: 'cadet', relation: 'material' },
-    { id: 'type4', name: 'Cadet Uniform Issue', dependent: 'cadet', relation: 'uniform' }
+    { id: 'type1', name: 'Uniform Issue', dependent: deficiencytype_dependent.uniform, relation: null },
+    { id: 'type2', name: 'Cadet Issue', dependent: deficiencytype_dependent.cadet, relation: null },
+    { id: 'type3', name: 'Material Issue', dependent: deficiencytype_dependent.cadet, relation: deficiencytype_relation.material },
+    { id: 'type4', name: 'Cadet Uniform Issue', dependent: deficiencytype_dependent.cadet, relation: deficiencytype_relation.uniform }
 ];
 const mockUniformLabels = [
     { id: 'uniform1', description: 'Jacket-1234' },
@@ -39,6 +45,9 @@ const mockMaterialConfiguration = [
     {
         id: 'group1',
         description: 'Accessories',
+        issuedDefault: null,
+        sortOrder: 0,
+        multitypeAllowed: false,
         typeList: [
             { id: 'mattype1', typename: 'Type A Group1', sortOrder: 1 },
             { id: 'mattype2', typename: 'Type B Group1', sortOrder: 2 }
@@ -47,12 +56,15 @@ const mockMaterialConfiguration = [
     {
         id: 'group2',
         description: 'Equipment',
+        issuedDefault: null,
+        sortOrder: 1,
+        multitypeAllowed: false,
         typeList: [
             { id: 'mattype3', typename: 'Type A Group2', sortOrder: 1 },
             { id: 'mattype4', typename: 'Type B Group2', sortOrder: 2 }
         ]
     }
-] satisfies Partial<MaterialGroup>[];
+] satisfies MaterialGroup[];
 
 // Test wrapper component
 interface TestWrapperProps {
@@ -89,7 +101,7 @@ const TestWrapper: React.FC<TestWrapperProps> = ({ children, defaultValues = {} 
     );
 };
 
-const mockRemove = jest.fn();
+const mockRemove = vi.fn();
 
 const defaultProps = {
     index: 0,
@@ -97,21 +109,16 @@ const defaultProps = {
 };
 
 describe('NewDeficiencyRow', () => {
-    const { useDeficiencyTypes } = jest.requireMock('@/dataFetcher/deficiency');
-    const { useCadetUniformDescriptList, useCadetMaterialDescriptionList } = jest.requireMock('@/dataFetcher/cadet');
-    const { useMaterialConfiguration, useMaterialTypeList } = jest.requireMock('@/dataFetcher/material');
-    const { useParams } = jest.requireMock('next/navigation');
-
     beforeEach(() => {
-        jest.clearAllMocks();
-        useParams.mockReturnValue({ cadetId: 'test-cadet-id' });
-        useDeficiencyTypes.mockReturnValue({ deficiencyTypeList: mockDeficiencyTypeList });
-        useCadetUniformDescriptList.mockReturnValue({ uniformLabels: mockUniformLabels });
-        useCadetMaterialDescriptionList.mockReturnValue({ materialList: mockMaterialList });
-        useMaterialConfiguration.mockReturnValue({ config: mockMaterialConfiguration });
+        vi.clearAllMocks();
+        vi.mocked(useParams).mockReturnValue({ cadetId: 'test-cadet-id' });
+        vi.mocked(useDeficiencyTypes).mockReturnValue({ deficiencyTypeList: mockDeficiencyTypeList });
+        vi.mocked(useCadetUniformDescriptList).mockReturnValue({ uniformLabels: mockUniformLabels });
+        vi.mocked(useCadetMaterialDescriptionList).mockReturnValue({ materialList: mockMaterialList });
+        vi.mocked(useMaterialConfiguration).mockReturnValue({ config: mockMaterialConfiguration });
 
         // Mock useMaterialTypeList to return different data based on groupId
-        useMaterialTypeList.mockImplementation((groupId?: string) => {
+        vi.mocked(useMaterialTypeList).mockImplementation((groupId?: string) => {
             const group = mockMaterialConfiguration.find((g) => g.id === groupId);
             return group ? group.typeList : [];
         });

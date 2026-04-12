@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`ExpandableArea renders area closed 1`] = `
+exports[`ExpandableArea > renders area closed 1`] = `
 <div>
   <div
     class="align-items-center justify-content-center row"
@@ -40,7 +40,7 @@ exports[`ExpandableArea renders area closed 1`] = `
 </div>
 `;
 
-exports[`ExpandableArea renders area open 1`] = `
+exports[`ExpandableArea > renders area open 1`] = `
 <div>
   <div
     class="align-items-center justify-content-center row"

@@ -40,6 +40,7 @@ test.describe(() => {
                 expect.soft(uniformComponent.btn_uitem_menu_withdraw(ids.uniformIds[0][84])).toBeHidden(),
             ]);
         });
+
         await test.step('Displaysize xl', async () => {
             await page.setViewportSize({ height: 800, width: 1300 });
 
@@ -63,6 +64,7 @@ test.describe(() => {
                 expect.soft(uniformComponent.btn_uitem_menu_withdraw(ids.uniformIds[0][84])).toBeHidden(),
             ]);
         });
+
         await test.step('Displaysize lg', async () => {
             await page.setViewportSize({ height: 800, width: 1000 });
 
@@ -86,6 +88,7 @@ test.describe(() => {
                 expect.soft(uniformComponent.btn_uitem_menu_withdraw(ids.uniformIds[0][84])).toBeHidden(),
             ]);
         });
+
         await test.step('Displaysize md', async () => {
             await page.setViewportSize({ height: 800, width: 800 });
 
@@ -109,6 +112,7 @@ test.describe(() => {
                 expect.soft(uniformComponent.btn_uitem_menu_withdraw(ids.uniformIds[0][84])).toBeHidden(),
             ]);
         });
+
         await test.step('Displaysize sm', async () => {
             await page.setViewportSize({ height: 800, width: 600 });
 
@@ -132,6 +136,7 @@ test.describe(() => {
                 expect.soft(uniformComponent.btn_uitem_menu_withdraw(ids.uniformIds[0][84])).toBeHidden(),
             ]);
         });
+
         await test.step('Displaysize xs', async () => {
             await page.setViewportSize({ height: 800, width: 500 });
 

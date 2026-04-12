@@ -1,14 +1,14 @@
-import { prisma } from "@/lib/db";
 import { uniformTypeArgs } from "@/types/globalUniformTypes";
+import { prismaMock } from '@test-utils/prisma-mock';
 import { __unsecuredGetUniformTypeList, getList, getType } from "./get";
 
 describe('<UniformType> get', () => {
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
-    const mockFindUnique = prisma.uniformType.findUnique as jest.Mock;
-    const mockFindMany = prisma.uniformType.findMany as jest.Mock;
+    const mockFindUnique = prismaMock.uniformType.findUnique;
+    const mockFindMany = prismaMock.uniformType.findMany;
 
     describe('getType', () => {
         it('should return uniform type by id', async () => {

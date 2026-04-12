@@ -5,25 +5,26 @@ import { mockTypeList, mockSizeLists } from "../../../../../../../../tests/_jest
 import { UniformListSidePanel } from "./UniformListSidePanel";
 import { UniformType } from "@/types/globalUniformTypes";
 
+
 // Mock useUniformTypeList
-jest.mock("@/dataFetcher/uniformAdmin", () => ({
+vi.mock("@/dataFetcher/uniformAdmin", () => ({
     useUniformTypeList: () => ({
         typeList: mockTypeList,
     }),
 }));
 
 // Mock next/navigation
-const replaceMock = jest.fn();
-const routerGetMock = jest.fn().mockReturnValue(null);
-jest.mock("next/navigation", () => ({
+const replaceMock = vi.fn();
+const routerGetMock = vi.fn().mockReturnValue(null);
+vi.mock("next/navigation", () => ({
     useRouter: () => ({ replace: replaceMock }),
     useSearchParams: () => ({
         get: routerGetMock,
         toString: () => "",
     }),
 }));
-jest.mock("usehooks-ts", () => ({
-    useSessionStorage: () => [null, jest.fn()],
+vi.mock("usehooks-ts", () => ({
+    useSessionStorage: () => [null, vi.fn()],
 }));
 
 // Helper to get sizeList for a type

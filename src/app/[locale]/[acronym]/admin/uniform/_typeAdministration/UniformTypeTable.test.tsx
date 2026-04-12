@@ -3,27 +3,32 @@ import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { testTypes } from "./testTypes";
 import { UniformTypeTable } from "./UniformTypeTable";
+import { changeUniformTypeSortOrder } from "@/dal/uniform/type/_index";
+import { useUniformTypeList } from "@/dataFetcher/uniformAdmin";
+import { UniformTypeOffcanvas } from "./UniformTypeOffcanvas";
+import { toast } from "react-toastify";
+import { vi } from 'vitest';
 
 
 // ################## MOCKS ##################
-jest.mock("@/dal/uniform/type/_index", () => ({
-    changeUniformTypeSortOrder: jest.fn(async () => "uniform type sortOrder changed"),
+vi.mock("@/dal/uniform/type/_index", () => ({
+    changeUniformTypeSortOrder: vi.fn(async () => "uniform type sortOrder changed"),
 }));
 
-jest.mock("@/dataFetcher/uniformAdmin", () => {
-    const mutateMock = jest.fn(async (a,) => await a);
+vi.mock("@/dataFetcher/uniformAdmin", () => {
+    const mutateMock = vi.fn(async (a,) => await a);
     return {
-        useUniformTypeList: jest.fn(() => ({
+        useUniformTypeList: vi.fn(() => ({
             mutate: mutateMock,
             typeList: testTypes,
         })),
     }
 });
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 let onDragEndFunction: undefined | ((newArray: UniformType[], itemId: string) => Promise<any>) = undefined;
-jest.mock("@/components/reorderDnD/ReorderableTableBody", () => {
+vi.mock("@/components/reorderDnD/ReorderableTableBody", () => {
     return {
-        ReorderableTableBody: jest.fn(({ items, onDragEnd, children }) => {
+        ReorderableTableBody: vi.fn(({ items, onDragEnd, children }) => {
             onDragEndFunction = onDragEnd;
             return (
                 <tbody data-testid="reorderable-table-body">
@@ -33,10 +38,10 @@ jest.mock("@/components/reorderDnD/ReorderableTableBody", () => {
         }),
     };
 });
-/* eslint-enable @typescript-eslint/no-explicit-any */
+ 
 
-jest.mock("./UniformTypeOffcanvas", () => ({
-    UniformTypeOffcanvas: jest.fn(({ setSelectedTypeId }) => (
+vi.mock("./UniformTypeOffcanvas", () => ({
+    UniformTypeOffcanvas: vi.fn(({ setSelectedTypeId }) => (
         <div data-testid="uniform-type-offcanvas" onClick={() => setSelectedTypeId(null)}>
             UniformTypeOffcanvas
         </div>
@@ -46,25 +51,22 @@ jest.mock("./UniformTypeOffcanvas", () => ({
 
 // ################## TESTS ##################
 describe("<UniformTypeTable />", () => {
-    const { changeUniformTypeSortOrder } = jest.requireMock("@/dal/uniform/type/_index");
-    const { useUniformTypeList } = jest.requireMock("@/dataFetcher/uniformAdmin");
-    const { UniformTypeOffcanvas } = jest.requireMock("./UniformTypeOffcanvas");
-    const { toast } = jest.requireMock("react-toastify");
     const mockMutate = useUniformTypeList().mutate;
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it("renders the component", () => {
         render(<UniformTypeTable initialTypeList={testTypes} />);
 
         expect(screen.getByRole("table")).toBeInTheDocument();
+        // eslint-disable-next-line testing-library/no-node-access
         expect(screen.getByRole("table").closest('div')).toMatchSnapshot();
     });
 
     it("calls changeUniformTypeSortOrder when onDragEnd is triggered", async () => {
-        changeUniformTypeSortOrder.mockReturnValue("uniform type sortOrder changed");
+        vi.mocked(changeUniformTypeSortOrder).mockReturnValue("uniform type sortOrder changed" as any);
         render(<UniformTypeTable initialTypeList={testTypes} />);
 
         expect(onDragEndFunction).toBeDefined();
@@ -84,7 +86,7 @@ describe("<UniformTypeTable />", () => {
     });
 
     it('catchs exeption in changeUniformTypeSortOrder', async () => {
-        changeUniformTypeSortOrder.mockImplementation(async () => { throw new Error("error") });
+        vi.mocked(changeUniformTypeSortOrder).mockImplementation(async () => { throw new Error("error") });
         render(<UniformTypeTable initialTypeList={testTypes} />);
 
         expect(onDragEndFunction).toBeDefined();
@@ -155,7 +157,7 @@ describe("<UniformTypeTable />", () => {
 
             // close the offcanvas by calling the setSelectedTypeId function with null
             act(() => {
-                UniformTypeOffcanvas.mock.calls[0][0].setSelectedTypeId(null);
+                vi.mocked(UniformTypeOffcanvas).mock.calls[0][0].setSelectedTypeId(null);
             });
             expect(screen.queryByTestId("uniform-type-offcanvas")).not.toBeInTheDocument();
 
@@ -194,7 +196,7 @@ describe("<UniformTypeTable />", () => {
             );
 
             act(() => {
-                UniformTypeOffcanvas.mock.calls[0][0].setSelectedTypeId(null);
+                vi.mocked(UniformTypeOffcanvas).mock.calls[0][0].setSelectedTypeId(null);
             });
             expect(screen.queryByTestId("uniform-type-offcanvas")).not.toBeInTheDocument();
         });
@@ -210,7 +212,7 @@ describe("<UniformTypeTable />", () => {
             expect(UniformTypeOffcanvas).toHaveBeenCalledTimes(1);
 
             act(() => {
-                UniformTypeOffcanvas.mock.calls[0][0].setSelectedTypeId(testTypes[1].id);
+                vi.mocked(UniformTypeOffcanvas).mock.calls[0][0].setSelectedTypeId(testTypes[1].id);
             });
             expect(screen.getByTestId("uniform-type-offcanvas")).toBeInTheDocument();
             expect(UniformTypeOffcanvas).toHaveBeenCalledTimes(2);
@@ -225,7 +227,7 @@ describe("<UniformTypeTable />", () => {
             );
 
             act(() => {
-                UniformTypeOffcanvas.mock.calls[1][0].setSelectedTypeId(null);
+                vi.mocked(UniformTypeOffcanvas).mock.calls[1][0].setSelectedTypeId(null);
             });
             expect(screen.queryByTestId("uniform-type-offcanvas")).not.toBeInTheDocument();
         });
@@ -253,7 +255,7 @@ describe("<UniformTypeTable />", () => {
 
             // call the setEditable function to change the editable state
             act(() => {
-                UniformTypeOffcanvas.mock.calls[0][0].setEditable(true);
+                vi.mocked(UniformTypeOffcanvas).mock.calls[0][0].setEditable(true);
             });
             expect(screen.getByTestId("uniform-type-offcanvas")).toBeInTheDocument();
             expect(UniformTypeOffcanvas).toHaveBeenCalledTimes(2);
@@ -277,7 +279,7 @@ describe("<UniformTypeTable />", () => {
 
             // call the setEditable function to change the editable state back to false
             act(() => {
-                UniformTypeOffcanvas.mock.calls[1][0].setEditable(false);
+                vi.mocked(UniformTypeOffcanvas).mock.calls[1][0].setEditable(false);
             });
             expect(screen.getByTestId("uniform-type-offcanvas")).toBeInTheDocument();
             expect(UniformTypeOffcanvas).toHaveBeenCalledTimes(3);

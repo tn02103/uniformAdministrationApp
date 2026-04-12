@@ -1,20 +1,21 @@
+
 import { AuthRole } from '@/lib/AuthRoles';
+import { prismaMock } from '@test-utils/prisma-mock';
 import { getUniformCountBySizeForType, getUniformCountByType } from './UniformCounts';
 
-// Mock setup is handled by jest/setup-dal-unit.ts
-const mockPrisma = jest.requireMock('@/lib/db').prisma;
+// Mock setup is handled by vitest/setup-dal-unit.ts
 
 describe('UniformCounts DAL - Unit Tests', () => {
     const mockUniformTypeId = 'uniform-type-123';
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
 
         // Set default test globals
         global.__ROLE__ = AuthRole.admin;
         global.__USERNAME__ = 'testuser';
         global.__ASSOSIATION__ = 'test-assosiation-id';
 
-        mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue({
+        prismaMock.uniformType.findUniqueOrThrow.mockResolvedValue({
             id: mockUniformTypeId,
             usingGenerations: false
         });
@@ -23,12 +24,12 @@ describe('UniformCounts DAL - Unit Tests', () => {
     describe('getUniformCountBySizeForType', () => {
         describe('Empty and Edge Cases', () => {
             it('should handle empty size list', async () => {
-                mockPrisma.uniformSize.findMany.mockResolvedValue([]);
+                prismaMock.uniformSize.findMany.mockResolvedValue([]);
 
                 const result = await getUniformCountBySizeForType(mockUniformTypeId);
 
                 expect(result).toEqual([]);
-                expect(mockPrisma.uniformSize.findMany).toHaveBeenCalledWith({
+                expect(prismaMock.uniformSize.findMany).toHaveBeenCalledWith({
                     where: {
                         uniformList: {
                             some: {
@@ -84,7 +85,7 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     uniformList: []
                 }];
 
-                mockPrisma.uniformSize.findMany.mockResolvedValue(mockSizes);
+                prismaMock.uniformSize.findMany.mockResolvedValue(mockSizes);
 
                 const result = await getUniformCountBySizeForType(mockUniformTypeId);
 
@@ -116,7 +117,7 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     ]
                 }];
 
-                mockPrisma.uniformSize.findMany.mockResolvedValue(mockSizes);
+                prismaMock.uniformSize.findMany.mockResolvedValue(mockSizes);
 
                 const result = await getUniformCountBySizeForType(mockUniformTypeId);
 
@@ -137,7 +138,7 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     ]
                 }];
 
-                mockPrisma.uniformSize.findMany.mockResolvedValue(mockSizes);
+                prismaMock.uniformSize.findMany.mockResolvedValue(mockSizes);
 
                 const result = await getUniformCountBySizeForType(mockUniformTypeId);
 
@@ -159,7 +160,7 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     ]
                 }];
 
-                mockPrisma.uniformSize.findMany.mockResolvedValue(mockSizes);
+                prismaMock.uniformSize.findMany.mockResolvedValue(mockSizes);
 
                 const result = await getUniformCountBySizeForType(mockUniformTypeId);
 
@@ -192,7 +193,7 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     ]
                 }];
 
-                mockPrisma.uniformSize.findMany.mockResolvedValue(mockSizes);
+                prismaMock.uniformSize.findMany.mockResolvedValue(mockSizes);
 
                 const result = await getUniformCountBySizeForType(mockUniformTypeId);
 
@@ -232,7 +233,7 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     ]
                 }];
 
-                mockPrisma.uniformSize.findMany.mockResolvedValue(mockSizes);
+                prismaMock.uniformSize.findMany.mockResolvedValue(mockSizes);
 
                 const result = await getUniformCountBySizeForType(mockUniformTypeId);
 
@@ -279,12 +280,12 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     }
                 ];
 
-                mockPrisma.uniformSize.findMany.mockResolvedValue(mockSizes);
+                prismaMock.uniformSize.findMany.mockResolvedValue(mockSizes);
 
                 const result = await getUniformCountBySizeForType(mockUniformTypeId);
 
                 expect(result).toHaveLength(3);
-                expect(mockPrisma.uniformSize.findMany).toHaveBeenCalledWith(
+                expect(prismaMock.uniformSize.findMany).toHaveBeenCalledWith(
                     expect.objectContaining({
                         orderBy: { sortOrder: 'asc' }
                     })
@@ -306,7 +307,7 @@ describe('UniformCounts DAL - Unit Tests', () => {
 
         describe('Generation-Based Reserve Logic', () => {
             it('uses generation.isReserve flag when usingGenerations', async () => {
-                mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue({
+                prismaMock.uniformType.findUniqueOrThrow.mockResolvedValue({
                     id: mockUniformTypeId,
                     usingGenerations: true
                 });
@@ -322,7 +323,7 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     ]
                 }];
 
-                mockPrisma.uniformSize.findMany.mockResolvedValue(mockSizes);
+                prismaMock.uniformSize.findMany.mockResolvedValue(mockSizes);
 
                 const result = await getUniformCountBySizeForType(mockUniformTypeId);
 
@@ -347,7 +348,7 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     ]
                 }];
 
-                mockPrisma.uniformSize.findMany.mockResolvedValue(mockSizes);
+                prismaMock.uniformSize.findMany.mockResolvedValue(mockSizes);
 
                 const result = await getUniformCountBySizeForType(mockUniformTypeId);
 
@@ -357,7 +358,7 @@ describe('UniformCounts DAL - Unit Tests', () => {
             });
 
             it('should handle null generation gracefully', async () => {
-                mockPrisma.uniformType.findUniqueOrThrow.mockResolvedValue({
+                prismaMock.uniformType.findUniqueOrThrow.mockResolvedValue({
                     id: mockUniformTypeId,
                     usingGenerations: true
                 });
@@ -371,7 +372,7 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     ]
                 }];
 
-                mockPrisma.uniformSize.findMany.mockResolvedValue(mockSizes);
+                prismaMock.uniformSize.findMany.mockResolvedValue(mockSizes);
 
                 const result = await getUniformCountBySizeForType(mockUniformTypeId);
 
@@ -385,8 +386,8 @@ describe('UniformCounts DAL - Unit Tests', () => {
     describe('getUniformCountByType', () => {
         describe('Empty and Edge Cases', () => {
             it('should handle empty type list', async () => {
-                mockPrisma.uniformType.findMany.mockResolvedValue([]);
-                mockPrisma.cadet.findMany.mockResolvedValue([]);
+                prismaMock.uniformType.findMany.mockResolvedValue([]);
+                prismaMock.cadet.findMany.mockResolvedValue([]);
 
                 const result = await getUniformCountByType();
 
@@ -406,8 +407,8 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     { id: 'cadet-2', firstname: 'Jane', lastname: 'Smith' }
                 ];
 
-                mockPrisma.uniformType.findMany.mockResolvedValue(mockTypes);
-                mockPrisma.cadet.findMany.mockResolvedValue(mockCadets);
+                prismaMock.uniformType.findMany.mockResolvedValue(mockTypes);
+                prismaMock.cadet.findMany.mockResolvedValue(mockCadets);
 
                 const result = await getUniformCountByType();
 
@@ -458,8 +459,8 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     { id: 'cadet-2', firstname: 'Jane', lastname: 'Smith' }
                 ];
 
-                mockPrisma.uniformType.findMany.mockResolvedValue(mockTypes);
-                mockPrisma.cadet.findMany.mockResolvedValue(mockCadets);
+                prismaMock.uniformType.findMany.mockResolvedValue(mockTypes);
+                prismaMock.cadet.findMany.mockResolvedValue(mockCadets);
 
                 const result = await getUniformCountByType();
 
@@ -493,8 +494,8 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     { id: 'cadet-3', firstname: 'Bob', lastname: 'Wilson' }
                 ];
 
-                mockPrisma.uniformType.findMany.mockResolvedValue(mockTypes);
-                mockPrisma.cadet.findMany.mockResolvedValue(mockCadets);
+                prismaMock.uniformType.findMany.mockResolvedValue(mockTypes);
+                prismaMock.cadet.findMany.mockResolvedValue(mockCadets);
 
                 const result = await getUniformCountByType();
 
@@ -522,8 +523,8 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     { id: 'cadet-2', firstname: 'Jane', lastname: 'Smith' }
                 ];
 
-                mockPrisma.uniformType.findMany.mockResolvedValue(mockTypes);
-                mockPrisma.cadet.findMany.mockResolvedValue(mockCadets);
+                prismaMock.uniformType.findMany.mockResolvedValue(mockTypes);
+                prismaMock.cadet.findMany.mockResolvedValue(mockCadets);
 
                 const result = await getUniformCountByType();
 
@@ -550,8 +551,8 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     { id: 'cadet-2', firstname: 'Jane', lastname: 'Smith' }
                 ];
 
-                mockPrisma.uniformType.findMany.mockResolvedValue(mockTypes);
-                mockPrisma.cadet.findMany.mockResolvedValue(mockCadets);
+                prismaMock.uniformType.findMany.mockResolvedValue(mockTypes);
+                prismaMock.cadet.findMany.mockResolvedValue(mockCadets);
 
                 const result = await getUniformCountByType();
 
@@ -587,8 +588,8 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     { id: 'cadet-1', firstname: 'John', lastname: 'Doe' }
                 ];
 
-                mockPrisma.uniformType.findMany.mockResolvedValue(mockTypes);
-                mockPrisma.cadet.findMany.mockResolvedValue(mockCadets);
+                prismaMock.uniformType.findMany.mockResolvedValue(mockTypes);
+                prismaMock.cadet.findMany.mockResolvedValue(mockCadets);
 
                 const result = await getUniformCountByType();
 
@@ -632,8 +633,8 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     { id: 'cadet-4', firstname: 'Diana', lastname: 'Miller' }
                 ];
 
-                mockPrisma.uniformType.findMany.mockResolvedValue(mockTypes);
-                mockPrisma.cadet.findMany.mockResolvedValue(mockCadets);
+                prismaMock.uniformType.findMany.mockResolvedValue(mockTypes);
+                prismaMock.cadet.findMany.mockResolvedValue(mockCadets);
 
                 const result = await getUniformCountByType();
 
@@ -676,8 +677,8 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     { id: 'cadet-2', firstname: 'Jane', lastname: 'Smith' }
                 ];
 
-                mockPrisma.uniformType.findMany.mockResolvedValue(mockTypes);
-                mockPrisma.cadet.findMany.mockResolvedValue(mockCadets);
+                prismaMock.uniformType.findMany.mockResolvedValue(mockTypes);
+                prismaMock.cadet.findMany.mockResolvedValue(mockCadets);
 
                 const result = await getUniformCountByType();
 
@@ -701,7 +702,7 @@ describe('UniformCounts DAL - Unit Tests', () => {
                 });
 
                 // Verify the Prisma query structure
-                expect(mockPrisma.uniformType.findMany).toHaveBeenCalledWith({
+                expect(prismaMock.uniformType.findMany).toHaveBeenCalledWith({
                     where: {
                         recdelete: null,
                         fk_assosiation: 'test-assosiation-id'
@@ -746,7 +747,7 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     }
                 });
 
-                expect(mockPrisma.cadet.findMany).toHaveBeenCalledWith({
+                expect(prismaMock.cadet.findMany).toHaveBeenCalledWith({
                     where: {
                         active: true,
                         recdelete: null,
@@ -786,8 +787,8 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     { id: 'cadet-2', firstname: 'Jane', lastname: 'Smith' }
                 ];
 
-                mockPrisma.uniformType.findMany.mockResolvedValue(mockTypes);
-                mockPrisma.cadet.findMany.mockResolvedValue(mockCadets);
+                prismaMock.uniformType.findMany.mockResolvedValue(mockTypes);
+                prismaMock.cadet.findMany.mockResolvedValue(mockCadets);
 
                 const result = await getUniformCountByType();
 
@@ -828,8 +829,8 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     { id: 'cadet-2', firstname: 'Jane', lastname: 'Smith' }
                 ];
 
-                mockPrisma.uniformType.findMany.mockResolvedValue(mockTypes);
-                mockPrisma.cadet.findMany.mockResolvedValue(mockCadets);
+                prismaMock.uniformType.findMany.mockResolvedValue(mockTypes);
+                prismaMock.cadet.findMany.mockResolvedValue(mockCadets);
 
                 const result = await getUniformCountByType();
 
@@ -869,8 +870,8 @@ describe('UniformCounts DAL - Unit Tests', () => {
                     { id: 'cadet-2', firstname: 'Jane', lastname: 'Smith' }
                 ];
 
-                mockPrisma.uniformType.findMany.mockResolvedValue(mockTypes);
-                mockPrisma.cadet.findMany.mockResolvedValue(mockCadets);
+                prismaMock.uniformType.findMany.mockResolvedValue(mockTypes);
+                prismaMock.cadet.findMany.mockResolvedValue(mockCadets);
 
                 const result = await getUniformCountByType();
 

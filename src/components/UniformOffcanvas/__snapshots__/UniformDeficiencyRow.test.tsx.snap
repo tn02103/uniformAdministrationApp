@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`UniformDeficiencyRow renders correctly 1`] = `
+exports[`UniformDeficiencyRow > renders correctly 1`] = `
 <div>
   <div
     class="m-0 mb-2 justify-content-between row"

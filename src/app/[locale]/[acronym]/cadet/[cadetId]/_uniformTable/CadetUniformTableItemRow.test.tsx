@@ -3,11 +3,16 @@ import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CadetUniformTableItemRow } from "./CadetUniformTableItemRow";
 import type { UniformWithOwner, UniformType } from "@/types/globalUniformTypes";
+import { useModal } from "@/components/modals/modalProvider";
+import { returnUniformItem } from "@/dal/uniform/item/_index";
+import { UniformOffcanvas } from "@/components/UniformOffcanvas/UniformOffcanvas";
+import { toast } from "react-toastify";
+import { vi } from 'vitest';
 
 // Mocks
-jest.mock("@/components/UniformOffcanvas/UniformOffcanvas", () => ({
+vi.mock("@/components/UniformOffcanvas/UniformOffcanvas", () => ({
     __esModule: true,
-    UniformOffcanvas: jest.fn().mockImplementation(
+    UniformOffcanvas: vi.fn().mockImplementation(
         (props: { onClose: () => void }) => (
             <div data-testid="offcanvas">
                 <button onClick={props.onClose}>Close</button>
@@ -15,19 +20,19 @@ jest.mock("@/components/UniformOffcanvas/UniformOffcanvas", () => ({
         )
     ),
 }));
-jest.mock("@/dal/uniform/item/_index", () => ({
-    returnUniformItem: jest.fn().mockResolvedValue([]),
+vi.mock("@/dal/uniform/item/_index", () => ({
+    returnUniformItem: vi.fn().mockResolvedValue([]),
 }));
-jest.mock("@/dataFetcher/cadet", () => ({
-    useCadetUniformMap: () => ({ mutate: jest.fn(async (x) => x) }),
+vi.mock("@/dataFetcher/cadet", () => ({
+    useCadetUniformMap: () => ({ mutate: vi.fn(async (x) => x) }),
 }));
-jest.mock("next/navigation", () => ({
+vi.mock("next/navigation", () => ({
     useParams: () => ({ cadetId: "cadet-1", locale: "de" }),
 }));
 
 
-const mockReplaceItem = jest.fn();
-const mockSetOpenUniformId = jest.fn();
+const mockReplaceItem = vi.fn();
+const mockSetOpenUniformId = vi.fn();
 
 const mockUniformType: UniformType = {
     id: "type-1",
@@ -68,13 +73,10 @@ function setup(props = {}) {
 }
 
 describe("CadetUniformTableItemRow", () => {
-    const { simpleWarningModal } = jest.requireMock("@/components/modals/modalProvider").useModal();
-    const { returnUniformItem } = jest.requireMock("@/dal/uniform/item/_index");
-    const { UniformOffcanvas } = jest.requireMock("@/components/UniformOffcanvas/UniformOffcanvas");
-    const { toast } = jest.requireMock("react-toastify");
+    const { simpleWarningModal } = useModal();
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it("renders all main fields", () => {
@@ -107,19 +109,19 @@ describe("CadetUniformTableItemRow", () => {
         expect(returnUniformItem).not.toHaveBeenCalled();
 
         await act(async () => {
-            await simpleWarningModal.mock.calls[0][0].primaryFunction();
+            await vi.mocked(simpleWarningModal).mock.calls[0][0].primaryFunction();
         });
         expect(returnUniformItem).toHaveBeenCalledWith({ uniformId: "u-1", cadetId: "cadet-1" });
     });
 
     it("catches errors when returnUniformItem fails", async () => {
         setup();
-        returnUniformItem.mockRejectedValue(new Error("Test error"));
+        vi.mocked(returnUniformItem).mockRejectedValue(new Error("Test error"));
 
         const btn = screen.getByTestId("btn_withdraw");
         await userEvent.click(btn);
         await act(async () => {
-            await simpleWarningModal.mock.calls[0][0].primaryFunction();
+            await vi.mocked(simpleWarningModal).mock.calls[0][0].primaryFunction();
         });
 
         expect(toast.error).toHaveBeenCalled();
@@ -283,7 +285,7 @@ describe("CadetUniformTableItemRow", () => {
         await userEvent.click(btnMenuSwitch);
         expect(mockReplaceItem).toHaveBeenCalled();
         await userEvent.click(btnMenuWithdraw);
-        const modalMock = jest.requireMock("@/components/modals/modalProvider").useModal();
+        const modalMock = vi.mocked(useModal)();
         expect(modalMock.simpleWarningModal).toHaveBeenCalled();
         await userEvent.click(btnMenuOpen);
         expect(mockSetOpenUniformId).toHaveBeenCalledWith("u-1");

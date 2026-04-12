@@ -1,7 +1,8 @@
+import userEvent from "@testing-library/user-event";
 import { Form } from "@/components/fields/Form";
 import { render, screen } from "@testing-library/react";
 import { CadetInspectionStep1, CadetInspectionStep1Props } from "./CadetInspectionStep1";
-
+import { OldDeficiencyRow } from "./OldDeficiencyRow";
 
 const mockOldDeficiencyList = [
     { id: '1', description: 'Old deficiency 1' },
@@ -12,17 +13,15 @@ const mockFormData = {
     oldDeficiencyList: mockOldDeficiencyList
 }
 
-jest.mock('./OldDeficiencyRow', () => ({
-    OldDeficiencyRow: jest.fn((data) => <div>{data.deficiency.description}</div>)
+vi.mock('./OldDeficiencyRow', () => ({
+    OldDeficiencyRow: vi.fn((data) => <div>{data.deficiency.description}</div>)
 }));
 
 describe('<CadetInspectionStep1 />', () => {
-    const { OldDeficiencyRow } = jest.requireMock('./OldDeficiencyRow')
-
     const MockComponent = ({ cancel, setNextStep }: Partial<CadetInspectionStep1Props>) => {
         return (
-            <Form onSubmit={jest.fn()} defaultValues={mockFormData}>
-                <CadetInspectionStep1 cancel={cancel ? cancel : jest.fn()} setNextStep={setNextStep ? setNextStep : jest.fn()} />
+            <Form onSubmit={vi.fn()} defaultValues={mockFormData}>
+                <CadetInspectionStep1 cancel={cancel ? cancel : vi.fn()} setNextStep={setNextStep ? setNextStep : vi.fn()} />
             </Form>
         );
     };
@@ -52,19 +51,21 @@ describe('<CadetInspectionStep1 />', () => {
         expect(screen.getByRole('button', { name: /nextStep/i })).toBeInTheDocument();
     });
 
-    it('should call cancel function when cancel button is clicked', () => {
-        const cancelMock = jest.fn();
+    it('should call cancel function when cancel button is clicked', async () => {
+        const user = userEvent.setup();
+        const cancelMock = vi.fn();
         render(<MockComponent cancel={cancelMock} />);
 
-        screen.getByRole('button', { name: /cancel/i }).click();
+        await user.click(screen.getByRole('button', { name: /cancel/i }));
         expect(cancelMock).toHaveBeenCalledTimes(1);
     });
 
-    it('should call nextStep function when nextStep button is clicked', () => {
-        const setNextStep = jest.fn();
+    it('should call nextStep function when nextStep button is clicked', async () => {
+        const user = userEvent.setup();
+        const setNextStep = vi.fn();
         render(<MockComponent setNextStep={setNextStep} />);
 
-        screen.getByRole('button', { name: /nextStep/i }).click();
+        await user.click(screen.getByRole('button', { name: /nextStep/i }));
         expect(setNextStep).toHaveBeenCalledTimes(1);
     });
 });

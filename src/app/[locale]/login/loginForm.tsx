@@ -4,7 +4,7 @@ import { useI18n } from "@/lib/locales/client";
 import { AuthItem } from "@/lib/storageTypes";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Assosiation } from "@prisma/client";
+import { Assosiation } from "@/prisma/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";

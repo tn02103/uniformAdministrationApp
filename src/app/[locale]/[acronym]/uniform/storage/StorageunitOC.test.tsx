@@ -5,13 +5,16 @@ import { mockStorageUnitWithItems } from "./StorageunitOC.jestHelper";
 import { StorageunitOC } from "./StorageunitOC";
 import userEvent from "@testing-library/user-event";
 import { AuthRole } from "@/lib/AuthRoles";
+import { useModal } from "@/components/modals/modalProvider";
+import { deleteStorageUnit } from "@/dal/storageUnit/_index";
+import { vi } from 'vitest';
 
 
 describe("StorageunitOC", () => {
     const mockStorageUnit = mockStorageUnitWithItems[0];
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('renders correctly with storage unit', () => {
@@ -111,12 +114,10 @@ describe("StorageunitOC", () => {
     });
 
     it('deletes storage unit', async () => {
-        const { useModal } = jest.requireMock("@/components/modals/modalProvider");
         const { showMessageModal } = useModal();
-        const { deleteStorageUnit } = jest.requireMock("@/dal/storageUnit/_index");
 
         const user = userEvent.setup();
-        const onHideMock = jest.fn();
+        const onHideMock = vi.fn();
         render(<StorageunitOC storageUnit={mockStorageUnit} onHide={onHideMock} setSelectedStorageUnitId={() => { }} />);
 
         const deleteButton = screen.getByRole('button', { name: /delete/i });
@@ -132,7 +133,7 @@ describe("StorageunitOC", () => {
         );
 
         await act(async () => {
-            await showMessageModal.mock.calls[0][2][1].function(); // Call the delete function
+            await vi.mocked(showMessageModal).mock.calls[0][2][1].function(); // Call the delete function
         });
 
         expect(deleteStorageUnit).toHaveBeenCalledWith(mockStorageUnit.id);
