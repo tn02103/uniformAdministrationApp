@@ -306,10 +306,9 @@ test.describe('Admin Dashboard - Charts', () => {
         test('should list all uniform types in header', async ({ page }) => {
             // Expand the table section
             const showMoreButtons = page.locator('button').filter({ hasText: /show more|mehr anzeigen/i });
-            if (await showMoreButtons.count() > 0) {
-                await showMoreButtons.first().click();
-            }
-
+            await expect(showMoreButtons.first()).toBeVisible();
+            await showMoreButtons.first().click();
+            
             const table = page.locator('[data-testid="uniform-types-table"]');
             await expect(table).toBeVisible();
 
@@ -334,10 +333,9 @@ test.describe('Admin Dashboard - Charts', () => {
         test('should show correct numbers for specific type', async ({ page }) => {
             // Expand table
             const showMoreButtons = page.locator('button').filter({ hasText: /show more|mehr anzeigen/i });
-            if (await showMoreButtons.count() > 0) {
-                await showMoreButtons.first().click();
-            }
-
+            await expect(showMoreButtons.first()).toBeVisible();
+            await showMoreButtons.first().click();
+            
             const table = page.locator('[data-testid="uniform-types-table"]');
             await expect(table).toBeVisible();
 
@@ -357,10 +355,9 @@ test.describe('Admin Dashboard - Charts', () => {
 
         test('should show correct row types', async ({ page }) => {
             const showMoreButtons = page.locator('button').filter({ hasText: /show more|mehr anzeigen/i });
-            if (await showMoreButtons.count() > 0) {
-                await showMoreButtons.first().click();
-            }
-
+            await expect(showMoreButtons.first()).toBeVisible();
+            await showMoreButtons.first().click();
+            
             const table = page.locator('[data-testid="uniform-types-table"]');
             await expect(table).toBeVisible();
 
@@ -387,10 +384,9 @@ test.describe('Admin Dashboard - Charts', () => {
 
         test('should show cadet tooltips on missing/issued reserves cells', async ({ page }) => {
             const showMoreButtons = page.locator('button').filter({ hasText: /show more|mehr anzeigen/i });
-            if (await showMoreButtons.count() > 0) {
-                await showMoreButtons.first().click();
-            }
-
+            await expect(showMoreButtons.first()).toBeVisible();
+            await showMoreButtons.first().click();
+            
             const table = page.locator('[data-testid="uniform-types-table"]');
             await expect(table).toBeVisible();
 
@@ -417,10 +413,9 @@ test.describe('Admin Dashboard - Charts', () => {
     test.describe('Uniform Size Table', () => {
         test('should list all sizes in header', async ({ page }) => {
             const showMoreButtons = page.locator('button').filter({ hasText: /show more|mehr anzeigen/i });
-            if (await showMoreButtons.count() > 1) {
-                await showMoreButtons.nth(1).click(); // Second expandable area
-            }
-
+            await expect(showMoreButtons.nth(1)).toBeVisible();
+            await showMoreButtons.nth(1).click(); // Second expandable area
+            
             const table = page.locator('[data-testid="uniform-size-table"]');
             await expect(table).toBeVisible();
 
@@ -441,10 +436,9 @@ test.describe('Admin Dashboard - Charts', () => {
 
         test('should show correct numbers for specific size', async ({ page }) => {
             const showMoreButtons = page.locator('button').filter({ hasText: /show more|mehr anzeigen/i });
-            if (await showMoreButtons.count() > 1) {
-                await showMoreButtons.nth(1).click();
-            }
-
+            await expect(showMoreButtons.nth(1)).toBeVisible();
+            await showMoreButtons.nth(1).click();
+            
             const table = page.locator('[data-testid="uniform-size-table"]');
             await expect(table).toBeVisible();
 
@@ -462,10 +456,9 @@ test.describe('Admin Dashboard - Charts', () => {
 
         test('should show correct row types', async ({ page }) => {
             const showMoreButtons = page.locator('button').filter({ hasText: /show more|mehr anzeigen/i });
-            if (await showMoreButtons.count() > 1) {
-                await showMoreButtons.nth(1).click();
-            }
-
+            await expect(showMoreButtons.nth(1)).toBeVisible();
+            await showMoreButtons.nth(1).click();
+            
             const table = page.locator('[data-testid="uniform-size-table"]');
             await expect(table).toBeVisible();
 

@@ -43,17 +43,17 @@ export const createUser = async (data: { username: string, name: string, role: A
 });
 
 export const updateUser = async (data: User) => genericSAValidatorV2(
-    AuthRole.admin,
-    (uuidValidationPattern.test(data.id)
-        && userNameValidationPattern.test(data.username)
-        && nameValidationPattern.test(data.name)
-        && (typeof data.active === "boolean")
-        && (data.role in AuthRole && typeof data.role === 'number')),
-    { userId: data.id }
-).then(async ({ assosiation }) => {
-    await dbHandler.update(data.id, data.name, data.role, data.active, prisma)
-    revalidatePath(`/[locale]/${assosiation}/admin/users`, 'page');
-});
+        AuthRole.admin,
+        (uuidValidationPattern.test(data.id)
+            && userNameValidationPattern.test(data.username)
+            && nameValidationPattern.test(data.name)
+            && (typeof data.active === "boolean")
+            && (data.role in AuthRole && typeof data.role === 'number')),
+        { userId: data.id }
+    ).then(async ({ assosiation }) => {
+        await dbHandler.update(data.id, data.name, data.role, data.active, prisma)
+        revalidatePath(`/[locale]/${assosiation}/admin/users`, 'page');
+    });
 
 export const changeUserPassword = async (userId: string, password: string) => genericSAValidatorV2(
     AuthRole.admin,

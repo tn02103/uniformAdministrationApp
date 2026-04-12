@@ -10,9 +10,9 @@ import { nameValidationPattern, userNameValidationPattern } from "@/lib/validati
 import { User } from "@/types/userTypes";
 import { faBars, faCheck, faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Dropdown, FormControl, FormGroup, FormLabel, FormSelect } from "react-bootstrap";
-import { Control, FieldErrors, FormProvider, UseFormRegister, useForm } from "react-hook-form";
+import { Control, Controller, FieldErrors, FormProvider, UseFormRegister, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 export default function UserAdminTableRow({
@@ -33,7 +33,15 @@ export default function UserAdminTableRow({
 
     const [editable, setEditable] = useState(!user);
 
+    useEffect(() => {
+        if (!editable) {
+            reset(user);
+            mobileForm.reset(user);
+        }
+    }, [user, reset, mobileForm.reset, editable]);
+
     async function handleSave(data: User) {
+        console.debug("🚀 ~ handleSave ~ data:", data)
         data.active = (String(data.active) === "true");
 
         if (!user) return handleCreate(data);
@@ -111,7 +119,7 @@ export default function UserAdminTableRow({
                     </div>
                     : <RoleSelect
                         formId={formId}
-                        register={register}
+                        control={control}
                         t={t} />
                 }
             </td>
@@ -122,7 +130,7 @@ export default function UserAdminTableRow({
                     </div>
                     : <ActiveSelect
                         formId={formId}
-                        register={register}
+                        control={control}
                         t={t} />
                 }
             </td>
@@ -210,14 +218,14 @@ export default function UserAdminTableRow({
                         <FormLabel className="ms-1 mt-1 mb-0">{t('admin.user.header.role')}</FormLabel>
                         <RoleSelect
                             formId={formId + "_mobil"}
-                            register={mobileForm.register}
+                            control={mobileForm.control}
                             t={t} />
                     </FormGroup>
                     <FormGroup>
                         <FormLabel className="ms-1 mt-1 mb-0">{t('admin.user.header.status')}</FormLabel>
                         <ActiveSelect
                             formId={formId + "_mobil"}
-                            register={mobileForm.register}
+                            control={mobileForm.control}
                             t={t} />
                     </FormGroup>
                     <div className="row m-2 mt-4 justify-content-between">
@@ -320,38 +328,54 @@ const NameControl = ({
 );
 const RoleSelect = ({
     formId,
-    register,
+    control,
     t,
 }: {
     formId: string;
-    register: UseFormRegister<User>;
+    control: Control<User>;
     t: any;
 }) => (
-    <FormSelect
-        form={formId}
-        {...register('role', { required: true, valueAsNumber: true })}
-    >
-        <option value={AuthRole.user}>{t('common.user.authRole.1')}</option>
-        <option value={AuthRole.inspector}>{t('common.user.authRole.2')}</option>
-        <option value={AuthRole.materialManager}>{t('common.user.authRole.3')}</option>
-        <option value={AuthRole.admin}>{t('common.user.authRole.4')}</option>
-    </FormSelect>
+    <Controller
+        control={control}
+        name="role"
+        render={({ field }) => (
+            <FormSelect
+                form={formId}
+                {...field}
+                value={String(field.value)}
+                onChange={(e) => field.onChange(+e.target.value)}
+            >
+                <option value={AuthRole.user}>{t('common.user.authRole.1')}</option>
+                <option value={AuthRole.inspector}>{t('common.user.authRole.2')}</option>
+                <option value={AuthRole.materialManager}>{t('common.user.authRole.3')}</option>
+                <option value={AuthRole.admin}>{t('common.user.authRole.4')}</option>
+            </FormSelect>
+        )}
+    />
 );
 
 const ActiveSelect = ({
     formId,
-    register,
+    control,
     t,
 }: {
     formId: string;
-    register: UseFormRegister<User>;
+    control: Control<User>;
     t: any;
 }) => (
-    <FormSelect
-        form={formId}
-        {...register('active', { required: true })}
-    >
-        <option value={"true"}>{t('common.user.active.true')}</option>
-        <option value={"false"}>{t('common.user.active.false')}</option>
-    </FormSelect>
+    <Controller
+        control={control}
+        name="active"
+        render={({ field }) =>
+            <FormSelect
+                {...field}
+                value={String(field.value)}
+                form={formId}
+                onChangeCapture={(e) => field.onChange(e.target.value === "true")}
+            >
+                <option value={"true"}>{t('common.user.active.true')}</option>
+                <option value={"false"}>{t('common.user.active.false')}</option>
+            </FormSelect>
+        }
+    />
 )

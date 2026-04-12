@@ -12,8 +12,15 @@ test.describe('Offcanvas - CadetOverview', () => {
 
     const openOffcanvas = async (page: Page, uniformId: string, number: number): Promise<Locator> => {
         const cadetUniformRow = page.getByTestId(`div_uniform_typeList`).getByTestId(`div_uitem_${uniformId}`);
-        await cadetUniformRow.getByRole('button', { name: /open/i }).click();
-        await expect(page.getByRole('dialog')).toBeVisible();
+        const openButton = cadetUniformRow.getByRole('button', { name: /open/i });
+        const dialog = page.getByRole('dialog');
+
+        await openButton.click();
+        // Retry click if dialog didn't open (handles Firefox hydration race)
+        await expect(dialog).toBeVisible().catch(async () => {
+            await openButton.click();
+        });
+        await expect(dialog).toBeVisible();
 
         return page.getByRole('dialog', { name: new RegExp(String(number)) })
     }

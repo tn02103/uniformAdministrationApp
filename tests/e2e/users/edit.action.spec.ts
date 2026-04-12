@@ -206,16 +206,16 @@ test.describe('save function', () => {
     }
     const validateDBStep = async (id: string) => {
         await test.step('validate db', async () => {
-            const dbUser = await prisma.user.findUniqueOrThrow({
-                where: { id }
-            });
-
-            expect(dbUser).toStrictEqual(expect.objectContaining({
-                username: 'test4',
-                name: 'Test Changed',
-                role: 2,
-                active: false
-            }));
+                const dbUser = await prisma.user.findUniqueOrThrow({
+                    where: { id }
+                });
+                
+                expect(dbUser).toStrictEqual(expect.objectContaining({
+                    username: 'test4',
+                    name: 'Test Changed',
+                    role: 2,
+                    active: false
+                }));
         });
     }
 
@@ -224,6 +224,7 @@ test.describe('save function', () => {
         await changeDataStep(userPage, ids, page);
 
         await test.step('validate ui', async () => {
+            await page.waitForTimeout(100);
             await expect(userPage.txt_user_name(ids.userIds[0])).toHaveValue('Test Changed');
         });
 
