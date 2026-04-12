@@ -120,7 +120,6 @@ describe("UniformListFilterAccordionBody", () => {
             );
             const selectAll = screen.getByLabelText("uniformList.selectAll") as HTMLInputElement;
             const item1 = screen.getByLabelText("Item 1");
-            const item2 = screen.getByLabelText("Item 2");
             expect(selectAll).not.toBeChecked();
             expect(selectAll.indeterminate).toBe(false);
 

@@ -1,24 +1,21 @@
-import { FlatCompat } from '@eslint/eslintrc';
+import nextCoreWebVitals from 'eslint-config-next/core-web-vitals';
+import nextTypescript from 'eslint-config-next/typescript';
 import vitest from '@vitest/eslint-plugin'
 import playwright from 'eslint-plugin-playwright';
 import testingLibrary from "eslint-plugin-testing-library";
-import { defineConfig } from "eslint/config";
 
-const compat = new FlatCompat({
-    // import.meta.dirname is available after Node.js v20.11.0
-    baseDirectory: import.meta.dirname,
-})
-
-export default defineConfig([
-    ...compat.config({
-        extends: ['next/core-web-vitals', 'next/typescript'],
-    }),
+export default [
+    ...nextCoreWebVitals,
+    ...nextTypescript,
     { files: ["**/src/**/*", "**/tests/**/*"] },
     {
         rules: {
             'no-console': ['error', {
                 allow: ['warn', 'error', 'info'],
-            }]
+            }],
+            "react-hooks/set-state-in-effect": "off",
+            "react-hooks/immutability": "off",
+            "react-hooks/incompatible-library": "off",
         }
     },
     {
@@ -50,4 +47,4 @@ export default defineConfig([
             "playwright/no-conditional-expect": "off",
         },
     },
-]);
+];
