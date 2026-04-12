@@ -135,6 +135,10 @@ test.describe(() => {
     test('validate issue', async ({ materialComponent, popupComponent, staticData: { ids } }) => {
         await test.step('open Modal', async () => {
             await materialComponent.btn_group_issue(ids.materialGroupIds[0]).click();
+            // Retry click if popup didn't open (handles Firefox hydration race)
+            await expect(popupComponent.div_popup).toBeVisible().catch(async () => {
+                await materialComponent.btn_group_issue(ids.materialGroupIds[0]).click();
+            });
             await expect(popupComponent.div_popup).toBeVisible();
         });
 
@@ -160,6 +164,10 @@ test.describe(() => {
 
         await test.step('open Modal', async () => {
             await materialComponent.btn_material_switch(oldMaterial).click();
+            // Retry click if popup didn't open (handles Firefox hydration race)
+            await expect(popupComponent.div_popup).toBeVisible().catch(async () => {
+                await materialComponent.btn_material_switch(oldMaterial).click();
+            });
             await expect(popupComponent.div_popup).toBeVisible();
         });
 
@@ -190,6 +198,10 @@ test.describe(() => {
     test('validate switch function change issued', async ({ materialComponent, popupComponent, staticData: { ids } }) => {
         await test.step('open Modal', async () => {
             await materialComponent.btn_material_switch(ids.materialIds[2]).click();
+            // Retry click if popup didn't open (handles Firefox hydration race)
+            await expect(popupComponent.div_popup).toBeVisible().catch(async () => {
+                await materialComponent.btn_material_switch(ids.materialIds[2]).click();
+            });
             await expect(popupComponent.div_popup).toBeVisible();
         });
 

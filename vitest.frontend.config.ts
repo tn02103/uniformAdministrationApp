@@ -53,6 +53,7 @@ export default defineConfig({
             'src/app/**/*.test.[jt]s?(x)',
             'src/lib/**/*.test.[jt]s?(x)',
         ],
+        maxWorkers: "60%",
     },
     resolve: {
         alias: [

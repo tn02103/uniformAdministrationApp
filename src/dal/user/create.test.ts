@@ -1,19 +1,17 @@
 import { prismaMock } from "@test-utils/prisma-mock";
-import { revalidatePath } from "next/cache";
-import bcrypt from "bcrypt";
+import { hash } from "bcrypt";
 import { AuthRole } from "@/lib/AuthRoles";
 import { createUser } from "./create";
 
 vi.mock("bcrypt", () => ({
-    default: {
-        hash: vi.fn().mockResolvedValue("$2b$12$mocked-bcrypt-hash"),
-    },
+    hash: vi.fn().mockResolvedValue("$2b$12$mocked-bcrypt-hash"),
 }));
 
-const mockBcryptHash = vi.mocked(bcrypt.hash);
+const mockBcryptHash = vi.mocked(hash);
 
 const validInput = {
     username: "abc12",
+    email: "test@example.com",
     name: "Test User",
     role: AuthRole.user,
     active: true,
@@ -23,7 +21,7 @@ const validInput = {
 describe("<User> createUser", () => {
     afterEach(() => vi.clearAllMocks());
 
-    it("should create a user and revalidate path on success", async () => {
+    it("should create a user on success", async () => {
         prismaMock.user.findFirst.mockResolvedValue(null);
         prismaMock.user.create.mockResolvedValue({} as never);
 
@@ -37,7 +35,7 @@ describe("<User> createUser", () => {
         expect(prismaMock.user.create).toHaveBeenCalledWith({
             data: {
                 username: validInput.username,
-                email: validInput.username,
+                email: validInput.email,
                 name: validInput.name,
                 role: validInput.role,
                 active: validInput.active,
@@ -45,10 +43,6 @@ describe("<User> createUser", () => {
                 organisationId: "test-organisation-id",
             },
         });
-        expect(revalidatePath).toHaveBeenCalledWith(
-            "/[locale]/test-organisation-id/admin/user",
-            "page"
-        );
     });
 
     it("should return error when username is already taken", async () => {
@@ -61,11 +55,39 @@ describe("<User> createUser", () => {
 
         expect(result).toEqual({
             error: {
-                message: "custom.usernameDuplication.user",
+                message: "user.username.duplication",
                 formElement: "username",
             },
         });
         expect(prismaMock.user.create).not.toHaveBeenCalled();
         expect(mockBcryptHash).not.toHaveBeenCalled();
+    });
+
+    it("should return error when email is already taken", async () => {
+        prismaMock.user.findFirst.mockResolvedValueOnce(null); // username check passes
+        prismaMock.user.findFirst.mockResolvedValueOnce({
+            id: "existing-user-id",
+            email: validInput.email,
+        } as never); // email check fails
+
+        const result = await createUser(validInput);
+
+        expect(result).toEqual({
+            error: {
+                message: "user.email.duplication",
+                formElement: "email",
+            },
+        });
+        expect(prismaMock.user.create).not.toHaveBeenCalled();
+        expect(mockBcryptHash).not.toHaveBeenCalled();
+    });
+
+    it("should hash password with bcrypt", async () => {
+        prismaMock.user.findFirst.mockResolvedValue(null);
+        prismaMock.user.create.mockResolvedValue({} as never);
+
+        await createUser(validInput);
+
+        expect(mockBcryptHash).toHaveBeenCalledWith(validInput.password, 12);
     });
 });

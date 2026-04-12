@@ -6,18 +6,6 @@ z.setErrorMap(customErrorMap);
 // ####### BASE SCHEMAS #######
 const requiredString = z.string({ message: "string.required" }).trim().min(1, "string.required");
 
-export const userNameSchema = z.string()
-    .trim()
-    .toLowerCase()
-    .min(3)
-    .max(30)
-    .regex(/^[a-z0-9](?:[a-z0-9._-]{1,28}[a-z0-9])?$/, 'user.username.pattern');
-export const nameSchema = z.string()
-    .trim()
-    .min(1)
-    .max(100)
-    .refine(v => /^[\p{L}\p{M} \-'.]{1,100}$/u.test(v), 'user.name.pattern');
-
 export const emailSchema = z.string().min(1, "string.required").email("string.email");
 
 const newPasswordSchema = requiredString.regex(passwordValidationPattern, "custom.auth.password.requirements");

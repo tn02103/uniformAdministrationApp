@@ -165,11 +165,11 @@ class StaticDataGetter {
         const organisationId = this.organisation.id;
         const password = await bcrypt.hash(process.env.TEST_USER_PASSWORD??"Test!234" as string, 12);
         return [
-            { id: this.userIds[0], organisationId, role: 4, username: 'test4', email: 'test4@test.com',  name: `Test ${this.index} Admin`, password, active: true },
-            { id: this.userIds[1], organisationId, role: 3, username: 'test3', email: 'test3@test.com', name: `Test ${this.index} Verwaltung`, password, active: true },
-            { id: this.userIds[2], organisationId, role: 2, username: 'test2', email: 'test2@test.com', name: `Test ${this.index} Kontrolleur`, password, active: true },
-            { id: this.userIds[3], organisationId, role: 1, username: 'test1', email: 'test1@test.com', name: `Test ${this.index} Nutzer`, password, active: true },
-            { id: this.userIds[4], organisationId, role: 1, username: 'test5', email: 'test5@test.com', name: `Test ${this.index} Gesperrt`, password, active: false },
+            { id: this.userIds[0], organisationId, role: 4, username: 'test4', email: 'test4@test.com',  name: `Test Admin`, password, active: true },
+            { id: this.userIds[1], organisationId, role: 3, username: 'test3', email: 'test3@test.com', name: `Test Verwaltung`, password, active: true },
+            { id: this.userIds[2], organisationId, role: 2, username: 'test2', email: 'test2@test.com', name: `Test Kontrolleur`, password, active: true },
+            { id: this.userIds[3], organisationId, role: 1, username: 'test1', email: 'test1@test.com', name: `Test Nutzer`, password, active: true },
+            { id: this.userIds[4], organisationId, role: 1, username: 'test5', email: 'test5@test.com', name: `Test Gesperrt`, password, active: false },
         ]
     }
 }

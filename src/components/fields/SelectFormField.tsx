@@ -19,9 +19,10 @@ export type SelectFormFieldProps<FormType extends FieldValues> = {
     selectClassName?: string,
     onValueChange?: (value: string | number) => void,
     hookFormValidation?: boolean,
+    valueAsNumber?: boolean;
 }
 
-export const SelectFormField = <FormType extends FieldValues>({ label, name, required, options, labelClassName, selectClassName, onValueChange, hookFormValidation, ...inputProps }: SelectFormFieldProps<FormType>) => {
+export const SelectFormField = <FormType extends FieldValues>({ label, name, required, options, labelClassName, selectClassName, onValueChange, hookFormValidation, valueAsNumber, ...inputProps }: SelectFormFieldProps<FormType>) => {
     const t = useI18n();
     const { field, fieldState } = useController({
         name,
@@ -41,6 +42,15 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
     const plaintext = formContext?.plaintext || inputProps.plaintext;
     const formName = inputProps.formName || formContext?.formName || "unnamedForm";
 
+    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        let value: string | number = e.target.value;
+        if (valueAsNumber) {
+            value = +value;
+        }
+        field.onChange(value);
+        onValueChange?.(value);
+    }
+
     return (
         <Field
             formName={formName}
@@ -58,7 +68,7 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
                 :
                 <Form.Select
                     {...field}
-                    onChange={(e) => { field.onChange(e); onValueChange?.(e.target.value) }}
+                    onChange={handleChange}
                     disabled={disabled}
                     id={`${formName}_select-${name}`}
                     isInvalid={!!fieldState.error}

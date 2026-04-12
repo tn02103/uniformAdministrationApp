@@ -1,15 +1,13 @@
 import { executePasswordReset } from "./executeReset";
 import { prismaMock } from "@test-utils/prisma-mock";
-import bcrypt from "bcrypt";
+import { hash } from "bcrypt";
 import { sha256Hex } from "@/dal/auth/helper.tokens";
 import { logSecurityAuditEntry } from "@/dal/auth/helper";
 import { LogDebugLevel } from "@/dal/auth/LogDebugLeve.enum";
 import { sendPasswordChangedEmail } from "@/lib/email/passwordChangedEmail";
 
 vi.mock("bcrypt", () => ({
-    default: {
-        hash: vi.fn().mockResolvedValue("$2b$12$mocked-bcrypt-hash"),
-    },
+    hash: vi.fn().mockResolvedValue("$2b$12$mocked-bcrypt-hash"),
 }));
 
 vi.mock("next/headers", () => ({
@@ -39,7 +37,7 @@ vi.mock("@/lib/email/passwordChangedEmail", () => ({
     sendPasswordChangedEmail: vi.fn().mockResolvedValue(undefined),
 }));
 
-const mockBcryptHash = vi.mocked(bcrypt.hash);
+const mockBcryptHash = vi.mocked(hash);
 const mockLogAuditEntry = vi.mocked(logSecurityAuditEntry);
 const mockSendPasswordChangedEmail = vi.mocked(sendPasswordChangedEmail);
 

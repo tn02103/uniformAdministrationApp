@@ -189,6 +189,12 @@ export default {
                     pattern: "The username may not contain special or blank characters",
                     duplicate: "The username is already used by a different user",
                 },
+                email: {
+                    duplicate: "The email address is already used by a different user",
+                },
+                name: {
+                    pattern: "The name may not contain special characters or numbers",
+                }
             },
             custom: {
                 nameDuplication: {
@@ -651,20 +657,44 @@ export default {
         user: {
             header: {
                 page: "User overview",
+            },
+            label: {
+                email: "Email",
                 username: "Username",
                 name: "Name",
                 role: "Role",
                 status: "State",
+                password: "Password",
+                activeStatus: "Active",
             },
-            deleteWarning: {
-                header: "Delete user {user}",
-                message: "Are you sure the user should be deleted",
+            role: {
+                selfChange: {
+                    disabled: "You cannot change your own role. Ask another admin to do this.",
+                },
+            },
+            actions: {
+                resetPassword: "Reset password",
+                reset2FA: "Reset 2FA",
+                "reset2FA.notAvailable": "Not yet available",
+                delete: "Delete user {user}",
+                deleteWarning: {
+                    header: "Delete user {user}",
+                    message: "Are you sure the user should be deleted",
+                },
+            },
+            success: {
+                deleted: "User deleted successfully",
+                passwordReset: "Password reset successfully",
+                saved: "User updated successfully",
+                created: "User created successfully",
             },
             error: {
                 changePassword: "Saving of the password failed",
+                delete: "Deleting the user failed",
+                create: "Creating the user failed",
+                save: "Updating the user failed",
+
             },
-            saved: "User updated successfully",
-            created: "User created successfully",
         },
         deficiency: {
             disabled: "disabled on: ",

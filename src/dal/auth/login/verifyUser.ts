@@ -2,7 +2,7 @@ import { AuthenticationException, TwoFactorRequiredException } from "@/errors/Au
 import { prisma } from "@/lib/db";
 import { sendUserBlockedEmail } from "@/lib/email/userBlockedEmail";
 import { LoginFormType } from "@/zod/auth";
-import bcrypt from 'bcrypt';
+import { compare } from 'bcrypt';
 import { UserLoginData } from ".";
 import { __unsecuredSendEmailVerifyCode } from "../email/verifyCode";
 import { verifyMFAToken } from "../helper";
@@ -29,7 +29,7 @@ export const verifyUser = async (props: VerifyUserProps): Promise<{ mfaMethod: n
         throw new AuthenticationException("User is blocked", "User Blocked", LogDebugLevel.WARNING, userData);
     }
 
-    const isValidPassword = await bcrypt.compare(loginFormData.password, user.password);
+    const isValidPassword = await compare(loginFormData.password, user.password);
     if (!isValidPassword) {
         const updatedUser = await prisma.user.update({
             where: { id: user.id },
@@ -76,7 +76,7 @@ export const verifyUser = async (props: VerifyUserProps): Promise<{ mfaMethod: n
         await __unsecuredSendEmailVerifyCode(organisationId, user.id, {
             userAgent: userData.agent,
             ipAddress: userData.ipAddress,
-            deviceId: userData.account?.deviceId?? "unknown", // TODO - device needs to allready be created at this point, need to refactor to ensure this
+            deviceId: userData.account?.deviceId ?? "unknown", // TODO - device needs to allready be created at this point, need to refactor to ensure this
         });
     }
     throw new TwoFactorRequiredException("Two factor authentication required", mfaMethod, userData);

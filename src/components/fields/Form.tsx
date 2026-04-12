@@ -15,6 +15,7 @@ export const useFormContext = () => useContext(FormContext);
 
 type FormProps<TFieldValue extends FieldValues> = {
     onSubmit: (data: TFieldValue, form: UseFormReturn<TFieldValue>) => void;
+    formReturn?: UseFormReturn<TFieldValue>;
     onSubmitError?: (errors: FieldErrors<TFieldValue>, form: UseFormReturn<TFieldValue>) => void;
     children: React.ReactNode;
     disabled?: boolean;
@@ -26,6 +27,7 @@ type FormProps<TFieldValue extends FieldValues> = {
 export const Form = <TFieldValue extends FieldValues>({
     onSubmit,
     onSubmitError,
+    formReturn,
     disabled = false,
     plaintext = false,
     formName = 'unnamedForm',
@@ -34,19 +36,20 @@ export const Form = <TFieldValue extends FieldValues>({
     children,
     ...props
 }: FormProps<TFieldValue>) => {
-    const form = useForm<TFieldValue>({
+    const internalForm = useForm<TFieldValue>({
         mode,
         reValidateMode,
         resolver: props.zodSchema ? zodResolver(props.zodSchema) : undefined,
         ...props,
     });
+    const form = formReturn ?? internalForm;
 
     const formContextValue = useMemo(() => ({
         disabled,
         plaintext,
         formName,
     }), [disabled, plaintext, formName]);
-
+    
     return (
         <form
             noValidate
