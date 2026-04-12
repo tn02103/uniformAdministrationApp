@@ -7,7 +7,7 @@ import { StorageunitOCHeader } from "./StorageunitOCHeader";
 import { AuthRole } from "@/lib/AuthRoles";
 import { updateStorageUnit } from "@/dal/storageUnit/_index";
 import { toast } from "react-toastify";
-import { vi, type Mock } from 'vitest';
+import { vi } from 'vitest';
 
 describe("StorageunitOCHeader", () => {
     const mockStorageUnit = mockStorageUnitWithItems[0];
@@ -72,7 +72,7 @@ describe("StorageunitOCHeader", () => {
     it("catches DAL-Exception on save", async () => {
         const user = userEvent.setup();
         const error = new Error("Database error");
-        (updateStorageUnit as unknown as Mock).mockRejectedValueOnce(error);
+        vi.mocked(updateStorageUnit).mockRejectedValueOnce(error);
 
         render(<StorageunitOCHeader storageUnit={mockStorageUnit} />);
         expect(screen.getByText(mockStorageUnit.name)).toBeInTheDocument();

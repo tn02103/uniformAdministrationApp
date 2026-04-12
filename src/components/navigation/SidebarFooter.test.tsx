@@ -1,4 +1,5 @@
 import { logout } from '@/actions/auth';
+import { vi, type MockedFunction, type Mock } from 'vitest';
 import { fireEvent, getByRole, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useRouter } from 'next/navigation';
@@ -9,23 +10,23 @@ import { useSidebarContext } from './Sidebar';
 import { SidebarFooter } from './SidebarFooter';
 
 // Mock all dependencies
-jest.mock('./Sidebar', () => ({
-    useSidebarContext: jest.fn(),
+vi.mock('./Sidebar', () => ({
+    useSidebarContext: vi.fn(),
 }));
 
-jest.mock('@/actions/auth', () => ({
-    logout: jest.fn(),
+vi.mock('@/actions/auth', () => ({
+    logout: vi.fn(),
 }));
 
-jest.mock('swr', () => ({
-    mutate: jest.fn(),
-    useSWR: jest.fn(),
+vi.mock('swr', () => ({
+    mutate: vi.fn(),
+    useSWR: vi.fn(),
 }));
 
 // Mock localStorage
 const mockLocalStorage = {
-    getItem: jest.fn(),
-    setItem: jest.fn(),
+    getItem: vi.fn(),
+    setItem: vi.fn(),
 };
 Object.defineProperty(window, 'localStorage', {
     value: mockLocalStorage,
@@ -34,50 +35,50 @@ Object.defineProperty(window, 'localStorage', {
 // Mock environment variable
 process.env.NEXT_PUBLIC_LOCAL_AUTH_KEY = 'test-auth-key';
 
-const mockUseSidebarContext = useSidebarContext as jest.MockedFunction<typeof useSidebarContext>;
-const mockUseModal = useModal as jest.MockedFunction<typeof useModal>;
-const mockLogout = logout as jest.MockedFunction<typeof logout>;
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>;
-const mockUseSessionStorage = useSessionStorage as jest.MockedFunction<typeof useSessionStorage>;
-const mockMutate = mutate as jest.MockedFunction<typeof mutate>;
+const mockUseSidebarContext = useSidebarContext as MockedFunction<typeof useSidebarContext>;
+const mockUseModal = useModal as MockedFunction<typeof useModal>;
+const mockLogout = logout as MockedFunction<typeof logout>;
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>;
+const mockUseSessionStorage = useSessionStorage as MockedFunction<typeof useSessionStorage>;
+const mockMutate = mutate as MockedFunction<typeof mutate>;
 
 describe('SidebarFooter', () => {
     const defaultProps = {
         username: 'testuser',
         collapseButtonRef: { current: null },
-        handleCollapseButtonMouseLeave: jest.fn(),
+        handleCollapseButtonMouseLeave: vi.fn(),
     };
 
     const defaultSidebarContext = {
         collapsed: false,
-        setCollapsed: jest.fn(),
+        setCollapsed: vi.fn(),
         isSidebarFixed: true,
-        setShowSidebar: jest.fn(),
+        setShowSidebar: vi.fn(),
         isMobile: false,
     };
 
     const defaultRouter = {
-        push: jest.fn(),
-        back: jest.fn(),
-        forward: jest.fn(),
-        refresh: jest.fn(),
-        replace: jest.fn(),
-        prefetch: jest.fn(),
+        push: vi.fn(),
+        back: vi.fn(),
+        forward: vi.fn(),
+        refresh: vi.fn(),
+        replace: vi.fn(),
+        prefetch: vi.fn(),
     };
 
     let user: ReturnType<typeof userEvent.setup>;
-    let setSidebarFixed: jest.Mock;
+    let setSidebarFixed: Mock;
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         user = userEvent.setup();
-        setSidebarFixed = jest.fn();
+        setSidebarFixed = vi.fn();
         mockUseSidebarContext.mockReturnValue(defaultSidebarContext);
          
         mockUseRouter.mockReturnValue(defaultRouter as any);
         mockLogout.mockResolvedValue(undefined);
         mockLocalStorage.getItem.mockReturnValue(JSON.stringify({ authToken: 'test-token', lastLogin: new Date() }));
-        mockUseSessionStorage.mockReturnValue([true, setSidebarFixed, jest.fn()]);
+        mockUseSessionStorage.mockReturnValue([true, setSidebarFixed, vi.fn()]);
     });
 
     describe('Basic Rendering', () => {
@@ -185,7 +186,7 @@ describe('SidebarFooter', () => {
         });
 
         test('calls setCollapsed', async () => {
-            const mockSetCollapsed = jest.fn();
+            const mockSetCollapsed = vi.fn();
             mockUseSidebarContext.mockReturnValue({
                 ...defaultSidebarContext,
                 isSidebarFixed: true,
@@ -211,7 +212,7 @@ describe('SidebarFooter', () => {
         });
 
         test('calls setShowSidebar', async () => {
-            const mockSetShowSidebar = jest.fn();
+            const mockSetShowSidebar = vi.fn();
             mockUseSidebarContext.mockReturnValue({
                 ...defaultSidebarContext,
                 setShowSidebar: mockSetShowSidebar,
@@ -234,7 +235,7 @@ describe('SidebarFooter', () => {
         });
 
         test('reads initial state', () => {
-            mockUseSessionStorage.mockReturnValue([false, setSidebarFixed, jest.fn()]);
+            mockUseSessionStorage.mockReturnValue([false, setSidebarFixed, vi.fn()]);
             render(<SidebarFooter {...defaultProps} />);
 
             // Verify that useSessionStorage was called with correct parameters
@@ -396,7 +397,7 @@ describe('SidebarFooter', () => {
     // 9. Button Behavior Tests
     describe('Button Behavior', () => {
         test('desktop collapse button click', async () => {
-            const mockSetCollapsed = jest.fn();
+            const mockSetCollapsed = vi.fn();
             mockUseSidebarContext.mockReturnValue({
                 ...defaultSidebarContext,
                 isSidebarFixed: true,
@@ -413,7 +414,7 @@ describe('SidebarFooter', () => {
         });
 
         test('mobile collapse button click', async () => {
-            const mockSetShowSidebar = jest.fn();
+            const mockSetShowSidebar = vi.fn();
             mockUseSidebarContext.mockReturnValue({
                 ...defaultSidebarContext,
                 setShowSidebar: mockSetShowSidebar,
@@ -427,7 +428,7 @@ describe('SidebarFooter', () => {
         });
 
         test('mouse leave handler', () => {
-            const handleMouseLeave = jest.fn();
+            const handleMouseLeave = vi.fn();
             render(<SidebarFooter {...defaultProps} handleCollapseButtonMouseLeave={handleMouseLeave} />);
 
             const desktopButton = screen.getByTestId('btn_fix_sidebar');

@@ -1,10 +1,12 @@
+import { vi } from 'vitest';
 import { SAFormHandler } from "./SAFormHandler";
+import { toast } from "react-toastify";
 
 describe('SAFormHandler', () => {
     it('should handle successful server action with return', async () => {
-        const mockSuccess = jest.fn();
-        const mockSetFormError = jest.fn();
-        const mockFailure = jest.fn();
+        const mockSuccess = vi.fn();
+        const mockSetFormError = vi.fn();
+        const mockFailure = vi.fn();
 
         const mockPromise = Promise.resolve({ data: 'success' });
 
@@ -16,9 +18,9 @@ describe('SAFormHandler', () => {
     });
     // successful server action with no return
     it('should handle successful server action with no return', async () => {
-        const mockSuccess = jest.fn();
-        const mockSetFormError = jest.fn();
-        const mockFailure = jest.fn();
+        const mockSuccess = vi.fn();
+        const mockSetFormError = vi.fn();
+        const mockFailure = vi.fn();
 
         const mockPromise = Promise.resolve();
 
@@ -30,9 +32,9 @@ describe('SAFormHandler', () => {
     });
     // formError with formElement and message
     it('should handle form error with formElement and message', async () => {
-        const mockSetFormError = jest.fn();
-        const mockSuccess = jest.fn();
-        const mockFailure = jest.fn();
+        const mockSetFormError = vi.fn();
+        const mockSuccess = vi.fn();
+        const mockFailure = vi.fn();
         const mockPromise = Promise.resolve({
             error: {
                 formElement: 'testField',
@@ -46,9 +48,8 @@ describe('SAFormHandler', () => {
     });
     // unhandled error with string message
     it('should handle unhandled error with string message', async () => {
-        const { toast } = jest.requireMock('react-toastify');
-        const mockSetFormError = jest.fn();
-        const mockSuccess = jest.fn();
+        const mockSetFormError = vi.fn();
+        const mockSuccess = vi.fn();
         const mockPromise = Promise.resolve({
             error: 'This is an unhandled error message'
         });
@@ -58,9 +59,9 @@ describe('SAFormHandler', () => {
         expect(toast.error).toHaveBeenCalledWith('This is an unhandled error message');
     });
     it('should handle unhandled error with callback function', async () => {
-        const mockSetFormError = jest.fn();
-        const mockSuccess = jest.fn();
-        const mockFailure = jest.fn();
+        const mockSetFormError = vi.fn();
+        const mockSuccess = vi.fn();
+        const mockFailure = vi.fn();
         const mockPromise = Promise.resolve({
             error: 'This is an unhandled error message'
         });
@@ -75,9 +76,9 @@ describe('SAFormHandler', () => {
     });
     // uncaught thrown error
     it('should handle uncaught thrown error', async () => {
-        const mockSetFormError = jest.fn();
-        const mockSuccess = jest.fn();
-        const mockFailure = jest.fn();
+        const mockSetFormError = vi.fn();
+        const mockSuccess = vi.fn();
+        const mockFailure = vi.fn();
 
         const mockPromise = new Promise((_, reject) => {
             reject(new Error('This is an uncaught error'));
@@ -90,9 +91,8 @@ describe('SAFormHandler', () => {
         expect(mockFailure).toHaveBeenCalledWith(new Error('This is an uncaught error'));
     });
     it('should handle uncaught thrown error with string message', async () => {
-        const { toast } = jest.requireMock('react-toastify');
-        const mockSetFormError = jest.fn();
-        const mockSuccess = jest.fn();
+        const mockSetFormError = vi.fn();
+        const mockSuccess = vi.fn();
 
         const mockPromise = new Promise((_, reject) => {
             reject('This is an uncaught error with string message');

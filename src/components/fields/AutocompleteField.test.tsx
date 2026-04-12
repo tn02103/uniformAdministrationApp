@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { vi } from 'vitest';
 import userEvent from "@testing-library/user-event";
 import { AutocompleteField, AutocompleteOptionType } from "./AutocompleteField";
 
@@ -50,7 +51,7 @@ describe("AutocompleteField", () => {
     });
 
     it("calls onChange when user types an exact match (implicit change)", async () => {
-        const onChange = jest.fn();
+        const onChange = vi.fn();
         const user = userEvent.setup();
         render(
             <AutocompleteField
@@ -69,7 +70,7 @@ describe("AutocompleteField", () => {
     });
 
     it("does not call onChange on input if noImplicitChange is true", async () => {
-        const onChange = jest.fn();
+        const onChange = vi.fn();
         const user = userEvent.setup();
         render(
             <AutocompleteField
@@ -86,7 +87,7 @@ describe("AutocompleteField", () => {
     });
 
     it("selects option with mouse and calls onChange", async () => {
-        const onChange = jest.fn();
+        const onChange = vi.fn();
         const user = userEvent.setup();
         render(
             <AutocompleteField
@@ -105,7 +106,7 @@ describe("AutocompleteField", () => {
     });
 
     it("selects option with keyboard navigation and Enter", async () => {
-        const onChange = jest.fn();
+        const onChange = vi.fn();
         const user = userEvent.setup();
         render(
             <AutocompleteField
@@ -140,7 +141,7 @@ describe("AutocompleteField", () => {
     });
 
     it("resets input on select if resetOnChange is true", async () => {
-        const onChange = jest.fn();
+        const onChange = vi.fn();
         const user = userEvent.setup();
         render(
             <AutocompleteField
@@ -159,7 +160,7 @@ describe("AutocompleteField", () => {
     });
 
     it("disables options using isOptionDisabled", async () => {
-        const onChange = jest.fn();
+        const onChange = vi.fn();
         const user = userEvent.setup();
         render(
             <AutocompleteField
@@ -411,7 +412,7 @@ describe("AutocompleteField", () => {
     });
 
     it("calls onInputChange as user types", async () => {
-        const onInputChange = jest.fn();
+        const onInputChange = vi.fn();
         const user = userEvent.setup();
         render(
             <AutocompleteField

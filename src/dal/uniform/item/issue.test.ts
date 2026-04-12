@@ -1,6 +1,6 @@
 import { ExceptionType } from "@/errors/CustomException";
 import { AuthRole } from "@/lib/AuthRoles";
-import { prismaMock as mockPrisma } from '@test-utils/prisma-mock';
+import { prismaMock } from '@test-utils/prisma-mock';
 import { genericSAValidator } from "@/actions/validations";
 import { __unsecuredReturnUniformitem } from "./return";
 import { __unsecuredGetCadetUniformMap } from "@/dal/cadet/uniformMap";
@@ -111,23 +111,23 @@ describe('<UniformItem> issue', () => {
 
     beforeEach(() => {
         // Default mock responses
-        mockPrisma.uniform.findFirst.mockResolvedValue(mockUniform as any);
-        mockPrisma.uniform.create.mockResolvedValue(mockUniform as any);
-        mockPrisma.uniform.update.mockResolvedValue(mockUniform as any);
-        mockPrisma.uniformIssued.create.mockResolvedValue({ id: 'new-issued-entry' } as any);
-        mockPrisma.cadet.findUniqueOrThrow.mockResolvedValue(mockCadet as any);
-        mockPrisma.$executeRaw.mockResolvedValue(1);
+        prismaMock.uniform.findFirst.mockResolvedValue(mockUniform as any);
+        prismaMock.uniform.create.mockResolvedValue(mockUniform as any);
+        prismaMock.uniform.update.mockResolvedValue(mockUniform as any);
+        prismaMock.uniformIssued.create.mockResolvedValue({ id: 'new-issued-entry' } as any);
+        prismaMock.cadet.findUniqueOrThrow.mockResolvedValue(mockCadet as any);
+        prismaMock.$executeRaw.mockResolvedValue(1);
     });
 
     afterEach(() => {
         vi.clearAllMocks();
-        mockPrisma.uniform.findFirst.mockReset();
-        mockPrisma.uniform.create.mockReset();
-        mockPrisma.uniform.update.mockReset();
-        mockPrisma.uniformIssued.create.mockReset();
-        mockPrisma.uniformIssued.findFirst.mockReset();
-        mockPrisma.cadet.findUniqueOrThrow.mockReset();
-        mockPrisma.$executeRaw.mockReset();
+        prismaMock.uniform.findFirst.mockReset();
+        prismaMock.uniform.create.mockReset();
+        prismaMock.uniform.update.mockReset();
+        prismaMock.uniformIssued.create.mockReset();
+        prismaMock.uniformIssued.findFirst.mockReset();
+        prismaMock.cadet.findUniqueOrThrow.mockReset();
+        prismaMock.$executeRaw.mockReset();
         mockUnsecuredReturnUniformitem.mockReset();
     });
 
@@ -136,7 +136,7 @@ describe('<UniformItem> issue', () => {
         it('issues uniform to cadet successfully', async () => {
             await expect(issue(defaultIssueProps)).resolves.toEqual([mockUniformList[0]]);
 
-            expect(mockPrisma.uniform.findFirst).toHaveBeenCalledWith({
+            expect(prismaMock.uniform.findFirst).toHaveBeenCalledWith({
                 where: {
                     number: 2001,
                     fk_uniformType: mockTypeList[0].id,
@@ -153,7 +153,7 @@ describe('<UniformItem> issue', () => {
                     },
                 }
             });
-            expect(mockPrisma.uniformIssued.create).toHaveBeenCalledWith({
+            expect(prismaMock.uniformIssued.create).toHaveBeenCalledWith({
                 data: {
                     fk_uniform: mockUniformId,
                     fk_cadet: mockCadetId,
@@ -162,7 +162,7 @@ describe('<UniformItem> issue', () => {
         });
 
         it('creates and issues uniform when uniform does not exist and create option is true', async () => {
-            mockPrisma.uniform.findFirst.mockResolvedValue(null);
+            prismaMock.uniform.findFirst.mockResolvedValue(null);
 
             await expect(
                 issue({
@@ -171,7 +171,7 @@ describe('<UniformItem> issue', () => {
                 })
             ).resolves.toEqual([mockUniformList[0]]);
 
-            expect(mockPrisma.uniform.create).toHaveBeenCalledWith({
+            expect(prismaMock.uniform.create).toHaveBeenCalledWith({
                 data: {
                     number: 2001,
                     fk_uniformType: mockTypeList[0].id,
@@ -183,11 +183,11 @@ describe('<UniformItem> issue', () => {
                     }
                 }
             });
-            expect(mockPrisma.uniformIssued.create).not.toHaveBeenCalled(); // uniform.create handles this
+            expect(prismaMock.uniformIssued.create).not.toHaveBeenCalled(); // uniform.create handles this
         });
 
         it('issues reserve uniform when ignoreReserve option is true', async () => {
-            mockPrisma.uniform.findFirst.mockResolvedValue(mockReserveUniform as any);
+            prismaMock.uniform.findFirst.mockResolvedValue(mockReserveUniform as any);
 
             await expect(
                 issue({
@@ -196,11 +196,11 @@ describe('<UniformItem> issue', () => {
                 })
             ).resolves.toEqual([mockUniformList[0]]);
 
-            expect(mockPrisma.uniformIssued.create).toHaveBeenCalled();
+            expect(prismaMock.uniformIssued.create).toHaveBeenCalled();
         });
 
         it('issues uniform with reserve generation when ignoreReserve option is true', async () => {
-            mockPrisma.uniform.findFirst.mockResolvedValue(mockUniformWithReserveGenerationAndType as any);
+            prismaMock.uniform.findFirst.mockResolvedValue(mockUniformWithReserveGenerationAndType as any);
 
             await expect(
                 issue({
@@ -209,31 +209,31 @@ describe('<UniformItem> issue', () => {
                 })
             ).resolves.toEqual([mockUniformList[0]]);
 
-            expect(mockPrisma.uniformIssued.create).toHaveBeenCalled();
+            expect(prismaMock.uniformIssued.create).toHaveBeenCalled();
         });
 
         it('issues uniform without generation when uniformtype uses generations', async () => {
-            mockPrisma.uniform.findFirst.mockResolvedValue(mockUniformWithoutGeneration as any);
+            prismaMock.uniform.findFirst.mockResolvedValue(mockUniformWithoutGeneration as any);
 
             await expect(issue(defaultIssueProps)).resolves.toEqual([mockUniformList[0]]);
 
-            expect(mockPrisma.uniformIssued.create).toHaveBeenCalled();
+            expect(prismaMock.uniformIssued.create).toHaveBeenCalled();
         });
 
         it('issues uniform with reserve generation when uniform type does not use generations', async () => {
             // When uniformType.usingGenerations is false, generation.isReserve should be ignored
-            mockPrisma.uniform.findFirst.mockResolvedValue(mockUniformWithReserveGenerationButTypeNotUsingGenerations as any);
+            prismaMock.uniform.findFirst.mockResolvedValue(mockUniformWithReserveGenerationButTypeNotUsingGenerations as any);
 
             await expect(issue({
                 ...defaultIssueProps,
                 uniformTypeId: mockTypeList[2].id
             })).resolves.toEqual([mockUniformList[0]]);
 
-            expect(mockPrisma.uniformIssued.create).toHaveBeenCalled();
+            expect(prismaMock.uniformIssued.create).toHaveBeenCalled();
         });
 
         it('forcefully issues already issued uniform', async () => {
-            mockPrisma.uniform.findFirst.mockResolvedValue(mockIssuedUniform as any);
+            prismaMock.uniform.findFirst.mockResolvedValue(mockIssuedUniform as any);
 
             await expect(
                 issue({
@@ -243,7 +243,7 @@ describe('<UniformItem> issue', () => {
             ).resolves.toEqual([mockUniformList[0]]);
 
             // Should add comment to previous owner
-            expect(mockPrisma.$executeRaw).toHaveBeenCalledWith(
+            expect(prismaMock.$executeRaw).toHaveBeenCalledWith(
                 expect.any(Array), // Template literal parts
                 expect.stringContaining(`<<Das Uniformteil ${mockTypeList[0].name} 2001 wurde Jane Smith Überschrieben>>`),
                 'other-cadet-123'
@@ -256,7 +256,7 @@ describe('<UniformItem> issue', () => {
                 expect.anything(),
             );
 
-            expect(mockPrisma.uniformIssued.create).toHaveBeenCalled();
+            expect(prismaMock.uniformIssued.create).toHaveBeenCalled();
         });
 
         it('removes uniform from storage unit when issuing', async () => {
@@ -264,21 +264,21 @@ describe('<UniformItem> issue', () => {
                 ...mockUniform,
                 storageUnitId: 'storage-unit-123'
             };
-            mockPrisma.uniform.findFirst.mockResolvedValue(uniformInStorage as any);
+            prismaMock.uniform.findFirst.mockResolvedValue(uniformInStorage as any);
 
             await expect(issue(defaultIssueProps)).resolves.toEqual([mockUniformList[0]]);
 
-            expect(mockPrisma.uniform.update).toHaveBeenCalledWith({
+            expect(prismaMock.uniform.update).toHaveBeenCalledWith({
                 where: { id: mockUniformId },
                 data: {
                     storageUnitId: null,
                 }
             });
-            expect(mockPrisma.uniformIssued.create).toHaveBeenCalled();
+            expect(prismaMock.uniformIssued.create).toHaveBeenCalled();
         });
 
         it('returns previous uniform when replacing', async () => {
-            mockPrisma.uniformIssued.findFirst.mockResolvedValue(mockIssuedEntry as any);
+            prismaMock.uniformIssued.findFirst.mockResolvedValue(mockIssuedEntry as any);
 
             await expect(
                 issue({
@@ -288,7 +288,7 @@ describe('<UniformItem> issue', () => {
             ).resolves.toEqual([mockUniformList[0]]);
 
             // Should find the issued entry to replace
-            expect(mockPrisma.uniformIssued.findFirst).toHaveBeenCalledWith({
+            expect(prismaMock.uniformIssued.findFirst).toHaveBeenCalledWith({
                 where: {
                     dateReturned: null,
                     fk_cadet: mockCadetId,
@@ -307,13 +307,13 @@ describe('<UniformItem> issue', () => {
                 expect.anything(),
             );
 
-            expect(mockPrisma.uniformIssued.create).toHaveBeenCalled();
+            expect(prismaMock.uniformIssued.create).toHaveBeenCalled();
         });
     });
 
     describe('error scenarios', () => {
         it('throws error when uniform not found and create option is false', async () => {
-            mockPrisma.uniform.findFirst.mockResolvedValue(null);
+            prismaMock.uniform.findFirst.mockResolvedValue(null);
 
             await expect(issue(defaultIssueProps)).resolves.toMatchObject({
                 error: {
@@ -321,12 +321,12 @@ describe('<UniformItem> issue', () => {
                 }
             });
 
-            expect(mockPrisma.uniform.create).not.toHaveBeenCalled();
-            expect(mockPrisma.uniformIssued.create).not.toHaveBeenCalled();
+            expect(prismaMock.uniform.create).not.toHaveBeenCalled();
+            expect(prismaMock.uniformIssued.create).not.toHaveBeenCalled();
         });
 
         it('throws error when uniform is reserve and ignoreReserve is false', async () => {
-            mockPrisma.uniform.findFirst.mockResolvedValue(mockReserveUniform as any);
+            prismaMock.uniform.findFirst.mockResolvedValue(mockReserveUniform as any);
 
             await expect(issue(defaultIssueProps)).resolves.toMatchObject({
                 error: {
@@ -334,11 +334,11 @@ describe('<UniformItem> issue', () => {
                 }
             });
 
-            expect(mockPrisma.uniformIssued.create).not.toHaveBeenCalled();
+            expect(prismaMock.uniformIssued.create).not.toHaveBeenCalled();
         });
 
         it('throws error when generation is reserve and ignoreReserve is false', async () => {
-            mockPrisma.uniform.findFirst.mockResolvedValue(mockUniformWithReserveGenerationAndType as any);
+            prismaMock.uniform.findFirst.mockResolvedValue(mockUniformWithReserveGenerationAndType as any);
 
             await expect(issue(defaultIssueProps)).resolves.toMatchObject({
                 error: {
@@ -346,11 +346,11 @@ describe('<UniformItem> issue', () => {
                 }
             });
 
-            expect(mockPrisma.uniformIssued.create).not.toHaveBeenCalled();
+            expect(prismaMock.uniformIssued.create).not.toHaveBeenCalled();
         });
 
         it('throws error when uniform is already issued and force is false', async () => {
-            mockPrisma.uniform.findFirst.mockResolvedValue(mockIssuedUniform as any);
+            prismaMock.uniform.findFirst.mockResolvedValue(mockIssuedUniform as any);
 
             await expect(issue(defaultIssueProps)).resolves.toMatchObject({
                 error: {
@@ -358,30 +358,30 @@ describe('<UniformItem> issue', () => {
                 }
             });
 
-            expect(mockPrisma.uniformIssued.create).not.toHaveBeenCalled();
+            expect(prismaMock.uniformIssued.create).not.toHaveBeenCalled();
         });
 
         it('throws error when uniform to replace is not found', async () => {
-            mockPrisma.uniformIssued.findFirst.mockResolvedValue(null);
+            prismaMock.uniformIssued.findFirst.mockResolvedValue(null);
 
             await expect(issue({
                 ...defaultIssueProps,
                 idToReplace: mockUniformToReplaceId
             })).rejects.toThrow('Could not return UniformToReplace. Issued Entry not found: ' + mockUniformToReplaceId);
 
-            expect(mockPrisma.uniformIssued.create).not.toHaveBeenCalled();
+            expect(prismaMock.uniformIssued.create).not.toHaveBeenCalled();
         });
 
         it('throws error when comment cannot be added to previous owner', async () => {
-            mockPrisma.uniform.findFirst.mockResolvedValue(mockIssuedUniform as any);
-            mockPrisma.$executeRaw.mockResolvedValue(0); // Simulate failure
+            prismaMock.uniform.findFirst.mockResolvedValue(mockIssuedUniform as any);
+            prismaMock.$executeRaw.mockResolvedValue(0); // Simulate failure
 
             await expect(issue({
                 ...defaultIssueProps,
                 options: { force: true }
             })).rejects.toThrow('Could not add comment to previous owner');
 
-            expect(mockPrisma.uniformIssued.create).not.toHaveBeenCalled();
+            expect(prismaMock.uniformIssued.create).not.toHaveBeenCalled();
         });
     });
 
@@ -389,7 +389,7 @@ describe('<UniformItem> issue', () => {
         it('calls genericSAValidator with correct parameters', async () => {
             await expect(issue(defaultIssueProps)).resolves.toEqual([mockUniformList[0]]);
 
-            expect(mockPrisma.uniformIssued.create).toHaveBeenCalled();
+            expect(prismaMock.uniformIssued.create).toHaveBeenCalled();
             expect(vi.mocked(genericSAValidator)).toHaveBeenCalledWith(
                 AuthRole.inspector,
                 defaultIssueProps,
@@ -405,14 +405,14 @@ describe('<UniformItem> issue', () => {
 
     describe('database interaction verification', () => {
         it('verifies cadet lookup when forcing issue', async () => {
-            mockPrisma.uniform.findFirst.mockResolvedValue(mockIssuedUniform as any);
+            prismaMock.uniform.findFirst.mockResolvedValue(mockIssuedUniform as any);
 
             await issue({
                 ...defaultIssueProps,
                 options: { force: true }
             });
 
-            expect(mockPrisma.cadet.findUniqueOrThrow).toHaveBeenCalledWith({
+            expect(prismaMock.cadet.findUniqueOrThrow).toHaveBeenCalledWith({
                 where: {
                     id: mockCadetId,
                     recdelete: null,
@@ -423,7 +423,7 @@ describe('<UniformItem> issue', () => {
         it('verifies correct uniform lookup parameters', async () => {
             await issue(defaultIssueProps);
 
-            expect(mockPrisma.uniform.findFirst).toHaveBeenCalledWith({
+            expect(prismaMock.uniform.findFirst).toHaveBeenCalledWith({
                 where: {
                     number: 2001,
                     fk_uniformType: mockTypeList[0].id,

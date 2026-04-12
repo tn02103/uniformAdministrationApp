@@ -49,8 +49,8 @@ test.describe('sizeList Configuration', () => {
         const divList = page.locator('div[data-testid^="div_sizelist_list_"]');
         await expect(divList).toHaveCount(sizelists.length);
 
-        for (let i = 0; i < divList.length; i++) {
-            await expect.soft(divList[i]).toHaveAttribute("data-testid", `div_sizelist_list_${sizelists[i].id}`);
+        for (let i = 0; i < sizelists.length; i++) {
+            await expect.soft(divList.nth(i)).toHaveAttribute("data-testid", `div_sizelist_list_${sizelists[i].id}`);
             await expect
                 .soft(listComponent.div_sizelist_name(sizelists[i].id!))
                 .toHaveText(sizelists[i].name);

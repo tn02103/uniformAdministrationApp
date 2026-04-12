@@ -1,10 +1,11 @@
 import { render, screen } from "@testing-library/react";
+import { vi } from 'vitest';
 import { UniformOCOwnerRow } from "./UniformOCOwnerRow";
 import { mockUniform } from "./UniformOffcanvasJestHelper";
 
 // Mock next/navigation
 let pathnameValue = "/de/app/uniform/list/81ff8e9b-a097-4879-a0b2-352e54d41e6c";
-jest.mock("next/navigation", () => ({
+vi.mock("next/navigation", () => ({
     usePathname: () => pathnameValue,
 }));
 

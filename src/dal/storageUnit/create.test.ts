@@ -1,4 +1,4 @@
-﻿import { vi, type Mock } from 'vitest';
+﻿import { vi } from 'vitest';
 import { prismaMock } from '@test-utils/prisma-mock';
 import { create } from "./create";
 import { prisma } from "@/lib/db";
@@ -20,14 +20,14 @@ describe('<StorageUnit> create', () => {
 
     const prismafindFirst = prismaMock.storageUnit.findFirst;
     const prismaCreate = prismaMock.storageUnit.create;
-    const getUnitsWithUniformItems = vi.mocked(__unsecuredGetUnitsWithUniformItems) as unknown as Mock;
+    const getUnitsWithUniformItems = vi.mocked(__unsecuredGetUnitsWithUniformItems);
 
     it('should create storage unit', async () => {
         prismafindFirst.mockResolvedValueOnce(null);
         prismaCreate.mockResolvedValueOnce({ ...testUnit });
         getUnitsWithUniformItems.mockResolvedValueOnce([
             { ...testUnit }
-        ]);
+        ] as any);
 
         const result = await create(testUnit);
         expect(result).toEqual([
@@ -67,7 +67,7 @@ describe('<StorageUnit> create', () => {
         prismaCreate.mockResolvedValueOnce({ ...testUnit });
         getUnitsWithUniformItems.mockResolvedValueOnce([
             { ...testUnit }
-        ]);
+        ] as any);
         const result = await create(testUnit);
         expect(result).toStrictEqual([
             expect.objectContaining(testUnit)

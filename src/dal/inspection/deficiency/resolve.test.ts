@@ -4,15 +4,14 @@ import { prismaMock } from '@test-utils/prisma-mock';
 
 
 describe('resolveDeficiency', () => {
-    const mockPrisma = prismaMock;
     const date = new Date();
 
     beforeEach(() => {
         vi.useFakeTimers();
         vi.setSystemTime(date);
-        mockPrisma.deficiency.update.mockResolvedValue(undefined as any);
-        mockPrisma.deficiency.findFirst.mockResolvedValue(null);
-        mockPrisma.inspection.findFirst.mockResolvedValue(null);
+        prismaMock.deficiency.update.mockResolvedValue(undefined as any);
+        prismaMock.deficiency.findFirst.mockResolvedValue(null);
+        prismaMock.inspection.findFirst.mockResolvedValue(null);
     });
     afterEach(() => {
         vi.clearAllMocks();
@@ -22,7 +21,7 @@ describe('resolveDeficiency', () => {
         const result = resolve('5f09250d-23cb-45f8-a7d0-d0f6d3896f34');
         await expect(result).resolves.toBeUndefined();
 
-        expect(mockPrisma.deficiency.update).toHaveBeenCalledWith({
+        expect(prismaMock.deficiency.update).toHaveBeenCalledWith({
             where: {
                 id: '5f09250d-23cb-45f8-a7d0-d0f6d3896f34',
             },
@@ -35,7 +34,7 @@ describe('resolveDeficiency', () => {
     });
 
     it('throws exception if deficiency already resolved', async () => {
-        mockPrisma.deficiency.findFirst.mockResolvedValueOnce({
+        prismaMock.deficiency.findFirst.mockResolvedValueOnce({
             id: '5f09250d-23cb-45f8-a7d0-d0f6d3896f34',
             dateResolved: date,
         } as any);
@@ -43,8 +42,8 @@ describe('resolveDeficiency', () => {
         const result = resolve('5f09250d-23cb-45f8-a7d0-d0f6d3896f34');
         await expect(result).rejects.toThrow("Deficiency already resolved");
 
-        expect(mockPrisma.deficiency.update).not.toHaveBeenCalled();
-        expect(mockPrisma.deficiency.findFirst).toHaveBeenCalledWith({
+        expect(prismaMock.deficiency.update).not.toHaveBeenCalled();
+        expect(prismaMock.deficiency.findFirst).toHaveBeenCalledWith({
             where: {
                 id: '5f09250d-23cb-45f8-a7d0-d0f6d3896f34',
                 dateResolved: { not: null }
@@ -53,12 +52,12 @@ describe('resolveDeficiency', () => {
     });
 
     it('connects active inspection to deficiency', async () => {
-        mockPrisma.inspection.findFirst.mockResolvedValueOnce({ id: '0177f740-75ee-4bb8-9875-7f10e3e6af8b' } as any);
+        prismaMock.inspection.findFirst.mockResolvedValueOnce({ id: '0177f740-75ee-4bb8-9875-7f10e3e6af8b' } as any);
 
         const result = resolve('5f09250d-23cb-45f8-a7d0-d0f6d3896f34');
         await expect(result).resolves.toBeUndefined();
 
-        expect(mockPrisma.inspection.findFirst).toHaveBeenCalledWith({
+        expect(prismaMock.inspection.findFirst).toHaveBeenCalledWith({
             where: {
                 fk_assosiation: 'test-assosiation-id',
                 date: dayjs(date).format("YYYY-MM-DD"),
@@ -67,7 +66,7 @@ describe('resolveDeficiency', () => {
             }
         });
 
-        expect(mockPrisma.deficiency.update).toHaveBeenCalledWith({
+        expect(prismaMock.deficiency.update).toHaveBeenCalledWith({
             where: {
                 id: '5f09250d-23cb-45f8-a7d0-d0f6d3896f34',
             },

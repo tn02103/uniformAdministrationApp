@@ -10,7 +10,7 @@ import * as modalProvider from '../modals/modalProvider';
 import * as dalUniformItem from '@/dal/uniform/item/_index';
 import * as toastify from 'react-toastify';
 import * as uniformFetcher from '@/dataFetcher/uniform';
-import { vi, type Mock } from 'vitest';
+import { vi } from 'vitest';
 
 describe('UniformOffcanvas', () => {
     const { useModal } = modalProvider;
@@ -238,7 +238,7 @@ describe('UniformOffcanvas', () => {
             it('should catch exception', async () => {
                 const user = userEvent.setup();
                 const onSaveMock = vi.fn();
-                (updateUniformItem as unknown as Mock).mockRejectedValueOnce(new Error('Failed to save item'));
+                vi.mocked(updateUniformItem).mockRejectedValueOnce(new Error('Failed to save item'));
 
                 const { getByRole } = render(
                     <UniformOffcanvas
@@ -296,8 +296,8 @@ describe('UniformOffcanvas', () => {
                 );
                 expect(deleteUniformItem).toHaveBeenCalledTimes(0);
 
-                expect((simpleWarningModal as unknown as Mock).mock.calls[0][0].primaryFunction).toBeDefined();
-                await (simpleWarningModal as unknown as Mock).mock.calls[0][0].primaryFunction!();
+                expect(vi.mocked(simpleWarningModal).mock.calls[0][0].primaryFunction).toBeDefined();
+                await vi.mocked(simpleWarningModal).mock.calls[0][0].primaryFunction!();
 
                 expect(deleteUniformItem).toHaveBeenCalledTimes(1);
                 expect(deleteUniformItem).toHaveBeenCalledWith(mockUniform.id);
@@ -309,7 +309,7 @@ describe('UniformOffcanvas', () => {
             it('should catch exception', async () => {
                 const onCloseMock = vi.fn();
                 const onSaveMock = vi.fn();
-                (deleteUniformItem as unknown as Mock).mockRejectedValueOnce(new Error('Failed to delete item'));
+                vi.mocked(deleteUniformItem).mockRejectedValueOnce(new Error('Failed to delete item'));
 
                 const user = userEvent.setup();
                 const { getByRole } = render(
@@ -325,7 +325,7 @@ describe('UniformOffcanvas', () => {
                 await user.click(deleteButton);
                 expect(simpleWarningModal).toHaveBeenCalledTimes(1);
 
-                await (simpleWarningModal as unknown as Mock).mock.calls[0][0].primaryFunction!();
+                await vi.mocked(simpleWarningModal).mock.calls[0][0].primaryFunction!();
                 expect(deleteUniformItem).toHaveBeenCalledTimes(1);
                 expect(deleteUniformItem).toHaveBeenCalledWith(mockUniform.id);
                 expect(onCloseMock).toHaveBeenCalledTimes(0);

@@ -7,7 +7,7 @@ import userEvent from "@testing-library/user-event";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useModal } from "@/components/modals/modalProvider";
 import { deleteStorageUnit } from "@/dal/storageUnit/_index";
-import { vi, type Mock } from 'vitest';
+import { vi } from 'vitest';
 
 
 describe("StorageunitOC", () => {
@@ -133,7 +133,7 @@ describe("StorageunitOC", () => {
         );
 
         await act(async () => {
-            await (showMessageModal as unknown as Mock).mock.calls[0][2][1].function(); // Call the delete function
+            await vi.mocked(showMessageModal).mock.calls[0][2][1].function(); // Call the delete function
         });
 
         expect(deleteStorageUnit).toHaveBeenCalledWith(mockStorageUnit.id);
