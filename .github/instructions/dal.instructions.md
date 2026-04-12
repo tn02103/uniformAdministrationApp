@@ -129,3 +129,23 @@ Soft-deletable models: `Uniform`, `UniformType`, `UniformGeneration`, `Cadet`, `
 - [ ] Exported via `index.ts` with domain-prefixed name
 - [ ] `__unsecured` helpers NOT in `index.ts`
 - [ ] Unit test and/or integration test written
+- [ ] JSDoc comment written (see Documentation below)
+
+## Documentation
+Every exported DAL function MUST have a JSDoc comment. Keep it concise — focus on what matters:
+```typescript
+/**
+ * One-line summary of what this function does.
+ *
+ * Add extra context only when the behaviour is non-obvious (e.g. side-effects,
+ * policy enforcement, cascading updates).
+ *
+ * @param data - Description of the input object and key fields.
+ * @returns What is returned on success (type + meaning).
+ * @throws {Error} Conditions that cause a throw (not validation errors).
+ */
+```
+- `@param` — only for the main `data` argument; list key fields inline
+- `@returns` — omit if the function returns `void`/`undefined` unconditionally
+- `@throws` — list every distinct throw condition; omit for auth/validation throws (those are implicit)
+- Do NOT document `__unsecured` internal helpers with JSDoc

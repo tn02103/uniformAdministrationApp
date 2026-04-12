@@ -955,6 +955,57 @@ export default {
     },
     profile: {
         security: "Security",
+        accountInfo: {
+            title: "Account Information",
+            name: "Name",
+            username: "Username",
+            email: "E-Mail",
+            role: "Role",
+            organisation: "Organisation",
+            active: "Active",
+        },
+        password: {
+            title: "Password",
+            changeButton: "Change Password",
+        },
+        twoFactor: {
+            title: "Two-Factor Authentication",
+            enabled: "2FA enabled",
+            disabled: "2FA disabled",
+            enableToggle: "Activate",
+            disableToggle: "Deactivate",
+            confirmDisable: {
+                header: "Deactivate two-factor authentication",
+                message: "Are you sure you want to deactivate two-factor authentication? This will reduce the security of your account.",
+            },
+            confirmRemoveApp: {
+                header: "Remove TOTP app",
+                message: "Are you sure you want to remove this TOTP app? You will no longer be able to use it for authentication.",
+            },
+            apps: {
+                title: "TOTP Apps",
+                remove: "Remove",
+                noApps: "No TOTP apps configured",
+                addNew: "Add TOTP App",
+            },
+            defaultMethod: {
+                title: "Default method",
+                email: "E-Mail",
+            },
+            errors: {
+                toggleFailed: "Failed to update two-factor authentication",
+                removeFailed: "Failed to remove TOTP app",
+                defaultMethodFailed: "Failed to update default method",
+            },
+        },
+        devices: {
+            title: "Trusted Devices",
+            noDevices: "No trusted devices",
+            lastUsed: "Last used",
+            addedOn: "Added on",
+            logoutAll: "Log out from all devices",
+            inactive: "Inactive",
+        },
         changePassword: {
             title: "Change Password",
             currentPassword: "Current Password",

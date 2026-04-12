@@ -70,7 +70,7 @@ export const add = async (props: AddPropType): AddAuthAppReturnType => genericSA
             }
         }
     }
-
+    const useSecret = (process.env.STAGE === "local" || process.env.STAGE === "dev") && process.env.TEST_2FA_APP_SECRET; // Allow fixed secret in local env for testing
 
     // CREATE APP
     const totp = new TOTP({
@@ -78,6 +78,7 @@ export const add = async (props: AddPropType): AddAuthAppReturnType => genericSA
         issuer: 'Uniformadmin-' + user.organisation.acronym,
         digits: AppConfig.digits,
         period: AppConfig.period,
+        secret: useSecret ? process.env.TEST_2FA_APP_SECRET : undefined, // Allow fixed secret in local env for testing
     });
 
     const app = await client.twoFactorApp.create({

@@ -1,11 +1,9 @@
-import { useI18n } from "@/lib/locales/client";
 import { useMemo } from "react";
-import { Form } from "react-bootstrap";
 import { FieldValues, Path, useController } from "react-hook-form";
-import { Field } from "./Field";
+import { SelectField } from "./SelectField";
 import { useFormContext } from "./Form";
 
-export type SelectOptionType = { value: string | number, label: string };
+export type { SelectOptionType } from "./SelectField";
 
 export type SelectFormFieldProps<FormType extends FieldValues> = {
     label: string,
@@ -13,7 +11,7 @@ export type SelectFormFieldProps<FormType extends FieldValues> = {
     formName?: string,
     required?: boolean,
     disabled?: boolean,
-    options: SelectOptionType[],
+    options: { value: string | number, label: string }[],
     plaintext?: boolean,
     labelClassName?: string,
     selectClassName?: string,
@@ -23,7 +21,6 @@ export type SelectFormFieldProps<FormType extends FieldValues> = {
 }
 
 export const SelectFormField = <FormType extends FieldValues>({ label, name, required, options, labelClassName, selectClassName, onValueChange, hookFormValidation, valueAsNumber, ...inputProps }: SelectFormFieldProps<FormType>) => {
-    const t = useI18n();
     const { field, fieldState } = useController({
         name,
         rules: hookFormValidation ? {
@@ -42,47 +39,26 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
     const plaintext = formContext?.plaintext || inputProps.plaintext;
     const formName = inputProps.formName || formContext?.formName || "unnamedForm";
 
-    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        let value: string | number = e.target.value;
-        if (valueAsNumber) {
-            value = +value;
-        }
+    const handleChange = (value: string | number) => {
         field.onChange(value);
         onValueChange?.(value);
-    }
+    };
 
     return (
-        <Field
-            formName={formName}
-            name={name}
+        <SelectField
             label={label}
+            name={String(name)}
+            formName={formName}
             required={required}
-            errorMessage={error}
+            disabled={disabled}
+            options={options}
+            value={field.value ?? ""}
+            onChange={handleChange}
+            valueAsNumber={valueAsNumber}
+            plaintext={plaintext}
             labelClassName={labelClassName}
-            fieldName="select"
-        >
-            {plaintext ?
-                <p aria-label={label} aria-readonly className="py-2 m-0">
-                    {options.find(option => option.value === field.value)?.label || field.value}
-                </p>
-                :
-                <Form.Select
-                    {...field}
-                    onChange={handleChange}
-                    disabled={disabled}
-                    id={`${formName}_select-${name}`}
-                    isInvalid={!!fieldState.error}
-                    aria-errormessage={fieldState.error ? `${formName}_err_${name}` : undefined}
-                    aria-invalid={!!fieldState.error}
-                    className={`text-truncate ${selectClassName || ""}`}
-                    value={field.value || ""} // Set the value prop to manage the selected option
-                >
-                    <option value="" disabled>{t('common.error.pleaseSelect')}</option>
-                    {options.map((option, index) => (
-                        <option key={index} value={option.value}>{option.label}</option>
-                    ))}
-                </Form.Select>
-            }
-        </Field>
+            selectClassName={selectClassName}
+            errorMessage={error}
+        />
     );
 };
