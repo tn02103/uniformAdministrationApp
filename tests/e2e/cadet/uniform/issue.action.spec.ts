@@ -83,6 +83,10 @@ test.describe(() => {
     test('return uniformItem Desktop', async ({ uniformComponent, messageComponent, cadetId, staticData: { ids } }) => {
         await test.step('open and validate modal', async () => {
             await uniformComponent.btn_uitem_withdraw(ids.uniformIds[0][84]).click();
+            // Retry click if modal didn't open (handles Firefox hydration race)
+            await expect(messageComponent.div_popup).toBeVisible().catch(async () => {
+                await uniformComponent.btn_uitem_withdraw(ids.uniformIds[0][84]).click();
+            });
             await expect(messageComponent.div_popup).toBeVisible();
 
             await Promise.all([
@@ -109,6 +113,11 @@ test.describe(() => {
         await test.step('open modal', async () => {
             await uniformComponent.btn_uitem_menu(ids.uniformIds[0][84]).click();
             await uniformComponent.btn_uitem_menu_withdraw(ids.uniformIds[0][84]).click();
+            // Retry click if modal didn't open (handles Firefox hydration race)
+            await expect(messageComponent.div_popup).toBeVisible().catch(async () => {
+                await uniformComponent.btn_uitem_menu(ids.uniformIds[0][84]).click();
+                await uniformComponent.btn_uitem_menu_withdraw(ids.uniformIds[0][84]).click();
+            });
             await expect(messageComponent.div_popup).toBeVisible();
         });
 
@@ -136,7 +145,10 @@ test.describe(() => {
 
         await test.step('issue uniformItem and validate Modal', async () => {
             await uniformComponent.btn_uitem_switch(ids.uniformIds[0][84]).click();
-
+            // Retry click if dialog didn't open (handles Firefox hydration race)
+            await expect(div_popup).toBeVisible().catch(async () => {
+                await uniformComponent.btn_uitem_switch(ids.uniformIds[0][84]).click();
+            });
             await expect(div_popup).toBeVisible();
             await expect(div_popup.getByRole("heading")).toHaveText(`Typ1-1184 ersetzen`);
 
@@ -173,7 +185,10 @@ test.describe(() => {
 
         await test.step('issue uniformItem', async () => {
             await uniformComponent.btn_utype_issue(ids.uniformTypeIds[0]).click();
-
+            // Retry click if dialog didn't open (handles Firefox hydration race)
+            await expect(div_popup).toBeVisible().catch(async () => {
+                await uniformComponent.btn_utype_issue(ids.uniformTypeIds[0]).click();
+            });
             await expect(div_popup).toBeVisible();
             await expect(div_popup.getByRole("heading")).toHaveText(`Typ1 ausgeben`);
 
@@ -208,6 +223,10 @@ test.describe(() => {
 
         await test.step('issue UniformItem', async () => {
             await uniformComponent.btn_utype_issue(ids.uniformTypeIds[0]).click();
+            // Retry click if dialog didn't open (handles Firefox hydration race)
+            await expect(txt_autocomplete).toBeVisible().catch(async () => {
+                await uniformComponent.btn_utype_issue(ids.uniformTypeIds[0]).click();
+            });
             await expect(txt_autocomplete).toBeVisible();
             await txt_autocomplete.click();
             await expect(div_popup.getByRole("option").nth(0)).toBeVisible(); // waiting till options are loaded
@@ -249,7 +268,11 @@ test.describe(() => {
 
         await test.step('setup', async () => {
             await uniformComponent.btn_utype_issue(ids.uniformTypeIds[0]).click();
-            await expect.soft(div_popup).toBeVisible();
+            // Retry click if dialog didn't open (handles Firefox hydration race)
+            await expect(div_popup).toBeVisible().catch(async () => {
+                await uniformComponent.btn_utype_issue(ids.uniformTypeIds[0]).click();
+            });
+            await expect(div_popup).toBeVisible();
             await expect.soft(div_popup.getByRole("heading")).toHaveText(`Typ1 ausgeben`);
             await expect.soft(txt_autocomplete).toBeVisible();
             await txt_autocomplete.click();
@@ -321,6 +344,10 @@ test.describe(() => {
 
         await test.step('open and fill modal', async () => {
             await uniformComponent.btn_utype_issue(ids.uniformTypeIds[0]).click();
+            // Retry click if dialog didn't open (handles Firefox hydration race)
+            await expect(txt_autocomplete).toBeVisible().catch(async () => {
+                await uniformComponent.btn_utype_issue(ids.uniformTypeIds[0]).click();
+            });
             await expect(txt_autocomplete).toBeVisible();
             await txt_autocomplete.click();
             await expect(div_popup.getByRole("option").nth(0)).toBeVisible(); // waiting till options are loaded

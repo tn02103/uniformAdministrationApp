@@ -158,6 +158,7 @@ test.describe(() => {
 
         await test.step('check editable', async () => {
             await dataComponent.btn_edit.click();
+            await expect(dataComponent.btn_save).toBeVisible();
 
             await Promise.all([
                 expect.soft(dataComponent.txt_firstname).toBeEnabled(),
@@ -197,6 +198,7 @@ test.describe(() => {
 
         await test.step('change data & save', async () => {
             await dataComponent.btn_edit.click();
+            await expect(dataComponent.btn_save).toBeVisible();
             await dataComponent.txt_firstname.fill(testData.firstname);
             await dataComponent.txt_lastname.fill(testData.lastname);
             await dataComponent.txt_comment.fill(testData.comment);

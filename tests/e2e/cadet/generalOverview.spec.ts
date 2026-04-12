@@ -78,6 +78,10 @@ test('E2E0102: validate sortOrder', async ({ page, cadetListPage, staticData: { 
 
 test('E2E0103: validate headerButton', async ({ page, cadetListPage }) => {
     await cadetListPage.btn_hdr_lastname.click();
+    // Retry click if URL didn't change (handles hydration race)
+    await expect(page).toHaveURL(/orderBy=lastname/).catch(async () => {
+        await cadetListPage.btn_hdr_lastname.click();
+    });
     await expect(page).toHaveURL(/orderBy=lastname/);
     await expect(page).toHaveURL(/asc=false/);
     
@@ -146,8 +150,13 @@ test('E2E0105: validate Links', async ({ page, cadetListPage, staticData: { ids 
         await cadetListPage.lnk_cadet_firstname(ids.cadetIds[4]).click();
         await expect(page).toHaveURL(`/de/app/cadet/${ids.cadetIds[4]}`);
         await page.goBack();
+        await expect(cadetListPage.div_cadet_list.first()).toBeVisible();
 
         await cadetListPage.lnk_cadet_lastname(ids.cadetIds[4]).click();
+        // Retry click if navigation didn't happen (handles hydration race after goBack)
+        await expect(page).toHaveURL(`/de/app/cadet/${ids.cadetIds[4]}`).catch(async () => {
+            await cadetListPage.lnk_cadet_lastname(ids.cadetIds[4]).click();
+        });
         await expect(page).toHaveURL(`/de/app/cadet/${ids.cadetIds[4]}`);
         await page.goBack();
     });

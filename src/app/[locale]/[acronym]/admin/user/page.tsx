@@ -4,7 +4,7 @@ import { getIronSession } from "@/lib/ironSession";
 import { Col, Row } from "react-bootstrap";
 import { UserTable } from "./_userTable/UserTable";
 
-export const dynamic = 'auto';
+// export const dynamic = 'auto';
 export async function generateMetadata() {
     const t = await getScopedI18n('pageTitles');
     return {

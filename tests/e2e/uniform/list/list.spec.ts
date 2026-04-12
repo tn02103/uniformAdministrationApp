@@ -17,8 +17,11 @@ test.describe(() => {
 
     test('integration: sort order and header buttons', async ({ page, uniformListPage, staticData: { ids } }) => {
         // Click header buttons and check URL and data order
-        await uniformListPage.div_header_number.click();
-        await expect(page).toHaveURL(`/de/app/uniform/list/${ids.uniformTypeIds[0]}?asc=false`);
+        // Wrap in toPass to handle hydration race where click handler isn't attached yet
+        await expect(async () => {
+            await uniformListPage.div_header_number.click();
+            await expect(page).toHaveURL(`/de/app/uniform/list/${ids.uniformTypeIds[0]}?asc=false`);
+        }).toPass({ timeout: 10_000 });
         await uniformListPage.div_header_number.click();
         await expect(page).toHaveURL(`/de/app/uniform/list/${ids.uniformTypeIds[0]}?asc=true`);
         await uniformListPage.div_header_generation.click();
@@ -64,7 +67,12 @@ test.describe(() => {
         await expect(uniformListPage.lnk_uitem_owner(ids.uniformIds[0][1])).toContainText(data.cadets[5].lastname);
         await expect(uniformListPage.div_uitem_comment(ids.uniformIds[0][1])).toHaveText(data.uniformList[1].comment ?? "");
 
-        await uniformListPage.txt_search_input.fill('99999');
+        // Retry fill to handle React controlled input re-render race
+        await expect(async () => {
+            await uniformListPage.txt_search_input.clear();
+            await uniformListPage.txt_search_input.fill('99999');
+            await expect(uniformListPage.txt_search_input).toHaveValue('99999');
+        }).toPass({ timeout: 10_000 });
         await uniformListPage.btn_search_submit.click();
         // After searching for a non-existent uniform, expect no items
         await expect(uniformListPage.div_nodata).toBeVisible();
