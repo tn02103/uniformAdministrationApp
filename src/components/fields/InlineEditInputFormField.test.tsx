@@ -4,14 +4,14 @@ import userEvent from "@testing-library/user-event";
 
 describe('InlineEditInputFormField', () => {
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
     
     it('renders default non-editable state', () => {
         render(
             <InlineEditInputFormField
                 value="Test Value"
-                onValueChange={jest.fn()}
+                onValueChange={vi.fn()}
                 label="Test Label"
                 name="testName"
             />
@@ -29,7 +29,7 @@ describe('InlineEditInputFormField', () => {
         render(
             <InlineEditInputFormField
                 value="Test Value"
-                onValueChange={jest.fn()}
+                onValueChange={vi.fn()}
                 label="Test Label"
                 name="testName"
             />
@@ -53,7 +53,7 @@ describe('InlineEditInputFormField', () => {
         render(
             <InlineEditInputFormField
                 value="Test Value"
-                onValueChange={jest.fn()}
+                onValueChange={vi.fn()}
                 label="Test Label"
                 name="testName"
             />
@@ -77,7 +77,7 @@ describe('InlineEditInputFormField', () => {
     });
 
     it('calls onValueChange on input change', async () => {
-        const onValueChangeMock = jest.fn();
+        const onValueChangeMock = vi.fn();
         const user = userEvent.setup();
         render(
             <InlineEditInputFormField
@@ -110,12 +110,12 @@ describe('InlineEditInputFormField', () => {
     });
 
     it('calls onSave on save button click', async () => {
-        const onSaveMock = jest.fn();
+        const onSaveMock = vi.fn();
         const user = userEvent.setup();
         const { rerender } = render(
             <InlineEditInputFormField
                 value="Test Value"
-                onValueChange={jest.fn()}
+                onValueChange={vi.fn()}
                 onSave={onSaveMock}
                 label="Test Label"
                 name="testName"
@@ -138,7 +138,7 @@ describe('InlineEditInputFormField', () => {
         rerender(
             <InlineEditInputFormField
                 value="Updated Value"
-                onValueChange={jest.fn()}
+                onValueChange={vi.fn()}
                 onSave={onSaveMock}
                 label="Test Label"
                 name="testName"
@@ -149,12 +149,12 @@ describe('InlineEditInputFormField', () => {
     });
 
     it('calls onSave when pressing Enter', async () => {
-        const onSaveMock = jest.fn();
+        const onSaveMock = vi.fn();
         const user = userEvent.setup();
         render(
             <InlineEditInputFormField
                 value="Test Value"
-                onValueChange={jest.fn()}
+                onValueChange={vi.fn()}
                 onSave={onSaveMock}
                 label="Test Label"
                 name="testName"

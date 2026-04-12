@@ -5,18 +5,19 @@ import userEvent from "@testing-library/user-event";
 import { mockGenerationLists, mockSizeLists, mockTypeList } from "../../../vitest/staticMockData";
 import { UniformDetailRow, UniformDetailRowProps } from "./UniformDetailRow";
 import { mockUniform } from "./UniformOffcanvasJestHelper";
+import { updateUniformItem } from "@/dal/uniform/item/_index";
 
 describe('UniformDetailRow', () => {
     const defaultProps: UniformDetailRowProps = {
         uniform: mockUniform,
         uniformType: mockTypeList[0],
         editable: false,
-        setEditable: jest.fn(),
-        onSave: jest.fn(),
+        setEditable: vi.fn(),
+        onSave: vi.fn(),
     };
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     describe("Render Components", () => {
@@ -356,8 +357,8 @@ describe('UniformDetailRow', () => {
         });
     });
     describe('save/reset form', () => {
+        const updateUniformItemMock = vi.mocked(updateUniformItem);
         it('should call updateUniformItem', async () => {
-            const { updateUniformItem } = jest.requireMock('@/dal/uniform/item/_index');
             const user = userEvent.setup();
             const { rerender } = render(<UniformDetailRow {...defaultProps} />);
             rerender(<UniformDetailRow {...defaultProps} editable />);
@@ -384,8 +385,8 @@ describe('UniformDetailRow', () => {
             expect(defaultProps.setEditable).toHaveBeenCalledTimes(1);
             expect(defaultProps.setEditable).toHaveBeenCalledWith(false);
 
-            expect(updateUniformItem).toHaveBeenCalledTimes(1);
-            expect(updateUniformItem).toHaveBeenCalledWith({
+            expect(updateUniformItemMock).toHaveBeenCalledTimes(1);
+            expect(updateUniformItemMock).toHaveBeenCalledWith({
                 number: mockUniform.number,
                 id: mockUniform.id,
                 generation: mockGenerationLists[0][2].id,
