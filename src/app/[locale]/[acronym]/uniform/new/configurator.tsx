@@ -172,7 +172,7 @@ const NewUniformConfigurator = ({
                                 <Col xs="4" sm="5" className="text-end p-0">
                                     <Form.Label
                                         className={`align-middle m-0`}>
-                                        {t('common.uniform.state.active')}:
+                                        {t('common.uniform.state.isReserve')}:
                                     </Form.Label>
                                 </Col>
                                 <Col xs="8" sm="5">
