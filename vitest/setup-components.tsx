@@ -15,8 +15,6 @@ const _mockStore = new Map<string, unknown>();
     requireMock: (path: string) => _mockStore.get(path),
 };
 
-window.HTMLElement.prototype.scrollIntoView = function () { };
-
 // --- i18n ---
 const useI18nFn = vi.fn((key: string) => key);
 const _locales_mock = {
@@ -94,8 +92,10 @@ vi.mock("react-calendar", () => ({
 }));
 
 // --- Browser APIs ---
+window.HTMLElement.prototype.scrollIntoView = function () { };
 Object.defineProperty(window, "matchMedia", {
     writable: true,
+    configurable: true,
     value: vi.fn().mockImplementation((query: string) => ({
         matches: false, media: query, onchange: null,
         addListener: vi.fn(), removeListener: vi.fn(),
