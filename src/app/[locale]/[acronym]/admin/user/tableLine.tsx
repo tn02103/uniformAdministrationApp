@@ -41,7 +41,6 @@ export default function UserAdminTableRow({
     }, [user, reset, mobileForm.reset, editable]);
 
     async function handleSave(data: User) {
-        console.debug("🚀 ~ handleSave ~ data:", data)
         data.active = (String(data.active) === "true");
 
         if (!user) return handleCreate(data);

@@ -5,7 +5,7 @@ import { StaticData } from './testData/staticDataLoader';
 setup.use({ storageState: { cookies: [], origins: [] } });
 export type authenticatedFixture = { page: Page, staticData: StaticData }
 
-async function loginWithRetry(request: APIRequestContext, body: Object, maxRetries = 3): Promise<void> {
+async function loginWithRetry(request: APIRequestContext, body: object, maxRetries = 3): Promise<void> {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         const response = await request.post('http://localhost:3021/api/auth/login', {
             data: JSON.stringify(body),
