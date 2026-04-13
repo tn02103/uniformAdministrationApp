@@ -8,7 +8,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { addUniformItemToStorageUnit, removeUniformFromStorageUnit } from "@/dal/storageUnit/_index";
 import { useModal } from "@/components/modals/modalProvider";
 import { toast } from "react-toastify";
-import { vi, type Mock } from 'vitest';
+import { vi } from 'vitest';
 
 const baseStorageUnit = mockStorageUnitWithItems[0];
 
@@ -101,7 +101,7 @@ describe("StorageunitOCUniformList", () => {
             expect(addUniformItemToStorageUnit).not.toHaveBeenCalled();
 
             await act(async () => {
-                await (simpleWarningModal as unknown as Mock).mock.calls[0][0].primaryFunction();
+                await vi.mocked(simpleWarningModal).mock.calls[0][0].primaryFunction();
             });
             expect(addUniformItemToStorageUnit).toHaveBeenCalledWith({
                 storageUnitId: fullUnit.id,
@@ -111,7 +111,7 @@ describe("StorageunitOCUniformList", () => {
 
         it("catches DAL-Exception", async () => {
             const user = userEvent.setup();
-            (addUniformItemToStorageUnit as unknown as Mock).mockRejectedValueOnce(new Error("fail"));
+            vi.mocked(addUniformItemToStorageUnit).mockRejectedValueOnce(new Error("fail"));
 
             render(<StorageunitOCUniformList storageUnit={baseStorageUnit} />);
             const autocomplete = screen.getByRole("textbox");
@@ -142,7 +142,7 @@ describe("StorageunitOCUniformList", () => {
         });
 
         it("catches DAL-Exception", async () => {
-            (removeUniformFromStorageUnit as unknown as Mock).mockRejectedValueOnce(new Error("fail"));
+            vi.mocked(removeUniformFromStorageUnit).mockRejectedValueOnce(new Error("fail"));
 
             const user = userEvent.setup();
             render(<StorageunitOCUniformList storageUnit={baseStorageUnit} />);

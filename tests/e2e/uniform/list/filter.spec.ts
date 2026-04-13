@@ -13,6 +13,7 @@ const test = adminTest.extend<Fixture>({
 test.describe(() => {
     test.beforeEach(async ({ page, uniformListPage, staticData: { ids } }) => {
         await page.goto(`/de/app/uniform/list/${ids.uniformTypeIds[0]}`);
+        await expect(uniformListPage.div_pageHeader).toBeVisible();
         await expect(uniformListPage.div_nodata).toBeHidden();
     });
 
@@ -70,9 +71,11 @@ test.describe(() => {
 
     test('integration: generation filter works', async ({ uniformListPage, staticData: { ids, data } }) => {
         // Filter by generation
-        await uniformListPage.btn_genAccordion_header.click();
-        await uniformListPage.chk_genFilter_selAll.setChecked(false);
-        await uniformListPage.chk_genFilter(ids.uniformGenerationIds[0]).setChecked(true);
+        await uniformListPage.openGenerationAccordion();
+        await uniformListPage.chk_genFilter_selAll.click();
+        await uniformListPage.chk_genFilter(ids.uniformGenerationIds[0]).click();
+        await expect(uniformListPage.chk_genFilter_selAll).not.toBeChecked();
+        await expect(uniformListPage.chk_genFilter(ids.uniformGenerationIds[0])).toBeChecked();
         await uniformListPage.btn_load.click();
         // Expect only uniforms with this generation to be shown
         const count = data.uniformList.filter(u => u.fk_generation === ids.uniformGenerationIds[0] && !u.recdelete).length;
@@ -88,10 +91,16 @@ test.describe(() => {
 
     test('integration: size filter works', async ({ uniformListPage, staticData: { ids, data } }) => {
         // Filter by size
-        await uniformListPage.btn_sizeAccordion_header.click();
-        await uniformListPage.chk_sizeFilter_selAll.setChecked(false);
-        await uniformListPage.chk_sizeFilter(ids.sizeIds[0]).setChecked(true);
+        await uniformListPage.openSizeAccordion();
+        await expect(uniformListPage.chk_sizeFilter_selAll).toBeChecked();
+        
+        await uniformListPage.chk_sizeFilter_selAll.click();
+        await uniformListPage.chk_sizeFilter(ids.sizeIds[0]).click();
+
+        await expect(uniformListPage.chk_sizeFilter_selAll).not.toBeChecked();
+        await expect(uniformListPage.chk_sizeFilter(ids.sizeIds[0])).toBeChecked();
         await uniformListPage.btn_load.click();
+        
         // Expect only uniforms with this size to be shown
         const count = data.uniformList.filter(u => (
             (u.fk_uniformType === ids.uniformTypeIds[0])

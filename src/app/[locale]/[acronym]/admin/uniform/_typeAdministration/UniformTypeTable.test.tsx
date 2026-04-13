@@ -7,7 +7,7 @@ import { changeUniformTypeSortOrder } from "@/dal/uniform/type/_index";
 import { useUniformTypeList } from "@/dataFetcher/uniformAdmin";
 import { UniformTypeOffcanvas } from "./UniformTypeOffcanvas";
 import { toast } from "react-toastify";
-import { vi, type Mock } from 'vitest';
+import { vi } from 'vitest';
 
 
 // ################## MOCKS ##################
@@ -66,7 +66,7 @@ describe("<UniformTypeTable />", () => {
     });
 
     it("calls changeUniformTypeSortOrder when onDragEnd is triggered", async () => {
-        (changeUniformTypeSortOrder as unknown as Mock).mockReturnValue("uniform type sortOrder changed");
+        vi.mocked(changeUniformTypeSortOrder).mockReturnValue("uniform type sortOrder changed" as any);
         render(<UniformTypeTable initialTypeList={testTypes} />);
 
         expect(onDragEndFunction).toBeDefined();
@@ -86,7 +86,7 @@ describe("<UniformTypeTable />", () => {
     });
 
     it('catchs exeption in changeUniformTypeSortOrder', async () => {
-        (changeUniformTypeSortOrder as unknown as Mock).mockImplementation(async () => { throw new Error("error") });
+        vi.mocked(changeUniformTypeSortOrder).mockImplementation(async () => { throw new Error("error") });
         render(<UniformTypeTable initialTypeList={testTypes} />);
 
         expect(onDragEndFunction).toBeDefined();
@@ -157,7 +157,7 @@ describe("<UniformTypeTable />", () => {
 
             // close the offcanvas by calling the setSelectedTypeId function with null
             act(() => {
-                (UniformTypeOffcanvas as unknown as Mock).mock.calls[0][0].setSelectedTypeId(null);
+                vi.mocked(UniformTypeOffcanvas).mock.calls[0][0].setSelectedTypeId(null);
             });
             expect(screen.queryByTestId("uniform-type-offcanvas")).not.toBeInTheDocument();
 
@@ -196,7 +196,7 @@ describe("<UniformTypeTable />", () => {
             );
 
             act(() => {
-                (UniformTypeOffcanvas as unknown as Mock).mock.calls[0][0].setSelectedTypeId(null);
+                vi.mocked(UniformTypeOffcanvas).mock.calls[0][0].setSelectedTypeId(null);
             });
             expect(screen.queryByTestId("uniform-type-offcanvas")).not.toBeInTheDocument();
         });
@@ -212,7 +212,7 @@ describe("<UniformTypeTable />", () => {
             expect(UniformTypeOffcanvas).toHaveBeenCalledTimes(1);
 
             act(() => {
-                (UniformTypeOffcanvas as unknown as Mock).mock.calls[0][0].setSelectedTypeId(testTypes[1].id);
+                vi.mocked(UniformTypeOffcanvas).mock.calls[0][0].setSelectedTypeId(testTypes[1].id);
             });
             expect(screen.getByTestId("uniform-type-offcanvas")).toBeInTheDocument();
             expect(UniformTypeOffcanvas).toHaveBeenCalledTimes(2);
@@ -227,7 +227,7 @@ describe("<UniformTypeTable />", () => {
             );
 
             act(() => {
-                (UniformTypeOffcanvas as unknown as Mock).mock.calls[1][0].setSelectedTypeId(null);
+                vi.mocked(UniformTypeOffcanvas).mock.calls[1][0].setSelectedTypeId(null);
             });
             expect(screen.queryByTestId("uniform-type-offcanvas")).not.toBeInTheDocument();
         });
@@ -255,7 +255,7 @@ describe("<UniformTypeTable />", () => {
 
             // call the setEditable function to change the editable state
             act(() => {
-                (UniformTypeOffcanvas as unknown as Mock).mock.calls[0][0].setEditable(true);
+                vi.mocked(UniformTypeOffcanvas).mock.calls[0][0].setEditable(true);
             });
             expect(screen.getByTestId("uniform-type-offcanvas")).toBeInTheDocument();
             expect(UniformTypeOffcanvas).toHaveBeenCalledTimes(2);
@@ -279,7 +279,7 @@ describe("<UniformTypeTable />", () => {
 
             // call the setEditable function to change the editable state back to false
             act(() => {
-                (UniformTypeOffcanvas as unknown as Mock).mock.calls[1][0].setEditable(false);
+                vi.mocked(UniformTypeOffcanvas).mock.calls[1][0].setEditable(false);
             });
             expect(screen.getByTestId("uniform-type-offcanvas")).toBeInTheDocument();
             expect(UniformTypeOffcanvas).toHaveBeenCalledTimes(3);

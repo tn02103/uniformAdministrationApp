@@ -12,6 +12,7 @@ import { LogDebugLevel } from './LogDebugLeve.enum';
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
 import { AuthRole } from '@/lib/AuthRoles';
 import crypto from 'crypto';
+import { Mock } from 'vitest';
 
 // Mock AuthConfig
 vi.mock('./config', () => ({
@@ -528,7 +529,7 @@ describe('issueNewAccessToken', () => {
         };
         sessionId?: string;
         deviceId?: string;
-        save: vi.Mock;
+        save: Mock;
     } = {
         user: undefined,
         sessionId: undefined,

@@ -1,10 +1,11 @@
+import { vi } from "vitest";
+import { sendInspectionReviewMail } from "@/lib/email/inspectionReview";
 import { DBQuery } from "@/dal/inspection/_dbQuerys";
 import { stopInspection } from "@/dal/inspection/stop";
 import { ExceptionType } from "@/errors/CustomException";
 import { prisma } from "@/lib/db";
 import { StaticData } from "../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { runServerActionTest } from "../_helper/testHelper";
-import { sendInspectionReviewMail } from "@/lib/email/inspectionReview";
 
 const staticData = new StaticData(0);
 const dbQuery = new DBQuery();

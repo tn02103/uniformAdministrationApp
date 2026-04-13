@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import { vi, type MockedFunction } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { faGear } from '@fortawesome/free-solid-svg-icons';
 import NavGroup from './NavGroup';

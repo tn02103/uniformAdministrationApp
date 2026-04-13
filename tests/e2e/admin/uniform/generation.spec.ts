@@ -64,7 +64,7 @@ test.describe('UniformGeneration Configuration', () => {
 
         await test.step('check if sortorder is changed', async () => {
             const rows = generationTable.locator('tbody').getByRole('row');
-
+            
             await expect(rows).toHaveCount(4);
             await expect(rows.nth(0)).toHaveAttribute('aria-label', generationList[1].name);
             await expect(rows.nth(1)).toHaveAttribute('aria-label', generationList[2].name);
@@ -74,14 +74,14 @@ test.describe('UniformGeneration Configuration', () => {
 
         await test.step('validate db sortorder', async () => {
             const dbGenerationList = await prisma.uniformGeneration.findMany({
-                    where: {
-                        recdelete: null,
-                        fk_uniformType: types[0].id,
-                    },
-                    orderBy: {
-                        sortOrder: 'asc',
-                    },
-                });
+                where: {
+                    recdelete: null,
+                    fk_uniformType: types[0].id,
+                },
+                orderBy: {
+                    sortOrder: 'asc',
+                },
+            });
             expect(dbGenerationList).toHaveLength(4);
             expect(dbGenerationList[0].id).toEqual(generationList[1].id);
             expect(dbGenerationList[1].id).toEqual(generationList[2].id);
@@ -134,14 +134,14 @@ test.describe('UniformGeneration Configuration', () => {
 
         await test.step('validate db sortorder', async () => {
             const dbGenerationList = await prisma.uniformGeneration.findMany({
-                    where: {
-                        recdelete: null,
-                        fk_uniformType: types[0].id,
-                    },
-                    orderBy: {
-                        sortOrder: 'asc',
-                    },
-                });
+                where: {
+                    recdelete: null,
+                    fk_uniformType: types[0].id,
+                },
+                orderBy: {
+                    sortOrder: 'asc',
+                },
+            });
             expect(dbGenerationList).toHaveLength(4);
             expect(dbGenerationList[0].id).toEqual(generationList[0].id);
             expect(dbGenerationList[1].id).toEqual(generationList[2].id);

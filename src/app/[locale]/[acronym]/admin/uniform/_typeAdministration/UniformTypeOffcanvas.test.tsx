@@ -9,7 +9,7 @@ import { getUniformItemCountByType } from "@/dal/uniform/item/_index";
 import { UniformGenerationTable } from "./UniformGenerationTable";
 import { useModal } from "@/components/modals/modalProvider";
 import { toast } from "react-toastify";
-import { vi, type Mock } from 'vitest';
+import { vi } from 'vitest';
 
 const sizeListIds = [
     'e667d674-7df8-436b-a2b8-77b06e063d36',
@@ -255,7 +255,7 @@ describe('<UniformTypeOffcanvas />', () => {
                 });
 
                 // call delete function
-                await (dangerConfirmationModal as unknown as Mock).mock.calls[0][0].dangerOption.function();
+                await vi.mocked(dangerConfirmationModal).mock.calls[0][0].dangerOption.function();
 
                 // validate success handling
                 expect(deleteUniformType).toHaveBeenCalledTimes(1);
@@ -268,7 +268,7 @@ describe('<UniformTypeOffcanvas />', () => {
             it('catch DAL Exception', async () => {
                 const user = userEvent.setup();
                 const setSelectedTypeId = vi.fn();
-                (deleteUniformType as Mock).mockImplementationOnce(async () => { throw new Error("custom.error") });
+                vi.mocked(deleteUniformType).mockImplementationOnce(async () => { throw new Error("custom.error") });
 
                 render(
                     <UniformTypeOffcanvas
@@ -288,7 +288,7 @@ describe('<UniformTypeOffcanvas />', () => {
                 expect(dangerConfirmationModal).toHaveBeenCalled();
 
                 // call delete function
-                await (dangerConfirmationModal as unknown as Mock).mock.calls[0][0].dangerOption.function();
+                await vi.mocked(dangerConfirmationModal).mock.calls[0][0].dangerOption.function();
 
                 // validate exception handling
                 expect(deleteUniformType).toHaveBeenCalledTimes(1);
@@ -356,7 +356,7 @@ describe('<UniformTypeOffcanvas />', () => {
                 const issuedDefaultInput = screen.getByRole('spinbutton', { name: 'common.uniform.type.issuedDefault' });
 
                 // mock name duplication error
-                (createUniformType as Mock).mockImplementationOnce(async () => ({
+                vi.mocked(createUniformType).mockImplementationOnce(async () => ({
                     error: {
                         message: "custom.uniform.type.nameDuplication",
                         formElement: "name",
@@ -388,7 +388,7 @@ describe('<UniformTypeOffcanvas />', () => {
                 expect(nameInput).not.toHaveClass('is-invalid');
 
                 // mock acronym duplication error
-                (createUniformType as Mock).mockImplementationOnce(async () => ({
+                vi.mocked(createUniformType).mockImplementationOnce(async () => ({
                     error: {
                         message: "custom.uniform.type.acronymDuplication;name:Test Type",
                         formElement: "acronym",
@@ -409,7 +409,7 @@ describe('<UniformTypeOffcanvas />', () => {
             });
 
             it('catchs DAL exception', async () => {
-                (createUniformType as Mock).mockImplementationOnce(async () => { throw new Error("custom.error") });
+                vi.mocked(createUniformType).mockImplementationOnce(async () => { throw new Error("custom.error") });
                 const user = userEvent.setup();
                 const setEditable = vi.fn();
                 const setSelectedTypeId = vi.fn();
@@ -500,7 +500,7 @@ describe('<UniformTypeOffcanvas />', () => {
                 );
 
                 // mock name duplication error
-                (updateUniformType as Mock).mockImplementationOnce(async () => ({
+                vi.mocked(updateUniformType).mockImplementationOnce(async () => ({
                     error: {
                         message: "custom.uniform.type.nameDuplication",
                         formElement: "name",
@@ -526,7 +526,7 @@ describe('<UniformTypeOffcanvas />', () => {
                 expect(screen.getByRole('textbox', { name: 'common.name *' })).not.toHaveClass('is-invalid');
 
                 // mock acronym duplication error
-                (updateUniformType as Mock).mockImplementationOnce(async () => ({
+                vi.mocked(updateUniformType).mockImplementationOnce(async () => ({
                     error: {
                         message: "custom.uniform.type.acronymDuplication;name:Test Type",
                         formElement: "acronym",
@@ -546,7 +546,7 @@ describe('<UniformTypeOffcanvas />', () => {
                 expect(screen.getByRole('textbox', { name: 'common.uniform.type.acronym *' })).toHaveClass('is-invalid');
             });
             it('catches DAL exception', async () => {
-                (updateUniformType as Mock).mockImplementationOnce(async () => { throw new Error("custom.error") });
+                vi.mocked(updateUniformType).mockImplementationOnce(async () => { throw new Error("custom.error") });
                 const user = userEvent.setup();
                 const setEditable = vi.fn();
                 render(

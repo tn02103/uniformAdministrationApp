@@ -1,5 +1,6 @@
 import "./UniformOffcanvasJestHelper";
 
+import { vi } from 'vitest';
 import { getAllByRole, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { mockGenerationLists, mockSizeLists, mockTypeList } from "../../../vitest/staticMockData";

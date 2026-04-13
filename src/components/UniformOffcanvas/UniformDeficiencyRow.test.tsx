@@ -1,5 +1,6 @@
 import "./UniformOffcanvasJestHelper";
 
+import { vi } from 'vitest';
 import { getByLabelText, getByRole, getByText, queryByRole, queryByText, render, screen } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 import { UniformDeficiencyRow } from "./UniformDeficiencyRow";

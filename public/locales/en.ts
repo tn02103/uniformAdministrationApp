@@ -72,7 +72,7 @@ export default {
             generation: {
                 "label#one": "Generation",
                 "label#other": "Generations",
-                isReserve: "Reserve",
+                isReserve: "Spare",
             },
             size: "Size",
             size_other: "Sizes",
@@ -83,7 +83,7 @@ export default {
             owner: "Owner",
             state: {
                 active: "Active",
-                isReserve: "Reserve"
+                isReserve: "Spare"
             },
             type: {
                 "type#one": "Uniform type",
@@ -349,7 +349,7 @@ export default {
             "alert.noItemFound": "There is no uniform part with the number {number}. Do you want to create it?",
             "alert.itemAlreadyOwned": "The selected uniform part is already issued to this person.",
             "alert.storageUnit": "The selected uniform part is assigned to the storage unit {unit}.",
-            "alert.isReserve": "The selected uniform part is marked as reserve.",
+            "alert.isReserve": "The selected uniform part is marked as a spare.",
             "button.changeOwner": "Change owner",
             "button.replace": "Replace",
             "button.issue": "Issue",
@@ -358,7 +358,7 @@ export default {
             "error.issueFailed": "The uniform part could not be issued. Please try again later.",
             "header.add": "Issue {type}",
             "header.replace": "Replace {type}-{number}",
-            "option.isReserve": "Reserve",
+            "option.isReserve": "Spare",
             "option.owner": "Owner: ",
             "option.storageUnit": "Storage unit: ",
         },
@@ -374,8 +374,8 @@ export default {
             "details.name": "Name",
             "details.capacity": "Capacity",
             "details.description": "Description",
-            "details.forReserves": "For reserves",
-            "details.forReservesText": "Uniform items are marked as reserve",
+            "details.forReserves": "For spares",
+            "details.forReservesText": "Uniform items are marked as a spare",
             "details.uniformCount": "Amount of uniform items",
             "editName": "Rename storage unit",
             "header.uniformlist": "Uniform item(s)",
@@ -393,7 +393,7 @@ export default {
         tooltips: {
             "utOptions.owner": "Owner: ",
             "utOptions.storageUnit": "Storage unit: ",
-            "utOptions.isReserve": "Reserve",
+            "utOptions.isReserve": "Spare",
         }
     },
     uniformList: {

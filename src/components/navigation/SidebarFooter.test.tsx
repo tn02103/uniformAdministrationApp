@@ -37,7 +37,7 @@ describe('SidebarFooter', () => {
 
     let user: ReturnType<typeof userEvent.setup>;
     let setSidebarFixed: any;
-    let mockLogout: ReturnType<typeof vi.fn>;
+    let mockLogout: ReturnType<typeof vi.fn<() => Promise<void>>>;
 
     beforeEach(() => {
         vi.clearAllMocks();
