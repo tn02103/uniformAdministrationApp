@@ -4,6 +4,8 @@ import { removeMfaApp } from "./delete";
 
 const APP_1_ID = "11111111-1111-4111-8111-111111111101";
 const APP_2_ID = "22222222-2222-4222-8222-222222222202";
+const APP_3_ID = "33333333-3333-4333-8333-333333333303";
+const APP_4_ID = "44444444-4444-4444-8444-444444444404";
 
 vi.mock("next/headers", () => ({
     headers: vi.fn(async () => ({ get: vi.fn().mockReturnValue(null) })),
@@ -64,6 +66,8 @@ describe("removeMfaApp", () => {
             data: [
                 { id: APP_1_ID, userId: staticData.ids.userIds[0], appName: "App1", secret: "S1", verifiedAt: new Date("2025-01-01") },
                 { id: APP_2_ID, userId: staticData.ids.userIds[0], appName: "App2", secret: "S2", verifiedAt: new Date("2025-02-01") },
+                { id: APP_3_ID, userId: staticData.ids.userIds[0], appName: "App3", secret: "S3", verifiedAt: new Date("2025-06-01") },
+                { id: APP_4_ID, userId: staticData.ids.userIds[0], appName: "App4", secret: "S4", verifiedAt: new Date("2025-04-01") },
             ],
         });
         await prisma.user.update({
@@ -77,7 +81,7 @@ describe("removeMfaApp", () => {
             where: { id: staticData.ids.userIds[0] },
             select: { default2FAMethod: true },
         });
-        expect(user?.default2FAMethod).toBe(APP_2_ID);
+        expect(user?.default2FAMethod).toBe(APP_3_ID); // App3 is the most recently verified app after App1
     });
 
     it("resets default to 'email' when deleted app was the default and no other verified apps remain", async () => {

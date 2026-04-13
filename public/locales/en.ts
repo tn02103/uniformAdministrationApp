@@ -991,6 +991,7 @@ export default {
             defaultMethod: {
                 title: "Default method",
                 email: "E-Mail",
+                changed: "Default method changed successfully",
             },
             errors: {
                 toggleFailed: "Failed to update two-factor authentication",

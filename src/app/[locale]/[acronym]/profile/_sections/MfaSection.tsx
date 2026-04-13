@@ -68,6 +68,7 @@ export const MfaSection = ({ profile, mutate }: MfaSectionProps) => {
     const handleDefaultMethodChange = async (method: string) => {
         try {
             await setDefaultMfaMethod({ method });
+            toast.success(t("defaultMethod.changed"));
             await mutate();
         } catch {
             toast.error(t("errors.defaultMethodFailed"));

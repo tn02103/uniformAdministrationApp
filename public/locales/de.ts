@@ -991,6 +991,7 @@ export default {
             defaultMethod: {
                 title: "Standardmethode",
                 email: "E-Mail",
+                changed: "Standardmethode erfolgreich geändert",
             },
             errors: {
                 toggleFailed: "Zwei-Faktor-Authentifizierung konnte nicht aktualisiert werden",
