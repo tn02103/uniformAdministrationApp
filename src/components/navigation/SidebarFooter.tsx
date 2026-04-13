@@ -9,6 +9,7 @@ import { Dropdown } from "react-bootstrap";
 import { mutate } from "swr";
 import { useSessionStorage } from "usehooks-ts";
 import { useModal } from "../modals/modalProvider";
+import { PwaInstallButton } from "./PwaInstallButton";
 import { useSidebarContext } from "./Sidebar";
 
 type SidebarFooterProps = {
@@ -58,6 +59,7 @@ export const SidebarFooter = ({ username, collapseButtonRef, handleCollapseButto
                                 <Dropdown.Item onClick={modal?.changeLanguage} data-testid="btn_changeSize" className="text-white bg-navy-secondary my-2 my-lg-0">
                                     {t('sidebar.changeLanguage')}
                                 </Dropdown.Item>
+                                <PwaInstallButton />
                             </Dropdown.Menu>
                         </Dropdown>
                     </div>

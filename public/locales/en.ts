@@ -455,6 +455,11 @@ export default {
     sidebar: {
         logout: "Logout",
         changeLanguage: "Change language",
+        installApp: "Install app",
+        "installApp.ios.title": "Add app to home screen",
+        "installApp.ios.step1": "Tap the Share icon (↑) in Safari's menu bar",
+        "installApp.ios.step2": "Scroll down and tap \"Add to Home Screen\"",
+        "installApp.ios.step3": "Tap \"Add\"",
         "message.inspection.start": "The inspection was successfully started",
         "message.inspection.startError": "The inspection could not be started. Please try again later.",
         "message.inspection.stop": "The inspection was successfully stopped",

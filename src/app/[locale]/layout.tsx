@@ -1,4 +1,5 @@
 import ModalProvider from '@/components/modals/modalProvider';
+import { PwaEventCapture } from '@/components/navigation/PwaEventCapture';
 import { I18nProviderClient } from '@/lib/locales/client';
 import { getStaticParams } from '@/lib/locales/config';
 import '@fortawesome/fontawesome-svg-core/styles.css';
@@ -54,6 +55,7 @@ export default async function RootLayout({
     return (
         <html lang={locale}>
             <body>
+                <PwaEventCapture />
                 <I18nProviderClient locale={locale}>
                     <ModalProvider>
                         {children}

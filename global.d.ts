@@ -5,4 +5,13 @@ declare global {
     var __ROLE__: AuthRole | undefined;
     var __ASSOSIATION__: string | undefined;
     var __USERNAME__: string | undefined;
+
+    interface BeforeInstallPromptEvent extends Event {
+        prompt(): Promise<void>;
+        userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+    }
+
+    interface Window {
+        __pwaPrompt?: BeforeInstallPromptEvent;
+    }
 }

@@ -455,6 +455,11 @@ export default {
     sidebar: {
         logout: "Abmelden",
         changeLanguage: "Sprache wechseln",
+        installApp: "App installieren",
+        "installApp.ios.title": "App zum Startbildschirm hinzufügen",
+        "installApp.ios.step1": "Tippe in Safari auf das Teilen-Symbol (↑) in der Menüleiste",
+        "installApp.ios.step2": "Scrolle nach unten und wähle „Zum Home-Bildschirm\"",
+        "installApp.ios.step3": "Tippe auf \"Hinzufügen\"",
         "message.inspection.start": "Die Kontrolle wurde erfolgreich gestartet",
         "message.inspection.startError": "Die Kontrolle konnte nicht gestartet werden. Bitte versuchen Sie es später erneut.",
         "message.inspection.stop": "Die Kontrolle wurder erfolgreich beendet",
