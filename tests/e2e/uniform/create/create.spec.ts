@@ -48,7 +48,7 @@ test('validate knownIds', async ({ page, createPage, staticData: { ids, organisa
             }
         });
 
-        expect(uniformItems.length).toBe(10);
+        expect(uniformItems).toHaveLength(10);
         expect.soft(uniformItems[0].comment).toBe('test comment');
         expect.soft(uniformItems[0].isReserve).toBeTruthy();
         expect.soft(uniformItems[0].fk_uniformType).toBe(ids.uniformTypeIds[0]);
@@ -92,7 +92,7 @@ test('validate generate Ids', async ({ page, createPage, staticData: { ids, orga
             }
         });
 
-        expect(uniformItems.length).toBe(11);
+        expect(uniformItems).toHaveLength(11);
         expect.soft(uniformItems[0].comment).toBe('test comment2');
         expect.soft(uniformItems[0].isReserve).toBeFalsy();
         expect.soft(uniformItems[0].fk_uniformType).toBe(ids.uniformTypeIds[0]);

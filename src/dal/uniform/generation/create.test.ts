@@ -1,4 +1,4 @@
-﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+﻿ 
 import { prismaMock } from '@test-utils/prisma-mock';
 
 import { mockSizeLists, mockTypeList } from "../../../../vitest/staticMockData";

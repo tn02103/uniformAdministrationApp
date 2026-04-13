@@ -435,7 +435,7 @@ describe('UniformTypesOverviewChart', () => {
                 }
             ];
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             render(<UniformTypesOverviewChart data={malformedData as any} />);
 
             // Should not crash

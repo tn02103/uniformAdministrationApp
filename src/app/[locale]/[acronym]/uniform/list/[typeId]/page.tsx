@@ -33,7 +33,7 @@ export default async function UniformListPage({
 }) {
     const t = await getI18n();
     const { typeId } = await params;
-
+    
     let uniformType: UniformType | null = null
     if (z.string().uuid().safeParse(typeId).success) {
         uniformType = await getUniformType(typeId);

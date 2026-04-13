@@ -7,7 +7,7 @@ const I18nMiddleware = createI18nMiddleware({
     defaultLocale: 'de',
 });
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     const response = I18nMiddleware(request);
     if (response.status === 307) {
         return response;

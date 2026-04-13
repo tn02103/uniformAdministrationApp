@@ -46,8 +46,8 @@ test.afterEach(async ({ staticData: { cleanup } }) => {
 test.describe('sizeList Configuration', () => {
     test('validate lists data', async ({ page, sizelists, listComponent }) => {
         await expect(page.getByRole('heading', {level: 3})).toBeVisible();
-        const divList = await page.locator('div[data-testid^="div_sizelist_list_"]').all();
-        expect(divList).toHaveLength(sizelists.length);
+        const divList = page.locator('div[data-testid^="div_sizelist_list_"]');
+        await expect(divList).toHaveCount(sizelists.length);
 
         for (let i = 0; i < divList.length; i++) {
             await expect.soft(divList[i]).toHaveAttribute("data-testid", `div_sizelist_list_${sizelists[i].id}`);

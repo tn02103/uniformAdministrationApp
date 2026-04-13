@@ -38,8 +38,8 @@ test.describe('Uniform size configuration', () => {
     test('validate Data', async ({ page, uniformSizePage, sizes }) => {
         await expect(uniformSizePage.div_size(sizes[0].id)).toBeVisible();
 
-        const divList = await page.locator('div[data-testid^="div_size_"]').all();
-        expect(divList).toHaveLength(sizes.length);
+        const divList = page.locator('div[data-testid^="div_size_"]');
+        await expect(divList).toHaveCount(sizes.length);
 
         const promises = [];
         /* eslint-disable playwright/missing-playwright-await */
@@ -291,7 +291,7 @@ test.describe('Uniform size configuration', () => {
             });
 
             expect(dbSizes.some(s => s.id === sizes[16].id)).toBeFalsy();
-            expect(dbSizes.length).toEqual(20);
+            expect(dbSizes).toHaveLength(20);
             expect(dbSizes[15].id).toEqual(sizes[15].id);
             expect(dbSizes[16].id).toEqual(sizes[17].id);
             expect(dbSizes[19].id).toEqual(sizes[20].id);

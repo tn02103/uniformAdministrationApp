@@ -63,25 +63,25 @@ test.describe('UniformGeneration Configuration', () => {
         });
 
         await test.step('check if sortorder is changed', async () => {
-            const rows = await generationTable.locator('tbody').getByRole('row').all();
-
-            expect(rows).toHaveLength(4);
-            await expect(rows[0]).toHaveAttribute('aria-label', generationList[1].name);
-            await expect(rows[1]).toHaveAttribute('aria-label', generationList[2].name);
-            await expect(rows[2]).toHaveAttribute('aria-label', generationList[0].name);
-            await expect(rows[3]).toHaveAttribute('aria-label', generationList[3].name);
+            const rows = generationTable.locator('tbody').getByRole('row');
+            
+            await expect(rows).toHaveCount(4);
+            await expect(rows.nth(0)).toHaveAttribute('aria-label', generationList[1].name);
+            await expect(rows.nth(1)).toHaveAttribute('aria-label', generationList[2].name);
+            await expect(rows.nth(2)).toHaveAttribute('aria-label', generationList[0].name);
+            await expect(rows.nth(3)).toHaveAttribute('aria-label', generationList[3].name);
         });
 
         await test.step('validate db sortorder', async () => {
             const dbGenerationList = await prisma.uniformGeneration.findMany({
-                    where: {
-                        recdelete: null,
-                        fk_uniformType: types[0].id,
-                    },
-                    orderBy: {
-                        sortOrder: 'asc',
-                    },
-                });
+                where: {
+                    recdelete: null,
+                    fk_uniformType: types[0].id,
+                },
+                orderBy: {
+                    sortOrder: 'asc',
+                },
+            });
             expect(dbGenerationList).toHaveLength(4);
             expect(dbGenerationList[0].id).toEqual(generationList[1].id);
             expect(dbGenerationList[1].id).toEqual(generationList[2].id);
@@ -123,25 +123,25 @@ test.describe('UniformGeneration Configuration', () => {
         });
 
         await test.step('check if sortorder is changed', async () => {
-            const rows = await generationTable.locator('tbody').getByRole('row').all();
+            const rows = generationTable.locator('tbody').getByRole('row');
 
-            expect(rows).toHaveLength(4);
-            await expect(rows[0]).toHaveAttribute('aria-label', generationList[0].name);
-            await expect(rows[1]).toHaveAttribute('aria-label', generationList[2].name);
-            await expect(rows[2]).toHaveAttribute('aria-label', generationList[1].name);
-            await expect(rows[3]).toHaveAttribute('aria-label', generationList[3].name);
+            await expect(rows).toHaveCount(4);
+            await expect(rows.nth(0)).toHaveAttribute('aria-label', generationList[0].name);
+            await expect(rows.nth(1)).toHaveAttribute('aria-label', generationList[2].name);
+            await expect(rows.nth(2)).toHaveAttribute('aria-label', generationList[1].name);
+            await expect(rows.nth(3)).toHaveAttribute('aria-label', generationList[3].name);
         });
 
         await test.step('validate db sortorder', async () => {
             const dbGenerationList = await prisma.uniformGeneration.findMany({
-                    where: {
-                        recdelete: null,
-                        fk_uniformType: types[0].id,
-                    },
-                    orderBy: {
-                        sortOrder: 'asc',
-                    },
-                });
+                where: {
+                    recdelete: null,
+                    fk_uniformType: types[0].id,
+                },
+                orderBy: {
+                    sortOrder: 'asc',
+                },
+            });
             expect(dbGenerationList).toHaveLength(4);
             expect(dbGenerationList[0].id).toEqual(generationList[0].id);
             expect(dbGenerationList[1].id).toEqual(generationList[2].id);
