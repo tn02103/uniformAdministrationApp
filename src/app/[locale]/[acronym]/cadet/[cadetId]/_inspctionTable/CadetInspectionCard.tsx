@@ -1,5 +1,6 @@
 "use client";
 
+import { Form } from "@/components/fields/Form";
 import { getCadetInspectionFormData, saveCadetInspection } from "@/dal/inspection";
 import { useUnresolvedDeficienciesByCadet } from "@/dataFetcher/inspection";
 import { useI18n } from "@/lib/locales/client";
@@ -7,14 +8,13 @@ import { cadetInspectionFormSchema, CadetInspectionFormSchema } from "@/zod/defi
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { mutate } from "swr";
 import CadetInspectionCardHeader from "./CadetInspectionCardHeader";
 import { CadetInspectionStep1 } from "./CadetInspectionStep1";
 import { CadetInspectionStep2 } from "./CadetInspectionStep2";
 import { OldDeficiencyRow } from "./OldDeficiencyRow";
-
 
 export const CadetInspectionCard = () => {
     const t = useI18n();
@@ -68,35 +68,33 @@ export const CadetInspectionCard = () => {
                 step={step}
                 startInspecting={handleStartCadetInspection}
             />
-            <form onSubmit={form.handleSubmit(handleSaveInspection)}>
-                <FormProvider {...form}>
-                    {step === 0 &&
-                        <div className="row p-0 bg-white border-top border-1 border-dark">
-                            {unresolvedDeficiencies?.map((deficiency, index) => (
-                                <OldDeficiencyRow
-                                    key={deficiency.id}
-                                    step={step}
-                                    deficiency={deficiency}
-                                    index={index}
-                                />
-                            ))}
-                            {(unresolvedDeficiencies?.length === 0) &&
-                                <div data-testid="div_step0_noDeficiencies" className="fw-bold p-2">{t('cadetDetailPage.inspection.label.noDeficiencies')}</div>
-                            }
-                        </div>
-                    }
-                    {step === 1 && (
-                        <CadetInspectionStep1
-                            setNextStep={() => setStep(2)}
-                            cancel={() => setStep(0)} />
-                    )}
-                    {step === 2 && (
-                        <CadetInspectionStep2
-                            setStep={setStep}
-                        />
-                    )}
-                </FormProvider>
-            </form>
+            <Form formReturn={form} formName="cadetinspection" onSubmit={handleSaveInspection}>
+                {step === 0 &&
+                    <div className="row p-0 bg-white border-top border-1 border-dark">
+                        {unresolvedDeficiencies?.map((deficiency, index) => (
+                            <OldDeficiencyRow
+                                key={deficiency.id}
+                                step={step}
+                                deficiency={deficiency}
+                                index={index}
+                            />
+                        ))}
+                        {(unresolvedDeficiencies?.length === 0) &&
+                            <div data-testid="div_step0_noDeficiencies" className="fw-bold p-2">{t('cadetDetailPage.inspection.label.noDeficiencies')}</div>
+                        }
+                    </div>
+                }
+                {step === 1 && (
+                    <CadetInspectionStep1
+                        setNextStep={() => setStep(2)}
+                        cancel={() => setStep(0)} />
+                )}
+                {step === 2 && (
+                    <CadetInspectionStep2
+                        setStep={setStep}
+                    />
+                )}
+            </Form>
         </div>
     )
 }

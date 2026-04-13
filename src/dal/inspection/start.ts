@@ -49,5 +49,5 @@ export const startInspection = async () => genericSANoDataValidator(
         });
     }
 
-    revalidateTag(`serverA.inspectionState.${organisationId}`);
+    revalidateTag(`serverA.inspectionState.${organisationId}`, 'seconds');
 }));

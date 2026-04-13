@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 /**
  * Unit Tests for handleRefreshTokenReuse
  * 
@@ -43,7 +43,7 @@ vi.mock('@/lib/email/tokenReuseDetected', () => ({
 const mockValidateDeviceFingerprint = vi.mocked(validateDeviceFingerprint);
 const mockIsRedisAvailable = vi.mocked(isRedisAvailable);
 const mockSendTokenReuseDetectedEmail = vi.mocked(sendTokenReuseDetectedEmail);
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 const mockPrisma = prisma as any;
 
 describe('handleRefreshTokenReuse - Unit Tests', () => {

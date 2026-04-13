@@ -12,6 +12,7 @@ const test = adminTest.extend<Fixture>({
 test.describe(() => {
     test.beforeEach(async ({ page, uniformListPage, staticData: { ids } }) => {
         await page.goto(`/de/app/uniform/list/${ids.uniformTypeIds[0]}`);
+        await expect(uniformListPage.div_pageHeader).toBeVisible();
         await expect(uniformListPage.div_nodata).toBeHidden();
     });
 
@@ -36,7 +37,7 @@ test.describe(() => {
         await expect(uniformListPage.div_header_count).not.toHaveText(String(uniformList.length));
 
         // Filter by size
-        await uniformListPage.btn_sizeAccordion_header.click();
+        await uniformListPage.openSizeAccordion();
         await uniformListPage.chk_sizeFilter_selAll.setChecked(false);
         await uniformListPage.chk_sizeFilter(ids.sizeIds[1]).setChecked(true);
         await uniformListPage.btn_load.click();
@@ -52,7 +53,7 @@ test.describe(() => {
 
     test('integration: displayed data matches expected after filter and search', async ({ uniformListPage, staticData: { ids, data } }) => {
         // Apply a filter and search, then check a known uniform
-        await uniformListPage.btn_genAccordion_header.click();
+        await uniformListPage.openGenerationAccordion();
         await uniformListPage.chk_genFilter_selAll.setChecked(false);
         await uniformListPage.chk_genFilter(ids.uniformGenerationIds[0]).setChecked(true);
         await uniformListPage.btn_load.click();

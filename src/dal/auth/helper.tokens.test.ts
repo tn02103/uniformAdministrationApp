@@ -12,6 +12,7 @@ import { LogDebugLevel } from './LogDebugLeve.enum';
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
 import { AuthRole } from '@/lib/AuthRoles';
 import crypto from 'crypto';
+import { Mock } from 'vitest';
 
 // Mock AuthConfig
 vi.mock('./config', () => ({
@@ -100,7 +101,7 @@ describe('issueNewRefreshToken', () => {
         // Wire up $transaction to pass the prisma mock as the client —
         // setup-dal-unit.ts does the same at module level, but this file
         // has its own vi.mock('@/lib/db') override.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         mockPrisma.$transaction.mockImplementation(async (callback: any) => callback(prisma));
 
         // Default DB mock return values
@@ -528,7 +529,7 @@ describe('issueNewAccessToken', () => {
         };
         sessionId?: string;
         deviceId?: string;
-        save: vi.Mock;
+        save: Mock;
     } = {
         user: undefined,
         sessionId: undefined,

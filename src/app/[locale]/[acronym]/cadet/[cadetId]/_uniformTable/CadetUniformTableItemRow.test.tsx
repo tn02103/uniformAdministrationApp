@@ -7,7 +7,7 @@ import { useModal } from "@/components/modals/modalProvider";
 import { returnUniformItem } from "@/dal/uniform/item/_index";
 import { UniformOffcanvas } from "@/components/UniformOffcanvas/UniformOffcanvas";
 import { toast } from "react-toastify";
-import { vi, type Mock } from 'vitest';
+import { vi } from 'vitest';
 
 // Mocks
 vi.mock("@/components/UniformOffcanvas/UniformOffcanvas", () => ({
@@ -109,19 +109,19 @@ describe("CadetUniformTableItemRow", () => {
         expect(returnUniformItem).not.toHaveBeenCalled();
 
         await act(async () => {
-            await (simpleWarningModal as unknown as Mock).mock.calls[0][0].primaryFunction();
+            await vi.mocked(simpleWarningModal).mock.calls[0][0].primaryFunction();
         });
         expect(returnUniformItem).toHaveBeenCalledWith({ uniformId: "u-1", cadetId: "cadet-1" });
     });
 
     it("catches errors when returnUniformItem fails", async () => {
         setup();
-        (returnUniformItem as unknown as Mock).mockRejectedValue(new Error("Test error"));
+        vi.mocked(returnUniformItem).mockRejectedValue(new Error("Test error"));
 
         const btn = screen.getByTestId("btn_withdraw");
         await userEvent.click(btn);
         await act(async () => {
-            await (simpleWarningModal as unknown as Mock).mock.calls[0][0].primaryFunction();
+            await vi.mocked(simpleWarningModal).mock.calls[0][0].primaryFunction();
         });
 
         expect(toast.error).toHaveBeenCalled();

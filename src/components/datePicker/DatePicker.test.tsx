@@ -1,4 +1,5 @@
 import dayjs from "@/lib/dayjs";
+import { vi } from 'vitest';
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
@@ -23,7 +24,7 @@ describe('DatePicker', () => {
     };
 
     it('should render without crashing', () => {
-        const onChange = jest.fn();
+        const onChange = vi.fn();
         const { container } = render(<DatePicker onChange={onChange} value={null} />);
         expect(screen.getByRole('textbox')).toBeInTheDocument();
         expect(container).toMatchSnapshot();
@@ -31,7 +32,7 @@ describe('DatePicker', () => {
 
     it('should open and close calendar', async () => {
         const user = userEvent.setup();
-        const onChange = jest.fn();
+        const onChange = vi.fn();
         render(<DatePickerTestField onChange={onChange} />);
 
         const button = screen.getByRole('button', { name: /calendar/i });
@@ -51,7 +52,7 @@ describe('DatePicker', () => {
 
     it('should handle input change', async () => {
         const user = userEvent.setup();
-        const onChange = jest.fn();
+        const onChange = vi.fn();
         render(<DatePickerTestField onChange={onChange} />);
 
         const input = screen.getByRole('textbox');
@@ -71,7 +72,7 @@ describe('DatePicker', () => {
 
     it('should handle select via calendar', async () => {
         const user = userEvent.setup();
-        const onChange = jest.fn();
+        const onChange = vi.fn();
         render(<DatePickerTestField onChange={onChange} />);
 
         const button = screen.getByRole('button', { name: /calendar/i });
@@ -87,7 +88,7 @@ describe('DatePicker', () => {
 
     it('should handle minDate', async () => {
         const user = userEvent.setup();
-        const onChange = jest.fn();
+        const onChange = vi.fn();
         const minDate = dayjs().date(15);
         render(<DatePickerTestField onChange={onChange} minDate={minDate.toDate()} />);
 

@@ -74,3 +74,22 @@ export const TwoFactorFormSchema = z.object({
     token: twoFactorCodeSchema,
 });
 export type TwoFactorFormType = z.infer<typeof TwoFactorFormSchema>;
+
+// MFA DAL
+export const mfaMethodSchema = z.union([z.literal("email"), z.string().uuid()]);
+export type MfaMethod = z.infer<typeof mfaMethodSchema>;
+
+export const removeMfaAppSchema = z.object({
+    appId: z.string().uuid(),
+});
+export type RemoveMfaAppInput = z.infer<typeof removeMfaAppSchema>;
+
+export const setDefaultMfaMethodSchema = z.object({
+    method: mfaMethodSchema,
+});
+export type SetDefaultMfaMethodInput = z.infer<typeof setDefaultMfaMethodSchema>;
+
+export const toggleUserMfaSchema = z.object({
+    enabled: z.boolean(),
+});
+export type ToggleUserMfaInput = z.infer<typeof toggleUserMfaSchema>;

@@ -195,7 +195,6 @@ exports[`<UniformTypeOffcanvas /> > handles editable state correctly 1`] = `
               aria-invalid="false"
               class="text-truncate  form-select"
               id="uniformTypeForm_select-fk_defaultSizelist"
-              name="fk_defaultSizelist"
             >
               <option
                 disabled=""

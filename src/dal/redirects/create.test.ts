@@ -8,7 +8,6 @@ import { genericSAValidator } from "@/actions/validations";
 
 
 describe("createRedirect", () => {
-    const mockPrisma = prismaMock;
 
     const mockOrganisation = "test-organisation-id";
     const mockProps: RedirectFormType = {
@@ -28,15 +27,15 @@ describe("createRedirect", () => {
     });
 
     it("should create a redirect successfully", async () => {
-        mockPrisma.redirect.findFirst.mockResolvedValue(null);
-        mockPrisma.redirect.create.mockResolvedValue({});
+        prismaMock.redirect.findFirst.mockResolvedValue(null);
+        prismaMock.redirect.create.mockResolvedValue({});
 
         const result = await createRedirect(mockProps);
 
-        expect(mockPrisma.redirect.findFirst).toHaveBeenCalledWith({
+        expect(prismaMock.redirect.findFirst).toHaveBeenCalledWith({
             where: { code: mockProps.code },
         });
-        expect(mockPrisma.redirect.create).toHaveBeenCalledWith({
+        expect(prismaMock.redirect.create).toHaveBeenCalledWith({
             data: {
                 ...mockProps,
                 organisationId: mockOrganisation,
@@ -50,11 +49,11 @@ describe("createRedirect", () => {
     });
 
     it("should return an error if a redirect with the same code already exists", async () => {
-        mockPrisma.redirect.findFirst.mockResolvedValue({ id: "existing-id" });
+        prismaMock.redirect.findFirst.mockResolvedValue({ id: "existing-id" });
 
         const result = await createRedirect(mockProps);
 
-        expect(mockPrisma.redirect.findFirst).toHaveBeenCalledWith({
+        expect(prismaMock.redirect.findFirst).toHaveBeenCalledWith({
             where: { code: mockProps.code },
         });
         expect(result).toEqual({
@@ -63,7 +62,7 @@ describe("createRedirect", () => {
                 formElement: "code",
             },
         });
-        expect(mockPrisma.redirect.create).not.toHaveBeenCalled();
+        expect(prismaMock.redirect.create).not.toHaveBeenCalled();
     });
 
     it("should call genericSAValidator with correct parameters", async () => {

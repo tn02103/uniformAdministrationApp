@@ -6,7 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { mockStorageUnitWithItems } from "./StorageunitOC.jestHelper";
 import { toast } from "react-toastify";
 import { updateStorageUnit, createStorageUnit } from "@/dal/storageUnit/_index";
-import { vi, type Mock } from 'vitest';
+import { vi } from 'vitest';
 
 describe("StorageunitOCDetailForm", () => {
     const setEditable = vi.fn();
@@ -141,7 +141,7 @@ describe("StorageunitOCDetailForm", () => {
             uniformList: [],
         }
         it("should update existing storage unit when unit is provided", async () => {
-            (updateStorageUnit as Mock).mockResolvedValue(mockStorageUnitWithItems.map(item => item.id === mockData.id ? mockData : item));
+            vi.mocked(updateStorageUnit).mockResolvedValue(mockStorageUnitWithItems.map(item => item.id === mockData.id ? mockData : item) as any);
 
             const user = userEvent.setup();
             const { container } = render(
@@ -210,7 +210,7 @@ describe("StorageunitOCDetailForm", () => {
         });
 
         it("should catch DAL exceptions on update", async () => {
-            (updateStorageUnit as Mock).mockRejectedValue(new Error("Test error"));
+            vi.mocked(updateStorageUnit).mockRejectedValue(new Error("Test error"));
 
             const user = userEvent.setup();
             const { container } = render(
@@ -242,7 +242,7 @@ describe("StorageunitOCDetailForm", () => {
             uniformList: [],
         }
         it("should create new storage unit", async () => {
-            (createStorageUnit as Mock).mockResolvedValue([...mockStorageUnitWithItems, mockData]);
+            vi.mocked(createStorageUnit).mockResolvedValue([...mockStorageUnitWithItems, mockData] as any);
 
             const user = userEvent.setup();
             const { container } = render(
@@ -273,7 +273,7 @@ describe("StorageunitOCDetailForm", () => {
         });
 
         it("should catch name duplication error on create", async () => {
-            (createStorageUnit as Mock).mockResolvedValue({
+            vi.mocked(createStorageUnit).mockResolvedValue({
                 error: {
                     formElement: "name",
                     message: "custom.nameDuplication.storageUnit",
@@ -321,7 +321,7 @@ describe("StorageunitOCDetailForm", () => {
         });
 
         it("should catch DAL exceptions on create", async () => {
-            (createStorageUnit as Mock).mockRejectedValue(new Error("Test error"));
+            vi.mocked(createStorageUnit).mockRejectedValue(new Error("Test error"));
 
             const user = userEvent.setup();
             const { container } = render(

@@ -317,10 +317,10 @@ test.describe('<DeficiencyTypeAdministrationPage />', () => {
         });
 
         await test.step('validate dependent', async () => {
-            const options = await rowComponent.sel_dependent.locator('option').all();
-            expect(options).toHaveLength(2);
-            await expect(options[0]).toHaveAttribute('value', 'cadet');
-            await expect(options[1]).toHaveAttribute('value', 'uniform');
+            const options = rowComponent.sel_dependent.locator('option');
+            await expect(options).toHaveCount(2);
+            await expect(options.nth(0)).toHaveAttribute('value', 'cadet');
+            await expect(options.nth(1)).toHaveAttribute('value', 'uniform');
         });
 
         await test.step('validate relation', async () => {
@@ -328,11 +328,11 @@ test.describe('<DeficiencyTypeAdministrationPage />', () => {
                 await rowComponent.sel_dependent.selectOption('cadet');
 
                 await expect(rowComponent.sel_relation).toBeEnabled();
-                const options = await rowComponent.sel_relation.locator('option').all();
-                expect(options).toHaveLength(3);
-                await expect(options[0]).toHaveAttribute('value', 'null');
-                await expect(options[1]).toHaveAttribute('value', 'uniform');
-                await expect(options[2]).toHaveAttribute('value', 'material');
+                const options = rowComponent.sel_relation.locator('option');
+                await expect(options).toHaveCount(3);
+                await expect(options.nth(0)).toHaveAttribute('value', 'null');
+                await expect(options.nth(1)).toHaveAttribute('value', 'uniform');
+                await expect(options.nth(2)).toHaveAttribute('value', 'material');
 
                 await rowComponent.sel_relation.selectOption('uniform');
             });

@@ -20,7 +20,7 @@ describe('saveCadetInspection Integration Tests', () => {
     afterAll(() => {
         global.__ROLE__ = undefined;
         global.__USERNAME__ = undefined;
-        global.__ASSOSIATION__ = undefined;
+        global.__ORGANISATION__ = undefined;
     })
 
     beforeEach(async () => {

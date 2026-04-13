@@ -23,8 +23,14 @@ type GlobalDataProviderPropType = {
     inspectionState: InspectionStatus | null;
 }
 
-export let GlobalDataContext: Context<GlobalDataProviderContextType>;
-export const useGlobalData = () => useContext(GlobalDataContext);
+export const GlobalDataContext: Context<GlobalDataProviderContextType | null> = createContext<GlobalDataProviderContextType | null>(null);
+export const useGlobalData = () => {
+    const context = useContext(GlobalDataContext);
+    if (!context) {
+        throw new Error("useGlobalData must be used within a GlobalDataProvider");
+    }
+    return context;
+};
 
 const GlobalDataProvider = ({ children, userRole, useBeta, sizelists, typeList, inspectionState }: GlobalDataProviderPropType) => {
 
@@ -37,7 +43,6 @@ const GlobalDataProvider = ({ children, userRole, useBeta, sizelists, typeList, 
         }
     }, [sizelists, useBeta, userRole, typeList]);
 
-    GlobalDataContext = createContext<GlobalDataProviderContextType>(getProviderContext());
     return (
         <SWRConfig value={{
             fallback: {

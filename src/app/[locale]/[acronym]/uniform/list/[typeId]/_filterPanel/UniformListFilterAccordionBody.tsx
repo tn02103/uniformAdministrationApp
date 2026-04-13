@@ -1,12 +1,12 @@
 "use client"
 
 import { useI18n } from "@/lib/locales/client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Accordion, Form } from "react-bootstrap";
-import { Path, useFormContext } from "react-hook-form";
+import { Controller, Path, useFormContext, useWatch } from "react-hook-form";
 import { FilterType } from "./UniformListSidePanel";
 
-type Item =  {
+type Item = {
     id: string,
     name: string,
     sortOrder?: number,
@@ -16,60 +16,102 @@ type FilterAccordionBodyProps = {
     name: "generations" | "sizes"
 }
 export function UniformListFilterAccordionBody({ itemList, name }: FilterAccordionBodyProps) {
-    const { register, getValues, setValue, watch } = useFormContext<FilterType>();
+    const { control, getValues, setValue } = useFormContext<FilterType>();
     const t = useI18n();
+    const allPath = `all.${name}` as Path<FilterType>;
+    const list = useWatch({ control, name }) as Record<string, boolean> | undefined;
+    const allValue = useWatch({ control, name: allPath }) as boolean | null | undefined;
 
-    const change = (e: React.MouseEvent) => {
-        const target = e.target as HTMLInputElement;
-        const value = getValues(target.name as Path<FilterType>);
-        setValue(target.name as Path<FilterType>, !value);
-
-        const list = watch(name);
+    useEffect(() => {
         if (!list) {
             return;
         }
-        if (Object.values(list).every(x => x === true)) {
-            setValue(`all.${name}`, true);
-        } else if (Object.values(list).every(x => !x)) {
-            setValue(`all.${name}`, false);
-        } else {
-            setValue(`all.${name}`, null);
+        const values = Object.values(list);
+        if (values.length === 0) {
+            return;
         }
-    }
+
+        const nextAllValue = values.every((value) => value)
+            ? true
+            : values.every((value) => !value)
+                ? false
+                : null;
+
+        if (allValue !== nextAllValue) {
+            setValue(allPath, nextAllValue, { shouldDirty: true });
+        }
+    }, [allPath, allValue, list, setValue]);
 
     const selectAll = (checked: boolean) => {
-        const list = getValues(name);
-        if (!list)
+        const currentList = getValues(name);
+        if (!currentList) {
             return;
-        const newObject: Record<string, boolean> = {};
+        }
 
-        Object.keys(list).forEach((key) => { newObject[key] = !!checked });
-        setValue(name, newObject);
-    }
+        Object.keys(currentList).forEach((key) => {
+            const fieldPath = `${name}.${key}` as Path<FilterType>;
+            setValue(fieldPath, checked, { shouldDirty: true });
+        });
+        setValue(allPath, checked, { shouldDirty: true });
+    };
+
+    const onSelectAllRef = (element: HTMLInputElement | null) => {
+        if (!element) {
+            return;
+        }
+        element.indeterminate = allValue === null;
+    };
+
+    const renderItemCheck = (path: Path<FilterType>, id: string, label: string, className?: string) => (
+        <Controller
+            key={id}
+            control={control}
+            name={path}
+            render={({ field }) => (
+                <Form.Check
+                    id={id}
+                    label={label}
+                    className={className}
+                    checked={!!field.value}
+                    onChange={(e) => field.onChange(e.target.checked)}
+                    name={field.name}
+                    ref={field.ref}
+                />
+            )}
+        />
+    );
 
     return (
-        <Accordion.Body>
-            <Form.Check
-                label={t('uniformList.selectAll')}
-                id={`uniformListFilter-selectAll-${name}`}
-                onClick={(e) => selectAll((e.target as HTMLInputElement).checked)}
-                {...register(`all.${name}`)} />
-            <Form.Check
-                label={"K.A."}
-                id={`uniformListFilter-ka-${name}`}
-                onClick={change}
-                {...register(`${name}.null`)} />
-            <div className="overflow-y-auto text-truncate" style={{ maxHeight: "200px" }}>
-                {itemList.map((item) => (
+        <Accordion.Body className="overflow-y-auto text-truncate" style={{ maxHeight: "300px" }}>
+            <Controller
+                control={control}
+                name={allPath}
+                render={({ field }) => (
                     <Form.Check
-                        key={name + item.id}
-                        id={`uniformListFilter-${name}-${item.id}`}
-                        label={item.name}
-                        onClick={change}
-                        className="text-truncate"
-                        {...register(`${name}.${item.id}`)} />
-                ))}
-            </div>
+                        label={t('uniformList.selectAll')}
+                        id={`uniformListFilter-selectAll-${name}`}
+                        checked={field.value === true}
+                        onChange={(e) => {
+                            const checked = e.target.checked;
+                            field.onChange(checked);
+                            selectAll(checked);
+                        }}
+                        name={field.name}
+                        ref={(element) => {
+                            field.ref(element);
+                            onSelectAllRef(element);
+                        }}
+                    />
+                )}
+            />
+            {renderItemCheck(`${name}.null` as Path<FilterType>, `uniformListFilter-ka-${name}`, "K.A.")}
+            {itemList.map((item) => (
+                renderItemCheck(
+                    `${name}.${item.id}` as Path<FilterType>,
+                    `uniformListFilter-${name}-${item.id}`,
+                    item.name,
+                )
+            ))}
         </Accordion.Body>
     )
 }

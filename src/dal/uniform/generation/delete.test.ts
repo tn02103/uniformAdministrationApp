@@ -1,4 +1,4 @@
-﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+﻿ 
 
 import { prismaMock } from '@test-utils/prisma-mock';
 import { markDeleted } from "./delete";
@@ -15,7 +15,6 @@ vi.mock("../type/get", () => ({
 const mockGetUniformTypeList = vi.mocked(__unsecuredGetUniformTypeList);
 
 // Get the mocked prisma client
-const mockPrisma = prismaMock;
 
 // Mock data
 const mockGenerationId = 'generation-to-delete-id';
@@ -40,22 +39,22 @@ describe('<UniformGeneration> markDeleted', () => {
 
     afterEach(() => {
         vi.clearAllMocks();
-        mockPrisma.uniformGeneration.findUniqueOrThrow.mockReset();
-        mockPrisma.uniformGeneration.update.mockReset();
-        mockPrisma.uniformGeneration.updateMany.mockReset();
-        mockPrisma.uniform.updateMany.mockReset();
+        prismaMock.uniformGeneration.findUniqueOrThrow.mockReset();
+        prismaMock.uniformGeneration.update.mockReset();
+        prismaMock.uniformGeneration.updateMany.mockReset();
+        prismaMock.uniform.updateMany.mockReset();
     });
 
     beforeEach(() => {
         // Setup default successful mocks for the transaction client
-        mockPrisma.uniformGeneration.findUniqueOrThrow.mockResolvedValue(mockGenerationToDelete as any);
-        mockPrisma.uniform.updateMany.mockResolvedValue({ count: 3 } as any);
-        mockPrisma.uniformGeneration.update.mockResolvedValue({
+        prismaMock.uniformGeneration.findUniqueOrThrow.mockResolvedValue(mockGenerationToDelete as any);
+        prismaMock.uniform.updateMany.mockResolvedValue({ count: 3 } as any);
+        prismaMock.uniformGeneration.update.mockResolvedValue({
             ...mockGenerationToDelete,
             recdelete: new Date(),
             recdeleteUser: mockSession.username,
         } as any);
-        mockPrisma.uniformGeneration.updateMany.mockResolvedValue({ count: 2 } as any);
+        prismaMock.uniformGeneration.updateMany.mockResolvedValue({ count: 2 } as any);
         mockGetUniformTypeList.mockResolvedValue(mockUniformTypeList as any);
     });
 
@@ -64,12 +63,12 @@ describe('<UniformGeneration> markDeleted', () => {
             await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
             // Verify generation lookup
-            expect(mockPrisma.uniformGeneration.findUniqueOrThrow).toHaveBeenCalledWith({
+            expect(prismaMock.uniformGeneration.findUniqueOrThrow).toHaveBeenCalledWith({
                 where: { id: mockGenerationId }
             });
 
             // Verify uniform items get generation nullified
-            expect(mockPrisma.uniform.updateMany).toHaveBeenCalledWith({
+            expect(prismaMock.uniform.updateMany).toHaveBeenCalledWith({
                 where: {
                     recdelete: null,
                     fk_generation: mockGenerationId,
@@ -80,17 +79,17 @@ describe('<UniformGeneration> markDeleted', () => {
             });
 
             // Verify generation is marked as deleted
-            expect(mockPrisma.uniformGeneration.update).toHaveBeenCalledWith({
+            expect(prismaMock.uniformGeneration.update).toHaveBeenCalledWith({
                 where: { id: mockGenerationId },
                 data: {
                     recdelete: expect.any(Date),
                     recdeleteUser: mockSession.username,
                 }
             });
-            expect(checkDateTolerance(mockPrisma.uniformGeneration.update.mock.calls[0][0].data.recdelete)).toBeLessThan(5000);
+            expect(checkDateTolerance(prismaMock.uniformGeneration.update.mock.calls[0][0].data.recdelete)).toBeLessThan(5000);
 
             // Verify sort order update for generations with higher sortOrder
-            expect(mockPrisma.uniformGeneration.updateMany).toHaveBeenCalledWith({
+            expect(prismaMock.uniformGeneration.updateMany).toHaveBeenCalledWith({
                 where: {
                     fk_uniformType: mockUniformTypeId,
                     recdelete: null,
@@ -109,12 +108,12 @@ describe('<UniformGeneration> markDeleted', () => {
                 ...mockGenerationToDelete,
                 sortOrder: 0,
             };
-            mockPrisma.uniformGeneration.findUniqueOrThrow.mockResolvedValue(generationWithSortOrder0 as any);
+            prismaMock.uniformGeneration.findUniqueOrThrow.mockResolvedValue(generationWithSortOrder0 as any);
 
             await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
             // Should still update generations with sortOrder > 0
-            expect(mockPrisma.uniformGeneration.updateMany).toHaveBeenCalledWith({
+            expect(prismaMock.uniformGeneration.updateMany).toHaveBeenCalledWith({
                 where: {
                     fk_uniformType: mockUniformTypeId,
                     recdelete: null,
@@ -131,12 +130,12 @@ describe('<UniformGeneration> markDeleted', () => {
                 ...mockGenerationToDelete,
                 sortOrder: 5,
             };
-            mockPrisma.uniformGeneration.findUniqueOrThrow.mockResolvedValue(generationWithHighSortOrder as any);
+            prismaMock.uniformGeneration.findUniqueOrThrow.mockResolvedValue(generationWithHighSortOrder as any);
 
             await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
             // Should look for generations with sortOrder > 5
-            expect(mockPrisma.uniformGeneration.updateMany).toHaveBeenCalledWith({
+            expect(prismaMock.uniformGeneration.updateMany).toHaveBeenCalledWith({
                 where: {
                     fk_uniformType: mockUniformTypeId,
                     recdelete: null,
@@ -151,43 +150,43 @@ describe('<UniformGeneration> markDeleted', () => {
 
     describe('error scenarios', () => {
         it('throws error when generation is not found', async () => {
-            mockPrisma.uniformGeneration.findUniqueOrThrow.mockRejectedValue(new Error('Generation not found'));
+            prismaMock.uniformGeneration.findUniqueOrThrow.mockRejectedValue(new Error('Generation not found'));
 
             await expect(markDeleted(mockGenerationId)).rejects.toThrow('Generation not found');
 
-            expect(mockPrisma.uniform.updateMany).not.toHaveBeenCalled();
-            expect(mockPrisma.uniformGeneration.update).not.toHaveBeenCalled();
-            expect(mockPrisma.uniformGeneration.updateMany).not.toHaveBeenCalled();
+            expect(prismaMock.uniform.updateMany).not.toHaveBeenCalled();
+            expect(prismaMock.uniformGeneration.update).not.toHaveBeenCalled();
+            expect(prismaMock.uniformGeneration.updateMany).not.toHaveBeenCalled();
             expect(mockGetUniformTypeList).not.toHaveBeenCalled();
         });
 
         it('handles error during uniform items update', async () => {
-            mockPrisma.uniform.updateMany.mockRejectedValue(new Error('Uniform update failed'));
+            prismaMock.uniform.updateMany.mockRejectedValue(new Error('Uniform update failed'));
 
             await expect(markDeleted(mockGenerationId)).rejects.toThrow('Uniform update failed');
 
-            expect(mockPrisma.uniformGeneration.findUniqueOrThrow).toHaveBeenCalled();
-            expect(mockPrisma.uniformGeneration.update).not.toHaveBeenCalled();
+            expect(prismaMock.uniformGeneration.findUniqueOrThrow).toHaveBeenCalled();
+            expect(prismaMock.uniformGeneration.update).not.toHaveBeenCalled();
             expect(mockGetUniformTypeList).not.toHaveBeenCalled();
         });
 
         it('handles error during generation deletion', async () => {
-            mockPrisma.uniformGeneration.update.mockRejectedValue(new Error('Generation delete failed'));
+            prismaMock.uniformGeneration.update.mockRejectedValue(new Error('Generation delete failed'));
 
             await expect(markDeleted(mockGenerationId)).rejects.toThrow('Generation delete failed');
 
-            expect(mockPrisma.uniform.updateMany).toHaveBeenCalled();
-            expect(mockPrisma.uniformGeneration.updateMany).not.toHaveBeenCalled();
+            expect(prismaMock.uniform.updateMany).toHaveBeenCalled();
+            expect(prismaMock.uniformGeneration.updateMany).not.toHaveBeenCalled();
             expect(mockGetUniformTypeList).not.toHaveBeenCalled();
         });
 
         it('handles error during sort order update', async () => {
-            mockPrisma.uniformGeneration.updateMany.mockRejectedValue(new Error('Sort order update failed'));
+            prismaMock.uniformGeneration.updateMany.mockRejectedValue(new Error('Sort order update failed'));
 
             await expect(markDeleted(mockGenerationId)).rejects.toThrow('Sort order update failed');
 
-            expect(mockPrisma.uniform.updateMany).toHaveBeenCalled();
-            expect(mockPrisma.uniformGeneration.update).toHaveBeenCalled();
+            expect(prismaMock.uniform.updateMany).toHaveBeenCalled();
+            expect(prismaMock.uniformGeneration.update).toHaveBeenCalled();
             expect(mockGetUniformTypeList).not.toHaveBeenCalled();
         });
     });
@@ -196,7 +195,7 @@ describe('<UniformGeneration> markDeleted', () => {
         it('verifies transaction usage', async () => {
             await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
-            expect(mockPrisma.$transaction).toHaveBeenCalledWith(expect.any(Function));
+            expect(prismaMock.$transaction).toHaveBeenCalledWith(expect.any(Function));
         });
 
         it('uses correct generation ID in all operations', async () => {
@@ -204,11 +203,11 @@ describe('<UniformGeneration> markDeleted', () => {
 
             await expect(markDeleted(customGenerationId)).resolves.toEqual(mockUniformTypeList);
 
-            expect(mockPrisma.uniformGeneration.findUniqueOrThrow).toHaveBeenCalledWith({
+            expect(prismaMock.uniformGeneration.findUniqueOrThrow).toHaveBeenCalledWith({
                 where: { id: customGenerationId }
             });
 
-            expect(mockPrisma.uniform.updateMany).toHaveBeenCalledWith({
+            expect(prismaMock.uniform.updateMany).toHaveBeenCalledWith({
                 where: {
                     recdelete: null,
                     fk_generation: customGenerationId,
@@ -218,7 +217,7 @@ describe('<UniformGeneration> markDeleted', () => {
                 }
             });
 
-            expect(mockPrisma.uniformGeneration.update).toHaveBeenCalledWith({
+            expect(prismaMock.uniformGeneration.update).toHaveBeenCalledWith({
                 where: { id: customGenerationId },
                 data: {
                     recdelete: expect.any(Date),
@@ -230,20 +229,20 @@ describe('<UniformGeneration> markDeleted', () => {
 
     describe('edge cases', () => {
         it('handles generation with no associated uniform items', async () => {
-            mockPrisma.uniform.updateMany.mockResolvedValue({ count: 0 } as any);
+            prismaMock.uniform.updateMany.mockResolvedValue({ count: 0 } as any);
 
             await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
-            expect(mockPrisma.uniform.updateMany).toHaveBeenCalled();
-            expect(mockPrisma.uniformGeneration.update).toHaveBeenCalled();
+            expect(prismaMock.uniform.updateMany).toHaveBeenCalled();
+            expect(prismaMock.uniformGeneration.update).toHaveBeenCalled();
         });
 
         it('handles generation with no higher sortOrder generations', async () => {
-            mockPrisma.uniformGeneration.updateMany.mockResolvedValue({ count: 0 } as any);
+            prismaMock.uniformGeneration.updateMany.mockResolvedValue({ count: 0 } as any);
 
             await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
-            expect(mockPrisma.uniformGeneration.updateMany).toHaveBeenCalled();
+            expect(prismaMock.uniformGeneration.updateMany).toHaveBeenCalled();
         });
 
         it('correctly passes session data to unsecured function', async () => {
@@ -260,7 +259,7 @@ describe('<UniformGeneration> markDeleted', () => {
         it('only affects uniform items that are not deleted', async () => {
             await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
-            expect(mockPrisma.uniform.updateMany).toHaveBeenCalledWith({
+            expect(prismaMock.uniform.updateMany).toHaveBeenCalledWith({
                 where: {
                     recdelete: null, // Only non-deleted items
                     fk_generation: mockGenerationId,
@@ -272,11 +271,11 @@ describe('<UniformGeneration> markDeleted', () => {
         });
 
         it('handles multiple uniform items correctly', async () => {
-            mockPrisma.uniform.updateMany.mockResolvedValue({ count: 10 } as any);
+            prismaMock.uniform.updateMany.mockResolvedValue({ count: 10 } as any);
 
             await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
-            expect(mockPrisma.uniform.updateMany).toHaveBeenCalledTimes(1);
+            expect(prismaMock.uniform.updateMany).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -284,7 +283,7 @@ describe('<UniformGeneration> markDeleted', () => {
         it('only updates generations from same type that are not deleted', async () => {
             await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
-            expect(mockPrisma.uniformGeneration.updateMany).toHaveBeenCalledWith({
+            expect(prismaMock.uniformGeneration.updateMany).toHaveBeenCalledWith({
                 where: {
                     fk_uniformType: mockUniformTypeId, // Same type only
                     recdelete: null, // Only non-deleted generations
@@ -301,11 +300,11 @@ describe('<UniformGeneration> markDeleted', () => {
                 ...mockGenerationToDelete,
                 fk_uniformType: 'different-type-id',
             };
-            mockPrisma.uniformGeneration.findUniqueOrThrow.mockResolvedValue(differentTypeGeneration as any);
+            prismaMock.uniformGeneration.findUniqueOrThrow.mockResolvedValue(differentTypeGeneration as any);
 
             await expect(markDeleted(mockGenerationId)).resolves.toEqual(mockUniformTypeList);
 
-            expect(mockPrisma.uniformGeneration.updateMany).toHaveBeenCalledWith({
+            expect(prismaMock.uniformGeneration.updateMany).toHaveBeenCalledWith({
                 where: {
                     fk_uniformType: 'different-type-id',
                     recdelete: null,

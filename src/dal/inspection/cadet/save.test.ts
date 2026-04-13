@@ -1,4 +1,4 @@
-﻿import { vi, type Mock } from 'vitest';
+﻿import { vi } from 'vitest';
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { prismaMock } from '@test-utils/prisma-mock';
@@ -151,11 +151,11 @@ const MOCK_INSPECTION_WITH_ORPHANS = {
 };
 
 describe("saveCadetInspection", () => {
-    const mockUnsecuredGetActiveInspection = vi.mocked(unsecuredGetActiveInspection) as unknown as Mock;
+    const mockUnsecuredGetActiveInspection = vi.mocked(unsecuredGetActiveInspection);
     beforeEach(() => {
         vi.clearAllMocks();
         // Setup default successful mocks
-        mockUnsecuredGetActiveInspection.mockResolvedValue(MOCK_INSPECTION);
+        mockUnsecuredGetActiveInspection.mockResolvedValue(MOCK_INSPECTION as any);
 
         // Setup global test values
         global.__ROLE__ = AuthRole.inspector;
@@ -165,13 +165,13 @@ describe("saveCadetInspection", () => {
     afterAll(() => {
         global.__ROLE__ = undefined;
         global.__USERNAME__ = undefined;
-        global.__ASSOSIATION__ = undefined;
+        global.__ORGANISATION__ = undefined;
     });
 
     describe("Group 1: Pre-condition Validation", () => {
         it("should throw error when no active inspection exists", async () => {
             // Arrange
-            mockUnsecuredGetActiveInspection.mockResolvedValue(null);
+            mockUnsecuredGetActiveInspection.mockResolvedValue(null as any);
 
             const props = { ...BASE_CADET_INSPECTION_PROPS };
 
@@ -982,7 +982,7 @@ describe("saveCadetInspection", () => {
 
         it("should call deficiency.deleteMany for orphaned deficiencies", async () => {
             // Arrange
-            mockUnsecuredGetActiveInspection.mockResolvedValue(MOCK_INSPECTION_WITH_ORPHANS);
+            mockUnsecuredGetActiveInspection.mockResolvedValue(MOCK_INSPECTION_WITH_ORPHANS as any);
 
             const props = { ...BASE_CADET_INSPECTION_PROPS };
 
@@ -1079,7 +1079,7 @@ describe("saveCadetInspection", () => {
                 deficiencyCreated: [],
             };
 
-            mockUnsecuredGetActiveInspection.mockResolvedValue(mockInspectionWithoutDeficiencyCreated);
+            mockUnsecuredGetActiveInspection.mockResolvedValue(mockInspectionWithoutDeficiencyCreated as any);
 
             const props = { ...BASE_CADET_INSPECTION_PROPS };
 
@@ -1102,7 +1102,7 @@ describe("saveCadetInspection", () => {
                 deficiencyCreated: [], // Empty array
             };
 
-            mockUnsecuredGetActiveInspection.mockResolvedValue(mockInspectionEmptyDeficiencyCreated);
+            mockUnsecuredGetActiveInspection.mockResolvedValue(mockInspectionEmptyDeficiencyCreated as any);
 
             const props = { ...BASE_CADET_INSPECTION_PROPS };
 
@@ -1140,7 +1140,7 @@ describe("saveCadetInspection", () => {
                 newDeficiencyList: [newDeficiency],
             };
 
-            mockUnsecuredGetActiveInspection.mockResolvedValue(mockInspectionWithDeficiencies);
+            mockUnsecuredGetActiveInspection.mockResolvedValue(mockInspectionWithDeficiencies as any);
             prismaMock.deficiencyType.findUniqueOrThrow.mockResolvedValue(MOCK_DEFICIENCY_TYPES.cadetWithoutRelation);
             prismaMock.deficiency.upsert.mockResolvedValue({ id: "def-to-process" });
 

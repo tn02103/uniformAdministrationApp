@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import { vi, type MockedFunction } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { faGear } from '@fortawesome/free-solid-svg-icons';
 import NavGroup from './NavGroup';
@@ -7,16 +8,16 @@ import { useSidebarContext } from './Sidebar';
 import { useGlobalData } from '../globalDataProvider';
 
 // Mock the context hooks
-jest.mock('./Sidebar', () => ({
-    useSidebarContext: jest.fn(),
+vi.mock('./Sidebar', () => ({
+    useSidebarContext: vi.fn(),
 }));
 
-jest.mock('../globalDataProvider', () => ({
-    useGlobalData: jest.fn(),
+vi.mock('../globalDataProvider', () => ({
+    useGlobalData: vi.fn(),
 }));
 
 // Mock Bootstrap components
-jest.mock('react-bootstrap', () => ({
+vi.mock('react-bootstrap', () => ({
     OverlayTrigger: ({ children, show, overlay }: { children: React.ReactNode, show?: boolean, overlay?: React.ReactNode }) => (
         <div data-testid="overlay-trigger" data-show={show}>
             {children}
@@ -26,8 +27,8 @@ jest.mock('react-bootstrap', () => ({
     Tooltip: ({ children }: { children: React.ReactNode }) => <div data-testid="tooltip-content">{children}</div>,
 }));
 
-const mockUseSidebarContext = useSidebarContext as jest.MockedFunction<typeof useSidebarContext>;
-const mockUseGlobalData = useGlobalData as jest.MockedFunction<typeof useGlobalData>;
+const mockUseSidebarContext = vi.mocked(useSidebarContext);
+const mockUseGlobalData = vi.mocked(useGlobalData);
 
 describe('NavGroup', () => {
     const defaultProps = {
@@ -41,10 +42,10 @@ describe('NavGroup', () => {
 
     const defaultSidebarContext = {
         collapsed: false,
-        setCollapsed: jest.fn(),
+        setCollapsed: vi.fn(),
         isSidebarFixed: false,
         isMobile: false,
-        setShowSidebar: jest.fn(),
+        setShowSidebar: vi.fn(),
     };
 
     const defaultGlobalData = {
@@ -57,7 +58,7 @@ describe('NavGroup', () => {
     let user: ReturnType<typeof userEvent.setup>;
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         user = userEvent.setup();
         mockUseSidebarContext.mockReturnValue(defaultSidebarContext);
         mockUseGlobalData.mockReturnValue(defaultGlobalData);
@@ -158,7 +159,7 @@ describe('NavGroup', () => {
         });
 
         test('Calls setCollapsed when expanding group in collapsed sidebar', async () => {
-            const mockSetCollapsed = jest.fn();
+            const mockSetCollapsed = vi.fn();
             mockUseSidebarContext.mockReturnValue({
                 ...defaultSidebarContext,
                 collapsed: true,

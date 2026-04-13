@@ -1,19 +1,9 @@
-import { prisma } from "@/lib/db";
-import { getIronSession } from "@/lib/ironSession"
+import { getOwnProfileData } from "@/dal/auth/index";
 import { ProfileContent } from "./Content";
+import { notFound } from "next/navigation";
 
-
-
-export default async function Page() {
-    const { user } = await getIronSession();
-    if (!user) throw new Error('Not authenticated');
-    const dbUser = await prisma.user.findUnique({
-        where: { id: user.id },
-        include: { organisation: true, twoFactorApps: true }
-    });
-    if (!dbUser) throw new Error('User not found');
-
-    return (
-        <ProfileContent user={dbUser} />
-    );
+export default async function ProfilePage() {
+    const profileData = await getOwnProfileData();
+    if (profileData === null) notFound();
+    return <ProfileContent fallbackData={profileData} />;
 }

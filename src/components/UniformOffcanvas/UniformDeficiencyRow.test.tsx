@@ -1,11 +1,23 @@
 import "./UniformOffcanvasJestHelper";
 
+import { vi } from 'vitest';
 import { getByLabelText, getByRole, getByText, queryByRole, queryByText, render, screen } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 import { UniformDeficiencyRow } from "./UniformDeficiencyRow";
 import { mockDeficiencyList, mockDeficiencyTypeList, mockUniform } from "./UniformOffcanvasJestHelper";
+import { useDeficienciesByUniformId } from "@/dataFetcher/deficiency";
+import { createUniformDeficiency, resolveDeficiency, updateUniformDeficiency } from "@/dal/inspection/deficiency";
+import { mutate } from "swr";
+import { toast } from "react-toastify";
 
 describe('UniformDeficiencyRow', () => {
+    const useDeficienciesByUniformIdMock = vi.mocked(useDeficienciesByUniformId);
+    const createUniformDeficiencyMock = vi.mocked(createUniformDeficiency);
+    const mutateMock = vi.mocked(mutate);
+    const updateUniformDeficiencyMock = vi.mocked(updateUniformDeficiency);
+    const resolveDeficiencyMock = vi.mocked(resolveDeficiency);
+
+
     const setEditable = async (card: HTMLElement, user: UserEvent) => {
         const actionMenu = getByRole(card, 'button', { name: /deficiency.label.actions/i });
         await user.click(actionMenu);
@@ -14,7 +26,7 @@ describe('UniformDeficiencyRow', () => {
     }
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('renders correctly', () => {
@@ -28,7 +40,6 @@ describe('UniformDeficiencyRow', () => {
 
     it('only shows resolved deficiencies when includeResolved is true', async () => {
         const user = userEvent.setup();
-        const { useDeficienciesByUniformId } = jest.requireMock('@/dataFetcher/deficiency');
 
         render(
             <UniformDeficiencyRow
@@ -56,8 +67,7 @@ describe('UniformDeficiencyRow', () => {
     });
 
     it('shows empty state when no deficiencies', () => {
-        const { useDeficienciesByUniformId } = jest.requireMock('@/dataFetcher/deficiency');
-        useDeficienciesByUniformId.mockReturnValueOnce({ deficiencies: [] });
+        useDeficienciesByUniformIdMock.mockReturnValueOnce({ deficiencies: []} as any);
 
         render(
             <UniformDeficiencyRow
@@ -222,8 +232,6 @@ describe('UniformDeficiencyRow', () => {
 
         it('should call createDeficiency on create', async () => {
             const user = userEvent.setup();
-            const { createUniformDeficiency } = jest.requireMock('@/dal/inspection/deficiency');
-            const { mutate } = jest.requireMock('swr');
             render(
                 <UniformDeficiencyRow
                     uniformId={mockUniform.id}
@@ -249,20 +257,17 @@ describe('UniformDeficiencyRow', () => {
                     typeId: mockDeficiencyTypeList[1].id
                 }
             });
-            expect(mutate).toHaveBeenCalledTimes(1);
-            expect(mutate.mock.calls[0][0](`uniform.${mockUniform.id}.deficiencies.true`)).toBeTruthy();
-            expect(mutate.mock.calls[0][0](`uniform.${mockUniform.id}.deficiencies.false`)).toBeTruthy();
-            expect(mutate.mock.calls[0][0](`uniform.${mockUniform.id}.somethingElse`)).toBeFalsy();
+            expect(mutateMock).toHaveBeenCalledTimes(1);
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.true`)).toBeTruthy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.false`)).toBeTruthy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.somethingElse`)).toBeFalsy();
 
             expect(screen.queryByRole('listitem', { name: /createCardLabel/i })).not.toBeInTheDocument();
         });
 
         it('should catch exceptions on create', async () => {
             const user = userEvent.setup();
-            const { createUniformDeficiency } = jest.requireMock('@/dal/inspection/deficiency');
-            const { mutate } = jest.requireMock('swr');
-            const { toast } = jest.requireMock('react-toastify');
-            createUniformDeficiency.mockRejectedValueOnce(new Error('Test error'));
+            createUniformDeficiencyMock.mockRejectedValueOnce(new Error('Test error'));
 
             render(
                 <UniformDeficiencyRow
@@ -357,8 +362,6 @@ describe('UniformDeficiencyRow', () => {
         });
         it('should call updateDeficiency on save', async () => {
             const user = userEvent.setup();
-            const { updateUniformDeficiency } = jest.requireMock('@/dal/inspection/deficiency');
-            const { mutate } = jest.requireMock('swr');
             render(
                 <UniformDeficiencyRow
                     uniformId={mockUniform.id}
@@ -389,10 +392,10 @@ describe('UniformDeficiencyRow', () => {
                     typeId: mockDeficiencyTypeList[1].id
                 }
             });
-            expect(mutate).toHaveBeenCalledTimes(1);
-            expect(mutate.mock.calls[0][0](`uniform.${mockUniform.id}.deficiencies.true`)).toBeTruthy();
-            expect(mutate.mock.calls[0][0](`uniform.${mockUniform.id}.deficiencies.false`)).toBeTruthy();
-            expect(mutate.mock.calls[0][0](`uniform.${mockUniform.id}.somethingElse`)).toBeFalsy();
+            expect(mutateMock).toHaveBeenCalledTimes(1);
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.true`)).toBeTruthy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.false`)).toBeTruthy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.somethingElse`)).toBeFalsy();
 
             // check that the card is not in edit mode
             expect(commentInput).not.toBeInTheDocument();
@@ -400,10 +403,7 @@ describe('UniformDeficiencyRow', () => {
         });
         it('should catch exceptions on update', async () => {
             const user = userEvent.setup();
-            const { updateUniformDeficiency } = jest.requireMock('@/dal/inspection/deficiency');
-            const { mutate } = jest.requireMock('swr');
-            const { toast } = jest.requireMock('react-toastify');
-            updateUniformDeficiency.mockRejectedValueOnce(new Error('Test error'));
+            updateUniformDeficiencyMock.mockRejectedValueOnce(new Error('Test error'));
 
             render(
                 <UniformDeficiencyRow
@@ -433,8 +433,6 @@ describe('UniformDeficiencyRow', () => {
     describe('resolve Deficiency', () => {
         it('calls resolveDeficiency', async () => {
             const user = userEvent.setup();
-            const { resolveDeficiency } = jest.requireMock('@/dal/inspection/deficiency');
-            const { mutate } = jest.requireMock('swr');
             render(
                 <UniformDeficiencyRow
                     uniformId={mockUniform.id}
@@ -452,16 +450,13 @@ describe('UniformDeficiencyRow', () => {
             expect(resolveDeficiency).toHaveBeenCalledTimes(1);
             expect(resolveDeficiency).toHaveBeenCalledWith(mockDeficiencyList[0].id);
             expect(mutate).toHaveBeenCalledTimes(1);
-            expect(mutate.mock.calls[0][0](`uniform.${mockUniform.id}.deficiencies.true`)).toBeTruthy();
-            expect(mutate.mock.calls[0][0](`uniform.${mockUniform.id}.deficiencies.false`)).toBeTruthy();
-            expect(mutate.mock.calls[0][0](`uniform.${mockUniform.id}.somethingElse`)).toBeFalsy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.true`)).toBeTruthy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.false`)).toBeTruthy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.somethingElse`)).toBeFalsy();
         });
         it('should catch exceptions on resolve', async () => {
             const user = userEvent.setup();
-            const { resolveDeficiency } = jest.requireMock('@/dal/inspection/deficiency');
-            const { mutate } = jest.requireMock('swr');
-            const { toast } = jest.requireMock('react-toastify');
-            resolveDeficiency.mockRejectedValueOnce(new Error('Test error'));
+            resolveDeficiencyMock.mockRejectedValueOnce(new Error('Test error'));
 
             render(
                 <UniformDeficiencyRow

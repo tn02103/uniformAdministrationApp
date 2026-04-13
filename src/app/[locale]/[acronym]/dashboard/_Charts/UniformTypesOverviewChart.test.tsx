@@ -4,9 +4,9 @@ import userEvent from '@testing-library/user-event';
 import { UniformTypesOverviewChart } from './UniformTypesOverviewChart';
 import { useI18n } from '@/lib/locales/client';
 import { Bar, BarChart, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import { vi, type Mock } from 'vitest';
+import { vi } from 'vitest';
 
-const MockBar = Bar as unknown as Mock;
+const MockBar = vi.mocked(Bar);
 
 // Mock the i18n hook
 vi.mock('@/lib/locales/client', () => ({
@@ -435,7 +435,7 @@ describe('UniformTypesOverviewChart', () => {
                 }
             ];
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             render(<UniformTypesOverviewChart data={malformedData as any} />);
 
             // Should not crash

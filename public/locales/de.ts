@@ -955,6 +955,58 @@ export default {
     },
     profile: {
         security: "Sicherheit",
+        accountInfo: {
+            title: "Kontoinformationen",
+            name: "Name",
+            username: "Benutzername",
+            email: "E-Mail",
+            role: "Rolle",
+            organisation: "Organisation",
+            active: "Aktiv",
+            password: {
+                title: "Passwort",
+                changeButton: "Passwort ändern",
+            },
+        },
+        twoFactor: {
+            title: "Zwei-Faktor-Authentifizierung",
+            enabled: "2FA aktiviert",
+            disabled: "2FA deaktiviert",
+            enableToggle: "Aktivieren",
+            disableToggle: "Deaktivieren",
+            confirmDisable: {
+                header: "Zwei-Faktor-Authentifizierung deaktivieren",
+                message: "Soll die Zwei-Faktor-Authentifizierung wirklich deaktiviert werden? Dies verringert die Sicherheit Ihres Kontos.",
+            },
+            confirmRemoveApp: {
+                header: "TOTP-App entfernen",
+                message: "Soll diese TOTP-App wirklich entfernt werden? Sie kann dann nicht mehr zur Authentifizierung verwendet werden.",
+            },
+            apps: {
+                title: "TOTP-Apps",
+                remove: "Entfernen",
+                noApps: "Keine TOTP-Apps konfiguriert",
+                addNew: "TOTP-App hinzufügen",
+            },
+            defaultMethod: {
+                title: "Standardmethode",
+                email: "E-Mail",
+                changed: "Standardmethode erfolgreich geändert",
+            },
+            errors: {
+                toggleFailed: "Zwei-Faktor-Authentifizierung konnte nicht aktualisiert werden",
+                removeFailed: "TOTP-App konnte nicht entfernt werden",
+                defaultMethodFailed: "Standardmethode konnte nicht aktualisiert werden",
+            },
+        },
+        devices: {
+            title: "Vertrauenswürdige Geräte",
+            noDevices: "Keine vertrauenswürdigen Geräte",
+            lastUsed: "Zuletzt verwendet",
+            addedOn: "Hinzugefügt am",
+            logoutAll: "Von allen Geräten abmelden",
+            inactive: "Inaktiv",
+        },
         changePassword: {
             title: "Passwort ändern",
             currentPassword: "Aktuelles Passwort",

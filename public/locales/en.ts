@@ -72,7 +72,7 @@ export default {
             generation: {
                 "label#one": "Generation",
                 "label#other": "Generations",
-                isReserve: "Reserve",
+                isReserve: "Spare",
             },
             size: "Size",
             size_other: "Sizes",
@@ -83,7 +83,7 @@ export default {
             owner: "Owner",
             state: {
                 active: "Active",
-                isReserve: "Reserve"
+                isReserve: "Spare"
             },
             type: {
                 "type#one": "Uniform type",
@@ -349,7 +349,7 @@ export default {
             "alert.noItemFound": "There is no uniform part with the number {number}. Do you want to create it?",
             "alert.itemAlreadyOwned": "The selected uniform part is already issued to this person.",
             "alert.storageUnit": "The selected uniform part is assigned to the storage unit {unit}.",
-            "alert.isReserve": "The selected uniform part is marked as reserve.",
+            "alert.isReserve": "The selected uniform part is marked as a spare.",
             "button.changeOwner": "Change owner",
             "button.replace": "Replace",
             "button.issue": "Issue",
@@ -358,7 +358,7 @@ export default {
             "error.issueFailed": "The uniform part could not be issued. Please try again later.",
             "header.add": "Issue {type}",
             "header.replace": "Replace {type}-{number}",
-            "option.isReserve": "Reserve",
+            "option.isReserve": "Spare",
             "option.owner": "Owner: ",
             "option.storageUnit": "Storage unit: ",
         },
@@ -374,8 +374,8 @@ export default {
             "details.name": "Name",
             "details.capacity": "Capacity",
             "details.description": "Description",
-            "details.forReserves": "For reserves",
-            "details.forReservesText": "Uniform items are marked as reserve",
+            "details.forReserves": "For spares",
+            "details.forReservesText": "Uniform items are marked as a spare",
             "details.uniformCount": "Amount of uniform items",
             "editName": "Rename storage unit",
             "header.uniformlist": "Uniform item(s)",
@@ -393,7 +393,7 @@ export default {
         tooltips: {
             "utOptions.owner": "Owner: ",
             "utOptions.storageUnit": "Storage unit: ",
-            "utOptions.isReserve": "Reserve",
+            "utOptions.isReserve": "Spare",
         }
     },
     uniformList: {
@@ -955,6 +955,58 @@ export default {
     },
     profile: {
         security: "Security",
+        accountInfo: {
+            title: "Account Information",
+            name: "Name",
+            username: "Username",
+            email: "E-Mail",
+            role: "Role",
+            organisation: "Organisation",
+            active: "Active",
+            password: {
+                title: "Password",
+                changeButton: "Change Password",
+            },
+        },
+        twoFactor: {
+            title: "Two-Factor Authentication",
+            enabled: "2FA enabled",
+            disabled: "2FA disabled",
+            enableToggle: "Activate",
+            disableToggle: "Deactivate",
+            confirmDisable: {
+                header: "Deactivate two-factor authentication",
+                message: "Are you sure you want to deactivate two-factor authentication? This will reduce the security of your account.",
+            },
+            confirmRemoveApp: {
+                header: "Remove TOTP app",
+                message: "Are you sure you want to remove this TOTP app? You will no longer be able to use it for authentication.",
+            },
+            apps: {
+                title: "TOTP Apps",
+                remove: "Remove",
+                noApps: "No TOTP apps configured",
+                addNew: "Add TOTP App",
+            },
+            defaultMethod: {
+                title: "Default method",
+                email: "E-Mail",
+                changed: "Default method changed successfully",
+            },
+            errors: {
+                toggleFailed: "Failed to update two-factor authentication",
+                removeFailed: "Failed to remove TOTP app",
+                defaultMethodFailed: "Failed to update default method",
+            },
+        },
+        devices: {
+            title: "Trusted Devices",
+            noDevices: "No trusted devices",
+            lastUsed: "Last used",
+            addedOn: "Added on",
+            logoutAll: "Log out from all devices",
+            inactive: "Inactive",
+        },
         changePassword: {
             title: "Change Password",
             currentPassword: "Current Password",

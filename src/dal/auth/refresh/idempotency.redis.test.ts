@@ -31,7 +31,7 @@ vi.mock('./handleRetryRequest', () => ({
 }));
 
 describe('Redis Idempotency Helpers', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const mockRedis = redis as any;
     const mockIsRedisAvailable = vi.mocked(isRedisAvailable);
     const mockHandleRetryRequest = vi.mocked(handleRetryRequest);
