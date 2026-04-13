@@ -21,7 +21,6 @@ type Props = {
  */
 export const AccountInfoSection = ({ profile }: Props) => {
     const t = useScopedI18n("profile.accountInfo");
-    const tPassword = useScopedI18n("profile.password");
     const tCommon = useI18n();
     const [showPasswordModal, setShowPasswordModal] = useState(false);
 
@@ -30,7 +29,7 @@ export const AccountInfoSection = ({ profile }: Props) => {
 
     return (
         <>
-            <div className="card mb-4">
+            <div className="card mb-4" data-testid="section-accountInfo">
                 <div className="card-header">
                     <h2 className="h5 mb-0">{t("title")}</h2>
                 </div>
@@ -65,13 +64,13 @@ export const AccountInfoSection = ({ profile }: Props) => {
                         <span>{profile.organisation?.name ?? "—"}</span>
                     </li>
                     <li className="list-group-item d-flex justify-content-between align-items-center">
-                        <span className="fw-semibold">{tPassword("title")}</span>
+                        <span className="fw-semibold">{t("password.title")}</span>
                         <button
                             type="button"
                             className="btn btn-outline-secondary btn-sm"
                             onClick={() => setShowPasswordModal(true)}
                         >
-                            {tPassword("changeButton")}
+                            {t("password.changeButton")}
                         </button>
                     </li>
                 </ul>

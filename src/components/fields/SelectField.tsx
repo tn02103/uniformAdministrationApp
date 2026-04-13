@@ -4,7 +4,9 @@ import { Field } from "./Field";
 
 export type SelectOptionType = { value: string | number, label: string };
 
-export type SelectFieldProps = {
+type OmittedFromSelect = 'value' | 'onChange' | 'disabled' | 'id' | 'isInvalid' | 'aria-errormessage' | 'aria-invalid' | 'name';
+
+export type SelectFieldProps = Omit<React.ComponentPropsWithoutRef<typeof Form.Select>, OmittedFromSelect> & {
     label: string,
     name: string,
     formName?: string,
@@ -35,6 +37,7 @@ export type SelectFieldProps = {
 export const SelectField = ({
     label, name, formName = "unnamedForm", required, disabled, options,
     value, onChange, valueAsNumber, plaintext, labelClassName, selectClassName, errorMessage,
+    ...selectProps
 }: SelectFieldProps) => {
     const t = useI18n();
 
@@ -62,6 +65,7 @@ export const SelectField = ({
                 </p>
             ) : (
                 <Form.Select
+                    {...selectProps}
                     value={value || ""}
                     onChange={handleChange}
                     disabled={disabled}
@@ -69,7 +73,7 @@ export const SelectField = ({
                     isInvalid={!!errorMessage}
                     aria-errormessage={errorMessage ? `${formName}_err_${name}` : undefined}
                     aria-invalid={!!errorMessage}
-                    className={`text-truncate ${selectClassName || ""}`}
+                    className={`text-truncate ${selectProps.className || selectClassName || ""}`}
                 >
                     <option value="" disabled>{t("common.error.pleaseSelect")}</option>
                     {options.map((option, index) => (

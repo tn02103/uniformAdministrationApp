@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useScopedI18n } from "@/lib/locales/client";
 import { AuthRole } from "@/lib/AuthRoles";
-import { removeVerifiedTwoFactorApp, setDefault2FAMethod, toggleUserTwoFA } from "@/dal/auth/index";
+import { removeMfaApp, setDefaultMfaMethod, toggleUserMfa } from "@/dal/auth/index";
 import { SelectField } from "@/components/fields/SelectField";
 import { AddTwoFactorAppModal } from "../AddTwoFactorAppModal";
 import { LabelIconButton } from "@/components/Buttons/LabelIconButton";
@@ -12,7 +12,7 @@ import type { OwnProfileData } from "@/dataFetcher/profile";
 import type { KeyedMutator } from "swr";
 import { useModal } from "@/components/modals/modalProvider";
 
-type Props = {
+type MfaSectionProps = {
     profile: OwnProfileData;
     mutate: KeyedMutator<OwnProfileData | null>;
 };
@@ -28,9 +28,9 @@ type Props = {
  * @param profile - The current user's profile data.
  * @param mutate - SWR mutate function to refresh profile data after mutations.
  */
-export const TwoFactorSection = ({ profile, mutate }: Props) => {
+export const MfaSection = ({ profile, mutate }: MfaSectionProps) => {
     const t = useScopedI18n("profile.twoFactor");
-    const tActions = useScopedI18n("common.actions")
+    const tActions = useScopedI18n("common.actions");
     const modal = useModal();
     const [toggleLoading, setToggleLoading] = useState(false);
     const [removingAppId, setRemovingAppId] = useState<string | null>(null);
@@ -44,7 +44,7 @@ export const TwoFactorSection = ({ profile, mutate }: Props) => {
     const handleToggle2FA = async () => {
         setToggleLoading(true);
         try {
-            await toggleUserTwoFA({ enabled: !profile.twoFAEnabled });
+            await toggleUserMfa({ enabled: !profile.twoFAEnabled });
             await mutate();
         } catch {
             toast.error(t("errors.toggleFailed"));
@@ -56,7 +56,7 @@ export const TwoFactorSection = ({ profile, mutate }: Props) => {
     const handleRemoveApp = async (appId: string) => {
         setRemovingAppId(appId);
         try {
-            await removeVerifiedTwoFactorApp({ appId });
+            await removeMfaApp({ appId });
             await mutate();
         } catch {
             toast.error(t("errors.removeFailed"));
@@ -67,7 +67,7 @@ export const TwoFactorSection = ({ profile, mutate }: Props) => {
 
     const handleDefaultMethodChange = async (method: string) => {
         try {
-            await setDefault2FAMethod({ method });
+            await setDefaultMfaMethod({ method });
             await mutate();
         } catch {
             toast.error(t("errors.defaultMethodFailed"));
@@ -80,7 +80,7 @@ export const TwoFactorSection = ({ profile, mutate }: Props) => {
     };
 
     return (
-        <div className="card mb-4">
+        <div className="card mb-4" data-testid="section-mfa">
             <div className="card-header">
                 <h2 className="h5 mb-0">{t("title")}</h2>
             </div>

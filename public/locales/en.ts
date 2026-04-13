@@ -963,10 +963,10 @@ export default {
             role: "Role",
             organisation: "Organisation",
             active: "Active",
-        },
-        password: {
-            title: "Password",
-            changeButton: "Change Password",
+            password: {
+                title: "Password",
+                changeButton: "Change Password",
+            },
         },
         twoFactor: {
             title: "Two-Factor Authentication",

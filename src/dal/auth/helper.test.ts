@@ -4,7 +4,7 @@ import { MFAType } from "@/prisma/client";
 import { calculateSessionLifetime, DeviceIdsCookie, DeviceIdsCookieAccount, getIPAddress, RiskLevel, UserAgent, getDeviceAccountFromCookies, validateDeviceFingerprint, getUserMFAConfig, verifyMFAToken } from "./helper";
 import { verifyEmailCode } from "./email/verifyCode";
 import { getMockUserAgent } from './__testHelpers__/mockData';
-import { __unsecuredVerifyTwoFactorCode } from "./2fa/verify";
+import { __unsecuredVerifyTwoFactorCode } from "./mfa/verify";
 import { prisma } from "@/lib/db";
 
 // Mock dependencies
@@ -20,7 +20,7 @@ vi.mock('./email/verifyCode', () => ({
     verifyEmailCode: vi.fn(),
 }));
 
-vi.mock('./2fa/verify', () => ({
+vi.mock('./mfa/verify', () => ({
     __unsecuredVerifyTwoFactorCode: vi.fn(),
 }));
 

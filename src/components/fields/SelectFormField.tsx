@@ -46,6 +46,7 @@ export const SelectFormField = <FormType extends FieldValues>({ label, name, req
 
     return (
         <SelectField
+            {...field}
             label={label}
             name={String(name)}
             formName={formName}

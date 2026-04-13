@@ -1,12 +1,12 @@
 import { Locator, Page } from "playwright";
 import { ChangePasswordModalComponent } from "./ChangePasswordModal.component";
-import { TwoFactorSectionComponent } from "./TwoFactorSection.component";
+import { MfaSectionComponent } from "./MfaSection.component";
 
 export class ProfilePage {
 
     readonly page: Page;
     readonly changePasswordModal: ChangePasswordModalComponent;
-    readonly twoFactorSection: TwoFactorSectionComponent;
+    readonly mfaSection: MfaSectionComponent;
 
     // Account info section
     readonly div_accountInfo: Locator;
@@ -16,10 +16,10 @@ export class ProfilePage {
     constructor(page: Page) {
         this.page = page;
         this.changePasswordModal = new ChangePasswordModalComponent(page);
-        this.twoFactorSection = new TwoFactorSectionComponent(page);
+        this.mfaSection = new MfaSectionComponent(page);
 
-        this.div_accountInfo = page.locator('.card').filter({ hasText: 'Kontoinformationen' }).first();
-        this.div_devicesSection = page.locator('.card').filter({ hasText: 'Vertrauenswürdige Geräte' }).first();
+        this.div_accountInfo = page.getByTestId('section-accountInfo');
+        this.div_devicesSection = page.getByTestId('section-devices');
     }
 
     async goto(index: number) {

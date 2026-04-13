@@ -3,7 +3,7 @@
 import type { OwnProfileData } from "@/dataFetcher/profile";
 import { useOwnProfile } from "@/dataFetcher/profile";
 import { AccountInfoSection } from "./_sections/AccountInfoSection";
-import { TwoFactorSection } from "./_sections/TwoFactorSection";
+import { MfaSection } from "./_sections/MfaSection";
 import { DevicesSection } from "./_sections/DevicesSection";
 
 type ProfileContentProps = {
@@ -26,7 +26,7 @@ export const ProfileContent = ({ fallbackData }: ProfileContentProps) => {
             <div className="row justify-content-center">
                 <div className="col-12">
                     <AccountInfoSection profile={profile} />
-                    <TwoFactorSection profile={profile} mutate={mutate} />
+                    <MfaSection profile={profile} mutate={mutate} />
                     <DevicesSection devices={profile.devices} />
                 </div>
             </div>

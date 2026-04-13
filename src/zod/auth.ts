@@ -75,18 +75,21 @@ export const TwoFactorFormSchema = z.object({
 });
 export type TwoFactorFormType = z.infer<typeof TwoFactorFormSchema>;
 
-// PROFILE DAL
-export const removeVerifiedTwoFactorAppSchema = z.object({
+// MFA DAL
+export const mfaMethodSchema = z.union([z.literal("email"), z.string().uuid()]);
+export type MfaMethod = z.infer<typeof mfaMethodSchema>;
+
+export const removeMfaAppSchema = z.object({
     appId: z.string().uuid(),
 });
-export type RemoveVerifiedTwoFactorAppInput = z.infer<typeof removeVerifiedTwoFactorAppSchema>;
+export type RemoveMfaAppInput = z.infer<typeof removeMfaAppSchema>;
 
-export const setDefault2FAMethodSchema = z.object({
-    method: z.string().min(1),
+export const setDefaultMfaMethodSchema = z.object({
+    method: mfaMethodSchema,
 });
-export type SetDefault2FAMethodInput = z.infer<typeof setDefault2FAMethodSchema>;
+export type SetDefaultMfaMethodInput = z.infer<typeof setDefaultMfaMethodSchema>;
 
-export const toggleUserTwoFASchema = z.object({
+export const toggleUserMfaSchema = z.object({
     enabled: z.boolean(),
 });
-export type ToggleUserTwoFAInput = z.infer<typeof toggleUserTwoFASchema>;
+export type ToggleUserMfaInput = z.infer<typeof toggleUserMfaSchema>;

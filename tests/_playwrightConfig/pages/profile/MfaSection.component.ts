@@ -1,6 +1,6 @@
 import { Locator, Page } from "playwright";
 
-export class TwoFactorSectionComponent {
+export class MfaSectionComponent {
 
     readonly div_section: Locator;
 
@@ -18,7 +18,7 @@ export class TwoFactorSectionComponent {
     readonly btn_warningCancel: Locator;
 
     constructor(page: Page) {
-        this.div_section = page.locator('.card').filter({ hasText: 'Zwei-Faktor-Authentifizierung' }).first();
+        this.div_section = page.getByTestId('section-mfa');
 
         // The toggle button – shows Aktivieren or Deaktivieren
         this.btn_toggle = this.div_section.locator('button').filter({

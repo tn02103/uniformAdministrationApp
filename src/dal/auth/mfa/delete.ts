@@ -1,7 +1,7 @@
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { removeVerifiedTwoFactorAppSchema, RemoveVerifiedTwoFactorAppInput } from "@/zod/auth";
+import { removeMfaAppSchema, RemoveMfaAppInput } from "@/zod/auth";
 import { getIPAddress, logSecurityAuditEntry } from "../helper";
 import { LogDebugLevel } from "../LogDebugLeve.enum";
 import { headers } from "next/headers";
@@ -18,11 +18,11 @@ import { userAgent } from "next/server";
  * @returns `{ success: true }` on success.
  * @throws {Error} If the app is not found or does not belong to the current user.
  */
-export const removeVerifiedTwoFactorApp = async (data: RemoveVerifiedTwoFactorAppInput) =>
+export const removeMfaApp = async (data: RemoveMfaAppInput) =>
     genericSAValidator(
         AuthRole.user,
         data,
-        removeVerifiedTwoFactorAppSchema,
+        removeMfaAppSchema,
     ).then(async ([user, { appId }]) => {
         const headerList = await headers();
         const ipAddress = getIPAddress(headerList);

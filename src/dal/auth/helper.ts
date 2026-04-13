@@ -7,7 +7,7 @@ import { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/he
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { userAgent } from "next/server";
 import z from "zod";
-import { __unsecuredVerifyTwoFactorCode } from "./2fa/verify";
+import { __unsecuredVerifyTwoFactorCode } from "./mfa/verify";
 import { AuthConfig } from "./config";
 import { verifyEmailCode } from "./email/verifyCode";
 import { LogDebugLevel } from "./LogDebugLeve.enum";
