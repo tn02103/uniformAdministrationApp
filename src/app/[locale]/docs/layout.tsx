@@ -2,7 +2,8 @@ import { ReactNode } from "react";
 import { DocsNav } from "./_components/DocsNav";
 
 export const metadata = {
-    title: "Dokumentation — Uniformverwaltung",
+    title: 'Dokumentation — Uniformverwaltung',
+    description: 'Dokumentation der Uniformverwaltungs-App: Funktionen, Konzepte und Konfigurationsanleitung für Uniformteile, Material, Kontrollen und mehr.',
 };
 
 export default function DocsLayout({ children }: { children: ReactNode }) {
