@@ -8,7 +8,6 @@ import { prismaMock } from '@test-utils/prisma-mock';
 import { genericSAValidator } from "@/actions/validations";
 
 describe("<Redirect> update", () => {
-    const mockPrisma = prismaMock;
 
     const mockOrganisation = "test-organisation-id";
     const mockProps = {
@@ -26,12 +25,12 @@ describe("<Redirect> update", () => {
     beforeEach(() => {
         vi.clearAllMocks();
 
-        mockPrisma.redirect.findUnique.mockResolvedValue({
+        prismaMock.redirect.findUnique.mockResolvedValue({
             id: mockProps.id,
             organisationId: mockOrganisation,
         });
-        mockPrisma.redirect.findFirst.mockResolvedValue(null);
-        mockPrisma.redirect.update.mockResolvedValue({});
+        prismaMock.redirect.findFirst.mockResolvedValue(null);
+        prismaMock.redirect.update.mockResolvedValue({});
     });
     afterAll(() => {
         delete global.__ROLE__;
@@ -61,7 +60,7 @@ describe("<Redirect> update", () => {
     });
 
     it("should return an error if a redirect with the same code already exists", async () => {
-        mockPrisma.redirect.findFirst.mockResolvedValue({ id: "duplicate-id" });
+        prismaMock.redirect.findFirst.mockResolvedValue({ id: "duplicate-id" });
 
         const result = await updateRedirect(mockProps);
 
@@ -81,7 +80,7 @@ describe("<Redirect> update", () => {
     });
 
     it("should throw an error if the redirect is not found", async () => {
-        mockPrisma.redirect.findUnique.mockResolvedValue(null);
+        prismaMock.redirect.findUnique.mockResolvedValue(null);
 
         await expect(updateRedirect(mockProps)).rejects.toThrow("Redirect not found");
         expect(prisma.redirect.findFirst).not.toHaveBeenCalled();
@@ -89,7 +88,7 @@ describe("<Redirect> update", () => {
     });
 
     it("should throw an error if the redirect does not belong to the association", async () => {
-        mockPrisma.redirect.findUnique.mockResolvedValue({
+        prismaMock.redirect.findUnique.mockResolvedValue({
             id: mockProps.id,
             organisationId: "different-association-id",
         });

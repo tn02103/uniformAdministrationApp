@@ -3,20 +3,18 @@ import { prismaMock } from '@test-utils/prisma-mock';
 import { changeSortOrder } from "./sortOrder";
 
 describe('<UniformGeneration> sortOrder', () => {
-    const mPrisma = prismaMock;
-
     beforeEach(() => {
         vi.clearAllMocks();
-        mPrisma.uniformGeneration.update.mockResolvedValue(undefined);
-        mPrisma.uniformGeneration.findUniqueOrThrow.mockResolvedValue({ sortOrder: 2, fk_uniformType: 'typeId' });
-        mPrisma.uniformGeneration.count.mockResolvedValue(5);
-        mPrisma.uniformGeneration.updateMany.mockResolvedValue({ count: 2 });
-        mPrisma.uniformType.findMany.mockResolvedValue('ReturnedList');
+        prismaMock.uniformGeneration.update.mockResolvedValue(undefined);
+        prismaMock.uniformGeneration.findUniqueOrThrow.mockResolvedValue({ sortOrder: 2, fk_uniformType: 'typeId' });
+        prismaMock.uniformGeneration.count.mockResolvedValue(5);
+        prismaMock.uniformGeneration.updateMany.mockResolvedValue({ count: 2 });
+        prismaMock.uniformType.findMany.mockResolvedValue('ReturnedList');
     });
     afterEach(vi.clearAllMocks);
 
-    const prismaUpdateMany = mPrisma.uniformGeneration.updateMany;
-    const prismaUpdate = mPrisma.uniformGeneration.update;
+    const prismaUpdateMany = prismaMock.uniformGeneration.updateMany;
+    const prismaUpdate = prismaMock.uniformGeneration.update;
 
     it('should work moving up', async () => {
         prismaUpdateMany.mockResolvedValueOnce({ count: 1 });
@@ -89,7 +87,7 @@ describe('<UniformGeneration> sortOrder', () => {
         expect(prismaUpdateMany).toHaveBeenCalledTimes(1);
     });
     it('should fail if updateMany returns smaller count', async () => {
-        mPrisma.uniformGeneration.count.mockResolvedValue(10);
+        prismaMock.uniformGeneration.count.mockResolvedValue(10);
         await expect(
              changeSortOrder({ id: 'SomeGenerationId', newPosition: 5 })
         ).rejects.toThrow('Could not update sortOrder of other types');

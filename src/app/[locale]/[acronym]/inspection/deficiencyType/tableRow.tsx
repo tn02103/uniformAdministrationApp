@@ -62,7 +62,9 @@ export default function DefTypeAdminTableRow({
                 reset(type);
             });
         } else {
-            await createDeficiencyType(data as AdminDeficiencytypeFormSchema).catch((e) => {
+            await createDeficiencyType(data as AdminDeficiencytypeFormSchema).then(() => {
+                hideNew();
+            }).catch((e) => {
                 console.error(e);
                 toast.error('Erstellen fehlgeschlagen');
                 hideNew();

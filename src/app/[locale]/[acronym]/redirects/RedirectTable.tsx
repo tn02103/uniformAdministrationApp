@@ -89,20 +89,29 @@ const RedirectTableRow = ({ redirect, closeNewRow, isARowEditable, setIsARowEdit
         await updateRedirect({
             id: redirect.id,
             data
+        }).then(() => {
+            setIsEditable(false);
+            setIsARowEditable(false);
         }).catch(() => {
             toast.error(t('common.error.unknown'));
         });
     }
 
     const handleCreate = async (data: RedirectFormType) => {
-        await createRedirect(data).catch(() => {
+        await createRedirect(data).then(() => {
+            closeNewRow?.();
+            setIsARowEditable(false);
+        }).catch(() => {
             toast.error(t('common.error.unknown'));
         });
     }
 
     const handleDelete = async () => {
         if (!redirect) return;
-        await deleteRedirect(redirect.id).catch(() => {
+        await deleteRedirect(redirect.id).then(() => {
+            setIsEditable(false);
+            setIsARowEditable(false);
+        }).catch(() => {
             toast.error(t('common.error.unknown'));
         });
     }

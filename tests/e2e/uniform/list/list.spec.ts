@@ -12,6 +12,7 @@ const test = adminTest.extend<Fixture>({
 test.describe(() => {
     test.beforeEach(async ({ page, uniformListPage, staticData: { ids } }) => {
         await page.goto(`/de/app/uniform/list/${ids.uniformTypeIds[0]}`);
+        await expect(uniformListPage.div_pageHeader).toBeVisible();
         await expect(uniformListPage.div_nodata).toBeHidden();
     });
 

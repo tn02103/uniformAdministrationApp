@@ -19,14 +19,22 @@ test.describe(() => {
 
     test('integration: sessionStorage filter config per uniformType', async ({ uniformListPage, staticData: { ids } }) => {
         // Change some filters and submit
-        await uniformListPage.openGenerationAccordion();
-        await expect(uniformListPage.btn_genAccordion_header).toHaveAttribute("aria-expanded", "true");
-        
-        await uniformListPage.chk_genFilter(ids.uniformGenerationIds[0]).setChecked(false);
+        await uniformListPage.btn_genAccordion_header.click();
+        await expect(uniformListPage.chk_genFilter(ids.uniformGenerationIds[0])).toBeVisible();
+        // Retry first checkbox interaction after accordion animation
+        await expect(async () => {
+            await uniformListPage.chk_genFilter(ids.uniformGenerationIds[0]).setChecked(false);
+            await expect(uniformListPage.chk_genFilter(ids.uniformGenerationIds[0])).not.toBeChecked();
+        }).toPass({ timeout: 10_000 });
         await uniformListPage.chk_genFilter(ids.uniformGenerationIds[1]).setChecked(false);
         await uniformListPage.chk_genFilter_nullValue.setChecked(false);
-        await uniformListPage.openOthersAccordion();
-        await uniformListPage.chk_issuedFilter.setChecked(false);
+        await uniformListPage.btn_othersAccordion_header.click();
+        await expect(uniformListPage.chk_issuedFilter).toBeVisible();
+        // Retry first checkbox interaction after accordion animation
+        await expect(async () => {
+            await uniformListPage.chk_issuedFilter.setChecked(false);
+            await expect(uniformListPage.chk_issuedFilter).not.toBeChecked();
+        }).toPass({ timeout: 10_000 });
         await uniformListPage.chk_isReserveFilter.setChecked(true);
         await uniformListPage.btn_load.click();
 

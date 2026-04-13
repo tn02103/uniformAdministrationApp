@@ -43,7 +43,6 @@ const GlobalDataProvider = ({ children, userRole, useBeta, sizelists, typeList, 
         }
     }, [sizelists, useBeta, userRole, typeList]);
 
-    GlobalDataContext 
     return (
         <SWRConfig value={{
             fallback: {

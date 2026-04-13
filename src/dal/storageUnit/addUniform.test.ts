@@ -1,4 +1,4 @@
-﻿import { vi, type Mock } from 'vitest';
+﻿import { vi } from 'vitest';
 import { prismaMock } from '@test-utils/prisma-mock';
 import CustomException, { ExceptionType } from "@/errors/CustomException";
 import { UniformIssuedException } from "@/errors/SaveDataException";
@@ -48,13 +48,13 @@ describe("<StorageUnit> addUniform", () => {
     const prismaUniformFindUniqueOrThrow = prismaMock.uniform.findUniqueOrThrow;
     const prismaUniformUpdate = prismaMock.uniform.update;
     const prismaStorageUnitFindUniqueOrThrow = prismaMock.storageUnit.findUniqueOrThrow;
-    const getUnitsWithUniformItems = vi.mocked(__unsecuredGetUnitsWithUniformItems) as unknown as Mock;
+    const getUnitsWithUniformItems = vi.mocked(__unsecuredGetUnitsWithUniformItems);
 
     beforeEach(() => {
         prismaUniformFindUniqueOrThrow.mockResolvedValue(uniformBase);
         prismaStorageUnitFindUniqueOrThrow.mockResolvedValue(storageUnitBase);
         prismaUniformUpdate.mockResolvedValue({});
-        getUnitsWithUniformItems.mockResolvedValue("unitsWithUniformItems");
+        getUnitsWithUniformItems.mockResolvedValue("unitsWithUniformItems" as any);
     })
 
     it("should add uniform to storage unit and return updated units", async () => {

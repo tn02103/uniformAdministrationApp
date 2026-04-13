@@ -5,7 +5,7 @@ import { useUniformSizelists, useUniformTypeList } from "@/dataFetcher/uniformAd
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { toast } from "react-toastify";
-import { vi, type Mock } from 'vitest';
+import { vi } from 'vitest';
 
 const sizeListIds = [
     'e667d674-7df8-436b-a2b8-77b06e063d36',
@@ -237,7 +237,7 @@ describe('<UniformgenerationOffcanvas>', () => {
             it('deletes generation', async () => {
                 const { dangerConfirmationModal } = useModal()!;
                 // change mocks
-                (deleteUniformGeneration as Mock).mockReturnValue('uniform generation deleted');
+                vi.mocked(deleteUniformGeneration).mockReturnValue('uniform generation deleted' as any);
                 const onHide = vi.fn();
 
                 // render component
@@ -268,7 +268,7 @@ describe('<UniformgenerationOffcanvas>', () => {
                 });
 
                 // call delete function and validate actions
-                await (dangerConfirmationModal as unknown as Mock).mock.calls[0][0].dangerOption.function();
+                await vi.mocked(dangerConfirmationModal).mock.calls[0][0].dangerOption.function();
                 expect(deleteUniformGeneration).toHaveBeenCalledTimes(1);
                 expect(deleteUniformGeneration).toHaveBeenCalledWith(testGeneration.id);
                 expect(mutate).toHaveBeenCalledTimes(1);
@@ -278,7 +278,7 @@ describe('<UniformgenerationOffcanvas>', () => {
             it('catches DAL-Exceptions', async () => {
 
                 // set mocks
-                (deleteUniformGeneration as Mock).mockImplementationOnce(async () => { throw new Error("custom.error") });
+                vi.mocked(deleteUniformGeneration).mockImplementationOnce(async () => { throw new Error("custom.error") });
                 const onHide = vi.fn();
 
                 // render component
@@ -300,7 +300,7 @@ describe('<UniformgenerationOffcanvas>', () => {
                 expect(dangerConfirmationModal).toHaveBeenCalledTimes(1);
 
                 // call delete function and validate actions                
-                await (dangerConfirmationModal as unknown as Mock).mock.calls[0][0].dangerOption.function();
+                await vi.mocked(dangerConfirmationModal).mock.calls[0][0].dangerOption.function();
                 expect(deleteUniformGeneration).toHaveBeenCalledTimes(1);
                 expect(mutate).toHaveBeenCalledTimes(1);
                 expect(onHide).not.toHaveBeenCalled();
@@ -356,7 +356,7 @@ describe('<UniformgenerationOffcanvas>', () => {
             });
             it('catches form-errors', async () => {
                 const user = userEvent.setup();
-                (createUniformGeneration as Mock).mockImplementationOnce(async () => {
+                vi.mocked(createUniformGeneration).mockImplementationOnce(async () => {
                     return {
                         error: {
                             message: "custom.uniform.generation.nameDuplication",
@@ -397,7 +397,7 @@ describe('<UniformgenerationOffcanvas>', () => {
                 expect(errorMessage).toBeInTheDocument();
             });
             it('catches DAL-Exception', async () => {
-                (createUniformGeneration as Mock).mockImplementationOnce(async () => { throw new Error("custom.error") });
+                vi.mocked(createUniformGeneration).mockImplementationOnce(async () => { throw new Error("custom.error") });
                 const user = userEvent.setup();
                 const onHide = vi.fn();
 
@@ -483,7 +483,7 @@ describe('<UniformgenerationOffcanvas>', () => {
             });
             it('catches form-errors', async () => {
                 const user = userEvent.setup();
-                (updateUniformGeneration as Mock).mockImplementationOnce(async () => {
+                vi.mocked(updateUniformGeneration).mockImplementationOnce(async () => {
                     return {
                         error: {
                             message: "custom.uniform.generation.nameDuplication",
@@ -529,7 +529,7 @@ describe('<UniformgenerationOffcanvas>', () => {
                 expect(errorMessage).toBeInTheDocument();
             });
             it('catches DAL-Exceptions', async () => {
-                (updateUniformGeneration as Mock).mockImplementationOnce(async () => { throw new Error("custom.error") });
+                vi.mocked(updateUniformGeneration).mockImplementationOnce(async () => { throw new Error("custom.error") });
                 const user = userEvent.setup();
                 const onHide = vi.fn();
 

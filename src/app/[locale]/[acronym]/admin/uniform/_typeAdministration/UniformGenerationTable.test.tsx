@@ -7,7 +7,7 @@ import { UniformgenerationOffcanvas } from "./UniformGenerationOffcanvas";
 import { changeUniformGenerationSortOrder } from "@/dal/uniform/generation/_index";
 import { useUniformTypeList } from "@/dataFetcher/uniformAdmin";
 import { toast } from "react-toastify";
-import { vi, type Mock } from 'vitest';
+import { vi } from 'vitest';
 
 const testType = testTypes[0];
 
@@ -39,7 +39,6 @@ vi.mock("@/components/reorderDnD/ReorderableTableBody", () => {
             onDragEndFunction = onDragEnd;
             return (
                 <tbody data-testid="reorderable-table-body">
-                    {  }
                     {items.map(((item: any) => children({ item, draggableRef: undefined, previewRef: undefined, isDragging: false })))}
                 </tbody>
             )
@@ -170,7 +169,7 @@ describe('<UniformGenerationTable />', () => {
     });
 
     it('catches error when sortOrder function fails', async () => {
-        (changeUniformGenerationSortOrder as Mock).mockImplementationOnce(async () => { throw new Error("Error") });
+        vi.mocked(changeUniformGenerationSortOrder).mockImplementationOnce(async () => { throw new Error("Error") });
         render(<UniformGenerationTable uniformType={testType} />);
 
         // trigger onDragEnd

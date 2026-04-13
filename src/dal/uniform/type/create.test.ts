@@ -16,47 +16,46 @@ const defaultProps = {
 }
 
 describe('<UniformType> create', () => {
-    const mockPrisma = prismaMock;
     
     afterEach(() => {
         vi.restoreAllMocks();
         // Reset all mock implementations to their default state
-        mockPrisma.uniformType.findFirst.mockReset();
-        mockPrisma.uniformType.count.mockReset();
-        mockPrisma.uniformType.create.mockReset();
+        prismaMock.uniformType.findFirst.mockReset();
+        prismaMock.uniformType.count.mockReset();
+        prismaMock.uniformType.create.mockReset();
     });
     it('should create a new uniform type', async () => {
         global.__ORGANISATION__ = 'test-organisation-id';
-        mockPrisma.uniformType.findFirst.mockResolvedValue(null);
-        mockPrisma.uniformType.count.mockResolvedValue(4);
-        mockPrisma.uniformType.create.mockResolvedValue("Created" as unknown as UniformType);
+        prismaMock.uniformType.findFirst.mockResolvedValue(null);
+        prismaMock.uniformType.count.mockResolvedValue(4);
+        prismaMock.uniformType.create.mockResolvedValue("Created" as unknown as UniformType);
 
         const result = await create(defaultProps);
         expect(result).toEqual("Created");
-        expect(mockPrisma.uniformType.findFirst).toHaveBeenCalledTimes(2);
-        expect(mockPrisma.uniformType.findFirst).toHaveBeenCalledWith({
+        expect(prismaMock.uniformType.findFirst).toHaveBeenCalledTimes(2);
+        expect(prismaMock.uniformType.findFirst).toHaveBeenCalledWith({
             where: {
                 organisationId: global.__ORGANISATION__,
                 recdelete: null, // Ensure we are checking only for active types
                 name: defaultProps.name,
             }
         });
-        expect(mockPrisma.uniformType.findFirst).toHaveBeenCalledWith({
+        expect(prismaMock.uniformType.findFirst).toHaveBeenCalledWith({
             where: {
                 organisationId: global.__ORGANISATION__,
                 recdelete: null, // Ensure we are checking only for active types
                 acronym: defaultProps.acronym,
             }
         });
-        expect(mockPrisma.uniformType.count).toHaveBeenCalledTimes(1);
-        expect(mockPrisma.uniformType.count).toHaveBeenCalledWith({
+        expect(prismaMock.uniformType.count).toHaveBeenCalledTimes(1);
+        expect(prismaMock.uniformType.count).toHaveBeenCalledWith({
             where: {
                 organisationId: global.__ORGANISATION__,
                 recdelete: null,
             }
         });
-        expect(mockPrisma.uniformType.create).toHaveBeenCalledTimes(1);
-        expect(mockPrisma.uniformType.create).toHaveBeenCalledWith({
+        expect(prismaMock.uniformType.create).toHaveBeenCalledTimes(1);
+        expect(prismaMock.uniformType.create).toHaveBeenCalledWith({
             data: {
                 ...defaultProps,
                 organisationId: 'test-organisation-id',
@@ -67,10 +66,10 @@ describe('<UniformType> create', () => {
     });
 
     it('should return error if name is duplicated', async () => {
-        mockPrisma.uniformType.findFirst
+        prismaMock.uniformType.findFirst
             .mockResolvedValueOnce({ name: defaultProps.name } as unknown as UniformType)
             .mockResolvedValueOnce(null);
-        mockPrisma.uniformType.count.mockResolvedValue(4);
+        prismaMock.uniformType.count.mockResolvedValue(4);
 
         const result = await create(defaultProps);
         expect(result).toEqual({
@@ -79,21 +78,21 @@ describe('<UniformType> create', () => {
                 formElement: "name",
             }
         });
-        expect(mockPrisma.uniformType.findFirst).toHaveBeenCalledTimes(1);
-        expect(mockPrisma.uniformType.findFirst).toHaveBeenCalledWith({
+        expect(prismaMock.uniformType.findFirst).toHaveBeenCalledTimes(1);
+        expect(prismaMock.uniformType.findFirst).toHaveBeenCalledWith({
             where: {
                 organisationId: 'test-organisation-id',
                 recdelete: null,
                 name: defaultProps.name,
             }
         });
-        expect(mockPrisma.uniformType.create).not.toHaveBeenCalled();
+        expect(prismaMock.uniformType.create).not.toHaveBeenCalled();
     });
     it('should return error if acronym is duplicated', async () => {
-        mockPrisma.uniformType.findFirst
+        prismaMock.uniformType.findFirst
             .mockResolvedValueOnce(null)
             .mockResolvedValueOnce({ acronym: defaultProps.acronym, name: defaultProps.name } as unknown as UniformType);
-        mockPrisma.uniformType.count.mockResolvedValue(4);
+        prismaMock.uniformType.count.mockResolvedValue(4);
 
         const result = await create(defaultProps);
         expect(result).toEqual({
@@ -102,22 +101,22 @@ describe('<UniformType> create', () => {
                 formElement: "acronym",
             }
         });
-        expect(mockPrisma.uniformType.findFirst).toHaveBeenCalledTimes(2);
-        expect(mockPrisma.uniformType.findFirst).toHaveBeenCalledWith({
+        expect(prismaMock.uniformType.findFirst).toHaveBeenCalledTimes(2);
+        expect(prismaMock.uniformType.findFirst).toHaveBeenCalledWith({
             where: {
                 organisationId: 'test-organisation-id',
                 recdelete: null,
                 name: defaultProps.name,
             }
         });
-        expect(mockPrisma.uniformType.findFirst).toHaveBeenCalledWith({
+        expect(prismaMock.uniformType.findFirst).toHaveBeenCalledWith({
             where: {
                 organisationId: 'test-organisation-id',
                 recdelete: null,
                 acronym: defaultProps.acronym,
             }
         });
-        expect(mockPrisma.uniformType.create).not.toHaveBeenCalled();
+        expect(prismaMock.uniformType.create).not.toHaveBeenCalled();
     });
     it('should not return error if fk_defaultSizelist is null and usingSizes is false', async () => {
         const props = {
@@ -125,16 +124,16 @@ describe('<UniformType> create', () => {
             fk_defaultSizelist: null,
             usingSizes: false,
         };
-        mockPrisma.uniformType.findFirst.mockResolvedValue(null);
-        mockPrisma.uniformType.count.mockResolvedValue(2);
-        mockPrisma.uniformType.create.mockResolvedValue('Created' as unknown as UniformType);
+        prismaMock.uniformType.findFirst.mockResolvedValue(null);
+        prismaMock.uniformType.count.mockResolvedValue(2);
+        prismaMock.uniformType.create.mockResolvedValue('Created' as unknown as UniformType);
 
         const result = await create(props);
         expect(result).toEqual('Created');
-        expect(mockPrisma.uniformType.findFirst).toHaveBeenCalledTimes(2);
-        expect(mockPrisma.uniformType.count).toHaveBeenCalledTimes(1);
-        expect(mockPrisma.uniformType.create).toHaveBeenCalledTimes(1);
-        expect(mockPrisma.uniformType.create).toHaveBeenCalledWith({
+        expect(prismaMock.uniformType.findFirst).toHaveBeenCalledTimes(2);
+        expect(prismaMock.uniformType.count).toHaveBeenCalledTimes(1);
+        expect(prismaMock.uniformType.create).toHaveBeenCalledTimes(1);
+        expect(prismaMock.uniformType.create).toHaveBeenCalledWith({
             data: {
                 ...props,
                 organisationId: 'test-organisation-id',
@@ -145,13 +144,13 @@ describe('<UniformType> create', () => {
     });
 
     it('should set sortOrder to the count of existing uniform types', async () => {
-        mockPrisma.uniformType.findFirst.mockResolvedValue(null);
-        mockPrisma.uniformType.count.mockResolvedValue(7); // Existing count of 7
-        mockPrisma.uniformType.create.mockResolvedValue('Created' as unknown as UniformType);
+        prismaMock.uniformType.findFirst.mockResolvedValue(null);
+        prismaMock.uniformType.count.mockResolvedValue(7); // Existing count of 7
+        prismaMock.uniformType.create.mockResolvedValue('Created' as unknown as UniformType);
 
         const result = await create(defaultProps);
         expect(result).toEqual('Created');
-        expect(mockPrisma.uniformType.create).toHaveBeenCalledWith({
+        expect(prismaMock.uniformType.create).toHaveBeenCalledWith({
             data: {
                 ...defaultProps,
                 organisationId: 'test-organisation-id',
@@ -167,7 +166,7 @@ describe('<UniformType> create', () => {
             usingSizes: true,
             fk_defaultSizelist: null,
         };
-        mockPrisma.uniformType.findFirst.mockResolvedValue(null);
+        prismaMock.uniformType.findFirst.mockResolvedValue(null);
 
         const result = await create(propsWithNullSizelist);
         
@@ -177,6 +176,6 @@ describe('<UniformType> create', () => {
                 formElement: "fk_defaultSizelist"
             }
         });
-        expect(mockPrisma.uniformType.create).not.toHaveBeenCalled();
+        expect(prismaMock.uniformType.create).not.toHaveBeenCalled();
     });
 });
