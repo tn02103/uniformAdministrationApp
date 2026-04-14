@@ -30,19 +30,17 @@ export const CadetInspectionCard = () => {
 
     const handleStartCadetInspection = async () => getCadetInspectionFormData(cadetId).then((data) => {
         form.reset(data);
-        setStep(1);
+        if (data.oldDeficiencyList.length > 0) {
+            setStep(1);
+        } else {
+            setStep(2);
+        }
     }).catch(() => {
         toast.error(t('cadetDetailPage.inspection.error.startInspection'));
     })
 
     const handleSaveInspection = async (data: CadetInspectionFormSchema) => {
-        data.newDeficiencyList.forEach((def, index) => {
-            if (def.materialId) {
-                if (def.materialId === "others") {
-                    data.newDeficiencyList[index].materialId = def.otherMaterialId;
-                }
-            }
-
+        data.newDeficiencyList.forEach((def) => {
             if (def.uniformId === "") def.uniformId = null;
             if (def.materialId === "") def.materialId = null;
             if (def.otherMaterialId === "") def.otherMaterialId = null;
@@ -68,7 +66,7 @@ export const CadetInspectionCard = () => {
                 step={step}
                 startInspecting={handleStartCadetInspection}
             />
-            <form onSubmit={form.handleSubmit(handleSaveInspection)}>
+            <form onSubmit={form.handleSubmit(handleSaveInspection, (errors) => console.debug(JSON.stringify(errors)))}>
                 <FormProvider {...form}>
                     {step === 0 &&
                         <div className="row p-0 bg-white border-top border-1 border-dark">

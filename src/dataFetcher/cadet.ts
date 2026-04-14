@@ -61,7 +61,7 @@ export function useCadetUniformComplete(cadetId: string) {
 
 export function useCadetMaterialMap(cadetId: string, initialData?: CadetMaterialMap) {
     const { data } = useSWR(
-        `cadet/material/${cadetId}`,
+        `cadet/material/${cadetId}/map`,
         () => getCadetMaterialMap(cadetId),
         {
             fallbackData: initialData
@@ -70,9 +70,10 @@ export function useCadetMaterialMap(cadetId: string, initialData?: CadetMaterial
 
     return {
         materialMap: data,
-        mutate: (data: Promise<CadetMaterialMap> | CadetMaterialMap, options?: MutatorOptions) => mutate(
-            (key) => (typeof key === "string") && key.startsWith(`cadet/material/${cadetId}`),
-            data, options)
+        mutate: (data: Promise<CadetMaterialMap> | CadetMaterialMap, options?: MutatorOptions) => {
+            mutate(`cadet/material/${cadetId}/map`, data, options);
+            mutate(`cadet/material/${cadetId}/list`);
+        }
     }
 }
 
