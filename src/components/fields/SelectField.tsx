@@ -1,12 +1,13 @@
+import { forwardRef } from "react";
 import { useI18n } from "@/lib/locales/client";
 import { Form } from "react-bootstrap";
 import { Field } from "./Field";
 
 export type SelectOptionType = { value: string | number, label: string };
 
-type OmittedFromSelect = 'value' | 'onChange' | 'disabled' | 'id' | 'isInvalid' | 'aria-errormessage' | 'aria-invalid' | 'name';
+type OmittedFromSelect = 'value' | 'onChange' | 'id' | 'isInvalid' | 'aria-errormessage' | 'aria-invalid' | 'options' | 'size';
 
-export type SelectFieldProps = Omit<React.ComponentPropsWithoutRef<typeof Form.Select>, OmittedFromSelect> & {
+export type SelectFieldProps = {
     label: string,
     name: string,
     formName?: string,
@@ -20,7 +21,7 @@ export type SelectFieldProps = Omit<React.ComponentPropsWithoutRef<typeof Form.S
     labelClassName?: string,
     selectClassName?: string,
     errorMessage?: string,
-}
+} & Omit<React.ComponentPropsWithoutRef<'select'>, OmittedFromSelect>;
 
 /**
  * Standalone select field with label and error display. No form context required.
@@ -33,12 +34,13 @@ export type SelectFieldProps = Omit<React.ComponentPropsWithoutRef<typeof Form.S
  * @param disabled - Disables the select when `true`.
  * @param plaintext - Renders a read-only text paragraph instead of the select.
  * @param errorMessage - Validation error to display below the field.
+ * @param ref - Forwarded ref to the Form.Select element.
  */
-export const SelectField = ({
-    label, name, formName = "unnamedForm", required, disabled, options,
-    value, onChange, valueAsNumber, plaintext, labelClassName, selectClassName, errorMessage,
-    ...selectProps
-}: SelectFieldProps) => {
+export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>((
+    props,
+    ref,
+) => {
+    const { label, name, formName = "unnamedForm", required, options, disabled, plaintext, labelClassName, selectClassName, errorMessage, valueAsNumber, onChange, value, ...selectProps } = props;
     const t = useI18n();
 
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -65,7 +67,9 @@ export const SelectField = ({
                 </p>
             ) : (
                 <Form.Select
+                    ref={ref}
                     {...selectProps}
+                    name={name}
                     value={value || ""}
                     onChange={handleChange}
                     disabled={disabled}
@@ -83,4 +87,5 @@ export const SelectField = ({
             )}
         </Field>
     );
-};
+}
+);
