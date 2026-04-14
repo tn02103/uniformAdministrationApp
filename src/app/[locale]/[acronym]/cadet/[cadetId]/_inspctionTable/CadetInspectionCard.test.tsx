@@ -6,6 +6,7 @@ import * as dataFetcherInspection from '@/dataFetcher/inspection';
 import * as nextNavigation from 'next/navigation';
 import * as swr from 'swr';
 import * as reactToastify from 'react-toastify';
+import { useEffect, useState } from 'react';
 
 // Mock the DAL functions
 vi.mock('@/dal/inspection', () => ({
@@ -41,8 +42,8 @@ vi.mock('./CadetInspectionStep1', () => ({
     CadetInspectionStep1: function MockCadetInspectionStep1({ setNextStep, cancel }: { setNextStep: () => void; cancel: () => void }) {
         return (
             <div data-testid="mock-step1">
-                <button onClick={() => setNextStep()} data-testid="btn-next-step">Next Step</button>
-                <button onClick={() => cancel()} data-testid="btn-cancel">Cancel</button>
+                <button type="button" onClick={() => setNextStep()} data-testid="btn-next-step">Next Step</button>
+                <button type="button" onClick={() => cancel()} data-testid="btn-cancel">Cancel</button>
             </div>
         );
     },
@@ -50,9 +51,10 @@ vi.mock('./CadetInspectionStep1', () => ({
 
 vi.mock('./CadetInspectionStep2', () => ({
     CadetInspectionStep2: function MockCadetInspectionStep2({ setStep }: { setStep: (step: number) => void }) {
+
         return (
             <div data-testid="mock-step2">
-                <button onClick={() => setStep(0)} data-testid="btn-back-to-step0">Back to Step 0</button>
+                <button type="button" onClick={() => setStep(0)} data-testid="btn-back-to-step0">Back to Step 0</button>
                 <button type="submit" data-testid="btn-submit">Submit</button>
             </div>
         );
@@ -239,7 +241,7 @@ describe('CadetInspectionCard', () => {
             expect(screen.getByTestId('mock-header')).toHaveTextContent('Step: 2');
             expect(screen.getByTestId('mock-step2')).toBeInTheDocument();
         });
-/*    // step 1 next goes to step 2
+        // step 1 next goes to step 2
         it('should navigate from step 1 to step 2 on next button click', async () => {
             const user = userEvent.setup();
             render(<CadetInspectionCard />);
@@ -291,10 +293,9 @@ describe('CadetInspectionCard', () => {
             await screen.findByTestId('mock-step2');
             await user.click(screen.getByTestId('btn-submit'));
 
-            await expect(mockSaveCadetInspection).toHaveBeenCalled();
-            expect(await screen.findByText(/step: 0/)).toBeInTheDocument();
-            expect(screen.getByTestId('mock-header')).toHaveTextContent('Step: 0');
-        }); */
+            await waitFor(() => expect(mockSaveCadetInspection).toHaveBeenCalled());
+            await waitFor(() => expect(screen.getByTestId('mock-header')).toHaveTextContent('Step: 0'));
+        });
     });
 
     describe('Form Data Management and Error Handling', () => {
@@ -394,9 +395,8 @@ describe('CadetInspectionCard', () => {
             // Mock successful save
             await user.click(screen.getByTestId('btn-submit'));
 
-            // Note: Since form submission is complex with React Hook Form,
-            // we verify the component structure supports submission
-            expect(screen.getByTestId('btn-submit')).toBeInTheDocument();
+            // After submission, component should navigate back to step 0
+            await waitFor(() => expect(screen.getByTestId('mock-header')).toHaveTextContent('Step: 0'));
         });
 
         it('should verify SWR cache invalidation patterns and toast notification setup', () => {
