@@ -358,6 +358,7 @@ describe('UniformDetailRow', () => {
         });
     });
     describe('save/reset form', () => {
+        const updateUniformItemMock = vi.mocked(updateUniformItem);
         it('should call updateUniformItem', async () => {
             const user = userEvent.setup();
             const { rerender } = render(<UniformDetailRow {...defaultProps} />);
@@ -385,8 +386,8 @@ describe('UniformDetailRow', () => {
             expect(defaultProps.setEditable).toHaveBeenCalledTimes(1);
             expect(defaultProps.setEditable).toHaveBeenCalledWith(false);
 
-            expect(updateUniformItem).toHaveBeenCalledTimes(1);
-            expect(updateUniformItem).toHaveBeenCalledWith({
+            expect(updateUniformItemMock).toHaveBeenCalledTimes(1);
+            expect(updateUniformItemMock).toHaveBeenCalledWith({
                 number: mockUniform.number,
                 id: mockUniform.id,
                 generation: mockGenerationLists[0][2].id,

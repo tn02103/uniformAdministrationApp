@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { AuthRole } from "@/lib/AuthRoles";
 import { MFAType } from "@/prisma/client";
 import { calculateSessionLifetime, DeviceIdsCookie, DeviceIdsCookieAccount, getIPAddress, RiskLevel, UserAgent, getDeviceAccountFromCookies, validateDeviceFingerprint, getUserMFAConfig, verifyMFAToken } from "./helper";
 import { verifyEmailCode } from "./email/verifyCode";
 import { getMockUserAgent } from './__testHelpers__/mockData';
-import { __unsecuredVerifyTwoFactorCode } from "./2fa/verify";
+import { __unsecuredVerifyTwoFactorCode } from "./mfa/verify";
 import { prisma } from "@/lib/db";
 
 // Mock dependencies
@@ -20,7 +20,7 @@ vi.mock('./email/verifyCode', () => ({
     verifyEmailCode: vi.fn(),
 }));
 
-vi.mock('./2fa/verify', () => ({
+vi.mock('./mfa/verify', () => ({
     __unsecuredVerifyTwoFactorCode: vi.fn(),
 }));
 
@@ -647,15 +647,16 @@ describe('getUserMFAConfig', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
+    const userFindUniqueMock = vi.mocked(prisma.user.findUnique);
 
     it('should throw error when user is not found', async () => {
-        mockPrisma.user.findUnique.mockResolvedValue(null);
+        userFindUniqueMock.mockResolvedValue(null);
 
         await expect(getUserMFAConfig('user-123')).rejects.toThrow('User not found');
     });
 
     it('should return enabled: true with user method when user.twoFAEnabled is true', async () => {
-        mockPrisma.user.findUnique.mockResolvedValue({
+        userFindUniqueMock.mockResolvedValue({
             id: 'user-123',
             twoFAEnabled: true,
             default2FAMethod: MFAType.totp,
@@ -663,7 +664,7 @@ describe('getUserMFAConfig', () => {
             organisation: {
                 organisationConfiguration: null,
             },
-        });
+        } as any);
 
         const result = await getUserMFAConfig('user-123');
 
@@ -674,7 +675,7 @@ describe('getUserMFAConfig', () => {
     });
 
     it('should default to "email" method when user.default2FAMethod is null', async () => {
-        mockPrisma.user.findUnique.mockResolvedValue({
+        userFindUniqueMock.mockResolvedValue({
             id: 'user-123',
             twoFAEnabled: true,
             default2FAMethod: null,
@@ -682,7 +683,7 @@ describe('getUserMFAConfig', () => {
             organisation: {
                 organisationConfiguration: null,
             },
-        });
+        } as any);
 
         const result = await getUserMFAConfig('user-123');
 
@@ -693,7 +694,7 @@ describe('getUserMFAConfig', () => {
     });
 
     it('should return enabled: true when org config requires 2FA for all users', async () => {
-        mockPrisma.user.findUnique.mockResolvedValue({
+        userFindUniqueMock.mockResolvedValue({
             id: 'user-123',
             twoFAEnabled: false,
             default2FAMethod: MFAType.email,
@@ -703,7 +704,7 @@ describe('getUserMFAConfig', () => {
                     twoFactorAuthRule: 'required',
                 },
             },
-        });
+        } as any);
 
         const result = await getUserMFAConfig('user-123');
 
@@ -714,7 +715,7 @@ describe('getUserMFAConfig', () => {
     });
 
     it('should return enabled: true when org requires 2FA for administrators and user is admin', async () => {
-        mockPrisma.user.findUnique.mockResolvedValue({
+        vi.mocked(mockPrisma.user.findUnique).mockResolvedValue({
             id: 'user-123',
             twoFAEnabled: false,
             default2FAMethod: MFAType.totp,
@@ -724,7 +725,7 @@ describe('getUserMFAConfig', () => {
                     twoFactorAuthRule: 'administrators',
                 },
             },
-        });
+        } as any);
 
         const result = await getUserMFAConfig('user-123');
 
@@ -735,7 +736,7 @@ describe('getUserMFAConfig', () => {
     });
 
     it('should return enabled: false when org requires 2FA for administrators but user is not admin', async () => {
-        mockPrisma.user.findUnique.mockResolvedValue({
+        userFindUniqueMock.mockResolvedValue({
             id: 'user-123',
             twoFAEnabled: false,
             default2FAMethod: MFAType.email,
@@ -745,7 +746,7 @@ describe('getUserMFAConfig', () => {
                     twoFactorAuthRule: 'administrators',
                 },
             },
-        });
+        } as any);
 
         const result = await getUserMFAConfig('user-123');
 
@@ -756,7 +757,7 @@ describe('getUserMFAConfig', () => {
     });
 
     it('should return enabled: false when no 2FA requirements are met', async () => {
-        mockPrisma.user.findUnique.mockResolvedValue({
+        userFindUniqueMock.mockResolvedValue({
             id: 'user-123',
             twoFAEnabled: false,
             default2FAMethod: MFAType.email,
@@ -766,7 +767,7 @@ describe('getUserMFAConfig', () => {
                     twoFactorAuthRule: 'optional',
                 },
             },
-        });
+        } as any);
 
         const result = await getUserMFAConfig('user-123');
 
@@ -777,7 +778,7 @@ describe('getUserMFAConfig', () => {
     });
 
     it('should return enabled: false when organisationConfiguration is null', async () => {
-        mockPrisma.user.findUnique.mockResolvedValue({
+        userFindUniqueMock.mockResolvedValue({
             id: 'user-123',
             twoFAEnabled: false,
             default2FAMethod: MFAType.email,
@@ -785,7 +786,7 @@ describe('getUserMFAConfig', () => {
             organisation: {
                 organisationConfiguration: null,
             },
-        });
+        } as any);
 
         const result = await getUserMFAConfig('user-123');
 
@@ -796,7 +797,7 @@ describe('getUserMFAConfig', () => {
     });
 
     it('should prioritize user.twoFAEnabled over org config', async () => {
-        mockPrisma.user.findUnique.mockResolvedValue({
+        userFindUniqueMock.mockResolvedValue({
             id: 'user-123',
             twoFAEnabled: true,
             default2FAMethod: MFAType.totp,
@@ -806,7 +807,7 @@ describe('getUserMFAConfig', () => {
                     twoFactorAuthRule: 'optional', // Would normally disable
                 },
             },
-        });
+        } as any);
 
         const result = await getUserMFAConfig('user-123');
 

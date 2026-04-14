@@ -6,11 +6,18 @@ import userEvent, { UserEvent } from "@testing-library/user-event";
 import { UniformDeficiencyRow } from "./UniformDeficiencyRow";
 import { mockDeficiencyList, mockDeficiencyTypeList, mockUniform } from "./UniformOffcanvasJestHelper";
 import { useDeficienciesByUniformId } from "@/dataFetcher/deficiency";
-import { createUniformDeficiency, updateUniformDeficiency, resolveDeficiency } from "@/dal/inspection/deficiency";
+import { createUniformDeficiency, resolveDeficiency, updateUniformDeficiency } from "@/dal/inspection/deficiency";
 import { mutate } from "swr";
 import { toast } from "react-toastify";
 
 describe('UniformDeficiencyRow', () => {
+    const useDeficienciesByUniformIdMock = vi.mocked(useDeficienciesByUniformId);
+    const createUniformDeficiencyMock = vi.mocked(createUniformDeficiency);
+    const mutateMock = vi.mocked(mutate);
+    const updateUniformDeficiencyMock = vi.mocked(updateUniformDeficiency);
+    const resolveDeficiencyMock = vi.mocked(resolveDeficiency);
+
+
     const setEditable = async (card: HTMLElement, user: UserEvent) => {
         const actionMenu = getByRole(card, 'button', { name: /deficiency.label.actions/i });
         await user.click(actionMenu);
@@ -60,7 +67,7 @@ describe('UniformDeficiencyRow', () => {
     });
 
     it('shows empty state when no deficiencies', () => {
-        vi.mocked(useDeficienciesByUniformId).mockReturnValueOnce({ deficiencies: [] } as any);
+        useDeficienciesByUniformIdMock.mockReturnValueOnce({ deficiencies: []} as any);
 
         render(
             <UniformDeficiencyRow
@@ -250,17 +257,17 @@ describe('UniformDeficiencyRow', () => {
                     typeId: mockDeficiencyTypeList[1].id
                 }
             });
-            expect(mutate).toHaveBeenCalledTimes(1);
-            expect((vi.mocked(mutate).mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.true`)).toBeTruthy();
-            expect((vi.mocked(mutate).mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.false`)).toBeTruthy();
-            expect((vi.mocked(mutate).mock.calls[0][0] as any)(`uniform.${mockUniform.id}.somethingElse`)).toBeFalsy();
+            expect(mutateMock).toHaveBeenCalledTimes(1);
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.true`)).toBeTruthy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.false`)).toBeTruthy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.somethingElse`)).toBeFalsy();
 
             expect(screen.queryByRole('listitem', { name: /createCardLabel/i })).not.toBeInTheDocument();
         });
 
         it('should catch exceptions on create', async () => {
             const user = userEvent.setup();
-            vi.mocked(createUniformDeficiency).mockRejectedValueOnce(new Error('Test error'));
+            createUniformDeficiencyMock.mockRejectedValueOnce(new Error('Test error'));
 
             render(
                 <UniformDeficiencyRow
@@ -385,10 +392,10 @@ describe('UniformDeficiencyRow', () => {
                     typeId: mockDeficiencyTypeList[1].id
                 }
             });
-            expect(mutate).toHaveBeenCalledTimes(1);
-            expect((vi.mocked(mutate).mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.true`)).toBeTruthy();
-            expect((vi.mocked(mutate).mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.false`)).toBeTruthy();
-            expect((vi.mocked(mutate).mock.calls[0][0] as any)(`uniform.${mockUniform.id}.somethingElse`)).toBeFalsy();
+            expect(mutateMock).toHaveBeenCalledTimes(1);
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.true`)).toBeTruthy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.false`)).toBeTruthy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.somethingElse`)).toBeFalsy();
 
             // check that the card is not in edit mode
             expect(commentInput).not.toBeInTheDocument();
@@ -396,7 +403,7 @@ describe('UniformDeficiencyRow', () => {
         });
         it('should catch exceptions on update', async () => {
             const user = userEvent.setup();
-            vi.mocked(updateUniformDeficiency).mockRejectedValueOnce(new Error('Test error'));
+            updateUniformDeficiencyMock.mockRejectedValueOnce(new Error('Test error'));
 
             render(
                 <UniformDeficiencyRow
@@ -443,13 +450,13 @@ describe('UniformDeficiencyRow', () => {
             expect(resolveDeficiency).toHaveBeenCalledTimes(1);
             expect(resolveDeficiency).toHaveBeenCalledWith(mockDeficiencyList[0].id);
             expect(mutate).toHaveBeenCalledTimes(1);
-            expect((vi.mocked(mutate).mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.true`)).toBeTruthy();
-            expect((vi.mocked(mutate).mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.false`)).toBeTruthy();
-            expect((vi.mocked(mutate).mock.calls[0][0] as any)(`uniform.${mockUniform.id}.somethingElse`)).toBeFalsy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.true`)).toBeTruthy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.false`)).toBeTruthy();
+            expect((mutateMock.mock.calls[0][0] as any)(`uniform.${mockUniform.id}.somethingElse`)).toBeFalsy();
         });
         it('should catch exceptions on resolve', async () => {
             const user = userEvent.setup();
-            vi.mocked(resolveDeficiency).mockRejectedValueOnce(new Error('Test error'));
+            resolveDeficiencyMock.mockRejectedValueOnce(new Error('Test error'));
 
             render(
                 <UniformDeficiencyRow

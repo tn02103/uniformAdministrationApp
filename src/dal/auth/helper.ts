@@ -7,7 +7,7 @@ import { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/he
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { userAgent } from "next/server";
 import z from "zod";
-import { __unsecuredVerifyTwoFactorCode } from "./2fa/verify";
+import { __unsecuredVerifyTwoFactorCode } from "./mfa/verify";
 import { AuthConfig } from "./config";
 import { verifyEmailCode } from "./email/verifyCode";
 import { LogDebugLevel } from "./LogDebugLeve.enum";
@@ -34,9 +34,9 @@ export const getIPAddress = (headers: ReadonlyHeaders) => {
 
 type LogSecurityAuditEntryData = {
     action: "LOGIN_ATTEMPT" | "REFRESH_ACCESS_TOKEN" | "LOGOUT" | "CREATE_2FA_APP"
-    | "VERIFY_2FA_APP" | "REMOVE_2FA_APP" | "SEND_EMAIL_CODE" | "VERIFY_EMAIL_CODE"
-    | "CHANGE_PASSWORD" | "PASSWORD_RESET_REQUEST" | "PASSWORD_RESET_EXECUTE" | "PASSWORD_RESET_VALIDATE"
-    | "ADMIN_PASSWORD_RESET";
+    | "VERIFY_2FA_APP" | "REMOVE_2FA_APP" |  "SET_DEFAULT_2FA_METHOD" | "TOGGLE_2FA" | "SEND_EMAIL_CODE"
+    | "VERIFY_EMAIL_CODE" | "CHANGE_PASSWORD" | "PASSWORD_RESET_REQUEST" | "PASSWORD_RESET_EXECUTE"
+    | "PASSWORD_RESET_VALIDATE" | "ADMIN_PASSWORD_RESET";
     debugLevel: LogDebugLevel;
     userId?: string;
     deviceId?: string;

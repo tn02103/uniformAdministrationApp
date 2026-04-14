@@ -7,6 +7,7 @@ describe('validate deletion', () => {
     afterAll(async () => staticData.cleanup.materialConfig());
     beforeAll(async () => {
         const { success } = await runServerActionTest(markDeleted(groupId));
+         
         expect(success).toBeTruthy();
     });
 

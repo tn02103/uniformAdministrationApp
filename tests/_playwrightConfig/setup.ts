@@ -18,7 +18,7 @@ async function loginWithRetry(request: APIRequestContext, body: LoginFormType, m
         if (attempt === maxRetries) {
             throw Error(`Failed to authenticate (status ${response.status()}) after ${maxRetries} attempts, response: ${responseText}`);
         }
-        console.warn(`Auth attempt ${attempt}/${maxRetries} failed (status ${response.status()}), retrying in ${attempt}s...`);
+      //  console.warn(`Auth attempt ${attempt}/${maxRetries} failed (status ${response.status()}), retrying in ${attempt}s...`);
         await new Promise(r => setTimeout(r, 1000 * attempt));
     }
 }

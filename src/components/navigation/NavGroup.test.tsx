@@ -27,8 +27,8 @@ vi.mock('react-bootstrap', () => ({
     Tooltip: ({ children }: { children: React.ReactNode }) => <div data-testid="tooltip-content">{children}</div>,
 }));
 
-const mockUseSidebarContext = useSidebarContext as MockedFunction<typeof useSidebarContext>;
-const mockUseGlobalData = useGlobalData as MockedFunction<typeof useGlobalData>;
+const mockUseSidebarContext = vi.mocked(useSidebarContext);
+const mockUseGlobalData = vi.mocked(useGlobalData);
 
 describe('NavGroup', () => {
     const defaultProps = {

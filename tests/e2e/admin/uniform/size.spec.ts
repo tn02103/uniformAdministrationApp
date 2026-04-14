@@ -42,9 +42,8 @@ test.describe('Uniform size configuration', () => {
         await expect(divList).toHaveCount(sizes.length);
 
         const promises = [];
-        const divListCount = await divList.count();
         /* eslint-disable playwright/missing-playwright-await */
-        for (let i = 0; i < divListCount; i++) {
+        for (let i = 0; i < sizes.length; i++) {
             promises.push(expect.soft(divList.nth(i)).toHaveAttribute("data-testid", `div_size_${sizes[i].id}`));
             promises.push(expect.soft((await uniformSizePage.div_name(sizes[i].id))).toHaveText(sizes[i].name));
             promises.push(expect.soft(uniformSizePage.div_index(sizes[i].id)).toHaveText(String(i + 1)));

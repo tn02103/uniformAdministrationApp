@@ -192,6 +192,26 @@ const prismaMock = {
     auditLog: {
         create: vi.fn(),
     },
+    twoFactorApp: {
+        findUnique: vi.fn(),
+        findFirst: vi.fn(),
+        findMany: vi.fn(),
+        create: vi.fn(),
+        update: vi.fn(),
+        delete: vi.fn(),
+        deleteMany: vi.fn(),
+    },
+    organisationConfiguration: {
+        findUnique: vi.fn(),
+        findFirst: vi.fn(),
+    },
+    device: {
+        findUnique: vi.fn(),
+        findFirst: vi.fn(),
+        findMany: vi.fn(),
+        update: vi.fn(),
+        delete: vi.fn(),
+    },
     $executeRaw: vi.fn(),
 };
 

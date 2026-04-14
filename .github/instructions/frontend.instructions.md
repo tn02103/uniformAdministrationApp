@@ -4,6 +4,22 @@ applyTo: src/app/**, src/components/**, src/dataFetcher/**
 
 # Frontend — Rules & Patterns
 
+## Documentation
+Every exported component, hook (`use*`), and utility function MUST have a JSDoc comment. Keep it brief:
+```typescript
+/**
+ * One-line summary of what this does.
+ *
+ * Extra context only when non-obvious (side-effects, conditions, important state).
+ *
+ * @param propName - Description (for components: only non-obvious props).
+ * @returns What is returned (omit for void/JSX components).
+ */
+```
+- Components: document non-obvious props only; skip `children`, `className`
+- Hooks: always document `@returns` shape
+- Utility functions: always document `@param` and `@returns`
+
 ## App Structure
 ```
 src/app/[locale]/[acronym]/   # All authenticated app pages live here

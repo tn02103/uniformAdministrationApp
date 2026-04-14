@@ -339,7 +339,6 @@ exports[`<UniformgenerationOffcanvas> > without generation > renders in editable
               aria-invalid="false"
               class="text-truncate  form-select"
               id="uniformGenerationForm_select-fk_sizelist"
-              name="fk_sizelist"
             >
               <option
                 disabled=""
