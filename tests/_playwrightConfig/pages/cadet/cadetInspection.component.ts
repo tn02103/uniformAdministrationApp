@@ -52,25 +52,25 @@ export class CadetInspectionComponent {
     }
     // -- fields
     sel_newDef_type(index: number) {
-        return this.div_ci.locator(`select[id="cadetinspection_select-newDeficiencyList.${index}.typeId"]`);
+        return this.div_ci.locator(`select[name="newDeficiencyList.${index}.typeId"]`);
     }
     sel_newDef_uniform(index: number) {
-        return this.div_ci.locator(`select[id="cadetinspection_select-newDeficiencyList.${index}.uniformId"]`);
+        return this.div_ci.locator(`select[name="newDeficiencyList.${index}.uniformId"]`);
     }
     sel_newDef_material(index: number) {
-        return this.div_ci.locator(`select[id="cadetinspection_select-newDeficiencyList.${index}.materialId"]`);
+        return this.div_ci.locator(`select[name="newDeficiencyList.${index}.materialId"]`);
     }
     sel_newDef_materialGroup(index: number) {
-        return this.div_ci.locator(`select[id="cadetinspection_select-newDeficiencyList.${index}.otherMaterialGroupId"]`);
+        return this.div_ci.locator(`select[name="newDeficiencyList.${index}.otherMaterialGroupId"]`);
     }
     sel_newDef_materialType(index: number) {
-        return this.div_ci.locator(`select[id="cadetinspection_select-newDeficiencyList.${index}.otherMaterialId"]`);
+        return this.div_ci.locator(`select[name="newDeficiencyList.${index}.otherMaterialId"]`);
     }
     txt_newDef_description(index: number) {
-        return this.div_ci.locator(`input[id="cadetinspection_input-newDeficiencyList.${index}.description"]`);
+        return this.div_ci.locator(`input[name="newDeficiencyList.${index}.description"]`);
     }
     txt_newDef_comment(index: number) {
-        return this.div_ci.locator(`textarea[id="cadetinspection_input-newDeficiencyList.${index}.comment"]`);
+        return this.div_ci.locator(`textarea[name="newDeficiencyList.${index}.comment"]`);
     }
     btn_newDef_delete(index: number) {
         return this.div_newDeficiency(index).getByTestId("btn_delete");
