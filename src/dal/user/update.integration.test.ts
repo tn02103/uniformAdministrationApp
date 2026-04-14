@@ -2,8 +2,7 @@
 import { prisma } from "@/lib/db";
 import { staticData, wrongOrganisation } from "../../../vitest/setup-dal-integration";
 import { runServerActionTest } from "../_helper/testHelper";
-import { changeUserPassword, updateUser } from "./update";
-import { compare } from "bcrypt";
+import { updateUser } from "./update";
 
 describe("<User> updateUser", () => {
     beforeAll(async () => {
@@ -163,34 +162,4 @@ describe("<User> updateUser", () => {
     });
 });
 
-describe("<User> changeUserPassword", () => {
-    beforeAll(async () => {
-        global.__ROLE__ = AuthRole.admin;
-        await staticData.cleanup.user();
-    });
 
-    afterEach(async () => {
-        await staticData.cleanup.user();
-    });
-
-    afterAll(() => {
-        delete global.__ROLE__;
-    });
-
-    it("should hash and persist the new password", async () => {
-        const id = staticData.ids.userIds[1];
-        const newPassword = "NewPassword1";
-
-        const userBefore = await prisma.user.findUnique({ where: { id } });
-        const oldPasswordHash = userBefore?.password;
-
-        const { success } = await runServerActionTest(
-            changeUserPassword({ id, password: newPassword })
-        );
-        expect(success).toBe(true);
-
-        const userAfter = await prisma.user.findUnique({ where: { id } });
-        expect(userAfter?.password).not.toBe(oldPasswordHash);
-        expect(await compare(newPassword, userAfter?.password || "")).toBe(true);
-    });
-});

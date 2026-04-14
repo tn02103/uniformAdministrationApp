@@ -9,7 +9,6 @@ import EditMaterialTypeModal, { EditMaterialTypeModalPropType } from "./editMate
 import IssueMaterialModal, { IssueMaterialModalProps } from "./issueMaterial";
 import MessageModal, { MessageModalOption, MessageModalPropType, MessageModalType } from "./messageModal";
 import SimpleFormModal, { SimpleFormModalProps } from "./simpleFormModal";
-import ChangeUserPasswordModal, { ChangeUserPasswordModalPropType } from "./userPassword";
 
 type ModalContextType = {
     showMessageModal: (header: string, message: string | ReactNode, options: MessageModalOption[], type: MessageModalType) => void,
@@ -19,7 +18,6 @@ type ModalContextType = {
     dangerConfirmationModal: (props: DangerConfirmationModalPropType) => void,
     simpleFormModal: (props: SimpleFormModalProps) => void,
     issueMaterialModal: (cadetId: string, materialGroup: MaterialGroup, issuedMaterialList: CadetMaterial[], oldMaterial?: CadetMaterial) => void,
-    changeUserPasswordModal: (save: (p: string) => Promise<void>, nameOfUser?: string) => void,
     editMaterialTypeModal: (groupName: string, groupId: string, type?: AdministrationMaterial) => void,
     changeLanguage: () => void,
 }
@@ -31,7 +29,7 @@ type ModalCapsule = {
 }
 
 type ModalTypes = "DangerConfirmationModal" | "EditMaterialTypeModal" | "InspectionReviewPopup" | "IssueMaterialModal"
-    | "IssueUniformModal" | "ChangeUserPasswordModal" | "SimpleFormModal" | "ChangeLanguageModal"
+    | "IssueUniformModal" | "SimpleFormModal" | "ChangeLanguageModal"
 
 export const ModalContext = createContext<ModalContextType | undefined>(undefined);
 export const useModal = () => {
@@ -172,14 +170,6 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         showModal("EditMaterialTypeModal", props);
     }, [showModal]);
 
-    const changeUserPasswordModal = useCallback((save: (password: string) => Promise<void>, nameOfUser?: string) => {
-        const props: ChangeUserPasswordModalPropType = {
-            nameOfUser,
-            onClose,
-            save,
-        }
-        showModal("ChangeUserPasswordModal", props);
-    }, [showModal]);
     const changeLanguage = useCallback(() => {
         showModal("ChangeLanguageModal", {});
     }, [showModal])
@@ -197,7 +187,6 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
             editMaterialTypeModal,
             /*issueUniformModal,
             inspectionReviewPopup,*/
-            changeUserPasswordModal,
             issueMaterialModal,
             simpleFormModal,
             changeLanguage,
@@ -210,7 +199,6 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         editMaterialTypeModal,
         /* issueUniformModal,
          inspectionReviewPopup,*/
-        changeUserPasswordModal,
         issueMaterialModal,
         simpleFormModal,
         changeLanguage
@@ -226,8 +214,6 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
                       return <IssueUniformModal {...modal.props} />
                   case "InspectionReviewPopup":
                       return <InspectionReviewPopup {...modal.props} />*/
-            case "ChangeUserPasswordModal":
-                return <ChangeUserPasswordModal {...modal.props} />
             case "SimpleFormModal":
                 return <SimpleFormModal {...modal.props} />
             case "IssueMaterialModal":

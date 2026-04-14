@@ -35,7 +35,8 @@ export const getIPAddress = (headers: ReadonlyHeaders) => {
 type LogSecurityAuditEntryData = {
     action: "LOGIN_ATTEMPT" | "REFRESH_ACCESS_TOKEN" | "LOGOUT" | "CREATE_2FA_APP"
     | "VERIFY_2FA_APP" | "REMOVE_2FA_APP" | "SEND_EMAIL_CODE" | "VERIFY_EMAIL_CODE"
-    | "CHANGE_PASSWORD" | "PASSWORD_RESET_REQUEST" | "PASSWORD_RESET_EXECUTE" | "PASSWORD_RESET_VALIDATE";
+    | "CHANGE_PASSWORD" | "PASSWORD_RESET_REQUEST" | "PASSWORD_RESET_EXECUTE" | "PASSWORD_RESET_VALIDATE"
+    | "ADMIN_PASSWORD_RESET";
     debugLevel: LogDebugLevel;
     userId?: string;
     deviceId?: string;

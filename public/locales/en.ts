@@ -49,6 +49,8 @@ export default {
             changePosition: "Change position",
             changePassword: "Change password",
             ok: "Understood",
+            close: "Close",
+            reset: "Reset",
             startInspection: "Start inspection",
         },
         cadet: {
@@ -674,6 +676,7 @@ export default {
             },
             actions: {
                 resetPassword: "Reset password",
+                resetPasswordConfirm: "Generate a temporary password for {user}? All active sessions will be terminated.",
                 reset2FA: "Reset 2FA",
                 "reset2FA.notAvailable": "Not yet available",
                 delete: "Delete user {user}",
@@ -684,16 +687,18 @@ export default {
             },
             success: {
                 deleted: "User deleted successfully",
-                passwordReset: "Password reset successfully",
+                passwordReset: "Temporary password generated",
                 saved: "User updated successfully",
-                created: "User created successfully",
             },
             error: {
-                changePassword: "Saving of the password failed",
+                passwordReset: "Resetting the password failed",
                 delete: "Deleting the user failed",
                 create: "Creating the user failed",
                 save: "Updating the user failed",
-
+            },
+            tempPassword: {
+                label: "The temporary password is:",
+                warning: "This password will only be shown once. Please note it down.",
             },
         },
         deficiency: {
@@ -850,34 +855,6 @@ export default {
                     pattern: "The text does not match"
                 },
             },
-        },
-        changePassword: {
-            header: {
-                change: "Change password of {user}",
-                create: "Input password for new user",
-            },
-            requirement: {
-                message: "The password must meet the following requirements:",
-                1: "at least 8 characters",
-                2: "upper and lower case characters",
-                3: "at least one number",
-            },
-            label: {
-                password: "Password",
-                confirmation: "Repeat password",
-            },
-            error: {
-                password: {
-                    required: "Please enter a password",
-                    minLength: "The password must be at least 8 characters long",
-                    pattern: "The password does not meet all requirements",
-                },
-                confirmation: {
-                    required: "Please confirm the password",
-                    invalid: "The passwords do not match",
-                },
-            },
-            save: "Save",
         },
         changeLanguage: {
             header: "Switch language",
