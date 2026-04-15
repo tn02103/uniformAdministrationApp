@@ -3,10 +3,11 @@ import { getInspectedCadetIdList, getInspectionState, getPlannedInspectionList, 
 import { AuthRole } from "@/lib/AuthRoles";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
 import useSWR from "swr";
+import { swrKeys } from "./swrKeys";
 
 export function useInspectionState() {
     const { data } = useSWR(
-        "inspection.status",
+        swrKeys.inspectionStatus,
         getInspectionState,
         {
             refreshInterval: 3000
@@ -19,7 +20,7 @@ export function useInspectionState() {
 
 export function usePlannedInspectionList(initialData?: PlannedInspectionType[]) {
     const {data, mutate} = useSWR(
-        "inspection.planned.list",
+        swrKeys.inspectionPlannedList,
         getPlannedInspectionList,
         {
             fallbackData: initialData,
@@ -33,7 +34,7 @@ export function usePlannedInspectionList(initialData?: PlannedInspectionType[]) 
 
 export function useInspectedCadetIdList(userRole: number, inspectionActive?: boolean) {
     const { data: inspectedIdList } = useSWR(
-        `inspection/status/idList`,
+        swrKeys.inspectionInspectedIdList,
         () => (userRole >= AuthRole.inspector) ? getInspectedCadetIdList() : null,
         {
             refreshInterval: inspectionActive ? 3000 : undefined
@@ -43,6 +44,6 @@ export function useInspectedCadetIdList(userRole: number, inspectionActive?: boo
 }
 
 export const useUnresolvedDeficienciesByCadet = (cadetId: string) => {
-    const { data } = useSWR(`cadet.${cadetId}.deficiencies.unresolved`, () => getUnresolvedDeficienciesByCadet(cadetId));
+    const { data } = useSWR(swrKeys.unresolvedDeficienciesByCadet(cadetId), () => getUnresolvedDeficienciesByCadet(cadetId));
     return { unresolvedDeficiencies: data };
 }

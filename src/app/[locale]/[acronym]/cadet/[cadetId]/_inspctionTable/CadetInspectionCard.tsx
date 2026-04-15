@@ -14,6 +14,7 @@ import CadetInspectionCardHeader from "./CadetInspectionCardHeader";
 import { CadetInspectionStep1 } from "./CadetInspectionStep1";
 import { CadetInspectionStep2 } from "./CadetInspectionStep2";
 import { OldDeficiencyRow } from "./OldDeficiencyRow";
+import { swrKeys } from "@/dataFetcher/swrKeys";
 
 
 export const CadetInspectionCard = () => {
@@ -30,19 +31,17 @@ export const CadetInspectionCard = () => {
 
     const handleStartCadetInspection = async () => getCadetInspectionFormData(cadetId).then((data) => {
         form.reset(data);
-        setStep(1);
+        if (data.oldDeficiencyList.length > 0) {
+            setStep(1);
+        } else {
+            setStep(2);
+        }
     }).catch(() => {
         toast.error(t('cadetDetailPage.inspection.error.startInspection'));
     })
 
     const handleSaveInspection = async (data: CadetInspectionFormSchema) => {
-        data.newDeficiencyList.forEach((def, index) => {
-            if (def.materialId) {
-                if (def.materialId === "others") {
-                    data.newDeficiencyList[index].materialId = def.otherMaterialId;
-                }
-            }
-
+        data.newDeficiencyList.forEach((def) => {
             if (def.uniformId === "") def.uniformId = null;
             if (def.materialId === "") def.materialId = null;
             if (def.otherMaterialId === "") def.otherMaterialId = null;
@@ -51,7 +50,7 @@ export const CadetInspectionCard = () => {
 
         saveCadetInspection(data).then(() => {
             mutate(
-                (key: string | object) => (typeof key === "string") && (key === `cadet.${cadetId}.inspection` || key === `cadet.${cadetId}.deficiencies.unresolved`),
+                swrKeys.unresolvedDeficienciesByCadet(cadetId),
                 undefined,
                 { populateCache: false }
             );

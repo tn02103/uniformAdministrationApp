@@ -1,10 +1,10 @@
 
 import { getMaterialConfiguration } from "@/dal/material/type/_index";
 import useSWR from "swr";
-
+import { swrKeys } from "./swrKeys";
 
 export function useMaterialConfiguration() {
-    const { data } = useSWR('materialConfig', getMaterialConfiguration, {
+    const { data } = useSWR(swrKeys.materialConfig, getMaterialConfiguration, {
         revalidateOnFocus: false,
     });
     return { config: data }

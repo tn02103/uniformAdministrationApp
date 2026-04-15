@@ -2,12 +2,13 @@
 
 import { createCadet, getCadetData, getCadetLastInspectionDate, saveCadetData } from "@/actions/cadet/data";
 import { useGlobalData } from "@/components/globalDataProvider";
+import { swrKeys } from "@/dataFetcher/swrKeys";
 import { AuthRole } from "@/lib/AuthRoles";
+import dayjs from "@/lib/dayjs";
 import { useI18n } from "@/lib/locales/client";
 import { Cadet } from "@/types/globalCadetTypes";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import dayjs from "@/lib/dayjs";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
@@ -36,7 +37,7 @@ const CadetDataTableForm = ({ initialData }: PropType) => {
     const [submitting, setSubmitting] = useState(false);
     const [editable, setEditable] = useState(!initialData);
     const { data: lastInspectionDate } = useSWR(
-        `cadet/inspection/lastInspection`,
+        swrKeys.cadetLastInspection,
         (!initialData || userRole < AuthRole.inspector)
             ? null : () => getCadetLastInspectionDate(cadetId).catch(),
     )

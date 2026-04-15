@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { mutate } from "swr";
 import { CadetMaterial, MaterialGroup } from "../../types/globalMaterialTypes";
 import { issueMaterial } from "@/actions/controllers/CadetMaterialController";
+import { swrKeys } from "@/dataFetcher/swrKeys";
 
 export type IssueMaterialModalProps = {
     cadetId: string,
@@ -33,7 +34,7 @@ const IssueMaterialModal = ({ cadetId, materialGroup, issuedMaterialList, oldMat
         onClose();
         issueMaterial(cadetId, materialId, +formData.issued, oldMaterial?.id)
             .then((data) => {
-                mutate(`cadet/material/${cadetId}`, data);
+                mutate(swrKeys.cadetMaterialMap(cadetId), data);
             }).catch((error) => {
                 console.error(error);
                 toast.error(t('cadetDetailPage.issueMaterial.error'));
