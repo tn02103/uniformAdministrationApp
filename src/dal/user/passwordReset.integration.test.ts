@@ -14,7 +14,7 @@ vi.mock("next/server", () => ({
 }));
 
 /** Create a minimal active RefreshToken for a given userId/deviceId/sessionId. */
-const seedRefreshToken = (userId: string, deviceId: string, sessionId: string) =>
+const createRefreshToken = (userId: string, deviceId: string, sessionId: string) =>
     prisma.refreshToken.create({
         data: {
             token: randomBytes(32).toString("hex"), // 64 hex chars
@@ -83,8 +83,8 @@ describe("<User> adminTriggerPasswordReset", () => {
         // Seed two active tokens for the manager's seeded sessions
         const { userIds, deviceIds, sessionIds } = staticData.ids;
         await Promise.all([
-            seedRefreshToken(userIds[1], deviceIds[2], sessionIds[2]),
-            seedRefreshToken(userIds[1], deviceIds[3], sessionIds[3]),
+            createRefreshToken(userIds[1], deviceIds[2], sessionIds[2]),
+            createRefreshToken(userIds[1], deviceIds[3], sessionIds[3]),
         ]);
 
         await adminTriggerPasswordReset({ id: targetId });

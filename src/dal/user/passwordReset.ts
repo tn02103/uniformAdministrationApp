@@ -17,6 +17,19 @@ export function generateTempPassword(): string {
     return `${chars.slice(0, 4).join('')}-${chars.slice(4).join('')}`;
 }
 
+/**
+ * Admin-triggered password reset for a target user within the caller's organisation.
+ *
+ * - Requires `AuthRole.admin`.
+ * - Org-scopes the target user via `userId` validation.
+ * - Generates a temporary password, hashes it (bcrypt, 12 rounds), and stores it.
+ * - Sets `changePasswordOnLogin: true` and resets `failedLoginCount` to 0.
+ * - Revokes all active refresh tokens and invalidates all valid sessions for the target user.
+ * - Logs a security audit entry for the operation.
+ *
+ * @param data - Validated payload: `id` (target userId).
+ * @returns `{ success: true; tempPassword: string }` on success.
+ */
 export const adminTriggerPasswordReset = (data: AdminTriggerPasswordResetInput) =>
     genericSAValidator(AuthRole.admin, data, AdminTriggerPasswordResetSchema, { userId: data.id })
         .then(async ([{ organisationId }, { id: userId }]) => {

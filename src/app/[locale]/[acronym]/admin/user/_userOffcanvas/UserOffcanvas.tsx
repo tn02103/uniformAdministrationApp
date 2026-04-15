@@ -102,7 +102,7 @@ export const UserOffcanvas = ({
 
     const handleSave = async (data: UserFormInput, form: UseFormReturn<UserFormInput>) => {
         if (isNewUser) {
-            return handleCreate(data as UserFormInput, form as UseFormReturn<UserFormInput>);
+            return handleCreate(data, form);
         }
 
         await SAFormHandler(
