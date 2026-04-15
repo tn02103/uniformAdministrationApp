@@ -2,6 +2,8 @@ export const metadata = {
     title: "Benutzerverwaltung — Dokumentation",
 };
 
+import Image from "next/image";
+
 export default function DocsAdminUsersPage() {
     return (
         <>
@@ -14,7 +16,7 @@ export default function DocsAdminUsersPage() {
             <hr />
 
             <figure className="mb-4">
-                <img src="/docs-screenshots/user-page.png" alt="Nutzerverwaltung" className="img-fluid border rounded shadow-sm" />
+                <Image src="/docs-screenshots/user-page.png" alt="Nutzerverwaltung" className="img-fluid border rounded shadow-sm" width={1200} height={500} />
                 <figcaption className="text-muted small mt-1">Nutzerübersicht mit Benutzernamen, Rollen und Status aller Konten der Organisation.</figcaption>
             </figure>
 

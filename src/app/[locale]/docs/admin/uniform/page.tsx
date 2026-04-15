@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export const metadata = {
     title: "Uniform-Konfiguration — Dokumentation",
@@ -17,14 +18,14 @@ export default function DocsAdminUniformPage() {
             <hr />
 
             <figure className="mb-4">
-                <img src="/docs-screenshots/uniform-config-type-list.png" alt="Uniform-Konfiguration" className="img-fluid border rounded shadow-sm" />
+                <Image src="/docs-screenshots/uniform-config-type-list.png" alt="Uniform-Konfiguration" className="img-fluid border rounded shadow-sm" width={1200} height={500} />
                 <figcaption className="text-muted small mt-1">Uniform-Konfigurationsseite mit Uniformtypen und Größenlisten.</figcaption>
             </figure>
 
             <h2>Uniformtypen verwalten</h2>
             <div className="d-flex flex-column flex-md-row gap-3 align-items-md-start mb-4">
                 <figure className="flex-shrink-0 order-2 order-md-1 m-0">
-                    <img src="/docs-screenshots/uniform-config-type-details.png" alt="Ansicht Uniformtyp-Details" className="img-fluid border rounded shadow-sm" style={{ maxWidth: "380px" }} />
+                    <Image src="/docs-screenshots/uniform-config-type-details.png" alt="Ansicht Uniformtyp-Details" className="img-fluid border rounded shadow-sm" width={380} height={240} />
                     <figcaption className="text-muted small mt-1">Ansicht Uniformtyp-Details</figcaption>
                 </figure>
                 <div className="order-1 order-md-2">
@@ -43,7 +44,7 @@ export default function DocsAdminUniformPage() {
             <h2>Generationen verwalten</h2>
             <div className="d-flex flex-column flex-md-row gap-3 align-items-md-start mb-4">
                 <figure className="flex-shrink-0 order-2 order-md-1 m-0">
-                    <img src="/docs-screenshots/uniform-config-generation-list.png" alt="Ansicht Generationsliste" className="img-fluid border rounded shadow-sm" style={{ maxWidth: "380px" }} />
+                    <Image src="/docs-screenshots/uniform-config-generation-list.png" alt="Ansicht Generationsliste" className="img-fluid border rounded shadow-sm" width={380} height={240} />
                     <figcaption className="text-muted small mt-1">Ansicht Generationsliste</figcaption>
                 </figure>
                 <div className="order-1 order-md-2">

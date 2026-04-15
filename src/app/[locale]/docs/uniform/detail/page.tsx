@@ -1,6 +1,7 @@
 import { faShirt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
+import Image from "next/image";
 
 export const metadata = {
     title: "Einzelteil-Panel — Dokumentation",
@@ -21,7 +22,7 @@ export default function DocsUniformDetailPage() {
             <h2>Details</h2>
             <div className="d-flex flex-column flex-md-row gap-3 align-items-md-start mb-4">
                 <figure className="flex-shrink-0 order-2 order-md-1 m-0">
-                    <img src="/docs-screenshots/uniform-detail-information.png" alt="Ansicht Details" className="img-fluid border rounded shadow-sm" style={{ maxWidth: "380px" }} />
+                    <Image src="/docs-screenshots/uniform-detail-information.png" alt="Ansicht Details" className="img-fluid border rounded shadow-sm" width={380} height={240} />
                     <figcaption className="text-muted small mt-1">Ansicht Details</figcaption>
                 </figure>
                 <div className="order-1 order-md-2">
@@ -40,7 +41,7 @@ export default function DocsUniformDetailPage() {
             <h2>Besitzer</h2>
             <div className="d-flex flex-column flex-md-row gap-3 align-items-md-start mb-4">
                 <figure className="flex-shrink-0 order-2 order-md-1 m-0">
-                    <img src="/docs-screenshots/uniform-detail-owner.png" alt="Ansicht Besitzer" className="img-fluid border rounded shadow-sm" style={{ maxWidth: "380px" }} />
+                    <Image src="/docs-screenshots/uniform-detail-owner.png" alt="Ansicht Besitzer" className="img-fluid border rounded shadow-sm" width={380} height={240} />
                     <figcaption className="text-muted small mt-1">Ansicht Besitzer</figcaption>
                 </figure>
                 <div className="order-1 order-md-2">
@@ -55,7 +56,7 @@ export default function DocsUniformDetailPage() {
             <h2>Lagereinheit</h2>
             <div className="d-flex flex-column flex-md-row gap-3 align-items-md-start mb-4">
                 <figure className="flex-shrink-0 order-2 order-md-1 m-0">
-                    <img src="/docs-screenshots/uniform-detail-storage.png" alt="Ansicht Lagereinheit" className="img-fluid border rounded shadow-sm" style={{ maxWidth: "380px" }} />
+                    <Image src="/docs-screenshots/uniform-detail-storage.png" alt="Ansicht Lagereinheit" className="img-fluid border rounded shadow-sm" width={380} height={240} />
                     <figcaption className="text-muted small mt-1">Ansicht Lagereinheit</figcaption>
                 </figure>
                 <div className="order-1 order-md-2">
@@ -74,7 +75,7 @@ export default function DocsUniformDetailPage() {
             <h2>Mängel</h2>
             <div className="d-flex flex-column flex-md-row gap-3 align-items-md-start mb-4">
                 <figure className="flex-shrink-0 order-2 order-md-1 m-0">
-                    <img src="/docs-screenshots/uniform-detail-deficiency.png" alt="Ansicht Mängel" className="img-fluid border rounded shadow-sm" style={{ maxWidth: "380px" }} />
+                    <Image src="/docs-screenshots/uniform-detail-deficiency.png" alt="Ansicht Mängel" className="img-fluid border rounded shadow-sm" width={380} height={240} />
                     <figcaption className="text-muted small mt-1">Ansicht Mängel</figcaption>
                 </figure>
                 <div className="order-1 order-md-2">
@@ -89,7 +90,7 @@ export default function DocsUniformDetailPage() {
             <h2>Historie</h2>
             <div className="d-flex flex-column flex-md-row gap-3 align-items-md-start mb-4">
                 <figure className="flex-shrink-0 order-2 order-md-1 m-0">
-                    <img src="/docs-screenshots/uniform-detail-history.png" alt="Ansicht Historie" className="img-fluid border rounded shadow-sm" style={{ maxWidth: "380px" }} />
+                    <Image src="/docs-screenshots/uniform-detail-history.png" alt="Ansicht Historie" className="img-fluid border rounded shadow-sm" width={380} height={240} />
                     <figcaption className="text-muted small mt-1">Ansicht Historie</figcaption>
                 </figure>
                 <div className="order-1 order-md-2">

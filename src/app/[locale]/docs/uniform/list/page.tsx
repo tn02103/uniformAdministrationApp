@@ -1,5 +1,7 @@
 import { faShirt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Image from "next/image";
+import Link from "next/link";
 
 export const metadata = {
     title: "Uniformliste — Dokumentation",
@@ -20,7 +22,7 @@ export default function DocsUniformListPage() {
 
             <hr />
             <figure className="mb-4">
-                <img src="/docs-screenshots/uniform-list-page.png" alt="Ansicht Uniformliste" className="img-fluid border rounded shadow-sm" />
+                <Image src="/docs-screenshots/uniform-list-page.png" alt="Ansicht Uniformliste" className="img-fluid border rounded shadow-sm" width={1200} height={500} />
                 <figcaption className="text-muted small mt-1">Ansicht Uniformliste</figcaption>
             </figure>
 
@@ -36,7 +38,7 @@ export default function DocsUniformListPage() {
             <h3>Suche</h3>
             <div className="d-flex flex-column flex-md-row gap-3 align-items-md-start mb-4">
                 <figure className="flex-shrink-0 order-2 order-md-1 m-0">
-                    <img src="/docs-screenshots/uniform-list-search.png" alt="Ansicht Suchfeld" className="img-fluid border rounded shadow-sm" style={{ maxWidth: "250px" }} />
+                    <Image src="/docs-screenshots/uniform-list-search.png" alt="Ansicht Suchfeld" className="img-fluid border rounded shadow-sm" width={250} height={160} />
                     <figcaption className="text-muted small mt-1">Ansicht Suchfeld</figcaption>
                 </figure>
                 <div className="order-1 order-md-2">
@@ -58,7 +60,7 @@ export default function DocsUniformListPage() {
             <h3>Filter</h3>
             <div className="d-flex flex-column flex-md-row gap-3 align-items-md-start mb-4">
                 <figure className="flex-shrink-0 order-2 order-md-1 m-0">
-                    <img src="/docs-screenshots/uniform-list-filter.png" alt="Ansicht Filterpanel" className="img-fluid border rounded shadow-sm" style={{ maxWidth: "280px" }} />
+                    <Image src="/docs-screenshots/uniform-list-filter.png" alt="Ansicht Filterpanel" className="img-fluid border rounded shadow-sm" width={280} height={180} />
                     <figcaption className="text-muted small mt-1">Ansicht Filterpanel</figcaption>
                 </figure>
                 <div className="order-1 order-md-2">
@@ -82,13 +84,13 @@ export default function DocsUniformListPage() {
                 Das <strong>R</strong>-Badge an der Nummer kennzeichnet Reserveteile.
                 Ein Besitzer-Link führt direkt zur Detailseite der Person.
             </p>
-            <p>
+                <p>
                 Das externe Link-Symbol am Zeilenende öffnet das{" "}
-                <a href="/docs/uniform/detail">Einzelteil-Panel</a> für dieses Teil.
+                <Link href="/docs/uniform/detail">Einzelteil-Panel</Link> für dieses Teil.
             </p>
 
             <figure className="mb-4">
-                <img src="/docs-screenshots/uniform-list-table.png" alt="Ansicht Tabelle" className="img-fluid border rounded shadow-sm" />
+                <Image src="/docs-screenshots/uniform-list-table.png" alt="Ansicht Tabelle" className="img-fluid border rounded shadow-sm" width={800} height={400} />
                 <figcaption className="text-muted small mt-1">Ansicht Tabelle</figcaption>
             </figure>
 

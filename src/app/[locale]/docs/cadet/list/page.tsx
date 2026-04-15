@@ -1,5 +1,6 @@
-import { faDisplay, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Image from "next/image";
 
 export const metadata = {
     title: "Personalliste — Dokumentation",
@@ -22,7 +23,7 @@ export default function DocsCadetListPage() {
 
             <hr />
             <figure className="my-4">
-                <img src="/docs-screenshots/Personalliste.png" alt="Nutzerverwaltung" className="img-fluid border rounded shadow-sm" />
+                <Image src="/docs-screenshots/Personalliste.png" alt="Nutzerverwaltung" className="img-fluid border rounded shadow-sm" width={1200} height={500} />
                 <figcaption className="text-muted small mt-1">Nutzerübersicht mit Benutzernamen, Rollen und Status aller Konten der Organisation.</figcaption>
             </figure>
             
@@ -48,7 +49,7 @@ export default function DocsCadetListPage() {
             </ul>
 
              <figure className="my-4">
-                <img src="/docs-screenshots/Personalliste-filter.png" alt="Nutzerverwaltung" className="img-fluid border rounded shadow-sm" />
+                <Image src="/docs-screenshots/Personalliste-filter.png" alt="Nutzerverwaltung" className="img-fluid border rounded shadow-sm" width={800} height={400} />
                 <figcaption className="text-muted small mt-1">Nutzerübersicht mit Benutzernamen, Rollen und Status aller Konten der Organisation.</figcaption>
             </figure>
 

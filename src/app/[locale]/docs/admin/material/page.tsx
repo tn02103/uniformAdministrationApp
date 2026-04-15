@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export const metadata = {
     title: "Material-Konfiguration — Dokumentation",
@@ -16,14 +17,14 @@ export default function DocsAdminMaterialPage() {
             <hr />
 
             <figure className="mb-4">
-                <img src="/docs-screenshots/material-config-page.png" alt="Material-Konfiguration" className="img-fluid border rounded shadow-sm" />
+                <Image src="/docs-screenshots/material-config-page.png" alt="Material-Konfiguration" className="img-fluid border rounded shadow-sm" width={1200} height={500} />
                 <figcaption className="text-muted small mt-1">Material-Konfigurationsseite mit Materialgruppen und Sortierungs-Schiebereglern.</figcaption>
             </figure>
 
             <h2>Aufbau der Seite</h2>
             <div className="d-flex flex-column flex-md-row gap-3 align-items-md-start mb-4">
                 <figure className="flex-shrink-0 order-2 order-md-1 m-0">
-                    <img src="/docs-screenshots/material-config-group-detail.png" alt="Ansicht Gruppendetails" className="img-fluid border rounded shadow-sm" style={{ maxWidth: "320px" }} />
+                    <Image src="/docs-screenshots/material-config-group-detail.png" alt="Ansicht Gruppendetails" className="img-fluid border rounded shadow-sm" width={320} height={200} />
                     <figcaption className="text-muted small mt-1">Ansicht Gruppendetails</figcaption>
                 </figure>
                 <div className="order-1 order-md-2">
@@ -39,7 +40,7 @@ export default function DocsAdminMaterialPage() {
             <h2>Materialgruppen verwalten</h2>
             <div className="d-flex flex-column flex-md-row gap-3 align-items-md-start mb-4">
                 <figure className="flex-shrink-0 order-2 order-md-1 m-0">
-                    <img src="/docs-screenshots/material-config-groups.png" alt="Ansicht Materialgruppen" className="img-fluid border rounded shadow-sm" style={{ maxWidth: "260px" }} />
+                    <Image src="/docs-screenshots/material-config-groups.png" alt="Ansicht Materialgruppen" className="img-fluid border rounded shadow-sm" width={260} height={170} />
                     <figcaption className="text-muted small mt-1">Ansicht Materialgruppen</figcaption>
                 </figure>
                 <div className="order-1 order-md-2">
@@ -60,7 +61,7 @@ export default function DocsAdminMaterialPage() {
             <h2>Materialtypen verwalten</h2>
             <div className="d-flex flex-column flex-md-row gap-3 align-items-md-start mb-4">
                 <figure className="flex-shrink-0 order-2 order-md-1 m-0">
-                    <img src="/docs-screenshots/material-config-type-list.png" alt="Ansicht Materialtypen" className="img-fluid border rounded shadow-sm" style={{ maxWidth: "380px" }} />
+                    <Image src="/docs-screenshots/material-config-type-list.png" alt="Ansicht Materialtypen" className="img-fluid border rounded shadow-sm" width={380} height={240} />
                     <figcaption className="text-muted small mt-1">Ansicht Materialtypen</figcaption>
                 </figure>
                 <div className="order-1 order-md-2">

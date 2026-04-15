@@ -1,5 +1,6 @@
 import { faChartLine } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Image from "next/image";
 
 export const metadata = {
     title: "Dashboard — Dokumentation",
@@ -17,7 +18,7 @@ export default function DocsDashboardPage() {
             <hr />
 
             <figure className="my-4">
-                <img src="/docs-screenshots/ss-dashboard.png" alt="Dashboard" className="img-fluid border rounded shadow-sm" />
+                <Image src="/docs-screenshots/ss-dashboard.png" alt="Dashboard" className="img-fluid border rounded shadow-sm" width={1200} height={500} />
                 <figcaption className="text-muted small mt-1">Dashboard mit Balkendiagramm zur Verteilung der Uniformteile nach Typ.</figcaption>
             </figure>
 

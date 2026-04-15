@@ -1,5 +1,6 @@
 import { faShirt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Image from "next/image";
 
 export const metadata = {
     title: "Größen & Größenlisten — Dokumentation",
@@ -18,7 +19,7 @@ export default function DocsUniformSizesPage() {
             <hr />
 
             <figure className="mb-4">
-                <img src="/docs-screenshots/sizelist-overview.png" alt="Ansicht Größen & Größenlisten" className="img-fluid border rounded shadow-sm" />
+                <Image src="/docs-screenshots/sizelist-overview.png" alt="Ansicht Größen & Größenlisten" className="img-fluid border rounded shadow-sm" />
                 <figcaption className="text-muted small mt-1">Ansicht Größen &amp; Größenlisten Konfiguration</figcaption>
             </figure>
 

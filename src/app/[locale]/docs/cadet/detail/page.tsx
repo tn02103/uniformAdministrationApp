@@ -1,5 +1,6 @@
 import { faDisplay } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Image from "next/image";
 
 export const metadata = {
     title: "Personendetail — Dokumentation",
@@ -27,7 +28,7 @@ export default function DocsCadetDetailPage() {
             <h2>Personaldaten</h2>
             <div className="d-flex flex-column flex-md-row gap-3 align-items-md-start mb-4">
                 <figure className="flex-shrink-0 order-2 order-md-1 m-0">
-                    <img src="/docs-screenshots/cadet-detail-data.png" alt="Ansicht Personaldaten" className="img-fluid border rounded shadow-sm" style={{ maxWidth: "220px" }} />
+                    <Image src="/docs-screenshots/cadet-detail-data.png" alt="Ansicht Personaldaten" className="img-fluid border rounded shadow-sm" width={220} height={140} />
                     <figcaption className="text-muted small mt-1">Ansicht Personaldaten</figcaption>
                 </figure>
                 <div className="order-1 order-md-2">
@@ -46,7 +47,7 @@ export default function DocsCadetDetailPage() {
             <h2>Mängel</h2>
             <div className="d-flex flex-column flex-md-row gap-3 align-items-md-start mb-4">
                 <figure className="flex-shrink-0 order-2 order-md-1 m-0">
-                    <img src="/docs-screenshots/cadet-detail-deficiency.png" alt="Ansicht Mängel" className="img-fluid border rounded shadow-sm" style={{ maxWidth: "340px" }} />
+                    <Image src="/docs-screenshots/cadet-detail-deficiency.png" alt="Ansicht Mängel" className="img-fluid border rounded shadow-sm" width={340} height={220} />
                     <figcaption className="text-muted small mt-1">Ansicht Mängel</figcaption>
                 </figure>
                 <div className="order-1 order-md-2">
@@ -83,14 +84,14 @@ export default function DocsCadetDetailPage() {
             </div>
 
             <figure className="mb-4 m-0">
-                <img src="/docs-screenshots/cadet-detail-uniform.png" alt="Ansicht Uniformteile" className="img-fluid border rounded shadow-sm" />
+                <Image src="/docs-screenshots/cadet-detail-uniform.png" alt="Ansicht Uniformteile" className="img-fluid border rounded shadow-sm" width={800} height={400} />
                 <figcaption className="text-muted small mt-1">Ansicht Uniformteile</figcaption>
             </figure>
 
             <h2>Material</h2>
             <div className="d-flex flex-column flex-md-row gap-3 align-items-md-start mb-4">
                 <figure className="flex-shrink-0 order-2 order-md-1 m-0">
-                    <img src="/docs-screenshots/cadet-detail-material.png" alt="Ansicht Material" className="img-fluid border rounded shadow-sm" style={{ maxWidth: "300px" }} />
+                    <Image src="/docs-screenshots/cadet-detail-material.png" alt="Ansicht Material" className="img-fluid border rounded shadow-sm" width={300} height={200} />
                     <figcaption className="text-muted small mt-1">Ansicht Material</figcaption>
                 </figure>
                 <div className="order-1 order-md-2">
