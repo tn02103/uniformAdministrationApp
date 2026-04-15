@@ -8,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
                 userAgent: '*',
                 // Only the public documentation section should be indexed.
                 // Authenticated app routes (/:locale/:acronym/*) must not be crawled.
-                allow: ['/en/docs', '/de/docs'],
+                allow: [/*'/en/docs',*/ '/de/docs'], // english docs are currently not available, so we only allow german docs for now
                 disallow: ['/'],
             },
         ],
