@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 import { Arguments, mutate } from "swr";
 import { LabelIconButton } from "../Buttons/LabelIconButton";
 import { ExpandableDividerArea } from "../ExpandableArea/ExpandableArea";
+import { swrKeys } from "@/dataFetcher/swrKeys";
 
 export const UniformDeficiencyRow = ({ uniformId }: { uniformId: string }) => {
     const t = useI18n();
@@ -100,7 +101,7 @@ const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: Defici
             },
         }).then(async () => {
             setEditable(false);
-            await mutate((key: Arguments) => (typeof key === "string") && key.startsWith("uniform." + uniformId + ".deficiencies."));
+            await mutate(swrKeys.uniformDefieicncyMutateMatcher(uniformId));
         }).catch(() => {
             toast.error(t('common.error.actions.save'));
         });
@@ -111,7 +112,7 @@ const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: Defici
             data
         }).then(async () => {
             hideCreateCard?.();
-            await mutate((key: Arguments) => (typeof key === "string") && key.startsWith("uniform." + uniformId + ".deficiencies."));
+            await mutate(swrKeys.uniformDefieicncyMutateMatcher(uniformId));
         }).catch(() => {
             toast.error(t('common.error.actions.create'));
         });
@@ -120,7 +121,7 @@ const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: Defici
     const handleResolve = () => {
         if (!deficiency) return;
         resolveDeficiency(deficiency.id!).then(() => {
-            mutate((key: Arguments) => (typeof key === "string") && key.startsWith("uniform." + uniformId + ".deficiencies."));
+            mutate(swrKeys.uniformDefieicncyMutateMatcher(uniformId));
             setEditable(false);
         }).catch(() => {
             toast.error(t('common.error.unknown'));

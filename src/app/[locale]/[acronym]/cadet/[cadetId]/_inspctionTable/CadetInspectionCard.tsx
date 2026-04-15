@@ -14,6 +14,7 @@ import CadetInspectionCardHeader from "./CadetInspectionCardHeader";
 import { CadetInspectionStep1 } from "./CadetInspectionStep1";
 import { CadetInspectionStep2 } from "./CadetInspectionStep2";
 import { OldDeficiencyRow } from "./OldDeficiencyRow";
+import { swrKeys } from "@/dataFetcher/swrKeys";
 
 
 export const CadetInspectionCard = () => {
@@ -49,7 +50,7 @@ export const CadetInspectionCard = () => {
 
         saveCadetInspection(data).then(() => {
             mutate(
-                (key: string | object) => (typeof key === "string") && (key === `cadet.${cadetId}.inspection` || key === `cadet.${cadetId}.deficiencies.unresolved`),
+                swrKeys.unresolvedDeficienciesByCadet(cadetId),
                 undefined,
                 { populateCache: false }
             );

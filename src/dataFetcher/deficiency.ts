@@ -3,11 +3,12 @@ import { getDeficiencyAdmintypeList } from "@/actions/controllers/DeficiencyType
 import { getDeficiencyTypeList } from "@/actions/controllers/InspectionController";
 import { getUniformItemDeficiencies } from "@/dal/uniform/item/_index";
 import useSWR from "swr";
+import { swrKeys } from "./swrKeys";
 
 
 export const useDeficiencyTypes = () => {
     const { data } = useSWR(
-        `deficiency.type.list`,
+        swrKeys.deficiencyTypeList,
         getDeficiencyTypeList,
     );
     return {
@@ -17,7 +18,7 @@ export const useDeficiencyTypes = () => {
 
 export const useDeficienciesByUniformId = (uniformId: string, includeResolved: boolean) => {
     const { data: deficiencies, mutate } = useSWR(
-        `uniform.${uniformId}.deficiencies.${JSON.stringify(includeResolved)}`,
+        swrKeys.uniformDeficiencies(uniformId, includeResolved),
         () => getUniformItemDeficiencies({ uniformId, includeResolved }),
     );
     return { deficiencies, mutate };
@@ -25,7 +26,7 @@ export const useDeficienciesByUniformId = (uniformId: string, includeResolved: b
 
 
 export function useAdminDeficiencyTypes() {
-    const { data, mutate } = useSWR('deficiency.type.adminList', getDeficiencyAdmintypeList);
+    const { data, mutate } = useSWR(swrKeys.deficiencyAdminTypeList, getDeficiencyAdmintypeList);
 
     return { typeList: data, mutate }
 }

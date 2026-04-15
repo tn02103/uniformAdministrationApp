@@ -3,11 +3,12 @@ import { getUniformTypeList } from "@/dal/uniform/type/_index";
 import { UniformSize, UniformType } from "@/types/globalUniformTypes";
 
 import useSWR from "swr";
+import { swrKeys } from "./swrKeys";
 
 
 export function useUniformTypeList(fallbackData?: UniformType[]) {
     const { data, mutate } = useSWR(
-        'uniform.type.list',
+        swrKeys.uniformTypeList,
         getUniformTypeList,
         { fallbackData });
     return { typeList: data, mutate };
@@ -30,7 +31,7 @@ export function useUniformGenerationListByType(typeId: string) {
 }
 
 export function useUniformSizelists() {
-    const { data, mutate } = useSWR('uniform.sizelist.list', getUniformSizelists);
+    const { data, mutate } = useSWR(swrKeys.uniformSizelistList, getUniformSizelists);
     return { sizelistList: data, mutate };
 }
 
@@ -44,7 +45,7 @@ export function useUniformSizelist(id: string) {
 }
 
 export function useAllUniformSizesList(initialValue?: UniformSize[]) {
-    const { data, mutate } = useSWR('uniform.size.all', getAllUniformSizesList, { fallbackData: initialValue });
+    const { data, mutate } = useSWR(swrKeys.uniformSizeAll, getAllUniformSizesList, { fallbackData: initialValue });
     return { sizes: data, mutate };
 }
 

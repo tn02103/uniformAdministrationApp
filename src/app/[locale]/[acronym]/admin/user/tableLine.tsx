@@ -28,7 +28,7 @@ export default function UserAdminTableRow({
     const modal = useModal();
 
     const formId = `user_${user ? user.id : "new"}`;
-    const { register, control, handleSubmit, reset, formState: { errors } } = useForm<User>({ defaultValues: user, mode: "onChange" });
+    const { control, handleSubmit, reset } = useForm<User>({ defaultValues: user, mode: "onChange" });
     const mobileForm = useForm<User>({ defaultValues: user, mode: "onChange" });
 
     const [editable, setEditable] = useState(!user);
