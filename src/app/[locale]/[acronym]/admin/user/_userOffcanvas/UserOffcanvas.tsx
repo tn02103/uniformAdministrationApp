@@ -34,12 +34,12 @@ export type Props = {
  * Offcanvas panel for viewing, creating, and editing a single user.
  *
  * Operates in two modes determined by the `user` prop:
- * - **Create mode** (`user === null`): renders an empty form with a password field and a
- *   "Create" submit button. Calls `createUser` on submit. On success, closes the panel and
- *   triggers `mutate` to refresh the user list.
+ * - **Create mode** (`user === null`): renders an empty form and a "Create" submit button.
+ *   Calls `createUser` on submit (which generates a server-side temp password).
+ *   On success, closes the panel and triggers `mutate` to refresh the user list.
  * - **View/Edit mode** (`user !== null`): renders the user's current data as plaintext fields
  *   when `editable` is false. Switching to edit mode (`editable = true`) enables all fields
- *   and replaces the action buttons with Save / Cancel. Password field is hidden in this mode.
+ *   and replaces the action buttons with Save / Cancel.
  *
  * Actions available in view mode (non-editable, existing user):
  * - **Edit**: calls `setEditable(true)` — controlled externally via the `editable` / `setEditable` props.
@@ -155,7 +155,7 @@ export const UserOffcanvas = ({
                             type="button"
                             className="btn btn-outline-secondary btn-sm border-0 ms-2 p-1 rounded"
                             onClick={() => navigator.clipboard.writeText(tempPassword)}
-                            aria-label="copy password"
+                            aria-label={t('admin.user.tempPassword.copyPassword')}
                         >
                             <FontAwesomeIcon icon={faCopy} />
                         </button>

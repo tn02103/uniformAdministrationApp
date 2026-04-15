@@ -699,6 +699,7 @@ export default {
             tempPassword: {
                 label: "The temporary password is:",
                 warning: "This password will only be shown once. Please note it down.",
+                copyPassword: "Copy password to clipboard",
             },
         },
         deficiency: {

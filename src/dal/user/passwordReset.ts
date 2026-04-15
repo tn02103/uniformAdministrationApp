@@ -12,6 +12,12 @@ import { userAgent } from "next/server";
 // Excludes visually ambiguous characters: 0, 1, O, I, l
 const TEMP_PASSWORD_ALPHABET = '23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ';
 
+/**
+ * Generates a random temporary password (10 chars: XXXX-XXXXXX format).
+ * 
+ * Excludes visually ambiguous characters to reduce transcription errors.
+ * Not cryptographically secure—use only for admin-assigned temporary passwords.
+ */
 export function generateTempPassword(): string {
     const chars = Array.from({ length: 10 }, () => TEMP_PASSWORD_ALPHABET[randomInt(TEMP_PASSWORD_ALPHABET.length)]);
     return `${chars.slice(0, 4).join('')}-${chars.slice(4).join('')}`;
@@ -32,7 +38,7 @@ export function generateTempPassword(): string {
  */
 export const adminTriggerPasswordReset = (data: AdminTriggerPasswordResetInput) =>
     genericSAValidator(AuthRole.admin, data, AdminTriggerPasswordResetSchema, { userId: data.id })
-        .then(async ([{ organisationId }, { id: userId }]) => {
+        .then(async ([user, { id: userId }]) => {
             const headerList = await headers();
             const ipAddress = getIPAddress(headerList);
             const agent = userAgent({ headers: headerList });
@@ -51,7 +57,7 @@ export const adminTriggerPasswordReset = (data: AdminTriggerPasswordResetInput) 
                         data: { valid: false },
                     }),
                     prisma.user.update({
-                        where: { id: userId, organisationId },
+                        where: { id: userId, organisationId: user.organisationId },
                         data: { password: hashedPassword, changePasswordOnLogin: true, failedLoginCount: 0 },
                     }),
                 ]);
@@ -61,10 +67,10 @@ export const adminTriggerPasswordReset = (data: AdminTriggerPasswordResetInput) 
                     success: true,
                     debugLevel: LogDebugLevel.SUCCESS,
                     userId,
-                    organisationId,
+                    organisationId: user.organisationId,
                     ipAddress,
                     userAgent: agent,
-                    details: "Admin triggered password reset: sessions revoked, temp password set",
+                    details: `Admin ${user.id} triggered password reset: sessions revoked, temp password set`,
                 });
 
                 return { success: true as const, tempPassword };
@@ -74,10 +80,10 @@ export const adminTriggerPasswordReset = (data: AdminTriggerPasswordResetInput) 
                     success: false,
                     debugLevel: LogDebugLevel.WARNING,
                     userId,
-                    organisationId,
+                    organisationId: user.organisationId,
                     ipAddress,
                     userAgent: agent,
-                    details: "Admin triggered password reset: unexpected error",
+                    details: `Admin ${user.id} triggered password reset: unexpected error`,
                 });
                 throw error;
             }

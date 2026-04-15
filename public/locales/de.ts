@@ -700,6 +700,7 @@ export default {
             tempPassword: {
                 label: "Das temporäre Passwort lautet:",
                 warning: "Dieses Passwort wird nur einmal angezeigt. Bitte notieren Sie es.",
+                copyPassword: "Passwort in Zwischenablage kopieren",
             },
         },
         deficiency: {

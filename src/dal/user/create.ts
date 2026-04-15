@@ -11,7 +11,8 @@ import { UserFormInput, UserFormSchema } from "@/zod/user";
  * - Requires `AuthRole.admin`.
  * - Before creating, checks for duplicate `username` and `email` within the organisation
  *   in a single parallel transaction. Returns a form-level error on conflict instead of throwing.
- * - Hashes the plaintext `password` with bcrypt (12 salt rounds) before persisting.
+ * - Generates a temporary password, hashes it (bcrypt, 12 rounds), and sets `changePasswordOnLogin: true`
+ *   so the user must change their password on first login.
  *
  * @param data - Validated payload: `username`, `email`, `name`, `role`, `active`.
  * @returns `{success: true, tempPassword: string }` on success, or one of the following error shapes:
