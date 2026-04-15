@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { DocsNav } from "./_components/DocsNav";
+import MobileDocsNav from "./_components/MobileDocsNav";
 
 export const metadata = {
     title: 'Dokumentation — Uniformverwaltung',
@@ -12,9 +13,15 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
             <div className="row g-4">
                 {/* Sidebar */}
                 <aside className="col-12 col-lg-3">
-                    <div className="bg-white border rounded p-3 sticky-top" style={{ top: "1rem" }}>
-                        <h6 className="text-uppercase text-muted fw-bold mb-3 small">Dokumentation</h6>
-                        <DocsNav />
+                    {/* Mobile: collapsible nav */}
+                    <MobileDocsNav />
+
+                    {/* Desktop: always-visible sidebar */}
+                    <div className="d-none d-lg-block">
+                        <div className="bg-white border rounded p-3 sticky-top" style={{ top: "1rem" }}>
+                            <h6 className="text-uppercase text-muted fw-bold mb-3 small">Dokumentation</h6>
+                            <DocsNav />
+                        </div>
                     </div>
                 </aside>
 

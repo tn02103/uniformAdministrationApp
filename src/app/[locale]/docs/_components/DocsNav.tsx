@@ -69,7 +69,7 @@ const navItems: NavItem[] = [
     },
 ];
 
-export function DocsNav() {
+export function DocsNav({ onNavigate }: { onNavigate?: () => void } = {}) {
     const pathname = usePathname();
     const params = useParams<{ locale: string }>();
     const locale = params.locale ?? "de";
@@ -88,6 +88,7 @@ export function DocsNav() {
                         <Link
                             href={`/${locale}${item.href}`}
                             className={`d-block px-2 py-1 rounded text-decoration-none ${isActive(item.href) ? "bg-primary text-white fw-semibold" : "text-dark"}`}
+                            onClick={() => onNavigate?.()}
                         >
                             {item.icon && (
                                 <FontAwesomeIcon icon={item.icon} className="me-2" style={{ width: "1em" }} />
@@ -101,6 +102,7 @@ export function DocsNav() {
                                         <Link
                                             href={`/${locale}${child.href}`}
                                             className={`d-flex align-items-center px-2 py-1 rounded text-decoration-none small ${isActive(child.href) ? "bg-primary text-white fw-semibold" : "text-secondary"}`}
+                                            onClick={() => onNavigate?.()}
                                         >
                                             <span className="flex-grow-1">{child.label}</span>
                                             {child.isOverview && (

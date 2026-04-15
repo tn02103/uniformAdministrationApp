@@ -18,7 +18,9 @@ export default function DocsDashboardPage() {
             <hr />
 
             <figure className="my-4">
-                <Image src="/docs-screenshots/ss-dashboard.png" alt="Dashboard" className="img-fluid border rounded shadow-sm" width={1200} height={500} />
+                <div style={{ height: "300px", overflowY: "scroll" }}>
+                    <Image src="/docs-screenshots/dashboard-page.png" alt="Dashboard" className="img-fluid border rounded shadow-sm" width={1200} height={500} />
+                </div>
                 <figcaption className="text-muted small mt-1">Dashboard mit Balkendiagramm zur Verteilung der Uniformteile nach Typ.</figcaption>
             </figure>
 
