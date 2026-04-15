@@ -11,8 +11,8 @@ import { User } from "@/types/userTypes";
 import { faBars, faCheck, faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
-import { Button, Dropdown, FormControl, FormGroup, FormLabel, FormSelect } from "react-bootstrap";
-import { Control, Controller, FieldErrors, FormProvider, UseFormRegister, useForm } from "react-hook-form";
+import { Button, Dropdown, FormGroup, FormLabel, FormSelect } from "react-bootstrap";
+import { Control, Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 export default function UserAdminTableRow({

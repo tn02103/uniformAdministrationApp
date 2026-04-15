@@ -1,12 +1,11 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { CadetInspectionCard } from './CadetInspectionCard';
 import * as dalInspection from '@/dal/inspection';
 import * as dataFetcherInspection from '@/dataFetcher/inspection';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import * as nextNavigation from 'next/navigation';
-import * as swr from 'swr';
 import * as reactToastify from 'react-toastify';
-import { useEffect, useState } from 'react';
+import * as swr from 'swr';
+import { CadetInspectionCard } from './CadetInspectionCard';
 
 // Mock the DAL functions
 vi.mock('@/dal/inspection', () => ({
