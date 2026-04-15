@@ -67,12 +67,12 @@ test.describe('User administration page', () => {
         });
 
         let tempPassword: string | null = null;
+        const tempPasswordElement = userPage.messageModal.div_message.getByTestId("temp-password");
+
         await test.step('temp password modal appears with a password', async () => {
             await expect(userPage.messageModal.div_popup).toBeVisible();
-            tempPassword = await userPage.messageModal.div_message.getByTestId("temp-password").textContent();
-            expect(tempPassword).toBeTruthy();
-            // temp passwords have the pattern xxxx-xxxxxx (6+ typeable chars after dash)
-            expect(tempPassword).toMatch(/[a-zA-Z0-9]{4}-[a-zA-Z0-9]{6}/);
+            await expect(tempPasswordElement).toHaveText(/[a-zA-Z0-9]{4}-[a-zA-Z0-9]{6}/);
+            tempPassword = await tempPasswordElement.textContent();
         });
 
         await test.step('close modal and new user appears in table', async () => {
@@ -214,12 +214,13 @@ test.describe('User administration page', () => {
         });
 
         let tempPassword: string | null = null;
+        const tempPasswordElement = userPage.messageModal.div_message.getByTestId("temp-password");
+
         await test.step('temp password modal appears with a password', async () => {
             await expect(userPage.messageModal.div_popup).toBeVisible();
-            tempPassword = await userPage.messageModal.div_message.getByTestId('temp-password').textContent();
-            expect(tempPassword).toBeTruthy();
-            expect(tempPassword).toMatch(/[a-zA-Z0-9]{4}-[a-zA-Z0-9]{6}/);
-        });
+            await expect(tempPasswordElement).toHaveText(/[a-zA-Z0-9]{4}-[a-zA-Z0-9]{6}/);
+            tempPassword = await tempPasswordElement.textContent();
+         });
 
         await test.step('close modal', async () => {
             await userPage.messageModal.div_popup.getByTestId('btn_close').click();

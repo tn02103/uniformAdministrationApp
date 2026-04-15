@@ -87,5 +87,5 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>((
             )}
         </Field>
     );
-}
-);
+});
+SelectField.displayName = "SelectField";
