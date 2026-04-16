@@ -17,18 +17,24 @@ applyTo: src/dal/**/*.test.ts, src/dal/**/*.integration.test.ts
 
 ## When to Write Which
 
-**Unit tests** (`*.test.ts`):
-- Business logic, conditional branches, data transformations
-- Error handling paths
-- Any logic that doesn't purely delegate to a single Prisma call
-- Mock Prisma responses to control inputs/outputs
+**Integration tests are the default.** Every DAL function should have an integration test that verifies actual DB behaviour.
 
-**Integration tests** (`*.integration.test.ts`):
+**Unit tests** (`*.test.ts`) — only when the function contains significant internal logic NOT primarily driven by a DB call:
+- Complex data transformations or business rules computed in-process (e.g., password hashing algorithm, random token generation)
+- Error handling that can be triggered without a real DB (e.g., bcrypt throws)
+- Do NOT write unit tests for things that are just "call Prisma and return" — test those with integration tests instead
+
+**Integration tests** (`*.integration.test.ts`) — always required:
 - Actual Prisma query behaviour (joins, relations, nested writes)
 - DB constraints and transactions
 - Organisation scoping — confirm other org's data is not returned
 - Soft-delete filtering
-- Simple CRUD with no logic may only need integration tests
+- Success + error paths (e.g. duplicate key, role rejection, cross-org rejection)
+- Simple CRUD with no internal logic needs integration tests only
+
+**Example split** (`adminTriggerPasswordReset`):
+- Unit: bcrypt called with 12 rounds; temp password format matches regex
+- Integration: user record updated correctly; sessions invalidated; refresh tokens revoked; cross-org and role rejection
 
 ## Bug Fix Tests
 Every bug fix MUST include a new test case that:

@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import { expect } from "playwright/test";
 import { UserAdministrationPage } from "../../_playwrightConfig/pages/admin/user/userAdministration.page";
 import { adminTest, managerTest } from "../../_playwrightConfig/setup";
+import { compareSync } from "bcrypt";
 
 type Fixture = {
     userPage: UserAdministrationPage;
@@ -51,7 +52,6 @@ test.describe('User administration page', () => {
             name: 'New Test User',
             username: 'newtestuser',
             email: 'newtestuser@test.com',
-            password: 'Test!234',
         };
 
         await test.step('open create offcanvas', async () => {
@@ -63,12 +63,21 @@ test.describe('User administration page', () => {
             await userPage.oc_inp_name.fill(newUser.name);
             await userPage.oc_inp_username.fill(newUser.username);
             await userPage.oc_inp_email.fill(newUser.email);
-            await userPage.oc_inp_password.fill(newUser.password);
             await userPage.oc_btn_create.click();
         });
 
-        await test.step('offcanvas closes and new user appears in table', async () => {
-            await userPage.offcanvas.waitFor({ state: 'hidden' });
+        let tempPassword: string | null = null;
+        const tempPasswordElement = userPage.messageModal.div_message.getByTestId("temp-password");
+
+        await test.step('temp password modal appears with a password', async () => {
+            await expect(userPage.messageModal.div_popup).toBeVisible();
+            await expect(tempPasswordElement).toHaveText(/[a-zA-Z0-9]{4}-[a-zA-Z0-9]{6}/);
+            tempPassword = await tempPasswordElement.textContent();
+        });
+
+        await test.step('close modal and new user appears in table', async () => {
+            await userPage.messageModal.div_popup.getByTestId('btn_close').click();
+            await expect(userPage.messageModal.div_popup).toBeHidden();
             await expect(userPage.userRow(newUser.username)).toBeVisible();
         });
 
@@ -81,7 +90,9 @@ test.describe('User administration page', () => {
                 name: newUser.name,
                 email: newUser.email,
                 active: true,
+                changePasswordOnLogin: true,
             });
+            expect(compareSync(tempPassword!, dbUser!.password)).toBe(true);
         });
     });
 
@@ -151,7 +162,6 @@ test.describe('User administration page', () => {
             await userPage.oc_inp_name.fill('New User');
             await userPage.oc_inp_username.fill(existingUser.username);
             await userPage.oc_inp_email.fill('unique@example.com');
-            await userPage.oc_inp_password.fill('Test!234');
             await userPage.oc_btn_create.click();
             await expect(userPage.oc_err_username).toBeVisible();
             await userPage.oc_btn_cancel.click();
@@ -163,7 +173,6 @@ test.describe('User administration page', () => {
             await userPage.oc_inp_name.fill('New User');
             await userPage.oc_inp_username.fill('uniqueuser');
             await userPage.oc_inp_email.fill(existingUser.email);
-            await userPage.oc_inp_password.fill('Test!234');
             await userPage.oc_btn_create.click();
             await expect(userPage.oc_err_email).toBeVisible();
             await userPage.oc_btn_cancel.click();
@@ -186,6 +195,42 @@ test.describe('User administration page', () => {
             await userPage.oc_inp_email.fill(existingUser.email);
             await userPage.oc_btn_save.click();
             await expect(userPage.oc_err_email).toBeVisible();
+        });
+    });
+
+    test('admin password reset shows temp password modal', async ({ userPage, staticData }) => {
+        const users = await staticData.data.users();
+        const targetUser = users[3]; // test1 - role Nutzer, non-admin
+
+        await test.step('open offcanvas for user', async () => {
+            await userPage.btn_openUser(targetUser.username).click();
+            await expect(userPage.oc_heading(targetUser.name)).toBeVisible();
+        });
+
+        await test.step('click reset password and confirm', async () => {
+            await userPage.oc_btn_resetPassword.click();
+            // simpleYesNoModal confirm button
+            await userPage.page.getByTestId('btn_save').click();
+        });
+
+        let tempPassword: string | null = null;
+        const tempPasswordElement = userPage.messageModal.div_message.getByTestId("temp-password");
+
+        await test.step('temp password modal appears with a password', async () => {
+            await expect(userPage.messageModal.div_popup).toBeVisible();
+            await expect(tempPasswordElement).toHaveText(/[a-zA-Z0-9]{4}-[a-zA-Z0-9]{6}/);
+            tempPassword = await tempPasswordElement.textContent();
+         });
+
+        await test.step('close modal', async () => {
+            await userPage.messageModal.div_popup.getByTestId('btn_close').click();
+            await expect(userPage.messageModal.div_popup).toBeHidden();
+        });
+
+        await test.step('validate db: changePasswordOnLogin is set', async () => {
+            const dbUser = await prisma.user.findUnique({ where: { id: targetUser.id } });
+            expect(dbUser?.changePasswordOnLogin).toBe(true);
+            expect(compareSync(tempPassword!, dbUser!.password)).toBe(true);
         });
     });
 });

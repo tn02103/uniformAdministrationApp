@@ -1,8 +1,9 @@
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { CreateUserInput, CreateUserSchema } from "@/zod/user";
 import { hash } from "bcrypt";
+import { generateTempPassword } from "./passwordReset";
+import { UserFormInput, UserFormSchema } from "@/zod/user";
 
 /**
  * Creates a new user within the caller's organisation.
@@ -10,15 +11,16 @@ import { hash } from "bcrypt";
  * - Requires `AuthRole.admin`.
  * - Before creating, checks for duplicate `username` and `email` within the organisation
  *   in a single parallel transaction. Returns a form-level error on conflict instead of throwing.
- * - Hashes the plaintext `password` with bcrypt (12 salt rounds) before persisting.
+ * - Generates a temporary password, hashes it (bcrypt, 12 rounds), and sets `changePasswordOnLogin: true`
+ *   so the user must change their password on first login.
  *
- * @param data - Validated payload: `username`, `email`, `name`, `role`, `active`, `password`.
- * @returns `undefined` on success, or one of the following error shapes:
+ * @param data - Validated payload: `username`, `email`, `name`, `role`, `active`.
+ * @returns `{success: true, tempPassword: string }` on success, or one of the following error shapes:
  *   - `{ error: { formElement: "username"; message: "user.username.duplication" } }` — username already taken
  *   - `{ error: { formElement: "email"; message: "user.email.duplication" } }` — email already taken
  */
-export const createUser = (data: CreateUserInput) =>
-    genericSAValidator(AuthRole.admin, data, CreateUserSchema, {})
+export const createUser = (data: UserFormInput) =>
+    genericSAValidator(AuthRole.admin, data, UserFormSchema, {})
         .then(async ([{ organisationId }, validatedData]) => {
             const [usernameExists, emailExists] = await prisma.$transaction([
                 prisma.user.findFirst({
@@ -47,7 +49,8 @@ export const createUser = (data: CreateUserInput) =>
                 };
             }
 
-            const hashedPassword = await hash(validatedData.password, 12);
+            const tempPassword = generateTempPassword();
+            const hashedPassword = await hash(tempPassword, 12);
             await prisma.user.create({
                 data: {
                     username: validatedData.username,
@@ -56,7 +59,9 @@ export const createUser = (data: CreateUserInput) =>
                     role: validatedData.role,
                     active: validatedData.active,
                     password: hashedPassword,
+                    changePasswordOnLogin: true,
                     organisationId,
                 },
             });
+            return { success: true, tempPassword };
         });

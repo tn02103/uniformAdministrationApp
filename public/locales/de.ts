@@ -49,6 +49,8 @@ export default {
             changePosition: "Position wechseln",
             changePassword: "Passwort ändern",
             ok: "Verstanden",
+            close: "Schließen",
+            reset: "Zurücksetzen",
             startInspection: "Inspektion Starten",
         },
         cadet: {
@@ -675,6 +677,7 @@ export default {
             },
             actions: {
                 resetPassword: "Passwort zurücksetzen",
+                resetPasswordConfirm: "Für {user} ein temporäres Passwort generieren? Alle aktiven Sitzungen werden beendet.",
                 reset2FA: "2FA zurücksetzen",
                 "reset2FA.notAvailable": "Noch nicht verfügbar",
                 delete: "Benutzer {user} löschen",
@@ -685,15 +688,19 @@ export default {
             },
             success: {
                 deleted: "Nutzer erfolgreich gelöscht",
-                passwordReset: "Passwort erfolgreich zurückgesetzt",
+                passwordReset: "Temporäres Passwort wurde erstellt",
                 saved: "Nutzer erfolgreich aktualisiert",
-                created: "Nutzer erfolgreich erstellt",
             },
             error: {
-                changePassword: "Das Ändern des Passworts ist fehlgeschlagen",
+                passwordReset: "Das Zurücksetzen des Passworts ist fehlgeschlagen",
                 delete: "Das Löschen des Nutzers ist fehlgeschlagen",
                 create: "Das Anlegen des Nutzers ist fehlgeschlagen",
                 save: "Das Aktualisieren des Nutzers ist fehlgeschlagen",
+            },
+            tempPassword: {
+                label: "Das temporäre Passwort lautet:",
+                warning: "Dieses Passwort wird nur einmal angezeigt. Bitte notieren Sie es.",
+                copyPassword: "Passwort in Zwischenablage kopieren",
             },
         },
         deficiency: {
@@ -850,34 +857,6 @@ export default {
                     pattern: "Der Text stimmt nicht überein"
                 },
             },
-        },
-        changePassword: {
-            header: {
-                change: "Passwort von {user} ändern",
-                create: "Bitte geben Sie ein Passwort ein",
-            },
-            requirement: {
-                message: "Das Passwort muss die folgenden Anforderungen erfüllen:",
-                1: "mindestens 8 Zeichen",
-                2: "große und kleine Zeichen",
-                3: "mindestens eine Zahl",
-            },
-            label: {
-                password: "Passwort",
-                confirmation: "Passwort wiederholen",
-            },
-            error: {
-                password: {
-                    required: "Bitte ein Passwort eingeben",
-                    minLength: "Das Passwort muss mindestens 8 Zeichen lang sein",
-                    pattern: "Das Passwort erfüllt nicht alle vorraussetzungen",
-                },
-                confirmation: {
-                    required: "Bitte bestätigen Sie das Passwort",
-                    invalid: "Die Passwörter stimmen nicht überein",
-                },
-            },
-            save: "Speichern",
         },
         changeLanguage: {
             header: "Sprache wechseln",

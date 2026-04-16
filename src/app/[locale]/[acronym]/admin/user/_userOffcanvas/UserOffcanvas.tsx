@@ -6,19 +6,20 @@ import { InputFormField } from "@/components/fields/InputFormField";
 import { SelectFormField } from "@/components/fields/SelectFormField";
 import { ToggleFormField } from "@/components/fields/ToggleFormField";
 import { useModal } from "@/components/modals/modalProvider";
-import { changeUserPassword, createUser, deleteUser, updateUser } from "@/dal/user";
+import { adminTriggerPasswordReset, createUser, deleteUser, updateUser } from "@/dal/user";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n } from "@/lib/locales/client";
 import { SAFormHandler } from "@/lib/SAFormHandler";
 import { User } from "@/types/userTypes";
-import { CreateUserInput, CreateUserSchema, UserBaseInput, UserBaseSchema, UserFormInput } from "@/zod/user";
+import { UserFormInput, UserFormSchema } from "@/zod/user";
+import { faCopy } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction, useCallback, useEffect } from "react";
 import { Button, Col, Offcanvas, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { toast } from "react-toastify";
 import { KeyedMutator } from "swr";
-import z from "zod";
 
 export type Props = {
     user: User | null;
@@ -33,23 +34,24 @@ export type Props = {
  * Offcanvas panel for viewing, creating, and editing a single user.
  *
  * Operates in two modes determined by the `user` prop:
- * - **Create mode** (`user === null`): renders an empty form with a password field and a
- *   "Create" submit button. Calls `createUser` on submit. On success, closes the panel and
- *   triggers `mutate` to refresh the user list.
+ * - **Create mode** (`user === null`): renders an empty form and a "Create" submit button.
+ *   Calls `createUser` on submit (which generates a server-side temp password).
+ *   On success, closes the panel and triggers `mutate` to refresh the user list.
  * - **View/Edit mode** (`user !== null`): renders the user's current data as plaintext fields
  *   when `editable` is false. Switching to edit mode (`editable = true`) enables all fields
- *   and replaces the action buttons with Save / Cancel. Password field is hidden in this mode.
+ *   and replaces the action buttons with Save / Cancel.
  *
  * Actions available in view mode (non-editable, existing user):
  * - **Edit**: calls `setEditable(true)` — controlled externally via the `editable` / `setEditable` props.
  * - **Delete**: opens a `dangerConfirmationModal` requiring confirmation text equals the user's
  *   name. On confirm, calls `deleteUser`, closes the panel, and triggers `mutate`.
- * - **Reset Password**: opens a `changeUserPasswordModal` that collects a new password, then
- *   calls `changeUserPassword`. Does not close the panel on success.
+ * - **Reset Password**: opens a `simpleYesNoModal` to confirm the action, then calls
+ *   `adminTriggerPasswordReset`. On success displays the one-time temp password in a message
+ *   modal; on failure shows an error modal.
  * - **Reset 2FA**: button is rendered but permanently disabled (not yet implemented).
  *
  * Form behaviour:
- * - Uses react-hook-form with `CreateUserSchema` (new) or `UserBaseSchema` (existing) as Zod resolvers.
+ * - Uses react-hook-form with `UserFormSchema` as Zod resolver.
  * - Field errors returned by DAL server actions (e.g. username/email duplication) are surfaced
  *   inline via `SAFormHandler` / `form.setError`.
  * - When `editable` transitions from `true` to `false` for an existing user, the form is reset
@@ -74,8 +76,8 @@ export const UserOffcanvas = ({
     const t = useI18n();
     const modal = useModal();
     const isNewUser = user === null;
-    const form = useForm<CreateUserInput | UserBaseInput>({
-        resolver: zodResolver(isNewUser ? CreateUserSchema : UserBaseSchema as z.ZodTypeAny),
+    const form = useForm<UserFormInput>({
+        resolver: zodResolver(UserFormSchema),
         defaultValues: isNewUser ? {
             role: AuthRole.user,
             active: true,
@@ -99,17 +101,12 @@ export const UserOffcanvas = ({
     const isOwnRecord = !isNewUser && currentUserId === user?.id;
 
     const handleSave = async (data: UserFormInput, form: UseFormReturn<UserFormInput>) => {
-
         if (isNewUser) {
-            if (data.password) {
-                return handleCreate(data as CreateUserInput, form as UseFormReturn<UserFormInput>);
-            }
-            console.error("Password is required for creating a new user");
-            return;
+            return handleCreate(data, form);
         }
 
         await SAFormHandler(
-            updateUser({...data, id: user!.id}),
+            updateUser({ ...data, id: user!.id }),
             form.setError,
             (data) => {
                 setEditable(false);
@@ -120,15 +117,15 @@ export const UserOffcanvas = ({
         );
     };
 
-    const handleCreate = async (data: CreateUserInput, form: UseFormReturn<UserFormInput>) => {
+    const handleCreate = async (data: UserFormInput, form: UseFormReturn<UserFormInput>) => {
         await SAFormHandler(
             createUser(data),
             form.setError,
-            () => {
+            (result) => {
                 setEditable(false);
                 setSelectedUserId(null);
                 mutate();
-                toast.success(t('admin.user.success.created'));
+                if (result?.tempPassword) showTempPasswordModal(result.tempPassword);
             },
             t('admin.user.error.create'),
         );
@@ -146,23 +143,51 @@ export const UserOffcanvas = ({
         }
     };
 
-    const handleResetPassword = async () => {
+    const showTempPasswordModal = useCallback((tempPassword: string) => {
+        modal?.showMessageModal(
+            t('admin.user.success.passwordReset'),
+            <>
+                <p>{t('admin.user.tempPassword.label')}</p>
+                <div className="d-flex align-items-center gap-2 mb-2">
+                    <code className="fs-5 user-select-all text-dark bg-body-secondary p-2 rounded">
+                        <span data-testid="temp-password">{tempPassword}</span>
+                        <button
+                            type="button"
+                            className="btn btn-outline-secondary btn-sm border-0 ms-2 p-1 rounded"
+                            onClick={() => navigator.clipboard.writeText(tempPassword)}
+                            aria-label={t('admin.user.tempPassword.copyPassword')}
+                        >
+                            <FontAwesomeIcon icon={faCopy} />
+                        </button>
+                    </code>
+                </div>
+                <p className="mb-0 small fst-italic">{t('admin.user.tempPassword.warning')}</p>
+            </>,
+            [{ type: 'primary', option: t('common.actions.close'), function: () => { }, testId: 'btn_close' }],
+            'message',
+        );
+    }, [modal, t]);
+
+    const handleResetPassword = useCallback(() => {
         if (isNewUser || !user) return;
 
-        modal?.changeUserPasswordModal(
-            async (password: string) => {
-                await SAFormHandler(
-                    changeUserPassword({ id: user.id, password }),
-                    null,
-                    () => {
-                        toast.success(t('admin.user.success.passwordReset'));
-                    },
-                    t('admin.user.error.changePassword'),
-                );
+        modal?.simpleYesNoModal({
+            header: t('admin.user.actions.resetPassword'),
+            message: t('admin.user.actions.resetPasswordConfirm', { user: user.name }),
+            primaryOption: t('common.actions.reset'),
+            primaryFunction: async () => {
+                try {
+                    const result = await adminTriggerPasswordReset({ id: user.id });
+                    showTempPasswordModal(result.tempPassword);
+                } catch {
+                    modal?.simpleErrorModal({
+                        header: t('admin.user.error.passwordReset'),
+                        message: t('admin.user.error.passwordReset'),
+                    });
+                }
             },
-            user.name,
-        );
-    };
+        });
+    }, [isNewUser, user, modal, t, showTempPasswordModal]);
 
     const handleDelete = async () => {
         if (isNewUser || !user) return;
@@ -289,18 +314,7 @@ export const UserOffcanvas = ({
                             />
                         </Col>
                     </Row>
-                    {isNewUser && (
-                        <Row>
-                            <Col xs={12}>
-                                <InputFormField<UserFormInput>
-                                    name="password"
-                                    label={t('admin.user.label.password')}
-                                    required
-                                    type="password"
-                                />
-                            </Col>
-                        </Row>
-                    )}
+
                     {editable && (
                         <Row className="mt-4 gap-2">
                             <Col xs="auto">

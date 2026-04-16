@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { staticData } from "../../../vitest/setup-dal-integration";
 import { runServerActionTest } from "../_helper/testHelper";
 import { createUser } from "./create";
+import { compareSync } from "bcrypt";
 
 describe("<User> createUser", () => {
     beforeAll(async () => {
@@ -24,7 +25,6 @@ describe("<User> createUser", () => {
         name: "New User",
         role: AuthRole.user,
         active: true,
-        password: "Password1",
     };
 
     it("should create a user in the database with explicit email", async () => {
@@ -69,6 +69,20 @@ describe("<User> createUser", () => {
                 formElement: "email",
             }),
         }));
+    });
 
+    it("should hash the password and set changePasswordOnLogin to true", async () => {
+        const { success, result } = await runServerActionTest(createUser(validInput));
+        expect(success).toBe(true);
+
+        const created = await prisma.user.findFirst({
+            where: {
+                organisationId: staticData.ids.organisationId,
+                username: validInput.username,
+            },
+        });
+        expect(created).not.toBeNull();
+        expect(compareSync(result.tempPassword, created!.password)).toBe(true);
+        expect(created?.changePasswordOnLogin).toBe(true);
     });
 });

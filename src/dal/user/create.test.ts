@@ -7,6 +7,10 @@ vi.mock("bcrypt", () => ({
     hash: vi.fn().mockResolvedValue("$2b$12$mocked-bcrypt-hash"),
 }));
 
+vi.mock("./passwordReset", () => ({
+    generateTempPassword: vi.fn().mockReturnValue("mocked-temp"),
+}));
+
 const mockBcryptHash = vi.mocked(hash);
 
 const validInput = {
@@ -15,23 +19,22 @@ const validInput = {
     name: "Test User",
     role: AuthRole.user,
     active: true,
-    password: "Password1",
 };
 
 describe("<User> createUser", () => {
     afterEach(() => vi.clearAllMocks());
 
-    it("should create a user on success", async () => {
+    it("should create a user and return tempPassword on success", async () => {
         prismaMock.user.findFirst.mockResolvedValue(null);
         prismaMock.user.create.mockResolvedValue({} as never);
 
         const result = await createUser(validInput);
 
-        expect(result).toBeUndefined();
+        expect(result).toEqual({ success: true, tempPassword: "mocked-temp" });
         expect(prismaMock.user.findFirst).toHaveBeenCalledWith({
             where: { organisationId: "test-organisation-id", username: validInput.username },
         });
-        expect(mockBcryptHash).toHaveBeenCalledWith(validInput.password, 12);
+        expect(mockBcryptHash).toHaveBeenCalledWith("mocked-temp", 12);
         expect(prismaMock.user.create).toHaveBeenCalledWith({
             data: {
                 username: validInput.username,
@@ -40,6 +43,7 @@ describe("<User> createUser", () => {
                 role: validInput.role,
                 active: validInput.active,
                 password: "$2b$12$mocked-bcrypt-hash",
+                changePasswordOnLogin: true,
                 organisationId: "test-organisation-id",
             },
         });
@@ -82,12 +86,12 @@ describe("<User> createUser", () => {
         expect(mockBcryptHash).not.toHaveBeenCalled();
     });
 
-    it("should hash password with bcrypt", async () => {
+    it("should hash the generated temp password with bcrypt", async () => {
         prismaMock.user.findFirst.mockResolvedValue(null);
         prismaMock.user.create.mockResolvedValue({} as never);
 
         await createUser(validInput);
 
-        expect(mockBcryptHash).toHaveBeenCalledWith(validInput.password, 12);
+        expect(mockBcryptHash).toHaveBeenCalledWith("mocked-temp", 12);
     });
 });

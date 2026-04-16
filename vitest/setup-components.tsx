@@ -33,6 +33,7 @@ _mockStore.set("next/navigation", _navigation_mock);
 // --- modalProvider ---
 const _modals_inner = {
     dangerConfirmationModal: vi.fn(),
+    simpleYesNoModal: vi.fn(),
     simpleWarningModal: vi.fn(),
     simpleErrorModal: vi.fn(),
     simpleFormModal: vi.fn(),

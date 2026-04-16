@@ -14,35 +14,23 @@ export const nameSchema = z.string()
     .refine(v => /^[\p{L}\p{M} \-'.]{1,100}$/u.test(v), 'user.name.pattern');
 
 
-export const CreateUserSchema = z.object({
-    username: userNameSchema,
-    email: z.string().email().max(100),
-    name: nameSchema,
-    role: z.nativeEnum(AuthRole),
-    active: z.boolean(),
-    password: z.string().min(8),
-});
-export type CreateUserInput = z.infer<typeof CreateUserSchema>;
-
-export const UserBaseSchema = z.object({
+export const UserFormSchema = z.object({
     username: userNameSchema,
     email: z.string().email().max(100),
     name: nameSchema,
     role: z.nativeEnum(AuthRole),
     active: z.boolean(),
 });
-export type UserBaseInput = z.infer<typeof UserBaseSchema>;
-export type UserFormInput = UserBaseInput & { password?: string };
-export const UpdateUserDALSchema = UserBaseSchema.extend({
+export type UserFormInput = z.infer<typeof UserFormSchema>;
+export const UpdateUserDALSchema = UserFormSchema.extend({
     id: z.string().uuid(),
 });
 export type UpdateUserDALInput = z.infer<typeof UpdateUserDALSchema>;
 
-export const ChangePasswordSchema = z.object({
+export const AdminTriggerPasswordResetSchema = z.object({
     id: z.string().uuid(),
-    password: z.string().min(8),
 });
-export type ChangePasswordInput = z.infer<typeof ChangePasswordSchema>;
+export type AdminTriggerPasswordResetInput = z.infer<typeof AdminTriggerPasswordResetSchema>;
 
 export const DeleteUserSchema = z.object({
     id: z.string().uuid(),

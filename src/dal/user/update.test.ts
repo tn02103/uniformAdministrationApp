@@ -1,17 +1,11 @@
 import { prismaMock } from "@test-utils/prisma-mock";
-import { hash } from "bcrypt";
 import { AuthRole } from "@/lib/AuthRoles";
-import { updateUser, changeUserPassword } from "./update";
+import { updateUser } from "./update";
 import { unsecuredGetUserList } from "./get";
 
-vi.mock("bcrypt", () => ({
-    hash: vi.fn().mockResolvedValue("$2b$12$mocked-bcrypt-hash"),
-}));
 vi.mock("./get", () => ({
     unsecuredGetUserList: vi.fn().mockResolvedValue("mocked-user-list"),
 }));
-
-const mockBcryptHash = vi.mocked(hash);
 
 describe("<User> updateUser", () => {
     const mockedUnsecuredGetUserList = vi.mocked(unsecuredGetUserList);
@@ -129,34 +123,4 @@ describe("<User> updateUser", () => {
     });
 });
 
-describe("<User> changeUserPassword", () => {
-    afterEach(() => vi.clearAllMocks());
 
-    const validInput = {
-        id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-        password: "NewPassword1",
-    };
-
-    it("should hash password, update user, and delete refresh tokens on success", async () => {
-        prismaMock.user.update.mockResolvedValue({} as never);
-        prismaMock.refreshToken.deleteMany.mockResolvedValue({ count: 2 });
-
-        const result = await changeUserPassword(validInput);
-
-        expect(result).toBeUndefined();
-        expect(mockBcryptHash).toHaveBeenCalledWith(validInput.password, 12);
-        expect(prismaMock.user.update).toHaveBeenCalledWith({
-            where: { id: validInput.id, organisationId: "test-organisation-id" },
-            data: { password: "$2b$12$mocked-bcrypt-hash" },
-        });
-        expect(prismaMock.refreshToken.deleteMany).toHaveBeenCalledWith({
-            where: { userId: validInput.id },
-        });
-    });
-
-    it("should propagate error when id does not exist", async () => {
-        prismaMock.user.update.mockRejectedValue(new Error("Record not found"));
-
-        await expect(changeUserPassword(validInput)).rejects.toThrow("Record not found");
-    });
-});

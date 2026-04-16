@@ -192,6 +192,7 @@ exports[`UniformDetailRow > Render Components > should render correctly when edi
             aria-invalid="false"
             class="text-truncate  form-select"
             id="uniform_select-generation"
+            name="generation"
           >
             <option
               disabled=""
@@ -244,6 +245,7 @@ exports[`UniformDetailRow > Render Components > should render correctly when edi
             aria-invalid="false"
             class="text-truncate  form-select"
             id="uniform_select-size"
+            name="size"
           >
             <option
               disabled=""

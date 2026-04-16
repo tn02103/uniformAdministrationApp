@@ -1,3 +1,4 @@
+import { useModal } from "@/components/modals/modalProvider";
 import { AuthRole } from "@/lib/AuthRoles";
 import { User } from "@/types/userTypes";
 import { render, screen, waitFor } from "@testing-library/react";
@@ -6,6 +7,7 @@ import { vi, type Mock } from "vitest";
 import { UserOffcanvas } from "./UserOffcanvas";
 import { setTimeout } from "timers/promises";
 import { toast } from "react-toastify";
+import { UserFormInput } from "@/zod/user";
 
 const mockUser: User = {
     id: "user-1",
@@ -20,32 +22,31 @@ const mockMutate = vi.fn();
 const mockSetSelectedUserId = vi.fn();
 const mocksetEditable = vi.fn();
 
-const mockChangeUserPassword = vi.hoisted(() => vi.fn());
+const mockAdminTriggerPasswordReset = vi.hoisted(() => vi.fn());
 const mockUpdateUser = vi.hoisted(() => vi.fn());
 const mockDeleteUser = vi.hoisted(() => vi.fn());
 const mockCreateUser = vi.hoisted(() => vi.fn());
 
 vi.mock("@/dal/user", () => ({
-    changeUserPassword: mockChangeUserPassword,
+    adminTriggerPasswordReset: mockAdminTriggerPasswordReset,
     updateUser: mockUpdateUser,
     deleteUser: mockDeleteUser,
     createUser: mockCreateUser,
 }));
 
-const mockDangerConfirmationModal = vi.fn();
-const mockChangeUserPasswordModal = vi.fn();
-
-vi.mock("@/components/modals/modalProvider", () => ({
-    useModal: () => ({
-        dangerConfirmationModal: mockDangerConfirmationModal,
-        changeUserPasswordModal: mockChangeUserPasswordModal,
-    }),
-}));
+// Modal mocks come from vitest/setup-components.tsx — no local vi.mock needed.
+// Access via the already-mocked useModal() return value.
+const {
+    dangerConfirmationModal: mockDangerConfirmationModal,
+    simpleYesNoModal: mockSimpleYesNoModal,
+    showMessageModal: mockShowMessageModal,
+    simpleErrorModal: mockSimpleErrorModal,
+} = vi.mocked(useModal)();
 
 describe("<UserOffcanvas />", () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        mockChangeUserPassword.mockResolvedValue(undefined);
+        mockAdminTriggerPasswordReset.mockResolvedValue({ success: true as const, tempPassword: 'aB3k-mP7x2' });
         mockUpdateUser.mockResolvedValue(mockUser);
         mockDeleteUser.mockResolvedValue(undefined);
         mockCreateUser.mockResolvedValue(undefined);
@@ -81,7 +82,6 @@ describe("<UserOffcanvas />", () => {
 
         // correct text
         expect(screen.getByRole("heading", { name: "common.actions.create" })).toBeInTheDocument();
-        expect(screen.getByLabelText(/label.password/)).toBeInTheDocument();
         // expect inputs to be editable
         expect(screen.getByRole("textbox", { name: /label.name/ })).toHaveValue("");
         expect(screen.getByRole("textbox", { name: /label.username/ })).toHaveValue("");
@@ -93,7 +93,7 @@ describe("<UserOffcanvas />", () => {
         expect(screen.getByLabelText(/label.email/)).toBeEnabled();
         expect(screen.getByLabelText(/label.role/)).toBeEnabled();
 
-        // expect buttons to be disabled
+        // expect buttons to be enabled
         expect(screen.getByRole("button", { name: "common.actions.create" })).toBeEnabled();
         expect(screen.getByRole("button", { name: "common.actions.cancel" })).toBeEnabled();
     });
@@ -178,7 +178,7 @@ describe("<UserOffcanvas />", () => {
             expect(mockDangerConfirmationModal).toHaveBeenCalled();
         });
 
-        it("opens password change modal when reset password button is clicked", async () => {
+        it("opens confirmation modal when reset password button is clicked", async () => {
             const user = userEvent.setup();
             render(
                 <UserOffcanvas
@@ -193,7 +193,7 @@ describe("<UserOffcanvas />", () => {
             const resetPasswordButton = screen.getByRole("button", { name: /resetPassword/ });
             await user.click(resetPasswordButton);
 
-            expect(mockChangeUserPasswordModal).toHaveBeenCalled();
+            expect(mockSimpleYesNoModal).toHaveBeenCalled();
         });
     });
 
@@ -292,37 +292,6 @@ describe("<UserOffcanvas />", () => {
             expect(screen.getByRole("option", { name: /common.user.authRole.4/ })).toBeInTheDocument();
         });
 
-        describe("only shows password field when creating a new user", () => {
-            it("new user", () => {
-                render(
-                    <UserOffcanvas
-                        user={null}
-                        setSelectedUserId={mockSetSelectedUserId}
-                        setEditable={mocksetEditable}
-                        mutate={mockMutate}
-                        editable={true}
-                    />
-                );
-
-                expect(screen.getByLabelText(/label.password/)).toBeInTheDocument();
-            });
-
-            it("existing user", () => {
-                render(
-                    <UserOffcanvas
-                        user={mockUser}
-                        setSelectedUserId={mockSetSelectedUserId}
-                        setEditable={mocksetEditable}
-                        mutate={mockMutate}
-                        editable={true}
-                    />
-                );
-
-                expect(screen.queryByLabelText(/label.password/)).not.toBeInTheDocument();
-            });
-        });
-
-
         it("closes offcanvas when cancel button is clicked for new user", async () => {
             const user = userEvent.setup();
             render(
@@ -363,14 +332,20 @@ describe("<UserOffcanvas />", () => {
     });
 
     describe("SA handling", () => {
-
         describe("createUser", () => {
             const fillCreateForm = async (user: ReturnType<typeof userEvent.setup>) => {
                 await user.type(screen.getByRole("textbox", { name: /label.name/ }), "Jane Doe");
                 await user.type(screen.getByRole("textbox", { name: /label.username/ }), "janedoe");
                 await user.type(screen.getByRole("textbox", { name: /label.email/ }), "jane.doe@example.com");
                 await user.selectOptions(screen.getByRole("combobox", { name: /label.role/ }), "common.user.authRole.2");
-                await user.type(screen.getByLabelText(/label.password/), "Password1");
+            };
+
+            const expectedCreatePayload: UserFormInput = {
+                name: "Jane Doe",
+                username: "janedoe",
+                email: "jane.doe@example.com",
+                role: AuthRole.inspector,
+                active: true,
             };
 
             it("calls createUser with correct data", async () => {
@@ -389,14 +364,35 @@ describe("<UserOffcanvas />", () => {
                 await user.click(screen.getByRole("button", { name: /actions.create/ }));
 
                 await waitFor(() => {
-                    expect(mockCreateUser).toHaveBeenCalledWith({
-                        name: "Jane Doe",
-                        username: "janedoe",
-                        email: "jane.doe@example.com",
-                        role: AuthRole.inspector,
-                        active: true,
-                        password: "Password1",
-                    });
+                    expect(mockCreateUser).toHaveBeenCalledWith(expectedCreatePayload);
+                });
+            });
+
+            it("on success: closes offcanvas, mutates, shows success toast, and opens temp password modal", async () => {
+                mockCreateUser.mockResolvedValue({ success: true as const, tempPassword: "abc-defg" });
+                const user = userEvent.setup();
+                render(
+                    <UserOffcanvas
+                        editable={true}
+                        user={null}
+                        setSelectedUserId={mockSetSelectedUserId}
+                        setEditable={mocksetEditable}
+                        mutate={mockMutate}
+                    />
+                );
+
+                await fillCreateForm(user);
+                await user.click(screen.getByRole("button", { name: /actions.create/ }));
+
+                await waitFor(() => {
+                    expect(mockSetSelectedUserId).toHaveBeenCalledWith(null);
+                    expect(mockMutate).toHaveBeenCalled();
+                    expect(mockShowMessageModal).toHaveBeenCalledWith(
+                        "admin.user.success.passwordReset",
+                        expect.anything(),
+                        expect.arrayContaining([expect.objectContaining({ testId: "btn_close" })]),
+                        "message",
+                    );
                 });
             });
 
@@ -650,8 +646,8 @@ describe("<UserOffcanvas />", () => {
             });
         });
 
-        describe("changeUserPassword", () => {
-            it("calls changeUserPassword with correct data and handles success", async () => {
+        describe("adminTriggerPasswordReset", () => {
+            it("calls adminTriggerPasswordReset with correct user id on confirm", async () => {
                 const user = userEvent.setup();
                 render(
                     <UserOffcanvas
@@ -664,21 +660,17 @@ describe("<UserOffcanvas />", () => {
                 );
 
                 await user.click(screen.getByRole("button", { name: /resetPassword/ }));
-                expect(mockChangeUserPasswordModal).toHaveBeenCalledWith(
-                    expect.any(Function),
-                    mockUser.name,
-                );
+                expect(mockSimpleYesNoModal).toHaveBeenCalled();
 
-                await (mockChangeUserPasswordModal as unknown as Mock).mock.calls[0][0]("NewPassword1");
+                await (mockSimpleYesNoModal as unknown as Mock).mock.calls[0][0].primaryFunction();
 
                 await waitFor(() => {
-                    expect(mockChangeUserPassword).toHaveBeenCalledWith({ id: mockUser.id, password: "NewPassword1" });
-                    expect(toast.success).toHaveBeenCalledWith("admin.user.success.passwordReset");
+                    expect(mockAdminTriggerPasswordReset).toHaveBeenCalledWith({ id: mockUser.id });
                 });
             });
 
-            it("handles unexpected exception", async () => {
-                mockChangeUserPassword.mockRejectedValue(new Error("Unexpected error"));
+            it("shows temp password display on successful reset", async () => {
+                mockAdminTriggerPasswordReset.mockResolvedValue({ success: true as const, tempPassword: 'aB3k-mP7x2' });
                 const user = userEvent.setup();
                 render(
                     <UserOffcanvas
@@ -691,13 +683,38 @@ describe("<UserOffcanvas />", () => {
                 );
 
                 await user.click(screen.getByRole("button", { name: /resetPassword/ }));
-                expect(mockChangeUserPasswordModal).toHaveBeenCalled();
-
-                await (mockChangeUserPasswordModal as unknown as Mock).mock.calls[0][0]("NewPassword1");
+                await (mockSimpleYesNoModal as unknown as Mock).mock.calls[0][0].primaryFunction();
 
                 await waitFor(() => {
-                    expect(mockChangeUserPassword).toHaveBeenCalled();
-                    expect(toast.error).toHaveBeenCalledWith("admin.user.error.changePassword");
+                    expect(mockShowMessageModal).toHaveBeenCalledWith(
+                        "admin.user.success.passwordReset",
+                        expect.anything(),
+                        expect.arrayContaining([expect.objectContaining({ type: 'primary' })]),
+                        'message',
+                    );
+                });
+            });
+
+            it("shows error state when reset fails", async () => {
+                mockAdminTriggerPasswordReset.mockRejectedValue(new Error("Reset failed"));
+                const user = userEvent.setup();
+                render(
+                    <UserOffcanvas
+                        editable={false}
+                        user={mockUser}
+                        setSelectedUserId={mockSetSelectedUserId}
+                        setEditable={mocksetEditable}
+                        mutate={mockMutate}
+                    />
+                );
+
+                await user.click(screen.getByRole("button", { name: /resetPassword/ }));
+                await (mockSimpleYesNoModal as unknown as Mock).mock.calls[0][0].primaryFunction();
+
+                await waitFor(() => {
+                    expect(mockSimpleErrorModal).toHaveBeenCalledWith(
+                        expect.objectContaining({ header: "admin.user.error.passwordReset" })
+                    );
                 });
             });
         });
