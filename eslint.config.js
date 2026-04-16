@@ -1,4 +1,4 @@
-import vitest from "eslint-plugin-vitest";
+import vitest from "@vitest/eslint-plugin";
 import nextCoreWebVitals from 'eslint-config-next/core-web-vitals';
 import nextTypescript from 'eslint-config-next/typescript';
 import playwright from 'eslint-plugin-playwright';
