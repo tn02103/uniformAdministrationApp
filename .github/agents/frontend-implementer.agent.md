@@ -1,6 +1,6 @@
 ---
 description: "Frontend implementation agent. Use when: writing or updating React components, pages, SWR dataFetcher hooks, or component tests in src/app/, src/components/, or src/dataFetcher/."
-tools: [read, edit, search, execute, todo]
+tools: [read, edit, search, execute, todo, vscode/askQuestions]
 user-invocable: false
 ---
 

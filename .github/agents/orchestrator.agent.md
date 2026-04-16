@@ -1,6 +1,6 @@
 ---
 description: "Main workflow orchestrator. Use when: starting a new feature, fixing a bug, adding requirements to an existing feature, or implementing PR review comments. Coordinates all specialist agents from ticket to merged PR."
-tools: [read, search, edit, execute, agent, todo, github/*, playwright/*]
+tools: [read, search, edit, execute, agent, todo, vscode/askQuestions, github/*, playwright/*]
 agents: [setup, planner, prisma, dal-implementer, frontend-implementer, e2e, reviewer, git-ops]
 ---
 
@@ -53,14 +53,15 @@ Write `SETUP_RESULT.branch` to the session file.
 ## STEP 2: Plan
 Delegate to `planner` agent with: ticket/PR number and workflow type.
 
-Planner returns a `PLAN` object. Write it to session file.
+Planner returns a `PLAN` object (already written to the session file by the planner).
 
-**⚠️ USER CHECKPOINT — present the plan and ask:**
-> "Implementation plan ready. Review the plan above. Shall I proceed with implementation?"
+Use the `ask` tool to present the following questions to the user (add more if `plan.has_critical_questions: yes`):
+1. "Are there any requirements missing from the plan?"
+2. "Are there any requirements that are not described correctly?"
 
-If `plan.has_critical_questions: yes`: present each unanswered question from `questions_and_answers` to the user and collect answers before proceeding. Update the session file with the answers.
+If `plan.has_critical_questions: yes`: also include each unanswered question from `questions_and_answers`.
 
-Do not continue until the user confirms.
+Record any answers in the session file before proceeding. Do not continue until the user has responded.
 
 ---
 
@@ -105,14 +106,27 @@ If lint fails: delegate the specific lint errors back to the appropriate agent (
 
 If build fails: same — delegate to the appropriate agent for targeted fixes. If build still fails: STOP and report.
 
-**⚠️ USER CHECKPOINT — once build passes, ask:**
-> "Build and lint passed. Please test the feature in the browser. Confirm when ready to continue with E2E tests."
+---
 
-Do not continue until the user confirms.
+## STEP 7: Pre-E2E Review (with one retry)
+Delegate to `reviewer` agent.
+
+### If `REVIEW_RESULT: PASS`: continue to Step 8.
+
+### If `REVIEW_RESULT: FAIL` (first time):
+- Group the issues by layer (dal, frontend, test)
+- Delegate DAL issues to `dal-implementer` with the specific issue list
+- Delegate frontend issues to `frontend-implementer` with the specific issue list
+- Call `reviewer` again (second review)
+
+### If `REVIEW_RESULT: FAIL` (second time):
+STOP. Present the full review report to the user:
+> "Pre-E2E review did not pass after one round of fixes. Here are the remaining issues — please review and decide how to proceed:"
+> [full REVIEW_RESULT output]
 
 ---
 
-## STEP 7: E2E Tests
+## STEP 8: E2E Tests
 Delegate to `e2e` agent with: plan + FRONTEND_RESULT.
 
 If `E2E_RESULT.status: fail`: STOP and report failure details to user.
@@ -121,10 +135,10 @@ Update session file with `E2E_RESULT`.
 
 ---
 
-## STEP 8: Review (with one retry)
+## STEP 9: Post-E2E Review (with one retry)
 Delegate to `reviewer` agent.
 
-### If `REVIEW_RESULT: PASS`: continue to Step 9.
+### If `REVIEW_RESULT: PASS`: continue to Step 10.
 
 ### If `REVIEW_RESULT: FAIL` (first time):
 - Group the issues by layer (dal, frontend, test)
@@ -139,7 +153,7 @@ STOP. Do not attempt further automatic fixes. Present the full review report to 
 
 ---
 
-## STEP 9: Git Operations
+## STEP 10: Git Operations
 Delegate to `git-ops` agent with:
 - All changed files grouped by layer (schema, dal, frontend, e2e)
 - Ticket/PR number
