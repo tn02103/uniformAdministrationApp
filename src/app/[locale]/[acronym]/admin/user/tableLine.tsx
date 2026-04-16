@@ -11,8 +11,8 @@ import { User } from "@/types/userTypes";
 import { faBars, faCheck, faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
-import { Button, Dropdown, FormControl, FormGroup, FormLabel, FormSelect } from "react-bootstrap";
-import { Control, Controller, FieldErrors, FormProvider, UseFormRegister, useForm } from "react-hook-form";
+import { Button, Dropdown, FormGroup, FormLabel, FormSelect } from "react-bootstrap";
+import { Control, Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 export default function UserAdminTableRow({
@@ -28,7 +28,7 @@ export default function UserAdminTableRow({
     const modal = useModal();
 
     const formId = `user_${user ? user.id : "new"}`;
-    const { register, control, handleSubmit, reset, formState: { errors } } = useForm<User>({ defaultValues: user, mode: "onChange" });
+    const { control, handleSubmit, reset } = useForm<User>({ defaultValues: user, mode: "onChange" });
     const mobileForm = useForm<User>({ defaultValues: user, mode: "onChange" });
 
     const [editable, setEditable] = useState(!user);

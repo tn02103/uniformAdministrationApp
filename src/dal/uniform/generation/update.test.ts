@@ -1,10 +1,9 @@
 ﻿ 
 
 import { prismaMock } from '@test-utils/prisma-mock';
-import { prisma } from "@/lib/db";
-import { update } from "./update";
+import { mockSizeLists, mockTypeList } from "../../../../tests/_jestConfig/staticMockData";
 import { __unsecuredGetUniformTypeList } from "../type/get";
-import { mockTypeList, mockSizeLists } from "../../../../tests/_jestConfig/staticMockData";
+import { update } from "./update";
 
 // Mock dependencies
 vi.mock("../type/get", () => ({

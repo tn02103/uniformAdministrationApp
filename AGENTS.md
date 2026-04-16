@@ -51,6 +51,42 @@ All Zod schemas go in `src/zod/`. Reuse them in both DAL (server) and forms (cli
 - Foreign keys: prefer `objectId` suffix (legacy: `fk_` prefix)
 - Soft delete: `recdelete` (DateTime?) + `recdeleteUser` (string?)
 
+## Public Documentation (`/docs`)
+
+A public-facing documentation section lives at `src/app/[locale]/docs/`. It is **not** inside the `[acronym]/` layout and requires **no authentication**.
+
+### Structure
+```
+src/app/[locale]/docs/
+  layout.tsx                      # Docs layout with sidebar navigation (no auth)
+  page.tsx                        # Übersicht & Kernkonzepte
+  _components/DocsNav.tsx         # Client sidebar nav component
+  cadet/page.tsx                  # Personen (Kadetten)
+  uniform/
+    page.tsx                      # Uniformteile
+    type/page.tsx                 # Uniformtypen & Generationen
+    sizes/page.tsx                # Größen & Größenlisten
+  storage/page.tsx                # Lager
+  material/page.tsx               # Material
+  inspection/
+    page.tsx                      # Kontrollen (Überblick)
+    conduct/page.tsx              # Kontrolle durchführen
+    deficiencies/page.tsx         # Mängel & Mängeltypen
+  dashboard/page.tsx              # Dashboard & Auswertungen
+  admin/
+    uniform/page.tsx              # Uniform-Konfiguration
+    material/page.tsx             # Material-Konfiguration
+    users/page.tsx                # Benutzerverwaltung
+    settings/page.tsx             # Organisationseinstellungen
+```
+
+### Keeping Docs Up-to-Date
+- Documentation pages are plain TSX files. All content is written as JSX (tables, lists, paragraphs) — no MDX or external libraries required.
+- When you add or change a feature that is documented above, update the corresponding page in `src/app/[locale]/docs/`.
+- When you add a new major feature or object, create a new page under the appropriate sub-path and add a link to `DocsNav.tsx` and the overview `page.tsx`.
+- Nav links in `DocsNav.tsx` are relative to `/docs` (e.g. `/docs/cadet`). Always prefix with `/${locale}` in rendered `<Link>` hrefs — this is already done in the component.
+- All content is in **German**.
+
 ## Detailed Guidance (load when relevant)
 - Database & schema: `.github/agent/database.md`
 - DAL patterns & server actions: `.github/agent/dal.md`

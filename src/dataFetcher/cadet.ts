@@ -4,6 +4,7 @@ import { CadetMaterialMap, CadetUniformMap } from "@/types/globalCadetTypes";
 import { UniformLabel, UniformWithOwner } from "@/types/globalUniformTypes";
 import useSWR, { KeyedMutator, MutatorOptions, SWRResponse, mutate } from "swr";
 import { useUniformTypeList } from "./uniformAdmin";
+import { swrKeys } from "./swrKeys";
 
 
 
@@ -14,7 +15,7 @@ type useCadetUniformMapReturnType = {
 }
 export function useCadetUniformMap(cadetId: string, initialData?: CadetUniformMap): useCadetUniformMapReturnType {
     const { data, mutate, error } = useSWR(
-        `cadet.${cadetId}.uniform`,
+        swrKeys.cadetUniformMap(cadetId),
         () => getCadetUniformMap(cadetId).catch(e => { console.error("cought SAError", e, Object.entries(e)); throw e }),
         {
             fallbackData: initialData,
@@ -61,7 +62,7 @@ export function useCadetUniformComplete(cadetId: string) {
 
 export function useCadetMaterialMap(cadetId: string, initialData?: CadetMaterialMap) {
     const { data } = useSWR(
-        `cadet/material/${cadetId}`,
+        swrKeys.cadetMaterialMap(cadetId),
         () => getCadetMaterialMap(cadetId),
         {
             fallbackData: initialData
@@ -70,13 +71,14 @@ export function useCadetMaterialMap(cadetId: string, initialData?: CadetMaterial
 
     return {
         materialMap: data,
-        mutate: (data: Promise<CadetMaterialMap> | CadetMaterialMap, options?: MutatorOptions) => mutate(
-            (key) => (typeof key === "string") && key.startsWith(`cadet/material/${cadetId}`),
-            data, options)
+        mutate: (data: Promise<CadetMaterialMap> | CadetMaterialMap, options?: MutatorOptions) => {
+            mutate(swrKeys.cadetMaterialMap(cadetId), data, options);
+            mutate(swrKeys.useCadetMaterialDescriptionList(cadetId));
+        }
     }
 }
 
 export const useCadetMaterialDescriptionList = (cadetId: string) => {
-    const { data } = useSWR(`cadet/material/${cadetId}/list`, () => getCadetMaterialList(cadetId));
+    const { data } = useSWR(swrKeys.useCadetMaterialDescriptionList(cadetId), () => getCadetMaterialList(cadetId));
     return { materialList: data };
 };

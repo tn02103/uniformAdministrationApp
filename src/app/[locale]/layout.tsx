@@ -12,13 +12,24 @@ import 'react-tooltip/dist/react-tooltip.css';
 import './../../styles/global.scss';
 import './../../styles/globals.css';
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3020';
+
 export const metadata: Metadata = {
-    title: 'Uniformverwaltung',
-    description: 'App zum Verwalen von Uniformteilen',
+    metadataBase: new URL(siteUrl),
+    title: {
+        template: '%s — Uniformverwaltung',
+        default: 'Uniformverwaltung',
+    },
+    description: 'Webanwendung zur Verwaltung von Uniformteilen, Material und Kontrollen für Non-Profit-Organisationen.',
     applicationName: 'Uniformadmin',
     appleWebApp: {
         capable: true,
         statusBarStyle: 'default',
+    },
+    openGraph: {
+        siteName: 'Uniformverwaltung',
+        type: 'website',
+        locale: 'de_DE',
     },
 }
 
@@ -41,7 +52,7 @@ export default async function RootLayout({
 }) {
     const { locale } = await params;
     return (
-        <html lang="en">
+        <html lang={locale}>
             <body>
                 <I18nProviderClient locale={locale}>
                     <ModalProvider>
