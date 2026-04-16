@@ -1,11 +1,42 @@
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
+import { Prisma } from "@/prisma/client";
 import { removeMfaAppSchema, RemoveMfaAppInput } from "@/zod/auth";
 import { getIPAddress, logSecurityAuditEntry } from "../helper";
 import { LogDebugLevel } from "../LogDebugLeve.enum";
 import { headers } from "next/headers";
 import { userAgent } from "next/server";
+
+/**
+ * Reassigns `default2FAMethod` after an app has been deleted.
+ *
+ * If `currentDefault` matches `deletedAppId`, reassigns to the most recently
+ * verified remaining app, or `"email"` if none remain.
+ * No-op if the deleted app was not the default.
+ */
+export const __unsecuredReassignDefault2FAMethod = async (
+    userId: string,
+    organisationId: string,
+    deletedAppId: string,
+    currentDefault: string | null | undefined,
+    client: Prisma.TransactionClient,
+) => {
+    if (currentDefault !== deletedAppId) return;
+
+    const remainingApps = await client.twoFactorApp.findMany({
+        where: { userId, user: { organisationId }, verifiedAt: { not: null } },
+        orderBy: { verifiedAt: "desc" },
+        select: { id: true },
+    });
+
+    const newDefault = remainingApps.length > 0 ? remainingApps[0].id : "email";
+
+    await client.user.update({
+        where: { id: userId, organisationId },
+        data: { default2FAMethod: newDefault },
+    });
+};
 
 /**
  * Removes a TOTP app (verified or unverified) belonging to the current user.
@@ -60,22 +91,13 @@ export const removeMfaApp = async (data: RemoveMfaAppInput) =>
 
             await tx.twoFactorApp.delete({ where: { id: appId, userId: user.id } });
 
-            // Only update defaultMethod if the deleted app was the current default
-            if (dbUser?.default2FAMethod === appId) {
-                // Find remaining verified apps ordered by verifiedAt desc → last used is first
-                const remainingApps = await tx.twoFactorApp.findMany({
-                    where: { userId: user.id, verifiedAt: { not: null } },
-                    orderBy: { verifiedAt: "desc" },
-                    select: { id: true },
-                });
-
-                const newDefault = remainingApps.length > 0 ? remainingApps[0].id : "email";
-
-                await tx.user.update({
-                    where: { id: user.id, organisationId: user.organisationId },
-                    data: { default2FAMethod: newDefault },
-                });
-            }
+            await __unsecuredReassignDefault2FAMethod(
+                user.id,
+                user.organisationId,
+                appId,
+                dbUser?.default2FAMethod,
+                tx,
+            );
 
             await logSecurityAuditEntry({ ...logBase, debugLevel: LogDebugLevel.SUCCESS, success: true, details: `2FA app ${appId} removed successfully` });
 

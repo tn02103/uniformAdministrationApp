@@ -93,3 +93,20 @@ export const toggleUserMfaSchema = z.object({
     enabled: z.boolean(),
 });
 export type ToggleUserMfaInput = z.infer<typeof toggleUserMfaSchema>;
+
+// ADMIN 2FA MANAGEMENT
+export const adminGetUserTwoFactorAppsSchema = z.object({
+    userId: z.string().uuid(),
+});
+export type AdminGetUserTwoFactorAppsInput = z.infer<typeof adminGetUserTwoFactorAppsSchema>;
+
+export const adminRemoveTwoFactorAppSchema = z.object({
+    userId: z.string().uuid(),
+    appId: z.string().uuid(),
+});
+export type AdminRemoveTwoFactorAppInput = z.infer<typeof adminRemoveTwoFactorAppSchema>;
+
+export const adminDisableUserTwoFASchema = z.object({
+    userId: z.string().uuid(),
+});
+export type AdminDisableUserTwoFAInput = z.infer<typeof adminDisableUserTwoFASchema>;

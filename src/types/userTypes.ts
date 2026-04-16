@@ -7,7 +7,9 @@ export const userArgs = {
         email: true,
         name: true,
         active: true,
-        role: true
+        role: true,
+        twoFAEnabled: true,
+        default2FAMethod: true,
     },
     orderBy: { username: "asc"}
 } satisfies Prisma.UserFindManyArgs;

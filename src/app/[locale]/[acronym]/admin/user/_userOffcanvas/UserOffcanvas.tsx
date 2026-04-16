@@ -16,10 +16,11 @@ import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dispatch, SetStateAction, useCallback, useEffect } from "react";
-import { Button, Col, Offcanvas, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
+import { Button, Col, Offcanvas, Row } from "react-bootstrap";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { toast } from "react-toastify";
 import { KeyedMutator } from "swr";
+import { UserOffcanvasTwoFASection } from "./UserOffcanvasTwoFASection";
 
 export type Props = {
     user: User | null;
@@ -214,10 +215,6 @@ export const UserOffcanvas = ({
         });
     };
 
-    const reset2FATooltip = (
-        <Tooltip>{t('admin.user.actions.reset2FA.notAvailable')}</Tooltip>
-    );
-
     return (
         <Offcanvas
             show={true}
@@ -347,25 +344,12 @@ export const UserOffcanvas = ({
                                     {t('admin.user.actions.resetPassword')}
                                 </Button>
                             </Col>
-                            <Col xs="auto">
-                                <OverlayTrigger
-                                    placement="top"
-                                    overlay={reset2FATooltip}
-                                >
-                                    <span className="d-inline-block">
-                                        <Button
-                                            type="button"
-                                            variant="outline-secondary"
-                                            disabled
-                                        >
-                                            {t('admin.user.actions.reset2FA')}
-                                        </Button>
-                                    </span>
-                                </OverlayTrigger>
-                            </Col>
                         </Row>
                     )}
                 </Form>
+                {!isNewUser && (
+                    <UserOffcanvasTwoFASection user={user} mutateUser={mutate} />
+                )}
             </Offcanvas.Body>
         </Offcanvas>
     );

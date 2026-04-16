@@ -678,8 +678,6 @@ export default {
             actions: {
                 resetPassword: "Passwort zurücksetzen",
                 resetPasswordConfirm: "Für {user} ein temporäres Passwort generieren? Alle aktiven Sitzungen werden beendet.",
-                reset2FA: "2FA zurücksetzen",
-                "reset2FA.notAvailable": "Noch nicht verfügbar",
                 delete: "Benutzer {user} löschen",
                 deleteWarning: {
                     header: "Nutzer {user} löschen",
@@ -701,6 +699,29 @@ export default {
                 label: "Das temporäre Passwort lautet:",
                 warning: "Dieses Passwort wird nur einmal angezeigt. Bitte notieren Sie es.",
                 copyPassword: "Passwort in Zwischenablage kopieren",
+            },
+            twoFA: {
+                sectionTitle: "2FA-Verwaltung",
+                statusEnabled: "2FA aktiviert",
+                statusDisabled: "2FA deaktiviert",
+                defaultMethod: "Standardmethode",
+                appsTitle: "TOTP-Apps",
+                appVerified: "Verifiziert",
+                appUnverified: "Nicht verifiziert",
+                removeApp: "Entfernen",
+                forceDisable: "2FA deaktivieren",
+                forceDisableConfirmHeader: "2FA deaktivieren",
+                forceDisableConfirmMessage: "Sind Sie sicher, dass Sie die Zwei-Faktor-Authentifizierung für {user} deaktivieren möchten? Der Nutzer muss 2FA dann nicht mehr verwenden.",
+                removeAppConfirmMessage: "Sind Sie sicher, dass Sie diese Zwei-Faktor-Authentifizierungs-App entfernen möchten?",
+                noApps: "Keine TOTP-Apps registriert",
+                success: {
+                    appRemoved: "TOTP-App erfolgreich entfernt",
+                    disabled: "2FA erfolgreich deaktiviert",
+                },
+                error: {
+                    appRemoved: "Entfernen der TOTP-App fehlgeschlagen",
+                    disabled: "Deaktivieren von 2FA fehlgeschlagen",
+                },
             },
         },
         deficiency: {
