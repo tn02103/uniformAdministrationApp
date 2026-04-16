@@ -61,8 +61,8 @@ jobs:
           # List of required check names from the Validate PR workflow
           REQUIRED_CHECKS=(
             "DAL-Unit Tests"
-            "Component Tests" 
             "DAL-Integration Tests"
+            "Frontend Tests" 
             "Lint Code"
             "Build Application"
             "E2E Tests"
