@@ -1,29 +1,11 @@
+﻿import { vi } from 'vitest';
+import { prismaMock } from '@test-utils/prisma-mock';
 import { create } from "./create";
 import { prisma } from "@/lib/db";
+import { __unsecuredGetUnitsWithUniformItems } from "./get";
 
-jest.mock('@/lib/db', () => ({
-    prisma: {
-        storageUnit: {
-            findFirst: jest.fn(),
-            create: jest.fn(),
-        },
-        assosiation: {
-            create: jest.fn(),
-            delete: jest.fn(),
-        },
-        uniformType: {
-            deleteMany: jest.fn(),
-        },
-        $transaction: jest.fn((fn) => fn(prisma)),
-    }
-}));
-jest.mock("@/actions/validations", () => ({
-    genericSAValidator: jest.fn((_, props) =>
-        Promise.resolve([{ assosiation: 'test-assosiation' }, props])
-    ),
-}));
-jest.mock("./get", () => ({
-    __unsecuredGetUnitsWithUniformItems: jest.fn(() => "unitsWithUniformItems"),
+vi.mock("./get", () => ({
+    __unsecuredGetUnitsWithUniformItems: vi.fn(() => "unitsWithUniformItems"),
 }));
 
 const testUnit = {
@@ -34,33 +16,33 @@ const testUnit = {
 };
 
 describe('<StorageUnit> create', () => {
-    afterEach(jest.clearAllMocks);
+    afterEach(vi.clearAllMocks);
 
-    const prismafindFirst = prisma.storageUnit.findFirst as jest.Mock;
-    const prismaCreate = prisma.storageUnit.create as jest.Mock;
-    const getUnitsWithUniformItems = jest.requireMock("./get").__unsecuredGetUnitsWithUniformItems as jest.Mock;
+    const prismafindFirst = prismaMock.storageUnit.findFirst;
+    const prismaCreate = prismaMock.storageUnit.create;
+    const getUnitsWithUniformItems = vi.mocked(__unsecuredGetUnitsWithUniformItems);
 
     it('should create storage unit', async () => {
         prismafindFirst.mockResolvedValueOnce(null);
         prismaCreate.mockResolvedValueOnce({ ...testUnit });
         getUnitsWithUniformItems.mockResolvedValueOnce([
             { ...testUnit }
-        ]);
+        ] as any);
 
         const result = await create(testUnit);
         expect(result).toEqual([
             expect.objectContaining(testUnit)
         ]);
         expect(prismafindFirst).toHaveBeenCalledWith({
-            where: { assosiationId: 'test-assosiation', name: testUnit.name }
+            where: { assosiationId: 'test-assosiation-id', name: testUnit.name }
         });
         expect(prismaCreate).toHaveBeenCalledWith({
             data: {
-                assosiationId: 'test-assosiation',
+                assosiationId: 'test-assosiation-id',
                 ...testUnit,
             }
         });
-        expect(getUnitsWithUniformItems).toHaveBeenCalledWith('test-assosiation', prisma);
+        expect(getUnitsWithUniformItems).toHaveBeenCalledWith('test-assosiation-id', prisma);
     });
 
     it('throws soft error if name is duplicated', async () => {
@@ -85,7 +67,7 @@ describe('<StorageUnit> create', () => {
         prismaCreate.mockResolvedValueOnce({ ...testUnit });
         getUnitsWithUniformItems.mockResolvedValueOnce([
             { ...testUnit }
-        ]);
+        ] as any);
         const result = await create(testUnit);
         expect(result).toStrictEqual([
             expect.objectContaining(testUnit)

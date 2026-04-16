@@ -1,7 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { changeUserPassword, createUser, deleteUser, updateUser } from "@/actions/controllers/UserController";
+import { InputFormField } from "@/components/fields/InputFormField";
 import { useModal } from "@/components/modals/modalProvider";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";
@@ -9,28 +10,35 @@ import { nameValidationPattern, userNameValidationPattern } from "@/lib/validati
 import { User } from "@/types/userTypes";
 import { faBars, faCheck, faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
-import { Button, Dropdown, FormControl, FormGroup, FormLabel, FormSelect } from "react-bootstrap";
-import { FieldErrors, UseFormRegister, useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { Button, Dropdown, FormGroup, FormLabel, FormSelect } from "react-bootstrap";
+import { Control, Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 export default function UserAdminTableRow({
-    user, userList, onCancel
+    user, userList, onCancel, onSave
 }: {
     user: User | undefined;
     userList: User[];
     onCancel?: () => void;
-    save?: () => void;
+    onSave?: () => void;
 }) {
     const t = useI18n();
     const tError = useScopedI18n('common.error');
     const modal = useModal();
 
     const formId = `user_${user ? user.id : "new"}`;
-    const { register, handleSubmit, reset, formState: { errors } } = useForm<User>({ defaultValues: user, mode: "onChange" });
+    const { control, handleSubmit, reset } = useForm<User>({ defaultValues: user, mode: "onChange" });
     const mobileForm = useForm<User>({ defaultValues: user, mode: "onChange" });
 
     const [editable, setEditable] = useState(!user);
+
+    useEffect(() => {
+        if (!editable) {
+            reset(user);
+            mobileForm.reset(user);
+        }
+    }, [user, reset, mobileForm.reset, editable]);
 
     async function handleSave(data: User) {
         data.active = (String(data.active) === "true");
@@ -38,6 +46,7 @@ export default function UserAdminTableRow({
         if (!user) return handleCreate(data);
         updateUser(data)
             .then(() => {
+                setEditable(false);
                 toast.success(t('admin.user.saved'))
             }).catch((error) => {
                 console.error(error);
@@ -48,6 +57,7 @@ export default function UserAdminTableRow({
         modal?.changeUserPasswordModal(
             (password: string) => createUser(data, password)
                 .then(() => {
+                    onSave?.();
                     toast.success(t('admin.user.created'));
                 }).catch((error) => {
                     console.error(error);
@@ -91,19 +101,15 @@ export default function UserAdminTableRow({
                     userList={userList.filter(u => !user || u.id !== user.id)}
                     disabled={!editable || !!user}
                     plaintext={!editable}
-                    register={register}
-                    tError={tError}
-                    errors={errors}
-                    mobile={false} />
+                    control={control}
+                    tError={tError} />
             </td>
             <td className={`col-8 col-sm-5 col-md-3 ${editable ? "d-none d-md-table-cell" : ""}`}>
                 <NameControl
                     formId={formId}
                     editable={editable}
-                    register={register}
-                    tError={tError}
-                    errors={errors}
-                    mobile={false} />
+                    control={control}
+                    tError={tError} />
             </td>
             <td className={`col-2 col-md-3 ${editable ? "d-none d-md-table-cell" : "d-none d-md-table-cell"}`}>
                 {(!editable && user)
@@ -112,7 +118,7 @@ export default function UserAdminTableRow({
                     </div>
                     : <RoleSelect
                         formId={formId}
-                        register={register}
+                        control={control}
                         t={t} />
                 }
             </td>
@@ -123,7 +129,7 @@ export default function UserAdminTableRow({
                     </div>
                     : <ActiveSelect
                         formId={formId}
-                        register={register}
+                        control={control}
                         t={t} />
                 }
             </td>
@@ -196,33 +202,29 @@ export default function UserAdminTableRow({
                             userList={userList.filter(u => !user || u.id !== user.id)}
                             plaintext={false}
                             disabled={!editable || !!user}
-                            register={mobileForm.register}
                             tError={tError}
-                            errors={mobileForm.formState.errors}
-                            mobile={true} />
+                            control={mobileForm.control} />
                     </FormGroup>
                     <FormGroup>
                         <FormLabel className="ms-1 mt-1 mb-0">{t('admin.user.header.name')}</FormLabel>
                         <NameControl
                             formId={formId + "_mobil"}
                             editable={editable}
-                            register={mobileForm.register}
-                            tError={tError}
-                            errors={mobileForm.formState.errors}
-                            mobile={true} />
+                            control={mobileForm.control}
+                            tError={tError} />
                     </FormGroup>
                     <FormGroup>
                         <FormLabel className="ms-1 mt-1 mb-0">{t('admin.user.header.role')}</FormLabel>
                         <RoleSelect
                             formId={formId + "_mobil"}
-                            register={mobileForm.register}
+                            control={mobileForm.control}
                             t={t} />
                     </FormGroup>
                     <FormGroup>
                         <FormLabel className="ms-1 mt-1 mb-0">{t('admin.user.header.status')}</FormLabel>
                         <ActiveSelect
                             formId={formId + "_mobil"}
-                            register={mobileForm.register}
+                            control={mobileForm.control}
                             t={t} />
                     </FormGroup>
                     <div className="row m-2 mt-4 justify-content-between">
@@ -262,121 +264,117 @@ const UsernameControl = ({
     formId,
     disabled,
     plaintext,
-    register,
+    control,
     tError,
-    errors,
-    mobile,
 }: {
     userList: User[];
     formId: string;
     disabled: boolean;
     plaintext: boolean;
-    register: UseFormRegister<User>;
+    control: Control<User>;
     tError: any;
-    errors: FieldErrors<User>;
-    mobile: boolean;
 }) => (
     <>
-        <FormControl
-            form={formId}
-            plaintext={plaintext}
+        <InputFormField
+            name="username"
+            formName={formId}
+            label=""
             disabled={disabled}
-            {...register("username", {
-                required: {
-                    value: true,
-                    message: tError('string.required'),
-                },
+            plaintext={plaintext}
+            control={control}
+            hookFormValidation
+            required
+            maxLength={6}
+            hookFormValidationRules={{
                 pattern: {
                     value: userNameValidationPattern,
                     message: tError('user.username.pattern'),
                 },
-                maxLength: {
-                    value: 6,
-                    message: tError('string.maxLength', { value: 6 }),
-                },
                 validate: (value) => userList.every(u => u.username !== value) || tError('user.username.duplicate'),
-            })}
+            }}
         />
-        <div data-testid={`err_username${mobile ? "_mobile" : ""}`} className="text-danger fs-7">
-            {errors.username?.message}
-        </div>
     </>
 );
 
 const NameControl = ({
     formId,
     editable,
-    register,
+    control,
     tError,
-    errors,
-    mobile,
 }: {
     formId: string;
     editable: boolean;
-    register: UseFormRegister<User>;
+    control: Control<User>;
     tError: any;
-    errors: FieldErrors<User>;
-    mobile: boolean;
 }) => (
-    <>
-        <FormControl
-            form={formId}
-            plaintext={!editable}
-            disabled={!editable}
-            {...register("name", {
-                required: {
-                    value: true,
-                    message: tError('string.required'),
-                },
-                pattern: {
-                    value: nameValidationPattern,
-                    message: tError('string.noSpecialChars'),
-                },
-                maxLength: {
-                    value: 20,
-                    message: tError('string.maxLength', { value: 20 }),
-                },
-            })}
-        />
-        <div data-testid={`err_name${mobile ? "_mobile" : ""}`} className="text-danger fs-7">
-            {errors.name?.message}
-        </div>
-    </>
+    <InputFormField
+        name="name"
+        control={control}
+        formName={formId}
+        disabled={!editable}
+        plaintext={!editable}
+        label=""
+        hookFormValidation
+        required
+        maxLength={20}
+        hookFormValidationRules={{
+            pattern: {
+                value: nameValidationPattern,
+                message: tError('string.noSpecialChars'),
+            },
+        }}
+    />
 );
 const RoleSelect = ({
     formId,
-    register,
+    control,
     t,
 }: {
     formId: string;
-    register: UseFormRegister<User>;
+    control: Control<User>;
     t: any;
 }) => (
-    <FormSelect
-        form={formId}
-        {...register('role', { required: true, valueAsNumber: true })}
-    >
-        <option value={AuthRole.user}>{t('common.user.authRole.1')}</option>
-        <option value={AuthRole.inspector}>{t('common.user.authRole.2')}</option>
-        <option value={AuthRole.materialManager}>{t('common.user.authRole.3')}</option>
-        <option value={AuthRole.admin}>{t('common.user.authRole.4')}</option>
-    </FormSelect>
+    <Controller
+        control={control}
+        name="role"
+        render={({ field }) => (
+            <FormSelect
+                form={formId}
+                {...field}
+                value={String(field.value)}
+                onChange={(e) => field.onChange(+e.target.value)}
+            >
+                <option value={AuthRole.user}>{t('common.user.authRole.1')}</option>
+                <option value={AuthRole.inspector}>{t('common.user.authRole.2')}</option>
+                <option value={AuthRole.materialManager}>{t('common.user.authRole.3')}</option>
+                <option value={AuthRole.admin}>{t('common.user.authRole.4')}</option>
+            </FormSelect>
+        )}
+    />
 );
 
 const ActiveSelect = ({
     formId,
-    register,
+    control,
     t,
 }: {
     formId: string;
-    register: UseFormRegister<User>;
+    control: Control<User>;
     t: any;
 }) => (
-    <FormSelect
-        form={formId}
-        {...register('active', { required: true })}
-    >
-        <option value={"true"}>{t('common.user.active.true')}</option>
-        <option value={"false"}>{t('common.user.active.false')}</option>
-    </FormSelect>
+    <Controller
+        control={control}
+        name="active"
+        render={({ field }) =>
+            <FormSelect
+                {...field}
+                value={String(field.value)}
+                form={formId}
+                onChangeCapture={(e) => field.onChange(e.target.value === "true")}
+            >
+                <option value={"true"}>{t('common.user.active.true')}</option>
+                <option value={"false"}>{t('common.user.active.false')}</option>
+            </FormSelect>
+        }
+    />
 )

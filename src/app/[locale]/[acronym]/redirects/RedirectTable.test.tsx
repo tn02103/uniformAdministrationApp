@@ -1,13 +1,15 @@
-import { Redirect } from "@prisma/client";
+import { Redirect } from "@/prisma/client";
 import { getAllByRole, getByDisplayValue, getByRole, getByText, queryByText, render, } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { toast } from "react-toastify";
 import { RedirectTable } from "./RedirectTable";
 
-jest.mock("@/dal/redirects", () => ({
-    createRedirect: jest.fn(),
-    deleteRedirect: jest.fn(),
-    updateRedirect: jest.fn(),
+import { createRedirect, deleteRedirect, updateRedirect } from "@/dal/redirects";
+
+vi.mock("@/dal/redirects", () => ({
+    createRedirect: vi.fn(),
+    deleteRedirect: vi.fn(),
+    updateRedirect: vi.fn(),
 }));
 
 const mockRedirects: Redirect[] = [
@@ -17,7 +19,7 @@ const mockRedirects: Redirect[] = [
 
 describe("RedirectTable", () => {
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it("renders the table with redirects", () => {
@@ -92,7 +94,7 @@ describe("RedirectTable", () => {
 
     describe("creating a redirect", () => {
         it("allows adding a new redirect", async () => {
-            const createRedirectMock = jest.requireMock("@/dal/redirects").createRedirect;
+            const createRedirectMock = vi.mocked(createRedirect);
             createRedirectMock.mockResolvedValueOnce(undefined);
 
             const user = userEvent.setup();
@@ -125,7 +127,7 @@ describe("RedirectTable", () => {
         });
 
         it("catches exception from DAL-method", async () => {
-            const createRedirectMock = jest.requireMock("@/dal/redirects").createRedirect;
+            const createRedirectMock = vi.mocked(createRedirect);
             createRedirectMock.mockRejectedValueOnce(new Error("Test error"));
 
             const user = userEvent.setup();
@@ -151,7 +153,7 @@ describe("RedirectTable", () => {
 
     describe("editing a redirect", () => {
         it("allows editing a redirect row", async () => {
-            const saveRedirectMock = jest.requireMock("@/dal/redirects").updateRedirect;
+            const saveRedirectMock = vi.mocked(updateRedirect);
             saveRedirectMock.mockResolvedValueOnce(undefined);
 
             const user = userEvent.setup();
@@ -222,7 +224,7 @@ describe("RedirectTable", () => {
         });
 
         it("catches exception from DAL-method", async () => {
-            const saveRedirectMock = jest.requireMock("@/dal/redirects").updateRedirect;
+            const saveRedirectMock = vi.mocked(updateRedirect);
             saveRedirectMock.mockRejectedValueOnce(new Error("Test error"));
 
             const user = userEvent.setup();
@@ -245,7 +247,7 @@ describe("RedirectTable", () => {
     });
     describe("deleting a redirect", () => {
         it('allows deleting a redirect row', async () => {
-            const deleteRedirectMock = jest.requireMock("@/dal/redirects").deleteRedirect;
+            const deleteRedirectMock = vi.mocked(deleteRedirect);
             deleteRedirectMock.mockResolvedValueOnce(undefined);
 
             const user = userEvent.setup();
@@ -259,7 +261,7 @@ describe("RedirectTable", () => {
 
         });
         it("catches exception from DAL-method", async () => {
-            const deleteRedirectMock = jest.requireMock("@/dal/redirects").deleteRedirect;
+            const deleteRedirectMock = vi.mocked(deleteRedirect);
             deleteRedirectMock.mockRejectedValueOnce(new Error("Test error"));
 
             const user = userEvent.setup();

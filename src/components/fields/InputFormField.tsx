@@ -1,12 +1,13 @@
 import { useScopedI18n } from "@/lib/locales/client"
 import { Form } from "react-bootstrap"
-import { FieldValues, Path, useController } from "react-hook-form"
+import { Control, FieldValues, Path, useController } from "react-hook-form"
 import { Field } from "./Field"
 import { useFormContext } from "./Form"
 
 type Props<FormType extends FieldValues> = {
     label: string,
     name: Path<FormType>,
+    control?: Control<FormType>,
     formName?: string,
     required?: boolean,
     disabled?: boolean,
@@ -15,17 +16,20 @@ type Props<FormType extends FieldValues> = {
     plaintext?: boolean,
     maxLength?: number,
     hookFormValidation?: boolean,
+    hookFormValidationRules?: Parameters<typeof useController<FormType>>[0]['rules'],
 }
 
 export const InputFormField = <FormType extends FieldValues>(props: Props<FormType>) => {
-    const { label, name, required, placeholder, className, hookFormValidation,  maxLength, ...inputProps } = props;
+    const { label, name, required, placeholder, className, hookFormValidation, maxLength, hookFormValidationRules, control, ...inputProps } = props;
 
     const t = useScopedI18n('common.error');
     const { field, fieldState } = useController({
         name,
+        control,
         rules: hookFormValidation ? {
             required: required ? t('string.required') : false,
             maxLength: maxLength ? { value: maxLength, message: t('string.maxLength', { value: maxLength }) } : undefined,
+            ...hookFormValidationRules,
         } : {},
     });
 

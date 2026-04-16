@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`UniformDetailRow Render Components should render correctly 1`] = `
+exports[`UniformDetailRow > Render Components > should render correctly 1`] = `
 <div>
   <form
     autocomplete="off"
@@ -125,7 +125,7 @@ exports[`UniformDetailRow Render Components should render correctly 1`] = `
 </div>
 `;
 
-exports[`UniformDetailRow Render Components should render correctly when editable 1`] = `
+exports[`UniformDetailRow > Render Components > should render correctly when editable 1`] = `
 <div>
   <form
     autocomplete="off"

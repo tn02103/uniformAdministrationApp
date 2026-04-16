@@ -1,7 +1,7 @@
 import { runServerActionTest } from "@/dal/_helper/testHelper";
 import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
-import { checkDateTolerance } from "../../../../jest/helpers/test-utils";
+import { checkDateTolerance } from "../../../../vitest/helpers/test-utils";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import {
     createUniformItems,
@@ -87,8 +87,7 @@ describe('<UniformItem> Integration Tests', () => {
                 create: false,
             },
         };
-        const { success } = await runServerActionTest(issueUniformItem(issueProps));
-        expect(success).toBeTruthy();
+        await expect(issueUniformItem(issueProps)).resolves.toBeDefined();
 
         const [oldCadet, oldIssuedEntry, newIssuedEntry] = await prisma.$transaction([
             prisma.cadet.findUnique({

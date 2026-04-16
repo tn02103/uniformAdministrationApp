@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2024",
     "lib": [
       "dom",
       "dom.iterable",
       "esnext"
     ],
-    "allowJs": true,
+    "allowJs": false,
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
@@ -15,8 +15,11 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
+    "types": [
+      "vitest/globals"
+    ],
     "plugins": [
       {
         "name": "next"
@@ -25,6 +28,12 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@/prisma/*": [
+        "./prisma/generated/*"
+      ],
+      "@test-utils/prisma-mock": [
+        "./vitest/setup-dal-unit.ts"
       ]
     }
   },
@@ -33,7 +42,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "next-env.d.ts",
-    "build/types/**/*.ts"
+    "build/types/**/*.ts",
+    "build/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

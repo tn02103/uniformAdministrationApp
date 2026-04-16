@@ -6,7 +6,7 @@ import { useI18n } from "@/lib/locales/client"
 import { RedirectFormSchema, RedirectFormType } from "@/zod/redirect"
 import { faCheck, faCopy, faX } from "@fortawesome/free-solid-svg-icons"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Redirect } from "@prisma/client"
+import { Redirect } from "@/prisma/client"
 import { useState } from "react"
 import { FormCheck, FormControl, Table } from "react-bootstrap"
 import { useForm } from "react-hook-form"
@@ -89,20 +89,29 @@ const RedirectTableRow = ({ redirect, closeNewRow, isARowEditable, setIsARowEdit
         await updateRedirect({
             id: redirect.id,
             data
+        }).then(() => {
+            setIsEditable(false);
+            setIsARowEditable(false);
         }).catch(() => {
             toast.error(t('common.error.unknown'));
         });
     }
 
     const handleCreate = async (data: RedirectFormType) => {
-        await createRedirect(data).catch(() => {
+        await createRedirect(data).then(() => {
+            closeNewRow?.();
+            setIsARowEditable(false);
+        }).catch(() => {
             toast.error(t('common.error.unknown'));
         });
     }
 
     const handleDelete = async () => {
         if (!redirect) return;
-        await deleteRedirect(redirect.id).catch(() => {
+        await deleteRedirect(redirect.id).then(() => {
+            setIsEditable(false);
+            setIsARowEditable(false);
+        }).catch(() => {
             toast.error(t('common.error.unknown'));
         });
     }

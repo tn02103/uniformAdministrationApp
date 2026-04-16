@@ -60,9 +60,9 @@ jobs:
           
           # List of required check names from the Validate PR workflow
           REQUIRED_CHECKS=(
-            "Jest Unit Tests"
-            "Jest Frontend Tests" 
-            "Jest Integration Tests"
+            "DAL-Unit Tests"
+            "DAL-Integration Tests"
+            "Frontend Tests" 
             "Lint Code"
             "Build Application"
             "E2E Tests"

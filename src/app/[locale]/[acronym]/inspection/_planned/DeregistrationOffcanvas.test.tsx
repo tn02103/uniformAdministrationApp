@@ -6,10 +6,16 @@ import userEvent from "@testing-library/user-event";
 import { format } from "date-fns";
 import { DeregistrationOffcanvas } from "./DeregistrationOffcanvas";
 import { mockCadetList, mockInspectionList } from "./jestHelper";
+import { updateCadetRegistrationForInspection } from "@/dal/inspection";
+import { usePlannedInspectionList } from "@/dataFetcher/inspection";
+import { toast } from "react-toastify";
+
 
 describe('<DeregistrationOffcanvas/>', () => {
+    const mockMutate = vi.mocked(usePlannedInspectionList)().mutate;
+
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
     it('should render', () => {
         const mockInspection = mockInspectionList[0];
@@ -17,7 +23,7 @@ describe('<DeregistrationOffcanvas/>', () => {
             <DeregistrationOffcanvas
                 inspection={mockInspection}
                 cadetList={mockCadetList}
-                onClose={jest.fn()}
+                onClose={vi.fn()}
             />
         );
 
@@ -43,7 +49,7 @@ describe('<DeregistrationOffcanvas/>', () => {
 
     it('should close the offcanvas with close button', async () => {
         const user = userEvent.setup();
-        const onClose = jest.fn();
+        const onClose = vi.fn();
         render(
             <DeregistrationOffcanvas
                 inspection={mockInspectionList[0]}
@@ -59,15 +65,12 @@ describe('<DeregistrationOffcanvas/>', () => {
     });
 
     it('should be able to deregister a cadet', async () => {
-        const { updateCadetRegistrationForInspection } = jest.requireMock("@/dal/inspection");
-        const { mutate } = jest.requireMock("@/dataFetcher/inspection").usePlannedInspectionList();
-
         const user = userEvent.setup();
         render(
             <DeregistrationOffcanvas
                 inspection={mockInspectionList[0]}
                 cadetList={mockCadetList}
-                onClose={jest.fn()}
+                onClose={vi.fn()}
             />
         );
 
@@ -105,19 +108,15 @@ describe('<DeregistrationOffcanvas/>', () => {
             inspectionId: mockInspectionList[0].id,
             deregister: true
         });
-        expect(mutate).toHaveBeenCalled();
+        expect(mockMutate).toHaveBeenCalled();
     });
     it('should catch exceptions when deregistering a cadet', async () => {
-        const { updateCadetRegistrationForInspection } = jest.requireMock("@/dal/inspection");
-        const { mutate } = jest.requireMock("@/dataFetcher/inspection").usePlannedInspectionList();
-        const { toast } = jest.requireMock("react-toastify");
-
         const user = userEvent.setup();
         render(
             <DeregistrationOffcanvas
                 inspection={mockInspectionList[0]}
                 cadetList={mockCadetList}
-                onClose={jest.fn()}
+                onClose={vi.fn()}
             />
         );
 
@@ -133,11 +132,11 @@ describe('<DeregistrationOffcanvas/>', () => {
             inspectionId: mockInspectionList[0].id,
             deregister: true
         });
-        expect(mutate).toHaveBeenCalled();
-        expect(mutate).toHaveReturnedTimes(1);
+        expect(mockMutate).toHaveBeenCalled();
+        expect(mockMutate).toHaveReturnedTimes(1);
         expect(toast.error).not.toHaveBeenCalled();
 
-        updateCadetRegistrationForInspection.mockRejectedValueOnce(new Error("test error"));
+        vi.mocked(updateCadetRegistrationForInspection).mockRejectedValueOnce(new Error("test error"));
         expect(deregisterField).toHaveAttribute("aria-expanded", "false");
         await user.click(deregisterField);
         expect(deregisterField).toHaveAttribute("aria-expanded", "true");
@@ -149,20 +148,17 @@ describe('<DeregistrationOffcanvas/>', () => {
             inspectionId: mockInspectionList[0].id,
             deregister: true
         });
-        expect(mutate).toHaveReturnedTimes(1);
+        expect(mockMutate).toHaveReturnedTimes(1);
         expect(toast.error).toHaveBeenCalled();
     });
 
     it('should be able to remove a cadet from the deregistration list', async () => {
-        const { updateCadetRegistrationForInspection } = jest.requireMock("@/dal/inspection");
-        const { mutate } = jest.requireMock("@/dataFetcher/inspection").usePlannedInspectionList();
-     
         const user = userEvent.setup();
         render(
             <DeregistrationOffcanvas
                 inspection={mockInspectionList[0]}
                 cadetList={mockCadetList}
-                onClose={jest.fn()}
+                onClose={vi.fn()}
             />
         );
 
@@ -174,20 +170,16 @@ describe('<DeregistrationOffcanvas/>', () => {
             inspectionId: mockInspectionList[0].id,
             deregister: false
         });
-        expect(mutate).toHaveBeenCalled();
+        expect(mockMutate).toHaveBeenCalled();
     });
 
     it('should catch exceptions when removing a cadet from the deregistration list', async () => {
-        const { updateCadetRegistrationForInspection } = jest.requireMock("@/dal/inspection");
-        const { mutate } = jest.requireMock("@/dataFetcher/inspection").usePlannedInspectionList();
-        const { toast } = jest.requireMock("react-toastify");
-
         const user = userEvent.setup();
         render(
             <DeregistrationOffcanvas
                 inspection={mockInspectionList[0]}
                 cadetList={mockCadetList}
-                onClose={jest.fn()}
+                onClose={vi.fn()}
             />
         );
 
@@ -198,11 +190,11 @@ describe('<DeregistrationOffcanvas/>', () => {
             inspectionId: mockInspectionList[0].id,
             deregister: false
         });
-        expect(mutate).toHaveBeenCalled();
-        expect(mutate).toHaveReturnedTimes(1);
+        expect(mockMutate).toHaveBeenCalled();
+        expect(mockMutate).toHaveReturnedTimes(1);
         expect(toast.error).not.toHaveBeenCalled();
 
-        updateCadetRegistrationForInspection.mockRejectedValueOnce(new Error("test error"));
+        vi.mocked(updateCadetRegistrationForInspection).mockRejectedValueOnce(new Error("test error"));
         await user.click(removeButtons[1]);
         expect(updateCadetRegistrationForInspection).toHaveBeenCalledTimes(2);
         expect(updateCadetRegistrationForInspection).toHaveBeenCalledWith({
@@ -210,7 +202,7 @@ describe('<DeregistrationOffcanvas/>', () => {
             inspectionId: mockInspectionList[0].id,
             deregister: false
         });
-        expect(mutate).toHaveReturnedTimes(1);
+        expect(mockMutate).toHaveReturnedTimes(1);
         expect(toast.error).toHaveBeenCalled();
     });
 });

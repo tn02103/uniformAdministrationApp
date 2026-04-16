@@ -6,26 +6,28 @@ import { mockTypeList, mockUniformList } from "../../../../../../../tests/_jestC
 import type { CadetUniformMap } from "@/types/globalCadetTypes";
 import { CadetUniformTableItemRowProps } from "./CadetUniformTableItemRow";
 import { CadetUniformTableIssueModalProps } from "./CadetUniformTableIssueModal";
+import { CadetUniformTableIssueModal } from "./CadetUniformTableIssueModal";
+
 
 // Mocks
-jest.mock("@/dataFetcher/uniformAdmin", () => ({
+vi.mock("@/dataFetcher/uniformAdmin", () => ({
     useUniformTypeList: () => ({
         typeList: mockTypeList,
     }),
 }));
-jest.mock("@/dataFetcher/cadet", () => ({
+vi.mock("@/dataFetcher/cadet", () => ({
     useCadetUniformMap: (_cadetId: string, uniformMap?: CadetUniformMap) => ({
         map: uniformMap,
-        mutate: jest.fn(),
+        mutate: vi.fn(),
     }),
 }));
-jest.mock("next/navigation", () => ({
+vi.mock("next/navigation", () => ({
     useParams: () => ({ cadetId: "cadet-1", locale: "de" }),
 }));
 
 
-jest.mock("./CadetUniformTableIssueModal", () => ({
-    CadetUniformTableIssueModal: jest.fn().mockImplementation(
+vi.mock("./CadetUniformTableIssueModal", () => ({
+    CadetUniformTableIssueModal: vi.fn().mockImplementation(
         (props: CadetUniformTableIssueModalProps) => (
             <div data-testid="issue-modal">
                 Modal: {props.type?.name}
@@ -34,8 +36,8 @@ jest.mock("./CadetUniformTableIssueModal", () => ({
         )
     ),
 }));
-jest.mock("./CadetUniformTableItemRow", () => ({
-    CadetUniformTableItemRow: jest.fn().mockImplementation(
+vi.mock("./CadetUniformTableItemRow", () => ({
+    CadetUniformTableItemRow: vi.fn().mockImplementation(
         (props: CadetUniformTableItemRowProps) => (
             <div data-testid={`itemrow_${props.uniform.id}`}>
                 {props.uniform.number}
@@ -80,7 +82,7 @@ function setup(props = {}) {
 
 describe("CadetUniformTable", () => {
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it("renders the table header", () => {
@@ -130,7 +132,6 @@ describe("CadetUniformTable", () => {
 
     it("opens the issue modal when issue button is clicked", async () => {
         setup();
-        const { CadetUniformTableIssueModal } = jest.requireMock("./CadetUniformTableIssueModal");
         
         const btns = screen.getAllByTestId("btn_issue");
         await userEvent.click(btns[0]);
@@ -171,7 +172,6 @@ describe("CadetUniformTable", () => {
 
     it("opens the issue modal for replace when replaceItem is called", async () => {
         setup();
-        const { CadetUniformTableIssueModal } = jest.requireMock("./CadetUniformTableIssueModal");
 
         const replaceBtn = screen.getByTestId("replace_u-1");
         await userEvent.click(replaceBtn);

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`<UniformType> Integration Tests should get list with correct data structure 1`] = `
+exports[`<UniformType> Integration Tests > should get list with correct data structure 1`] = `
 [
   {
     "acronym": "AA",
@@ -121,7 +121,7 @@ exports[`<UniformType> Integration Tests should get list with correct data struc
 ]
 `;
 
-exports[`<UniformType> Integration Tests should get single type with correct data structure 1`] = `
+exports[`<UniformType> Integration Tests > should get single type with correct data structure 1`] = `
 {
   "acronym": "AA",
   "defaultSizelist": {

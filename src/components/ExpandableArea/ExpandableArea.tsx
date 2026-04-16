@@ -1,10 +1,10 @@
 "use client";
+import { useI18n } from "@/lib/locales/client";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
-import { Row, Button } from "react-bootstrap";
+import { Button, Row } from "react-bootstrap";
 import styles from "./ExpandableArea.module.css";
-import { useI18n } from "@/lib/locales/client";
 
 type ExpandableAreaProps = {
     children: React.ReactNode;
@@ -14,7 +14,6 @@ type ExpandableAreaProps = {
 }
 
 export const ExpandableArea = ({ children, header, headerClassName, defaultExpanded = false }: ExpandableAreaProps) => {
-    const t = useI18n();
     const [expanded, setExpanded] = useState(defaultExpanded);
 
     const getHeader = () => {
@@ -45,27 +44,30 @@ export const ExpandableArea = ({ children, header, headerClassName, defaultExpan
 
 export const ExpandableDividerArea = ({ children }: Pick<ExpandableAreaProps, "children">) => {
     const t = useI18n();
-    return ExpandableArea({
-        children,
-        header: ({ expanded, setExpanded }) => (
-            <Row style={{ height: "2rem" }} className="align-items-center justify-content-center">
-                <div className="position-relative">
-                    <hr className="" />
-                    <div
-                        className="w-auto bg-white align-center position-absolute top-50 start-50 translate-middle"
-                    >
-                        <Button
-                            size="sm"
-                            variant="light"
-                            className="border-0"
-                            onClick={() => setExpanded(!expanded)}
+    return (
+        <ExpandableArea
+            header={({ expanded, setExpanded }) => (
+                <Row style={{ height: "2rem" }} className="align-items-center justify-content-center">
+                    <div className="position-relative">
+                        <hr className="" />
+                        <div
+                            className="w-auto bg-white align-center position-absolute top-50 start-50 translate-middle"
                         >
-                            <FontAwesomeIcon icon={faChevronDown} className={"text-dark me-2 " + (expanded && styles.open)} />
-                            {expanded ? t('expandableArea.showLess') : t('expandableArea.showMore')}
-                        </Button>
+                            <Button
+                                size="sm"
+                                variant="light"
+                                className="border-0"
+                                onClick={() => setExpanded((prev) => !prev)}
+                            >
+                                <FontAwesomeIcon icon={faChevronDown} className={"text-dark me-2 " + (expanded && styles.open)} />
+                                {expanded ? t('expandableArea.showLess') : t('expandableArea.showMore')}
+                            </Button>
+                        </div>
                     </div>
-                </div>
-            </Row>
-        )
-    });
+                </Row>
+            )}
+        >
+            {children}
+        </ExpandableArea>
+    );
 }

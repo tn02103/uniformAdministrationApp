@@ -1,14 +1,16 @@
 import { render, screen } from '@testing-library/react';
 import { CustomChartTooltip } from './CustomChartTooltip';
+import { useI18n } from '@/lib/locales/client';
+
 
 // Mock the i18n hook
-jest.mock('@/lib/locales/client', () => ({
-    useI18n: jest.fn()
+vi.mock('@/lib/locales/client', () => ({
+    useI18n: vi.fn()
 }));
 
 describe('CustomChartTooltip', () => {
-    const mockUseI18n = jest.requireMock('@/lib/locales/client').useI18n;
-    const mockTranslate = jest.fn();
+    const mockUseI18n = useI18n;
+    const mockTranslate = vi.fn();
 
     // Realistic test data that mirrors actual chart payload structure
     const samplePayload = [
@@ -21,8 +23,8 @@ describe('CustomChartTooltip', () => {
     const sampleLabel = 'Uniform Type A';
 
     beforeEach(() => {
-        jest.clearAllMocks();
-        mockUseI18n.mockReturnValue(mockTranslate);
+        vi.clearAllMocks();
+        (mockUseI18n as ReturnType<typeof vi.fn>).mockReturnValue(mockTranslate);
         
         // Setup default translation mock behavior
         mockTranslate.mockImplementation((key: string) => {

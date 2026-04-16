@@ -6,15 +6,20 @@ import userEvent from "@testing-library/user-event";
 import { mockTypeList } from "../../../tests/_jestConfig/staticMockData";
 import { UniformOffcanvas } from "./UniformOffcanvas";
 import { mockUniform } from "./UniformOffcanvasJestHelper";
+import * as modalProvider from '../modals/modalProvider';
+import * as dalUniformItem from '@/dal/uniform/item/_index';
+import * as toastify from 'react-toastify';
+import * as uniformFetcher from '@/dataFetcher/uniform';
+import { vi } from 'vitest';
 
 describe('UniformOffcanvas', () => {
-    const { useModal } = jest.requireMock('../modals/modalProvider');
-    const { simpleWarningModal } = useModal();
-    const { deleteUniformItem, updateUniformItem } = jest.requireMock('@/dal/uniform/item/_index');
-    const { toast } = jest.requireMock('react-toastify');
+    const { useModal } = modalProvider;
+    const { simpleWarningModal } = useModal()!;
+    const { deleteUniformItem, updateUniformItem } = dalUniformItem;
+    const { toast } = toastify;
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('should render correctly', () => {
@@ -23,8 +28,8 @@ describe('UniformOffcanvas', () => {
                 <UniformOffcanvas
                     uniform={mockUniform}
                     uniformType={mockTypeList[0]}
-                    onClose={jest.fn()}
-                    onSave={jest.fn()}
+                    onClose={vi.fn()}
+                    onSave={vi.fn()}
                 />
             </div>
         );
@@ -33,13 +38,13 @@ describe('UniformOffcanvas', () => {
     });
 
     it('should call onClose when close button is clicked', async () => {
-        const onCloseMock = jest.fn();
+        const onCloseMock = vi.fn();
         const { getByLabelText } = render(
             <UniformOffcanvas
                 uniform={mockUniform}
                 uniformType={mockTypeList[0]}
                 onClose={onCloseMock}
-                onSave={jest.fn()}
+                onSave={vi.fn()}
             />
         );
 
@@ -55,8 +60,8 @@ describe('UniformOffcanvas', () => {
             <UniformOffcanvas
                 uniform={mockUniform}
                 uniformType={mockTypeList[0]}
-                onClose={jest.fn()}
-                onSave={jest.fn()}
+                onClose={vi.fn()}
+                onSave={vi.fn()}
             />
         );
 
@@ -80,8 +85,8 @@ describe('UniformOffcanvas', () => {
             <UniformOffcanvas
                 uniform={mockUniform}
                 uniformType={mockTypeList[0]}
-                onClose={jest.fn()}
-                onSave={jest.fn()}
+                onClose={vi.fn()}
+                onSave={vi.fn()}
             />
         );
 
@@ -103,8 +108,8 @@ describe('UniformOffcanvas', () => {
             <UniformOffcanvas
                 uniform={mockUniform}
                 uniformType={mockTypeList[0]}
-                onClose={jest.fn()}
-                onSave={jest.fn()}
+                onClose={vi.fn()}
+                onSave={vi.fn()}
             />
         );
 
@@ -121,8 +126,8 @@ describe('UniformOffcanvas', () => {
             <UniformOffcanvas
                 uniform={{ ...mockUniform, storageUnit: { id: 'storage1', name: 'Storage 1', description: "desc1", isReserve: false }, issuedEntries: [] }}
                 uniformType={mockTypeList[0]}
-                onClose={jest.fn()}
-                onSave={jest.fn()}
+                onClose={vi.fn()}
+                onSave={vi.fn()}
             />
         );
 
@@ -137,8 +142,8 @@ describe('UniformOffcanvas', () => {
             <UniformOffcanvas
                 uniform={{ ...mockUniform, storageUnit: null, issuedEntries: [] }}
                 uniformType={mockTypeList[0]}
-                onClose={jest.fn()}
-                onSave={jest.fn()}
+                onClose={vi.fn()}
+                onSave={vi.fn()}
             />
         );
 
@@ -152,8 +157,8 @@ describe('UniformOffcanvas', () => {
                 <UniformOffcanvas
                     uniform={mockUniform}
                     uniformType={mockTypeList[0]}
-                    onClose={jest.fn()}
-                    onSave={jest.fn()}
+                    onClose={vi.fn()}
+                    onSave={vi.fn()}
                 />
             );
 
@@ -174,17 +179,18 @@ describe('UniformOffcanvas', () => {
         });
 
         it('should render empty history', () => {
-            const { useUniformItemHistory } = jest.requireMock('@/dataFetcher/uniform');
-            useUniformItemHistory.mockReturnValue({
+            const { useUniformItemHistory } = uniformFetcher;
+            vi.mocked(useUniformItemHistory).mockReturnValue({
                 history: [],
+                mutate: vi.fn(),
             });
 
             render(
                 <UniformOffcanvas
                     uniform={mockUniform}
                     uniformType={mockTypeList[0]}
-                    onClose={jest.fn()}
-                    onSave={jest.fn()}
+                    onClose={vi.fn()}
+                    onSave={vi.fn()}
                 />
             );
 
@@ -198,12 +204,12 @@ describe('UniformOffcanvas', () => {
         describe('updateUniformItem', () => {
             it('should update item', async () => {
                 const user = userEvent.setup();
-                const onSaveMock = jest.fn();
+                const onSaveMock = vi.fn();
                 const { getByRole } = render(
                     <UniformOffcanvas
                         uniform={mockUniform}
                         uniformType={mockTypeList[0]}
-                        onClose={jest.fn()}
+                        onClose={vi.fn()}
                         onSave={onSaveMock}
                     />
                 );
@@ -231,14 +237,14 @@ describe('UniformOffcanvas', () => {
             });
             it('should catch exception', async () => {
                 const user = userEvent.setup();
-                const onSaveMock = jest.fn();
-                updateUniformItem.mockRejectedValueOnce(new Error('Failed to save item'));
+                const onSaveMock = vi.fn();
+                vi.mocked(updateUniformItem).mockRejectedValueOnce(new Error('Failed to save item'));
 
                 const { getByRole } = render(
                     <UniformOffcanvas
                         uniform={mockUniform}
                         uniformType={mockTypeList[0]}
-                        onClose={jest.fn()}
+                        onClose={vi.fn()}
                         onSave={onSaveMock}
                     />
                 );
@@ -262,8 +268,8 @@ describe('UniformOffcanvas', () => {
 
         describe('deleteUniformItem', () => {
             it('should delete item', async () => {
-                const onCloseMock = jest.fn();
-                const onSaveMock = jest.fn();
+                const onCloseMock = vi.fn();
+                const onSaveMock = vi.fn();
 
                 const user = userEvent.setup();
                 const { getByRole } = render(
@@ -290,8 +296,8 @@ describe('UniformOffcanvas', () => {
                 );
                 expect(deleteUniformItem).toHaveBeenCalledTimes(0);
 
-                expect(simpleWarningModal.mock.calls[0][0].primaryFunction).toBeDefined();
-                await simpleWarningModal.mock.calls[0][0].primaryFunction!();
+                expect(vi.mocked(simpleWarningModal).mock.calls[0][0].primaryFunction).toBeDefined();
+                await vi.mocked(simpleWarningModal).mock.calls[0][0].primaryFunction!();
 
                 expect(deleteUniformItem).toHaveBeenCalledTimes(1);
                 expect(deleteUniformItem).toHaveBeenCalledWith(mockUniform.id);
@@ -301,9 +307,9 @@ describe('UniformOffcanvas', () => {
                 expect(toast.success).toHaveBeenCalledWith('uniformOffcanvas.deleteAction.success');
             });
             it('should catch exception', async () => {
-                const onCloseMock = jest.fn();
-                const onSaveMock = jest.fn();
-                deleteUniformItem.mockRejectedValueOnce(new Error('Failed to delete item'));
+                const onCloseMock = vi.fn();
+                const onSaveMock = vi.fn();
+                vi.mocked(deleteUniformItem).mockRejectedValueOnce(new Error('Failed to delete item'));
 
                 const user = userEvent.setup();
                 const { getByRole } = render(
@@ -319,7 +325,7 @@ describe('UniformOffcanvas', () => {
                 await user.click(deleteButton);
                 expect(simpleWarningModal).toHaveBeenCalledTimes(1);
 
-                await simpleWarningModal.mock.calls[0][0].primaryFunction!();
+                await vi.mocked(simpleWarningModal).mock.calls[0][0].primaryFunction!();
                 expect(deleteUniformItem).toHaveBeenCalledTimes(1);
                 expect(deleteUniformItem).toHaveBeenCalledWith(mockUniform.id);
                 expect(onCloseMock).toHaveBeenCalledTimes(0);
@@ -338,8 +344,8 @@ describe('UniformOffcanvas', () => {
                 <UniformOffcanvas
                     uniform={mockUniform}
                     uniformType={mockTypeList[0]}
-                    onClose={jest.fn()}
-                    onSave={jest.fn()}
+                    onClose={vi.fn()}
+                    onSave={vi.fn()}
                 />
             );
 
@@ -352,8 +358,8 @@ describe('UniformOffcanvas', () => {
                 <UniformOffcanvas
                     uniform={mockUniform}
                     uniformType={mockTypeList[0]}
-                    onClose={jest.fn()}
-                    onSave={jest.fn()}
+                    onClose={vi.fn()}
+                    onSave={vi.fn()}
                 />
             );
 
@@ -367,8 +373,8 @@ describe('UniformOffcanvas', () => {
                 <UniformOffcanvas
                     uniform={mockUniform}
                     uniformType={mockTypeList[0]}
-                    onClose={jest.fn()}
-                    onSave={jest.fn()}
+                    onClose={vi.fn()}
+                    onSave={vi.fn()}
                 />
             );
 
@@ -381,8 +387,8 @@ describe('UniformOffcanvas', () => {
                 <UniformOffcanvas
                     uniform={mockUniform}
                     uniformType={mockTypeList[0]}
-                    onClose={jest.fn()}
-                    onSave={jest.fn()}
+                    onClose={vi.fn()}
+                    onSave={vi.fn()}
                 />
             );
 

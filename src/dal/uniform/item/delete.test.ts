@@ -1,20 +1,22 @@
+
+import { prisma } from "@/lib/db";
+import { prismaMock } from '@test-utils/prisma-mock';
 import { deleteUniformItem } from "./_index";
 
 describe('successfull deletion', () => {
-    const mockId = "9fccd605-6a8b-4e1a-98a6-9cc627d5186d";
-    const { prisma } = jest.requireMock('@/lib/db');
     const mockDate = new Date();
 
     beforeEach(() => {
-        jest.useFakeTimers();
-        jest.setSystemTime(mockDate);
+        vi.useFakeTimers();
+        vi.setSystemTime(mockDate);
     });
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('marks uniformItem as deleted', async () => {
-        prisma.uniform.update.mockResolvedValueOnce([]);
+        const mockId = "9fccd605-6a8b-4e1a-98a6-9cc627d5186d";
+        prismaMock.uniform.update.mockResolvedValueOnce([]);
         await expect(deleteUniformItem(mockId)).resolves.toBeUndefined();
 
         expect(prisma.uniform.update).toHaveBeenCalledWith({
@@ -26,6 +28,7 @@ describe('successfull deletion', () => {
         });
     });
     it('marks all uniformDeficiencies from item as deleted', async () => {
+        const mockId = "9fccd605-6a8b-4e1a-98a6-9cc627d5186d";
         await expect(deleteUniformItem(mockId)).resolves.toBeUndefined();
 
         expect(prisma.deficiency.updateMany).toHaveBeenCalledWith({
@@ -42,6 +45,7 @@ describe('successfull deletion', () => {
         });
     });
     it('returns item when issued', async () => {
+        const mockId = "9fccd605-6a8b-4e1a-98a6-9cc627d5186d";
         await expect(deleteUniformItem(mockId)).resolves.toBeUndefined();
 
         expect(prisma.uniformIssued.updateMany).toHaveBeenCalledWith({

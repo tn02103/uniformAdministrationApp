@@ -32,36 +32,105 @@ describe("UniformListFilterAccordionBody", () => {
         expect(screen.getByLabelText("Item 2")).toBeInTheDocument();
     });
 
-    it("selects all items when 'Select All' is checked", async () => {
-        const user = userEvent.setup();
-        render(
-            <Wrapper defaultValues={{
-                all: { generations: false, sizes: false },
-                generations: { "1": false, "2": true, null: false }
-            }}>
-                <UniformListFilterAccordionBody itemList={itemList} name="generations" />
-            </Wrapper>
-        );
-        const selectAll = screen.getByLabelText("uniformList.selectAll");
-        await user.click(selectAll);
-        expect(screen.getByLabelText("Item 1")).toBeChecked();
-        expect(screen.getByLabelText("Item 2")).toBeChecked();
-    });
+    describe("Select All functionality", () => {
 
-    it('unchecks all items when "uniformList.selectAll" is unchecked', async () => {
-        const user = userEvent.setup();
-        render(
-            <Wrapper defaultValues={{
-                all: { generations: true, sizes: false },
-                generations: { "1": true, "2": true, null: true }
-            }}>
-                <UniformListFilterAccordionBody itemList={itemList} name="generations" />
-            </Wrapper>
-        );
-        const selectAll = screen.getByLabelText("uniformList.selectAll");
-        await user.click(selectAll);
-        expect(screen.getByLabelText("Item 1")).not.toBeChecked();
-        expect(screen.getByLabelText("Item 2")).not.toBeChecked();
+        it("selects all items when 'Select All' is checked", async () => {
+            const user = userEvent.setup();
+            render(
+                <Wrapper defaultValues={{
+                    all: { generations: false, sizes: false },
+                    generations: { "1": false, "2": true, null: false }
+                }}>
+                    <UniformListFilterAccordionBody itemList={itemList} name="generations" />
+                </Wrapper>
+            );
+            const selectAll = screen.getByLabelText("uniformList.selectAll");
+            await user.click(selectAll);
+            expect(screen.getByLabelText("Item 1")).toBeChecked();
+            expect(screen.getByLabelText("Item 2")).toBeChecked();
+        });
+
+        it('unchecks all items when "uniformList.selectAll" is unchecked', async () => {
+            const user = userEvent.setup();
+            render(
+                <Wrapper defaultValues={{
+                    all: { generations: true, sizes: false },
+                    generations: { "1": true, "2": true, null: true }
+                }}>
+                    <UniformListFilterAccordionBody itemList={itemList} name="generations" />
+                </Wrapper>
+            );
+            const selectAll = screen.getByLabelText("uniformList.selectAll");
+            await user.click(selectAll);
+            expect(screen.getByLabelText("Item 1")).not.toBeChecked();
+            expect(screen.getByLabelText("Item 2")).not.toBeChecked();
+        });
+
+        it("sets 'Select All' to indeterminate when some items are checked", async () => {
+            const user = userEvent.setup();
+            render(
+                <Wrapper defaultValues={{
+                    all: { generations: false, sizes: false },
+                    generations: { "1": true, "2": false, null: true }
+                }}>
+                    <UniformListFilterAccordionBody itemList={itemList} name="generations" />
+                </Wrapper>
+            );
+            const selectAll = screen.getByLabelText("uniformList.selectAll") as HTMLInputElement;
+            expect(selectAll.indeterminate).toBe(true);
+            const item2 = screen.getByLabelText("Item 2");
+            await user.click(item2);
+            expect(selectAll.indeterminate).toBe(false);
+            await user.click(item2);
+            expect(selectAll).not.toBeChecked();
+            expect(selectAll.indeterminate).toBe(true);
+        });
+
+
+        it("sets 'Select All' to checked when all items are checked", async () => {
+            const user = userEvent.setup();
+            render(
+                <Wrapper defaultValues={{
+                    all: { generations: false, sizes: false },
+                    generations: { "1": true, "2": true, null: true }
+                }}>
+                    <UniformListFilterAccordionBody itemList={itemList} name="generations" />
+                </Wrapper>
+            );
+            const selectAll = screen.getByLabelText("uniformList.selectAll") as HTMLInputElement;
+            const item1 = screen.getByLabelText("Item 1");
+            expect(selectAll).toBeChecked();
+
+            await user.click(item1);
+            expect(selectAll).not.toBeChecked();
+
+            await user.click(item1);
+            expect(selectAll).toBeChecked();
+        });
+
+        it("sets 'Select All' to unchecked when all items are unchecked", async () => {
+            const user = userEvent.setup();
+            render(
+                <Wrapper defaultValues={{
+                    all: { generations: false, sizes: false },
+                    generations: { "1": false, "2": false, null: false }
+                }}>
+                    <UniformListFilterAccordionBody itemList={itemList} name="generations" />
+                </Wrapper>
+            );
+            const selectAll = screen.getByLabelText("uniformList.selectAll") as HTMLInputElement;
+            const item1 = screen.getByLabelText("Item 1");
+            expect(selectAll).not.toBeChecked();
+            expect(selectAll.indeterminate).toBe(false);
+
+            await user.click(item1);
+            expect(selectAll).not.toBeChecked();
+            expect(selectAll.indeterminate).toBe(true);
+
+            await user.click(item1);
+            expect(selectAll).not.toBeChecked();
+            expect(selectAll.indeterminate).toBe(false);
+        });
     });
 
     it("toggles individual item and updates 'Select All' state", async () => {
@@ -79,11 +148,11 @@ describe("UniformListFilterAccordionBody", () => {
         await user.click(item1);
         expect(item1).toBeChecked();
         expect(screen.getByLabelText("uniformList.selectAll")).not.toBeChecked();
-        
+
         const item2 = screen.getByLabelText("Item 2");
         await user.click(item2);
         expect(screen.getByLabelText("uniformList.selectAll")).toBeChecked();
-        
+
         await user.click(item1);
         expect(item1).not.toBeChecked();
         expect(screen.getByLabelText("uniformList.selectAll")).not.toBeChecked();
@@ -116,7 +185,9 @@ describe("UniformListFilterAccordionBody", () => {
             </Wrapper>
         );
         // Only generations values should be reflected
-        expect(screen.getByLabelText("uniformList.selectAll")).toBeChecked();
+        const selectAll = screen.getByLabelText("uniformList.selectAll") as HTMLInputElement;
+        expect(selectAll).not.toBeChecked();
+        expect(selectAll.indeterminate).toBe(true);
         expect(screen.getByLabelText("Item 1")).toBeChecked();
         expect(screen.getByLabelText("Item 2")).not.toBeChecked();
         expect(screen.getByLabelText("K.A.")).not.toBeChecked();
@@ -139,7 +210,9 @@ describe("UniformListFilterAccordionBody", () => {
             </Wrapper>
         );
         // Only sizes values should be reflected
-        expect(screen.getByLabelText("uniformList.selectAll")).toBeChecked();
+        const selectAll = screen.getByLabelText("uniformList.selectAll") as HTMLInputElement;
+        expect(selectAll).not.toBeChecked();
+        expect(selectAll.indeterminate).toBe(true);
         expect(screen.getByLabelText("Item 1")).toBeChecked();
         expect(screen.getByLabelText("Item 2")).not.toBeChecked();
         expect(screen.getByLabelText("K.A.")).toBeChecked();

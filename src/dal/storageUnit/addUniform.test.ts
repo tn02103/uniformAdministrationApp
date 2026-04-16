@@ -1,27 +1,18 @@
+﻿import { vi } from 'vitest';
+import { prismaMock } from '@test-utils/prisma-mock';
 import CustomException, { ExceptionType } from "@/errors/CustomException";
 import { UniformIssuedException } from "@/errors/SaveDataException";
 import { prisma } from "@/lib/db";
+import { __unsecuredGetUnitsWithUniformItems } from "./get";
 import { addUniform } from "./addUniform";
 
-jest.mock('@/lib/db', () => ({
-    prisma: {
-        uniform: {
-            findUniqueOrThrow: jest.fn(),
-            update: jest.fn(),
-        },
-        storageUnit: {
-            findUniqueOrThrow: jest.fn(),
-        },
-        $transaction: jest.fn((fn) => fn(prisma)),
-    }
-}));
-jest.mock("@/actions/validations", () => ({
-    genericSAValidator: jest.fn((_, props,) =>
-        Promise.resolve([{ assosiation: '1' }, props])
+vi.mock("@/actions/validations", () => ({
+    genericSAValidator: vi.fn((_, props) =>
+        Promise.resolve([{ assosiation: 'test-assosiation-id' }, props])
     ),
 }));
-jest.mock("./get", () => ({
-    __unsecuredGetUnitsWithUniformItems: jest.fn(async () => "unitsWithUniformItems"),
+vi.mock("./get", () => ({
+    __unsecuredGetUnitsWithUniformItems: vi.fn(async () => "unitsWithUniformItems"),
 }));
 
 const defaultProps = {
@@ -52,18 +43,18 @@ const storageUnitBase = {
 };
 
 describe("<StorageUnit> addUniform", () => {
-    afterEach(jest.clearAllMocks);
+    afterEach(vi.clearAllMocks);
 
-    const prismaUniformFindUniqueOrThrow = prisma.uniform.findUniqueOrThrow as jest.Mock;
-    const prismaUniformUpdate = prisma.uniform.update as jest.Mock;
-    const prismaStorageUnitFindUniqueOrThrow = prisma.storageUnit.findUniqueOrThrow as jest.Mock;
-    const getUnitsWithUniformItems = jest.requireMock('./get.ts').__unsecuredGetUnitsWithUniformItems as jest.Mock;
+    const prismaUniformFindUniqueOrThrow = prismaMock.uniform.findUniqueOrThrow;
+    const prismaUniformUpdate = prismaMock.uniform.update;
+    const prismaStorageUnitFindUniqueOrThrow = prismaMock.storageUnit.findUniqueOrThrow;
+    const getUnitsWithUniformItems = vi.mocked(__unsecuredGetUnitsWithUniformItems);
 
     beforeEach(() => {
         prismaUniformFindUniqueOrThrow.mockResolvedValue(uniformBase);
         prismaStorageUnitFindUniqueOrThrow.mockResolvedValue(storageUnitBase);
         prismaUniformUpdate.mockResolvedValue({});
-        getUnitsWithUniformItems.mockResolvedValue("unitsWithUniformItems");
+        getUnitsWithUniformItems.mockResolvedValue("unitsWithUniformItems" as any);
     })
 
     it("should add uniform to storage unit and return updated units", async () => {
@@ -85,7 +76,7 @@ describe("<StorageUnit> addUniform", () => {
             where: { id: defaultProps.uniformId },
             data: { storageUnitId: defaultProps.storageUnitId }
         });
-        expect(getUnitsWithUniformItems).toHaveBeenCalledWith('1', prisma);
+        expect(getUnitsWithUniformItems).toHaveBeenCalledWith('test-assosiation-id', prisma);
         expect(result).toBe("unitsWithUniformItems");
     });
 

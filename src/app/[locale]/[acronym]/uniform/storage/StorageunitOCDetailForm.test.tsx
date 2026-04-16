@@ -4,16 +4,17 @@ import { getByRole, queryByRole, render, screen } from "@testing-library/react";
 import { StorageunitOCDetailForm } from "./StorageunitOCDetailForm";
 import userEvent from "@testing-library/user-event";
 import { mockStorageUnitWithItems } from "./StorageunitOC.jestHelper";
+import { toast } from "react-toastify";
+import { updateStorageUnit, createStorageUnit } from "@/dal/storageUnit/_index";
+import { vi } from 'vitest';
 
 describe("StorageunitOCDetailForm", () => {
-    const { toast } = jest.requireMock("react-toastify");
-
-    const setEditable = jest.fn();
-    const setSelectedStorageUnitId = jest.fn();
-    const onHide = jest.fn();
+    const setEditable = vi.fn();
+    const setSelectedStorageUnitId = vi.fn();
+    const onHide = vi.fn();
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it("should render without storageunit", () => {
@@ -21,9 +22,9 @@ describe("StorageunitOCDetailForm", () => {
             <StorageunitOCDetailForm
                 editable={true}
                 storageUnit={undefined}
-                setEditable={jest.fn()}
-                setSelectedStorageUnitId={jest.fn()}
-                onHide={jest.fn()}
+                setEditable={vi.fn()}
+                setSelectedStorageUnitId={vi.fn()}
+                onHide={vi.fn()}
             />
         );
 
@@ -53,9 +54,9 @@ describe("StorageunitOCDetailForm", () => {
             <StorageunitOCDetailForm
                 editable={false}
                 storageUnit={mockStorageUnitWithItems[0]}
-                setEditable={jest.fn()}
-                setSelectedStorageUnitId={jest.fn()}
-                onHide={jest.fn()}
+                setEditable={vi.fn()}
+                setSelectedStorageUnitId={vi.fn()}
+                onHide={vi.fn()}
             />
         );
 
@@ -140,8 +141,7 @@ describe("StorageunitOCDetailForm", () => {
             uniformList: [],
         }
         it("should update existing storage unit when unit is provided", async () => {
-            const { updateStorageUnit } = jest.requireMock("@/dal/storageUnit/_index");
-            updateStorageUnit.mockResolvedValue(mockStorageUnitWithItems.map(item => item.id === mockData.id ? mockData : item));
+            vi.mocked(updateStorageUnit).mockResolvedValue(mockStorageUnitWithItems.map(item => item.id === mockData.id ? mockData : item) as any);
 
             const user = userEvent.setup();
             const { container } = render(
@@ -210,8 +210,7 @@ describe("StorageunitOCDetailForm", () => {
         });
 
         it("should catch DAL exceptions on update", async () => {
-            const { updateStorageUnit } = jest.requireMock("@/dal/storageUnit/_index");
-            updateStorageUnit.mockRejectedValue(new Error("Test error"));
+            vi.mocked(updateStorageUnit).mockRejectedValue(new Error("Test error"));
 
             const user = userEvent.setup();
             const { container } = render(
@@ -243,8 +242,7 @@ describe("StorageunitOCDetailForm", () => {
             uniformList: [],
         }
         it("should create new storage unit", async () => {
-            const { createStorageUnit } = jest.requireMock("@/dal/storageUnit/_index");
-            createStorageUnit.mockResolvedValue([...mockStorageUnitWithItems, mockData]);
+            vi.mocked(createStorageUnit).mockResolvedValue([...mockStorageUnitWithItems, mockData] as any);
 
             const user = userEvent.setup();
             const { container } = render(
@@ -275,8 +273,7 @@ describe("StorageunitOCDetailForm", () => {
         });
 
         it("should catch name duplication error on create", async () => {
-            const { createStorageUnit } = jest.requireMock("@/dal/storageUnit/_index");
-            createStorageUnit.mockResolvedValue({
+            vi.mocked(createStorageUnit).mockResolvedValue({
                 error: {
                     formElement: "name",
                     message: "custom.nameDuplication.storageUnit",
@@ -324,8 +321,7 @@ describe("StorageunitOCDetailForm", () => {
         });
 
         it("should catch DAL exceptions on create", async () => {
-            const { createStorageUnit } = jest.requireMock("@/dal/storageUnit/_index");
-            createStorageUnit.mockRejectedValue(new Error("Test error"));
+            vi.mocked(createStorageUnit).mockRejectedValue(new Error("Test error"));
 
             const user = userEvent.setup();
             const { container } = render(

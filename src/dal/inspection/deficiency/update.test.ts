@@ -1,0 +1,58 @@
+﻿
+import { updateUniform } from "./update";
+import { prismaMock } from '@test-utils/prisma-mock';
+
+describe('updateUniformDeficiency', () => {
+    const date = new Date();
+    beforeEach(() => {
+        vi.useFakeTimers();
+        vi.setSystemTime(date);
+        prismaMock.deficiency.update.mockResolvedValue(undefined);
+    })
+    afterEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it('updates the deficiency', async () => {
+        prismaMock.deficiencyType.findUnique.mockResolvedValueOnce({
+            id: 'typeId',
+            dependent: 'uniform',
+        });
+
+        const result = updateUniform({
+            id: '5f09250d-23cb-45f8-a7d0-d0f6d3896f34',
+            data: {
+                comment: 'Updated comment',
+                typeId: '37d06077-f678-45d0-8494-75056c61b0ce',
+            },
+        });
+        await expect(result).resolves.toBeUndefined();
+
+        expect(prismaMock.deficiency.update).toHaveBeenCalledWith({
+            where: {
+                id: '5f09250d-23cb-45f8-a7d0-d0f6d3896f34',
+            },
+            data: {
+                comment: 'Updated comment',
+                fk_deficiencyType: '37d06077-f678-45d0-8494-75056c61b0ce',
+                userUpdated: 'testuser',
+                dateUpdated: date,
+            },
+        });
+    });
+
+    it('throws exception if dependend is not uniform', async () => {
+        prismaMock.deficiencyType.findUnique.mockResolvedValueOnce({
+            id: 'typeId',
+            dependent: 'cadet',
+        });
+
+        await expect(updateUniform({
+            id: 'ac41027d-b9aa-4dbf-b797-ff5f71c524a9',
+            data: {
+                comment: 'Updated comment',
+                typeId: '654d9dd9-60dc-4cc2-810f-0b1ac17351af',
+            },
+        })).rejects.toThrow('Deficiency type is not uniform dependent');
+    });
+});

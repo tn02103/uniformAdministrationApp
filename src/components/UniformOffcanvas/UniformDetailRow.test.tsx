@@ -1,22 +1,24 @@
 import "./UniformOffcanvasJestHelper";
 
+import { vi } from 'vitest';
 import { getAllByRole, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { mockGenerationLists, mockSizeLists, mockTypeList } from "../../../tests/_jestConfig/staticMockData";
 import { UniformDetailRow, UniformDetailRowProps } from "./UniformDetailRow";
 import { mockUniform } from "./UniformOffcanvasJestHelper";
+import { updateUniformItem } from "@/dal/uniform/item/_index";
 
 describe('UniformDetailRow', () => {
     const defaultProps: UniformDetailRowProps = {
         uniform: mockUniform,
         uniformType: mockTypeList[0],
         editable: false,
-        setEditable: jest.fn(),
-        onSave: jest.fn(),
+        setEditable: vi.fn(),
+        onSave: vi.fn(),
     };
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     describe("Render Components", () => {
@@ -357,7 +359,6 @@ describe('UniformDetailRow', () => {
     });
     describe('save/reset form', () => {
         it('should call updateUniformItem', async () => {
-            const { updateUniformItem } = jest.requireMock('@/dal/uniform/item/_index');
             const user = userEvent.setup();
             const { rerender } = render(<UniformDetailRow {...defaultProps} />);
             rerender(<UniformDetailRow {...defaultProps} editable />);

@@ -1,5 +1,6 @@
 import { createUniformDeficiency, resolveDeficiency, updateUniformDeficiency } from "@/dal/inspection/deficiency";
 import { useDeficienciesByUniformId, useDeficiencyTypes } from "@/dataFetcher/deficiency";
+import { swrKeys } from "@/dataFetcher/swrKeys";
 import { useI18n } from "@/lib/locales/client";
 import { Deficiency } from "@/types/deficiencyTypes";
 import { UpdateUniformDeficiencySchema, updateUniformDeficiencySchema } from "@/zod/deficiency";
@@ -11,7 +12,7 @@ import { useState } from "react";
 import { Badge, Button, Card, Col, Dropdown, Form, FormControl, FormSelect, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { Arguments, mutate } from "swr";
+import { mutate } from "swr";
 import { LabelIconButton } from "../Buttons/LabelIconButton";
 import { ExpandableDividerArea } from "../ExpandableArea/ExpandableArea";
 
@@ -100,7 +101,7 @@ const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: Defici
             },
         }).then(async () => {
             setEditable(false);
-            await mutate((key: Arguments) => (typeof key === "string") && key.startsWith("uniform." + uniformId + ".deficiencies."));
+            await mutate(swrKeys.uniformDefieicncyMutateMatcher(uniformId));
         }).catch(() => {
             toast.error(t('common.error.actions.save'));
         });
@@ -111,7 +112,7 @@ const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: Defici
             data
         }).then(async () => {
             hideCreateCard?.();
-            await mutate((key: Arguments) => (typeof key === "string") && key.startsWith("uniform." + uniformId + ".deficiencies."));
+            await mutate(swrKeys.uniformDefieicncyMutateMatcher(uniformId));
         }).catch(() => {
             toast.error(t('common.error.actions.create'));
         });
@@ -120,7 +121,7 @@ const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: Defici
     const handleResolve = () => {
         if (!deficiency) return;
         resolveDeficiency(deficiency.id!).then(() => {
-            mutate((key: Arguments) => (typeof key === "string") && key.startsWith("uniform." + uniformId + ".deficiencies."));
+            mutate(swrKeys.uniformDefieicncyMutateMatcher(uniformId));
             setEditable(false);
         }).catch(() => {
             toast.error(t('common.error.unknown'));
