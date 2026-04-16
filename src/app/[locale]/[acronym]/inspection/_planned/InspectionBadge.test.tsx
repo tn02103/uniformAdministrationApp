@@ -1,6 +1,5 @@
 import { InspectionBadge } from "@/app/[locale]/[acronym]/inspection/_planned/InspectionBadge";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
-import '@testing-library/jest-dom';
 import { render, screen } from "@testing-library/react";
 import dayjs from "@/lib/dayjs";
 
