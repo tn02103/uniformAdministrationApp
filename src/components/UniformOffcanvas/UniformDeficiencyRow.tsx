@@ -1,5 +1,6 @@
 import { createUniformDeficiency, resolveDeficiency, updateUniformDeficiency } from "@/dal/inspection/deficiency";
 import { useDeficienciesByUniformId, useDeficiencyTypes } from "@/dataFetcher/deficiency";
+import { swrKeys } from "@/dataFetcher/swrKeys";
 import { useI18n } from "@/lib/locales/client";
 import { Deficiency } from "@/types/deficiencyTypes";
 import { UpdateUniformDeficiencySchema, updateUniformDeficiencySchema } from "@/zod/deficiency";
@@ -11,10 +12,9 @@ import { useState } from "react";
 import { Badge, Button, Card, Col, Dropdown, Form, FormControl, FormSelect, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { Arguments, mutate } from "swr";
+import { mutate } from "swr";
 import { LabelIconButton } from "../Buttons/LabelIconButton";
 import { ExpandableDividerArea } from "../ExpandableArea/ExpandableArea";
-import { swrKeys } from "@/dataFetcher/swrKeys";
 
 export const UniformDeficiencyRow = ({ uniformId }: { uniformId: string }) => {
     const t = useI18n();

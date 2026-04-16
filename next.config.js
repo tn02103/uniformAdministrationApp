@@ -13,6 +13,7 @@ const nextConfig = {
         turbopackFileSystemCacheForDev: true,
     },
     reactCompiler: true,
+    allowedDevOrigins: JSON.parse(process.env.NEXT_PUBLIC_DEV_ORIGIN || "[]"),
 }
 
 export default nextConfig;
