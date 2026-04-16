@@ -1,6 +1,6 @@
 ---
 description: "DAL implementation agent. Use when: writing or updating DAL functions, Zod schemas, DAL unit tests, or DAL integration tests in src/dal/."
-tools: [read, edit, search, execute, todo]
+tools: [read, edit, search, execute, todo, vscode/askQuestions]
 user-invocable: false
 ---
 

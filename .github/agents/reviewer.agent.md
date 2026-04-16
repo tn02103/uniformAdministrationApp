@@ -1,6 +1,6 @@
 ---
 description: "Read-only code reviewer. Use when: reviewing changes for architectural compliance, security, test coverage, and PR readiness. Cannot edit files. Returns PASS or FAIL with specific file:line issues."
-tools: [read, search]
+tools: [read, search, vscode/askQuestions]
 user-invocable: true
 ---
 

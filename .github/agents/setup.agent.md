@@ -1,6 +1,6 @@
 ---
 description: "Project setup agent. Use at the start of any ticket: handles branch checkout/creation and local environment reset (npm install, prisma generate, migrate reset, seed)."
-tools: [read, execute]
+tools: [read, execute, vscode/askQuestions]
 model: GPT-5 mini
 ---
 

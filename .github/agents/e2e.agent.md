@@ -1,6 +1,6 @@
 ---
 description: "Playwright E2E test agent. Use when: writing or updating E2E tests in tests/e2e/ after a successful build. Covers full user workflows, role-based access, and acceptance criteria validation."
-tools: [read, edit, search, execute, todo, playwright/*]
+tools: [read, edit, search, execute, todo, vscode/askQuestions, playwright/*]
 user-invocable: false
 ---
 
@@ -33,11 +33,14 @@ For bug fixes: write an E2E test that reproduces the bug scenario and verifies i
 
 For changed requirements: update existing E2E tests to reflect the new expected behaviour.
 
-### 4. Run tests (up to 4 retries)
+### 4. Inspect the application if needed
+If you are unsure about the exact UI structure, element selectors, or page flow, use the Playwright MCP tools to navigate the running application directly (the dev server runs on port 3021). Take screenshots, inspect the DOM, and follow navigation to understand what you're testing before writing assertions. You do NOT need to ask the user — investigate it yourself.
+
+### 5. Run tests (up to 4 retries)
 ```bash
 npm run test:e2e
 ```
-If tests fail, analyze the failure, fix the test or the relevant code, and retry. You have **4 attempts** total.
+If tests fail, analyze the failure. Use the Playwright MCP tools to inspect the live application if the failure reason is unclear. Fix the test or the relevant code and retry. You have **4 attempts** total.
 After 4 failed attempts: stop and report failure details to the orchestrator — do not continue.
 
 ## Output contract

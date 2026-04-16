@@ -57,6 +57,8 @@ Use the `ask` tool to present the following questions to the user (add more if `
 
 If `plan.has_critical_questions: yes`: also include each unanswered question from `questions_and_answers`.
 
+Record any answers in the session file before proceeding. Do not continue until the user has responded.
+
 ---
 
 
