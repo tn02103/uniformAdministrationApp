@@ -8,6 +8,7 @@ import { UserOffcanvas } from "./UserOffcanvas";
 import { setTimeout } from "timers/promises";
 import { toast } from "react-toastify";
 import { UserFormInput } from "@/zod/user";
+import { id } from "zod/v4/locales";
 
 const mockUser: User = {
     id: "user-1",
@@ -16,6 +17,8 @@ const mockUser: User = {
     email: "john@example.com",
     role: AuthRole.user,
     active: true,
+    twoFAEnabled: false,
+    default2FAMethod: null,
 };
 
 const mockMutate = vi.fn();
@@ -32,6 +35,10 @@ vi.mock("@/dal/user", () => ({
     updateUser: mockUpdateUser,
     deleteUser: mockDeleteUser,
     createUser: mockCreateUser,
+}));
+
+vi.mock("./UserOffcanvasTwoFASection", () => ({
+    UserOffcanvasTwoFASection: () => <div data-testid="twofa-section" />,
 }));
 
 // Modal mocks come from vitest/setup-components.tsx — no local vi.mock needed.
@@ -155,9 +162,6 @@ describe("<UserOffcanvas />", () => {
             const resetPasswordButton = screen.getByRole("button", { name: /resetPassword/ });
             expect(resetPasswordButton).toBeInTheDocument();
             expect(resetPasswordButton).toBeEnabled();
-
-            const reset2FAButton = screen.getByRole("button", { name: /reset2FA/ });
-            expect(reset2FAButton).toBeDisabled(); //  TODO: enable when 2FA is implemented
         });
 
         it("opens delete confirmation modal when delete button is clicked", async () => {
@@ -509,10 +513,12 @@ describe("<UserOffcanvas />", () => {
 
                 await waitFor(() => {
                     expect(mockUpdateUser).toHaveBeenCalledWith({
-                        ...mockUser,
+                        id: mockUser.id,
                         name: "John Smith",
                         email: "john.smith@example.com",
                         role: AuthRole.admin,
+                        username: mockUser.username, 
+                        active: mockUser.active,
                     });
                 });
             });
@@ -796,6 +802,36 @@ describe("<UserOffcanvas />", () => {
                 expect(mocksetEditable).not.toHaveBeenCalled();
                 expect(mockMutate).not.toHaveBeenCalled();
             });
+        });
+    });
+
+    describe("TwoFA section", () => {
+        it("renders UserOffcanvasTwoFASection when viewing an existing user (non-edit mode)", () => {
+            render(
+                <UserOffcanvas
+                    user={mockUser}
+                    editable={false}
+                    setSelectedUserId={mockSetSelectedUserId}
+                    setEditable={mocksetEditable}
+                    mutate={mockMutate}
+                />
+            );
+
+            expect(screen.getByTestId("twofa-section")).toBeInTheDocument();
+        });
+
+        it("does not render UserOffcanvasTwoFASection for a new user", () => {
+            render(
+                <UserOffcanvas
+                    user={null}
+                    editable={true}
+                    setSelectedUserId={mockSetSelectedUserId}
+                    setEditable={mocksetEditable}
+                    mutate={mockMutate}
+                />
+            );
+
+            expect(screen.queryByTestId("twofa-section")).not.toBeInTheDocument();
         });
     });
 });

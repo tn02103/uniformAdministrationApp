@@ -38,11 +38,7 @@ Delegate to the `setup` agent with:
 - `ticket_number`: from the plan
 - `workflow_type`: from the plan
 - `branch_name`: computed as `feature/#<n>-<slug>` (new-feature) or `bugfix/#<n>-<slug>` (fix-bug), slug derived from ticket title; for `add-requirement`/`implement-review` pass the current session branch
-<<<<<<< Updated upstream
-- `base_branch`: `plan.epic_branch` if set, otherwise `develop`
-=======
 - `base_branch`: `plan.epic_branch` if set, otherwise if ticket has parent issue search for existing epic branch matching `epic/#<parent-issue-number>-*` and use it; otherwise `develop`
->>>>>>> Stashed changes
 
 If `SETUP_RESULT.status: fail`: STOP and report to user — do not proceed with implementation.
 

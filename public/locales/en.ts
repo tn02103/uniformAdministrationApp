@@ -677,8 +677,6 @@ export default {
             actions: {
                 resetPassword: "Reset password",
                 resetPasswordConfirm: "Generate a temporary password for {user}? All active sessions will be terminated.",
-                reset2FA: "Reset 2FA",
-                "reset2FA.notAvailable": "Not yet available",
                 delete: "Delete user {user}",
                 deleteWarning: {
                     header: "Delete user {user}",
@@ -700,6 +698,29 @@ export default {
                 label: "The temporary password is:",
                 warning: "This password will only be shown once. Please note it down.",
                 copyPassword: "Copy password to clipboard",
+            },
+            twoFA: {
+                sectionTitle: "2FA Management",
+                statusEnabled: "2FA enabled",
+                statusDisabled: "2FA disabled",
+                defaultMethod: "Default method",
+                appsTitle: "TOTP Apps",
+                appVerified: "Verified",
+                appUnverified: "Unverified",
+                removeApp: "Remove",
+                forceDisable: "Force disable 2FA",
+                forceDisableConfirmHeader: "Force disable 2FA",
+                forceDisableConfirmMessage: "Are you sure you want to force-disable two-factor authentication for {user}? The user will no longer be required to use 2FA.",
+                removeAppConfirmMessage: "Are you sure you want to remove this two-factor authentication app?",
+                noApps: "No TOTP apps registered",
+                success: {
+                    appRemoved: "TOTP app removed successfully",
+                    disabled: "2FA disabled successfully",
+                },
+                error: {
+                    appRemoved: "Failed to remove TOTP app",
+                    disabled: "Failed to disable 2FA",
+                },
             },
         },
         deficiency: {
