@@ -2,16 +2,14 @@ import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { getIronSession } from "@/lib/ironSession";
-import { sendPasswordChangedEmail } from "@/lib/email/passwordChangedEmail";
 import { SelfServiceChangePasswordDALSchema, SelfServiceChangePasswordDALType } from "@/zod/auth";
-import { compare as passwordCompare, hash } from "bcrypt";
+import { compare as passwordCompare } from "bcrypt";
 import { headers } from "next/headers";
 import { userAgent } from "next/server";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import { getIPAddress, logSecurityAuditEntry } from "../helper";
 import { LogDebugLevel } from "../LogDebugLeve.enum";
-
-const SALT_ROUNDS = 12;
+import { applyPasswordChange } from "./_applyPasswordChange";
 
 const userRateLimiter = new RateLimiterMemory({
     points: 5,
@@ -89,48 +87,8 @@ export const changePassword = async (data: SelfServiceChangePasswordDALType): Pr
         return { error: { formElement: "currentPassword", message: "custom.auth.invalidCurrentPassword" } };
     }
 
-    const hashedNewPassword = await hash(newPassword, SALT_ROUNDS);
-
     const ironSession = await getIronSession();
     const currentSessionId = ironSession.sessionId;
 
-    await prisma.$transaction(async (tx) => {
-        await tx.user.update({
-            where: { id: user.id },
-            data: {
-                password: hashedNewPassword,
-                changePasswordOnLogin: false,
-            },
-        });
-
-        await tx.session.updateMany({
-            where: {
-                device: { userId: user.id },
-                valid: true,
-                ...(currentSessionId ? { NOT: { id: currentSessionId } } : {}),
-            },
-            data: { valid: false },
-        });
-
-        await tx.refreshToken.deleteMany({
-            where: {
-                userId: user.id,
-                ...(currentSessionId ? { NOT: { sessionId: currentSessionId } } : {}),
-            },
-        });
-    });
-
-    await logSecurityAuditEntry({
-        action: "CHANGE_PASSWORD",
-        debugLevel: LogDebugLevel.SUCCESS,
-        userId: user.id,
-        success: true,
-        ipAddress,
-        userAgent: agent,
-        details: "Password changed successfully",
-    });
-
-    void sendPasswordChangedEmail(user.id, "change").catch((e) =>
-        console.error("changePassword: failed to send password changed notification", e)
-    );
+    await applyPasswordChange(user.id, newPassword, currentSessionId, "CHANGE_PASSWORD", ipAddress, agent);
 };

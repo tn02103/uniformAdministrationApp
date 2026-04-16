@@ -30,7 +30,8 @@ export const issueNewAccessToken = async (props: IssueNewAccessTokenProps) => {
         username: user.username,
         role: user.role,
         organisationId: organisation.id,
-        acronym: organisation.acronym
+        acronym: organisation.acronym,
+        changePasswordOnLogin: user.changePasswordOnLogin,
     };
     ironSession.sessionId = sessionId;
     ironSession.deviceId = deviceId;

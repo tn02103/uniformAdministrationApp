@@ -69,6 +69,18 @@ export const ResetPasswordFormSchema = ResetPasswordDALSchema.extend({
 }).superRefine(passwordConfirmationRefine);
 export type ResetPasswordFormType = z.infer<typeof ResetPasswordFormSchema>;
 
+// FORCED PASSWORD CHANGE (after admin reset)
+export const ForcedChangePasswordFormSchema = z.object({
+    newPassword: newPasswordSchema,
+    confirmPassword: requiredString,
+}).superRefine(passwordConfirmationRefine);
+export type ForcedChangePasswordFormType = z.infer<typeof ForcedChangePasswordFormSchema>;
+
+export const ForcedChangePasswordDALSchema = z.object({
+    newPassword: newPasswordSchema,
+});
+export type ForcedChangePasswordDALType = z.infer<typeof ForcedChangePasswordDALSchema>;
+
 // TWO FACTOR AUTHENTICATION
 export const TwoFactorFormSchema = z.object({
     token: twoFactorCodeSchema,

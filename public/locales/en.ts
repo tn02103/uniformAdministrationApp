@@ -281,6 +281,18 @@ export default {
             tooManyRequests: "Too many attempts. Please try again later.",
         },
     },
+    forcedPasswordChange: {
+        header: "Password change required",
+        description: "You must change your password before you can continue.",
+        label: {
+            submit: "Change password",
+        },
+        success: "Password changed successfully.",
+        error: {
+            unknown: "An error occurred. Please try again.",
+            tooManyRequests: "Too many attempts. Please try again later.",
+        },
+    },
     resetPassword: {
         header: "Set a new password",
         label: {
