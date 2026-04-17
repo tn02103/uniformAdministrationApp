@@ -25,6 +25,7 @@ export type ItemLabel = {
         id: string;
         name: string;
     } | null;
+    activeDeficiencies: { typeName: string; comment: string }[];
 }
 /**
  * Get all uniform items for the assosiation
@@ -52,6 +53,20 @@ export const getItemLabels = async (): Promise<ItemLabel[]> => genericSANoDataVa
                 cadet: true,
             },
         },
+        uniformDeficiencies: {
+            where: {
+                deficiency: {
+                    dateResolved: null,
+                },
+            },
+            include: {
+                deficiency: {
+                    include: {
+                        type: true,
+                    },
+                },
+            },
+        },
     },
     orderBy: [
         { type: { name: 'asc' } },
@@ -76,6 +91,10 @@ export const getItemLabels = async (): Promise<ItemLabel[]> => genericSANoDataVa
         id: item.storageUnit.id,
         name: item.storageUnit.name,
     } : null,
+    activeDeficiencies: item.uniformDeficiencies.map(ud => ({
+        typeName: ud.deficiency.type.name,
+        comment: ud.deficiency.comment,
+    })),
 })));
 
 

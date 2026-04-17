@@ -49,3 +49,4 @@ test-report.html
 prisma/generated/
 .playwright-mcp/*
 test-results.json
+.github/session/*

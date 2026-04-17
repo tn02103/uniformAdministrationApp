@@ -174,6 +174,19 @@ export const CadetUniformTableIssueModal = ({ cadetId, type, itemToReplace, onCl
                         {t('cadetDetailPage.issueModal.alert.storageUnit', { unit: selectedItem.storageUnit.name })}
                     </CustomAlert>
                 )}
+                {(selectedItem && selectedItem.activeDeficiencies.length > 0) && (
+                    <CustomAlert
+                        variant="warning"
+                        icon={faTriangleExclamation}
+                    >
+                        <strong>{t('cadetDetailPage.issueModal.alert.deficiency.header')}</strong>
+                        <ul className="mb-0 ps-3">
+                            {selectedItem.activeDeficiencies.map((d, i) => (
+                                <li key={i}>{t('cadetDetailPage.issueModal.alert.deficiency.item', { typeName: d.typeName, comment: d.comment })}</li>
+                            ))}
+                        </ul>
+                    </CustomAlert>
+                )}
             </Modal.Body>
             <Modal.Footer>
                 <Button
@@ -223,7 +236,7 @@ const getRenderOptionFunction = (translations: { isReserve: string, owner: strin
             textColor = "text-secondary";
         } else if (option.owner) {
             textColor = "text-danger";
-        } else if (option.isReserve) {
+        } else if (option.isReserve || option.activeDeficiencies.length > 0) {
             textColor = "text-warning";
         }
 
@@ -245,13 +258,16 @@ const getRenderOptionFunction = (translations: { isReserve: string, owner: strin
                 {option.isReserve &&
                     <FontAwesomeIcon icon={faRegistered} className="text-warning" />
                 }
+                {option.activeDeficiencies.length > 0 &&
+                    <FontAwesomeIcon icon={faTriangleExclamation} className="text-warning" />
+                }
                 {option.storageUnit &&
                     <FontAwesomeIcon icon={faBoxOpen} className="text-secondary" />
                 }
             </div>
         )
 
-        if (!option.owner && !option.storageUnit && !option.isReserve)
+        if (!option.owner && !option.storageUnit && !option.isReserve && option.activeDeficiencies.length === 0)
             return optionElement;
 
         return (
