@@ -1,0 +1,12 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "windows": "echo === Git Context === && git branch --show-current && echo. && echo Recent commits: && git log --oneline -5",
+        "command": "echo '=== Git Context ===' && git branch --show-current && echo '' && echo 'Recent commits:' && git log --oneline -5",
+        "timeout": 10
+      }
+    ]
+  }
+}
