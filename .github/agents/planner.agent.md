@@ -44,10 +44,11 @@ After resolving, use `updateProjectV2ItemFieldValue` to set status to "In Progre
 - Identify which layers need changes: schema, DAL, frontend, E2E
 - Identify specific files that will be created or modified
 
-### 5. Clarify ambiguities
-If anything about the business logic, scope, or requirements is unclear, use the `vscode/askQuestions` tool to ask the developer before proceeding with the rest of the plan.
+### 5. Discussions with developer
+If there is a any topic that requires clarification or a decision from the developer, use the `vscode/askQuestions` tool to ask targeted questions. 
+If the ticket has a tobe clarified section, give the user an overview of the pros and cons of the different options and ask them to choose via the `vscode/askQuestions` tool. Document the questions and answers in the `questions_and_answers` field of the PLAN output.
 
-**Note: you are running as a subagent.** If you need to ask questions mid-analysis, use the `vscode/askQuestions` tool — do not stop or assume. For questions that cannot block analysis (non-critical), document your assumption in `questions_and_answers` and proceed.
+**Note.** Never stop for a question nor assume any information without asking the developer first. Always use `vscode/askQuestions` to clarify uncertainties or gather missing information.
 
 ### 6. Define interface contracts for DAL/UI boundary
 For every function or component that sits at the boundary between the DAL and UI layers (server actions, DAL functions called by components, and components that call server actions), document the full interface contract. This is the authoritative specification that both the DAL-implementer and frontend-implementer will follow.
@@ -60,6 +61,7 @@ Use this format for each contract:
 interface_contracts:
   - name: <functionOrComponentName>
     file: <intended file path, e.g. src/dal/auth/password/forcedChangePassword.ts>
+    action: create | update | delete
     layer: dal_function | global_function | zod_schema | component
     props:
       - name: <paramOrPropName>
@@ -74,6 +76,7 @@ interface_contracts:
       - <condition>: <what is thrown or returned, e.g. "RateLimit exceeded: returns { error: { tooManyRequests: true } }">
       - <condition>: <e.g. "Unauthorized: throws Error('Unauthorized')">
 ```
+For deleted files only the `name`, `file`, `action`, and `layer` fields are required. For updated files, include only the changed props and requirements.
 
 ### 7. Write the plan to the session file
 Write the complete PLAN to `.github/session/<ticket-number>.md` (create or overwrite). Include `interface_contracts` in the session file.
@@ -81,11 +84,7 @@ Write the complete PLAN to `.github/session/<ticket-number>.md` (create or overw
 Use the session file format from the orchestrator. Preserve any existing fields (branch, completed_steps) when the file already exists.
 
 ### 8. Ask the developer review questions
-After writing the session file, use the `vscode/askQuestions` tool to ask the following questions:
-1. "Are there any requirements missing from the plan?"
-2. "Are there any requirements that are not described correctly?"
-
-Record the developer's answers in the session file under a `plan_review_answers` key before returning the PLAN to the orchestrator.
+After writing the session file, use the `vscode/askQuestions` tool to ask the questions: "Would you like any changes to the implementation plan?". The developer can respond with any changes or clarifications they want to make to the plan. If the developer requests changes, update the plan in the session file to include those changes. Add their answers under a `plan_review_answers` key and repeat this step till the developer confirms the plan is ready.
 
 ### Output contract
 
