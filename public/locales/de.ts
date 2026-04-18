@@ -280,6 +280,10 @@ export default {
             "tooltip.inspected": "Kadetten kontrolliert:\nInspektion des Kadetten aktualisieren",
             "tooltip.notInspected": "Kadetten unkontrolliert:\nInspektion des Kadetten starten",
             "message.saved": "Inspektion erfolgreich gespeichert",
+            "message.deficiencyUpdated": "Mangel erfolgreich aktualisiert",
+            "message.deficiencyCreated": "Mangel erfolgreich angelegt",
+            "message.deficiencyResolved": "Mangel erfolgreich behoben",
+            "button.newDeficiency": "Neuen Mangel anlegen",
             "error.startInspection": "Beim starten der Kontrolle für diese Person ist ein Fehler aufgetreten. Bitte laden Sie die Seite neu und versuchen es nocheinmal",
         },
         returnUniform: {

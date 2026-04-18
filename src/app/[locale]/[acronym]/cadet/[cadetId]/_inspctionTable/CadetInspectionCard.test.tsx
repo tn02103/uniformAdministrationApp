@@ -1,4 +1,5 @@
 import * as dalInspection from '@/dal/inspection';
+import * as dalDeficiency from '@/dal/inspection/deficiency';
 import * as dataFetcherInspection from '@/dataFetcher/inspection';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -13,9 +14,21 @@ vi.mock('@/dal/inspection', () => ({
     saveCadetInspection: vi.fn(),
 }));
 
+vi.mock('@/dal/inspection/deficiency', () => ({
+    createDeficiency: vi.fn(),
+}));
+
+// Mock DeficiencyFormFields to avoid complex hook dependencies
+vi.mock('./DeficiencyFormFields', () => ({
+    DeficiencyFormFields: function MockDeficiencyFormFields() {
+        return <div data-testid="mock-deficiency-form-fields" />;
+    },
+}));
+
 // Mock the data fetcher
 vi.mock('@/dataFetcher/inspection', () => ({
     useUnresolvedDeficienciesByCadet: vi.fn(),
+    useInspectionState: vi.fn(),
 }));
 
 // Mock SWR mutate
@@ -61,14 +74,15 @@ vi.mock('./CadetInspectionStep2', () => ({
 }));
 
 vi.mock('./OldDeficiencyRow', () => ({
-    OldDeficiencyRow: function MockOldDeficiencyRow({ deficiency, index, step }: {
+    OldDeficiencyRow: function MockOldDeficiencyRow({ deficiency, index, step, inspectionActive }: {
         deficiency: { description: string };
         index: number;
-        step: number
+        step: number;
+        inspectionActive?: boolean;
     }) {
         return (
             <div data-testid={`old-deficiency-${index}`}>
-                {deficiency.description} (Step: {step})
+                {deficiency.description} (Step: {step}, inspectionActive: {String(inspectionActive)})
             </div>
         );
     },
@@ -79,9 +93,11 @@ describe('CadetInspectionCard', () => {
     const mockGetCadetInspectionFormData = vi.mocked(dalInspection.getCadetInspectionFormData);
     const mockSaveCadetInspection = vi.mocked(dalInspection.saveCadetInspection);
     const mockUseUnresolvedDeficienciesByCadet = vi.mocked(dataFetcherInspection.useUnresolvedDeficienciesByCadet);
+    const mockUseInspectionState = vi.mocked(dataFetcherInspection.useInspectionState);
     const mockUseParams = vi.mocked(nextNavigation.useParams);
     const mockMutate = vi.mocked(swr.mutate);
     const mockToast = vi.mocked(reactToastify.toast);
+    const mockCreateDeficiency = vi.mocked(dalDeficiency.createDeficiency);
 
     const mockCadetId = '59b34bbe-8c80-477c-93de-43eed2258051';
     const mockUnresolvedDeficiencies = [
@@ -140,9 +156,11 @@ describe('CadetInspectionCard', () => {
         mockUseUnresolvedDeficienciesByCadet.mockReturnValue({
             unresolvedDeficiencies: mockUnresolvedDeficiencies,
         });
+        mockUseInspectionState.mockReturnValue({ inspectionState: { active: false, state: 'none' } });
         mockGetCadetInspectionFormData.mockResolvedValue(mockFormData);
         mockSaveCadetInspection.mockResolvedValue(undefined);
         mockMutate.mockResolvedValue(undefined);
+        mockCreateDeficiency.mockResolvedValue(undefined);
     });
 
     describe('Component Rendering and Initial State', () => {
@@ -157,8 +175,8 @@ describe('CadetInspectionCard', () => {
             expect(screen.getByTestId('mock-header')).toHaveTextContent('Step: 0');
 
             // Shows deficiencies
-            expect(screen.getByTestId('old-deficiency-0')).toHaveTextContent('Missing button (Step: 0)');
-            expect(screen.getByTestId('old-deficiency-1')).toHaveTextContent('Dirty boots (Step: 0)');
+            expect(screen.getByTestId('old-deficiency-0')).toHaveTextContent('Missing button (Step: 0, inspectionActive: false)');
+            expect(screen.getByTestId('old-deficiency-1')).toHaveTextContent('Dirty boots (Step: 0, inspectionActive: false)');
 
             // Verifies hook calls with correct cadetId
             expect(mockUseUnresolvedDeficienciesByCadet).toHaveBeenCalledWith(mockCadetId);
@@ -476,6 +494,56 @@ describe('CadetInspectionCard', () => {
             expect(screen.getByTestId('mock-header')).toBeInTheDocument();
             expect(screen.queryByTestId('div_step0_noDeficiencies')).not.toBeInTheDocument();
             unmount4();
+        });
+    });
+
+    describe('Standalone deficiency management (no active inspection)', () => {
+        const user = userEvent.setup();
+
+        it('should show "New Deficiency" button in step 0 when no inspection is active', () => {
+            mockUseInspectionState.mockReturnValue({ inspectionState: { active: false, state: 'none' } });
+            render(<CadetInspectionCard />);
+            expect(screen.getByTestId('btn_new_deficiency')).toBeInTheDocument();
+        });
+
+        it('should NOT show "New Deficiency" button when inspection is active', () => {
+            mockUseInspectionState.mockReturnValue({ inspectionState: { active: true, state: 'active', id: 'insp-1', date: '2026-01-01', inspectedCadets: 0, activeCadets: 10, deregistrations: 0 } });
+            render(<CadetInspectionCard />);
+            expect(screen.queryByTestId('btn_new_deficiency')).not.toBeInTheDocument();
+        });
+
+        it('should show create card when "New Deficiency" button is clicked', async () => {
+            render(<CadetInspectionCard />);
+
+            expect(screen.queryByTestId('btn_save_new_deficiency')).not.toBeInTheDocument();
+
+            await user.click(screen.getByTestId('btn_new_deficiency'));
+
+            expect(screen.getByTestId('mock-deficiency-form-fields')).toBeInTheDocument();
+            expect(screen.getByTestId('btn_save_new_deficiency')).toBeInTheDocument();
+            expect(screen.getByTestId('btn_cancel_new_deficiency')).toBeInTheDocument();
+        });
+
+        it('should hide create card when Cancel is clicked', async () => {
+            render(<CadetInspectionCard />);
+
+            await user.click(screen.getByTestId('btn_new_deficiency'));
+            expect(screen.getByTestId('btn_save_new_deficiency')).toBeInTheDocument();
+
+            await user.click(screen.getByTestId('btn_cancel_new_deficiency'));
+            expect(screen.queryByTestId('btn_save_new_deficiency')).not.toBeInTheDocument();
+        });
+
+        it('should pass inspectionActive=false to OldDeficiencyRow when no inspection active', () => {
+            mockUseInspectionState.mockReturnValue({ inspectionState: { active: false, state: 'none' } });
+            render(<CadetInspectionCard />);
+            expect(screen.getByTestId('old-deficiency-0')).toHaveTextContent('inspectionActive: false');
+        });
+
+        it('should pass inspectionActive=true to OldDeficiencyRow when inspection is active', () => {
+            mockUseInspectionState.mockReturnValue({ inspectionState: { active: true, state: 'active', id: 'insp-1', date: '2026-01-01', inspectedCadets: 0, activeCadets: 10, deregistrations: 0 } });
+            render(<CadetInspectionCard />);
+            expect(screen.getByTestId('old-deficiency-0')).toHaveTextContent('inspectionActive: true');
         });
     });
 });

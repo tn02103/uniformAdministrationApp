@@ -280,6 +280,10 @@ export default {
             "tooltip.inspected": "Cadets inspected:\nUpdate cadet inspection",
             "tooltip.notInspected": "Cadets uninspected:\nStart cadet inspection",
             "message.saved": "Inspection successfully saved",
+            "message.deficiencyUpdated": "Deficiency successfully updated",
+            "message.deficiencyCreated": "Deficiency successfully created",
+            "message.deficiencyResolved": "Deficiency successfully resolved",
+            "button.newDeficiency": "New Deficiency",
             "error.startInspection": "An error occurred while starting the inspection for this person. Please reload the page and try again."
         },
         returnUniform: {

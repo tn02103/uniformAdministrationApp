@@ -1,11 +1,28 @@
 // NOTE: The following imports and utilities will be used when implementing the actual tests
 import React from 'react';
-import { getByTestId, getByText, render, screen } from '@testing-library/react';
+import { getByTestId, getByText, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FormProvider, useForm, UseFormReturn } from 'react-hook-form';
 import { CadetInspectionFormSchema } from '@/zod/deficiency';
 import { Deficiency } from '@/types/deficiencyTypes';
 import { OldDeficiencyRow } from './OldDeficiencyRow';
+import * as nextNavigation from 'next/navigation';
+import * as dalDeficiency from '@/dal/inspection/deficiency';
+import * as swr from 'swr';
+import * as reactToastify from 'react-toastify';
+
+vi.mock('@/dal/inspection/deficiency', () => ({
+    updateDeficiency: vi.fn(),
+    resolveDeficiency: vi.fn(),
+}));
+
+vi.mock('swr', async (importOriginal) => {
+    const actual = await importOriginal() as Record<string, unknown>;
+    return {
+        ...actual,
+        mutate: vi.fn(),
+    };
+});
 
 
 // Mock data for testing
@@ -69,7 +86,7 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
     );
 };
 const renderWithForm = (
-    props = defaultProps,
+    props: { index: number; step: number; deficiency: Deficiency; inspectionActive?: boolean } = defaultProps,
     options: {
         formDefaults?: Partial<CadetInspectionFormSchema>;
         onMethodsReady?: (methods: UseFormReturn<CadetInspectionFormSchema>) => void;
@@ -95,6 +112,10 @@ describe('OldDeficiencyRow', () => {
     beforeEach(() => {
         // Clear any previous mocks between tests
         vi.clearAllMocks();
+        vi.mocked(nextNavigation.useParams).mockReturnValue({ cadetId: 'test-cadet-id' });
+        vi.mocked(dalDeficiency.updateDeficiency).mockResolvedValue(undefined);
+        vi.mocked(dalDeficiency.resolveDeficiency).mockResolvedValue(undefined);
+        vi.mocked(swr.mutate).mockResolvedValue(undefined);
     });
 
     describe('Basic Rendering', () => {
@@ -428,6 +449,116 @@ describe('OldDeficiencyRow', () => {
 
             // Date should be formatted according to locale
             expect(screen.getByText('15.06.2023')).toBeInTheDocument();
+        });
+    });
+
+    describe('Standalone mode (step=0, inspectionActive=false)', () => {
+        const user = userEvent.setup();
+
+        it('should show Edit and Resolve buttons when step=0 and inspectionActive=false', () => {
+            renderWithForm({ ...defaultProps, step: 0, inspectionActive: false });
+
+            expect(screen.getByTestId(`btn_edit_${mockDeficiency.id}`)).toBeInTheDocument();
+            expect(screen.getByTestId(`btn_resolve_${mockDeficiency.id}`)).toBeInTheDocument();
+        });
+
+        it('should NOT show Edit/Resolve buttons when step=0 and inspectionActive=true', () => {
+            renderWithForm({ ...defaultProps, step: 0, inspectionActive: true });
+
+            expect(screen.queryByTestId(`btn_edit_${mockDeficiency.id}`)).not.toBeInTheDocument();
+            expect(screen.queryByTestId(`btn_resolve_${mockDeficiency.id}`)).not.toBeInTheDocument();
+        });
+
+        it('should NOT show Edit/Resolve buttons in step=1 even if inspectionActive=false', () => {
+            renderWithForm({ ...defaultProps, step: 1, inspectionActive: false });
+
+            expect(screen.queryByTestId(`btn_edit_${mockDeficiency.id}`)).not.toBeInTheDocument();
+            expect(screen.queryByTestId(`btn_resolve_${mockDeficiency.id}`)).not.toBeInTheDocument();
+        });
+
+        it('should toggle edit form when Edit button is clicked', async () => {
+            renderWithForm({ ...defaultProps, step: 0, inspectionActive: false });
+
+            expect(screen.queryByTestId(`btn_save_edit_${mockDeficiency.id}`)).not.toBeInTheDocument();
+
+            await user.click(screen.getByTestId(`btn_edit_${mockDeficiency.id}`));
+
+            expect(screen.getByTestId(`btn_save_edit_${mockDeficiency.id}`)).toBeInTheDocument();
+            expect(screen.getByTestId(`btn_cancel_edit_${mockDeficiency.id}`)).toBeInTheDocument();
+        });
+
+        it('should close edit form when Cancel is clicked', async () => {
+            renderWithForm({ ...defaultProps, step: 0, inspectionActive: false });
+
+            await user.click(screen.getByTestId(`btn_edit_${mockDeficiency.id}`));
+            expect(screen.getByTestId(`btn_save_edit_${mockDeficiency.id}`)).toBeInTheDocument();
+
+            await user.click(screen.getByTestId(`btn_cancel_edit_${mockDeficiency.id}`));
+            expect(screen.queryByTestId(`btn_save_edit_${mockDeficiency.id}`)).not.toBeInTheDocument();
+        });
+
+        it('should call updateDeficiency and mutate on save', async () => {
+            renderWithForm({ ...defaultProps, step: 0, inspectionActive: false });
+
+            await user.click(screen.getByTestId(`btn_edit_${mockDeficiency.id}`));
+            await user.click(screen.getByTestId(`btn_save_edit_${mockDeficiency.id}`));
+
+            await waitFor(() => {
+                expect(dalDeficiency.updateDeficiency).toHaveBeenCalledWith({
+                    id: mockDeficiency.id,
+                    data: expect.objectContaining({ comment: mockDeficiency.comment }),
+                });
+            });
+            expect(swr.mutate).toHaveBeenCalled();
+            expect(reactToastify.toast.success).toHaveBeenCalled();
+        });
+
+        it('should show toast.error when updateDeficiency fails', async () => {
+            vi.mocked(dalDeficiency.updateDeficiency).mockRejectedValueOnce(new Error('fail'));
+            renderWithForm({ ...defaultProps, step: 0, inspectionActive: false });
+
+            await user.click(screen.getByTestId(`btn_edit_${mockDeficiency.id}`));
+            await user.click(screen.getByTestId(`btn_save_edit_${mockDeficiency.id}`));
+
+            await waitFor(() => expect(reactToastify.toast.error).toHaveBeenCalled());
+        });
+
+        it('should call resolveDeficiency and mutate on resolve', async () => {
+            renderWithForm({ ...defaultProps, step: 0, inspectionActive: false });
+
+            await user.click(screen.getByTestId(`btn_resolve_${mockDeficiency.id}`));
+
+            await waitFor(() => {
+                expect(dalDeficiency.resolveDeficiency).toHaveBeenCalledWith(mockDeficiency.id);
+            });
+            expect(swr.mutate).toHaveBeenCalled();
+            expect(reactToastify.toast.success).toHaveBeenCalled();
+        });
+
+        it('should show toast.error when resolveDeficiency fails', async () => {
+            vi.mocked(dalDeficiency.resolveDeficiency).mockRejectedValueOnce(new Error('fail'));
+            renderWithForm({ ...defaultProps, step: 0, inspectionActive: false });
+
+            await user.click(screen.getByTestId(`btn_resolve_${mockDeficiency.id}`));
+
+            await waitFor(() => expect(reactToastify.toast.error).toHaveBeenCalled());
+        });
+
+        it('should show description field in edit form for non-uniform-linked deficiency', async () => {
+            // deficiency without fk_uniform is cadet-linked
+            renderWithForm({ ...defaultProps, step: 0, inspectionActive: false });
+            await user.click(screen.getByTestId(`btn_edit_${mockDeficiency.id}`));
+
+            expect(screen.getByLabelText(/common.description/i)).toBeInTheDocument();
+        });
+
+        it('should show read-only description for uniform-linked deficiency', async () => {
+            const uniformLinkedDeficiency = { ...mockDeficiency, fk_uniform: 'some-uniform-id' } as Deficiency;
+            renderWithForm({ ...defaultProps, step: 0, inspectionActive: false, deficiency: uniformLinkedDeficiency });
+            await user.click(screen.getByTestId(`btn_edit_${uniformLinkedDeficiency.id}`));
+
+            // description input should NOT be present (read-only display instead)
+            expect(screen.queryByLabelText(/common.description/i)).not.toBeInTheDocument();
         });
     });
 });
