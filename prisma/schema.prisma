@@ -276,6 +276,7 @@ model Inspection {
     name               String
     timeStart          String?           @map("time_start") @db.Char(5)
     timeEnd            String?           @map("time_end") @db.Char(5)
+    closingReport      Json?
     cadetInspection    CadetInspection[]
     deficiencyCreated  Deficiency[]      @relation("Deficiency_InspectionCreated")
     deficiencyResolved Deficiency[]      @relation("Deficiency_InspectionResolved")
