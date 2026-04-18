@@ -32,11 +32,13 @@ export const getIPAddress = (headers: ReadonlyHeaders) => {
     return headers.get('true-client-ip') ?? headers.get('x-forwarded-for') ?? "Unknown IP";
 }
 
-type LogSecurityAuditEntryData = {
-    action: "LOGIN_ATTEMPT" | "REFRESH_ACCESS_TOKEN" | "LOGOUT" | "CREATE_2FA_APP"
-    | "VERIFY_2FA_APP" | "REMOVE_2FA_APP" |  "SET_DEFAULT_2FA_METHOD" | "TOGGLE_2FA" | "SEND_EMAIL_CODE"
-    | "VERIFY_EMAIL_CODE" | "CHANGE_PASSWORD" | "PASSWORD_RESET_REQUEST" | "PASSWORD_RESET_EXECUTE"
+export type SecurityActionTypes = "LOGIN_ATTEMPT" | "REFRESH_ACCESS_TOKEN" | "LOGOUT" | "CREATE_2FA_APP"
+    | "VERIFY_2FA_APP" | "REMOVE_2FA_APP" | "SET_DEFAULT_2FA_METHOD" | "TOGGLE_2FA" | "SEND_EMAIL_CODE"
+    | "VERIFY_EMAIL_CODE" | "CHANGE_PASSWORD" | "FORCED_CHANGE_PASSWORD" | "PASSWORD_RESET_REQUEST" | "PASSWORD_RESET_EXECUTE"
     | "PASSWORD_RESET_VALIDATE" | "ADMIN_PASSWORD_RESET";
+
+type LogSecurityAuditEntryData = {
+    action: SecurityActionTypes;
     debugLevel: LogDebugLevel;
     userId?: string;
     deviceId?: string;

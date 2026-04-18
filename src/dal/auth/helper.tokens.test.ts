@@ -13,6 +13,7 @@ import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adap
 import { AuthRole } from '@/lib/AuthRoles';
 import crypto from 'crypto';
 import { Mock } from 'vitest';
+import { changePassword } from './password/changePassword';
 
 // Mock AuthConfig
 vi.mock('./config', () => ({
@@ -542,6 +543,7 @@ describe('issueNewAccessToken', () => {
         name: 'John Doe',
         username: 'johndoe',
         role: AuthRole.admin,
+        changePasswordOnLogin: false
         // ... other User fields not used by function
     };
 
@@ -574,6 +576,7 @@ describe('issueNewAccessToken', () => {
             role: AuthRole.admin,
             organisationId: 'org-456',
             acronym: 'ACME',
+            changePasswordOnLogin: false,
         });
     });
 

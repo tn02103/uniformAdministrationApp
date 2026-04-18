@@ -282,7 +282,7 @@ const dbTokenInclude = {
         user: {
             include: {
                 organisation: true
-            }
+            },
         },
         device: true,
         session: true,

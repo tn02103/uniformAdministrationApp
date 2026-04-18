@@ -15,6 +15,14 @@ export async function proxy(request: NextRequest) {
 
     const session = await getIronSession();
 
+    if (session.user?.changePasswordOnLogin === true) {
+        const locale = response.headers.get('x-next-locale') ?? 'de';
+        const changePasswordPath = `/${locale}/change-password`;
+        if (!request.nextUrl.pathname.startsWith(changePasswordPath)) {
+            return NextResponse.redirect(new URL(changePasswordPath, request.url));
+        }
+    }
+
     if (request.nextUrl.pathname.length < 4) {
         if (!session.user) {
             return NextResponse.redirect(new URL('/login', request.url));

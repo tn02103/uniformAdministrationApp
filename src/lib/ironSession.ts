@@ -28,6 +28,7 @@ export type IronSessionUser = {
     role: AuthRole;
     acronym: string;
     organisationId: string;
+    changePasswordOnLogin?: boolean;
 }
 
 export type IronSession = UntypedIronSession<IronSessionData>

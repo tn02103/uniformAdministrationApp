@@ -6,6 +6,7 @@ import { setDefaultMfaMethod as _setDefaultMfaMethod, toggleUserMfa as _toggleUs
 import { Login } from "./login";
 import { logout } from "./logout";
 import { changePassword } from "./password/changePassword";
+import { forcedChangePassword as _forcedChangePassword } from "./password/forcedChangePassword";
 import { getOwnProfileData as getProfileData } from "./profile/get";
 import { executePasswordReset as execPwReset } from "./passwordReset/executeReset";
 import { requestPasswordReset as rqPwReset } from "./passwordReset/requestReset";
@@ -21,6 +22,7 @@ export const removeMfaApp = _removeMfaApp;
 export const setDefaultMfaMethod = _setDefaultMfaMethod;
 export const toggleUserMfa = _toggleUserMfa;
 export const userChangePassword = changePassword;
+export const userForcedChangePassword = _forcedChangePassword;
 
 export const getOwnProfileData = getProfileData;
 
