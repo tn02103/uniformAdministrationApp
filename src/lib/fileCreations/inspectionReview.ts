@@ -34,6 +34,7 @@ function createCadetTable(workSheet: Worksheet, cadetList: InspectionReviewCadet
             { name: 'Anzahl Aktiver Mängel', filterButton: true },
             { name: 'Anzahl Mängel geschlossen (Diese Kontrolle)', filterButton: true },
             { name: 'Anzahl Mängel geschlossen (Insgesammt)', filterButton: true },
+            { name: 'Anwesenheit', filterButton: true },
         ],
         // DATA
         rows: cadetList.map(revCad => {
@@ -45,6 +46,9 @@ function createCadetTable(workSheet: Worksheet, cadetList: InspectionReviewCadet
                 +(revCad.activeDeficiencyCount ?? 0),
                 +(revCad.newlyClosedDeficiencyCount ?? 0),
                 +(revCad.overalClosedDeficiencyCount ?? 0),
+                revCad.attendanceStatus === 'inspected' ? 'Kontrolliert'
+                    : revCad.attendanceStatus === 'excused' ? 'Entschuldigt'
+                    : 'Fehlend',
             ]
         }),
     });
