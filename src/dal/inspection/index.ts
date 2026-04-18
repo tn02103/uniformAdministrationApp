@@ -10,6 +10,8 @@ import { getCadetIdList, getInspectionState as gis } from "./state";
 import { stopInspection as soi } from "./stop";
 import { getCadetInspectionFormData as gcifd, getUnresolvedByCadet } from "./cadet/get";
 import { saveCadetInspection as saveci } from "./cadet/save";
+import { getClosedInspectionList as gcil } from "./closed/get";
+import { getClosedInspectionReport as gcir } from "./closed/getReport";
 
 
 export const createInspection = ci;
@@ -24,3 +26,5 @@ export const stopInspection = soi;
 export const getCadetInspectionFormData = gcifd;
 export const getUnresolvedDeficienciesByCadet = getUnresolvedByCadet;
 export const saveCadetInspection = saveci;
+export const getClosedInspectionList = gcil;
+export const getClosedInspectionReport = gcir;

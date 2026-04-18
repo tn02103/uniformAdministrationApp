@@ -118,7 +118,12 @@ export class DBQuery {
                 lci."id" as "lastInspectionId",
                 counts."openDeficiencies",
                 counts."overalClosedDeficiencies",
-                counts."newlyClosedDeficiencies"
+                counts."newlyClosedDeficiencies",
+                CASE
+                    WHEN lci.id IS NOT NULL THEN 'inspected'
+                    WHEN dr.fk_inspection IS NOT NULL THEN 'excused'
+                    ELSE 'missing'
+                END AS "attendanceStatus"
            FROM base.cadet c
       LEFT JOIN (SELECT i."date", i."id", ci.uniform_complete, ci.fk_cadet
                    FROM inspection.cadet_inspection ci
@@ -153,6 +158,8 @@ export class DBQuery {
 				  WHERE "dateCreated" <= ${dayjs(date).toDate()}
 			   GROUP BY "fk_cadet") as "counts"
 	         ON counts.fk_cadet = c.id
+      LEFT JOIN inspection.deregistration dr
+             ON dr.fk_cadet = c.id AND dr.fk_inspection = ${inspectionId}
           WHERE c.fk_assosiation= ${fk_assosiation}
             AND c.recdelete IS NULL
     `.then(list => list.map(d => ({
@@ -169,5 +176,6 @@ export class DBQuery {
       activeDeficiencyCount: Number(d.openDeficiencies),
       newlyClosedDeficiencyCount: Number(d.newlyClosedDeficiencies),
       overalClosedDeficiencyCount: Number(d.overalClosedDeficiencies),
+      attendanceStatus: d.attendanceStatus as 'inspected' | 'excused' | 'missing',
     })));
 }
