@@ -52,3 +52,18 @@ export const cadetInspectionFormSchema = z.object({
 export type NewCadetDeficiencyFormSchema = z.infer<typeof newCadetDeficiencyFormSchema>;
 export type OldDeficiencyFormSchema = z.infer<typeof oldDeficiencyFormSchema>;
 export type CadetInspectionFormSchema = z.infer<typeof cadetInspectionFormSchema>;
+
+export const createDeficiencySchema = z.object({
+    typeId: z.string().uuid(),
+    comment: z.string(),
+    description: z.string().optional(),
+    uniformId: nullableUUID,
+    cadetId: nullableUUID,
+});
+export type CreateDeficiencyInput = z.infer<typeof createDeficiencySchema>;
+
+export const updateDeficiencySchema = z.object({
+    description: z.string().optional(),
+    comment: z.string(),
+});
+export type UpdateDeficiencyInput = z.infer<typeof updateDeficiencySchema>;

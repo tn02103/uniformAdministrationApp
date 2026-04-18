@@ -2,7 +2,7 @@ import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
-import { updateUniformDeficiencySchema } from "@/zod/deficiency";
+import { createDeficiencySchema, CreateDeficiencyInput, updateUniformDeficiencySchema } from "@/zod/deficiency";
 import { z } from "zod";
 
 const createUniformDeficiencySchema = z.object({
@@ -52,6 +52,55 @@ export const createUniformDef = async (props: CreateUniformDeficiencyProps) => g
             dateUpdated: new Date(),
             fk_inspection_created: activeInspection?.id,
             fk_uniform: uniformId,
+        },
+    });
+});
+
+export const createDeficiency = async (props: CreateDeficiencyInput) => genericSAValidator(
+    AuthRole.inspector,
+    props,
+    createDeficiencySchema,
+    {
+        deficiencytypeId: props.typeId,
+        ...(props.uniformId ? { uniformId: props.uniformId } : {}),
+        ...(props.cadetId ? { cadetId: props.cadetId } : {}),
+    }
+).then(async ([{ username }, { typeId, comment, description, uniformId, cadetId }]) => {
+    const type = await prisma.deficiencyType.findUnique({
+        where: { id: typeId },
+    });
+    if (!type) {
+        throw new Error("Deficiency type not found");
+    }
+
+    let resolvedDescription = description ?? '';
+    if (type.dependent === 'uniform') {
+        if (!uniformId) {
+            throw new Error("uniformId is required for uniform-dependent deficiency type");
+        }
+        const uniform = await prisma.uniform.findUnique({
+            where: { id: uniformId, recdelete: null },
+            include: { type: true },
+        });
+        resolvedDescription = `${uniform?.type.name}-${uniform?.number}`;
+    } else if (type.dependent === 'cadet') {
+        if (!cadetId) {
+            throw new Error("cadetId is required for cadet-dependent deficiency type");
+        }
+    }
+
+    await prisma.deficiency.create({
+        data: {
+            fk_deficiencyType: typeId,
+            comment,
+            description: resolvedDescription,
+            userCreated: username,
+            dateCreated: new Date(),
+            userUpdated: username,
+            dateUpdated: new Date(),
+            fk_inspection_created: null,
+            fk_uniform: uniformId ?? undefined,
+            fk_cadet: cadetId ?? undefined,
         },
     });
 });
