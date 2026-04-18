@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { Assosiation, AssosiationConfiguration, Cadet, DeficiencyType, Inspection, Material, MaterialGroup, Prisma, StorageUnit, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@/prisma/client";
+import { Assosiation, AssosiationConfiguration, Cadet, DeficiencyType, Material, MaterialGroup, Prisma, StorageUnit, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@/prisma/client";
 import bcrypt from 'bcrypt';
 import StaticDataGenerator, { StaticDataIdType } from "./staticDataGenerator";
 import { getStaticDataIds } from "./staticDataIds"; 
@@ -66,7 +66,7 @@ class StaticDataGetter {
     readonly deficiencyTypes: DeficiencyType[];
     readonly deficiencies: Prisma.DeficiencyCreateManyInput[];
 
-    readonly inspections: Inspection[];
+    readonly inspections: Prisma.InspectionCreateManyInput[];
     readonly cadetInspections: Prisma.CadetInspectionCreateManyInput[];
     readonly deregistrations: Prisma.DeregistrationCreateManyInput[];
     readonly redirects: Prisma.RedirectCreateManyInput[];
