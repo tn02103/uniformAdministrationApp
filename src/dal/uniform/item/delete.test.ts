@@ -34,9 +34,7 @@ describe('successfull deletion', () => {
         expect(prisma.deficiency.updateMany).toHaveBeenCalledWith({
             where: { 
                 dateResolved: null,
-                uniformDeficiency: {
-                    fk_uniform: mockId,
-                },
+                fk_uniform: mockId,
              },
             data: {
                 dateResolved: mockDate,

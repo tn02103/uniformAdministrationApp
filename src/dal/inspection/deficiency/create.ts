@@ -51,11 +51,7 @@ export const createUniformDef = async (props: CreateUniformDeficiencyProps) => g
             userUpdated: username,
             dateUpdated: new Date(),
             fk_inspection_created: activeInspection?.id,
-            uniformDeficiency: {
-                create: {
-                    fk_uniform: uniformId
-                }
-            }
+            fk_uniform: uniformId,
         },
     });
 });

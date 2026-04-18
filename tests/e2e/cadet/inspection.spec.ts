@@ -243,7 +243,8 @@ test.describe("<CadetInspectionCard />", () => {
                         comment: testData.newDefs.cadet.comment,
                         userCreated: 'test4',
                         userUpdated: 'test4',
-                        fk_inspection_created: testData.inspectionId
+                        fk_inspection_created: testData.inspectionId,
+                        fk_cadet: ids.cadetIds[2]
                     },
                     {
                         id: ids.dynamic.firstInspection.newDefIds[1],
@@ -252,7 +253,9 @@ test.describe("<CadetInspectionCard />", () => {
                         comment: testData.newDefs.cadetMaterialOther.comment,
                         userCreated: 'test4',
                         userUpdated: 'test4',
-                        fk_inspection_created: testData.inspectionId
+                        fk_inspection_created: testData.inspectionId,
+                        fk_cadet: ids.cadetIds[2],
+                        fk_material: ids.materialIds[7]
                     },
                     {
                         id: ids.dynamic.firstInspection.newDefIds[2],
@@ -261,33 +264,11 @@ test.describe("<CadetInspectionCard />", () => {
                         comment: testData.newDefs.uniform.comment,
                         userCreated: 'test4',
                         userUpdated: 'test4',
-                        fk_inspection_created: testData.inspectionId
+                        fk_inspection_created: testData.inspectionId,
+                        fk_uniform: ids.uniformIds[0][46]
                     }
                 ]
             });
-
-            // Create cadet deficiency records for the new deficiencies
-            await prisma.cadetDeficiency.createMany({
-                data: [
-                    {
-                        deficiencyId: ids.dynamic.firstInspection.newDefIds[0],
-                        fk_cadet: ids.cadetIds[2]
-                    },
-                    {
-                        deficiencyId: ids.dynamic.firstInspection.newDefIds[1],
-                        fk_cadet: ids.cadetIds[2],
-                        fk_material: ids.materialIds[7]
-                    },
-                ]
-            });
-
-            // Create uniform deficiency records for the new uniform deficiency
-            await prisma.uniformDeficiency.create({
-                data: {
-                    deficiencyId: ids.dynamic.firstInspection.newDefIds[2],
-                    fk_uniform: ids.uniformIds[0][46]
-                }
-            })
 
         });
 

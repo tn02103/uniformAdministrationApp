@@ -134,6 +134,11 @@ export const saveCadetInspection = async (props: CadetInspectionFormSchema) => g
 
             if (!def.description) throw new Error("Could not save Deficiency description is missing");
 
+            // -- compute FK values
+            const fk_cadet = type.dependent === "cadet" ? cadetId : undefined;
+            const fk_uniform = (type.dependent === "uniform" || type.relation === "uniform") ? def.uniformId ?? undefined : undefined;
+            const fk_material = type.relation === "material" ? materialId ?? undefined : undefined;
+
             // -- save data
             const dbDeficiency = await client.deficiency.upsert({
                 where: {
@@ -147,45 +152,20 @@ export const saveCadetInspection = async (props: CadetInspectionFormSchema) => g
                     userCreated: username,
                     userUpdated: username,
                     fk_inspection_created: inspection.id,
+                    fk_cadet,
+                    fk_uniform,
+                    fk_material,
                 },
                 update: {
                     description: def.description,
                     comment: def.comment,
                     userUpdated: username,
                     dateUpdated: new Date(),
+                    fk_cadet,
+                    fk_uniform,
+                    fk_material,
                 }
             });
-
-            if (type.dependent === "uniform") {
-                dbPromises.push(
-                    client.uniformDeficiency.upsert({
-                        where: { deficiencyId: dbDeficiency.id },
-                        create: {
-                            deficiencyId: dbDeficiency.id,
-                            fk_uniform: def.uniformId!,
-                        },
-                        update: {
-                            fk_uniform: def.uniformId!,
-                        },
-                    })
-                );
-            } else {
-                dbPromises.push(
-                    client.cadetDeficiency.upsert({
-                        where: { deficiencyId: dbDeficiency.id },
-                        create: {
-                            deficiencyId: dbDeficiency.id,
-                            fk_cadet: cadetId,
-                            fk_material: (type.relation === "material") ? materialId : undefined,
-                            fk_uniform: (type.relation === "uniform") ? def.uniformId : undefined
-                        },
-                        update: {
-                            fk_material: (type.relation === "material") ? materialId : undefined,
-                            fk_uniform: (type.relation === "uniform") ? def.uniformId : undefined,
-                        }
-                    })
-                )
-            }
 
             // -- remove from list
             if (inspection.deficiencyCreated) {

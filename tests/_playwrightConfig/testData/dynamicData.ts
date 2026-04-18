@@ -31,11 +31,7 @@ export const svenKellerFirstInspectionData = (i: number) => {
                 userCreated: 'test3',
                 userUpdated: 'test3',
                 fk_inspection_created: staticData.ids.inspectionIds[4],
-                cadetDeficiency: {
-                    create: {
-                        fk_cadet: staticData.ids.cadetIds[2]
-                    }
-                }
+                fk_cadet: staticData.ids.cadetIds[2],
             },
             {
                 id: staticData.ids.dynamic.firstInspection.newDefIds[1],
@@ -45,11 +41,7 @@ export const svenKellerFirstInspectionData = (i: number) => {
                 userCreated: 'test3',
                 userUpdated: 'test3',
                 fk_inspection_created: staticData.ids.inspectionIds[4],
-                uniformDeficiency: {
-                    create: {
-                        fk_uniform: staticData.ids.uniformIds[0][46],
-                    }
-                }
+                fk_uniform: staticData.ids.uniformIds[0][46],
             },
             {
                 id: staticData.ids.dynamic.firstInspection.newDefIds[2],
@@ -59,12 +51,8 @@ export const svenKellerFirstInspectionData = (i: number) => {
                 userCreated: 'test3',
                 userUpdated: 'test3',
                 fk_inspection_created: staticData.ids.inspectionIds[4],
-                cadetDeficiency: {
-                    create: {
-                        fk_cadet: staticData.ids.cadetIds[2],
-                        fk_material: staticData.ids.materialIds[9],
-                    }
-                }
+                fk_cadet: staticData.ids.cadetIds[2],
+                fk_material: staticData.ids.materialIds[9],
             },
             {
                 id: staticData.ids.dynamic.firstInspection.newDefIds[3],
@@ -74,12 +62,8 @@ export const svenKellerFirstInspectionData = (i: number) => {
                 userCreated: 'test3',
                 userUpdated: 'test3',
                 fk_inspection_created: staticData.ids.inspectionIds[4],
-                cadetDeficiency: {
-                    create: {
-                        fk_cadet: staticData.ids.cadetIds[2],
-                        fk_material: staticData.ids.materialIds[4],
-                    }
-                }
+                fk_cadet: staticData.ids.cadetIds[2],
+                fk_material: staticData.ids.materialIds[4],
             },
             {
                 id: staticData.ids.dynamic.firstInspection.newDefIds[4],
@@ -89,12 +73,8 @@ export const svenKellerFirstInspectionData = (i: number) => {
                 userCreated: 'test3',
                 userUpdated: 'test3',
                 fk_inspection_created: staticData.ids.inspectionIds[4],
-                cadetDeficiency: {
-                    create: {
-                        fk_cadet: staticData.ids.cadetIds[2],
-                        fk_uniform: staticData.ids.uniformIds[0][48],
-                    }
-                }
+                fk_cadet: staticData.ids.cadetIds[2],
+                fk_uniform: staticData.ids.uniformIds[0][48],
             }
         ],
         oldDefIdsToResolve: [

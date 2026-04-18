@@ -104,14 +104,11 @@ export const getDeficiencies = async (props: GetDeficienciesProps): Promise<Defi
     { uniformId: props.uniformId }
 ).then(([, { uniformId, includeResolved }]) => prisma.deficiency.findMany({
     where: {
-        uniformDeficiency: {
-            fk_uniform: uniformId,
-        },
+        fk_uniform: uniformId,
         dateResolved: includeResolved ? undefined : null,
     },
     include: {
         type: true,
-        uniformDeficiency: true,
     },
     orderBy: [
         { dateCreated: 'asc' },  // Oldest to newest
