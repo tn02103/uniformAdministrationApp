@@ -44,11 +44,7 @@ describe('createUniformDeficiency', () => {
                 userUpdated: 'testuser',
                 dateUpdated: date,
                 fk_inspection_created: undefined,
-                uniformDeficiency: {
-                    create: {
-                        fk_uniform: '00aceba0-b8db-4d10-9312-049de35c7b3a',
-                    }
-                }
+                fk_uniform: '00aceba0-b8db-4d10-9312-049de35c7b3a',
             },
         });
         expect(prismaMock.uniform.findUnique).toHaveBeenCalledWith({
@@ -118,11 +114,7 @@ describe('createUniformDeficiency', () => {
                 userUpdated: 'testuser',
                 dateUpdated: date,
                 fk_inspection_created: '0177f740-75ee-4bb8-9875-7f10e3e6af8b',
-                uniformDeficiency: {
-                    create: {
-                        fk_uniform: '00aceba0-b8db-4d10-9312-049de35c7b3a',
-                    },
-                },
+                fk_uniform: '00aceba0-b8db-4d10-9312-049de35c7b3a',
             },
         });
     });

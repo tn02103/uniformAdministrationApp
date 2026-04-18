@@ -85,17 +85,17 @@ export const getCadetInspectionFormData = async (props: string) => genericSAVali
             resolved: def.dateResolved !== null,
         })),
         newDeficiencyList: activeInspection.deficiencyCreated.map(def => {
-            const isIssued = def.cadetDeficiency?.fk_material && issuedMaterials.some(mat => mat.id === def.cadetDeficiency?.fk_material);
+            const isIssued = def.fk_material && issuedMaterials.some(mat => mat.id === def.fk_material);
 
             return {
                 id: def.id,
                 typeId: def.type.id,
                 description: def.description,
                 comment: def.comment,
-                uniformId: def.uniformDeficiency?.fk_uniform ?? def.cadetDeficiency?.fk_uniform ?? null,
-                materialId: (isIssued ? def.cadetDeficiency?.fk_material : "other") ?? null,
-                otherMaterialId: isIssued ? null : def.cadetDeficiency?.fk_material ?? null,
-                otherMaterialGroupId: isIssued ? null : def.cadetDeficiency?.material?.fk_materialGroup ?? null,
+                uniformId: def.fk_uniform ?? null,
+                materialId: (isIssued ? def.fk_material : "other") ?? null,
+                otherMaterialId: isIssued ? null : def.fk_material ?? null,
+                otherMaterialGroupId: isIssued ? null : def.material?.fk_materialGroup ?? null,
                 dateCreated: dayjs(def.dateCreated).format("YYYY-MM-DDTHH:mm:ss"),
             }
         }),
@@ -130,15 +130,13 @@ export const unsecuredGetPreviouslyUnresolvedDeficiencies = async (cadetId: stri
                 },
                 {
                     OR: [
-                        { cadetDeficiency: { fk_cadet: cadetId } },
+                        { fk_cadet: cadetId },
                         {
-                            uniformDeficiency: {
-                                uniform: {
-                                    issuedEntries: {
-                                        some: {
-                                            fk_cadet: cadetId,
-                                            dateReturned: null,
-                                        },
+                            uniform: {
+                                issuedEntries: {
+                                    some: {
+                                        fk_cadet: cadetId,
+                                        dateReturned: null,
                                     },
                                 },
                             },
@@ -155,8 +153,6 @@ export const unsecuredGetPreviouslyUnresolvedDeficiencies = async (cadetId: stri
         },
         include: {
             type: true,
-            cadetDeficiency: true,
-            uniformDeficiency: true,
         },
         orderBy: [
             { dateCreated: 'asc' },
@@ -182,15 +178,13 @@ export const unsecuredGetActiveInspection = async (cadetId: string, assosiation:
             deficiencyCreated: {
                 where: {
                     OR: [
-                        { cadetDeficiency: { fk_cadet: cadetId } },
+                        { fk_cadet: cadetId },
                         {
-                            uniformDeficiency: {
-                                uniform: {
-                                    issuedEntries: {
-                                        some: {
-                                            fk_cadet: cadetId,
-                                            dateReturned: null,
-                                        },
+                            uniform: {
+                                issuedEntries: {
+                                    some: {
+                                        fk_cadet: cadetId,
+                                        dateReturned: null,
                                     },
                                 },
                             },
@@ -199,12 +193,7 @@ export const unsecuredGetActiveInspection = async (cadetId: string, assosiation:
                 },
                 include: {
                     type: true,
-                    cadetDeficiency: {
-                        include: {
-                            material: true,
-                        },
-                    },
-                    uniformDeficiency: true,
+                    material: true,
                 },
                 orderBy: {
                     type: {name: "asc"},

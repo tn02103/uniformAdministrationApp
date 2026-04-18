@@ -65,8 +65,6 @@ class StaticDataGetter {
 
     readonly deficiencyTypes: DeficiencyType[];
     readonly deficiencies: Prisma.DeficiencyCreateManyInput[];
-    readonly cadetDeficiencies: Prisma.CadetDeficiencyCreateManyInput[];
-    readonly uniformDeficiencies: Prisma.UniformDeficiencyCreateManyInput[];
 
     readonly inspections: Inspection[];
     readonly cadetInspections: Prisma.CadetInspectionCreateManyInput[];
@@ -148,8 +146,6 @@ class StaticDataGetter {
 
         this.deficiencyTypes = generator.deficiencyType() as DeficiencyType[];
         this.deficiencies = generator.deficiency();
-        this.cadetDeficiencies = generator.cadetDeficiency();
-        this.uniformDeficiencies = generator.uniformDeficiency();
 
         this.inspections = generator.inspection();
         this.cadetInspections = generator.cadetInspection();
@@ -190,8 +186,6 @@ class StaticDataCleanup {
         await this.loader.deregistration();
         await this.loader.deficiencyTypes();
         await this.loader.deficiencies();
-        await this.loader.deficienciesCadet();
-        await this.loader.deficienciesUniform();
     }
     async user() {
         await this.deleteUsers();
@@ -201,9 +195,6 @@ class StaticDataCleanup {
         await prisma.$transaction([
             this.deleteUniformIssued(),
             this.deleteMaterialIssued(),
-            prisma.cadetDeficiency.deleteMany({
-                where: { cadet: { fk_assosiation: this.data.assosiation.id } }
-            }),
             this.deleteCadetInspection(),
         ]);
         await this.deleteCadet();
@@ -211,7 +202,6 @@ class StaticDataCleanup {
         await this.loader.cadets();
         await this.loader.uniformIssued();
         await this.loader.materialIssued();
-        await this.loader.deficienciesCadet();
         await this.loader.cadetInspections();
     }
     async uniformIssued() {
@@ -242,11 +232,7 @@ class StaticDataCleanup {
 
         await this.loader.uniform();
         await this.loader.deficiencies();
-        await Promise.all([
-            this.loader.uniformIssued(),
-            this.loader.deficienciesCadet(),
-            this.loader.deficienciesUniform(),
-        ]);
+        await this.loader.uniformIssued();
     }
 
     async uniformTypeConfiguration(cleanup?: () => Promise<void>) {
@@ -284,8 +270,6 @@ class StaticDataCleanup {
         await this.loader.material();
         await this.loader.materialIssued();
         await this.loader.deficiencies();
-        await this.loader.deficienciesCadet();
-        await this.loader.deficienciesUniform();
     }
 
     async materialIssued() {
@@ -407,8 +391,6 @@ class StaticDataLoader {
         await this.deregistration();
         await this.deficiencyTypes();
         await this.deficiencies();
-        await this.deficienciesUniform();
-        await this.deficienciesCadet();
         await this.cadetInspections();
         await this.redirects();
     }
@@ -505,16 +487,6 @@ class StaticDataLoader {
     async deficiencies() {
         await prisma.deficiency.createMany({
             data: this.data.deficiencies,
-        });
-    }
-    async deficienciesCadet() {
-        await prisma.cadetDeficiency.createMany({
-            data: this.data.cadetDeficiencies,
-        });
-    }
-    async deficienciesUniform() {
-        await prisma.uniformDeficiency.createMany({
-            data: this.data.uniformDeficiencies,
         });
     }
     async inspection() {
