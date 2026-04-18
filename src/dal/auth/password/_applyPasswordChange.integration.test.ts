@@ -8,6 +8,7 @@
  *  - next/server (userAgent)
  *  - @/lib/email/passwordChangedEmail — prevent real email sending
  *  - @/lib/ironSession — not needed by applyPasswordChange directly
+ *  - logSecurityAuditEntry — to verify correct audit logging without relying on DB entries
  *
  * Not mocked: Prisma, bcrypt (hash), logSecurityAuditEntry
  */
