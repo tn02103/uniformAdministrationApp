@@ -1,5 +1,6 @@
 import { cleanData, cleanDataV2 } from "@/dal/_helper/testHelper";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { wrongAssosiation } from "../../../../vitest/setup-dal-integration";
 import { getUniformItemCountByType, getUniformItemLabels, getUniformListWithOwner } from "./_index";
 import { getDeficiencies, getHistory } from "./get";
 
@@ -95,6 +96,43 @@ describe('getItemLabels', () => {
         storageItems.forEach(storageItem => {
             expect(storageItem.storageUnit).toHaveProperty('id');
             expect(storageItem.storageUnit).toHaveProperty('name');
+        });
+    });
+
+    it('should include activeDeficiencies for uniform with unresolved deficiencies', async () => {
+        const result = await getUniformItemLabels();
+        const itemWithDeficiencies = result.find(item => item.id === ids.uniformIds[0][46]);
+
+        expect(itemWithDeficiencies).toBeDefined();
+        expect(itemWithDeficiencies!.activeDeficiencies).toHaveLength(2);
+        expect(itemWithDeficiencies!.activeDeficiencies[0]).toHaveProperty('typeName');
+        expect(itemWithDeficiencies!.activeDeficiencies[0]).toHaveProperty('comment');
+    });
+
+    it('should return empty activeDeficiencies for uniform with no deficiencies', async () => {
+        const result = await getUniformItemLabels();
+        const itemWithoutDeficiencies = result.find(item => item.id === ids.uniformIds[0][0]);
+
+        expect(itemWithoutDeficiencies).toBeDefined();
+        expect(itemWithoutDeficiencies!.activeDeficiencies).toEqual([]);
+    });
+
+    it('should only include unresolved deficiencies in activeDeficiencies', async () => {
+        // uniformIds[0][46] has 2 unresolved and 2 resolved deficiencies - only unresolved should appear
+        const result = await getUniformItemLabels();
+        const item = result.find(i => i.id === ids.uniformIds[0][46]);
+
+        expect(item).toBeDefined();
+        expect(item!.activeDeficiencies).toHaveLength(2);
+    });
+
+    it('should not return uniform items from a different organisation', async () => {
+        const result = await getUniformItemLabels();
+        const resultIds = result.map(item => item.id);
+
+        const orgBUniformIds = wrongAssosiation.ids.uniformIds.flat();
+        orgBUniformIds.forEach(orgBId => {
+            expect(resultIds).not.toContain(orgBId);
         });
     });
 });

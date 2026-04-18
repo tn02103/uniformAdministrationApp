@@ -300,6 +300,8 @@ export default {
             "alert.itemAlreadyOwned": "The selected uniform part is already issued to this person.",
             "alert.storageUnit": "The selected uniform part is assigned to the storage unit {unit}.",
             "alert.isReserve": "The selected uniform part is marked as a spare.",
+            "alert.deficiency.header": "Active Deficiencies",
+            "alert.deficiency.item": "{typeName}: {comment}",
             "button.changeOwner": "Change owner",
             "button.replace": "Replace",
             "button.issue": "Issue",
