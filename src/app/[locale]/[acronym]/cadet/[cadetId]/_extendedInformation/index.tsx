@@ -2,7 +2,7 @@
 
 import { ExpandableDividerArea } from "@/components/ExpandableArea/ExpandableArea";
 import { useScopedI18n } from "@/lib/locales/client";
-import { Tab, Tabs } from "react-bootstrap";
+import { Col, Tab, Tabs } from "react-bootstrap";
 import { InspectionHistoryTab } from "./InspectionHistoryTab";
 
 type Props = {
@@ -19,12 +19,14 @@ export const ExtendedInformationDiv = ({ cadetId }: Props) => {
 
     return (
         <ExpandableDividerArea>
-            <h2 className="text-center mb-3">{t("header")}</h2>
-            <Tabs defaultActiveKey="inspection">
-                <Tab eventKey="inspection" title={t("tabs.inspectionHistory")}>
-                    <InspectionHistoryTab cadetId={cadetId} />
-                </Tab>
-            </Tabs>
+            <Col xs={12} className="mb-3">
+                <h2 className="text-center mb-3">{t("header")}</h2>
+                <Tabs defaultActiveKey="inspection">
+                    <Tab eventKey="inspection" title={t("tabs.inspectionHistory")} className="border">
+                        <InspectionHistoryTab cadetId={cadetId} />
+                    </Tab>
+                </Tabs>
+            </Col>
         </ExpandableDividerArea>
     );
 };

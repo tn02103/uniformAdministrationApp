@@ -74,7 +74,7 @@ model Cadet {
     fk_assosiation  String            @db.Char(36)
     firstname       String            @db.VarChar(30)
     lastname        String            @db.VarChar(30)
-    dateCreated     DateTime?         @map("date_created") @db.Date @default(now())
+    dateCreated     DateTime          @map("date_created") @db.Date @default(now())
     active          Boolean           @default(true)
     comment         String            @default("")
     recdelete       DateTime?         @db.Timestamp(6)

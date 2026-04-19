@@ -46,7 +46,7 @@ export const getInspectionsByCadet = async (data: { cadetId: string }): Promise<
              LEFT JOIN inspection.deregistration dr ON dr.fk_inspection = i.id AND dr.fk_cadet = ${cadetId}
              WHERE i.fk_assosiation = ${assosiation}
                AND i.time_end IS NOT NULL
-               AND (c.date_created IS NULL OR i.date::date >= c.date_created)
+               AND i.date::date >= c.date_created
              ORDER BY i.date DESC
         `;
 

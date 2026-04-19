@@ -161,11 +161,11 @@ describe('getInspectionsByCadet', () => {
             expect(rowIds).toContain(ids.inspectionIds[1]);
         });
 
-        it('includes all inspections when cadet dateCreated is null', async () => {
-            // Set dateCreated to null → no filter applied
+        it('includes all inspections when cadet dateCreated is before all inspections', async () => {
+            // Set dateCreated to a very early date → all inspections included
             await prisma.cadet.update({
                 where: { id: ids.cadetIds[0] },
-                data: { dateCreated: null },
+                data: { dateCreated: new Date('2000-01-01') },
             });
 
             const { success, result } = await runServerActionTest(
