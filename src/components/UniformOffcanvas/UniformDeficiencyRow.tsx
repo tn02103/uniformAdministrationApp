@@ -1,4 +1,4 @@
-import { createUniformDeficiency, resolveDeficiency, updateUniformDeficiency } from "@/dal/inspection/deficiency";
+import { createDeficiency, resolveDeficiency, updateUniformDeficiency } from "@/dal/inspection/deficiency";
 import { useDeficienciesByUniformId, useDeficiencyTypes } from "@/dataFetcher/deficiency";
 import { swrKeys } from "@/dataFetcher/swrKeys";
 import { useI18n } from "@/lib/locales/client";
@@ -107,9 +107,10 @@ const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: Defici
         });
     }
     const handleCreate = async (data: UpdateUniformDeficiencySchema) => {
-        await createUniformDeficiency({
+        await createDeficiency({
+            typeId: data.typeId,
+            comment: data.comment,
             uniformId,
-            data
         }).then(async () => {
             hideCreateCard?.();
             await mutate(swrKeys.uniformDefieicncyMutateMatcher(uniformId));

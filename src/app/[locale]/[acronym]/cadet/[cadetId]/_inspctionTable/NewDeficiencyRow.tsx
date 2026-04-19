@@ -37,7 +37,7 @@ export function NewDeficiencyRow({
                 control={control as unknown as Control<FieldValues>}
                 namePrefix={`newDeficiencyList.${index}`}
                 cadetId={cadetId}
-                disabled={isCreated}
+                typeSelectDisabled={isCreated}
             />
             <Col xs={1} className="align-self-end p-0 pb-2 d-sm-none" align="right">
                 <TooltipIconButton

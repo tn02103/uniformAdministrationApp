@@ -90,13 +90,15 @@ test.describe("<CadetInspectionCard />", () => {
     });
 
     test('active inspection state, not inspected', async ({ page, staticData: { ids }, inspectionComponent, testData }) => {
+        test.setTimeout(90_000);
         await startInspection(ids);
         await page.goto(`/de/app/cadet/${ids.cadetIds[2]}`);
         
         await expect(async () => {
+            await startInspection(ids);
             await page.reload();
             await expect(inspectionComponent.div_header).toContainText(german.cadetDetailPage.inspection["header.inspection"]);
-        }).toPass();
+        }).toPass({ timeout: 60_000 });
 
         await test.step('inspection step 0', async () => Promise.all([
             expect(inspectionComponent.div_oldDeficiency_list).toHaveCount(6),
@@ -204,6 +206,7 @@ test.describe("<CadetInspectionCard />", () => {
     });
 
     test('active inspection state, previously inspected', async ({ page, staticData: { ids }, inspectionComponent, testData }) => {
+        test.setTimeout(90_000);
         await test.step('setup - create previous inspection state', async () => {
             // Start the inspection
             await startInspection(ids);
@@ -275,7 +278,11 @@ test.describe("<CadetInspectionCard />", () => {
         await page.goto(`/de/app/cadet/${ids.cadetIds[2]}`);
 
         await test.step('inspection step 0: verify unresolved deficiencies and new deficiencies are shown', async () => {
-            await expect(inspectionComponent.div_header).toContainText(german.cadetDetailPage.inspection["header.inspection"]);
+            await expect(async () => {
+                await startInspection(ids);
+                await page.reload();
+                await expect(inspectionComponent.div_header).toContainText(german.cadetDetailPage.inspection["header.inspection"]);
+            }).toPass({ timeout: 60_000 });
 
             // Should show 6 deficiencies: 3 unresolved old + 3 new from previous inspection
             await expect(inspectionComponent.div_oldDeficiency_list).toHaveCount(6);

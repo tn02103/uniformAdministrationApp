@@ -11,7 +11,7 @@ export const AdminDeficiencytypeFormSchema = z.object({
 })
 
 export const updateUniformDeficiencySchema = z.object({
-    comment: z.string(),
+    comment: z.string().max(1000, "string.maxLength;value:1000"),
     typeId: z.string().uuid(),
 });
 
@@ -53,17 +53,21 @@ export type NewCadetDeficiencyFormSchema = z.infer<typeof newCadetDeficiencyForm
 export type OldDeficiencyFormSchema = z.infer<typeof oldDeficiencyFormSchema>;
 export type CadetInspectionFormSchema = z.infer<typeof cadetInspectionFormSchema>;
 
+export const deficiencyDescriptionSchema = z.string().max(30, "string.maxLength;value:30").regex(/^[\w\s.,;:\-/\xC0-\xFF]*$/, "string.noSpecialChars");
+export const deficiencyCommentSchema = z.string().max(1000, "string.maxLength;value:1000").regex(/^[\w\s.,;:!?'"()\-/\xC0-\xFF]*$/, "string.noSpecialChars");
+
 export const createDeficiencySchema = z.object({
     typeId: z.string().uuid(),
-    comment: z.string(),
-    description: z.string().optional(),
+    comment: deficiencyCommentSchema,
+    description: deficiencyDescriptionSchema.optional(),
     uniformId: nullableUUID,
     cadetId: nullableUUID,
+    materialId: nullableUUID,
 });
 export type CreateDeficiencyInput = z.infer<typeof createDeficiencySchema>;
 
 export const updateDeficiencySchema = z.object({
-    description: z.string().optional(),
-    comment: z.string(),
+    description: deficiencyDescriptionSchema.optional(),
+    comment: deficiencyCommentSchema,
 });
 export type UpdateDeficiencyInput = z.infer<typeof updateDeficiencySchema>;

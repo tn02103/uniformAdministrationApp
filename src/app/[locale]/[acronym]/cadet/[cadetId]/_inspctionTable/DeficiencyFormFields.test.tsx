@@ -111,7 +111,7 @@ describe('DeficiencyFormFields', () => {
                             control={form.control as any}
                             namePrefix=""
                             cadetId={cadetId}
-                            disabled
+                            typeSelectDisabled
                         />
                     </FormProvider>
                 );
@@ -138,6 +138,40 @@ describe('DeficiencyFormFields', () => {
         it('shows material selector when cadet+material type is selected', () => {
             renderFields('', { typeId: 'type-cadet-material' });
             expect(screen.getByLabelText(/common.material.material/i)).toBeInTheDocument();
+        });
+
+        it('shows uniform selector when cadet+uniform-relation type is selected', () => {
+            renderFields('', { typeId: 'type-cadet-uniform' });
+            expect(screen.getByLabelText(/common.uniform.item/i)).toBeInTheDocument();
+            expect(screen.queryByLabelText(/common.description/i)).not.toBeInTheDocument();
+        });
+
+        it('shows extended material controls when materialId is "other" and type is cadet+material', () => {
+            renderFields('', { typeId: 'type-cadet-material', materialId: 'other' });
+            expect(screen.getByLabelText(/common.material.material/i)).toBeInTheDocument();
+            expect(screen.getByLabelText(/common.material.group_one/i)).toBeInTheDocument();
+            expect(screen.getByLabelText(/common.material.type_one/i)).toBeInTheDocument();
+        });
+
+        it('only disables type selector when typeSelectDisabled is set', () => {
+            const Wrapper = () => {
+                const form = useForm({ defaultValues: {} });
+                return (
+                    <FormProvider {...form}>
+                        <DeficiencyFormFields
+                            control={form.control as any}
+                            namePrefix=""
+                            cadetId={cadetId}
+                            typeSelectDisabled
+                        />
+                    </FormProvider>
+                );
+            };
+            render(<Wrapper />);
+            const typeSelect = screen.getByLabelText(/common.type/i);
+            expect(typeSelect).toBeDisabled();
+            // comment textarea should not be disabled
+            expect(screen.getByLabelText(/common.comment/i)).not.toBeDisabled();
         });
     });
 

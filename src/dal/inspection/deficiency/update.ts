@@ -15,9 +15,9 @@ export const updateUniform = async (props: UpdateUniformProps) => genericSAValid
     props,
     updateUniformPropSchema,
     { deficiencyId: props.id, deficiencytypeId: props.data.typeId }
-).then(async ([{ username }, { id, data }]) => {
-    const type = await prisma.deficiencyType.findUnique({
-        where: { id: data.typeId },
+).then(async ([{ username, assosiation }, { id, data }]) => {
+    const type = await prisma.deficiencyType.findFirst({
+        where: { id: data.typeId, fk_assosiation: assosiation },
     });
     if (!type) {
         throw new Error("Deficiency type not found");
@@ -29,6 +29,7 @@ export const updateUniform = async (props: UpdateUniformProps) => genericSAValid
     await prisma.deficiency.update({
         where: {
             id,
+            type: { fk_assosiation: assosiation },
         },
         data: {
             comment: data.comment,
@@ -50,11 +51,20 @@ export const updateDeficiency = async (props: UpdateDeficiencyProps) => genericS
     props,
     updateDeficiencyPropSchema,
     { deficiencyId: props.id }
-).then(async ([{ username }, { id, data }]) => {
+).then(async ([{ username, assosiation }, { id, data }]) => {
+    const deficiency = await prisma.deficiency.findFirst({
+        where: { id, type: { fk_assosiation: assosiation } },
+        include: { type: true },
+    });
+    if (!deficiency) {
+        throw new Error("Deficiency not found");
+    }
+    const canUpdateDescription = !deficiency.type ||
+        (deficiency.type.dependent === 'cadet' && deficiency.type.relation === null);
     await prisma.deficiency.update({
-        where: { id },
+        where: { id, type: { fk_assosiation: assosiation } },
         data: {
-            ...(data.description !== undefined ? { description: data.description } : {}),
+            ...(canUpdateDescription && data.description !== undefined ? { description: data.description } : {}),
             comment: data.comment,
             userUpdated: username,
             dateUpdated: new Date(),

@@ -38,13 +38,27 @@ vi.mock('swr', () => ({
 
 // Mock the child components
 vi.mock('./CadetInspectionCardHeader', () => ({
-    default: function MockCadetInspectionCardHeader({ step, startInspecting }: { step: number; startInspecting: () => void }) {
+    default: function MockCadetInspectionCardHeader({ step, startInspecting, showCreateCard, onNewDeficiency }: {
+        step: number;
+        startInspecting: () => void;
+        showCreateCard?: boolean;
+        onNewDeficiency?: () => void;
+    }) {
         return (
             <div data-testid="mock-header">
                 <span data-testid="mock-current-step">Step: {step}</span>
                 <button data-testid="btn-start-inspection" onClick={startInspecting}>
                     Start Inspection
                 </button>
+                {onNewDeficiency && (
+                    <button
+                        data-testid="btn_new_deficiency"
+                        disabled={showCreateCard}
+                        onClick={onNewDeficiency}
+                    >
+                        New Deficiency
+                    </button>
+                )}
             </div>
         );
     },
@@ -544,6 +558,28 @@ describe('CadetInspectionCard', () => {
             mockUseInspectionState.mockReturnValue({ inspectionState: { active: true, state: 'active', id: 'insp-1', date: '2026-01-01', inspectedCadets: 0, activeCadets: 10, deregistrations: 0 } });
             render(<CadetInspectionCard />);
             expect(screen.getByTestId('old-deficiency-0')).toHaveTextContent('inspectionActive: true');
+        });
+
+        it('button visibility in step 0: button is enabled when no create card shown, disabled when create card shown', async () => {
+            render(<CadetInspectionCard />);
+
+            const btn = screen.getByTestId('btn_new_deficiency');
+            expect(btn).toBeInTheDocument();
+            expect(btn).not.toBeDisabled();
+
+            await user.click(btn);
+
+            expect(btn).toBeDisabled();
+        });
+
+        it('active inspection: New Deficiency button not visible and deficiency rows pass inspectionActive=true', () => {
+            mockUseInspectionState.mockReturnValue({ inspectionState: { active: true, state: 'active', id: 'insp-1', date: '2026-01-01', inspectedCadets: 0, activeCadets: 10, deregistrations: 0 } });
+            render(<CadetInspectionCard />);
+
+            expect(screen.queryByTestId('btn_new_deficiency')).not.toBeInTheDocument();
+            // Deficiency rows receive inspectionActive=true so edit/resolve buttons will not be shown
+            expect(screen.getByTestId('old-deficiency-0')).toHaveTextContent('inspectionActive: true');
+            expect(screen.getByTestId('old-deficiency-1')).toHaveTextContent('inspectionActive: true');
         });
     });
 });

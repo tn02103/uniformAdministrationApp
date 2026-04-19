@@ -13,8 +13,8 @@ import { Col } from "react-bootstrap";
 import { Control, FieldValues, useFormContext, useWatch } from "react-hook-form";
 
 type Props = {
-    /** react-hook-form control used for watching field values */
-    control: Control<FieldValues>;
+    /** react-hook-form control used for watching field values (optional, falls back to form context) */
+    control?: Control<FieldValues>;
     /**
      * Dot-separated field name prefix.
      * Use `"newDeficiencyList.0"` for the inspection form, or `""` for standalone.
@@ -23,7 +23,7 @@ type Props = {
     /** CadetId for fetching uniform and material option lists */
     cadetId: string;
     /** When true, the type selector is disabled (prevents changing the type) */
-    disabled?: boolean;
+    typeSelectDisabled?: boolean;
 };
 
 /** Builds a prefixed field name. */
@@ -37,9 +37,10 @@ const buildName = (namePrefix: string, field: string): string =>
  * and a comment textarea. Returns Col fragments to be placed inside a Bootstrap Row.
  * Resets dependent fields whenever the selected type changes.
  */
-export function DeficiencyFormFields({ control, namePrefix, cadetId, disabled }: Props) {
+export function DeficiencyFormFields({ control: controlProp, namePrefix, cadetId, typeSelectDisabled }: Props) {
     const t = useI18n();
-    const { setValue } = useFormContext<FieldValues>();
+    const { setValue, control: contextControl } = useFormContext<FieldValues>();
+    const control = controlProp ?? contextControl;
     const [selectedDefType, setSelectedDefType] = useState<DeficiencyType | undefined>(undefined);
 
     const n = (field: string) => buildName(namePrefix, field);
@@ -89,7 +90,7 @@ export function DeficiencyFormFields({ control, namePrefix, cadetId, disabled }:
                     name={n("typeId")}
                     label={t("common.type")}
                     options={deficiencyTypeOptions}
-                    disabled={disabled}
+                    disabled={typeSelectDisabled}
                     hookFormValidation
                 />
             </Col>
@@ -143,7 +144,7 @@ export function DeficiencyFormFields({ control, namePrefix, cadetId, disabled }:
                     name={n("comment")}
                     label={t("common.comment")}
                     rows={2}
-                    maxLength={300}
+                    maxLength={1000}
                     hookFormValidation
                 />
             </Col>

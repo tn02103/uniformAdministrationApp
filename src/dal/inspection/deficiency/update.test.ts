@@ -14,7 +14,7 @@ describe('updateUniformDeficiency', () => {
     });
 
     it('updates the deficiency', async () => {
-        prismaMock.deficiencyType.findUnique.mockResolvedValueOnce({
+        prismaMock.deficiencyType.findFirst.mockResolvedValueOnce({
             id: 'typeId',
             dependent: 'uniform',
         });
@@ -28,9 +28,13 @@ describe('updateUniformDeficiency', () => {
         });
         await expect(result).resolves.toBeUndefined();
 
+        expect(prismaMock.deficiencyType.findFirst).toHaveBeenCalledWith(expect.objectContaining({
+            where: expect.objectContaining({ fk_assosiation: 'test-assosiation-id' }),
+        }));
         expect(prismaMock.deficiency.update).toHaveBeenCalledWith({
             where: {
                 id: '5f09250d-23cb-45f8-a7d0-d0f6d3896f34',
+                type: { fk_assosiation: 'test-assosiation-id' },
             },
             data: {
                 comment: 'Updated comment',
@@ -42,7 +46,7 @@ describe('updateUniformDeficiency', () => {
     });
 
     it('throws exception if dependend is not uniform', async () => {
-        prismaMock.deficiencyType.findUnique.mockResolvedValueOnce({
+        prismaMock.deficiencyType.findFirst.mockResolvedValueOnce({
             id: 'typeId',
             dependent: 'cadet',
         });
@@ -65,6 +69,11 @@ describe('updateDeficiency', () => {
         vi.useFakeTimers();
         vi.setSystemTime(date);
         prismaMock.deficiency.update.mockResolvedValue(undefined as any);
+        // Default: cadet type with null relation — canUpdateDescription is true
+        prismaMock.deficiency.findFirst.mockResolvedValue({
+            id: deficiencyId,
+            type: { dependent: 'cadet', relation: null },
+        } as any);
     });
     afterEach(() => {
         vi.clearAllMocks();
@@ -76,8 +85,13 @@ describe('updateDeficiency', () => {
             data: { comment: 'Updated comment', description: 'New desc' },
         })).resolves.toBeUndefined();
 
+        expect(prismaMock.deficiency.findFirst).toHaveBeenCalledWith(expect.objectContaining({
+            where: expect.objectContaining({
+                type: expect.objectContaining({ fk_assosiation: 'test-assosiation-id' }),
+            }),
+        }));
         expect(prismaMock.deficiency.update).toHaveBeenCalledWith({
-            where: { id: deficiencyId },
+            where: { id: deficiencyId, type: { fk_assosiation: 'test-assosiation-id' } },
             data: {
                 description: 'New desc',
                 comment: 'Updated comment',
@@ -112,5 +126,25 @@ describe('updateDeficiency', () => {
         expect(callArg.data).not.toHaveProperty('fk_deficiencyType');
         expect(callArg.data).not.toHaveProperty('fk_uniform');
         expect(callArg.data).not.toHaveProperty('fk_cadet');
+    });
+
+    it('blocks description update when type has cadet+uniform relation', async () => {
+        prismaMock.deficiency.findFirst.mockResolvedValueOnce({
+            id: deficiencyId,
+            type: { dependent: 'cadet', relation: 'uniform' },
+        } as any);
+
+        await expect(updateDeficiency({
+            id: deficiencyId,
+            data: { comment: 'comment', description: 'should be blocked' },
+        })).resolves.toBeUndefined();
+
+        const callArg = prismaMock.deficiency.update.mock.calls[0][0];
+        expect(callArg.data).not.toHaveProperty('description');
+        expect(callArg.data).toEqual({
+            comment: 'comment',
+            userUpdated: 'testuser',
+            dateUpdated: date,
+        });
     });
 });

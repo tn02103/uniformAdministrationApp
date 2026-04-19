@@ -6,7 +6,7 @@ import userEvent, { UserEvent } from "@testing-library/user-event";
 import { UniformDeficiencyRow } from "./UniformDeficiencyRow";
 import { mockDeficiencyList, mockDeficiencyTypeList, mockUniform } from "./UniformOffcanvasJestHelper";
 import { useDeficienciesByUniformId } from "@/dataFetcher/deficiency";
-import { createUniformDeficiency, updateUniformDeficiency, resolveDeficiency } from "@/dal/inspection/deficiency";
+import { createDeficiency, updateUniformDeficiency, resolveDeficiency } from "@/dal/inspection/deficiency";
 import { mutate } from "swr";
 import { toast } from "react-toastify";
 
@@ -242,13 +242,11 @@ describe('UniformDeficiencyRow', () => {
             expect(createButton).toBeEnabled();
 
             await user.click(createButton);
-            expect(createUniformDeficiency).toHaveBeenCalledTimes(1);
-            expect(createUniformDeficiency).toHaveBeenCalledWith({
+            expect(createDeficiency).toHaveBeenCalledTimes(1);
+            expect(createDeficiency).toHaveBeenCalledWith({
                 uniformId: mockUniform.id,
-                data: {
-                    comment: 'Test comment',
-                    typeId: mockDeficiencyTypeList[1].id
-                }
+                typeId: mockDeficiencyTypeList[1].id,
+                comment: 'Test comment',
             });
             expect(mutate).toHaveBeenCalledTimes(1);
             expect((vi.mocked(mutate).mock.calls[0][0] as any)(`uniform.${mockUniform.id}.deficiencies.true`)).toBeTruthy();
@@ -260,7 +258,7 @@ describe('UniformDeficiencyRow', () => {
 
         it('should catch exceptions on create', async () => {
             const user = userEvent.setup();
-            vi.mocked(createUniformDeficiency).mockRejectedValueOnce(new Error('Test error'));
+            vi.mocked(createDeficiency).mockRejectedValueOnce(new Error('Test error'));
 
             render(
                 <UniformDeficiencyRow
@@ -279,7 +277,7 @@ describe('UniformDeficiencyRow', () => {
             await user.selectOptions(typeSelect, mockDeficiencyTypeList[1].id);
             await user.click(createButton);
 
-            expect(createUniformDeficiency).toHaveBeenCalledTimes(1);
+            expect(createDeficiency).toHaveBeenCalledTimes(1);
             expect(mutate).toHaveBeenCalledTimes(0);
             expect(toast.error).toHaveBeenCalledTimes(1);
         });

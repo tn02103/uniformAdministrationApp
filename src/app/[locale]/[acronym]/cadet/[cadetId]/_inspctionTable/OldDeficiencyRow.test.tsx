@@ -1,6 +1,6 @@
 // NOTE: The following imports and utilities will be used when implementing the actual tests
 import React from 'react';
-import { getByTestId, getByText, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FormProvider, useForm, UseFormReturn } from 'react-hook-form';
 import { CadetInspectionFormSchema } from '@/zod/deficiency';
@@ -158,7 +158,7 @@ describe('OldDeficiencyRow', () => {
             renderWithForm({ ...defaultProps, step: 0 });
 
             // Step != 1: Resolution switch should NOT be visible
-            expect(screen.queryByTestId('chk_resolved')).not.toBeInTheDocument();
+            expect(screen.queryByRole('switch')).not.toBeInTheDocument();
 
             // Step >= 2: Creation date and comment should NOT be visible
             expect(screen.getByTestId('div_created')).toBeInTheDocument();
@@ -183,7 +183,7 @@ describe('OldDeficiencyRow', () => {
             renderWithForm({ ...defaultProps, step: 1 });
 
             // Step 1: Resolution switch should be visible
-            expect(screen.getByTestId('chk_resolved')).toBeInTheDocument();
+            expect(screen.getByRole('switch')).toBeInTheDocument();
 
             // Step < 2: Creation date and comment should be visible
             expect(screen.getByTestId('div_created')).toBeInTheDocument();
@@ -209,7 +209,7 @@ describe('OldDeficiencyRow', () => {
             renderWithForm({ ...defaultProps, step: 2 });
 
             // Step != 1: Resolution switch should NOT be visible
-            expect(screen.queryByTestId('chk_resolved')).not.toBeInTheDocument();
+            expect(screen.queryByRole('switch')).not.toBeInTheDocument();
 
             // Step >= 2: Creation date and comment should NOT be visible
             expect(screen.queryByTestId('div_created')).not.toBeInTheDocument();
@@ -263,11 +263,11 @@ describe('OldDeficiencyRow', () => {
             expect(formMethods!.getValues().oldDeficiencyList[0].resolved).toBe(true);
 
             // Switch should be rendered and show initial value
-            const switchElement = screen.getByTestId('chk_resolved');
+            const switchElement = screen.getByRole('switch');
             expect(switchElement).toBeInTheDocument();
             expect(switchElement).toBeChecked();
 
-            // Label should reflect the initial resolved state
+            // Label should be present (static label from ToggleFormField)
             expect(screen.getByText('common.deficiency.resolved.true')).toBeInTheDocument();
         });
 
@@ -297,9 +297,8 @@ describe('OldDeficiencyRow', () => {
             );
 
             // Initial state: unresolved
-            const switchElement = screen.getByTestId('chk_resolved');
+            const switchElement = screen.getByRole('switch');
             expect(switchElement).not.toBeChecked();
-            expect(screen.getByText('common.deficiency.resolved.false')).toBeInTheDocument();
             expect(formMethods!.getValues().oldDeficiencyList[0].resolved).toBe(false);
 
             // Toggle the switch
@@ -310,7 +309,6 @@ describe('OldDeficiencyRow', () => {
 
             // UI should reflect the change
             expect(switchElement).toBeChecked();
-            expect(screen.getByText('common.deficiency.resolved.true')).toBeInTheDocument();
 
         });
 
@@ -360,21 +358,20 @@ describe('OldDeficiencyRow', () => {
             // First instance should show resolved state
             const firstRow = screen.getByTestId('div_olddef_1');
             expect(firstRow).toBeInTheDocument();
-            expect(getByTestId(firstRow, 'chk_resolved')).toBeChecked();
-            expect(getByText(firstRow, 'common.deficiency.resolved.true')).toBeInTheDocument();
+            const firstSwitch = firstRow.querySelector('input[role="switch"]') as HTMLInputElement;
+            expect(firstSwitch).toBeChecked();
             expect(formMethods!.getValues().oldDeficiencyList[0].resolved).toBe(true);
 
             // Second instance should show unresolved state
             const secondRow = screen.getByTestId('div_olddef_2');
             expect(secondRow).toBeInTheDocument();
-            expect(getByTestId(secondRow, 'chk_resolved')).not.toBeChecked();
-            expect(getByText(secondRow, 'common.deficiency.resolved.false')).toBeInTheDocument();
+            const secondSwitch = secondRow.querySelector('input[role="switch"]') as HTMLInputElement;
+            expect(secondSwitch).not.toBeChecked();
             expect(formMethods!.getValues().oldDeficiencyList[1].resolved).toBe(false);
 
             // Toggle first row
-            await userEvent.click(getByTestId(firstRow, 'chk_resolved'));
-            expect(getByTestId(firstRow, 'chk_resolved')).not.toBeChecked();
-            expect(getByText(firstRow, 'common.deficiency.resolved.false')).toBeInTheDocument();
+            await userEvent.click(firstSwitch);
+            expect(firstSwitch).not.toBeChecked();
             expect(formMethods!.getValues().oldDeficiencyList[0].resolved).toBe(false);
         });
     });
@@ -416,13 +413,11 @@ describe('OldDeficiencyRow', () => {
             expect(container).toHaveClass('py-3');
             expect(container).not.toHaveClass('py-1');
 
-            const checkbox = screen.getByTestId('chk_resolved');
-            // eslint-disable-next-line testing-library/no-node-access
-            const parent = checkbox.closest('div');
-            expect(parent).toHaveClass(/text-success/);
+            const checkbox = screen.getByRole('switch');
+            expect(checkbox).toBeInTheDocument();
 
             await userEvent.click(checkbox);
-            expect(parent).toHaveClass(/text-danger/);
+            expect(checkbox).not.toBeChecked();
         });
     });
 
@@ -558,6 +553,15 @@ describe('OldDeficiencyRow', () => {
             await user.click(screen.getByTestId(`btn_edit_${uniformLinkedDeficiency.id}`));
 
             // description input should NOT be present (read-only display instead)
+            expect(screen.queryByLabelText(/common.description/i)).not.toBeInTheDocument();
+        });
+
+        it('material-linked deficiency has read-only description', async () => {
+            const materialLinkedDeficiency = { ...mockDeficiency, fk_material: 'some-material-id' } as Deficiency;
+            renderWithForm({ ...defaultProps, step: 0, inspectionActive: false, deficiency: materialLinkedDeficiency });
+            await user.click(screen.getByTestId(`btn_edit_${materialLinkedDeficiency.id}`));
+
+            // description input should NOT be present for material-linked deficiency (read-only display instead)
             expect(screen.queryByLabelText(/common.description/i)).not.toBeInTheDocument();
         });
     });

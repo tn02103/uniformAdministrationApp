@@ -1,4 +1,4 @@
-import { TooltipIconButton } from "@/components/Buttons/TooltipIconButton";
+import { TooltipActionButton, TooltipIconButton } from "@/components/Buttons/TooltipIconButton";
 import { useGlobalData } from "@/components/globalDataProvider";
 import { useInspectedCadetIdList, useInspectionState } from "@/dataFetcher/inspection";
 import { useScopedI18n } from "@/lib/locales/client";
@@ -11,9 +11,13 @@ import { ParamType } from "../page";
 export default function CadetInspectionCardHeader({
     step,
     startInspecting,
+    showCreateCard,
+    onNewDeficiency,
 }: {
     step: number;
     startInspecting: () => void;
+    showCreateCard?: boolean;
+    onNewDeficiency?: () => void;
 }) {
     const t = useScopedI18n('cadetDetailPage.inspection');
     const { inspectionState } = useInspectionState();
@@ -41,8 +45,16 @@ export default function CadetInspectionCardHeader({
                     />
                 </div>
                 :
-                <div data-testid="div_header" className="col-12 text-center p-0">
-                    {t('header.noInspection')}
+                <div data-testid="div_header" className="col-12 d-flex align-items-center justify-content-center p-0">
+                    <span>{t('header.noInspection')}</span>
+                    {step === 0 && onNewDeficiency && (
+                        <TooltipActionButton
+                            variantKey="create"
+                            testId="btn_new_deficiency"
+                            disabled={showCreateCard}
+                            onClick={onNewDeficiency}
+                        />
+                    )}
                 </div>
             }
         </Row>
