@@ -60,4 +60,17 @@ describe('getClosedInspectionList', () => {
         expect(ids).not.toContain(staticData.ids.inspectionIds[0]);
         expect(ids).not.toContain(staticData.ids.inspectionIds[1]);
     });
+
+    it('includes cadets soft-deleted AFTER the inspection date in activeCadets count', async () => {
+        // cadet[8] has recdelete = 2023-08-16, which is after inspection[0] date 2023-06-18.
+        // Bug: the old query used recdelete IS NULL, which excluded cadet[8] giving activeCadets = 9.
+        // Fix: the query now also counts cadets whose recdelete date is after the inspection date.
+        const { success, result } = await runServerActionTest(getClosedInspectionList());
+        expect(success).toBeTruthy();
+        const list = result as { id: string; activeCadets: number }[];
+        const insp = list.find(r => r.id === staticData.ids.inspectionIds[0]);
+        expect(insp).toBeDefined();
+        // All 10 cadets are active on 2023-06-18, including cadet[8] deleted on 2023-08-16.
+        expect(insp!.activeCadets).toBe(10);
+    });
 });

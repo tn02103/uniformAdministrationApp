@@ -40,10 +40,10 @@ export class DBQuery {
     }[]>`
              SELECT i.id,
                     i.name,
-        	        i.date,
+        	          i.date,
                     i.time_start,
                     i.time_end,
-        	        (SELECT COUNT(ic.id)
+        	          (SELECT COUNT(ic.id)
                        FROM inspection.cadet_inspection ic
                       WHERE ic.fk_inspection = i.id) as "cadetsInspected",
                     (SELECT COUNT(dr.fk_inspection)
@@ -52,8 +52,9 @@ export class DBQuery {
                     (SELECT COUNT(c.id)
                        FROM base.cadet c
                       WHERE c.fk_assosiation = i.fk_assosiation
-                        AND c.recdelete IS NULL) as "activeCadets",
-         	        (SELECT COUNT(cd.id)
+                        AND (c.recdelete IS NULL 
+                            OR to_char(c.recdelete, 'YYYY-MM-DD') > i.date)) as "activeCadets",
+         	          (SELECT COUNT(cd.id)
                        FROM inspection.deficiency cd
                       WHERE cd.fk_inspection_resolved = i.id) as "newlyResolvedDeficiencies",
                     (SELECT COUNT(cd2.id)
@@ -75,7 +76,7 @@ export class DBQuery {
   getActiveDeficiencyList = (id: string, client: Prisma.TransactionClient): Promise<InspectionReviewDeficiency[]> =>
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     client.$queryRaw<any[]>`
-         SELECT v.*,
+       SELECT v.*,
 	            CASE
 		            WHEN v."fk_inspectionCreated" = ${id}
 		            THEN 1
@@ -120,7 +121,7 @@ export class DBQuery {
                 counts."overalClosedDeficiencies",
                 counts."newlyClosedDeficiencies",
                 CASE
-                    WHEN lci.id IS NOT NULL THEN 'inspected'
+                    WHEN lci.id = ${inspectionId} THEN 'inspected'
                     WHEN dr.fk_inspection IS NOT NULL THEN 'excused'
                     ELSE 'missing'
                 END AS "attendanceStatus"

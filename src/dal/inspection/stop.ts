@@ -22,7 +22,7 @@ export const stopInspection = async (props: stopInspectionPropShema) => genericS
     { inspectionId: props.id }
 ).then(async ([user, data]) => prisma.$transaction(async (client) => {
     const inspection = await client.inspection.findUniqueOrThrow({
-        where: { id: data.id },
+        where: { id: data.id, fk_assosiation: user.assosiation },
     });
     if (!inspection.timeStart) {
         throw new SaveDataException('Could not finish inspection: Inspection has not jet been started')
@@ -45,12 +45,9 @@ export const stopInspection = async (props: stopInspectionPropShema) => genericS
 
     // update Inspection
     await client.inspection.update({
-        where: { id: data.id },
+        where: { id: data.id, fk_assosiation: user.assosiation },
         data: { timeEnd: data.time }
     });
-    // compute inspection review for email
-    const inspreview = await dbHandler.getInspectionReviewData(user.assosiation, data.id, client);
-
     // send Mails
     const config = await client.assosiationConfiguration.findUnique({
         where: { assosiationId: user.assosiation }
@@ -59,5 +56,7 @@ export const stopInspection = async (props: stopInspectionPropShema) => genericS
         return;
     }
 
+    // compute inspection review for email
+    const inspreview = await dbHandler.getInspectionReviewData(user.assosiation, data.id, client);
     await sendInspectionReviewMail(config.inspectionReportEmails, inspreview);
 }));

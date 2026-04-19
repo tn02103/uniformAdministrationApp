@@ -29,4 +29,20 @@ describe('getClosedInspectionReport', () => {
         expect(success).toBeFalsy();
         expect(result).toBeDefined();
     });
+
+    it('returns attendanceStatus as missing for a cadet inspected in a prior inspection but not the current one', async () => {
+        // cadet[2] was inspected in inspection[0] (2023-06-18) but NOT inspection[1] (2023-08-13).
+        // Bug: the old query used lci.id IS NOT NULL, which marked cadet[2] as 'inspected' for
+        // inspection[1] because they had a cadet_inspection record from a different inspection.
+        // Fix: the query now uses lci.id = inspectionId so only cadets inspected in THIS inspection
+        // are marked as 'inspected'.
+        const { success, result } = await runServerActionTest(
+            getClosedInspectionReport({ inspectionId: staticData.ids.inspectionIds[1] })
+        );
+        expect(success).toBeTruthy();
+        const report = result as InspectionReview;
+        const cadet2Entry = report.cadetList.find(e => e.cadet.id === staticData.ids.cadetIds[2]);
+        expect(cadet2Entry).toBeDefined();
+        expect(cadet2Entry!.attendanceStatus).toBe('missing');
+    });
 });

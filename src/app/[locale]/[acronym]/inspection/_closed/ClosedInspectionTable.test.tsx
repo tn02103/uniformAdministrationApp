@@ -83,7 +83,7 @@ describe("<ClosedInspectionTable />", () => {
         expect(cells2[7]).toHaveTextContent("-");
     });
 
-    it("clicking 'Bericht anzeigen' opens the report offcanvas", async () => {
+    it("clicking 'Show Report' button opens the report offcanvas", async () => {
         const user = userEvent.setup();
         render(<ClosedInspectionTable initialData={mockInspections} />);
 

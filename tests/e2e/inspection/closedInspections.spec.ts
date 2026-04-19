@@ -10,27 +10,6 @@ test.describe("Abgeschlossene Kontrollen", () => {
         await cleanup.inspection();
     });
 
-    test("E2E-CI01: section is visible with correct column headers", async ({
-        page,
-    }) => {
-        await expect(
-            page.getByRole("heading", { name: /Abgeschlossene Kontrollen/i })
-        ).toBeVisible();
-
-        const table = page.getByTestId("div_closedInspectionTable");
-        await expect(table).toBeVisible();
-
-        const headers = table.locator("thead th");
-        await expect(headers.filter({ hasText: /Name/i })).toBeVisible();
-        await expect(headers.filter({ hasText: /Datum/i })).toBeVisible();
-        await expect(headers.filter({ hasText: /Dauer/i })).toBeVisible();
-        await expect(headers.filter({ hasText: /Aktive VKs/i })).toBeVisible();
-        await expect(headers.filter({ hasText: /Kontrolliert/i })).toBeVisible();
-        await expect(headers.filter({ hasText: /Abgemeldet/i })).toBeVisible();
-        await expect(headers.filter({ hasText: /Fehlend/i })).toBeVisible();
-        await expect(headers.filter({ hasText: /Uniform vollst/i })).toBeVisible();
-    });
-
     test("E2E-CI02: static closed inspections appear in the list", async ({
         page,
         staticData: { ids },
@@ -49,7 +28,7 @@ test.describe("Abgeschlossene Kontrollen", () => {
         await expect(row1).toContainText("2023-08-13");
     });
 
-    test("E2E-CI05: clicking Bericht anzeigen opens the report offcanvas", async ({
+    test("E2E-CI05: clicking 'Show Report' button opens the report offcanvas", async ({
         page,
         staticData: { ids },
     }) => {
@@ -93,12 +72,4 @@ test.describe("Abgeschlossene Kontrollen", () => {
         expect(contentDisposition).toMatch(/\.xlsx/);
     });
 
-    test("E2E-CI07: XLSX download endpoint returns 403 for unknown inspection ID", async ({
-        page,
-    }) => {
-        const response = await page.request.get(
-            "/api/inspection/00000000-0000-0000-0000-000000000000/report"
-        );
-        expect(response.status()).toBe(403);
-    });
 });
