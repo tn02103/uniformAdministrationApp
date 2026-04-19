@@ -27,6 +27,8 @@ export const swrKeys = {
     inspectionPlannedList: 'inspection.planned.list',
     inspectionInspectedIdList: 'inspection/status/idList',
     unresolvedDeficienciesByCadet: (cadetId: string) => `cadet.${cadetId}.deficiencies.unresolved`,
+    inspectionClosedList: 'inspection.closed.list',
+    inspectionClosedReport: (inspectionId: string) => `inspection.closed.${inspectionId}.report`,
     // Cadet specific
     cadetLastInspection: 'cadet/inspection/lastInspection',
 }

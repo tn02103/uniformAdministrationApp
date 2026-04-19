@@ -690,6 +690,34 @@ export default {
         header: {
             planned: 'planned inspections',
         },
+        closed: {
+            title: 'Completed Inspections',
+            columns: {
+                name: 'Name',
+                date: 'Date',
+                duration: 'Duration',
+                activeCadets: 'Active Cadets',
+                cadetsInspected: 'Inspected',
+                deregisteredCadets: 'Deregistered',
+                missingCadets: 'Missing',
+                uniformComplete: 'Uniform Complete %',
+            },
+            actions: {
+                showReport: 'Show Report',
+                downloadXlsx: 'Download XLSX',
+            },
+            report: {
+                title: 'Inspection Report',
+                cadetList: 'Cadet List',
+                attendance: 'Attendance',
+                activeDeficiencies: 'Active Deficiencies',
+                attendanceStatus: {
+                    inspected: 'Inspected',
+                    excused: 'Excused',
+                    missing: 'Missing',
+                },
+            },
+        },
         planned: {
             deregistration: {
                 header: "Deregistrations {name}",

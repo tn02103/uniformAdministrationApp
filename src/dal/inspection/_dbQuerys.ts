@@ -40,10 +40,10 @@ export class DBQuery {
     }[]>`
              SELECT i.id,
                     i.name,
-        	        i.date,
+        	          i.date,
                     i.time_start,
                     i.time_end,
-        	        (SELECT COUNT(ic.id)
+        	          (SELECT COUNT(ic.id)
                        FROM inspection.cadet_inspection ic
                       WHERE ic.fk_inspection = i.id) as "cadetsInspected",
                     (SELECT COUNT(dr.fk_inspection)
@@ -52,8 +52,9 @@ export class DBQuery {
                     (SELECT COUNT(c.id)
                        FROM base.cadet c
                       WHERE c.fk_assosiation = i.fk_assosiation
-                        AND c.recdelete IS NULL) as "activeCadets",
-         	        (SELECT COUNT(cd.id)
+                        AND (c.recdelete IS NULL 
+                            OR to_char(c.recdelete, 'YYYY-MM-DD') > i.date)) as "activeCadets",
+         	          (SELECT COUNT(cd.id)
                        FROM inspection.deficiency cd
                       WHERE cd.fk_inspection_resolved = i.id) as "newlyResolvedDeficiencies",
                     (SELECT COUNT(cd2.id)
@@ -75,7 +76,7 @@ export class DBQuery {
   getActiveDeficiencyList = (id: string, client: Prisma.TransactionClient): Promise<InspectionReviewDeficiency[]> =>
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     client.$queryRaw<any[]>`
-         SELECT v.*,
+       SELECT v.*,
 	            CASE
 		            WHEN v."fk_inspectionCreated" = ${id}
 		            THEN 1
@@ -118,7 +119,12 @@ export class DBQuery {
                 lci."id" as "lastInspectionId",
                 counts."openDeficiencies",
                 counts."overalClosedDeficiencies",
-                counts."newlyClosedDeficiencies"
+                counts."newlyClosedDeficiencies",
+                CASE
+                    WHEN lci.id = ${inspectionId} THEN 'inspected'
+                    WHEN dr.fk_inspection IS NOT NULL THEN 'excused'
+                    ELSE 'missing'
+                END AS "attendanceStatus"
            FROM base.cadet c
       LEFT JOIN (SELECT i."date", i."id", ci.uniform_complete, ci.fk_cadet
                    FROM inspection.cadet_inspection ci
@@ -153,6 +159,8 @@ export class DBQuery {
 				  WHERE "dateCreated" <= ${dayjs(date).toDate()}
 			   GROUP BY "fk_cadet") as "counts"
 	         ON counts.fk_cadet = c.id
+      LEFT JOIN inspection.deregistration dr
+             ON dr.fk_cadet = c.id AND dr.fk_inspection = ${inspectionId}
           WHERE c.fk_assosiation= ${fk_assosiation}
             AND c.recdelete IS NULL
     `.then(list => list.map(d => ({
@@ -169,5 +177,6 @@ export class DBQuery {
       activeDeficiencyCount: Number(d.openDeficiencies),
       newlyClosedDeficiencyCount: Number(d.newlyClosedDeficiencies),
       overalClosedDeficiencyCount: Number(d.overalClosedDeficiencies),
+      attendanceStatus: d.attendanceStatus as 'inspected' | 'excused' | 'missing',
     })));
 }

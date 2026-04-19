@@ -24,9 +24,21 @@ git fetch origin
 git branch -a | grep <branch_name>
 ```
 - If branch **exists remotely or locally**: `git checkout <branch_name>` then `git pull origin <branch_name>` if remote
-- If branch **does not exist**:
+If branch **does not exist**:
   ```bash
-  git checkout -b <branch_name> origin/<base_branch>
+  # ensure a local base branch exists and is up-to-date
+  git fetch origin
+  if git show-ref --verify --quiet refs/heads/<base_branch>; then
+    git checkout <base_branch>
+    git pull --ff-only origin <base_branch>
+  else
+    # create a local base branch that tracks origin/<base_branch>
+    git checkout -b <base_branch> origin/<base_branch>
+  fi
+  # create the new branch from the local, up-to-date base
+  git checkout -b <branch_name> <base_branch>
+  # push and set upstream so the new branch tracks origin/<branch_name>
+  git push -u origin <branch_name>
   ```
 
 ### For `add-requirement` and `implement-review`:

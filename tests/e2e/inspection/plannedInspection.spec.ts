@@ -45,7 +45,7 @@ test.describe('Planned Inspection Overview', () => {
         });
 
         await test.step('check ui', async () => {
-            const rows = page.getByRole('row');
+            const rows = page.getByTestId('div_plannedTable').getByRole('row');
             await expect(rows).toHaveCount(5);
 
             const row = rows.filter({ hasText: 'Test Inspection' }).nth(0);
@@ -79,7 +79,7 @@ test.describe('Planned Inspection Overview', () => {
         const testDate = dayjs().add(30, "day").locale('de');
 
         await test.step('edit Inspection', async () => {
-            const row = page.getByRole('row').nth(1);
+            const row = page.getByTestId('div_plannedTable').getByRole('row').nth(1);
             const dateField = row.getByRole('textbox', { name: /datum/i });
             const nameField = row.getByRole('textbox', { name: /name/i });
 
@@ -95,7 +95,7 @@ test.describe('Planned Inspection Overview', () => {
         });
 
         await test.step('check ui', async () => {
-            const rows = page.getByRole('row');
+            const rows = page.getByTestId('div_plannedTable').getByRole('row');
             await expect(rows).toHaveCount(4);
 
             const row = rows.filter({ hasText: 'Test Inspection 2' }).nth(0);

@@ -690,6 +690,34 @@ export default {
         header: {
             planned: 'Geplannte Kontrollen',
         },
+        closed: {
+            title: 'Abgeschlossene Kontrollen',
+            columns: {
+                name: 'Name',
+                date: 'Datum',
+                duration: 'Dauer',
+                activeCadets: 'Aktive VKs',
+                cadetsInspected: 'Kontrolliert',
+                deregisteredCadets: 'Abgemeldet',
+                missingCadets: 'Fehlend',
+                uniformComplete: 'Uniform vollst. %',
+            },
+            actions: {
+                showReport: 'Bericht anzeigen',
+                downloadXlsx: 'XLSX herunterladen',
+            },
+            report: {
+                title: 'Inspektionsbericht',
+                cadetList: 'Kadettenliste',
+                attendance: 'Anwesenheit',
+                activeDeficiencies: 'Aktive Mängel',
+                attendanceStatus: {
+                    inspected: 'Kontrolliert',
+                    excused: 'Entschuldigt',
+                    missing: 'Fehlend',
+                },
+            },
+        },
         planned: {
             deregistration: {
                 header: "Abmeldungen für {name}",

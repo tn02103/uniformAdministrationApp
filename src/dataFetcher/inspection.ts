@@ -1,6 +1,7 @@
 
-import { getInspectedCadetIdList, getInspectionState, getPlannedInspectionList, getUnresolvedDeficienciesByCadet } from "@/dal/inspection";
+import { getClosedInspectionList, getClosedInspectionReport, getInspectedCadetIdList, getInspectionState, getPlannedInspectionList, getUnresolvedDeficienciesByCadet } from "@/dal/inspection";
 import { AuthRole } from "@/lib/AuthRoles";
+import { ClosedInspectionSummary, InspectionReview } from "@/types/deficiencyTypes";
 import { PlannedInspectionType } from "@/types/inspectionTypes";
 import useSWR from "swr";
 import { swrKeys } from "./swrKeys";
@@ -46,4 +47,35 @@ export function useInspectedCadetIdList(userRole: number, inspectionActive?: boo
 export const useUnresolvedDeficienciesByCadet = (cadetId: string) => {
     const { data } = useSWR(swrKeys.unresolvedDeficienciesByCadet(cadetId), () => getUnresolvedDeficienciesByCadet(cadetId));
     return { unresolvedDeficiencies: data };
+}
+
+/**
+ * SWR hook for the list of closed inspections.
+ *
+ * @param initialData - Optional SSR-fetched data used as fallback.
+ * @returns `{ closedInspectionList }` — the list of closed inspection summaries.
+ */
+export function useClosedInspectionList(initialData?: ClosedInspectionSummary[]) {
+    const { data } = useSWR(
+        swrKeys.inspectionClosedList,
+        getClosedInspectionList,
+        {
+            fallbackData: initialData,
+        }
+    );
+    return { closedInspectionList: data };
+}
+
+/**
+ * SWR hook for a single closed inspection's full report.
+ *
+ * @param inspectionId - The ID of the closed inspection.
+ * @returns `{ inspectionReport }` — the full `InspectionReview` for the given inspection.
+ */
+export function useClosedInspectionReport(inspectionId: string) {
+    const { data } = useSWR(
+        swrKeys.inspectionClosedReport(inspectionId),
+        () => getClosedInspectionReport({ inspectionId }),
+    );
+    return { inspectionReport: data as InspectionReview | undefined };
 }
