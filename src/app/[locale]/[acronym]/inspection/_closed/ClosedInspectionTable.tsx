@@ -49,7 +49,6 @@ export function ClosedInspectionTable({ initialData }: { initialData: ClosedInsp
                                     variant="outline-primary"
                                     size="sm"
                                     className="me-2"
-                                    disabled={!inspection.hasReport}
                                     onClick={() => setReportInspectionId(inspection.id)}
                                     aria-label={t("actions.showReport")}
                                 >
@@ -58,9 +57,7 @@ export function ClosedInspectionTable({ initialData }: { initialData: ClosedInsp
                                 <a
                                     href={`/api/inspection/${inspection.id}/report`}
                                     download
-                                    className={`btn btn-sm btn-outline-secondary${!inspection.hasReport ? " disabled" : ""}`}
-                                    aria-disabled={!inspection.hasReport}
-                                    tabIndex={!inspection.hasReport ? -1 : undefined}
+                                    className="btn btn-sm btn-outline-secondary"
                                     aria-label={t("actions.downloadXlsx")}
                                 >
                                     {t("actions.downloadXlsx")}

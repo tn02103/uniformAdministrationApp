@@ -112,7 +112,6 @@ export type ClosedInspectionSummary = {
     deregisteredCadets: number;
     missingCadets: number;
     uniformCompletePercent: number;
-    hasReport: boolean;
 }
 
 export type InspectionReviewDeficiency = {

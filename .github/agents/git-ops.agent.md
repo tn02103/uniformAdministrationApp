@@ -2,7 +2,7 @@
 description: "Git and GitHub operations agent. Use when: creating commits, pushing branches, creating pull requests, or updating ticket status in the GitHub project board."
 tools: [execute, read, vscode/askQuestions, github/*]
 model: GPT-5 mini
-user-invocable: false
+user-invocable: true
 ---
 
 You are the git and GitHub operations agent for the uniformAdministrationApp project. You handle all version control and GitHub automation. You do NOT edit source files.

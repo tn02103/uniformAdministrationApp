@@ -1,70 +1,70 @@
+"use server";
+
 import { genericSANoDataValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { ClosedInspectionSummary, InspectionReview } from "@/types/deficiencyTypes";
+import { ClosedInspectionSummary } from "@/types/deficiencyTypes";
 
-export const getClosedInspectionList = (): Promise<ClosedInspectionSummary[]> =>
+export const getClosedInspectionList = async (): Promise<ClosedInspectionSummary[]> =>
     genericSANoDataValidator(AuthRole.materialManager)
         .then(async ([user]) => {
-            const inspections = await prisma.inspection.findMany({
-                where: {
-                    fk_assosiation: user.assosiation,
-                    timeEnd: { not: null },
-                },
-                select: {
-                    id: true,
-                    name: true,
-                    date: true,
-                    timeStart: true,
-                    timeEnd: true,
-                    closingReport: true,
-                },
-                orderBy: { date: 'desc' },
-            });
+            const rows = await prisma.$queryRaw<{
+                id: string;
+                name: string;
+                date: string;
+                time_start: string;
+                time_end: string;
+                cadetsInspected: bigint;
+                deregisteredCadets: bigint;
+                activeCadets: bigint;
+                uniformCompleteCount: bigint;
+            }[]>`
+                SELECT i.id,
+                       i.name,
+                       i.date,
+                       i.time_start,
+                       i.time_end,
+                       (SELECT COUNT(ic.id)
+                          FROM inspection.cadet_inspection ic
+                         WHERE ic.fk_inspection = i.id) AS "cadetsInspected",
+                       (SELECT COUNT(dr.fk_inspection)
+                          FROM inspection.deregistration dr
+                         WHERE dr.fk_inspection = i.id) AS "deregisteredCadets",
+                       (SELECT COUNT(c.id)
+                          FROM base.cadet c
+                         WHERE c.fk_assosiation = i.fk_assosiation
+                           AND c.recdelete IS NULL) AS "activeCadets",
+                       (SELECT COUNT(ic2.id)
+                          FROM inspection.cadet_inspection ic2
+                         WHERE ic2.fk_inspection = i.id
+                           AND ic2.uniform_complete = TRUE) AS "uniformCompleteCount"
+                  FROM inspection.inspection i
+                 WHERE i.fk_assosiation = ${user.assosiation}
+                   AND i.time_end IS NOT NULL
+              ORDER BY i.date DESC
+            `;
 
-            return inspections.map((insp): ClosedInspectionSummary => {
-                const hasReport = insp.closingReport !== null;
-                if (!hasReport) {
-                    return {
-                        id: insp.id,
-                        name: insp.name,
-                        date: insp.date,
-                        timeStart: insp.timeStart!,
-                        timeEnd: insp.timeEnd!,
-                        activeCadets: 0,
-                        cadetsInspected: 0,
-                        deregisteredCadets: 0,
-                        missingCadets: 0,
-                        uniformCompletePercent: NaN,
-                        hasReport: false,
-                    };
-                }
-
-                const report = insp.closingReport as unknown as InspectionReview;
-                const cadetList = report.cadetList;
-                const activeCadets = cadetList.length;
-                const cadetsInspected = cadetList.filter(c => c.attendanceStatus === 'inspected').length;
-                const deregisteredCadets = cadetList.filter(c => c.attendanceStatus === 'excused').length;
+            return rows.map((row): ClosedInspectionSummary => {
+                const cadetsInspected = Number(row.cadetsInspected);
+                const deregisteredCadets = Number(row.deregisteredCadets);
+                const activeCadets = Number(row.activeCadets);
+                const uniformCompleteCount = Number(row.uniformCompleteCount);
                 const missingCadets = activeCadets - cadetsInspected - deregisteredCadets;
                 const uniformCompletePercent = cadetsInspected > 0
-                    ? Math.round(
-                        cadetList.filter(c => c.attendanceStatus === 'inspected' && c.lastInspection?.uniformComplete === true).length
-                        / cadetsInspected * 1000
-                    ) / 10
+                    ? Math.round(uniformCompleteCount / cadetsInspected * 1000) / 10
                     : NaN;
 
                 return {
-                    id: insp.id,
-                    name: insp.name,
-                    date: insp.date,
-                    timeStart: insp.timeStart!,
-                    timeEnd: insp.timeEnd!,
+                    id: row.id,
+                    name: row.name,
+                    date: row.date,
+                    timeStart: row.time_start,
+                    timeEnd: row.time_end,
                     activeCadets,
                     cadetsInspected,
                     deregisteredCadets,
                     missingCadets,
                     uniformCompletePercent,
-                    hasReport: true,
                 };
             });
         });

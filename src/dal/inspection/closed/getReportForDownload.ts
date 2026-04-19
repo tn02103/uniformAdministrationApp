@@ -1,39 +1,29 @@
 /**
  * @internal
  * Internal DAL helper used only by the XLSX API route handler.
- * Multi-tenancy is enforced via the `where` clause (both `id` and `fk_assosiation`).
+ * Multi-tenancy is enforced by verifying the inspection belongs to the given association
+ * before running the live query.
  * The caller (API route) is responsible for session authentication before invoking this.
  * NOT exported from the barrel to prevent exposure as a Next.js Server Action.
  */
 import { prisma } from "@/lib/db";
 import { InspectionReview } from "@/types/deficiencyTypes";
+import { DBQuery } from "../_dbQuerys";
 
-export type InspectionReportDownload = {
-    name: string;
-    date: string;
-    closingReport: InspectionReview;
-};
+const dbHandler = new DBQuery();
 
 export const getReportForDownload = async (
     inspectionId: string,
     associationId: string
-): Promise<InspectionReportDownload | null> => {
-    const inspection = await prisma.inspection.findUnique({
-        where: { id: inspectionId, fk_assosiation: associationId },
-        select: {
-            name: true,
-            date: true,
-            closingReport: true,
-        },
+): Promise<InspectionReview | null> => {
+    const exists = await prisma.inspection.findFirst({
+        where: { id: inspectionId, fk_assosiation: associationId, timeEnd: { not: null } },
+        select: { id: true },
     });
 
-    if (!inspection?.closingReport) {
+    if (!exists) {
         return null;
     }
 
-    return {
-        name: inspection.name,
-        date: inspection.date,
-        closingReport: inspection.closingReport as unknown as InspectionReview,
-    };
+    return prisma.$transaction((tx) => dbHandler.getInspectionReviewData(associationId, inspectionId, tx));
 };

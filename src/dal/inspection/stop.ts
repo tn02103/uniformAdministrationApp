@@ -5,7 +5,6 @@ import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { sendInspectionReviewMail } from "@/lib/email/inspectionReview";
-import { Prisma } from "@/prisma/client";
 import { z } from "zod";
 import { DBQuery } from "./_dbQuerys";
 import dayjs from "@/lib/dayjs";
@@ -49,12 +48,8 @@ export const stopInspection = async (props: stopInspectionPropShema) => genericS
         where: { id: data.id },
         data: { timeEnd: data.time }
     });
-    // compute inspection review and save as closingReport
+    // compute inspection review for email
     const inspreview = await dbHandler.getInspectionReviewData(user.assosiation, data.id, client);
-    await client.inspection.update({
-        where: { id: data.id },
-        data: { closingReport: inspreview as Prisma.InputJsonValue },
-    });
 
     // send Mails
     const config = await client.assosiationConfiguration.findUnique({

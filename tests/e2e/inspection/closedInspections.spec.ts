@@ -1,56 +1,7 @@
-import { prisma } from "@/lib/db";
 import { expect } from "playwright/test";
 import { managerTest } from "../../_playwrightConfig/setup";
-import { InspectionReview } from "@/types/deficiencyTypes";
 
 const test = managerTest;
-
-// Minimal valid closingReport for tests that need hasReport=true
-function makeClosingReport(ids: {
-    inspectionId: string;
-    cadetIds: string[];
-}): InspectionReview {
-    return {
-        id: ids.inspectionId,
-        name: "Quartal 1",
-        date: "2023-06-18",
-        timeStart: "07:58",
-        timeEnd: "13:06",
-        deregisteredCadets: 0,
-        activeCadets: 2,
-        cadetsInspected: 2,
-        newDeficiencies: 0,
-        activeDeficiencies: 0,
-        resolvedDeficiencies: 0,
-        cadetList: [
-            {
-                cadet: { id: ids.cadetIds[1], firstname: "Marie", lastname: "Becker" },
-                attendanceStatus: "inspected",
-                activeDeficiencyCount: 0,
-                newlyClosedDeficiencyCount: 0,
-                overalClosedDeficiencyCount: 0,
-                lastInspection: {
-                    id: ids.inspectionId,
-                    date: "2023-06-18",
-                    uniformComplete: true,
-                },
-            },
-            {
-                cadet: { id: ids.cadetIds[2], firstname: "Sven", lastname: "Keller" },
-                attendanceStatus: "inspected",
-                activeDeficiencyCount: 0,
-                newlyClosedDeficiencyCount: 0,
-                overalClosedDeficiencyCount: 0,
-                lastInspection: {
-                    id: ids.inspectionId,
-                    date: "2023-06-18",
-                    uniformComplete: false,
-                },
-            },
-        ],
-        activeDeficiencyList: [],
-    };
-}
 
 test.describe("Abgeschlossene Kontrollen", () => {
     test.beforeEach(({ page }) => page.goto("/de/app/inspection"));
@@ -80,7 +31,7 @@ test.describe("Abgeschlossene Kontrollen", () => {
         await expect(headers.filter({ hasText: /Uniform vollst/i })).toBeVisible();
     });
 
-    test("E2E-CI02: static inspections without closingReport appear in the list", async ({
+    test("E2E-CI02: static closed inspections appear in the list", async ({
         page,
         staticData: { ids },
     }) => {
@@ -98,72 +49,10 @@ test.describe("Abgeschlossene Kontrollen", () => {
         await expect(row1).toContainText("2023-08-13");
     });
 
-    test("E2E-CI03: rows without closingReport show disabled action buttons", async ({
-        page,
-        staticData: { ids },
-    }) => {
-        const table = page.getByTestId("div_closedInspectionTable");
-        const row = table.getByTestId(`row_${ids.inspectionIds[0]}`);
-
-        const showReportBtn = row.getByRole("button", {
-            name: /Bericht anzeigen/i,
-        });
-        const downloadLink = row.getByRole("link", {
-            name: /XLSX herunterladen/i,
-        });
-
-        await expect(showReportBtn).toBeDisabled();
-        await expect(downloadLink).toHaveClass(/disabled/);
-        await expect(downloadLink).toHaveAttribute("aria-disabled", "true");
-    });
-
-    test("E2E-CI04: rows with closingReport show enabled action buttons", async ({
-        page,
-        staticData: { ids },
-    }) => {
-        await prisma.inspection.update({
-            where: { id: ids.inspectionIds[0] },
-            data: {
-                closingReport: makeClosingReport({
-                    inspectionId: ids.inspectionIds[0],
-                    cadetIds: ids.cadetIds,
-                }) as object,
-            },
-        });
-
-        await page.reload();
-
-        const table = page.getByTestId("div_closedInspectionTable");
-        const row = table.getByTestId(`row_${ids.inspectionIds[0]}`);
-
-        const showReportBtn = row.getByRole("button", {
-            name: /Bericht anzeigen/i,
-        });
-        const downloadLink = row.getByRole("link", {
-            name: /XLSX herunterladen/i,
-        });
-
-        await expect(showReportBtn).toBeEnabled();
-        await expect(downloadLink).not.toHaveClass(/disabled/);
-        await expect(downloadLink).not.toHaveAttribute("aria-disabled", "true");
-    });
-
     test("E2E-CI05: clicking Bericht anzeigen opens the report offcanvas", async ({
         page,
         staticData: { ids },
     }) => {
-        await prisma.inspection.update({
-            where: { id: ids.inspectionIds[0] },
-            data: {
-                closingReport: makeClosingReport({
-                    inspectionId: ids.inspectionIds[0],
-                    cadetIds: ids.cadetIds,
-                }) as object,
-            },
-        });
-
-        await page.reload();
-
         const table = page.getByTestId("div_closedInspectionTable");
         const row = table.getByTestId(`row_${ids.inspectionIds[0]}`);
 
@@ -184,32 +73,12 @@ test.describe("Abgeschlossene Kontrollen", () => {
         await expect(
             reportTable.locator("thead").getByText(/Uniform vollst/i)
         ).toBeVisible();
-
-        // Check cadets from the closingReport appear
-        await expect(
-            reportTable.locator("tbody").getByText(/Becker/i)
-        ).toBeVisible();
-        await expect(
-            reportTable.locator("tbody").getByText(/Keller/i)
-        ).toBeVisible();
     });
 
     test("E2E-CI06: XLSX download endpoint returns 200 with spreadsheet content-type", async ({
         page,
         staticData: { ids },
     }) => {
-        await prisma.inspection.update({
-            where: { id: ids.inspectionIds[0] },
-            data: {
-                closingReport: makeClosingReport({
-                    inspectionId: ids.inspectionIds[0],
-                    cadetIds: ids.cadetIds,
-                }) as object,
-            },
-        });
-
-        await page.reload();
-
         const response = await page.request.get(
             `/api/inspection/${ids.inspectionIds[0]}/report`
         );

@@ -19,7 +19,7 @@ export async function GET(
         return new Response("Forbidden", { status: 403 });
     }
 
-    const workbook = generateInspectionReviewXLSX(inspection.closingReport);
+    const workbook = generateInspectionReviewXLSX(inspection);
     const buffer = await workbook.xlsx.writeBuffer();
 
     // Sanitise filename to prevent response-header injection

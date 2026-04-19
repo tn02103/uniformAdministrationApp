@@ -21,7 +21,6 @@ const mockInspections: ClosedInspectionSummary[] = [
         deregisteredCadets: 3,
         missingCadets: 2,
         uniformCompletePercent: 80,
-        hasReport: true,
     },
     {
         id: "insp-2",
@@ -34,7 +33,6 @@ const mockInspections: ClosedInspectionSummary[] = [
         deregisteredCadets: 0,
         missingCadets: 0,
         uniformCompletePercent: NaN,
-        hasReport: false,
     },
 ];
 
@@ -83,29 +81,6 @@ describe("<ClosedInspectionTable />", () => {
         const row2 = screen.getByTestId("row_insp-2");
         const cells2 = within(row2).getAllByRole("cell");
         expect(cells2[7]).toHaveTextContent("-");
-    });
-
-    it("disables both buttons when hasReport is false", () => {
-        render(<ClosedInspectionTable initialData={mockInspections} />);
-
-        const row2 = screen.getByTestId("row_insp-2");
-        const showReportButton = within(row2).getByRole("button", { name: /actions.showReport/i });
-        expect(showReportButton).toBeDisabled();
-
-        const downloadLink = within(row2).getByRole("link", { name: /actions.downloadXlsx/i });
-        expect(downloadLink).toHaveClass("disabled");
-    });
-
-    it("enables both buttons when hasReport is true", () => {
-        render(<ClosedInspectionTable initialData={mockInspections} />);
-
-        const row1 = screen.getByTestId("row_insp-1");
-        const showReportButton = within(row1).getByRole("button", { name: /actions.showReport/i });
-        expect(showReportButton).not.toBeDisabled();
-
-        const downloadLink = within(row1).getByRole("link", { name: /actions.downloadXlsx/i });
-        expect(downloadLink).not.toHaveClass("disabled");
-        expect(downloadLink).toHaveAttribute("href", "/api/inspection/insp-1/report");
     });
 
     it("clicking 'Bericht anzeigen' opens the report offcanvas", async () => {
