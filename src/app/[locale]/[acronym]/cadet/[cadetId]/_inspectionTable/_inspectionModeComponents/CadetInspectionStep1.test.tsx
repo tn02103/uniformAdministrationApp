@@ -2,7 +2,7 @@ import userEvent from "@testing-library/user-event";
 import { Form } from "@/components/fields/Form";
 import { render, screen } from "@testing-library/react";
 import { CadetInspectionStep1, CadetInspectionStep1Props } from "./CadetInspectionStep1";
-import { OldDeficiencyRow } from "./OldDeficiencyRow";
+import { DeficiencyInspectionStep1Row } from "./DeficiencyInspectionStep1Row";
 
 const mockOldDeficiencyList = [
     { id: '1', description: 'Old deficiency 1' },
@@ -13,8 +13,8 @@ const mockFormData = {
     oldDeficiencyList: mockOldDeficiencyList
 }
 
-vi.mock('./OldDeficiencyRow', () => ({
-    OldDeficiencyRow: vi.fn((data) => <div>{data.deficiency.description}</div>)
+vi.mock('./DeficiencyInspectionStep1Row', () => ({
+    DeficiencyInspectionStep1Row: vi.fn((data) => <div>{data.deficiency.description}</div>)
 }));
 
 describe('<CadetInspectionStep1 />', () => {
@@ -33,17 +33,17 @@ describe('<CadetInspectionStep1 />', () => {
         expect(screen.getByText('Old deficiency 2')).toBeInTheDocument();
         expect(screen.getByText('Old deficiency 3')).toBeInTheDocument();
 
-        expect(OldDeficiencyRow).toHaveBeenCalledTimes(3);
-        expect(OldDeficiencyRow).toHaveBeenCalledWith(
-            { deficiency: mockOldDeficiencyList[0], index: 0, step: 1 },
+        expect(DeficiencyInspectionStep1Row).toHaveBeenCalledTimes(3);
+        expect(DeficiencyInspectionStep1Row).toHaveBeenCalledWith(
+            { deficiency: mockOldDeficiencyList[0], index: 0 },
             undefined
         );
-        expect(OldDeficiencyRow).toHaveBeenCalledWith(
-            { deficiency: mockOldDeficiencyList[1], index: 1, step: 1 }, 
+        expect(DeficiencyInspectionStep1Row).toHaveBeenCalledWith(
+            { deficiency: mockOldDeficiencyList[1], index: 1 },
             undefined
         );
-        expect(OldDeficiencyRow).toHaveBeenCalledWith(
-            { deficiency: mockOldDeficiencyList[2], index: 2, step: 1 },
+        expect(DeficiencyInspectionStep1Row).toHaveBeenCalledWith(
+            { deficiency: mockOldDeficiencyList[2], index: 2 },
             undefined
         );
 

@@ -11,11 +11,13 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { mutate } from "swr";
+import { Row } from "react-bootstrap";
 import CadetInspectionCardHeader from "./CadetInspectionCardHeader";
-import { CadetInspectionStep1 } from "./CadetInspectionStep1";
-import { CadetInspectionStep2 } from "./CadetInspectionStep2";
-import { CreateDeficiencyForm } from "./CreateDeficiencyForm";
-import { OldDeficiencyRow } from "./OldDeficiencyRow";
+import { CadetInspectionStep1 } from "./_inspectionModeComponents/CadetInspectionStep1";
+import { CadetInspectionStep2 } from "./_inspectionModeComponents/CadetInspectionStep2";
+import { CreateDeficiencyForm } from "./_standaloneModeComponents/CreateDeficiencyForm";
+import { DeficiencyReadDisplay } from "./_sharedComponents/DeficiencyReadDisplay";
+import { DeficiencyStandaloneRow } from "./_standaloneModeComponents/DeficiencyStandaloneRow";
 
 
 /** Main inspection card for a cadet. Handles both active-inspection flow and standalone deficiency management. */
@@ -68,14 +70,14 @@ export const CadetInspectionCard = () => {
             />
             {step === 0 &&
                 <div className="row p-0 bg-white border-top border-1 border-dark">
-                    {unresolvedDeficiencies?.map((deficiency, index) => (
-                        <OldDeficiencyRow
-                            key={deficiency.id}
-                            step={step}
-                            deficiency={deficiency}
-                            index={index}
-                            inspectionActive={inspectionActive}
-                        />
+                    {unresolvedDeficiencies?.map((deficiency) => (
+                        inspectionActive ? (
+                            <Row key={deficiency.id} className="p-1 m-0 border-bottom border-1 py-3" data-testid={`div_olddef_${deficiency.id}`}>
+                                <DeficiencyReadDisplay deficiency={deficiency} />
+                            </Row>
+                        ) : (
+                            <DeficiencyStandaloneRow key={deficiency.id} deficiency={deficiency} />
+                        )
                     ))}
                     {(unresolvedDeficiencies?.length === 0) &&
                         <div data-testid="div_step0_noDeficiencies" className="fw-bold p-2">{t('cadetDetailPage.inspection.label.noDeficiencies')}</div>

@@ -1,8 +1,8 @@
 import { Form } from "@/components/fields/Form";
 import { getByRole, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { CadetInspectionStep2 } from "./CadetInspectionStep2";
-import { OldDeficiencyRow } from "./OldDeficiencyRow";
+import { CadetInspectionStep2 } from "../CadetInspectionStep2";
+import { DeficiencyReadDisplay } from "../_sharedComponents/DeficiencyReadDisplay";
 import { NewDeficiencyRow } from "./NewDeficiencyRow";
 import { useCadetUniformComplete } from "@/dataFetcher/cadet";
 import { useParams } from "next/navigation";
@@ -20,8 +20,8 @@ const mockFormData = {
     ],
 };
 
-vi.mock('./OldDeficiencyRow', () => ({
-    OldDeficiencyRow: vi.fn(({ deficiency }) => <div>{deficiency.description}</div>)
+vi.mock('./DeficiencyReadDisplay', () => ({
+    DeficiencyReadDisplay: vi.fn(({ deficiency }) => <div>{deficiency.description}</div>)
 }));
 
 vi.mock('./NewDeficiencyRow', () => ({
@@ -64,17 +64,17 @@ describe('<CadetInspectionStep2 />', () => {
         expect(screen.getByText('Old deficiency 2')).toBeInTheDocument();
         expect(screen.getByText('Old deficiency 3')).toBeInTheDocument();
 
-        expect(OldDeficiencyRow).toHaveBeenCalledTimes(3);
-        expect(OldDeficiencyRow).toHaveBeenCalledWith(
-            { deficiency: mockFormData.oldDeficiencyList[0], step: 2, index: 0 },
+        expect(DeficiencyReadDisplay).toHaveBeenCalledTimes(3);
+        expect(DeficiencyReadDisplay).toHaveBeenCalledWith(
+            { deficiency: mockFormData.oldDeficiencyList[0], compact: true },
             undefined
         );
-        expect(OldDeficiencyRow).toHaveBeenCalledWith(
-            { deficiency: mockFormData.oldDeficiencyList[1], step: 2, index: 1 },
+        expect(DeficiencyReadDisplay).toHaveBeenCalledWith(
+            { deficiency: mockFormData.oldDeficiencyList[1], compact: true },
             undefined
         );
-        expect(OldDeficiencyRow).toHaveBeenCalledWith(
-            { deficiency: mockFormData.oldDeficiencyList[2], step: 2, index: 2 },
+        expect(DeficiencyReadDisplay).toHaveBeenCalledWith(
+            { deficiency: mockFormData.oldDeficiencyList[2], compact: true },
             undefined
         );
     });

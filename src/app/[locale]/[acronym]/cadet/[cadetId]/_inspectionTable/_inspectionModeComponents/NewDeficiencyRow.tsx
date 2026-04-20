@@ -5,8 +5,8 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "next/navigation";
 import { Col, Row } from "react-bootstrap";
 import { Control, FieldValues, useFormContext, useWatch } from "react-hook-form";
-import { ParamType } from "../page";
-import { DeficiencyFormFields } from "./DeficiencyFormFields";
+import { ParamType } from "../../page";
+import { DeficiencyFormFields } from "../_sharedComponents/DeficiencyFormFields";
 
 
 /**

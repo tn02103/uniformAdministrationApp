@@ -11,7 +11,7 @@ import { useParams } from "next/navigation";
 import { Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { mutate } from "swr";
-import { DeficiencyFormFields } from "./DeficiencyFormFields";
+import { DeficiencyFormFields } from "../_sharedComponents/DeficiencyFormFields";
 
 /**
  * Standalone form for creating a new cadet deficiency.

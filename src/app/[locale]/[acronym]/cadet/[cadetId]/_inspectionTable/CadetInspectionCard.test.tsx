@@ -32,8 +32,13 @@ vi.mock('@/dataFetcher/inspection', () => ({
 }));
 
 // Mock SWR mutate
-vi.mock('swr', () => ({
-    mutate: vi.fn(),
+vi.mock('swr', async (importOriginal) => {
+    const actual = await importOriginal() as Record<string, unknown>;
+    return { ...actual, mutate: vi.fn() };
+});
+
+vi.mock('@/dataFetcher/deficiency', () => ({
+    useDeficiencyTypes: vi.fn(() => ({ deficiencyTypeList: [] })),
 }));
 
 // Mock the child components
@@ -87,19 +92,16 @@ vi.mock('./CadetInspectionStep2', () => ({
     },
 }));
 
-vi.mock('./OldDeficiencyRow', () => ({
-    OldDeficiencyRow: function MockOldDeficiencyRow({ deficiency, index, step, inspectionActive }: {
-        deficiency: { description: string };
-        index: number;
-        step: number;
-        inspectionActive?: boolean;
-    }) {
-        return (
-            <div data-testid={`old-deficiency-${index}`}>
-                {deficiency.description} (Step: {step}, inspectionActive: {String(inspectionActive)})
-            </div>
-        );
-    },
+vi.mock('./DeficiencyStandaloneRow', () => ({
+    DeficiencyStandaloneRow: vi.fn(({ deficiency }: { deficiency: { id: string; description: string } }) => (
+        <div data-testid={`standalone-row-${deficiency.id}`}>{deficiency.description}</div>
+    )),
+}));
+
+vi.mock('./DeficiencyReadDisplay', () => ({
+    DeficiencyReadDisplay: vi.fn(({ deficiency }: { deficiency: { id: string; description: string } }) => (
+        <div data-testid={`read-display-${deficiency.id}`}>{deficiency.description}</div>
+    )),
 }));
 
 describe('CadetInspectionCard', () => {
@@ -187,8 +189,8 @@ describe('CadetInspectionCard', () => {
             expect(screen.getByTestId('mock-header')).toHaveTextContent('Step: 0');
 
             // Shows deficiencies
-            expect(screen.getByTestId('old-deficiency-0')).toHaveTextContent('Missing button (Step: 0, inspectionActive: false)');
-            expect(screen.getByTestId('old-deficiency-1')).toHaveTextContent('Dirty boots (Step: 0, inspectionActive: false)');
+            expect(screen.getByTestId(`standalone-row-${mockUnresolvedDeficiencies[0].id}`)).toHaveTextContent('Missing button');
+            expect(screen.getByTestId(`standalone-row-${mockUnresolvedDeficiencies[1].id}`)).toHaveTextContent('Dirty boots');
 
             // Verifies hook calls with correct cadetId
             expect(mockUseUnresolvedDeficienciesByCadet).toHaveBeenCalledWith(mockCadetId);
@@ -234,8 +236,8 @@ describe('CadetInspectionCard', () => {
             render(<CadetInspectionCard />);
 
             expect(screen.getByTestId('mock-header')).toHaveTextContent('Step: 0');
-            expect(screen.getByTestId('old-deficiency-0')).toBeInTheDocument();
-            expect(screen.getByTestId('old-deficiency-1')).toBeInTheDocument();
+            expect(screen.getByTestId(`standalone-row-${mockUnresolvedDeficiencies[0].id}`)).toBeInTheDocument();
+            expect(screen.getByTestId(`standalone-row-${mockUnresolvedDeficiencies[1].id}`)).toBeInTheDocument();
         });
         // start inspection goes to step 1 if old deficiencies exist
         it("should go to step 1 when starting inspection if old deficiencies exist", async () => {
@@ -379,8 +381,8 @@ describe('CadetInspectionCard', () => {
             expect(screen.getByTestId('mock-header')).toBeInTheDocument();
 
             // Verify deficiencies are rendered
-            expect(screen.getByTestId('old-deficiency-0')).toBeInTheDocument();
-            expect(screen.getByTestId('old-deficiency-1')).toBeInTheDocument();
+            expect(screen.getByTestId(`standalone-row-${mockUnresolvedDeficiencies[0].id}`)).toBeInTheDocument();
+            expect(screen.getByTestId(`standalone-row-${mockUnresolvedDeficiencies[1].id}`)).toBeInTheDocument();
         });
 
         it('should handle different cadetId values from useParams correctly', () => {
@@ -535,16 +537,18 @@ describe('CadetInspectionCard', () => {
                 expect(screen.queryByTestId('btn_save_new_deficiency')).not.toBeInTheDocument();
         });
 
-        it('should pass inspectionActive=false to OldDeficiencyRow when no inspection active', () => {
+        it('should render DeficiencyStandaloneRow when no inspection active', () => {
             mockUseInspectionState.mockReturnValue({ inspectionState: { active: false, state: 'none' } });
             render(<CadetInspectionCard />);
-            expect(screen.getByTestId('old-deficiency-0')).toHaveTextContent('inspectionActive: false');
+            expect(screen.getByTestId(`standalone-row-${mockUnresolvedDeficiencies[0].id}`)).toBeInTheDocument();
+            expect(screen.queryByTestId(`read-display-${mockUnresolvedDeficiencies[0].id}`)).not.toBeInTheDocument();
         });
 
-        it('should pass inspectionActive=true to OldDeficiencyRow when inspection is active', () => {
+        it('should render read-only display (locked) when inspection is active', () => {
             mockUseInspectionState.mockReturnValue({ inspectionState: { active: true, state: 'active', id: 'insp-1', date: '2026-01-01', inspectedCadets: 0, activeCadets: 10, deregistrations: 0 } });
             render(<CadetInspectionCard />);
-            expect(screen.getByTestId('old-deficiency-0')).toHaveTextContent('inspectionActive: true');
+            expect(screen.getByTestId(`read-display-${mockUnresolvedDeficiencies[0].id}`)).toBeInTheDocument();
+            expect(screen.queryByTestId(`standalone-row-${mockUnresolvedDeficiencies[0].id}`)).not.toBeInTheDocument();
         });
     });
 });
