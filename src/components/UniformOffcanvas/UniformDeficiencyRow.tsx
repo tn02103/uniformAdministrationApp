@@ -3,13 +3,13 @@ import { useDeficienciesByUniformId, useDeficiencyTypes } from "@/dataFetcher/de
 import { swrKeys } from "@/dataFetcher/swrKeys";
 import { useI18n } from "@/lib/locales/client";
 import { Deficiency } from "@/types/deficiencyTypes";
-import { CreateDeficiencyInput, createDeficiencySchema, UpdateDeficiencyInput, updateDeficiencySchema } from "@/zod/deficiency";
+import { CreateDeficiencyInput, createDeficiencySchema } from "@/zod/deficiency";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatDate } from "date-fns";
 import { useState } from "react";
-import { Badge, Button, Card, Col, Dropdown, Form, FormControl, FormSelect, Row } from "react-bootstrap";
+import { Badge, Button, Card, Col, Dropdown, Form, Row } from "react-bootstrap";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { mutate } from "swr";
@@ -135,7 +135,7 @@ const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: Defici
         >
             <Card.Body className="position-relative">
                 <FormProvider {...form}>
-                    <form onSubmit={form.handleSubmit(handleSave, console.debug)} noValidate autoComplete="off" className="mb-4">
+                    <form onSubmit={form.handleSubmit(handleSave)} noValidate autoComplete="off" className="mb-4">
                         {editable ?
                             <>
                                 <Card.Title className="fs-6 fw-bold">

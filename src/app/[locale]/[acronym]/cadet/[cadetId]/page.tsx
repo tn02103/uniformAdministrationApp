@@ -8,7 +8,7 @@ import { getScopedI18n } from "@/lib/locales/config";
 import { notFound } from "next/navigation";
 import { Col, Row } from "react-bootstrap";
 import CadetDataTable from "./_cadetDataTable/table";
-import { CadetInspectionCard } from "./_inspctionTable/CadetInspectionCard";
+import { CadetInspectionCard } from "./_inspectionTable/CadetInspectionCard";
 import { CadetMaterialTable } from "./_materialTable/CadetMaterialTable";
 import { CadetUniformTable } from "./_uniformTable/CadetUniformTable";
 import CadetDropDown from "./cadetDropDown";

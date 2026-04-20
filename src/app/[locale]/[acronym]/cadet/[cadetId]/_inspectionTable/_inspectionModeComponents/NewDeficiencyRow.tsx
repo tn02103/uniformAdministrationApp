@@ -3,8 +3,8 @@ import { useI18n } from "@/lib/locales/client";
 import { CadetInspectionFormSchema } from "@/zod/deficiency";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "next/navigation";
-import { Col, Row } from "react-bootstrap";
-import { Control, FieldValues, useFormContext, useWatch } from "react-hook-form";
+import { Row } from "react-bootstrap";
+import { useWatch } from "react-hook-form";
 import { ParamType } from "../../page";
 import { DeficiencyFormFields } from "../_sharedComponents/DeficiencyFormFields";
 
