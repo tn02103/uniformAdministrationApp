@@ -154,9 +154,7 @@ describe('CadetInspectionCard', () => {
                 description: 'New deficiency',
                 comment: 'Test comment',
                 uniformId: '',
-                materialId: 'other',
-                otherMaterialId: '662b54d6-1dd1-4d1c-9800-4779de61542d',
-                otherMaterialGroupId: '8681745c-fd1a-4bee-8b66-63b79abafeef',
+                materialId: null,
                 dateCreated: '2024-01-15T00:00:00',
             },
         ],
@@ -514,17 +512,6 @@ describe('CadetInspectionCard', () => {
     describe('Standalone deficiency management (no active inspection)', () => {
         const user = userEvent.setup();
 
-        it('should show "New Deficiency" button in step 0 when no inspection is active', () => {
-            mockUseInspectionState.mockReturnValue({ inspectionState: { active: false, state: 'none' } });
-            render(<CadetInspectionCard />);
-            expect(screen.getByTestId('btn_new_deficiency')).toBeInTheDocument();
-        });
-
-        it('should NOT show "New Deficiency" button when inspection is active', () => {
-            mockUseInspectionState.mockReturnValue({ inspectionState: { active: true, state: 'active', id: 'insp-1', date: '2026-01-01', inspectedCadets: 0, activeCadets: 10, deregistrations: 0 } });
-            render(<CadetInspectionCard />);
-            expect(screen.queryByTestId('btn_new_deficiency')).not.toBeInTheDocument();
-        });
 
         it('should show create card when "New Deficiency" button is clicked', async () => {
             render(<CadetInspectionCard />);
@@ -545,7 +532,7 @@ describe('CadetInspectionCard', () => {
             expect(screen.getByTestId('btn_save_new_deficiency')).toBeInTheDocument();
 
             await user.click(screen.getByTestId('btn_cancel_new_deficiency'));
-            expect(screen.queryByTestId('btn_save_new_deficiency')).not.toBeInTheDocument();
+                expect(screen.queryByTestId('btn_save_new_deficiency')).not.toBeInTheDocument();
         });
 
         it('should pass inspectionActive=false to OldDeficiencyRow when no inspection active', () => {
@@ -558,28 +545,6 @@ describe('CadetInspectionCard', () => {
             mockUseInspectionState.mockReturnValue({ inspectionState: { active: true, state: 'active', id: 'insp-1', date: '2026-01-01', inspectedCadets: 0, activeCadets: 10, deregistrations: 0 } });
             render(<CadetInspectionCard />);
             expect(screen.getByTestId('old-deficiency-0')).toHaveTextContent('inspectionActive: true');
-        });
-
-        it('button visibility in step 0: button is enabled when no create card shown, disabled when create card shown', async () => {
-            render(<CadetInspectionCard />);
-
-            const btn = screen.getByTestId('btn_new_deficiency');
-            expect(btn).toBeInTheDocument();
-            expect(btn).not.toBeDisabled();
-
-            await user.click(btn);
-
-            expect(btn).toBeDisabled();
-        });
-
-        it('active inspection: New Deficiency button not visible and deficiency rows pass inspectionActive=true', () => {
-            mockUseInspectionState.mockReturnValue({ inspectionState: { active: true, state: 'active', id: 'insp-1', date: '2026-01-01', inspectedCadets: 0, activeCadets: 10, deregistrations: 0 } });
-            render(<CadetInspectionCard />);
-
-            expect(screen.queryByTestId('btn_new_deficiency')).not.toBeInTheDocument();
-            // Deficiency rows receive inspectionActive=true so edit/resolve buttons will not be shown
-            expect(screen.getByTestId('old-deficiency-0')).toHaveTextContent('inspectionActive: true');
-            expect(screen.getByTestId('old-deficiency-1')).toHaveTextContent('inspectionActive: true');
         });
     });
 });

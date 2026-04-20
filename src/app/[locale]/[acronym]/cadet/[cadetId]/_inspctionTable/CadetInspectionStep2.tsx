@@ -16,8 +16,6 @@ const initDeficiency: NewCadetDeficiencyFormSchema = {
     comment: "",
     uniformId: null,
     materialId: null,
-    otherMaterialGroupId: null,
-    otherMaterialId: null,
 }
 
 export function CadetInspectionStep2({

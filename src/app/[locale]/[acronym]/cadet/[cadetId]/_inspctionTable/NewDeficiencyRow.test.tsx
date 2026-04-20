@@ -2,13 +2,12 @@ import { MaterialGroup } from '@/types/globalMaterialTypes';
 import { deficiencytype_dependent, deficiencytype_relation } from '@/prisma/enums';
 import { CadetInspectionFormSchema } from '@/zod/deficiency';
 import { getAllByRole, render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { NewDeficiencyRow } from './NewDeficiencyRow';
 import { useDeficiencyTypes } from '@/dataFetcher/deficiency';
-import { useCadetUniformDescriptList, useCadetMaterialDescriptionList } from '@/dataFetcher/cadet';
-import { useMaterialConfiguration, useMaterialTypeList } from '@/dataFetcher/material';
+import { useCadetUniformDescriptList } from '@/dataFetcher/cadet';
+import { useMaterialConfiguration } from '@/dataFetcher/material';
 import { useParams } from 'next/navigation';
 
 
@@ -19,12 +18,10 @@ vi.mock('@/dataFetcher/deficiency', () => ({
 
 vi.mock('@/dataFetcher/cadet', () => ({
     useCadetUniformDescriptList: vi.fn(),
-    useCadetMaterialDescriptionList: vi.fn()
 }));
 
 vi.mock('@/dataFetcher/material', () => ({
     useMaterialConfiguration: vi.fn(),
-    useMaterialTypeList: vi.fn()
 }));
 
 const mockDeficiencyTypeList = [
@@ -37,10 +34,7 @@ const mockUniformLabels = [
     { id: 'uniform1', description: 'Jacket-1234' },
     { id: 'uniform2', description: 'Trousers-1234' }
 ];
-const mockMaterialList = [
-    { id: 'material1', description: 'Boots' },
-    { id: 'material2', description: 'Belt' }
-];
+
 const mockMaterialConfiguration = [
     {
         id: 'group1',
@@ -85,8 +79,6 @@ const TestWrapper: React.FC<TestWrapperProps> = ({ children, defaultValues = {} 
                     comment: '',
                     uniformId: null,
                     materialId: null,
-                    otherMaterialGroupId: null,
-                    otherMaterialId: null,
                     dateCreated: null
                 }
             ],
@@ -114,14 +106,7 @@ describe('NewDeficiencyRow', () => {
         vi.mocked(useParams).mockReturnValue({ cadetId: 'test-cadet-id' });
         vi.mocked(useDeficiencyTypes).mockReturnValue({ deficiencyTypeList: mockDeficiencyTypeList });
         vi.mocked(useCadetUniformDescriptList).mockReturnValue({ uniformLabels: mockUniformLabels });
-        vi.mocked(useCadetMaterialDescriptionList).mockReturnValue({ materialList: mockMaterialList });
         vi.mocked(useMaterialConfiguration).mockReturnValue({ config: mockMaterialConfiguration });
-
-        // Mock useMaterialTypeList to return different data based on groupId
-        vi.mocked(useMaterialTypeList).mockImplementation((groupId?: string) => {
-            const group = mockMaterialConfiguration.find((g) => g.id === groupId);
-            return group ? group.typeList : [];
-        });
     });
 
     describe('Basic Rendering', () => {
@@ -163,8 +148,6 @@ describe('NewDeficiencyRow', () => {
                         comment: '',
                         uniformId: null,
                         materialId: null,
-                        otherMaterialGroupId: null,
-                        otherMaterialId: null,
                         dateCreated: null
                     }
                 ]
@@ -196,8 +179,6 @@ describe('NewDeficiencyRow', () => {
                         comment: '',
                         uniformId: null,
                         materialId: null,
-                        otherMaterialGroupId: null,
-                        otherMaterialId: null,
                         dateCreated: null
                     }
                 ]
@@ -229,8 +210,6 @@ describe('NewDeficiencyRow', () => {
                         comment: '',
                         uniformId: null,
                         materialId: null,
-                        otherMaterialGroupId: null,
-                        otherMaterialId: null,
                         dateCreated: null
                     }
                 ]
@@ -259,8 +238,6 @@ describe('NewDeficiencyRow', () => {
                         comment: '',
                         uniformId: null,
                         materialId: null,
-                        otherMaterialGroupId: null,
-                        otherMaterialId: null,
                         dateCreated: null
                     }
                 ]
@@ -280,36 +257,6 @@ describe('NewDeficiencyRow', () => {
             expect(screen.queryByLabelText(/common.uniform.item/i)).not.toBeInTheDocument();
         });
 
-        it('should show additional material fields when "other" is selected', () => {
-            const formData = {
-                newDeficiencyList: [
-                    {
-                        typeId: 'type3', // Material Issue
-                        description: '',
-                        comment: '',
-                        uniformId: null,
-                        materialId: 'other', // "other" selected
-                        otherMaterialGroupId: null,
-                        otherMaterialId: null,
-                        dateCreated: "2023-01-01"
-                    }
-                ]
-            };
-
-            render(
-                <TestWrapper defaultValues={formData}>
-                    <NewDeficiencyRow {...defaultProps} />
-                </TestWrapper>
-            );
-
-            // Material field should be visible
-            expect(screen.getByLabelText(/common.material.material/i)).toBeInTheDocument();
-
-            // Additional material fields should be visible when "others" is selected
-            expect(screen.getByLabelText(/common.material.group_one/i)).toBeInTheDocument();
-            expect(screen.getByLabelText(/common.material.type_one/i)).toBeInTheDocument();
-        });
-
         it('should hide additional material fields when material is not "others"', () => {
             const formData = {
                 newDeficiencyList: [
@@ -318,9 +265,7 @@ describe('NewDeficiencyRow', () => {
                         description: '',
                         comment: '',
                         uniformId: null,
-                        materialId: 'material1', // Regular material, not "others"
-                        otherMaterialGroupId: null,
-                        otherMaterialId: null,
+                        materialId: null,
                         dateCreated: null
                     }
                 ]
@@ -349,8 +294,6 @@ describe('NewDeficiencyRow', () => {
                         comment: '',
                         uniformId: null,
                         materialId: null,
-                        otherMaterialGroupId: null,
-                        otherMaterialId: null,
                         dateCreated: '2024-01-15T10:30:00Z' // dateCreated present
                     }
                 ]
@@ -399,8 +342,6 @@ describe('NewDeficiencyRow', () => {
                         comment: '',
                         uniformId: null,
                         materialId: null,
-                        otherMaterialGroupId: null,
-                        otherMaterialId: null,
                         dateCreated: null
                     }
                 ]
@@ -427,13 +368,11 @@ describe('NewDeficiencyRow', () => {
             const formData = {
                 newDeficiencyList: [
                     {
-                        typeId: 'type3', // Material Issue
+                        typeId: 'type3', // Material Issue, relation: material
                         description: '',
                         comment: '',
                         uniformId: null,
                         materialId: null,
-                        otherMaterialGroupId: null,
-                        otherMaterialId: null,
                         dateCreated: null
                     }
                 ]
@@ -445,207 +384,12 @@ describe('NewDeficiencyRow', () => {
                 </TestWrapper>
             );
 
-            const materialSelect = screen.getByRole('combobox', { name: /common.material.material/i });
-            expect(materialSelect).toBeInTheDocument();
+            // Material field is now an autocomplete input (not a select)
+            const materialInput = screen.getByLabelText(/common.material.material/i);
+            expect(materialInput).toBeInTheDocument();
 
-            // Material select should contain options from mockMaterialList plus "other" option
-            const options = getAllByRole(materialSelect, 'option');
-            expect(options).toHaveLength(4); // 2 from mockMaterialList + 1 "other" + 1 "please select" option
-            expect(options[0]).toHaveTextContent('common.error.pleaseSelect');
-            expect(options[1]).toHaveTextContent('Boots');
-            expect(options[2]).toHaveTextContent('Belt');
-            expect(options[3]).toHaveTextContent(/label.otherMaterials/i);
-        });
-
-        it('should have material select show "other" when materialId is set to "other"', () => {
-            const formData = {
-                newDeficiencyList: [
-                    {
-                        typeId: 'type3', // Material Issue
-                        description: '',
-                        comment: '',
-                        uniformId: null,
-                        materialId: 'other', // "other" selected
-                        otherMaterialGroupId: null,
-                        otherMaterialId: null,
-                        dateCreated: "2024-01-01"
-                    }
-                ]
-            } satisfies Partial<CadetInspectionFormSchema>;
-
-            render(
-                <TestWrapper defaultValues={formData}>
-                    <NewDeficiencyRow {...defaultProps} />
-                </TestWrapper>
-            );
-
-            // Check if material select shows "other" as selected
-            const materialSelect = screen.getByRole('combobox', { name: /common.material.material/i });
-            expect(materialSelect).toBeInTheDocument();
-            expect(materialSelect).toHaveValue('other');
-
-            // Check if material group select appears (it should based on component logic)
-            const materialGroupSelect = screen.getByRole('combobox', { name: /common.material.group_one/i });
-            const groupOptions = getAllByRole(materialGroupSelect, 'option');
-            expect(groupOptions).toHaveLength(3);
-            expect(groupOptions[0]).toHaveTextContent('common.error.pleaseSelect');
-            expect(groupOptions[1]).toHaveTextContent(mockMaterialConfiguration[0].description); // Group 1
-            expect(groupOptions[2]).toHaveTextContent(mockMaterialConfiguration[1].description); // Group 2
-
-            expect(materialGroupSelect).toHaveValue("");
-        });
-
-        it('should display correct options in material type select based on selected group', async () => {
-            // Create a custom test wrapper that properly sets both materialId and otherMaterialGroupId
-            const CustomTestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-                const methods = useForm<CadetInspectionFormSchema>({
-                    defaultValues: {
-                        cadetId: 'test-cadet-id',
-                        uniformComplete: false,
-                        oldDeficiencyList: [],
-                        newDeficiencyList: [
-                            {
-                                typeId: 'type3', // Material Issue
-                                description: '',
-                                comment: '',
-                                uniformId: null,
-                                materialId: 'other',
-                                otherMaterialGroupId: mockMaterialConfiguration[0].id, // Group selected
-                                otherMaterialId: null,
-                                dateCreated: "2023-01-01"
-                            }
-                        ],
-                    },
-                });
-
-                return (
-                    <FormProvider {...methods}>
-                        {children}
-                    </FormProvider>
-                );
-            };
-
-            render(
-                <CustomTestWrapper>
-                    <NewDeficiencyRow {...defaultProps} />
-                </CustomTestWrapper>
-            );
-
-            // Wait for the component to render with the material type select
-            const materialTypeSelect = await screen.findByRole('combobox', { name: /common.material.type_one/i });
-            expect(materialTypeSelect).toBeInTheDocument();
-
-            // Material type select should contain options from mockMaterialTypeListGroup1
-            const options = getAllByRole(materialTypeSelect, 'option');
-            expect(options).toHaveLength(3); // 2 from mockMaterialTypeListGroup1 + 1 "please select" option
-            expect(options[0]).toHaveTextContent('common.error.pleaseSelect');
-            expect(options[1]).toHaveTextContent(mockMaterialConfiguration[0].typeList[0].typename); // Type A Group1
-            expect(options[2]).toHaveTextContent(mockMaterialConfiguration[0].typeList[1].typename); // Type B Group1
-        });
-
-        it('should update material type options when material group selection changes', async () => {
-            // Test with group1 first
-            const TestWrapperGroup1: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-                const methods = useForm<CadetInspectionFormSchema>({
-                    defaultValues: {
-                        cadetId: 'test-cadet-id',
-                        uniformComplete: false,
-                        oldDeficiencyList: [],
-                        newDeficiencyList: [
-                            {
-                                typeId: 'type3',
-                                description: '',
-                                comment: '',
-                                uniformId: null,
-                                materialId: 'other',
-                                otherMaterialGroupId: null,
-                                otherMaterialId: null,
-                                dateCreated: "2023-01-01"
-                            }
-                        ],
-                    },
-                });
-
-                return (
-                    <FormProvider {...methods}>
-                        {children}
-                    </FormProvider>
-                );
-            };
-
-            const user = userEvent.setup();
-            render(
-                <TestWrapperGroup1>
-                    <NewDeficiencyRow {...defaultProps} />
-                </TestWrapperGroup1>
-            );
-
-            // Verify initial state with group1 options
-            const materialGroupSelect = await screen.findByRole('combobox', { name: /common.material.group_one/i });
-            const materialTypeSelect = await screen.findByRole('combobox', { name: /common.material.type_one/i });
-            expect(materialGroupSelect).toBeInTheDocument();
-            expect(materialTypeSelect).toBeInTheDocument();
-
-            expect(materialGroupSelect).toHaveValue("");
-            expect(materialTypeSelect).toHaveValue("");
-
-            const matOption1 = getAllByRole(materialTypeSelect, 'option');
-            expect(matOption1).toHaveLength(1);
-            expect(matOption1[0]).toHaveTextContent('common.error.pleaseSelect');
-
-            // select Group1 and verify type options
-            await user.selectOptions(materialGroupSelect, mockMaterialConfiguration[0].id);
-            const matOptions2 = getAllByRole(materialTypeSelect, 'option');
-            expect(matOptions2).toHaveLength(3); // 2 from group1 + 1 "please select"
-            expect(matOptions2[0]).toHaveTextContent('common.error.pleaseSelect');
-            expect(matOptions2[1]).toHaveTextContent(mockMaterialConfiguration[0].typeList[0].typename); // Type A Group1
-            expect(matOptions2[2]).toHaveTextContent(mockMaterialConfiguration[0].typeList[1].typename); // Type B Group1
-
-            // select type 2
-            await user.selectOptions(materialTypeSelect, mockMaterialConfiguration[0].typeList[1].id);
-            expect(materialTypeSelect).toHaveValue(mockMaterialConfiguration[0].typeList[1].id);
-
-            // change Group to Group2
-            await user.selectOptions(materialGroupSelect, mockMaterialConfiguration[1].id);
-            expect(materialGroupSelect).toHaveValue(mockMaterialConfiguration[1].id);
-
-            // verify type is reset
-            expect(materialTypeSelect).toHaveValue("");
-
-            // verify type options are changed
-            const matOption3 = getAllByRole(materialTypeSelect, 'option');
-            expect(matOption3).toHaveLength(3);
-            expect(matOption3[0]).toHaveTextContent('common.error.pleaseSelect');
-            expect(matOption3[1]).toHaveTextContent(mockMaterialConfiguration[1].typeList[0].typename); // Type A Group2
-            expect(matOption3[2]).toHaveTextContent(mockMaterialConfiguration[1].typeList[1].typename); // Type B Group2
-
-        });
-
-        it('should disable material type select when no material group is selected', () => {
-            const formData = {
-                newDeficiencyList: [
-                    {
-                        typeId: 'type3',
-                        description: '',
-                        comment: '',
-                        uniformId: null,
-                        materialId: 'other',
-                        otherMaterialGroupId: null, // No group selected
-                        otherMaterialId: null,
-                        dateCreated: "2023-01-01"
-                    }
-                ]
-            };
-
-            render(
-                <TestWrapper defaultValues={formData}>
-                    <NewDeficiencyRow {...defaultProps} />
-                </TestWrapper>
-            );
-
-            // Material type select should not be present when no group is selected
-            const materialTypeSelect = screen.queryByRole('combobox', { name: /common.material.type_one/i });
-            expect(materialTypeSelect).toBeDisabled();
+            // useMaterialConfiguration should have been called to supply options
+            expect(vi.mocked(useMaterialConfiguration)).toHaveBeenCalled();
         });
     });
 });

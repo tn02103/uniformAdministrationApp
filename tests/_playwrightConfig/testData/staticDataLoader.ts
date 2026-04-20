@@ -201,6 +201,7 @@ class StaticDataCleanup {
             this.deleteUniformIssued(),
             this.deleteMaterialIssued(),
             this.deleteCadetInspection(),
+            this.deleteDeficiency(),
         ]);
         await this.deleteCadet();
 
@@ -208,6 +209,7 @@ class StaticDataCleanup {
         await this.loader.uniformIssued();
         await this.loader.materialIssued();
         await this.loader.cadetInspections();
+        await this.loader.deficiencies();
     }
     async uniformIssued() {
         await this.deleteUniformIssued();

@@ -6,7 +6,7 @@ import userEvent, { UserEvent } from "@testing-library/user-event";
 import { UniformDeficiencyRow } from "./UniformDeficiencyRow";
 import { mockDeficiencyList, mockDeficiencyTypeList, mockUniform } from "./UniformOffcanvasJestHelper";
 import { useDeficienciesByUniformId } from "@/dataFetcher/deficiency";
-import { createDeficiency, updateUniformDeficiency, resolveDeficiency } from "@/dal/inspection/deficiency";
+import { createDeficiency, updateDeficiency, resolveDeficiency } from "@/dal/inspection/deficiency";
 import { mutate } from "swr";
 import { toast } from "react-toastify";
 
@@ -199,7 +199,7 @@ describe('UniformDeficiencyRow', () => {
             expect(createButton).toBeEnabled();
             expect(cancelButton).toBeEnabled();
             expect(commentInput).toHaveValue('');
-            expect(typeSelect).toHaveValue(mockDeficiencyTypeList[0].id);
+            expect(typeSelect).toHaveValue('');
 
             expect(typeSelect).toHaveTextContent(mockDeficiencyTypeList[0].name);
             expect(getByRole(typeSelect, 'option', { name: mockDeficiencyTypeList[0].name })).toBeInTheDocument();
@@ -299,18 +299,14 @@ describe('UniformDeficiencyRow', () => {
             const saveButton = getByRole(firstCard, 'button', { name: /save/i });
             const cancelButton = getByRole(firstCard, 'button', { name: /cancel/i });
             const commentInput = getByRole(firstCard, 'textbox', { name: /comment/i });
-            const typeSelect = getByRole(firstCard, 'combobox', { name: /deficiencyType/i });
 
             // check that the card is in edit mode
             expect(saveButton).toBeEnabled();
             expect(cancelButton).toBeEnabled();
             expect(commentInput).toHaveValue(mockDeficiencyList[0].comment);
-            expect(typeSelect).toHaveValue(mockDeficiencyList[0].typeId);
 
-            // validate typeSelect options
-            expect(typeSelect).toHaveTextContent(mockDeficiencyTypeList[0].name);
-            expect(getByRole(typeSelect, 'option', { name: mockDeficiencyTypeList[0].name })).toBeInTheDocument();
-            expect(getByRole(typeSelect, 'option', { name: mockDeficiencyTypeList[1].name })).toBeInTheDocument();
+            // No typeId select in edit mode
+            expect(queryByRole(firstCard, 'combobox', { name: /deficiencyType/i })).not.toBeInTheDocument();
         });
 
         it('resets data on cancel', async () => {
@@ -327,29 +323,24 @@ describe('UniformDeficiencyRow', () => {
 
             // change form data
             const commentInput = getByRole(firstCard, 'textbox', { name: /comment/i });
-            const typeSelect = getByRole(firstCard, 'combobox', { name: /deficiencyType/i });
             await user.clear(commentInput);
             await user.type(commentInput, 'Something creative');
-            await user.selectOptions(typeSelect, mockDeficiencyTypeList[1].id);
 
             // cancel the edit
             const cancelButton = getByRole(firstCard, 'button', { name: /cancel/i });
             await user.click(cancelButton);
 
             // check that the card is not in edit mode
-            expect(typeSelect).not.toBeInTheDocument();
             expect(commentInput).not.toBeInTheDocument();
 
             // check that the data is reset
             expect(getByText(firstCard, mockDeficiencyList[0].comment)).toBeInTheDocument();
             expect(getByText(firstCard, mockDeficiencyList[0].typeName)).toBeInTheDocument();
             expect(queryByText(firstCard, 'Something creative')).toBeNull();
-            expect(queryByText(firstCard, mockDeficiencyTypeList[1].name)).toBeNull();
 
             // check that formValues are reset when editing again
             await setEditable(firstCard, user);
             expect(getByRole(firstCard, 'textbox', { name: /comment/i })).toHaveValue(mockDeficiencyList[0].comment);
-            expect(getByRole(firstCard, 'combobox', { name: /deficiencyType/i })).toHaveValue(mockDeficiencyList[0].typeId);
         });
         it('should call updateDeficiency on save', async () => {
             const user = userEvent.setup();
@@ -365,22 +356,19 @@ describe('UniformDeficiencyRow', () => {
 
             // change form data
             const commentInput = getByRole(firstCard, 'textbox', { name: /comment/i });
-            const typeSelect = getByRole(firstCard, 'combobox', { name: /deficiencyType/i });
             await user.clear(commentInput);
             await user.type(commentInput, 'Something creative');
-            await user.selectOptions(typeSelect, mockDeficiencyTypeList[1].id);
 
             // save the edit
             const saveButton = getByRole(firstCard, 'button', { name: /save/i });
             await user.click(saveButton);
 
             // validate function calls
-            expect(updateUniformDeficiency).toHaveBeenCalledTimes(1);
-            expect(updateUniformDeficiency).toHaveBeenCalledWith({
+            expect(updateDeficiency).toHaveBeenCalledTimes(1);
+            expect(updateDeficiency).toHaveBeenCalledWith({
                 id: mockDeficiencyList[0].id,
                 data: {
                     comment: 'Something creative',
-                    typeId: mockDeficiencyTypeList[1].id
                 }
             });
             expect(mutate).toHaveBeenCalledTimes(1);
@@ -390,11 +378,10 @@ describe('UniformDeficiencyRow', () => {
 
             // check that the card is not in edit mode
             expect(commentInput).not.toBeInTheDocument();
-            expect(typeSelect).not.toBeInTheDocument();
         });
         it('should catch exceptions on update', async () => {
             const user = userEvent.setup();
-            vi.mocked(updateUniformDeficiency).mockRejectedValueOnce(new Error('Test error'));
+            vi.mocked(updateDeficiency).mockRejectedValueOnce(new Error('Test error'));
 
             render(
                 <UniformDeficiencyRow
@@ -411,13 +398,12 @@ describe('UniformDeficiencyRow', () => {
             await user.click(saveButton);
 
             // validate function calls
-            expect(updateUniformDeficiency).toHaveBeenCalledTimes(1);
+            expect(updateDeficiency).toHaveBeenCalledTimes(1);
             expect(mutate).toHaveBeenCalledTimes(0);
             expect(toast.error).toHaveBeenCalledTimes(1);
 
             // check that the card is still in edit mode
             expect(getByRole(firstCard, 'textbox', { name: /comment/i })).toBeInTheDocument();
-            expect(getByRole(firstCard, 'combobox', { name: /deficiencyType/i })).toBeInTheDocument();
             expect(getByRole(firstCard, 'button', { name: /save/i })).toBeInTheDocument();
         });
     });

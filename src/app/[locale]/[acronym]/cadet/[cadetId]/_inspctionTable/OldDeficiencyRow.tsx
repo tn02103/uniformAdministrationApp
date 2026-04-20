@@ -1,28 +1,34 @@
-import { TextareaFormField } from "@/components/fields/TextareaFormField";
-import { InputFormField } from "@/components/fields/InputFormField";
-import { ToggleFormField } from "@/components/fields/ToggleFormField";
-import { Form } from "@/components/fields/Form";
 import { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
+import { Form } from "@/components/fields/Form";
+import { InputFormField } from "@/components/fields/InputFormField";
+import { TextareaFormField } from "@/components/fields/TextareaFormField";
+import { ToggleFormField } from "@/components/fields/ToggleFormField";
 import { resolveDeficiency, updateDeficiency } from "@/dal/inspection/deficiency";
 import { swrKeys } from "@/dataFetcher/swrKeys";
 import dayjs from "@/lib/dayjs";
 import { useScopedI18n } from "@/lib/locales/client";
 import { CadetDeficiency, Deficiency } from "@/types/deficiencyTypes";
-import { updateDeficiencySchema, UpdateDeficiencyInput, CadetInspectionFormSchema } from "@/zod/deficiency";
+import { CadetInspectionFormSchema, UpdateDeficiencyInput, updateDeficiencySchema } from "@/zod/deficiency";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { Col, Row } from "react-bootstrap";
+import { useWatch } from "react-hook-form";
 import { toast } from "react-toastify";
 import { mutate } from "swr";
 
 /** Step-1 checkbox — must be rendered inside a FormProvider for the inspection form. */
 function ResolvedCheckbox({ index }: { index: number }) {
     const tDef = useScopedI18n('common.deficiency');
+    const resolved = useWatch({ name: `oldDeficiencyList.${index}.resolved` });
+    const toggleText = resolved ? tDef('resolved.true') : tDef('resolved.false');
+
     return (
-        <Col xs={12} xl={12} className={"justify-content-center"}>
+        <Col xs={12} xl={12} className={`justify-content-center ${resolved ? "text-success" : "text-danger"}`}>
             <ToggleFormField<CadetInspectionFormSchema>
+
                 name={`oldDeficiencyList.${index}.resolved`}
-                label={tDef('resolved.true')}
+                label=""
+                toggleText={toggleText}
                 formName="cadetInspectionForm"
             />
         </Col>
@@ -80,7 +86,7 @@ export function OldDeficiencyRow({
 
     return (
         <Row
-            className={`p-1 m-0 border-bottom border-1 ${(step == 2) ? "py-1" : "py-3"}`}
+            className={`p-1 m-0 position-relative border-bottom border-1 ${(step == 2) ? "py-1" : "py-3"}`}
             key={`oldDefRow-${deficiency.id}`}
             data-testid={`div_olddef_${deficiency.id}`}
         >
@@ -137,9 +143,9 @@ export function OldDeficiencyRow({
                     </Row>
                 </Col>
             }
-            {(step === 0 && !inspectionActive) && (
-                <Col xs={12} className="pt-2">
-                    <div className="d-flex gap-2 mb-2 justify-content-end">
+            {!inspectionActive && (
+                <div className="position-absolute top-0 end-0 p-2 w-auto">
+                    <div className="d-flex flex-column mb-2 justify-content-end">
                         <TooltipActionButton
                             variantKey="edit"
                             testId={`btn_edit_${deficiency.id}`}
@@ -151,6 +157,10 @@ export function OldDeficiencyRow({
                             onClick={handleResolve}
                         />
                     </div>
+                </div>
+            )}
+            {(step === 0 && !inspectionActive) && (
+                <Col xs={12} className="pt-2">
                     {showEditForm && (
                         <Form<UpdateDeficiencyInput>
                             zodSchema={updateDeficiencySchema}
@@ -187,7 +197,7 @@ export function OldDeficiencyRow({
                                         variantKey="save"
                                         buttonType="submit"
                                         testId={`btn_save_edit_${deficiency.id}`}
-                                        onClick={() => {}}
+                                        onClick={() => { }}
                                     />
                                     <TooltipActionButton
                                         variantKey="cancel"

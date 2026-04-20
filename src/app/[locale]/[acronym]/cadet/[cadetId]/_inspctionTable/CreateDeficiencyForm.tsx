@@ -1,11 +1,12 @@
 "use client";
 
-import { Form } from "@/components/fields/Form";
 import { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
+import { Form } from "@/components/fields/Form";
 import { createDeficiency } from "@/dal/inspection/deficiency";
+import { useDeficiencyTypes } from "@/dataFetcher/deficiency";
 import { swrKeys } from "@/dataFetcher/swrKeys";
 import { useI18n } from "@/lib/locales/client";
-import { createDeficiencySchema, CreateDeficiencyInput } from "@/zod/deficiency";
+import { CreateDeficiencyInput, createDeficiencySchema } from "@/zod/deficiency";
 import { useParams } from "next/navigation";
 import { Row } from "react-bootstrap";
 import { toast } from "react-toastify";
@@ -27,6 +28,7 @@ export function CreateDeficiencyForm({
 }) {
     const t = useI18n();
     const { cadetId } = useParams<{ cadetId: string }>();
+    const { deficiencyTypeList } = useDeficiencyTypes();
 
     const handleSubmit = async (data: CreateDeficiencyInput) => {
         try {
@@ -39,9 +41,10 @@ export function CreateDeficiencyForm({
         }
     };
 
+
     return (
         <Form<CreateDeficiencyInput>
-            zodSchema={createDeficiencySchema}
+            zodSchema={createDeficiencySchema(deficiencyTypeList ?? [])}
             onSubmit={handleSubmit}
             defaultValues={{
                 typeId: "",
@@ -60,7 +63,7 @@ export function CreateDeficiencyForm({
                         variantKey="save"
                         buttonType="submit"
                         testId="btn_save_new_deficiency"
-                        onClick={() => {}}
+                        onClick={() => { }}
                     />
                     <TooltipActionButton
                         variantKey="cancel"

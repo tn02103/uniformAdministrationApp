@@ -15,7 +15,7 @@ const _reg = <T>(path: string, mock: T): T => {
 const _dalInspectionMock = vi.hoisted(() => ({
     createDeficiency: vi.fn(async () => "created successfully"),
     resolveDeficiency: vi.fn(async () => "resolved successfully"),
-    updateUniformDeficiency: vi.fn(async () => "updated successfully"),
+    updateDeficiency: vi.fn(async () => "updated successfully"),
 }));
 vi.mock('@/dal/inspection/deficiency', () => _dalInspectionMock);
 

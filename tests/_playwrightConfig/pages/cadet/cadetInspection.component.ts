@@ -28,10 +28,10 @@ export class CadetInspectionComponent {
         return this.div_ci.getByTestId(`div_olddef_${deficiencyId}`);
     }
     chk_olddef_resolved(deficiencyId: string) {
-        return this.div_oldDeficiency(deficiencyId).getByTestId("chk_resolved");
+        return this.div_oldDeficiency(deficiencyId).getByRole('switch');
     }
     lbl_olddef_resolved(deficiencyId: string) {
-        return this.chk_olddef_resolved(deficiencyId).locator('..').locator('label');
+        return this.div_oldDeficiency(deficiencyId).getByRole('switch').locator('..').locator('label');
     }
     div_olddef_description(deficiencyId: string) {
         return this.div_oldDeficiency(deficiencyId).getByTestId("div_description");

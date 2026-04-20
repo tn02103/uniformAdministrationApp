@@ -23,7 +23,6 @@ export function NewDeficiencyRow({
     remove: () => void;
 }) {
     const t = useI18n();
-    const { control } = useFormContext<CadetInspectionFormSchema>();
     const { cadetId }: ParamType = useParams();
 
     const dateCreated = useWatch<CadetInspectionFormSchema>({
@@ -32,31 +31,24 @@ export function NewDeficiencyRow({
     const isCreated = !!dateCreated;
 
     return (
-        <Row data-testid={`div_newDef_${index}`} className="p-2 m-0 border-top border-1 border-dark">
-            <DeficiencyFormFields
-                control={control as unknown as Control<FieldValues>}
-                namePrefix={`newDeficiencyList.${index}`}
-                cadetId={cadetId}
-                typeSelectDisabled={isCreated}
-            />
-            <Col xs={1} className="align-self-end p-0 pb-2 d-sm-none" align="right">
-                <TooltipIconButton
-                    icon={faTrash}
-                    variant="outline-danger"
-                    tooltipText={t("common.actions.delete")}
-                    onClick={remove}
-                    testId="btn_delete_mobile"
+        <div className="position-relative p-0">
+            <Row data-testid={`div_newDef_${index}`} className="p-2 m-0 border-top border-1 border-dark ">
+                <DeficiencyFormFields
+                    namePrefix={`newDeficiencyList.${index}`}
+                    cadetId={cadetId}
+                    typeSelectDisabled={isCreated}
                 />
-            </Col>
-            <Col xs={"1"} className="d-none d-sm-inline align-self-end p-0 pb-2 pe-3" align="right">
+            </Row>
+            <div className="position-absolute end-0 top-0 m-2">
                 <TooltipIconButton
                     icon={faTrash}
                     variant="outline-danger"
                     tooltipText={t("common.actions.delete")}
+                    iconClass="f"
                     onClick={remove}
                     testId="btn_delete"
                 />
-            </Col>
-        </Row>
+            </div>
+        </div>
     );
 }

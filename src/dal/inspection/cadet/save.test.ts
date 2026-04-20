@@ -131,8 +131,6 @@ const BASE_NEW_DEFICIENCY = {
     comment: "Test comment",
     uniformId: null,
     materialId: null,
-    otherMaterialId: null,
-    otherMaterialGroupId: null,
 };
 
 // Common mock database return values
@@ -514,12 +512,11 @@ describe("saveCadetInspection", () => {
 
         });
 
-        it("should handle 'other' materialId correctly", async () => {
+        it("should use materialId for material lookup", async () => {
             // Arrange
             const newDeficiency = {
                 ...BASE_NEW_DEFICIENCY,
-                materialId: "other",
-                otherMaterialId: "other-material-id",
+                materialId: "other-material-id",
             };
 
             const propsWithNewDeficiency = {
@@ -535,7 +532,6 @@ describe("saveCadetInspection", () => {
             await saveCadetInspection(propsWithNewDeficiency);
 
             // Assert
-            // Should use otherMaterialId for material lookup
             expect(prisma.material.findUniqueOrThrow).toHaveBeenCalledWith({
                 where: {
                     id: "other-material-id",
@@ -1029,8 +1025,6 @@ describe("saveCadetInspection", () => {
                 comment: "", // Empty comment
                 uniformId: null,
                 materialId: null,
-                otherMaterialId: null,
-                otherMaterialGroupId: null,
             };
 
             const propsWithMinimalDeficiency = {

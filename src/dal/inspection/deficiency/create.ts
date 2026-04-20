@@ -1,13 +1,19 @@
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
-import dayjs from "@/lib/dayjs";
 import { prisma } from "@/lib/db";
+import { IronSessionUser } from "@/lib/ironSession";
 import { createDeficiencySchema, CreateDeficiencyInput } from "@/zod/deficiency";
+import { __usecuredGetDeficiencyTypeList } from "./type/get";
+
+const getSchema = async ({ assosiation }: IronSessionUser) => {
+    const deficiencyTypeList = await __usecuredGetDeficiencyTypeList(assosiation);
+    return createDeficiencySchema(deficiencyTypeList);
+}
 
 export const createDeficiency = async (props: CreateDeficiencyInput) => genericSAValidator(
     AuthRole.inspector,
     props,
-    createDeficiencySchema,
+    getSchema,
     {
         deficiencytypeId: props.typeId,
         ...(props.uniformId ? { uniformId: props.uniformId } : {}),
@@ -31,7 +37,10 @@ export const createDeficiency = async (props: CreateDeficiencyInput) => genericS
             where: { id: uniformId, recdelete: null },
             include: { type: true },
         });
-        resolvedDescription = `${uniform?.type.name}-${uniform?.number}`;
+        if (!uniform) {
+            throw new Error('Uniform not found');
+        }
+        resolvedDescription = `${uniform.type.name}-${uniform.number}`;
     } else if (type.dependent === 'cadet') {
         if (!cadetId) {
             throw new Error("cadetId is required for cadet-dependent deficiency type");

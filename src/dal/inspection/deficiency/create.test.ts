@@ -14,40 +14,6 @@ describe('createDeficiency', () => {
         prismaMock.deficiency.create.mockResolvedValue(undefined as any);
     });
 
-    it('creates a deficiency for uniform-dependent type with auto-generated description', async () => {
-        prismaMock.deficiencyType.findFirst.mockResolvedValueOnce({
-            id: uniformTypeId,
-            dependent: 'uniform',
-        } as any);
-        prismaMock.uniform.findUnique.mockResolvedValueOnce({
-            id: uniformId,
-            type: { name: 'Typ1', id: 'typeId' },
-            number: '1184',
-        } as any);
-
-        const result = createDeficiency({
-            typeId: uniformTypeId,
-            comment: 'New comment',
-            uniformId,
-        });
-        await expect(result).resolves.toBeUndefined();
-
-        expect(prismaMock.deficiency.create).toHaveBeenCalledWith({
-            data: {
-                fk_deficiencyType: uniformTypeId,
-                comment: 'New comment',
-                description: 'Typ1-1184',
-                userCreated: 'testuser',
-                dateCreated: date,
-                userUpdated: 'testuser',
-                dateUpdated: date,
-                fk_inspection_created: null,
-                fk_uniform: uniformId,
-                fk_cadet: undefined,
-            },
-        });
-    });
-
     it('creates a deficiency for cadet-dependent type with provided description', async () => {
         prismaMock.deficiencyType.findFirst.mockResolvedValueOnce({
             id: uniformTypeId,
@@ -124,66 +90,101 @@ describe('createDeficiency', () => {
             .rejects.toThrow("cadetId is required for cadet-dependent deficiency type");
     });
 
-    it('creates deficiency with auto-generated description and fk_uniform for cadet+uniform-relation type', async () => {
-        const materialId = 'b1c2d3e4-f5a6-7890-bcde-f12345678901';
-        prismaMock.deficiencyType.findFirst.mockResolvedValueOnce({
-            id: uniformTypeId,
-            dependent: 'cadet',
-            relation: 'uniform',
-        } as any);
-        prismaMock.uniformIssued.findFirst.mockResolvedValueOnce({
-            fk_cadet: cadetId,
-            fk_uniform: uniformId,
-            uniform: {
+    describe('auto-generates description', () => {
+        it('creates a deficiency for uniform-dependent type with auto-generated description', async () => {
+            prismaMock.deficiencyType.findFirst.mockResolvedValueOnce({
+                id: uniformTypeId,
+                dependent: 'uniform',
+            } as any);
+            prismaMock.uniform.findUnique.mockResolvedValueOnce({
                 id: uniformId,
-                number: '42',
-                type: { name: 'Typ2', id: 'typeId' },
-            },
-        } as any);
+                type: { name: 'Typ1', id: 'typeId' },
+                number: '1184',
+            } as any);
 
-        const result = createDeficiency({
-            typeId: uniformTypeId,
-            comment: 'Uniform relation comment',
-            cadetId,
-            uniformId,
+            const result = createDeficiency({
+                typeId: uniformTypeId,
+                comment: 'New comment',
+                uniformId,
+            });
+            await expect(result).resolves.toBeUndefined();
+
+            expect(prismaMock.deficiency.create).toHaveBeenCalledWith({
+                data: {
+                    fk_deficiencyType: uniformTypeId,
+                    comment: 'New comment',
+                    description: 'Typ1-1184',
+                    userCreated: 'testuser',
+                    dateCreated: date,
+                    userUpdated: 'testuser',
+                    dateUpdated: date,
+                    fk_inspection_created: null,
+                    fk_uniform: uniformId,
+                    fk_cadet: undefined,
+                },
+            });
         });
-        await expect(result).resolves.toBeUndefined();
 
-        expect(prismaMock.deficiency.create).toHaveBeenCalledWith({
-            data: expect.objectContaining({
-                description: 'Typ2-42',
+        it('creates deficiency with auto-generated description and fk_uniform for cadet+uniform-relation type', async () => {
+            prismaMock.deficiencyType.findFirst.mockResolvedValueOnce({
+                id: uniformTypeId,
+                dependent: 'cadet',
+                relation: 'uniform',
+            } as any);
+            prismaMock.uniformIssued.findFirst.mockResolvedValueOnce({
+                fk_cadet: cadetId,
                 fk_uniform: uniformId,
-                fk_cadet: cadetId,
-            }),
+                uniform: {
+                    id: uniformId,
+                    number: '42',
+                    type: { name: 'Typ2', id: 'typeId' },
+                },
+            } as any);
+
+            const result = createDeficiency({
+                typeId: uniformTypeId,
+                comment: 'Uniform relation comment',
+                cadetId,
+                uniformId,
+            });
+            await expect(result).resolves.toBeUndefined();
+
+            expect(prismaMock.deficiency.create).toHaveBeenCalledWith({
+                data: expect.objectContaining({
+                    description: 'Typ2-42',
+                    fk_uniform: uniformId,
+                    fk_cadet: cadetId,
+                }),
+            });
         });
-    });
 
-    it('creates deficiency with auto-generated description and fk_material for cadet+material-relation type', async () => {
-        const materialId = 'b1c2d3e4-f5a6-7890-bcde-f12345678901';
-        prismaMock.deficiencyType.findFirst.mockResolvedValueOnce({
-            id: uniformTypeId,
-            dependent: 'cadet',
-            relation: 'material',
-        } as any);
-        prismaMock.material.findUnique.mockResolvedValueOnce({
-            id: materialId,
-            typename: 'Helm',
-        } as any);
+        it('creates deficiency with auto-generated description and fk_material for cadet+material-relation type', async () => {
+            const materialId = 'b1c2d3e4-f5a6-7890-bcde-f12345678901';
+            prismaMock.deficiencyType.findFirst.mockResolvedValueOnce({
+                id: uniformTypeId,
+                dependent: 'cadet',
+                relation: 'material',
+            } as any);
+            prismaMock.material.findUnique.mockResolvedValueOnce({
+                id: materialId,
+                typename: 'Helm',
+            } as any);
 
-        const result = createDeficiency({
-            typeId: uniformTypeId,
-            comment: 'Material relation comment',
-            cadetId,
-            materialId,
-        });
-        await expect(result).resolves.toBeUndefined();
+            const result = createDeficiency({
+                typeId: uniformTypeId,
+                comment: 'Material relation comment',
+                cadetId,
+                materialId,
+            });
+            await expect(result).resolves.toBeUndefined();
 
-        expect(prismaMock.deficiency.create).toHaveBeenCalledWith({
-            data: expect.objectContaining({
-                description: 'Helm',
-                fk_material: materialId,
-                fk_cadet: cadetId,
-            }),
+            expect(prismaMock.deficiency.create).toHaveBeenCalledWith({
+                data: expect.objectContaining({
+                    description: 'Helm',
+                    fk_material: materialId,
+                    fk_cadet: cadetId,
+                }),
+            });
         });
     });
 });

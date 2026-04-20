@@ -1,15 +1,16 @@
 "use client";
 
+import { Form } from "@/components/fields/Form";
 import { getCadetInspectionFormData, saveCadetInspection } from "@/dal/inspection";
+import { useDeficiencyTypes } from "@/dataFetcher/deficiency";
 import { useInspectionState, useUnresolvedDeficienciesByCadet } from "@/dataFetcher/inspection";
 import { swrKeys } from "@/dataFetcher/swrKeys";
 import { useI18n } from "@/lib/locales/client";
-import { cadetInspectionFormSchema, CadetInspectionFormSchema } from "@/zod/deficiency";
+import { CadetInspectionFormSchema, getCadetInspectionFormSchema } from "@/zod/deficiency";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { mutate } from "swr";
-import { Form } from "@/components/fields/Form";
 import CadetInspectionCardHeader from "./CadetInspectionCardHeader";
 import { CadetInspectionStep1 } from "./CadetInspectionStep1";
 import { CadetInspectionStep2 } from "./CadetInspectionStep2";
@@ -27,6 +28,7 @@ export const CadetInspectionCard = () => {
     const [inspectionData, setInspectionData] = useState<CadetInspectionFormSchema | null>(null);
 
     const { unresolvedDeficiencies } = useUnresolvedDeficienciesByCadet(cadetId);
+    const { deficiencyTypeList } = useDeficiencyTypes();
     const { inspectionState } = useInspectionState();
     const inspectionActive = !!inspectionState?.active;
 
@@ -45,8 +47,6 @@ export const CadetInspectionCard = () => {
         data.newDeficiencyList.forEach((def) => {
             if (def.uniformId === "") def.uniformId = null;
             if (def.materialId === "") def.materialId = null;
-            if (def.otherMaterialId === "") def.otherMaterialId = null;
-            if (def.otherMaterialGroupId === "") def.otherMaterialGroupId = null;
         });
 
         saveCadetInspection(data).then(() => {
@@ -92,7 +92,7 @@ export const CadetInspectionCard = () => {
             }
             {(step === 1 || step === 2) && (
                 <Form<CadetInspectionFormSchema>
-                    zodSchema={cadetInspectionFormSchema}
+                    zodSchema={getCadetInspectionFormSchema(deficiencyTypeList ?? [], [])}
                     onSubmit={handleSaveInspection}
                     defaultValues={inspectionData ?? undefined}
                 >

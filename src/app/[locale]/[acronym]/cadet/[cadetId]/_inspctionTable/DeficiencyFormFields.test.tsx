@@ -4,8 +4,8 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { deficiencytype_dependent, deficiencytype_relation } from '@/prisma/enums';
 import { DeficiencyFormFields } from './DeficiencyFormFields';
 import { useDeficiencyTypes } from '@/dataFetcher/deficiency';
-import { useCadetUniformDescriptList, useCadetMaterialDescriptionList } from '@/dataFetcher/cadet';
-import { useMaterialConfiguration, useMaterialTypeList } from '@/dataFetcher/material';
+import { useCadetUniformDescriptList } from '@/dataFetcher/cadet';
+import { useMaterialConfiguration } from '@/dataFetcher/material';
 import { MaterialGroup } from '@/types/globalMaterialTypes';
 import { useParams } from 'next/navigation';
 
@@ -15,12 +15,10 @@ vi.mock('@/dataFetcher/deficiency', () => ({
 
 vi.mock('@/dataFetcher/cadet', () => ({
     useCadetUniformDescriptList: vi.fn(),
-    useCadetMaterialDescriptionList: vi.fn(),
 }));
 
 vi.mock('@/dataFetcher/material', () => ({
     useMaterialConfiguration: vi.fn(),
-    useMaterialTypeList: vi.fn(),
 }));
 
 const mockDeficiencyTypeList = [
@@ -33,11 +31,6 @@ const mockDeficiencyTypeList = [
 const mockUniformLabels = [
     { id: 'uniform-1', description: 'Jacket-1234' },
     { id: 'uniform-2', description: 'Trousers-1234' },
-];
-
-const mockMaterialList = [
-    { id: 'mat-1', description: 'Boots' },
-    { id: 'mat-2', description: 'Belt' },
 ];
 
 const mockMaterialConfig = [
@@ -59,12 +52,7 @@ describe('DeficiencyFormFields', () => {
         vi.mocked(useParams).mockReturnValue({ cadetId });
         vi.mocked(useDeficiencyTypes).mockReturnValue({ deficiencyTypeList: mockDeficiencyTypeList });
         vi.mocked(useCadetUniformDescriptList).mockReturnValue({ uniformLabels: mockUniformLabels });
-        vi.mocked(useCadetMaterialDescriptionList).mockReturnValue({ materialList: mockMaterialList });
         vi.mocked(useMaterialConfiguration).mockReturnValue({ config: mockMaterialConfig });
-        vi.mocked(useMaterialTypeList).mockImplementation((groupId?: string) => {
-            const group = mockMaterialConfig.find((g) => g.id === groupId);
-            return group ? group.typeList : [];
-        });
     });
 
     const renderFields = (namePrefix = '', defaultValues = {}) => {
@@ -76,7 +64,6 @@ describe('DeficiencyFormFields', () => {
                 <FormProvider {...form}>
                     <div style={{ display: 'contents' }}>
                         <DeficiencyFormFields
-                            control={form.control as any}
                             namePrefix={namePrefix}
                             cadetId={cadetId}
                         />
@@ -108,7 +95,6 @@ describe('DeficiencyFormFields', () => {
                 return (
                     <FormProvider {...form}>
                         <DeficiencyFormFields
-                            control={form.control as any}
                             namePrefix=""
                             cadetId={cadetId}
                             typeSelectDisabled
@@ -138,6 +124,9 @@ describe('DeficiencyFormFields', () => {
         it('shows material selector when cadet+material type is selected', () => {
             renderFields('', { typeId: 'type-cadet-material' });
             expect(screen.getByLabelText(/common.material.material/i)).toBeInTheDocument();
+            // No extended group/type selects
+            expect(screen.queryByLabelText(/common.material.group_one/i)).not.toBeInTheDocument();
+            expect(screen.queryByLabelText(/common.material.type_one/i)).not.toBeInTheDocument();
         });
 
         it('shows uniform selector when cadet+uniform-relation type is selected', () => {
@@ -145,34 +134,26 @@ describe('DeficiencyFormFields', () => {
             expect(screen.getByLabelText(/common.uniform.item/i)).toBeInTheDocument();
             expect(screen.queryByLabelText(/common.description/i)).not.toBeInTheDocument();
         });
+    });
 
-        it('shows extended material controls when materialId is "other" and type is cadet+material', () => {
-            renderFields('', { typeId: 'type-cadet-material', materialId: 'other' });
-            expect(screen.getByLabelText(/common.material.material/i)).toBeInTheDocument();
-            expect(screen.getByLabelText(/common.material.group_one/i)).toBeInTheDocument();
-            expect(screen.getByLabelText(/common.material.type_one/i)).toBeInTheDocument();
-        });
-
-        it('only disables type selector when typeSelectDisabled is set', () => {
-            const Wrapper = () => {
-                const form = useForm({ defaultValues: {} });
-                return (
-                    <FormProvider {...form}>
-                        <DeficiencyFormFields
-                            control={form.control as any}
-                            namePrefix=""
-                            cadetId={cadetId}
-                            typeSelectDisabled
-                        />
-                    </FormProvider>
-                );
-            };
-            render(<Wrapper />);
-            const typeSelect = screen.getByLabelText(/common.type/i);
-            expect(typeSelect).toBeDisabled();
-            // comment textarea should not be disabled
-            expect(screen.getByLabelText(/common.comment/i)).not.toBeDisabled();
-        });
+    it('only disables type selector when typeSelectDisabled is set', () => {
+        const Wrapper = () => {
+            const form = useForm({ defaultValues: {} });
+            return (
+                <FormProvider {...form}>
+                    <DeficiencyFormFields
+                        namePrefix=""
+                        cadetId={cadetId}
+                        typeSelectDisabled
+                    />
+                </FormProvider>
+            );
+        };
+        render(<Wrapper />);
+        const typeSelect = screen.getByLabelText(/common.type/i);
+        expect(typeSelect).toBeDisabled();
+        // comment textarea should not be disabled
+        expect(screen.getByLabelText(/common.comment/i)).not.toBeDisabled();
     });
 
     describe('namePrefix support', () => {
@@ -183,4 +164,32 @@ describe('DeficiencyFormFields', () => {
             expect(screen.getByLabelText(/common.comment/i)).toBeInTheDocument();
         });
     });
+
+    describe('default values', () => {
+        it('initializes material selector when type with material relation is selected', () => {
+            const defaultMaterialId = 'mattype-1';
+            renderFields('', { typeId: 'type-cadet-material', materialId: defaultMaterialId });
+            const materialSelect = screen.getByLabelText(/common.material.material/i);
+            expect(materialSelect).toHaveValue("Accessories");
+
+        });
+        it('initializes description field when type with null relation is selected', () => {
+            const defaultDescription = 'Pre-filled description';
+            renderFields('', { typeId: 'type-cadet-none', description: defaultDescription });
+            const descriptionInput = screen.getByLabelText(/common.description/i);
+            expect(descriptionInput).toHaveValue(defaultDescription);
+        });
+        it('initializes uniform selector when type with uniform dependency is selected', () => {
+            const defaultUniformId = 'uniform-1';
+            renderFields('', { typeId: 'type-uniform', uniformId: defaultUniformId });
+            const uniformSelect = screen.getByLabelText(/common.uniform.item/i);
+            expect(uniformSelect).toHaveValue(defaultUniformId);
+        });
+        it('initializes uniform selector when type with uniform relation is selected', () => {
+            const defaultUniformId = 'uniform-2';
+            renderFields('', { typeId: 'type-cadet-uniform', uniformId: defaultUniformId });
+            const uniformSelect = screen.getByLabelText(/common.uniform.item/i);
+            expect(uniformSelect).toHaveValue(defaultUniformId);
+        });
+    })
 });
