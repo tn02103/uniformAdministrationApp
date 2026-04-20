@@ -39,7 +39,7 @@ async function main() {
         });
 
         await prisma.cadet.createMany({
-            data: generator.cadet()
+            data: generator.cadet(),
         });
 
 

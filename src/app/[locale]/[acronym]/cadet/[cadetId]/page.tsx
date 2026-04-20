@@ -8,6 +8,7 @@ import { getScopedI18n } from "@/lib/locales/config";
 import { notFound } from "next/navigation";
 import { Col, Row } from "react-bootstrap";
 import CadetDataTable from "./_cadetDataTable/table";
+import { ExtendedInformationDiv } from "./_extendedInformation";
 import { CadetInspectionCard } from "./_inspctionTable/CadetInspectionCard";
 import { CadetMaterialTable } from "./_materialTable/CadetMaterialTable";
 import { CadetUniformTable } from "./_uniformTable/CadetUniformTable";
@@ -96,6 +97,11 @@ const CadetDetailPage = async (props: PropType) => {
                 <Col xs={12} className="p-0">
                     <CadetUniformTable uniformMap={uniformMap} />
                 </Col>
+            </Row>
+            <Row className="justify-content-center mt-3 mb-5">
+                {(user!.role >= AuthRole.materialManager) &&
+                    <ExtendedInformationDiv cadetId={cadetId} />
+                }
             </Row>
         </div>
     )

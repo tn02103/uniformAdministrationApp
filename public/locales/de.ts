@@ -312,6 +312,33 @@ export default {
             "option.owner": "Besitzer: ",
             "option.storageUnit": "Lagereinheit: ",
         },
+        extendedInformation: {
+            header: "Weitere Informationen",
+            tabs: {
+                inspectionHistory: "Kontrollen",
+            },
+            inspectionHistory: {
+                columns: {
+                    date: "Datum",
+                    attendanceState: "Anwesenheit",
+                    uniformComplete: "Uniform vollständig",
+                    unresolved: "Offen",
+                    resolved: "Behoben",
+                    newlyCreated: "Neu",
+                },
+                attendanceState: {
+                    inspected: "Kontrolliert",
+                    excused: "Entschuldigt",
+                    missing: "Fehlend",
+                },
+                empty: "Keine Kontrollen vorhanden",
+                loading: "Lädt...",
+                uniformComplete: {
+                    yes: "✓",
+                    no: "✗",
+                },
+            },
+        },
     },
     storageUnit: {
         error: {

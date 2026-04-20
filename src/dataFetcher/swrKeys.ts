@@ -31,4 +31,5 @@ export const swrKeys = {
     inspectionClosedReport: (inspectionId: string) => `inspection.closed.${inspectionId}.report`,
     // Cadet specific
     cadetLastInspection: 'cadet/inspection/lastInspection',
+    cadetInspectionHistory: (cadetId: string) => `cadet.${cadetId}.inspection.history`,
 }

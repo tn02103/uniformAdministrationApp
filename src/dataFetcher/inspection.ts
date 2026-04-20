@@ -1,8 +1,8 @@
 
-import { getClosedInspectionList, getClosedInspectionReport, getInspectedCadetIdList, getInspectionState, getPlannedInspectionList, getUnresolvedDeficienciesByCadet } from "@/dal/inspection";
+import { getClosedInspectionList, getClosedInspectionReport, getInspectedCadetIdList, getInspectionState, getInspectionsByCadet, getPlannedInspectionList, getUnresolvedDeficienciesByCadet } from "@/dal/inspection";
 import { AuthRole } from "@/lib/AuthRoles";
 import { ClosedInspectionSummary, InspectionReview } from "@/types/deficiencyTypes";
-import { PlannedInspectionType } from "@/types/inspectionTypes";
+import { CadetInspectionHistoryRow, PlannedInspectionType } from "@/types/inspectionTypes";
 import useSWR from "swr";
 import { swrKeys } from "./swrKeys";
 
@@ -78,4 +78,18 @@ export function useClosedInspectionReport(inspectionId: string) {
         () => getClosedInspectionReport({ inspectionId }),
     );
     return { inspectionReport: data as InspectionReview | undefined };
+}
+
+/**
+ * SWR hook for the inspection history of a single cadet.
+ *
+ * @param cadetId - The ID of the cadet.
+ * @returns `{ inspectionHistory }` — the list of past inspection rows for the cadet.
+ */
+export function useInspectionsByCadet(cadetId: string) {
+    const { data } = useSWR(
+        swrKeys.cadetInspectionHistory(cadetId),
+        () => getInspectionsByCadet({ cadetId }),
+    );
+    return { inspectionHistory: data as CadetInspectionHistoryRow[] | undefined };
 }

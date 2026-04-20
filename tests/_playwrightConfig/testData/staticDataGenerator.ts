@@ -79,17 +79,18 @@ export default class StaticDataGenerator {
 
     cadet() {
         const { cadetIds, fk_assosiation } = this.ids
+        const defaultDate = new Date('2020-01-01');
         return [
-            { id: cadetIds[0], fk_assosiation, firstname: 'Antje', lastname: 'Fried', active: true, comment: '', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[1], fk_assosiation, firstname: 'Marie', lastname: 'Becker', active: true, comment: 'Bemerkung Test', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[2], fk_assosiation, firstname: 'Sven', lastname: 'Keller', active: true, comment: '', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[3], fk_assosiation, firstname: 'Lucas', lastname: 'Schwartz', active: true, comment: '', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[4], fk_assosiation, firstname: 'Uwe', lastname: 'Luft', active: true, comment: 'initial-comment', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[5], fk_assosiation, firstname: 'Maik', lastname: 'Finkel', active: true, comment: 'initial-comment', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[6], fk_assosiation, firstname: 'Tim', lastname: 'Weissmuller', active: true, comment: '', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[7], fk_assosiation, firstname: 'Juliane', lastname: 'Unger', active: true, comment: '', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[8], fk_assosiation, firstname: 'Simone', lastname: 'Osterhagen', active: true, comment: '', recdelete: new Date('2023-08-16 09:45:25'), recdeleteUser: 'test4' },
-            { id: cadetIds[9], fk_assosiation, firstname: 'Christina', lastname: 'Faber', active: true, comment: '', recdelete: null, recdeleteUser: null },
+            { id: cadetIds[0], fk_assosiation, firstname: 'Antje', lastname: 'Fried', dateCreated: defaultDate, active: true, comment: '', recdelete: null, recdeleteUser: null },
+            { id: cadetIds[1], fk_assosiation, firstname: 'Marie', lastname: 'Becker', dateCreated: defaultDate, active: true, comment: 'Bemerkung Test', recdelete: null, recdeleteUser: null },
+            { id: cadetIds[2], fk_assosiation, firstname: 'Sven', lastname: 'Keller', dateCreated: defaultDate, active: true, comment: '', recdelete: null, recdeleteUser: null },
+            { id: cadetIds[3], fk_assosiation, firstname: 'Lucas', lastname: 'Schwartz', dateCreated: defaultDate, active: true, comment: '', recdelete: null, recdeleteUser: null },
+            { id: cadetIds[4], fk_assosiation, firstname: 'Uwe', lastname: 'Luft', dateCreated: defaultDate, active: true, comment: 'initial-comment', recdelete: null, recdeleteUser: null },
+            { id: cadetIds[5], fk_assosiation, firstname: 'Maik', lastname: 'Finkel', dateCreated: defaultDate, active: true, comment: 'initial-comment', recdelete: null, recdeleteUser: null },
+            { id: cadetIds[6], fk_assosiation, firstname: 'Tim', lastname: 'Weissmuller', dateCreated: defaultDate, active: true, comment: '', recdelete: null, recdeleteUser: null },
+            { id: cadetIds[7], fk_assosiation, firstname: 'Juliane', lastname: 'Unger', dateCreated: defaultDate, active: true, comment: '', recdelete: null, recdeleteUser: null },
+            { id: cadetIds[8], fk_assosiation, firstname: 'Simone', lastname: 'Osterhagen', dateCreated: defaultDate, active: true, comment: '', recdelete: new Date('2023-08-16 09:45:25'), recdeleteUser: 'test4' },
+            { id: cadetIds[9], fk_assosiation, firstname: 'Christina', lastname: 'Faber', dateCreated: defaultDate, active: true, comment: '', recdelete: null, recdeleteUser: null },
         ]
     }
 
