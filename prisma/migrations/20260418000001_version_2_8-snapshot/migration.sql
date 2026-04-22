@@ -116,3 +116,30 @@ GROUP BY c.id,
     ci.uniform_complete,
     i.date;
 ALTER TABLE base.v_cadet_generaloverview OWNER TO CURRENT_USER;
+
+-- Migration: add_cadet_date_created
+-- Add date_created column to base.cadet; backfill from issuance history,
+-- fallback to CURRENT_DATE for cadets with no issuance history.
+
+ALTER TABLE base.cadet ADD COLUMN IF NOT EXISTS date_created date;
+
+-- Back-fill date_created: use earliest issuance date, or today if none
+UPDATE base.cadet c
+   SET date_created = COALESCE(
+       (
+           SELECT MIN(d)::date
+             FROM (
+                 SELECT MIN(ui.date_issued) AS d FROM base.uniform_issued ui WHERE ui.fk_cadet = c.id
+                 UNION ALL
+                 SELECT MIN(mi.date_issued) AS d FROM base.material_issued mi WHERE mi.fk_cadet = c.id
+             ) sub
+            WHERE d IS NOT NULL
+       ),
+       CURRENT_DATE
+   );
+
+-- Enforce NOT NULL now that every row has a value
+ALTER TABLE base.cadet ALTER COLUMN date_created SET NOT NULL;
+
+-- Set default for future inserts
+ALTER TABLE base.cadet ALTER COLUMN date_created SET DEFAULT now();

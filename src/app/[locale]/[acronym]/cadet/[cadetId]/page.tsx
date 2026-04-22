@@ -9,6 +9,7 @@ import { notFound } from "next/navigation";
 import { Col, Row } from "react-bootstrap";
 import CadetDataTable from "./_cadetDataTable/table";
 import { CadetInspectionCard } from "./_inspectionTable/CadetInspectionCard";
+import { ExtendedInformationDiv } from "./_extendedInformation";
 import { CadetMaterialTable } from "./_materialTable/CadetMaterialTable";
 import { CadetUniformTable } from "./_uniformTable/CadetUniformTable";
 import CadetDropDown from "./cadetDropDown";
@@ -96,6 +97,11 @@ const CadetDetailPage = async (props: PropType) => {
                 <Col xs={12} className="p-0">
                     <CadetUniformTable uniformMap={uniformMap} />
                 </Col>
+            </Row>
+            <Row className="justify-content-center mt-3 mb-5">
+                {(user!.role >= AuthRole.materialManager) &&
+                    <ExtendedInformationDiv cadetId={cadetId} />
+                }
             </Row>
         </div>
     )

@@ -316,6 +316,33 @@ export default {
             "option.owner": "Besitzer: ",
             "option.storageUnit": "Lagereinheit: ",
         },
+        extendedInformation: {
+            header: "Weitere Informationen",
+            tabs: {
+                inspectionHistory: "Kontrollen",
+            },
+            inspectionHistory: {
+                columns: {
+                    date: "Datum",
+                    attendanceState: "Anwesenheit",
+                    uniformComplete: "Uniform vollständig",
+                    unresolved: "Offen",
+                    resolved: "Behoben",
+                    newlyCreated: "Neu",
+                },
+                attendanceState: {
+                    inspected: "Kontrolliert",
+                    excused: "Entschuldigt",
+                    missing: "Fehlend",
+                },
+                empty: "Keine Kontrollen vorhanden",
+                loading: "Lädt...",
+                uniformComplete: {
+                    yes: "✓",
+                    no: "✗",
+                },
+            },
+        },
     },
     storageUnit: {
         error: {
@@ -693,6 +720,34 @@ export default {
     inspection: {
         header: {
             planned: 'Geplannte Kontrollen',
+        },
+        closed: {
+            title: 'Abgeschlossene Kontrollen',
+            columns: {
+                name: 'Name',
+                date: 'Datum',
+                duration: 'Dauer',
+                activeCadets: 'Aktive VKs',
+                cadetsInspected: 'Kontrolliert',
+                deregisteredCadets: 'Abgemeldet',
+                missingCadets: 'Fehlend',
+                uniformComplete: 'Uniform vollst. %',
+            },
+            actions: {
+                showReport: 'Bericht anzeigen',
+                downloadXlsx: 'XLSX herunterladen',
+            },
+            report: {
+                title: 'Inspektionsbericht',
+                cadetList: 'Kadettenliste',
+                attendance: 'Anwesenheit',
+                activeDeficiencies: 'Aktive Mängel',
+                attendanceStatus: {
+                    inspected: 'Kontrolliert',
+                    excused: 'Entschuldigt',
+                    missing: 'Fehlend',
+                },
+            },
         },
         planned: {
             deregistration: {

@@ -1,7 +1,8 @@
 import { getPersonnelNameList } from "@/dal/cadet/getNameList";
-import { getPlannedInspectionList } from "@/dal/inspection/planned/get";
+import { getClosedInspectionList, getPlannedInspectionList } from "@/dal/inspection";
 import { getScopedI18n } from "@/lib/locales/config";
 import { Col, Row } from "react-bootstrap";
+import { ClosedInspectionTable } from "./_closed/ClosedInspectionTable";
 import { PlannedInspectionTable } from "./_planned/PlannedInspectionTable";
 
 export async function generateMetadata() {
@@ -11,9 +12,10 @@ export async function generateMetadata() {
     }
 }
 export default async function InspectionAdministrationPage() {
-    const [nameList, plannedInspections, t] = await Promise.all([
+    const [nameList, plannedInspections, closedInspections, t] = await Promise.all([
         getPersonnelNameList(),
         getPlannedInspectionList(),
+        getClosedInspectionList(),
         getScopedI18n('inspection')
     ]);
 
@@ -25,6 +27,14 @@ export default async function InspectionAdministrationPage() {
             <Row className="p-4 justify-content-center">
                 <Col xs={12}>
                     <PlannedInspectionTable inspections={plannedInspections} cadets={nameList} />
+                </Col>
+            </Row>
+            <div className="row pt-2 pb-2 m-0">
+                <h2 className="text-center">{t('closed.title')}</h2>
+            </div>
+            <Row className="p-4 justify-content-center">
+                <Col xs={12}>
+                    <ClosedInspectionTable initialData={closedInspections} />
                 </Col>
             </Row>
         </div>

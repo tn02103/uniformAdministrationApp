@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { Assosiation, AssosiationConfiguration, Cadet, DeficiencyType, Inspection, Material, MaterialGroup, Prisma, StorageUnit, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@/prisma/client";
+import { Assosiation, AssosiationConfiguration, Cadet, DeficiencyType, Material, MaterialGroup, Prisma, StorageUnit, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@/prisma/client";
 import bcrypt from 'bcrypt';
 import StaticDataGenerator, { StaticDataIdType } from "./staticDataGenerator";
 import { getStaticDataIds } from "./staticDataIds"; 
@@ -66,7 +66,7 @@ class StaticDataGetter {
     readonly deficiencyTypes: DeficiencyType[];
     readonly deficiencies: Prisma.DeficiencyCreateManyInput[];
 
-    readonly inspections: Inspection[];
+    readonly inspections: Prisma.InspectionCreateManyInput[];
     readonly cadetInspections: Prisma.CadetInspectionCreateManyInput[];
     readonly deregistrations: Prisma.DeregistrationCreateManyInput[];
     readonly redirects: Prisma.RedirectCreateManyInput[];
@@ -418,7 +418,7 @@ class StaticDataLoader {
     }
     async cadets() {
         await prisma.cadet.createMany({
-            data: this.data.cadets,
+            data: this.data.cadets.map(c => ({ ...c, dateCreated: c.dateCreated ?? new Date('2020-01-01') })),
         });
     }
     async uniformSize() {

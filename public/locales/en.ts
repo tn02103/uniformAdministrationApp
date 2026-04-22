@@ -316,6 +316,33 @@ export default {
             "option.owner": "Owner: ",
             "option.storageUnit": "Storage unit: ",
         },
+        extendedInformation: {
+            header: "Extended Information",
+            tabs: {
+                inspectionHistory: "Inspection History",
+            },
+            inspectionHistory: {
+                columns: {
+                    date: "Date",
+                    attendanceState: "Attendance",
+                    uniformComplete: "Uniform Complete",
+                    unresolved: "Unresolved",
+                    resolved: "Resolved",
+                    newlyCreated: "New",
+                },
+                attendanceState: {
+                    inspected: "Inspected",
+                    excused: "Excused",
+                    missing: "Missing",
+                },
+                empty: "No inspections found",
+                loading: "Loading...",
+                uniformComplete: {
+                    yes: "✓",
+                    no: "✗",
+                },
+            },
+        },
     },
     storageUnit: {
         error: {
@@ -693,6 +720,34 @@ export default {
     inspection: {
         header: {
             planned: 'planned inspections',
+        },
+        closed: {
+            title: 'Completed Inspections',
+            columns: {
+                name: 'Name',
+                date: 'Date',
+                duration: 'Duration',
+                activeCadets: 'Active Cadets',
+                cadetsInspected: 'Inspected',
+                deregisteredCadets: 'Deregistered',
+                missingCadets: 'Missing',
+                uniformComplete: 'Uniform Complete %',
+            },
+            actions: {
+                showReport: 'Show Report',
+                downloadXlsx: 'Download XLSX',
+            },
+            report: {
+                title: 'Inspection Report',
+                cadetList: 'Cadet List',
+                attendance: 'Attendance',
+                activeDeficiencies: 'Active Deficiencies',
+                attendanceStatus: {
+                    inspected: 'Inspected',
+                    excused: 'Excused',
+                    missing: 'Missing',
+                },
+            },
         },
         planned: {
             deregistration: {
