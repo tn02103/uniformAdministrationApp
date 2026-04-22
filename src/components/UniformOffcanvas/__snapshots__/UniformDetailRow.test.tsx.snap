@@ -153,7 +153,7 @@ exports[`UniformDetailRow > Render Components > should render correctly when edi
               aria-checked="false"
               aria-describedby="uniform_isReserve_toggleText"
               aria-disabled="false"
-              class="form-check-input ms-0 my-2"
+              class="form-check-input ms-0"
               id="uniform_toggle-isReserve"
               name="isReserve"
               role="switch"
@@ -163,7 +163,7 @@ exports[`UniformDetailRow > Render Components > should render correctly when edi
               value="false"
             />
             <label
-              class="form-check-label ms-2"
+              class="form-check-label ms-2 my-auto"
               id="uniform_isReserve_toggleText"
             >
               common.uniform.state.active

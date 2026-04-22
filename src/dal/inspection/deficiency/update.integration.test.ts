@@ -23,8 +23,8 @@ describe('updateDeficiency Integration Tests', () => {
     });
 
     it('updates comment and description on a deficiency', async () => {
-        // deficiencyIds[1] is an unresolved uniform deficiency
-        const id = staticData.ids.deficiencyIds[1];
+        // deficiencyIds[5] is an unresolved cadet deficiency with relation: null (description is updatable)
+        const id = staticData.ids.deficiencyIds[5];
 
         await updateDeficiency({ id, data: { comment: 'Updated comment', description: 'NewDesc' } });
 

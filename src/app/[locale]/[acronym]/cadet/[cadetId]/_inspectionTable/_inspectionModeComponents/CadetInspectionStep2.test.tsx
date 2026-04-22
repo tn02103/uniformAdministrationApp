@@ -1,7 +1,7 @@
 import { Form } from "@/components/fields/Form";
 import { getByRole, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { CadetInspectionStep2 } from "../CadetInspectionStep2";
+import { CadetInspectionStep2 } from "./CadetInspectionStep2";
 import { DeficiencyReadDisplay } from "../_sharedComponents/DeficiencyReadDisplay";
 import { NewDeficiencyRow } from "./NewDeficiencyRow";
 import { useCadetUniformComplete } from "@/dataFetcher/cadet";
@@ -20,7 +20,7 @@ const mockFormData = {
     ],
 };
 
-vi.mock('./DeficiencyReadDisplay', () => ({
+vi.mock('../_sharedComponents/DeficiencyReadDisplay', () => ({
     DeficiencyReadDisplay: vi.fn(({ deficiency }) => <div>{deficiency.description}</div>)
 }));
 

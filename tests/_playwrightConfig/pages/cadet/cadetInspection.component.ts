@@ -58,13 +58,7 @@ export class CadetInspectionComponent {
         return this.div_ci.locator(`select[name="newDeficiencyList.${index}.uniformId"]`);
     }
     sel_newDef_material(index: number) {
-        return this.div_ci.locator(`select[name="newDeficiencyList.${index}.materialId"]`);
-    }
-    sel_newDef_materialGroup(index: number) {
-        return this.div_ci.locator(`select[name="newDeficiencyList.${index}.otherMaterialGroupId"]`);
-    }
-    sel_newDef_materialType(index: number) {
-        return this.div_ci.locator(`select[name="newDeficiencyList.${index}.otherMaterialId"]`);
+        return this.div_newDeficiency(index).getByLabel(/Material/i);
     }
     txt_newDef_description(index: number) {
         return this.div_ci.locator(`input[name="newDeficiencyList.${index}.description"]`);

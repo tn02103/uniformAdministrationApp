@@ -136,12 +136,11 @@ const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: Defici
             <Card.Body className="position-relative">
                 <FormProvider {...form}>
                     <form onSubmit={form.handleSubmit(handleSave)} noValidate autoComplete="off" className="mb-4">
-                        {editable ?
+                        {editable && !deficiency ?
                             <>
                                 <Card.Title className="fs-6 fw-bold">
                                     <SelectFormField
                                         name="typeId"
-                                        disabled={!!deficiency} 
                                         label={t('uniformOffcanvas.deficiency.label.deficiencyType')}
                                         options={filteredTypes?.map((type) => ({ value: type.id, label: type.name })) ?? []}
                                     />

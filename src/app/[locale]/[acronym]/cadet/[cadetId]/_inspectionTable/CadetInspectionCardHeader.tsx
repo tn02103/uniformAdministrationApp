@@ -38,7 +38,7 @@ export default function CadetInspectionCardHeader({
                 {headerLabel}
             </Col>
             <Col xs={1} className="text-end me-3">
-                {step === 0 && onNewDeficiency && (
+                {step === 0 && onNewDeficiency && !inspectionState?.active && (
                     <TooltipActionButton
                         variantKey="create"
                         testId="btn_new_deficiency"

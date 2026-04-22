@@ -19,7 +19,7 @@ vi.mock('@/dal/inspection/deficiency', () => ({
 }));
 
 // Mock DeficiencyFormFields to avoid complex hook dependencies
-vi.mock('./DeficiencyFormFields', () => ({
+vi.mock('./_sharedComponents/DeficiencyFormFields', () => ({
     DeficiencyFormFields: function MockDeficiencyFormFields() {
         return <div data-testid="mock-deficiency-form-fields" />;
     },
@@ -69,7 +69,7 @@ vi.mock('./CadetInspectionCardHeader', () => ({
     },
 }));
 
-vi.mock('./CadetInspectionStep1', () => ({
+vi.mock('./_inspectionModeComponents/CadetInspectionStep1', () => ({
     CadetInspectionStep1: function MockCadetInspectionStep1({ setNextStep, cancel }: { setNextStep: () => void; cancel: () => void }) {
         return (
             <div data-testid="mock-step1">
@@ -80,7 +80,7 @@ vi.mock('./CadetInspectionStep1', () => ({
     },
 }));
 
-vi.mock('./CadetInspectionStep2', () => ({
+vi.mock('./_inspectionModeComponents/CadetInspectionStep2', () => ({
     CadetInspectionStep2: function MockCadetInspectionStep2({ setStep }: { setStep: (step: number) => void }) {
 
         return (
@@ -92,13 +92,13 @@ vi.mock('./CadetInspectionStep2', () => ({
     },
 }));
 
-vi.mock('./DeficiencyStandaloneRow', () => ({
+vi.mock('./_standaloneModeComponents/DeficiencyStandaloneRow', () => ({
     DeficiencyStandaloneRow: vi.fn(({ deficiency }: { deficiency: { id: string; description: string } }) => (
         <div data-testid={`standalone-row-${deficiency.id}`}>{deficiency.description}</div>
     )),
 }));
 
-vi.mock('./DeficiencyReadDisplay', () => ({
+vi.mock('./_sharedComponents/DeficiencyReadDisplay', () => ({
     DeficiencyReadDisplay: vi.fn(({ deficiency }: { deficiency: { id: string; description: string } }) => (
         <div data-testid={`read-display-${deficiency.id}`}>{deficiency.description}</div>
     )),

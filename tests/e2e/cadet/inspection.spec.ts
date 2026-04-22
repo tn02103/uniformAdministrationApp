@@ -97,16 +97,14 @@ test.describe("<CadetInspectionCard />", () => {
     });
 
     test('active inspection state, not inspected', async ({ page, staticData: { ids }, inspectionComponent, testData }) => {
-        test.setTimeout(90_000);
         await startInspection(ids);
         await page.goto(`/de/app/cadet/${ids.cadetIds[2]}`);
-        
+
         await expect(async () => {
-            await startInspection(ids);
             await page.reload();
             await page.waitForLoadState('domcontentloaded');
             await expect(inspectionComponent.div_header).toContainText(german.cadetDetailPage.inspection["header.inspection"]);
-        }).toPass({ timeout: 60_000 });
+        }).toPass();
 
         await test.step('inspection step 0', async () => {
             // Wait for SWR data to load before checking all
@@ -180,10 +178,9 @@ test.describe("<CadetInspectionCard />", () => {
             await inspectionComponent.btn_step2_newDef.click();
             await expect(inspectionComponent.div_newDeficiency(1)).toBeVisible();
             await inspectionComponent.sel_newDef_type(1).selectOption(testData.newDefs.cadetMaterialOther.type);
-            await inspectionComponent.sel_newDef_material(1).selectOption("other");
-            await expect(inspectionComponent.sel_newDef_materialGroup(1)).toBeVisible();
-            await inspectionComponent.sel_newDef_materialGroup(1).selectOption(testData.newDefs.cadetMaterialOther.materialGroup!);
-            await inspectionComponent.sel_newDef_materialType(1).selectOption(testData.newDefs.cadetMaterialOther.materialType!);
+            await inspectionComponent.sel_newDef_material(1).click();
+            await inspectionComponent.sel_newDef_material(1).fill(testData.newDefs.cadetMaterialOther.description);
+            await inspectionComponent.div_newDeficiency(1).getByRole('option', { name: testData.newDefs.cadetMaterialOther.description }).click();
             await inspectionComponent.txt_newDef_comment(1).fill(testData.newDefs.cadetMaterialOther.comment!);
 
             await inspectionComponent.btn_step2_newDef.click();
@@ -218,8 +215,6 @@ test.describe("<CadetInspectionCard />", () => {
     });
 
     test('active inspection state, previously inspected', async ({ page, staticData: { ids }, inspectionComponent, testData }) => {
-        test.setTimeout(90_000);
-
         await test.step('setup - create previous inspection state', async () => {
             // Start the inspection
             await startInspection(ids);
@@ -285,7 +280,6 @@ test.describe("<CadetInspectionCard />", () => {
                     }
                 ]
             });
-
         });
 
         await page.goto(`/de/app/cadet/${ids.cadetIds[2]}`);

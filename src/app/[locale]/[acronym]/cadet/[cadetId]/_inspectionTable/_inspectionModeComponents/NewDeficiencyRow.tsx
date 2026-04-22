@@ -31,8 +31,8 @@ export function NewDeficiencyRow({
     const isCreated = !!dateCreated;
 
     return (
-        <div className="position-relative p-0">
-            <Row data-testid={`div_newDef_${index}`} className="p-2 m-0 border-top border-1 border-dark ">
+        <div className="position-relative p-0" data-testid={`div_newDef_${index}`} >
+            <Row className="p-2 m-0 border-top border-1 border-dark ">
                 <DeficiencyFormFields
                     namePrefix={`newDeficiencyList.${index}`}
                     cadetId={cadetId}

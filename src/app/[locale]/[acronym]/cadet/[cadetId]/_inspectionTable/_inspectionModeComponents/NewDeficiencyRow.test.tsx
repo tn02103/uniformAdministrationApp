@@ -121,8 +121,7 @@ describe('NewDeficiencyRow', () => {
             expect(screen.getByLabelText(/common.type/i)).toBeInTheDocument();
             expect(screen.getByRole('combobox', { name: /common.type/i })).toBeInTheDocument();
 
-            // Check both delete buttons are present with correct test-ids
-            expect(screen.getByTestId('btn_delete_mobile')).toBeInTheDocument();
+            // Check delete button is present with correct test-id
             expect(screen.getByTestId('btn_delete')).toBeInTheDocument();
 
             // Check comment textarea is always present

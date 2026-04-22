@@ -76,6 +76,7 @@ describe('CreateDeficiencyForm', () => {
         renderForm();
 
         await user.selectOptions(screen.getByLabelText(/common.type/i), '97d25d1c-15cc-43fb-a2f3-5b21d0ffd8cd');
+        await user.type(screen.getByLabelText(/common.description/i), 'Some Description');
         await user.type(screen.getByLabelText(/common.comment/i), 'Some Comment');
         await user.click(screen.getByTestId('btn_save_new_deficiency'));
 
@@ -90,6 +91,7 @@ describe('CreateDeficiencyForm', () => {
         renderForm();
 
         await user.selectOptions(screen.getByLabelText(/common.type/i), '97d25d1c-15cc-43fb-a2f3-5b21d0ffd8cd');
+        await user.type(screen.getByLabelText(/common.description/i), 'Some Description');
         await user.type(screen.getByLabelText(/common.comment/i), 'Some Comment');
         await user.click(screen.getByTestId('btn_save_new_deficiency'));
 
@@ -104,6 +106,7 @@ describe('CreateDeficiencyForm', () => {
         renderForm();
 
         await user.selectOptions(screen.getByLabelText(/common.type/i), '97d25d1c-15cc-43fb-a2f3-5b21d0ffd8cd');
+        await user.type(screen.getByLabelText(/common.description/i), 'Some Description');
         await user.type(screen.getByLabelText(/common.comment/i), 'Some Comment');
         await user.click(screen.getByTestId('btn_save_new_deficiency'));
 
