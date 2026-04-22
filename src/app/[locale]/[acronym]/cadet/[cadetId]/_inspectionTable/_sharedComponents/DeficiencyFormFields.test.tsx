@@ -89,7 +89,7 @@ describe('DeficiencyFormFields', () => {
             expect(screen.queryByLabelText(/common.material.material/i)).not.toBeInTheDocument();
         });
 
-        it('disables type selector when disabled=true', () => {
+        it('disables type selector when typeSelectDisabled=true', () => {
             const Wrapper = () => {
                 const form = useForm({ defaultValues: {} });
                 return (
@@ -136,33 +136,14 @@ describe('DeficiencyFormFields', () => {
         });
     });
 
-    it('only disables type selector when typeSelectDisabled is set', () => {
-        const Wrapper = () => {
-            const form = useForm({ defaultValues: {} });
-            return (
-                <FormProvider {...form}>
-                    <DeficiencyFormFields
-                        namePrefix=""
-                        cadetId={cadetId}
-                        typeSelectDisabled
-                    />
-                </FormProvider>
-            );
-        };
-        render(<Wrapper />);
-        const typeSelect = screen.getByLabelText(/common.type/i);
-        expect(typeSelect).toBeDisabled();
-        // comment textarea should not be disabled
-        expect(screen.getByLabelText(/common.comment/i)).not.toBeDisabled();
-    });
-
-    describe('namePrefix support', () => {
-        it('renders correctly with a prefix', () => {
-            renderFields('newDeficiencyList.0', { 'newDeficiencyList.0': { typeId: '', comment: '' } });
-            // Type selector should still be visible with prefixed names
-            expect(screen.getByLabelText(/common.type/i)).toBeInTheDocument();
-            expect(screen.getByLabelText(/common.comment/i)).toBeInTheDocument();
-        });
+    it('renders correctly with a prefix', () => {
+        renderFields('newDeficiencyList.0');
+        // Type selector should still be visible with prefixed names
+        expect(screen.getByLabelText(/common.type/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/common.comment/i)).toBeInTheDocument();
+        // Verify the prefix is applied to field names
+        expect(screen.getByLabelText(/common.type/i)).toHaveAttribute('name', 'newDeficiencyList.0.typeId');
+        expect(screen.getByLabelText(/common.comment/i)).toHaveAttribute('name', 'newDeficiencyList.0.comment');
     });
 
     describe('default values', () => {

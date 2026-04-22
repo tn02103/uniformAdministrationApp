@@ -69,63 +69,65 @@ describe('updateDeficiency', () => {
         expect(callArg.data).not.toHaveProperty('fk_cadet');
     });
 
-    it('blocks description update when type has cadet+uniform relation', async () => {
-        prismaMock.deficiency.findFirst.mockResolvedValueOnce({
-            id: deficiencyId,
-            type: { dependent: 'cadet', relation: 'uniform' },
-        } as any);
+    describe('blocks description update', () => {
+        it('when type has cadet+uniform relation', async () => {
+            prismaMock.deficiency.findFirst.mockResolvedValueOnce({
+                id: deficiencyId,
+                type: { dependent: 'cadet', relation: 'uniform' },
+            } as any);
 
-        await expect(updateDeficiency({
-            id: deficiencyId,
-            data: { comment: 'comment', description: 'should be blocked' },
-        })).resolves.toBeUndefined();
+            await expect(updateDeficiency({
+                id: deficiencyId,
+                data: { comment: 'comment', description: 'should be blocked' },
+            })).resolves.toBeUndefined();
 
-        const callArg = prismaMock.deficiency.update.mock.calls[0][0];
-        expect(callArg.data).not.toHaveProperty('description');
-        expect(callArg.data).toEqual({
-            comment: 'comment',
-            userUpdated: 'testuser',
-            dateUpdated: date,
+            const callArg = prismaMock.deficiency.update.mock.calls[0][0];
+            expect(callArg.data).not.toHaveProperty('description');
+            expect(callArg.data).toEqual({
+                comment: 'comment',
+                userUpdated: 'testuser',
+                dateUpdated: date,
+            });
         });
-    });
 
-    it('blocks description update when type has cadet+material relation', async () => {
-        prismaMock.deficiency.findFirst.mockResolvedValueOnce({
-            id: deficiencyId,
-            type: { dependent: 'cadet', relation: 'material' },
-        } as any);
+        it('when type has cadet+material relation', async () => {
+            prismaMock.deficiency.findFirst.mockResolvedValueOnce({
+                id: deficiencyId,
+                type: { dependent: 'cadet', relation: 'material' },
+            } as any);
 
-        await expect(updateDeficiency({
-            id: deficiencyId,
-            data: { comment: 'comment', description: 'should be blocked' },
-        })).resolves.toBeUndefined();
+            await expect(updateDeficiency({
+                id: deficiencyId,
+                data: { comment: 'comment', description: 'should be blocked' },
+            })).resolves.toBeUndefined();
 
-        const callArg = prismaMock.deficiency.update.mock.calls[0][0];
-        expect(callArg.data).not.toHaveProperty('description');
-        expect(callArg.data).toEqual({
-            comment: 'comment',
-            userUpdated: 'testuser',
-            dateUpdated: date,
+            const callArg = prismaMock.deficiency.update.mock.calls[0][0];
+            expect(callArg.data).not.toHaveProperty('description');
+            expect(callArg.data).toEqual({
+                comment: 'comment',
+                userUpdated: 'testuser',
+                dateUpdated: date,
+            });
         });
-    });
 
-    it('blocks description update when type has uniform dependency', async () => {
-        prismaMock.deficiency.findFirst.mockResolvedValueOnce({
-            id: deficiencyId,
-            type: { dependent: 'uniform', relation: null },
-        } as any);
+        it('when type has uniform dependency', async () => {
+            prismaMock.deficiency.findFirst.mockResolvedValueOnce({
+                id: deficiencyId,
+                type: { dependent: 'uniform', relation: null },
+            } as any);
 
-        await expect(updateDeficiency({
-            id: deficiencyId,
-            data: { comment: 'comment', description: 'should be blocked' },
-        })).resolves.toBeUndefined();
+            await expect(updateDeficiency({
+                id: deficiencyId,
+                data: { comment: 'comment', description: 'should be blocked' },
+            })).resolves.toBeUndefined();
 
-        const callArg = prismaMock.deficiency.update.mock.calls[0][0];
-        expect(callArg.data).not.toHaveProperty('description');
-        expect(callArg.data).toEqual({
-            comment: 'comment',
-            userUpdated: 'testuser',
-            dateUpdated: date,
+            const callArg = prismaMock.deficiency.update.mock.calls[0][0];
+            expect(callArg.data).not.toHaveProperty('description');
+            expect(callArg.data).toEqual({
+                comment: 'comment',
+                userUpdated: 'testuser',
+                dateUpdated: date,
+            });
         });
     });
 });

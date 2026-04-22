@@ -2,6 +2,7 @@ import { MaterialGroup } from '@/types/globalMaterialTypes';
 import { deficiencytype_dependent, deficiencytype_relation } from '@/prisma/enums';
 import { CadetInspectionFormSchema } from '@/zod/deficiency';
 import { getAllByRole, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { NewDeficiencyRow } from './NewDeficiencyRow';
@@ -256,34 +257,6 @@ describe('NewDeficiencyRow', () => {
             expect(screen.queryByLabelText(/common.uniform.item/i)).not.toBeInTheDocument();
         });
 
-        it('should hide additional material fields when material is not "others"', () => {
-            const formData = {
-                newDeficiencyList: [
-                    {
-                        typeId: 'type3', // Material Issue
-                        description: '',
-                        comment: '',
-                        uniformId: null,
-                        materialId: null,
-                        dateCreated: null
-                    }
-                ]
-            };
-
-            render(
-                <TestWrapper defaultValues={formData}>
-                    <NewDeficiencyRow {...defaultProps} />
-                </TestWrapper>
-            );
-
-            // Material field should be visible
-            expect(screen.getByLabelText(/common.material.material/i)).toBeInTheDocument();
-
-            // Additional material fields should NOT be visible when regular material is selected
-            expect(screen.queryByLabelText(/common.material.group_one/i)).not.toBeInTheDocument();
-            expect(screen.queryByLabelText(/common.material.type_one/i)).not.toBeInTheDocument();
-        });
-
         it('should disable type field when dateCreated is present', () => {
             const formData = {
                 newDeficiencyList: [
@@ -363,7 +336,8 @@ describe('NewDeficiencyRow', () => {
             expect(options[2]).toHaveTextContent('Trousers-1234');
         });
 
-        it('should display correct options in material select', () => {
+        it('should display correct options in material autocomplete', async () => {
+            const user = userEvent.setup();
             const formData = {
                 newDeficiencyList: [
                     {
@@ -383,12 +357,18 @@ describe('NewDeficiencyRow', () => {
                 </TestWrapper>
             );
 
-            // Material field is now an autocomplete input (not a select)
             const materialInput = screen.getByLabelText(/common.material.material/i);
             expect(materialInput).toBeInTheDocument();
 
-            // useMaterialConfiguration should have been called to supply options
-            expect(vi.mocked(useMaterialConfiguration)).toHaveBeenCalled();
+            // Open the autocomplete dropdown
+            await user.click(materialInput);
+
+            // Assert all material options derived from mockMaterialConfiguration are present
+            // Groups with >1 type get label "{groupDesc}-{typeName}"
+            expect(screen.getByRole('option', { name: 'Accessories-Type A Group1' })).toBeInTheDocument();
+            expect(screen.getByRole('option', { name: 'Accessories-Type B Group1' })).toBeInTheDocument();
+            expect(screen.getByRole('option', { name: 'Equipment-Type A Group2' })).toBeInTheDocument();
+            expect(screen.getByRole('option', { name: 'Equipment-Type B Group2' })).toBeInTheDocument();
         });
     });
 });

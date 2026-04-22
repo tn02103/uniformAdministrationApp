@@ -37,7 +37,7 @@ export default function CadetInspectionCardHeader({
             <Col xs={"auto"}className="text-center">
                 {headerLabel}
             </Col>
-            <Col xs={1} className="text-end me-3">
+            <Col className="ms-auto text-end">
                 {step === 0 && onNewDeficiency && !inspectionState?.active && (
                     <TooltipActionButton
                         variantKey="create"

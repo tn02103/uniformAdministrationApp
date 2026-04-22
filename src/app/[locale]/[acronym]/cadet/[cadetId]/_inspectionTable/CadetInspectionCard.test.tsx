@@ -18,13 +18,6 @@ vi.mock('@/dal/inspection/deficiency', () => ({
     createDeficiency: vi.fn(),
 }));
 
-// Mock DeficiencyFormFields to avoid complex hook dependencies
-vi.mock('./_sharedComponents/DeficiencyFormFields', () => ({
-    DeficiencyFormFields: function MockDeficiencyFormFields() {
-        return <div data-testid="mock-deficiency-form-fields" />;
-    },
-}));
-
 // Mock the data fetcher
 vi.mock('@/dataFetcher/inspection', () => ({
     useUnresolvedDeficienciesByCadet: vi.fn(),
@@ -298,6 +291,11 @@ describe('CadetInspectionCard', () => {
             await screen.findByTestId('mock-step1');
 
             await user.click(screen.getByTestId('btn-cancel'));
+
+            await waitFor(() => {
+                expect(screen.queryByTestId('mock-step1')).not.toBeInTheDocument();
+            });
+            expect(screen.getByTestId('mock-header')).toHaveTextContent('Step: 0');
         });
 
         // step 2 back goes to step 0
@@ -494,7 +492,7 @@ describe('CadetInspectionCard', () => {
             unmount2();
 
             // Test null scenario  
-            mockUseUnresolvedDeficienciesByCadet.mockReturnValue({ unresolvedDeficiencies: undefined });
+            mockUseUnresolvedDeficienciesByCadet.mockReturnValue({ unresolvedDeficiencies: null as any });
             const { unmount: unmount3 } = render(<CadetInspectionCard />);
             expect(screen.getByTestId('div_cadetInspection')).toBeInTheDocument();
             expect(screen.getByTestId('mock-header')).toBeInTheDocument();
@@ -522,7 +520,6 @@ describe('CadetInspectionCard', () => {
 
             await user.click(screen.getByTestId('btn_new_deficiency'));
 
-            expect(screen.getByTestId('mock-deficiency-form-fields')).toBeInTheDocument();
             expect(screen.getByTestId('btn_save_new_deficiency')).toBeInTheDocument();
             expect(screen.getByTestId('btn_cancel_new_deficiency')).toBeInTheDocument();
         });
