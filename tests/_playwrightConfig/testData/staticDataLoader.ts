@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { Assosiation, AssosiationConfiguration, Cadet, DeficiencyType, Inspection, Material, MaterialGroup, Prisma, StorageUnit, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@/prisma/client";
+import { Assosiation, AssosiationConfiguration, Cadet, DeficiencyType, Inspection, Material, MaterialGroup, Prisma, ReturnChecklistTemplate, StorageUnit, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@/prisma/client";
 import bcrypt from 'bcrypt';
 import StaticDataGenerator, { StaticDataIdType } from "./staticDataGenerator";
 import { getStaticDataIds } from "./staticDataIds"; 
@@ -47,6 +47,7 @@ class StaticDataGetter {
     readonly assosiation: Assosiation;
     readonly assosiationConfiguration: AssosiationConfiguration;
     readonly cadets: Cadet[];
+    readonly returnChecklistTemplates: ReturnChecklistTemplate[];
     readonly userIds: string[];
 
     readonly uniformSizes: UniformSize[];
@@ -89,6 +90,7 @@ class StaticDataGetter {
 
         this.assosiationConfiguration = generator.assosiationConfiguration();
         this.cadets = generator.cadet();
+        this.returnChecklistTemplates = generator.returnChecklistTemplates();
         this.uniformSizes = generator.uniformSize();
 
         this.uniformSizelists = [
@@ -316,6 +318,8 @@ class StaticDataCleanup {
         await this.deleteUniformSizelist();
         await this.deleteStorage();
 
+        await this.deleteReturnChecklistTemplates();
+
         await this.deleteCadet();
         await this.deleteUsers();
         await this.deleteAssosiation();
@@ -377,6 +381,9 @@ class StaticDataCleanup {
     private deleteRedirects = () => prisma.redirect.deleteMany({
         where: { assosiationId: this.fk_assosiation }
     });
+    private deleteReturnChecklistTemplates = () => prisma.returnChecklistTemplate.deleteMany({
+        where: { fk_assosiation: this.fk_assosiation }
+    });
 }
 class StaticDataLoader {
     readonly data: StaticDataGetter;
@@ -388,6 +395,7 @@ class StaticDataLoader {
     async all() {
         await this.assosiation();
         await this.assosiationConfiguration();
+        await this.returnChecklistTemplates();
         await this.users();
 
         await this.storageUnits();
@@ -420,6 +428,12 @@ class StaticDataLoader {
     async assosiationConfiguration() {
         await prisma.assosiationConfiguration.create({
             data: this.data.assosiationConfiguration,
+        });
+    }
+    async returnChecklistTemplates() {
+        if (this.data.returnChecklistTemplates.length === 0) return;
+        await prisma.returnChecklistTemplate.createMany({
+            data: this.data.returnChecklistTemplates
         });
     }
     async users() {

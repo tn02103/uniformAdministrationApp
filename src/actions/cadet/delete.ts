@@ -10,7 +10,7 @@ export const deleteCadet = async (cadetId: string) => genericSAValidatorV2(
     AuthRole.inspector,
     uuidValidationPattern.test(cadetId),
     { cadetId }
-).then(({ username }) => prisma.$transaction([
+).then(() => prisma.$transaction([
     // RETURN uniform
     // -- remove issuedEntries issued today
     prisma.uniformIssued.deleteMany({
@@ -56,8 +56,8 @@ export const deleteCadet = async (cadetId: string) => genericSAValidatorV2(
             id: cadetId,
         },
         data: {
-            recdelete: new Date(),
-            recdeleteUser: username,
+            status: 'DELETED',
+            deletedAt: new Date(),
         }
     }),
 ])).then(() => {

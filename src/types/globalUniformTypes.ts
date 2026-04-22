@@ -32,7 +32,7 @@ const cadetDescriptionArgs = (config: {withDeleted: boolean}) => ({
         id: true,
         firstname: true,
         lastname: true,
-        recdelete: config.withDeleted,
+        deletedAt: config.withDeleted,
     }
 }) satisfies Prisma.CadetFindManyArgs;
 

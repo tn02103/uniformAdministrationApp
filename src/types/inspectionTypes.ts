@@ -11,8 +11,7 @@ export const plannedInspectionTypeArgs = {
         deregistrations: {
             where: {
                 cadet: {
-                    recdelete: null,
-                    active: true,
+                    status: 'ACTIVE',
                 },
             },
             include: {

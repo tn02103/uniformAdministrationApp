@@ -44,13 +44,11 @@ export const cadetValidation = {
         uuidValidationPattern.test(cadet.id)
         && nameValidationPattern.test(cadet.lastname)
         && nameValidationPattern.test(cadet.firstname)
-        && (typeof cadet.active === "boolean")
         && (typeof cadet.comment === "string")
     ),
     testWithoutId: (cadet: Cadet) => (
         nameValidationPattern.test(cadet.lastname)
         && nameValidationPattern.test(cadet.firstname)
-        && (typeof cadet.active === "boolean")
         && (typeof cadet.comment === "string")
     )
 }

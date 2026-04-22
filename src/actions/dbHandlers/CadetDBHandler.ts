@@ -40,7 +40,7 @@ export class CadetDBHandler {
             },
             where: {
                 fk_assosiation,
-                recdelete: null,
+                status: 'ACTIVE',
                 ...filter,
             },
             orderBy: (orderBy === "lastname")

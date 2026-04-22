@@ -9,7 +9,7 @@ export const getPersonnelNameList = async () => genericSAValidatorV2(AuthRole.us
         select: { id: true, firstname: true, lastname: true },
         where: {
             fk_assosiation: assosiation,
-            recdelete: null
+            status: 'ACTIVE'
         },
         orderBy: [
             { lastname: "asc" },

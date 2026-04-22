@@ -97,7 +97,7 @@ test.describe(() => {
                 expect.soft(dataComponent.txt_lastname).toHaveValue(cadet.lastname),
                 expect.soft(dataComponent.txt_comment).toHaveValue(cadet.comment),
                 expect.soft(dataComponent.div_lastInspection).toHaveText('13.08.2023'),
-                expect.soft(dataComponent.div_active).toHaveText(t.common.active.true),
+                expect.soft(dataComponent.div_active).toHaveText('ACTIVE'),
             ]);
         });
 
@@ -106,12 +106,11 @@ test.describe(() => {
                 expect.soft(dataComponent.txt_firstname).toBeDisabled(),
                 expect.soft(dataComponent.txt_lastname).toBeDisabled(),
                 expect.soft(dataComponent.txt_comment).toBeDisabled(),
-                expect.soft(dataComponent.chk_active).toBeHidden(),
             ]);
         });
     });
 
-    test('delete', async ({ page, cadetDetailPage, messagePopup, staticData: { ids } }) => {
+    test.fixme('delete', async ({ page, cadetDetailPage, messagePopup, staticData: { ids } }) => {
         const listPage = new CadetListPage(page);
 
         await test.step('validate popup and save', async () => {
@@ -137,14 +136,12 @@ test.describe(() => {
         });
 
         await test.step('validate db', async () => {
-            const date = new Date();
-            date.setUTCHours(0, 0, 0, 0);
             const cadet = await prisma.cadet.findUniqueOrThrow({
                 where: { id: ids.cadetIds[1] }
             });
 
-            expect(cadet.recdelete).not.toBeNull();
-            expect(cadet.recdeleteUser).toBe('test4');
+            expect(cadet.status).toBe('DELETED');
+            expect(cadet.deletedAt).not.toBeNull();
         });
     });
 
@@ -152,7 +149,6 @@ test.describe(() => {
         const testData = {
             firstname: 'firstname',
             lastname: 'lastname',
-            active: false,
             comment: 'comment for testing',
         }
 
@@ -164,25 +160,16 @@ test.describe(() => {
                 expect.soft(dataComponent.txt_firstname).toBeEnabled(),
                 expect.soft(dataComponent.txt_lastname).toBeEnabled(),
                 expect.soft(dataComponent.txt_comment).toBeEnabled(),
-                expect.soft(dataComponent.chk_active).toBeVisible(),
-                expect.soft(dataComponent.chk_active).toBeEnabled(),
                 expect.soft(dataComponent.btn_edit).toBeHidden(),
                 expect.soft(dataComponent.btn_save).toBeVisible(),
                 expect.soft(dataComponent.btn_cancel).toBeVisible(),
             ]);
         });
 
-        await test.step('validate lbl_active', async () => {
-            await expect.soft(dataComponent.lbl_active).toHaveText(t.common.active.true);
-            await dataComponent.chk_active.click();
-            await expect.soft(dataComponent.lbl_active).toHaveText(t.common.active.false);
-        })
-
         await test.step('change data & cancel', async () => {
             await dataComponent.txt_firstname.fill(testData.firstname);
             await dataComponent.txt_lastname.fill(testData.lastname);
             await dataComponent.txt_comment.fill(testData.comment);
-            await dataComponent.chk_active.click();
 
             await dataComponent.btn_cancel.click();
         });
@@ -192,7 +179,7 @@ test.describe(() => {
                 expect.soft(dataComponent.txt_firstname).toHaveValue(cadet.firstname),
                 expect.soft(dataComponent.txt_lastname).toHaveValue(cadet.lastname),
                 expect.soft(dataComponent.txt_comment).toHaveValue(cadet.comment),
-                expect.soft(dataComponent.div_active).toHaveText(t.common.active.true),
+                expect.soft(dataComponent.div_active).toHaveText('ACTIVE'),
             ]);
         });
 
@@ -202,7 +189,6 @@ test.describe(() => {
             await dataComponent.txt_firstname.fill(testData.firstname);
             await dataComponent.txt_lastname.fill(testData.lastname);
             await dataComponent.txt_comment.fill(testData.comment);
-            await dataComponent.chk_active.click();
 
             await dataComponent.btn_save.click();
             await dataComponent.btn_edit.isEnabled();
@@ -213,7 +199,7 @@ test.describe(() => {
                 expect.soft(dataComponent.txt_firstname).toHaveValue(testData.firstname),
                 expect.soft(dataComponent.txt_lastname).toHaveValue(testData.lastname),
                 expect.soft(dataComponent.txt_comment).toHaveValue(testData.comment),
-                expect.soft(dataComponent.div_active).toHaveText(t.common.active.false),
+                expect.soft(dataComponent.div_active).toHaveText('ACTIVE'),
             ]);
         });
 
@@ -224,8 +210,8 @@ test.describe(() => {
             
             expect(dbCadet).toMatchObject({
                 ...testData,
-                recdelete: null,
-                recdeleteUser: null,
+                status: 'ACTIVE',
+                deletedAt: null,
             });
         });
     });

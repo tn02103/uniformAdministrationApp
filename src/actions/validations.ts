@@ -155,11 +155,11 @@ export const genericSAValidatorV2 = async (
 export const validateUserAssosiation = async (id: string, fk_assosiation: string) => prisma.user.findUniqueOrThrow({
     where: { id, fk_assosiation }
 });
-export const validateCadetAssosiation = async (cadetId: string, assosiationId: string) => prisma.cadet.findUniqueOrThrow({
+export const validateCadetAssosiation = async (cadetId: string, assosiationId: string) => prisma.cadet.findFirstOrThrow({
     where: {
         id: cadetId,
         fk_assosiation: assosiationId,
-        recdelete: null,
+        status: { not: 'DELETED' },
     }
 });
 

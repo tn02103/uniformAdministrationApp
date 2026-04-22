@@ -91,8 +91,7 @@ export const getInspectionState = async (): Promise<InspectionStatus | null> => 
             where: {
                 fk_inspection: inspection.id,
                 cadet: {
-                    active: true,
-                    recdelete: null,
+                    status: 'ACTIVE',
                 }
             }
         }),
