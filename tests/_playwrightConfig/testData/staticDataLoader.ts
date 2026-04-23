@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { Assosiation, AssosiationConfiguration, Cadet, DeficiencyType, Inspection, Material, MaterialGroup, Prisma, ReturnChecklistTemplate, StorageUnit, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@/prisma/client";
+import { Assosiation, AssosiationConfiguration, Cadet, CadetStatus, DeficiencyType, Inspection, Material, MaterialGroup, Prisma, ReturnChecklistTemplate, StorageUnit, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@/prisma/client";
 import bcrypt from 'bcrypt';
 import StaticDataGenerator, { StaticDataIdType } from "./staticDataGenerator";
 import { getStaticDataIds } from "./staticDataIds"; 
@@ -48,6 +48,9 @@ class StaticDataGetter {
     readonly assosiationConfiguration: AssosiationConfiguration;
     readonly cadets: Cadet[];
     readonly returnChecklistTemplates: ReturnChecklistTemplate[];
+    readonly returnProcessTemplates: Prisma.ReturnProcessTemplateCreateManyInput[];
+    readonly returnProcesses: Prisma.ReturnProcessCreateManyInput[];
+    readonly returnChecklistItemStatuses: Prisma.ReturnChecklistItemStatusCreateManyInput[];
     readonly userIds: string[];
 
     readonly uniformSizes: UniformSize[];
@@ -91,6 +94,9 @@ class StaticDataGetter {
         this.assosiationConfiguration = generator.assosiationConfiguration();
         this.cadets = generator.cadet();
         this.returnChecklistTemplates = generator.returnChecklistTemplates();
+        this.returnProcessTemplates = generator.returnProcessTemplates();
+        this.returnProcesses = generator.returnProcesses();
+        this.returnChecklistItemStatuses = generator.returnChecklistItemStatuses();
         this.uniformSizes = generator.uniformSize();
 
         this.uniformSizelists = [
@@ -300,6 +306,32 @@ class StaticDataCleanup {
         await this.loader.redirects();
     }
 
+    async returnProcess() {
+        await this.deleteReturnChecklistItemStatuses();
+        await this.deleteReturnProcesses();
+
+        // Reset cadet statuses to match static data (tests may have changed them)
+        await prisma.cadet.updateMany({
+            where: { id: { in: [this.data.cadets[10].id, this.data.cadets[11].id] } },
+            data: { status: CadetStatus.RETURNING },
+        });
+
+        await this.loader.returnProcesses();
+        await this.loader.returnChecklistItemStatuses();
+    }
+
+    async returnProcessTemplate() {
+        await this.deleteReturnChecklistItemStatuses();
+        await this.deleteReturnProcesses();
+        await this.deleteReturnChecklistTemplates();
+        await this.deleteReturnProcessTemplates();
+
+        await this.loader.returnProcessTemplates();
+        await this.loader.returnChecklistTemplates();
+        await this.loader.returnProcesses();
+        await this.loader.returnChecklistItemStatuses();
+    }
+
     async removeAssosiation() {
         await this.deleteRedirects();
         await this.deleteDeficiency();
@@ -318,7 +350,10 @@ class StaticDataCleanup {
         await this.deleteUniformSizelist();
         await this.deleteStorage();
 
+        await this.deleteReturnChecklistItemStatuses();
+        await this.deleteReturnProcesses();
         await this.deleteReturnChecklistTemplates();
+        await this.deleteReturnProcessTemplates();
 
         await this.deleteCadet();
         await this.deleteUsers();
@@ -384,6 +419,15 @@ class StaticDataCleanup {
     private deleteReturnChecklistTemplates = () => prisma.returnChecklistTemplate.deleteMany({
         where: { fk_assosiation: this.fk_assosiation }
     });
+    private deleteReturnChecklistItemStatuses = () => prisma.returnChecklistItemStatus.deleteMany({
+        where: { checklistItem: { fk_assosiation: this.fk_assosiation } }
+    });
+    private deleteReturnProcesses = () => prisma.returnProcess.deleteMany({
+        where: { fk_assosiation: this.fk_assosiation }
+    });
+    private deleteReturnProcessTemplates = () => prisma.returnProcessTemplate.deleteMany({
+        where: { fk_assosiation: this.fk_assosiation }
+    });
 }
 class StaticDataLoader {
     readonly data: StaticDataGetter;
@@ -395,11 +439,14 @@ class StaticDataLoader {
     async all() {
         await this.assosiation();
         await this.assosiationConfiguration();
+        await this.returnProcessTemplates();
         await this.returnChecklistTemplates();
         await this.users();
 
         await this.storageUnits();
         await this.cadets();
+        await this.returnProcesses();
+        await this.returnChecklistItemStatuses();
         await this.uniformSize();
         await this.uniformSizelists();
         await this.connectSizes();
@@ -435,6 +482,21 @@ class StaticDataLoader {
         await prisma.returnChecklistTemplate.createMany({
             data: this.data.returnChecklistTemplates
         });
+    }
+
+    async returnProcessTemplates() {
+        if (!this.data.returnProcessTemplates || this.data.returnProcessTemplates.length === 0) return;
+        await prisma.returnProcessTemplate.createMany({ data: this.data.returnProcessTemplates });
+    }
+
+    async returnProcesses() {
+        if (!this.data.returnProcesses || this.data.returnProcesses.length === 0) return;
+        await prisma.returnProcess.createMany({ data: this.data.returnProcesses });
+    }
+
+    async returnChecklistItemStatuses() {
+        if (!this.data.returnChecklistItemStatuses || this.data.returnChecklistItemStatuses.length === 0) return;
+        await prisma.returnChecklistItemStatus.createMany({ data: this.data.returnChecklistItemStatuses });
     }
     async users() {
         await prisma.user.createMany({

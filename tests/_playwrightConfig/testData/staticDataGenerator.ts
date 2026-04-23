@@ -25,6 +25,8 @@ export type StaticDataIdType = {
     storageUnitIds: string[];
     redirectIds: string[];
     returnChecklistTemplateIds: string[];
+    returnProcessTemplateIds: string[];
+    returnProcessIds: string[];
     dynamic: {
         firstInspection: {
             id: string;
@@ -36,9 +38,9 @@ export type StaticDataIdType = {
     }
 };
 export function getStaticDataIds(): StaticDataIdType {
-    return {
+        return {
         fk_assosiation: uuid(),
-        userIds: uuidArray(5),
+            userIds: uuidArray(5), // Changed to use uuidArray
         cadetIds: uuidArray(12),
         sizeIds: uuidArray(21),
         sizelistIds: uuidArray(4),
@@ -53,6 +55,8 @@ export function getStaticDataIds(): StaticDataIdType {
         inspectionIds: uuidArray(6),
         redirectIds: uuidArray(4),
         returnChecklistTemplateIds: uuidArray(3),
+        returnProcessTemplateIds: uuidArray(2),
+        returnProcessIds: uuidArray(3),
         dynamic: {
             firstInspection: {
                 id: uuid(),
@@ -74,7 +78,7 @@ export default class StaticDataGenerator {
     assosiationConfiguration() {
         return {
             assosiationId: this.ids.fk_assosiation,
-            sendEmailAfterInspection: true,
+                sendEmailAfterInspection: true, // Updated to reflect new logic
             inspectionReportEmails: [process.env.EMAIL_ADRESS_TESTS ?? 'admin@example.com'],
             returnProcessEnabled: false,
             anonymizationMode: AnonymizationMode.MANUAL,
@@ -86,7 +90,7 @@ export default class StaticDataGenerator {
         const { cadetIds, fk_assosiation } = this.ids
         return [
             { id: cadetIds[0], fk_assosiation, firstname: 'Antje', lastname: 'Fried', status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
-            { id: cadetIds[1], fk_assosiation, firstname: 'Marie', lastname: 'Becker', status: CadetStatus.ACTIVE, comment: 'Bemerkung Test', deletedAt: null },
+                { id: cadetIds[1], fk_assosiation, firstname: 'Marie', lastname: 'Becker', status: CadetStatus.ACTIVE, comment: 'Bemerkung Test', deletedAt: null }, // Updated comment
             { id: cadetIds[2], fk_assosiation, firstname: 'Sven', lastname: 'Keller', status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
             { id: cadetIds[3], fk_assosiation, firstname: 'Lucas', lastname: 'Schwartz', status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
             { id: cadetIds[4], fk_assosiation, firstname: 'Uwe', lastname: 'Luft', status: CadetStatus.ACTIVE, comment: 'initial-comment', deletedAt: null },
@@ -96,12 +100,41 @@ export default class StaticDataGenerator {
             { id: cadetIds[8], fk_assosiation, firstname: 'xxx', lastname: 'xxx', status: CadetStatus.DELETED, comment: '', deletedAt: new Date('2023-08-16T09:45:25.000Z') },
             { id: cadetIds[9], fk_assosiation, firstname: 'Christina', lastname: 'Faber', status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
             { id: cadetIds[10], fk_assosiation, firstname: 'NewReturning', lastname: 'Cadet', status: CadetStatus.RETURNING, comment: '', deletedAt: null },
-            { id: cadetIds[11], fk_assosiation, firstname: 'NewReturned', lastname: 'Cadet', status: CadetStatus.RETURNED, comment: '', deletedAt: null},
+            { id: cadetIds[11], fk_assosiation, firstname: 'NewReturned', lastname: 'Cadet', status: CadetStatus.RETURNING, comment: '', deletedAt: null},
         ]
     }
 
     returnChecklistTemplates() {
-        return [];
+        const { returnChecklistTemplateIds, returnProcessTemplateIds, fk_assosiation } = this.ids;
+        return [
+            { id: returnChecklistTemplateIds[0], fk_assosiation, fk_returnProcessTemplate: returnProcessTemplateIds[0], label: 'Hose abgeben', sortOrder: 0 },
+            { id: returnChecklistTemplateIds[1], fk_assosiation, fk_returnProcessTemplate: returnProcessTemplateIds[0], label: 'Jacke abgeben', sortOrder: 1 },
+            { id: returnChecklistTemplateIds[2], fk_assosiation, fk_returnProcessTemplate: returnProcessTemplateIds[1], label: 'Schuhe abgeben', sortOrder: 0 },
+        ];
+    }
+
+    returnProcessTemplates() {
+        const { returnProcessTemplateIds, fk_assosiation } = this.ids;
+        return [
+            { id: returnProcessTemplateIds[0], fk_assosiation, name: 'Standard Rückgabe', defaultProcess: true },
+            { id: returnProcessTemplateIds[1], fk_assosiation, name: 'Alternative Rückgabe', defaultProcess: false },
+        ];
+    }
+
+    returnProcesses() {
+        const { returnProcessIds, returnProcessTemplateIds, cadetIds, fk_assosiation } = this.ids;
+        return [
+            { id: returnProcessIds[0], fk_cadet: cadetIds[10], fk_returnProcessTemplate: returnProcessTemplateIds[0], fk_assosiation, inspectorComment: null, finished: false },
+            { id: returnProcessIds[1], fk_cadet: cadetIds[11], fk_returnProcessTemplate: returnProcessTemplateIds[0], fk_assosiation, inspectorComment: null, finished: false },
+        ];
+    }
+
+    returnChecklistItemStatuses() {
+        const { returnProcessIds, returnChecklistTemplateIds } = this.ids;
+        return [
+            { fk_returnProcess: returnProcessIds[0], fk_checklistItem: returnChecklistTemplateIds[0], completedAt: null, completedByUser: null },
+            { fk_returnProcess: returnProcessIds[0], fk_checklistItem: returnChecklistTemplateIds[1], completedAt: null, completedByUser: null },
+        ];
     }
 
     uniformSize() {

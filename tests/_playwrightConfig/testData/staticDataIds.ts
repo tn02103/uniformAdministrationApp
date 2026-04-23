@@ -30,9 +30,18 @@ export function getStaticDataIds(index: number) {
             `${prefix}bb2222-2222-2222-2222-222222222222`
         ],
         returnChecklistTemplateIds: [
-            `${prefix}rct000-0000-0000-0000-000000000001`,
-            `${prefix}rct000-0000-0000-0000-000000000002`,
-            `${prefix}rct000-0000-0000-0000-000000000003`
+            `${prefix}cc0000-0000-4000-8000-000000000001`,
+            `${prefix}cc0000-0000-4000-8000-000000000002`,
+            `${prefix}cc0000-0000-4000-8000-000000000003`
+        ],
+        returnProcessTemplateIds: [
+            `${prefix}ee0000-0000-4000-8000-000000000001`,
+            `${prefix}ee0000-0000-4000-8000-000000000002`
+        ],
+        returnProcessIds: [
+            `${prefix}aa0000-0000-4000-8000-000000000001`,
+            `${prefix}aa0000-0000-4000-8000-000000000002`,
+            `${prefix}aa0000-0000-4000-8000-000000000003`
         ],
         sizeIds: [
             `${prefix}3c9e63-d49a-4152-976d-3ba34eafd7a6`,
