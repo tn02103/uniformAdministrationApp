@@ -35,7 +35,7 @@ export default function CadetDropDown({
 
     const { cadetId }: { cadetId: string } = useParams();
 
-    function handleDeleteCadet() {
+  /*  function handleDeleteCadet() {
         modal?.simpleWarningModal({
             header: t('cadetDetailPage.delete.header'),
             message: t('cadetDetailPage.delete.message', { firstname, lastname }),
@@ -46,7 +46,7 @@ export default function CadetDropDown({
                 toast.error(t('cadetDetailPage.delete.error'));
             })
         });
-    }
+    } */
 
     function handleReturnUniform() {
         if (returnConfig?.returnProcessEnabled && returnConfig.templates.length > 0) {
@@ -66,6 +66,9 @@ export default function CadetDropDown({
             });
         }
     }
+    if (cadetStatus !== CadetStatus.ACTIVE) {
+        return null;
+    }
 
     return (
         <>
@@ -79,9 +82,9 @@ export default function CadetDropDown({
                             {t('cadetDetailPage.returnProcess.dropdownLabel')}
                         </Dropdown.Item>
                     )}
-                    <Dropdown.Item onClick={handleDeleteCadet} data-testid={"btn_cadet_menu_delete"}>
+                    {/* <Dropdown.Item onClick={handleDeleteCadet} data-testid={"btn_cadet_menu_delete"}>
                         {t('common.actions.delete')}
-                    </Dropdown.Item>
+                    </Dropdown.Item> */}
                 </Dropdown.Menu>
             </Dropdown>
             {isReturnModalOpen && returnConfig && (
