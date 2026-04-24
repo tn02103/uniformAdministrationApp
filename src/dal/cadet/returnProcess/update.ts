@@ -14,8 +14,15 @@ export const completeChecklistItem = (data: CompleteChecklistItemInput) =>
         data,
         completeChecklistItemSchema,
         { returnProcessId: data.returnProcessId }
-    ).then(([{ username }, { returnProcessId, checklistItemId, completed }]) =>
+    ).then(([{ username, assosiation }, { returnProcessId, checklistItemId, completed }]) =>
         prisma.$transaction(async (client) => {
+            const checklistItem = await client.returnChecklistTemplate.findFirst({
+                where: { id: checklistItemId, fk_assosiation: assosiation },
+            });
+            if (!checklistItem) {
+                throw new Error("Checklist item not found or does not belong to the organisation");
+            }
+
             const updateResult = await client.returnChecklistItemStatus.updateMany({
                 where: {
                     fk_returnProcess: returnProcessId,
@@ -32,7 +39,7 @@ export const completeChecklistItem = (data: CompleteChecklistItemInput) =>
             }
 
             await client.returnProcess.update({
-                where: { id: returnProcessId },
+                where: { id: returnProcessId, fk_assosiation: assosiation },
                 data: { updatedAt: new Date() },
             });
         })
@@ -49,10 +56,10 @@ export const completeChecklist = (data: CompleteChecklistInput) =>
         data,
         completeChecklistSchema,
         { returnProcessId: data.returnProcessId }
-    ).then(([{ username }, { returnProcessId }]) =>
+    ).then(([{ username, assosiation }, { returnProcessId }]) =>
         prisma.$transaction(async (client) => {
-            const returnProcess = await client.returnProcess.findUniqueOrThrow({
-                where: { id: returnProcessId },
+            const returnProcess = await client.returnProcess.findFirstOrThrow({
+                where: { id: returnProcessId, fk_assosiation: assosiation },
                 include: { itemStatuses: true },
             });
 
@@ -67,12 +74,12 @@ export const completeChecklist = (data: CompleteChecklistInput) =>
             });
 
             await client.returnProcess.update({
-                where: { id: returnProcessId },
+                where: { id: returnProcessId, fk_assosiation: assosiation },
                 data: { finished: true, updatedAt: now },
             });
 
             await client.cadet.update({
-                where: { id: returnProcess.fk_cadet },
+                where: { id: returnProcess.fk_cadet, fk_assosiation: assosiation, deletedAt: null },
                 data: { status: CadetStatus.RETURNED },
             });
         })

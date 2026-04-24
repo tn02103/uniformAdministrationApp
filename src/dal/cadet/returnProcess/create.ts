@@ -19,52 +19,58 @@ export const create = (data: CreateReturnProcessInput) =>
             cadetId: data.cadetId,
             returnProcessTemplateId: data.returnProcessTemplateId,
         }
-    ).then(([{ assosiation }, { cadetId, returnProcessTemplateId, inspectorComment }]) =>
+    ).then(([{ assosiation, username }, { cadetId, returnProcessTemplateId, inspectorComment, preCheckedItemIds }]) =>
         prisma.$transaction(async (client) => {
             const cadet = await client.cadet.findUniqueOrThrow({
-                where: { id: cadetId, fk_assosiation: assosiation },
+                where: { id: cadetId, fk_assosiation: assosiation, deletedAt: null },
             });
 
             if (cadet.status !== CadetStatus.ACTIVE) {
                 throw new Error("Cadet is not ACTIVE");
             }
 
-            let templateId = returnProcessTemplateId;
-            if (!templateId) {
-                const defaultTemplate = await client.returnProcessTemplate.findFirst({
-                    where: { fk_assosiation: assosiation, defaultProcess: true },
+            const checklistItems = await client.returnChecklistTemplate.findMany({
+                where: { fk_returnProcessTemplate: returnProcessTemplateId, fk_assosiation: assosiation },
+            });
+
+            if (returnProcessTemplateId !== undefined && returnProcessTemplateId !== null) {
+                const templateExists = await client.returnProcessTemplate.findFirst({
+                    where: { id: returnProcessTemplateId, fk_assosiation: assosiation },
+                    select: { id: true },
                 });
-                if (!defaultTemplate) {
-                    throw new Error("No default return process template found");
+                if (!templateExists) {
+                    throw new Error("ReturnProcessTemplate not found or does not belong to organisation");
                 }
-                templateId = defaultTemplate.id;
             }
 
-            const checklistItems = await client.returnChecklistTemplate.findMany({
-                where: { fk_returnProcessTemplate: templateId, fk_assosiation: assosiation },
-            });
+            const validPreCheckedItemIds = (preCheckedItemIds ?? []).filter((id) =>
+                checklistItems.some((item) => item.id === id)
+            );
 
             const returnProcess = await client.returnProcess.create({
                 data: {
                     fk_cadet: cadetId,
-                    fk_returnProcessTemplate: templateId,
+                    fk_returnProcessTemplate: returnProcessTemplateId,
                     fk_assosiation: assosiation,
                     inspectorComment: inspectorComment ?? null,
                     finished: false,
                     itemStatuses: {
                         createMany: {
-                            data: checklistItems.map((item) => ({
-                                fk_checklistItem: item.id,
-                                completedAt: null,
-                                completedByUser: null,
-                            })),
+                            data: checklistItems.map((item) => {
+                                const isPreChecked = validPreCheckedItemIds.includes(item.id);
+                                return {
+                                    fk_checklistItem: item.id,
+                                    completedAt: isPreChecked ? new Date() : null,
+                                    completedByUser: isPreChecked ? username : null,
+                                };
+                            }),
                         },
                     },
                 },
             });
 
             await client.cadet.update({
-                where: { id: cadetId },
+                where: { id: cadetId, fk_assosiation: assosiation, deletedAt: null },
                 data: { status: CadetStatus.RETURNING },
             });
 
