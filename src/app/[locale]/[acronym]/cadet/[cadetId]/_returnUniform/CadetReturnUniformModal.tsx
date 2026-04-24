@@ -2,7 +2,7 @@
 import { createReturnProcess } from "@/dal/cadet/returnProcess";
 import { FormContext } from "@/components/fields/Form";
 import { SelectFormField } from "@/components/fields/SelectFormField";
-import { ToggleFormField } from "@/components/fields/ToggleFormField";
+import { CheckboxFormField } from "@/components/fields/CheckboxFormField";
 import { useI18n } from "@/lib/locales/client";
 import { ReturnChecklistTemplate, ReturnProcessTemplate } from "@/prisma/browser";
 import { ReturnProcessModalFormType } from "@/zod/returnProcess";
@@ -81,8 +81,10 @@ export default function CadetReturnUniformModal({ cadetId, templates, onClose }:
                         <Modal.Title>
                             {t("cadetDetailPage.returnProcess.modal.header")}
                         </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
                         {templates.length > 1 && (
-                            <div className="ms-3">
+                            <div className="d-flex justify-content-center mb-3">
                                 <SelectFormField<ReturnProcessModalFormType>
                                     name="templateId"
                                     label={t("cadetDetailPage.returnProcess.modal.templateLabel")}
@@ -92,10 +94,8 @@ export default function CadetReturnUniformModal({ cadetId, templates, onClose }:
                                 />
                             </div>
                         )}
-                    </Modal.Header>
-                    <Modal.Body>
                         {sortedItems.map((item) => (
-                            <ToggleFormField<ReturnProcessModalFormType>
+                            <CheckboxFormField<ReturnProcessModalFormType>
                                 key={item.id}
                                 name={`items.${item.id}` as Path<ReturnProcessModalFormType>}
                                 label={item.label}
