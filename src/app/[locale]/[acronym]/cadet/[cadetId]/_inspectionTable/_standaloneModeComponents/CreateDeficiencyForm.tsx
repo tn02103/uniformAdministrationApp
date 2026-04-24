@@ -54,8 +54,7 @@ export function CreateDeficiencyForm({
                 cadetId,
             }}
         >
-            <div className="border rounded p-2 mt-2 bg-light">
-                <Row>
+                 <Row>
                     <DeficiencyFormFields namePrefix="" cadetId={cadetId} />
                 </Row>
                 <div className="d-flex gap-2 mt-2">
@@ -71,7 +70,6 @@ export function CreateDeficiencyForm({
                         onClick={onCancel}
                     />
                 </div>
-            </div>
         </Form>
     );
 }

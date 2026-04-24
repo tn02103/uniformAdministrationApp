@@ -85,6 +85,50 @@ describe('createDeficiency Integration Tests', () => {
             .rejects.toThrow();
     });
 
+    it('sets fk_inspection_created to null when no active inspection exists', async () => {
+        // inspectionIds[4] has date=today but timeStart=null — not active
+        const typeId = staticData.ids.deficiencyTypeIds[0];
+        const uniformId = staticData.ids.uniformIds[0][0];
+
+        await createDeficiency({ typeId, comment: 'no active inspection', uniformId });
+
+        const created = await prisma.deficiency.findFirst({
+            where: { fk_deficiencyType: typeId, comment: 'no active inspection' },
+        });
+
+        expect(created).not.toBeNull();
+        expect(created!.fk_inspection_created).toBeNull();
+    });
+
+    it('sets fk_inspection_created to active inspection id when inspection is active', async () => {
+        const activeInspectionId = staticData.ids.inspectionIds[4];
+        // Activate the inspection by setting timeStart
+        await prisma.inspection.update({
+            where: { id: activeInspectionId },
+            data: { timeStart: '09:00' },
+        });
+
+        try {
+            const typeId = staticData.ids.deficiencyTypeIds[0];
+            const uniformId = staticData.ids.uniformIds[0][0];
+
+            await createDeficiency({ typeId, comment: 'active inspection test', uniformId });
+
+            const created = await prisma.deficiency.findFirst({
+                where: { fk_deficiencyType: typeId, comment: 'active inspection test' },
+            });
+
+            expect(created).not.toBeNull();
+            expect(created!.fk_inspection_created).toBe(activeInspectionId);
+        } finally {
+            // Restore inspection to inactive state
+            await prisma.inspection.update({
+                where: { id: activeInspectionId },
+                data: { timeStart: null },
+            });
+        }
+    });
+
     it('rejects request with role below inspector', async () => {
         global.__ROLE__ = AuthRole.user;
         const typeId = staticData.ids.deficiencyTypeIds[0];

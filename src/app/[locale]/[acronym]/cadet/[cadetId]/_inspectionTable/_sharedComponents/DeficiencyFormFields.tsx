@@ -75,7 +75,6 @@ export function DeficiencyFormFields({ namePrefix, cadetId, typeSelectDisabled }
                     label={t("common.type")}
                     options={deficiencyTypeOptions}
                     disabled={typeSelectDisabled}
-                    hookFormValidation
                     onValueChange={handleTypeChange}
                 />
             </Col>
@@ -85,7 +84,6 @@ export function DeficiencyFormFields({ namePrefix, cadetId, typeSelectDisabled }
                     <InputFormField
                         name={n("description")}
                         label={t("common.description")}
-                        hookFormValidation
                         maxLength={30}
                     />
                 </Col>
@@ -100,7 +98,6 @@ export function DeficiencyFormFields({ namePrefix, cadetId, typeSelectDisabled }
                             name={n("uniformId")}
                             label={t("common.uniform.item", { count: 1 })}
                             options={uniformOptions}
-                            hookFormValidation
                         />
                     </Col>
                 )}
@@ -113,7 +110,6 @@ export function DeficiencyFormFields({ namePrefix, cadetId, typeSelectDisabled }
                             label={t("common.material.material")}
                             options={materialOptions}
                             required
-                            hookFormValidation
                         />
                     </Col>
                 )}
@@ -124,7 +120,6 @@ export function DeficiencyFormFields({ namePrefix, cadetId, typeSelectDisabled }
                     label={t("common.comment")}
                     rows={2}
                     maxLength={1000}
-                    hookFormValidation
                 />
             </Col>
         </>

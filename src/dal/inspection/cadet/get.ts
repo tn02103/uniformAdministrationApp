@@ -80,7 +80,7 @@ export const getCadetInspectionFormData = async (props: string): Promise<CadetIn
             description: def.description,
             comment: def.comment,
             uniformId: def.fk_uniform ?? null,
-            materialId: def.fk_material,
+            materialId: def.fk_material ?? null,
             dateCreated: dayjs(def.dateCreated).format("YYYY-MM-DDTHH:mm:ss"),
         })),
     };

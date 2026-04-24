@@ -1,5 +1,10 @@
+import { unsecuredGetActiveInspection } from "../state";
 import { createDeficiency } from "./create";
 import { prismaMock } from '@test-utils/prisma-mock';
+
+vi.mock("../state", () => ({
+    unsecuredGetActiveInspection: vi.fn(),
+}));
 
 describe('createDeficiency', () => {
     const date = new Date();
@@ -12,6 +17,7 @@ describe('createDeficiency', () => {
         vi.useFakeTimers();
         vi.setSystemTime(date);
         prismaMock.deficiency.create.mockResolvedValue(undefined as any);
+        vi.mocked(unsecuredGetActiveInspection).mockResolvedValue(null);
     });
 
     it('creates a deficiency for cadet-dependent type with provided description', async () => {
@@ -44,7 +50,7 @@ describe('createDeficiency', () => {
         });
     });
 
-    it('sets fk_inspection_created to null regardless of active inspection', async () => {
+    it('sets fk_inspection_created to null when no active inspection exists', async () => {
         prismaMock.deficiencyType.findFirst.mockResolvedValueOnce({
             id: uniformTypeId,
             dependent: 'uniform',
@@ -54,12 +60,37 @@ describe('createDeficiency', () => {
             type: { name: 'Typ1', id: 'typeId' },
             number: '1184',
         } as any);
+        vi.mocked(unsecuredGetActiveInspection).mockResolvedValueOnce(null);
 
         await createDeficiency({ typeId: uniformTypeId, comment: 'c', uniformId });
 
-        expect(prismaMock.inspection.findFirst).not.toHaveBeenCalled();
         expect(prismaMock.deficiency.create).toHaveBeenCalledWith(
             expect.objectContaining({ data: expect.objectContaining({ fk_inspection_created: null }) })
+        );
+    });
+
+    it('sets fk_inspection_created to active inspection id when inspection is active', async () => {
+        const activeInspectionId = 'f1e2d3c4-b5a6-7890-abcd-ef1234567890';
+        prismaMock.deficiencyType.findFirst.mockResolvedValueOnce({
+            id: uniformTypeId,
+            dependent: 'uniform',
+        } as any);
+        prismaMock.uniform.findUnique.mockResolvedValueOnce({
+            id: uniformId,
+            type: { name: 'Typ1', id: 'typeId' },
+            number: '1184',
+        } as any);
+        vi.mocked(unsecuredGetActiveInspection).mockResolvedValueOnce({
+            id: activeInspectionId,
+            date: new Date().toISOString().split('T')[0],
+            timeStart: '09:00',
+            timeEnd: null,
+        } as any);
+
+        await createDeficiency({ typeId: uniformTypeId, comment: 'c', uniformId });
+
+        expect(prismaMock.deficiency.create).toHaveBeenCalledWith(
+            expect.objectContaining({ data: expect.objectContaining({ fk_inspection_created: activeInspectionId }) })
         );
     });
 
@@ -168,6 +199,7 @@ describe('createDeficiency', () => {
             prismaMock.material.findUnique.mockResolvedValueOnce({
                 id: materialId,
                 typename: 'Helm',
+                materialGroup: { description: 'Kopfbedeckung' },
             } as any);
 
             const result = createDeficiency({
@@ -180,7 +212,7 @@ describe('createDeficiency', () => {
 
             expect(prismaMock.deficiency.create).toHaveBeenCalledWith({
                 data: expect.objectContaining({
-                    description: 'Helm',
+                    description: 'Kopfbedeckung-Helm',
                     fk_material: materialId,
                     fk_cadet: cadetId,
                 }),
