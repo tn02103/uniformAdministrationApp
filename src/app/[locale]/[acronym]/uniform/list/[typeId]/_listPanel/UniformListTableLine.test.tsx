@@ -49,7 +49,7 @@ describe("UniformListTableLine", () => {
         ...mockUniformList[0],
         issuedEntries: [
             {
-                cadet: { id: "cadet1", lastname: "Doe", firstname: "John", recdelete: null, recdeleteUser: null },
+                cadet: { id: "cadet1", lastname: "Doe", firstname: "John" },
                 dateIssued: dayjs("2023-01-01").toDate(),
             }
         ],

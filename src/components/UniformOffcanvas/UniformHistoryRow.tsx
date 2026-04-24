@@ -27,8 +27,8 @@ export function UniformHistoryRow({ uniformId }: UniformHistoryRowProps) {
                         </Col>
                         <Col
                             aria-label={'person'}
-                            className={issueEntry.cadet.recdelete ? "text-decoration-line-through text-danger" : ""}
-                            title={issueEntry.cadet.recdelete ? t('uniformOffcanvas.history.title.deleted') : ""}
+                            className={issueEntry.cadet.deletedAt ? "text-decoration-line-through text-danger" : ""}
+                            title={issueEntry.cadet.deletedAt ? t('uniformOffcanvas.history.title.deleted') : ""}
                         >
                             {issueEntry.cadet.firstname} {issueEntry.cadet.lastname}
                         </Col>

@@ -749,8 +749,7 @@ describe('UniformCounts DAL - Unit Tests', () => {
 
                 expect(prismaMock.cadet.findMany).toHaveBeenCalledWith({
                     where: {
-                        active: true,
-                        recdelete: null,
+                        status: 'ACTIVE',
                         fk_assosiation: 'test-assosiation-id'
                     },
                     select: {

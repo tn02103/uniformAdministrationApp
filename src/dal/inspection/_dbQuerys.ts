@@ -52,7 +52,7 @@ export class DBQuery {
                     (SELECT COUNT(c.id)
                        FROM base.cadet c
                       WHERE c.fk_assosiation = i.fk_assosiation
-                        AND c.recdelete IS NULL) as "activeCadets",
+                        AND c.status = 'ACTIVE') as "activeCadets",
          	        (SELECT COUNT(cd.id)
                        FROM inspection.deficiency cd
                       WHERE cd.fk_inspection_resolved = i.id) as "newlyResolvedDeficiencies",
@@ -154,7 +154,7 @@ export class DBQuery {
 			   GROUP BY "fk_cadet") as "counts"
 	         ON counts.fk_cadet = c.id
           WHERE c.fk_assosiation= ${fk_assosiation}
-            AND c.recdelete IS NULL
+            AND c.status = 'ACTIVE'
     `.then(list => list.map(d => ({
       cadet: {
         id: d.cadetId,

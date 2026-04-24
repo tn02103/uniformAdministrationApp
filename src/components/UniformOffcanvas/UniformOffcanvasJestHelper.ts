@@ -178,7 +178,7 @@ export const mockUniform = {
                 id: 'cadet1',
                 firstname: 'John',
                 lastname: 'Doe',
-                recdelete: null,
+                deletedAt: null,
             },
         },
     ],
@@ -193,7 +193,7 @@ export const mockUniformHistory: UniformHistroyEntry[] = [
             id: 'cadet1',
             firstname: 'John',
             lastname: 'Doe',
-            recdelete: null,
+            deletedAt: null,
         },
     },
     {
@@ -204,7 +204,7 @@ export const mockUniformHistory: UniformHistroyEntry[] = [
             id: 'cadet2',
             firstname: 'Jane',
             lastname: 'Smith',
-            recdelete: new Date('2023-10-03T12:00:00Z'),
+            deletedAt: new Date('2023-10-03T12:00:00Z'),
         },
     },
 ];

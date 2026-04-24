@@ -51,7 +51,7 @@ const getRestrictedPersonnelList = (fk_assosiation: string, orderBy: "lastname" 
         },
         where: {
             fk_assosiation,
-            recdelete: null,
+            status: 'ACTIVE',
         },
         orderBy: (orderBy === "lastname")
             ? [{ lastname: asc }, { firstname: asc }]

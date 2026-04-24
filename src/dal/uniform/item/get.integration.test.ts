@@ -11,12 +11,12 @@ it('should return a list of uniform history entries', async () => {
     const result = await getHistory(uniformId);
     expect(result).toBeDefined();
     expect(result.length).toBeGreaterThan(0);
-    cleanData(result, ["id", "cadet.id", "cadet.recdelete"]);
+    cleanData(result, ["id", "cadet.id", "cadet.deletedAt"]);
     expect(result).toMatchSnapshot();
-    expect(result[0].cadet.recdelete).toBeUndefined();
-    expect(result[1].cadet.recdelete).toBeUndefined();
-    expect(result[2].cadet.recdelete).toBeUndefined();
-    expect(result[3].cadet.recdelete).not.toBeNull();
+    expect(result[0].cadet.deletedAt).toBeUndefined();
+    expect(result[1].cadet.deletedAt).toBeUndefined();
+    expect(result[2].cadet.deletedAt).toBeUndefined();
+    expect(result[3].cadet.deletedAt).not.toBeNull();
 });
 it('should return a list of defficiencies', async () => {
     const result = await getDeficiencies({ uniformId: ids.uniformIds[0][46] });

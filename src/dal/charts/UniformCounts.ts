@@ -155,8 +155,7 @@ export const getUniformCountByType = async (): Promise<UniformCountByTypeData[]>
         // Get all active cadets for missing calculation
         const activeCadets = await prisma.cadet.findMany({
             where: {
-                active: true,
-                recdelete: null,
+                status: 'ACTIVE',
                 fk_assosiation: assosiation
             },
             ...cadetLableArgs,

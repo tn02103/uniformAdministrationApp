@@ -71,7 +71,7 @@ test('E2E0284: validate initialState and save', async ({ page, dataComponent, pa
         await expect(dataComponent.txt_firstname).toHaveValue('Bob');
         await expect(dataComponent.txt_lastname).toHaveValue('Beispiel');
         await expect(dataComponent.txt_comment).toHaveValue('Dies ist ein Kommentar');
-        await expect(dataComponent.div_active).toHaveText(germ.common.active.true);
+        await expect(dataComponent.div_active).toHaveText('ACTIVE');
         await expect(dataComponent.div_lastInspection).toHaveText(germ.common.cadet.notInspected);
     });
 
@@ -88,9 +88,8 @@ test('E2E0284: validate initialState and save', async ({ page, dataComponent, pa
         expect(dbCadet).toMatchObject({
             firstname: 'Bob',
             lastname: 'Beispiel',
-            active: true,
-            recdelete: null,
-            recdeleteUser: null,
+            status: 'ACTIVE',
+            deletedAt: null,
         });
     });
 });

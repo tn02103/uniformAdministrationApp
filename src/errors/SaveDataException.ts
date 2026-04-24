@@ -28,7 +28,7 @@ export class UniformIssuedException extends CustomException {
                 id: owner.id,
                 firstname: owner.firstname,
                 lastname: owner.lastname,
-                active: owner.active,
+                status: owner.status,
                 comment: owner.comment,
             },
         }

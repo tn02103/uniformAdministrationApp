@@ -24,16 +24,21 @@ model Assosiation {
     AssosiationConfiguration AssosiationConfiguration[]
     StorageUnit              StorageUnit[]
     Redirect                 Redirect[]
+    returnProcessTemplates   ReturnProcessTemplate[]
+    returnProcesses          ReturnProcess[]
 
     @@map("assosiation")
     @@schema("authentication")
 }
 
 model AssosiationConfiguration {
-    assosiationId            String      @id @db.Char(36)
+    assosiationId            String            @id @db.Char(36)
     sendEmailAfterInspection Boolean
     inspectionReportEmails   String[]
-    assosiation              Assosiation @relation(fields: [assosiationId], references: [id], onDelete: Cascade)
+    returnProcessEnabled     Boolean           @default(false)
+    anonymizationMode        AnonymizationMode @default(MANUAL)
+    anonymizationDelayDays   Int               @default(30)
+    assosiation              Assosiation       @relation(fields: [assosiationId], references: [id], onDelete: Cascade)
 
     @@map("assosiation_configuration")
     @@schema("base")
@@ -74,19 +79,84 @@ model Cadet {
     fk_assosiation  String            @db.Char(36)
     firstname       String            @db.VarChar(30)
     lastname        String            @db.VarChar(30)
-    active          Boolean           @default(true)
     comment         String            @default("")
-    recdelete       DateTime?         @db.Timestamp(6)
-    recdeleteUser   String?           @map("recdelete_user") @db.VarChar(10)
+    status          CadetStatus       @default(ACTIVE)
+    deletedAt       DateTime?         @map("deleted_at") @db.Timestamp(6)
     assosiation     Assosiation       @relation(fields: [fk_assosiation], references: [id])
     materialIssued  MaterialIssued[]
     uniformIssued   UniformIssued[]
     cadetDeficiency CadetDeficiency[]
     cadetInspection CadetInspection[]
     deregistrations Deregistration[]
+    returnProcesses ReturnProcess[]
 
     @@index([fk_assosiation])
     @@map("cadet")
+    @@schema("base")
+}
+
+model ReturnProcessTemplate {
+    id              String                    @id @default(uuid())
+    fk_assosiation  String                    @db.Char(36)
+    name            String
+    defaultProcess  Boolean                   @default(false)
+    createdAt       DateTime                  @default(now())
+    updatedAt       DateTime                  @updatedAt
+    assosiation     Assosiation               @relation(fields: [fk_assosiation], references: [id])
+    checklistItems  ReturnChecklistTemplate[]
+    returnProcesses ReturnProcess[]
+
+    @@index([fk_assosiation])
+    @@map("return_process_template")
+    @@schema("base")
+}
+
+model ReturnProcess {
+    id                       String                      @id @default(cuid())
+    fk_cadet                 String                      @db.Char(36)
+    cadet                    Cadet                       @relation(fields: [fk_cadet], references: [id])
+    fk_returnProcessTemplate String                      @db.Char(36)
+    returnProcessTemplate    ReturnProcessTemplate       @relation(fields: [fk_returnProcessTemplate], references: [id])
+    fk_assosiation           String                      @db.Char(36)
+    assosiation              Assosiation                 @relation(fields: [fk_assosiation], references: [id])
+    inspectorComment         String?
+    finished                 Boolean                     @default(false)
+    createdAt                DateTime                    @default(now())
+    updatedAt                DateTime                    @updatedAt
+    itemStatuses             ReturnChecklistItemStatus[]
+
+    @@index([fk_assosiation])
+    @@index([fk_cadet])
+    @@map("return_process")
+    @@schema("base")
+}
+
+model ReturnChecklistTemplate {
+    id                       String                      @id @default(uuid())
+    fk_assosiation           String                      @db.Char(36)
+    fk_returnProcessTemplate String                      @db.Char(36)
+    label                    String
+    sortOrder                Int                         @default(0)
+    returnProcessTemplate    ReturnProcessTemplate       @relation(fields: [fk_returnProcessTemplate], references: [id])
+    itemStatuses             ReturnChecklistItemStatus[]
+
+    @@index([fk_returnProcessTemplate])
+    @@index([fk_assosiation])
+    @@map("return_checklist_template")
+    @@schema("base")
+}
+
+model ReturnChecklistItemStatus {
+    fk_returnProcess String                  @db.Char(36)
+    fk_checklistItem String                  @db.Char(36)
+    completedAt      DateTime?
+    completedByUser  String?                 @db.VarChar(10)
+    returnProcess    ReturnProcess           @relation(fields: [fk_returnProcess], references: [id])
+    checklistItem    ReturnChecklistTemplate @relation(fields: [fk_checklistItem], references: [id])
+
+    @@id([fk_returnProcess, fk_checklistItem])
+    @@index([fk_checklistItem])
+    @@map("return_checklist_item_status")
     @@schema("base")
 }
 
@@ -391,6 +461,23 @@ enum deficiencytype_relation {
     material
 
     @@schema("inspection")
+}
+
+enum CadetStatus {
+    ACTIVE
+    RETURNING
+    RETURNED
+    DELETED
+
+    @@schema("base")
+}
+
+enum AnonymizationMode {
+    MANUAL
+    AFTER_DAYS
+    IMMEDIATELY
+
+    @@schema("base")
 }
 
 model Redirect {

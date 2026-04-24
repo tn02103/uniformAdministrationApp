@@ -7,7 +7,7 @@ export const cadetArgs = {
         id: true,
         firstname: true,
         lastname: true,
-        active: true,
+        status: true,
         comment: true
     }
 } satisfies Prisma.CadetFindManyArgs;

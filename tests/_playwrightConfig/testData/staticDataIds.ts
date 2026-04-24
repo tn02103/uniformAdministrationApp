@@ -25,7 +25,23 @@ export function getStaticDataIds(index: number) {
             `${prefix}0bae84-d8c0-497e-9ed5-40884066b3c6`,
             `${prefix}1f170d-c3c2-4fbf-b6a1-33526e694e69`,
             `${prefix}3e0c91-c657-4de1-95aa-6fade66f8a1a`,
-            `${prefix}9afa67-6785-4276-b37b-6d675187c25d`
+            `${prefix}9afa67-6785-4276-b37b-6d675187c25d`,
+            `${prefix}aa1111-1111-1111-1111-111111111111`,
+            `${prefix}bb2222-2222-2222-2222-222222222222`
+        ],
+        returnChecklistTemplateIds: [
+            `${prefix}cc0000-0000-4000-8000-000000000001`,
+            `${prefix}cc0000-0000-4000-8000-000000000002`,
+            `${prefix}cc0000-0000-4000-8000-000000000003`
+        ],
+        returnProcessTemplateIds: [
+            `${prefix}ee0000-0000-4000-8000-000000000001`,
+            `${prefix}ee0000-0000-4000-8000-000000000002`
+        ],
+        returnProcessIds: [
+            `${prefix}aa0000-0000-4000-8000-000000000001`,
+            `${prefix}aa0000-0000-4000-8000-000000000002`,
+            `${prefix}aa0000-0000-4000-8000-000000000003`
         ],
         sizeIds: [
             `${prefix}3c9e63-d49a-4152-976d-3ba34eafd7a6`,

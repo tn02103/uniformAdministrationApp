@@ -20,7 +20,7 @@ const defaultValue: Cadet = {
     id: "",
     lastname: "",
     firstname: "",
-    active: true,
+    status: "ACTIVE",
     comment: "",
 }
 
@@ -198,12 +198,7 @@ const CadetDataTableForm = ({ initialData }: PropType) => {
                             </Row>
                             <Row>
                                 <Col data-testid="div_active" className="pb-2">
-                                    {editable
-                                        ? <Form.Check
-                                            type="switch"
-                                            label={t(`common.active.${watch("active") ? "true" : "false"}`)}
-                                            {...register("active")} />
-                                        : t(`common.active.${watch("active") ? "true" : "false"}`)}
+                                    {watch("status")}
                                 </Col >
                             </Row >
                         </Col >

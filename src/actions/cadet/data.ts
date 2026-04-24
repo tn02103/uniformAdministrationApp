@@ -11,10 +11,10 @@ export const getCadetData = cache(async (cadetId: string): Promise<Cadet> => gen
     (uuidValidationPattern.test(cadetId)),
     { cadetId }
 ).then(() => {
-    return prisma.cadet.findUniqueOrThrow({
+    return prisma.cadet.findFirstOrThrow({
         where: {
             id: cadetId,
-            recdelete: null,
+            status: { not: 'DELETED' },
         },
         ...cadetArgs
     });
@@ -50,7 +50,6 @@ export const saveCadetData = async (cadet: Cadet) => genericSAValidatorV2(
         data: {
             firstname: cadet.firstname,
             lastname: cadet.lastname,
-            active: cadet.active,
             comment: cadet.comment,
         }
     });
@@ -65,7 +64,6 @@ export const createCadet = async (cadet: Cadet) => genericSAValidatorV2(
     data: {
         firstname: cadet.firstname,
         lastname: cadet.lastname,
-        active: cadet.active,
         comment: cadet.comment,
         fk_assosiation: assosiation,
     }

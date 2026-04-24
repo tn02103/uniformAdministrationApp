@@ -196,7 +196,7 @@ test.describe('Offcanvas - CadetOverview', () => {
                 { dateIssued: "16.08.2023", cadet: "Marie Becker", dateReturned: '' },
                 { dateIssued: "11.08.2023", cadet: "Antje Fried", dateReturned: "15.08.2023" },
                 { dateIssued: "06.08.2023", cadet: "Christina Faber", dateReturned: "10.08.2023" },
-                { dateIssued: "01.08.2023", cadet: "Simone Osterhagen", dateReturned: "05.08.2023" },
+                { dateIssued: "01.08.2023", cadet: "xxx xxx", dateReturned: "05.08.2023" },
             ];
 
             const dialog = await openOffcanvas(page, ids.uniformIds[0][86], 1186);

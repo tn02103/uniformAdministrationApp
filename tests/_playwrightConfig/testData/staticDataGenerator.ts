@@ -1,4 +1,4 @@
-import { AssosiationConfiguration, Deregistration, Inspection, Prisma, Redirect, StorageUnit, Uniform } from "@/prisma/client";
+import { AnonymizationMode, AssosiationConfiguration, CadetStatus, Deregistration, Inspection, Prisma, Redirect, StorageUnit, Uniform } from "@/prisma/client";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat.js";
 import utc from "dayjs/plugin/utc.js";
@@ -24,6 +24,9 @@ export type StaticDataIdType = {
     uniformTypeIds: string[];
     storageUnitIds: string[];
     redirectIds: string[];
+    returnChecklistTemplateIds: string[];
+    returnProcessTemplateIds: string[];
+    returnProcessIds: string[];
     dynamic: {
         firstInspection: {
             id: string;
@@ -35,10 +38,10 @@ export type StaticDataIdType = {
     }
 };
 export function getStaticDataIds(): StaticDataIdType {
-    return {
+        return {
         fk_assosiation: uuid(),
-        userIds: uuidArray(5),
-        cadetIds: uuidArray(10),
+            userIds: uuidArray(5), // Changed to use uuidArray
+        cadetIds: uuidArray(12),
         sizeIds: uuidArray(21),
         sizelistIds: uuidArray(4),
         uniformTypeIds: uuidArray(5),
@@ -51,6 +54,9 @@ export function getStaticDataIds(): StaticDataIdType {
         deficiencyIds: uuidArray(16),
         inspectionIds: uuidArray(6),
         redirectIds: uuidArray(4),
+        returnChecklistTemplateIds: uuidArray(3),
+        returnProcessTemplateIds: uuidArray(2),
+        returnProcessIds: uuidArray(3),
         dynamic: {
             firstInspection: {
                 id: uuid(),
@@ -72,25 +78,63 @@ export default class StaticDataGenerator {
     assosiationConfiguration() {
         return {
             assosiationId: this.ids.fk_assosiation,
-            sendEmailAfterInspection: true,
+                sendEmailAfterInspection: true, // Updated to reflect new logic
             inspectionReportEmails: [process.env.EMAIL_ADRESS_TESTS ?? 'admin@example.com'],
+            returnProcessEnabled: false,
+            anonymizationMode: AnonymizationMode.MANUAL,
+            anonymizationDelayDays: 30,
         } satisfies AssosiationConfiguration
     }
 
     cadet() {
         const { cadetIds, fk_assosiation } = this.ids
         return [
-            { id: cadetIds[0], fk_assosiation, firstname: 'Antje', lastname: 'Fried', active: true, comment: '', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[1], fk_assosiation, firstname: 'Marie', lastname: 'Becker', active: true, comment: 'Bemerkung Test', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[2], fk_assosiation, firstname: 'Sven', lastname: 'Keller', active: true, comment: '', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[3], fk_assosiation, firstname: 'Lucas', lastname: 'Schwartz', active: true, comment: '', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[4], fk_assosiation, firstname: 'Uwe', lastname: 'Luft', active: true, comment: 'initial-comment', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[5], fk_assosiation, firstname: 'Maik', lastname: 'Finkel', active: true, comment: 'initial-comment', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[6], fk_assosiation, firstname: 'Tim', lastname: 'Weissmuller', active: true, comment: '', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[7], fk_assosiation, firstname: 'Juliane', lastname: 'Unger', active: true, comment: '', recdelete: null, recdeleteUser: null },
-            { id: cadetIds[8], fk_assosiation, firstname: 'Simone', lastname: 'Osterhagen', active: true, comment: '', recdelete: new Date('2023-08-16 09:45:25'), recdeleteUser: 'test4' },
-            { id: cadetIds[9], fk_assosiation, firstname: 'Christina', lastname: 'Faber', active: true, comment: '', recdelete: null, recdeleteUser: null },
+            { id: cadetIds[0], fk_assosiation, firstname: 'Antje', lastname: 'Fried', status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
+                { id: cadetIds[1], fk_assosiation, firstname: 'Marie', lastname: 'Becker', status: CadetStatus.ACTIVE, comment: 'Bemerkung Test', deletedAt: null }, // Updated comment
+            { id: cadetIds[2], fk_assosiation, firstname: 'Sven', lastname: 'Keller', status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
+            { id: cadetIds[3], fk_assosiation, firstname: 'Lucas', lastname: 'Schwartz', status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
+            { id: cadetIds[4], fk_assosiation, firstname: 'Uwe', lastname: 'Luft', status: CadetStatus.ACTIVE, comment: 'initial-comment', deletedAt: null },
+            { id: cadetIds[5], fk_assosiation, firstname: 'Maik', lastname: 'Finkel', status: CadetStatus.ACTIVE, comment: 'initial-comment', deletedAt: null },
+            { id: cadetIds[6], fk_assosiation, firstname: 'Tim', lastname: 'Weissmuller', status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
+            { id: cadetIds[7], fk_assosiation, firstname: 'Juliane', lastname: 'Unger', status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
+            { id: cadetIds[8], fk_assosiation, firstname: 'xxx', lastname: 'xxx', status: CadetStatus.DELETED, comment: '', deletedAt: new Date('2023-08-16T09:45:25.000Z') },
+            { id: cadetIds[9], fk_assosiation, firstname: 'Christina', lastname: 'Faber', status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
+            { id: cadetIds[10], fk_assosiation, firstname: 'NewReturning', lastname: 'Cadet', status: CadetStatus.RETURNING, comment: '', deletedAt: null },
+            { id: cadetIds[11], fk_assosiation, firstname: 'NewReturned', lastname: 'Cadet', status: CadetStatus.RETURNED, comment: '', deletedAt: null},
         ]
+    }
+
+    returnChecklistTemplates() {
+        const { returnChecklistTemplateIds, returnProcessTemplateIds, fk_assosiation } = this.ids;
+        return [
+            { id: returnChecklistTemplateIds[0], fk_assosiation, fk_returnProcessTemplate: returnProcessTemplateIds[0], label: 'Hose abgeben', sortOrder: 0 },
+            { id: returnChecklistTemplateIds[1], fk_assosiation, fk_returnProcessTemplate: returnProcessTemplateIds[0], label: 'Jacke abgeben', sortOrder: 1 },
+            { id: returnChecklistTemplateIds[2], fk_assosiation, fk_returnProcessTemplate: returnProcessTemplateIds[1], label: 'Schuhe abgeben', sortOrder: 0 },
+        ];
+    }
+
+    returnProcessTemplates() {
+        const { returnProcessTemplateIds, fk_assosiation } = this.ids;
+        return [
+            { id: returnProcessTemplateIds[0], fk_assosiation, name: 'Standard Rückgabe', defaultProcess: true },
+            { id: returnProcessTemplateIds[1], fk_assosiation, name: 'Alternative Rückgabe', defaultProcess: false },
+        ];
+    }
+
+    returnProcesses() {
+        const { returnProcessIds, returnProcessTemplateIds, cadetIds, fk_assosiation } = this.ids;
+        return [
+            { id: returnProcessIds[0], fk_cadet: cadetIds[10], fk_returnProcessTemplate: returnProcessTemplateIds[0], fk_assosiation, inspectorComment: null, finished: false },
+            { id: returnProcessIds[1], fk_cadet: cadetIds[11], fk_returnProcessTemplate: returnProcessTemplateIds[0], fk_assosiation, inspectorComment: null, finished: true },
+        ];
+    }
+
+    returnChecklistItemStatuses() {
+        const { returnProcessIds, returnChecklistTemplateIds } = this.ids;
+        return [
+            { fk_returnProcess: returnProcessIds[0], fk_checklistItem: returnChecklistTemplateIds[0], completedAt: null, completedByUser: null },
+            { fk_returnProcess: returnProcessIds[0], fk_checklistItem: returnChecklistTemplateIds[1], completedAt: null, completedByUser: null },
+        ];
     }
 
     uniformSize() {
@@ -347,6 +391,8 @@ export default class StaticDataGenerator {
             { fk_cadet: this.ids.cadetIds[8], fk_uniform: this.ids.uniformIds[0][55], dateIssued: new Date('2023-08-13T09:10:55.000Z'), dateReturned: new Date('2023-08-16T09:45:25.000Z') },
             { fk_cadet: this.ids.cadetIds[8], fk_uniform: this.ids.uniformIds[0][56], dateIssued: new Date('2023-08-13T09:11:00.000Z'), dateReturned: new Date('2023-08-16T09:45:25.000Z') },
             { fk_cadet: this.ids.cadetIds[8], fk_uniform: this.ids.uniformIds[0][57], dateIssued: new Date('2023-08-13T09:11:05.000Z'), dateReturned: new Date('2023-08-16T09:45:25.000Z') },
+            { fk_cadet: this.ids.cadetIds[10], fk_uniform: this.ids.uniformIds[0][57], dateIssued: new Date('2023-08-16T11:11:05.000Z'), dateReturned: new Date('2023-09-16T09:45:25.000Z') },
+            { fk_cadet: this.ids.cadetIds[11], fk_uniform: this.ids.uniformIds[0][57], dateIssued: new Date('2023-10-13T09:11:05.000Z'), dateReturned: new Date('2023-11-16T09:45:25.000Z') },
             { fk_cadet: this.ids.cadetIds[0], fk_uniform: this.ids.uniformIds[3][10], dateIssued: new Date('2023-08-13T09:19:32.000Z'), dateReturned: null },
             { fk_cadet: this.ids.cadetIds[0], fk_uniform: this.ids.uniformIds[3][1], dateIssued: new Date('2023-08-13T09:05:19.000Z'), dateReturned: null },
             { fk_cadet: this.ids.cadetIds[0], fk_uniform: this.ids.uniformIds[1][15], dateIssued: new Date('2023-08-13T09:29:50.000Z'), dateReturned: null },
