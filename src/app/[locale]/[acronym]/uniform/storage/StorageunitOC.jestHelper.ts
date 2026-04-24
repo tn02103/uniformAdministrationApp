@@ -26,7 +26,7 @@ vi.mock("@/dataFetcher/uniform", () => ({
 }));
 
 const getUniformLabel = (data: Partial<UniformItemLabel>): UniformItemLabel => ({
-    id: "1", label: "Uniform-1", number: 1, owner: null, isReserve: false, storageUnit: null, type: { id: "type1", name: "Uniform", acronym: "AA" },
+    id: "1", label: "Uniform-1", number: 1, owner: null, isReserve: false, storageUnit: null, type: { id: "type1", name: "Uniform", acronym: "AA" }, activeDeficiencies: [],
     ...data,
 });
 
