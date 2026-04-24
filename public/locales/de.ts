@@ -285,6 +285,22 @@ export default {
         returnUniform: {
             error: "Beim Zurückziehen des Uniformteils ist ein Fehler aufgetreten. Bitte versuchen sie es noch einmal",
         },
+        returnProcess: {
+            dropdownLabel: "Uniform zurückgeben",
+            modal: {
+                header: "Uniformrückgabe starten",
+                templateLabel: "Vorlage",
+                startButton: "Uniformrückgabe starten",
+                success: "Uniformrückgabe erfolgreich gestartet",
+                error: "Beim Starten der Uniformrückgabe ist ein Fehler aufgetreten",
+            },
+            directReturn: {
+                header: "Uniform direkt zurückgeben",
+                message: "Möchten Sie die Uniform von {firstname} {lastname} direkt zurückgeben?",
+                confirm: "Zurückgeben",
+                error: "Beim Zurückgeben der Uniform ist ein Fehler aufgetreten",
+            },
+        },
         issueMaterial: {
             header: "{group} ausgeben",
             error: ""

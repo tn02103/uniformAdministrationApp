@@ -285,6 +285,22 @@ export default {
         returnUniform: {
             error: "An error occurred while withdrawing the uniform part. Please try again",
         },
+        returnProcess: {
+            dropdownLabel: "Return uniform",
+            modal: {
+                header: "Start uniform return",
+                templateLabel: "Template",
+                startButton: "Start uniform return",
+                success: "Uniform return successfully started",
+                error: "An error occurred while starting the uniform return",
+            },
+            directReturn: {
+                header: "Return uniform directly",
+                message: "Do you want to return the uniform of {firstname} {lastname} directly?",
+                confirm: "Return",
+                error: "An error occurred while returning the uniform",
+            },
+        },
         issueMaterial: {
             header: "Issue {group}",
             error: ""
