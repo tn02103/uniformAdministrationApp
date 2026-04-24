@@ -45,7 +45,7 @@ export type CreateReturnChecklistTemplateInput = z.infer<typeof createReturnChec
 
 export const updateReturnChecklistTemplateSchema = z.object({
     id: z.string().uuid(),
-    label: z.string().min(1).max(100).optional(),
+    label: z.string().min(1).max(100),
 });
 export type UpdateReturnChecklistTemplateInput = z.infer<typeof updateReturnChecklistTemplateSchema>;
 

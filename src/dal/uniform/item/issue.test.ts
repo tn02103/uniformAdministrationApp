@@ -415,7 +415,7 @@ describe('<UniformItem> issue', () => {
             expect(prismaMock.cadet.findUniqueOrThrow).toHaveBeenCalledWith({
                 where: {
                     id: mockCadetId,
-                    recdelete: null,
+                    status: "ACTIVE",
                 }
             });
         });

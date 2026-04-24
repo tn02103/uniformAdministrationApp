@@ -7,7 +7,7 @@ import { updateReturnChecklistTemplateSchema, UpdateReturnChecklistTemplateInput
  * Updates a checklist template item's label.
  * Use changeReturnChecklistTemplateSortOrder to change sort order.
  * Verifies the item belongs to the caller's organisation before updating.
- * @param data id, optional label
+ * @param data id, label
  * @returns the updated ReturnChecklistTemplate
  */
 export const update = (data: UpdateReturnChecklistTemplateInput) =>
@@ -24,7 +24,7 @@ export const update = (data: UpdateReturnChecklistTemplateInput) =>
             return client.returnChecklistTemplate.update({
                 where: { id },
                 data: {
-                    ...(label !== undefined && { label }),
+                    label,
                 },
             });
         })

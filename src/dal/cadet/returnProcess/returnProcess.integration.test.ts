@@ -16,7 +16,7 @@ describe('<ReturnProcess> Integration Tests', () => {
         it('should return unfinished return processes with cadet and template info', async () => {
             const result = await getReturnProcessList();
 
-            expect(result).toHaveLength(2);
+            expect(result).toHaveLength(1);
             const process = result.find((p) => p.id === ids.returnProcessIds[0]);
             expect(process).toBeDefined();
             expect(process!.cadet.id).toBe(ids.cadetIds[10]);

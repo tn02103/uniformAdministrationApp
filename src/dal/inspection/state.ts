@@ -82,8 +82,7 @@ export const getInspectionState = async (): Promise<InspectionStatus | null> => 
             _count: true,
             where: {
                 fk_assosiation: assosiation,
-                active: true,
-                recdelete: null,
+                status: 'ACTIVE',
             },
         }),
         prisma.deregistration.aggregate({

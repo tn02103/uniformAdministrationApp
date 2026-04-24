@@ -90,7 +90,7 @@ describe('<UniformItem> return', () => {
                     },
                     cadet: {
                         id: mockCadetId,
-                        recdelete: null,
+                        status: "ACTIVE",
                     },
                     dateReturned: null,
                 }
@@ -157,7 +157,7 @@ describe('<UniformItem> return', () => {
                     },
                     cadet: {
                         id: mockCadetId,
-                        recdelete: null,
+                        status: "ACTIVE",
                     },
                     dateReturned: null,
                 }

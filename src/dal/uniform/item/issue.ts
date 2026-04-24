@@ -105,7 +105,7 @@ export const issue = async (props: IssuePropType): Promise<CadetUniformMap | SAE
         const cadet = await client.cadet.findUniqueOrThrow({
             where: {
                 id: cadetId,
-                recdelete: null,
+                status: "ACTIVE",
             }
         });
 
