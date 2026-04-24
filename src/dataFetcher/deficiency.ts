@@ -1,9 +1,9 @@
 
 import { getDeficiencyAdmintypeList } from "@/actions/controllers/DeficiencyTypeController";
-import { getDeficiencyTypeList } from "@/actions/controllers/InspectionController";
 import { getUniformItemDeficiencies } from "@/dal/uniform/item/_index";
 import useSWR from "swr";
 import { swrKeys } from "./swrKeys";
+import { getDeficiencyTypeList } from "@/dal/inspection/deficiency/type";
 
 
 export const useDeficiencyTypes = () => {

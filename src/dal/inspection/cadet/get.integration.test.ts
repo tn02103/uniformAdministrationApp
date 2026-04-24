@@ -297,8 +297,8 @@ describe('unsecuredGetActiveInspection Integration Tests', () => {
         // All deficiencyCreated should be related to the cadet or their uniforms
         result!.deficiencyCreated.forEach(def => {
             const hasCorrectRelation = 
-                def.cadetDeficiency?.fk_cadet === ids.cadetIds[0] ||
-                def.uniformDeficiency !== null;
+                def.fk_cadet === ids.cadetIds[0] ||
+                def.fk_uniform !== null;
             expect(hasCorrectRelation).toBe(true);
         });
     });

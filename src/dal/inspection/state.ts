@@ -6,6 +6,17 @@ import { InspectionStatus } from "@/types/deficiencyTypes";
 import dayjs from "@/lib/dayjs";
 import { unstable_cache } from "next/cache";
 
+export const unsecuredGetActiveInspection = async ({ assosiation }: { assosiation: string }) => {
+    const activeInspection = await prisma.inspection.findFirst({
+        where: {
+            fk_assosiation: assosiation,
+            date: dayjs().format("YYYY-MM-DD"),
+            timeStart: { not: null },
+            timeEnd: null,
+        },
+    });
+    return activeInspection;
+};
 
 export const getCadetIdList = async () => genericSANoDataValidator(AuthRole.inspector)
     .then(async ([{ assosiation }]) =>

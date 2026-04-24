@@ -369,4 +369,54 @@ test.describe(() => {
             await expect.soft(cadet2Page.divPageHeader).toContainText('Maik Finkel');
         });
     });
+
+    test('Deficiency warning in issue modal', async ({ page, uniformComponent, staticData: { ids, data } }) => {
+        const div_popup = page.getByRole("dialog");
+        const txt_autocomplete = div_popup.getByRole('textbox', { name: t.cadetDetailPage.issueModal["input.label"] });
+        const alerts = div_popup.getByRole("alert");
+
+        await test.step('setup', async () => {
+            await uniformComponent.btn_utype_issue(ids.uniformTypeIds[0]).click();
+            // Retry click if dialog didn't open (handles Firefox hydration race)
+            await expect(div_popup).toBeVisible().catch(async () => {
+                await uniformComponent.btn_utype_issue(ids.uniformTypeIds[0]).click();
+            });
+            await expect(div_popup).toBeVisible();
+            await txt_autocomplete.click();
+            await expect(div_popup.getByRole("option").nth(0)).toBeVisible(); // waiting till options are loaded
+        });
+
+        await test.step('item with deficiencies shows warning alert', async () => {
+            // uniformIds[0][46] = number 1146, has 2 active deficiencies
+            await txt_autocomplete.fill('1146');
+            const deficiencyAlert = alerts.filter({ hasText: t.cadetDetailPage.issueModal["alert.deficiency.header"] });
+            await expect.soft(deficiencyAlert).toBeVisible();
+            await expect.soft(deficiencyAlert).toHaveClass(/alert-warning/);
+            await expect.soft(deficiencyAlert.getByRole('img', { includeHidden: true })).toHaveAttribute('data-icon', 'triangle-exclamation');
+            await expect.soft(deficiencyAlert).toContainText(
+                t.cadetDetailPage.issueModal["alert.deficiency.item"]
+                    .replace('{typeName}', data.deficiencyTypes[0].name)
+                    .replace('{comment}', data.deficiencies[1].comment!)
+            );
+            await expect.soft(deficiencyAlert).toContainText(
+                t.cadetDetailPage.issueModal["alert.deficiency.item"]
+                    .replace('{typeName}', data.deficiencyTypes[7].name)
+                    .replace('{comment}', data.deficiencies[15].comment!)
+            );
+        });
+
+        await test.step('item without deficiencies shows no deficiency alert', async () => {
+            // uniformIds[0][25] = number 1125, no deficiencies
+            await txt_autocomplete.fill('1125');
+            const deficiencyAlert = alerts.filter({ hasText: t.cadetDetailPage.issueModal["alert.deficiency.header"] });
+            await expect.soft(deficiencyAlert).toHaveCount(0);
+        });
+
+        await test.step('issue button enabled despite deficiency warning', async () => {
+            // 1146 is issued to another cadet, so the save button is "changeOwner"; it must be enabled
+            await txt_autocomplete.fill('1146');
+            const btn_changeOwner = div_popup.getByRole("button", { name: t.cadetDetailPage.issueModal["button.changeOwner"] });
+            await expect.soft(btn_changeOwner).toBeEnabled();
+        });
+    });
 });

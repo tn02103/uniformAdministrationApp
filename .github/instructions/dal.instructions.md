@@ -1,0 +1,151 @@
+---
+applyTo: "src/dal/**"
+---
+
+# DAL (Data Access Layer) — Rules & Patterns
+
+## Core Rule
+ALL database access MUST go through `src/dal/`. Never import `prisma` directly in components, pages, or route handlers. Never add new code to `src/actions/controllers/` or `src/actions/dbHandlers/` — those are deprecated.
+
+## Directory Structure
+```
+src/dal/
+└── <domain>/           # e.g. uniform/, cadet/, inspection/, material/, storageUnit/, auth/
+    └── <subdomain>/    # optional, e.g. uniform/item/, uniform/type/
+        ├── index.ts    # "use server" directive + re-exports with domain-prefixed names
+        ├── get.ts
+        ├── create.ts
+        ├── update.ts
+        ├── delete.ts
+        ├── *.test.ts               # unit tests
+        └── *.integration.test.ts  # integration tests
+```
+
+## Server Actions & Exports
+- Every `index.ts` in `src/dal/` MUST have `"use server"` at the top
+- External callers (pages, components) import ONLY from `index.ts` files
+- Function files (`get.ts`, `create.ts`, etc.) do NOT need `"use server"` — they inherit it from the index barrel
+- Exported names must be domain-prefixed: `getUniformItem`, `createCadet`, not just `get` or `create`
+
+## Security: Every public DAL function MUST use a validator
+
+### `genericSAValidator` — use for actions that receive input data
+Input MUST be a single typed object validated by a Zod schema. Never use individual primitive parameters — wrap them in an object.
+```typescript
+// src/zod/uniform.ts
+export const getUniformItemSchema = z.object({ uniformId: z.string().uuid() });
+
+// src/dal/uniform/item/get.ts
+export const getUniformItem = (data: { uniformId: string }) =>
+    genericSAValidator(
+        AuthRole.user,
+        data,
+        getUniformItemSchema,
+        { uniformId: data.uniformId }   // org-scoping validation
+    ).then(([{ assosiation }, { uniformId }]) =>
+        prisma.uniform.findUnique({
+            where: { id: uniformId, type: { fk_assosiation: assosiation } }
+        })
+    );
+```
+
+### `genericSANoDataValidator` — use for actions with no input
+```typescript
+export const getUniformTypeList = () =>
+    genericSANoDataValidator(AuthRole.user)
+        .then(([user]) =>
+            prisma.uniformType.findMany({
+                where: { fk_assosiation: user.assosiation, recdelete: null }
+            })
+        );
+```
+
+### Org-scoping validation keys
+Pass an object with any of these keys to have the validator confirm the IDs belong to the caller's assosiation. Each accepts a single `string` or `string[]`:
+```
+userId, cadetId, uniformId, uniformTypeId, uniformGenerationId,
+uniformSizelistId, uniformSizeId, materialId, materialGroupId,
+deficiencytypeId, deficiencyId, inspectionId, storageUnitId
+```
+
+## Unsecured (internal) helpers
+Used when one DAL function needs to call another — avoids double session checks.
+- Naming: prefix with `__unsecured` (e.g. `__unsecuredGetUniformList`)
+- Parameters: accept `fk_assosiation: string` and optionally `client?: Prisma.TransactionClient`
+- **Never export from `index.ts`** — internal use only, never exposed as a server action
+```typescript
+export const __unsecuredGetUniformList = (
+    fk_assosiation: string,
+    client?: Prisma.TransactionClient
+) => (client ?? prisma).uniform.findMany({
+    where: { type: { fk_assosiation }, recdelete: null }
+});
+```
+
+## Zod Schemas
+- All schemas live in `src/zod/` (domain files: `uniform.ts`, `cadet.ts`, etc.)
+- Export both the schema and its inferred type:
+```typescript
+export const createUniformSchema = z.object({ number: z.number(), typeId: z.string().uuid() });
+export type CreateUniformInput = z.infer<typeof createUniformSchema>;
+```
+- Reuse the same schema on the frontend for form validation — one schema, two uses
+
+## Field Naming Conventions
+- **Assosiation FK**: prefer `fk_assosiation`
+- **Foreign keys**:  `fk_` prefix
+- **Soft delete**: `recdelete` (DateTime?) + `recdeleteUser` (string?)
+- When touching a file that uses legacy naming, migrate that file to the new convention
+
+## AuthRole values
+```
+User (1)      — read-only access
+Inspector (2) — CRUD cadets/uniforms/materials
+Manager (3)   — settings, inspections
+Admin (4)     — users, org config
+```
+Set the minimum required role — never use a higher role than necessary.
+
+## Session user object
+`genericSAValidator` resolves with `[user, validatedData]` where `user` is:
+```typescript
+{ name, username, role: AuthRole, acronym, assosiation /* The id of the assosiation */ }
+```
+
+## Transactions
+Use `prisma.$transaction([...])` or the interactive transaction form for multi-step mutations. Pass the transaction client to `__unsecured` helpers as the `client` parameter.
+
+## Soft Delete
+Always add `recdelete: null` to queries on soft-deletable models unless explicitly querying deleted records.
+Soft-deletable models: `Uniform`, `UniformType`, `UniformGeneration`, `Cadet`, `Material`, `MaterialGroup`.
+
+## Checklist for every new DAL function
+- [ ] Input wrapped in typed object, validated by Zod schema in `src/zod/`
+- [ ] Uses `genericSAValidator` or `genericSANoDataValidator`
+- [ ] Required `AuthRole` is set to the minimum needed
+- [ ] All input UUIDs listed in org-scoping validation object
+- [ ] All queries include `fk_assosiation` filter
+- [ ] Soft-deletable models include `recdelete: null`
+- [ ] Exported via `index.ts` with domain-prefixed name
+- [ ] `__unsecured` helpers NOT in `index.ts`
+- [ ] Unit test and/or integration test written
+- [ ] JSDoc comment written (see Documentation below)
+
+## Documentation
+Every exported DAL function MUST have a JSDoc comment. Keep it concise — focus on what matters:
+```typescript
+/**
+ * One-line summary of what this function does.
+ *
+ * Add extra context only when the behaviour is non-obvious (e.g. side-effects,
+ * policy enforcement, cascading updates).
+ *
+ * @param data - Description of the input object and key fields.
+ * @returns What is returned on success (type + meaning).
+ * @throws {Error} Conditions that cause a throw (not validation errors).
+ */
+```
+- `@param` — only for the main `data` argument; list key fields inline
+- `@returns` — omit if the function returns `void`/`undefined` unconditionally
+- `@throws` — list every distinct throw condition; omit for auth/validation throws (those are implicit)
+- Do NOT document `__unsecured` internal helpers with JSDoc
