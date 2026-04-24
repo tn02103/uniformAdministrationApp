@@ -3,7 +3,9 @@
 import { create } from "./create";
 import { update } from "./update";
 import { deleteChecklistTemplate } from "./delete";
+import { changeSortOrder } from "./sortOrder";
 
 export const createReturnChecklistTemplate = create;
 export const updateReturnChecklistTemplate = update;
 export const deleteReturnChecklistTemplate = deleteChecklistTemplate;
+export const changeReturnChecklistTemplateSortOrder = changeSortOrder;

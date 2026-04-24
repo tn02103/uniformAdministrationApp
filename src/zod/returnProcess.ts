@@ -40,14 +40,12 @@ export type DeleteReturnProcessTemplateInput = z.infer<typeof deleteReturnProces
 export const createReturnChecklistTemplateSchema = z.object({
     returnProcessTemplateId: z.string().uuid(),
     label: z.string().min(1).max(100),
-    sortOrder: z.number().int().optional(),
 });
 export type CreateReturnChecklistTemplateInput = z.infer<typeof createReturnChecklistTemplateSchema>;
 
 export const updateReturnChecklistTemplateSchema = z.object({
     id: z.string().uuid(),
     label: z.string().min(1).max(100).optional(),
-    sortOrder: z.number().int().optional(),
 });
 export type UpdateReturnChecklistTemplateInput = z.infer<typeof updateReturnChecklistTemplateSchema>;
 
@@ -55,3 +53,9 @@ export const deleteReturnChecklistTemplateSchema = z.object({
     id: z.string().uuid(),
 });
 export type DeleteReturnChecklistTemplateInput = z.infer<typeof deleteReturnChecklistTemplateSchema>;
+
+export const changeReturnChecklistTemplateSortOrderSchema = z.object({
+    checklistItemId: z.string().uuid(),
+    newPosition: z.number().int().min(0),
+});
+export type ChangeReturnChecklistTemplateSortOrderInput = z.infer<typeof changeReturnChecklistTemplateSortOrderSchema>;

@@ -100,7 +100,7 @@ export default class StaticDataGenerator {
             { id: cadetIds[8], fk_assosiation, firstname: 'xxx', lastname: 'xxx', status: CadetStatus.DELETED, comment: '', deletedAt: new Date('2023-08-16T09:45:25.000Z') },
             { id: cadetIds[9], fk_assosiation, firstname: 'Christina', lastname: 'Faber', status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
             { id: cadetIds[10], fk_assosiation, firstname: 'NewReturning', lastname: 'Cadet', status: CadetStatus.RETURNING, comment: '', deletedAt: null },
-            { id: cadetIds[11], fk_assosiation, firstname: 'NewReturned', lastname: 'Cadet', status: CadetStatus.RETURNING, comment: '', deletedAt: null},
+            { id: cadetIds[11], fk_assosiation, firstname: 'NewReturned', lastname: 'Cadet', status: CadetStatus.RETURNED, comment: '', deletedAt: null},
         ]
     }
 
@@ -125,7 +125,7 @@ export default class StaticDataGenerator {
         const { returnProcessIds, returnProcessTemplateIds, cadetIds, fk_assosiation } = this.ids;
         return [
             { id: returnProcessIds[0], fk_cadet: cadetIds[10], fk_returnProcessTemplate: returnProcessTemplateIds[0], fk_assosiation, inspectorComment: null, finished: false },
-            { id: returnProcessIds[1], fk_cadet: cadetIds[11], fk_returnProcessTemplate: returnProcessTemplateIds[0], fk_assosiation, inspectorComment: null, finished: false },
+            { id: returnProcessIds[1], fk_cadet: cadetIds[11], fk_returnProcessTemplate: returnProcessTemplateIds[0], fk_assosiation, inspectorComment: null, finished: true },
         ];
     }
 

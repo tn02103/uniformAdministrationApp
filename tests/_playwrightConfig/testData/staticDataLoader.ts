@@ -2,7 +2,7 @@ import { prisma } from "@/lib/db";
 import { Assosiation, AssosiationConfiguration, Cadet, CadetStatus, DeficiencyType, Inspection, Material, MaterialGroup, Prisma, ReturnChecklistTemplate, StorageUnit, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@/prisma/client";
 import bcrypt from 'bcrypt';
 import StaticDataGenerator, { StaticDataIdType } from "./staticDataGenerator";
-import { getStaticDataIds } from "./staticDataIds"; 
+import { getStaticDataIds } from "./staticDataIds";
 
 export class StaticData {
 
@@ -167,7 +167,7 @@ class StaticDataGetter {
 
     async users() {
         const fk_assosiation = this.assosiation.id;
-        const password = await bcrypt.hash(process.env.TEST_USER_PASSWORD??"Test!234" as string, 12);
+        const password = await bcrypt.hash(process.env.TEST_USER_PASSWORD ?? "Test!234" as string, 12);
         return [
             { id: this.userIds[0], fk_assosiation, role: 4, username: 'test4', name: `Test ${this.index} Admin`, password, active: true },
             { id: this.userIds[1], fk_assosiation, role: 3, username: 'test3', name: `Test ${this.index} Verwaltung`, password, active: true },
@@ -209,6 +209,8 @@ class StaticDataCleanup {
         await prisma.$transaction([
             this.deleteUniformIssued(),
             this.deleteMaterialIssued(),
+            this.deleteReturnChecklistItemStatuses(),
+            this.deleteReturnProcesses(),
             prisma.cadetDeficiency.deleteMany({
                 where: { cadet: { fk_assosiation: this.data.assosiation.id } }
             }),
@@ -217,6 +219,8 @@ class StaticDataCleanup {
         await this.deleteCadet();
 
         await this.loader.cadets();
+        await this.loader.returnProcesses();
+        await this.loader.returnChecklistItemStatuses();
         await this.loader.uniformIssued();
         await this.loader.materialIssued();
         await this.loader.deficienciesCadet();
@@ -312,7 +316,7 @@ class StaticDataCleanup {
 
         // Reset cadet statuses to match static data (tests may have changed them)
         await prisma.cadet.updateMany({
-            where: { id: { in: [this.data.cadets[10].id, this.data.cadets[11].id] } },
+            where: { id: { in: [this.data.cadets[10].id] } },
             data: { status: CadetStatus.RETURNING },
         });
 
@@ -393,7 +397,8 @@ class StaticDataCleanup {
         where: { type: { fk_assosiation: this.fk_assosiation } }
     });
     private deleteUniformType = () => prisma.uniformType.deleteMany({
-        where: { fk_assosiation: this.fk_assosiation } }
+        where: { fk_assosiation: this.fk_assosiation }
+    }
     );
     private deleteUniformSize = () => prisma.uniformSize.deleteMany({
         where: { fk_assosiation: this.fk_assosiation }
@@ -478,24 +483,20 @@ class StaticDataLoader {
         });
     }
     async returnChecklistTemplates() {
-        if (this.data.returnChecklistTemplates.length === 0) return;
         await prisma.returnChecklistTemplate.createMany({
             data: this.data.returnChecklistTemplates
         });
     }
 
     async returnProcessTemplates() {
-        if (!this.data.returnProcessTemplates || this.data.returnProcessTemplates.length === 0) return;
         await prisma.returnProcessTemplate.createMany({ data: this.data.returnProcessTemplates });
     }
 
     async returnProcesses() {
-        if (!this.data.returnProcesses || this.data.returnProcesses.length === 0) return;
         await prisma.returnProcess.createMany({ data: this.data.returnProcesses });
     }
 
     async returnChecklistItemStatuses() {
-        if (!this.data.returnChecklistItemStatuses || this.data.returnChecklistItemStatuses.length === 0) return;
         await prisma.returnChecklistItemStatus.createMany({ data: this.data.returnChecklistItemStatuses });
     }
     async users() {

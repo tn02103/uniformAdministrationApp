@@ -4,9 +4,10 @@ import { prisma } from "@/lib/db";
 import { updateReturnChecklistTemplateSchema, UpdateReturnChecklistTemplateInput } from "@/zod/returnProcess";
 
 /**
- * Updates a checklist template item's label and/or sortOrder.
+ * Updates a checklist template item's label.
+ * Use changeReturnChecklistTemplateSortOrder to change sort order.
  * Verifies the item belongs to the caller's organisation before updating.
- * @param data id, optional label and sortOrder
+ * @param data id, optional label
  * @returns the updated ReturnChecklistTemplate
  */
 export const update = (data: UpdateReturnChecklistTemplateInput) =>
@@ -14,7 +15,7 @@ export const update = (data: UpdateReturnChecklistTemplateInput) =>
         AuthRole.admin,
         data,
         updateReturnChecklistTemplateSchema,
-    ).then(([{ assosiation }, { id, label, sortOrder }]) =>
+    ).then(([{ assosiation }, { id, label }]) =>
         prisma.$transaction(async (client) => {
             await client.returnChecklistTemplate.findUniqueOrThrow({
                 where: { id, fk_assosiation: assosiation },
@@ -24,7 +25,6 @@ export const update = (data: UpdateReturnChecklistTemplateInput) =>
                 where: { id },
                 data: {
                     ...(label !== undefined && { label }),
-                    ...(sortOrder !== undefined && { sortOrder }),
                 },
             });
         })

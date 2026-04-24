@@ -259,8 +259,8 @@ exports[`should return a list of uniform history entries 1`] = `
   },
   {
     "cadet": {
-      "firstname": "Simone",
-      "lastname": "Osterhagen",
+      "firstname": "xxx",
+      "lastname": "xxx",
     },
     "dateIssued": 2023-08-01T00:00:00.000Z,
     "dateReturned": 2023-08-05T00:00:00.000Z,

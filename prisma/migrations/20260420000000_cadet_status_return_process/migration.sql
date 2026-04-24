@@ -49,57 +49,88 @@ ADD COLUMN "anonymizationDelayDays" INTEGER NOT NULL DEFAULT 30,
 ADD COLUMN "anonymizationMode" "base"."AnonymizationMode" NOT NULL DEFAULT 'MANUAL',
 ADD COLUMN "returnProcessEnabled" BOOLEAN NOT NULL DEFAULT false;
 
--- CreateTable
-CREATE TABLE "base"."return_process" (
+-- CreateTable: return process templates
+CREATE TABLE "base"."return_process_template" (
     "id" TEXT NOT NULL,
     "fk_assosiation" CHAR(36) NOT NULL,
     "name" TEXT NOT NULL,
+    "defaultProcess" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "return_process_template_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable: return processes (final shape)
+CREATE TABLE "base"."return_process" (
+    "id" TEXT NOT NULL,
+    "fk_cadet" CHAR(36) NOT NULL,
+    "fk_returnProcessTemplate" CHAR(36) NOT NULL,
+    "fk_assosiation" CHAR(36) NOT NULL,
+    "inspectorComment" TEXT,
+    "finished" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "return_process_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
+-- CreateTable: checklist templates
 CREATE TABLE "base"."return_checklist_template" (
     "id" TEXT NOT NULL,
     "fk_assosiation" CHAR(36) NOT NULL,
-    "fk_returnProcess" CHAR(36) NOT NULL,
+    "fk_returnProcessTemplate" CHAR(36) NOT NULL,
     "label" TEXT NOT NULL,
     "sortOrder" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "return_checklist_template_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
+-- CreateTable: checklist item statuses (final shape)
 CREATE TABLE "base"."return_checklist_item_status" (
-    "fk_cadet" TEXT NOT NULL,
-    "fk_checklistItem" TEXT NOT NULL,
-    "completed" BOOLEAN NOT NULL DEFAULT false,
+    "fk_returnProcess" CHAR(36) NOT NULL,
+    "fk_checklistItem" CHAR(36) NOT NULL,
+    "completedAt" TIMESTAMP(3),
+    "completedByUser" VARCHAR(10),
 
-    CONSTRAINT "return_checklist_item_status_pkey" PRIMARY KEY ("fk_cadet","fk_checklistItem")
+    CONSTRAINT "return_checklist_item_status_pkey" PRIMARY KEY ("fk_returnProcess","fk_checklistItem")
 );
 
 -- CreateIndex
-CREATE INDEX "return_process_fk_assosiation_idx" ON "base"."return_process"("fk_assosiation");
+CREATE INDEX "return_process_template_fk_assosiation_idx" ON "base"."return_process_template"("fk_assosiation");
 
 -- CreateIndex
-CREATE INDEX "return_checklist_template_fk_returnProcess_idx" ON "base"."return_checklist_template"("fk_returnProcess");
+CREATE INDEX "return_checklist_template_fk_returnProcessTemplate_idx" ON "base"."return_checklist_template"("fk_returnProcessTemplate");
 
 -- CreateIndex
 CREATE INDEX "return_checklist_template_fk_assosiation_idx" ON "base"."return_checklist_template"("fk_assosiation");
 
 -- CreateIndex
+CREATE INDEX "return_process_fk_assosiation_idx" ON "base"."return_process"("fk_assosiation");
+
+-- CreateIndex
+CREATE INDEX "return_process_fk_cadet_idx" ON "base"."return_process"("fk_cadet");
+
+-- CreateIndex
 CREATE INDEX "return_checklist_item_status_fk_checklistItem_idx" ON "base"."return_checklist_item_status"("fk_checklistItem");
+
+-- AddForeignKey
+ALTER TABLE "base"."return_process_template" ADD CONSTRAINT "return_process_template_fk_assosiation_fkey" FOREIGN KEY ("fk_assosiation") REFERENCES "authentication"."assosiation"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "base"."return_process" ADD CONSTRAINT "return_process_fk_cadet_fkey" FOREIGN KEY ("fk_cadet") REFERENCES "base"."cadet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "base"."return_process" ADD CONSTRAINT "return_process_fk_returnProcessTemplate_fkey" FOREIGN KEY ("fk_returnProcessTemplate") REFERENCES "base"."return_process_template"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "base"."return_process" ADD CONSTRAINT "return_process_fk_assosiation_fkey" FOREIGN KEY ("fk_assosiation") REFERENCES "authentication"."assosiation"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "base"."return_checklist_template" ADD CONSTRAINT "return_checklist_template_fk_returnProcess_fkey" FOREIGN KEY ("fk_returnProcess") REFERENCES "base"."return_process"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "base"."return_checklist_template" ADD CONSTRAINT "return_checklist_template_fk_returnProcessTemplate_fkey" FOREIGN KEY ("fk_returnProcessTemplate") REFERENCES "base"."return_process_template"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "base"."return_checklist_item_status" ADD CONSTRAINT "return_checklist_item_status_fk_cadet_fkey" FOREIGN KEY ("fk_cadet") REFERENCES "base"."cadet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "base"."return_checklist_item_status" ADD CONSTRAINT "return_checklist_item_status_fk_returnProcess_fkey" FOREIGN KEY ("fk_returnProcess") REFERENCES "base"."return_process"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "base"."return_checklist_item_status" ADD CONSTRAINT "return_checklist_item_status_fk_checklistItem_fkey" FOREIGN KEY ("fk_checklistItem") REFERENCES "base"."return_checklist_template"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
