@@ -25,6 +25,7 @@ export type ItemLabel = {
         id: string;
         name: string;
     } | null;
+    activeDeficiencies: { typeName: string; comment: string }[];
 }
 /**
  * Get all uniform items for the assosiation
@@ -52,6 +53,17 @@ export const getItemLabels = async (): Promise<ItemLabel[]> => genericSANoDataVa
                 cadet: true,
             },
         },
+        deficiencies: {
+            where: {
+                dateResolved: null,
+                type: {
+                    dependent: "uniform",
+                },
+            },
+            include: {
+                type: true,
+            },
+        },
     },
     orderBy: [
         { type: { name: 'asc' } },
@@ -76,6 +88,10 @@ export const getItemLabels = async (): Promise<ItemLabel[]> => genericSANoDataVa
         id: item.storageUnit.id,
         name: item.storageUnit.name,
     } : null,
+    activeDeficiencies: item.deficiencies.map(ud => ({
+        typeName: ud.type.name,
+        comment: ud.comment,
+    })),
 })));
 
 
@@ -104,14 +120,11 @@ export const getDeficiencies = async (props: GetDeficienciesProps): Promise<Defi
     { uniformId: props.uniformId }
 ).then(([, { uniformId, includeResolved }]) => prisma.deficiency.findMany({
     where: {
-        uniformDeficiency: {
-            fk_uniform: uniformId,
-        },
+        fk_uniform: uniformId,
         dateResolved: includeResolved ? undefined : null,
     },
     include: {
         type: true,
-        uniformDeficiency: true,
     },
     orderBy: [
         { dateCreated: 'asc' },  // Oldest to newest

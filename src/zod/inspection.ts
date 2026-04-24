@@ -13,3 +13,13 @@ export const plannedInspectionFormShema = z.object({
     )
 });
 export type PlannedInspectionFormShema = z.infer<typeof plannedInspectionFormShema>;
+
+export const getClosedInspectionReportSchema = z.object({
+    inspectionId: z.string().uuid(),
+});
+export type GetClosedInspectionReportInput = z.infer<typeof getClosedInspectionReportSchema>;
+
+export const getInspectionsByCadetSchema = z.object({
+    cadetId: z.string().uuid(),
+});
+export type GetInspectionsByCadetInput = z.infer<typeof getInspectionsByCadetSchema>;

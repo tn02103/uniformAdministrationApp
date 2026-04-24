@@ -1,22 +1,9 @@
 "use server";
 
 import { AuthRole } from "@/lib/AuthRoles";
-import { prisma } from "@/lib/db";
-import { DeficiencyType, deficiencyTypeArgs } from "@/types/deficiencyTypes";
-import { genericSAValidatorV2 } from "../validations";
 import dayjs from "@/lib/dayjs";
-
-export const getDeficiencyTypeList = async (): Promise<DeficiencyType[]> => genericSAValidatorV2(AuthRole.inspector, true, {})
-    .then(({ assosiation }) => prisma.deficiencyType.findMany({
-        where: {
-            fk_assosiation: assosiation,
-            disabledDate: null,
-        },
-        ...deficiencyTypeArgs,
-        orderBy: {
-            "name": "asc"
-        },
-    }));
+import { prisma } from "@/lib/db";
+import { genericSAValidatorV2 } from "../validations";
 
 export const getInspectedCadetIdList =async  () => genericSAValidatorV2(AuthRole.inspector, true, {})
     .then(async ({ assosiation }) =>

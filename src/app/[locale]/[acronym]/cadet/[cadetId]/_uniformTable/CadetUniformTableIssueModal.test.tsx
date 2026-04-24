@@ -37,6 +37,7 @@ const getUniformLabel = (data: Partial<UniformItemLabel>): UniformItemLabel => (
     owner: null,
     isReserve: false,
     storageUnit: null,
+    activeDeficiencies: [],
     type: { id: defaultProps.type.id, name: defaultProps.type.name, acronym: defaultProps.type.acronym },
     ...data,
 });
@@ -46,6 +47,8 @@ const uniformLabels = [
     getUniformLabel({ id: "item-3", number: 103, owner: { id: "cadet-2", firstname: "Max", lastname: "Mustermann" } }),
     getUniformLabel({ id: "item-4", number: 104, storageUnit: { id: "s1", name: "Lager 1" } }),
     getUniformLabel({ id: "item-5", number: 105, isReserve: true, owner: { id: "cadet-3", firstname: "Anna", lastname: "Musterfrau" } }),
+    getUniformLabel({ id: "item-6", number: 106, activeDeficiencies: [{ typeName: "Fleck", comment: "Großer Fleck auf der Brust" }] }),
+    getUniformLabel({ id: "item-7", number: 107, activeDeficiencies: [{ typeName: "Riss", comment: "Am Ärmel" }, { typeName: "Knopf", comment: "Fehlt" }] }),
 ] satisfies UniformItemLabel[];
 
 
@@ -312,6 +315,41 @@ describe("CadetUniformTableIssueModal", () => {
             await userEvent.type(input, "104");
             expect(await screen.findByText(/cadetDetailPage.issueModal.alert.storageUnit/)).toBeInTheDocument();
         });
+
+        it("does NOT show deficiency alert when selected item has no active deficiencies", async () => {
+            setup();
+            const input = screen.getByLabelText(/input.label/i);
+            await userEvent.clear(input);
+            await userEvent.type(input, "104");
+            expect(screen.queryByText(/cadetDetailPage.issueModal.alert.deficiency.header/)).not.toBeInTheDocument();
+        });
+
+        it("shows deficiency alert with correct content when item has one active deficiency", async () => {
+            setup();
+            const input = screen.getByLabelText(/input.label/i);
+            await userEvent.clear(input);
+            await userEvent.type(input, "106");
+            expect(await screen.findByText(/cadetDetailPage.issueModal.alert.deficiency.header/)).toBeInTheDocument();
+            expect(screen.getAllByText(/cadetDetailPage.issueModal.alert.deficiency.item/)).toHaveLength(1);
+        });
+
+        it("shows deficiency alert with all deficiencies when item has multiple active deficiencies", async () => {
+            setup();
+            const input = screen.getByLabelText(/input.label/i);
+            await userEvent.clear(input);
+            await userEvent.type(input, "107");
+            expect(await screen.findByText(/cadetDetailPage.issueModal.alert.deficiency.header/)).toBeInTheDocument();
+            expect(screen.getAllByText(/cadetDetailPage.issueModal.alert.deficiency.item/)).toHaveLength(2);
+        });
+
+        it("issue button remains enabled when item has active deficiencies", async () => {
+            setup();
+            const input = screen.getByLabelText(/input.label/i);
+            await userEvent.clear(input);
+            await userEvent.type(input, "106");
+            const issueBtn = await screen.findByRole("button", { name: /issue/i });
+            expect(issueBtn).toBeEnabled();
+        });
     });
     describe("options", () => {
         it("shows storage unit icon for storage item", async () => {
@@ -379,8 +417,68 @@ describe("CadetUniformTableIssueModal", () => {
             expect(option).toHaveClass("text-danger");
         });
 
-        it("renders the option for an already issued item as disabled and with not-allowed cursor", async () => {
+        it("shows warning triangle icon for item with one active deficiency", async () => {
             setup();
+            const input = screen.getByLabelText(/input.label/i);
+            await userEvent.clear(input);
+            await userEvent.type(input, "106");
+
+            const option = screen.getByRole("option", { name: /106/i });
+            expect(option).toBeVisible();
+            const icons = getAllByRole(option, "img", { hidden: true });
+            const warningIcon = Array.from(icons).find(icon =>
+                icon.classList.contains("fa-triangle-exclamation")
+            );
+            expect(warningIcon).toBeTruthy();
+            expect(option).toHaveClass("text-warning");
+        });
+
+        it("shows warning triangle icon for item with multiple active deficiencies", async () => {
+            setup();
+            const input = screen.getByLabelText(/input.label/i);
+            await userEvent.clear(input);
+            await userEvent.type(input, "107");
+
+            const option = screen.getByRole("option", { name: /107/i });
+            expect(option).toBeVisible();
+            const icons = getAllByRole(option, "img", { hidden: true });
+            const warningIcon = Array.from(icons).find(icon =>
+                icon.classList.contains("fa-triangle-exclamation")
+            );
+            expect(warningIcon).toBeTruthy();
+            expect(option).toHaveClass("text-warning");
+        });
+
+        it("shows warning triangle icon but uses text-danger color when item has deficiencies and an owner", async () => {
+            const labelWithDeficiencyAndOwner = getUniformLabel({
+                id: "item-8",
+                number: 108,
+                owner: { id: "cadet-4", firstname: "Test", lastname: "Owner" },
+                activeDeficiencies: [{ typeName: "Fleck", comment: "Kragen" }],
+            });
+            vi.mocked(useUniformLabels).mockReturnValue({
+                uniformLabels: [...uniformLabels, labelWithDeficiencyAndOwner],
+                isLoading: false,
+                mutate: vi.fn(),
+            });
+
+            setup();
+            const input = screen.getByLabelText(/input.label/i);
+            await userEvent.clear(input);
+            await userEvent.type(input, "108");
+
+            const option = screen.getByRole("option", { name: /108/i });
+            expect(option).toBeVisible();
+            const icons = getAllByRole(option, "img", { hidden: true });
+            const warningIcon = Array.from(icons).find(icon =>
+                icon.classList.contains("fa-triangle-exclamation")
+            );
+            expect(warningIcon).toBeTruthy();
+            expect(option).toHaveClass("text-danger");
+            expect(option).not.toHaveClass("text-warning");
+        });
+
+        it("renders the option for an already issued item as disabled and with not-allowed cursor", async () => {            setup();
             const input = screen.getByLabelText(/input.label/i);
             await userEvent.clear(input);
             await userEvent.type(input, "101");

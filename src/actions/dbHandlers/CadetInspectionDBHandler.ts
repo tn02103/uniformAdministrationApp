@@ -136,15 +136,9 @@ export class CadetInspectionDBHandler {
         }
     });
 
-    upsertDeficiencyUniform = (deficiencyId: string, fk_uniform: string, client:  Prisma.TransactionClient) => client.uniformDeficiency.upsert({
-        where: { deficiencyId },
-        create: {
-            deficiencyId,
-            fk_uniform
-        },
-        update: {
-            fk_uniform
-        }
+    upsertDeficiencyUniform = (deficiencyId: string, fk_uniform: string, client:  Prisma.TransactionClient) => client.deficiency.update({
+        where: { id: deficiencyId },
+        data: { fk_uniform },
     });
 
     upsertDeficiencyCadet = (
@@ -155,18 +149,9 @@ export class CadetInspectionDBHandler {
             fk_uniform?: string,
         },
         client:  Prisma.TransactionClient
-    ) => client.cadetDeficiency.upsert({
-        where: { deficiencyId },
-        create: {
-            deficiencyId,
-            fk_cadet,
-            fk_material,
-            fk_uniform
-        },
-        update: {
-            fk_material,
-            fk_uniform,
-        }
+    ) => client.deficiency.update({
+        where: { id: deficiencyId },
+        data: { fk_cadet, fk_material, fk_uniform },
     });
 
     deleteNewDeficiencies = (idList: string[], fk_assosiation: string, client: Prisma.TransactionClient) => client.deficiency.deleteMany({

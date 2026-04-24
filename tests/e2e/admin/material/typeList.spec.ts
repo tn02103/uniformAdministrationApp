@@ -66,19 +66,21 @@ test('validate moveUp', async ({ page, materialListComponent, staticData: { ids 
     });
 
     await test.step('validate db', async () => {
-        const [initial, seccond] = await prisma.$transaction([
-            prisma.material.findUnique({
-                where: { id: ids.materialIds[1] }
-            }),
-            prisma.material.findUnique({
-                where: { id: ids.materialIds[0] }
-            }),
-        ]);
-        expect(initial).toBeDefined();
-        expect(seccond).toBeDefined();
+        await expect(async () => {
+            const [initial, seccond] = await prisma.$transaction([
+                prisma.material.findUnique({
+                    where: { id: ids.materialIds[1] }
+                }),
+                prisma.material.findUnique({
+                    where: { id: ids.materialIds[0] }
+                }),
+            ]);
+            expect(initial).toBeDefined();
+            expect(seccond).toBeDefined();
 
-        expect.soft(initial?.sortOrder).toBe(0);
-        expect.soft(seccond?.sortOrder).toBe(1);
+            expect.soft(initial?.sortOrder).toBe(0);
+            expect.soft(seccond?.sortOrder).toBe(1);
+        }).toPass();
     });
 
 });
@@ -92,19 +94,21 @@ test('validate moveDown', async ({ page, materialListComponent, staticData: { id
     });
 
     await test.step('validate db', async () => {
-        const [initial, seccond] = await prisma.$transaction([
-            prisma.material.findUnique({
-                where: { id: ids.materialIds[1] }
-            }),
-            prisma.material.findUnique({
-                where: { id: ids.materialIds[2] }
-            }),
-        ]);
-        expect(initial).toBeDefined();
-        expect(seccond).toBeDefined();
+        await expect(async () => {
+            const [initial, seccond] = await prisma.$transaction([
+                prisma.material.findUnique({
+                    where: { id: ids.materialIds[1] }
+                }),
+                prisma.material.findUnique({
+                    where: { id: ids.materialIds[2] }
+                }),
+            ]);
+            expect(initial).toBeDefined();
+            expect(seccond).toBeDefined();
 
-        expect.soft(initial?.sortOrder).toBe(2);
-        expect.soft(seccond?.sortOrder).toBe(1);
+            expect.soft(initial?.sortOrder).toBe(2);
+            expect.soft(seccond?.sortOrder).toBe(1);
+        }).toPass();
     });
 });
 
@@ -123,27 +127,32 @@ test('validate create', async ({ materialListComponent, editMaterialPopup, stati
         await expect(editMaterialPopup.div_popup).toBeHidden();
     });
 
-    const dbMaterial = await prisma.material.findFirst({
-        where: {
-            fk_materialGroup: ids.materialGroupIds[0],
-            typename: "newType",
-        },
-    });
+
+    let materialId: string | null = null;
 
     await test.step('validate db', async () => {
-        expect(dbMaterial).not.toBeNull();
-        expect(dbMaterial).toStrictEqual(expect.objectContaining({
-            typename: "newType",
-            sortOrder: 4,
-            actualQuantity: 99,
-            targetQuantity: 98,
-            recdelete: null,
-            recdeleteUser: null,
-        }));
+        await expect(async () => {
+            const dbMaterial = await prisma.material.findFirst({
+                where: {
+                    fk_materialGroup: ids.materialGroupIds[0],
+                    typename: "newType",
+                },
+            });
+            expect(dbMaterial).not.toBeNull();
+            expect(dbMaterial).toStrictEqual(expect.objectContaining({
+                typename: "newType",
+                sortOrder: 4,
+                actualQuantity: 99,
+                targetQuantity: 98,
+                recdelete: null,
+                recdeleteUser: null,
+            }));
+            materialId = dbMaterial!.id;
+        }).toPass();
     });
 
     await test.step('validate ui', async () => {
-        const id = dbMaterial!.id
+        const id = materialId!;
         await expect(materialListComponent.div_material(id)).toBeVisible();
         await expect(materialListComponent.div_material_actualQuantity(id)).toHaveText('99');
         await expect(materialListComponent.div_material_targetQuantity(id)).toHaveText('98');

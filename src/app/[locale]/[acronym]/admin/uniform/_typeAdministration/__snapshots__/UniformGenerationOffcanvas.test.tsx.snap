@@ -126,7 +126,7 @@ exports[`<UniformgenerationOffcanvas> > with generation > renders the component 
               <input
                 aria-checked="false"
                 aria-disabled="true"
-                class="form-check-input ms-0 my-2"
+                class="form-check-input ms-0"
                 id="uniformGenerationForm_toggle-isReserve"
                 name="isReserve"
                 role="switch"
@@ -304,7 +304,7 @@ exports[`<UniformgenerationOffcanvas> > without generation > renders in editable
               <input
                 aria-checked="false"
                 aria-disabled="false"
-                class="form-check-input ms-0 my-2"
+                class="form-check-input ms-0"
                 id="uniformGenerationForm_toggle-isReserve"
                 name="isReserve"
                 role="switch"
