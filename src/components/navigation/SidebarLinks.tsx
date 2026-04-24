@@ -3,8 +3,7 @@ import { useInspectionState } from "@/dataFetcher/inspection";
 import { AuthRole } from "@/lib/AuthRoles";
 import dayjs from "@/lib/dayjs";
 import { useI18n } from "@/lib/locales/client";
-import { faBoxOpen, faChartLine, faClipboardCheck, faGear, faLink, faPlus, faShirt, faUser } from "@fortawesome/free-solid-svg-icons";
-import { useParams, usePathname } from "next/navigation";
+import { faBoxOpen, faChartLine, faClipboardCheck, faGear, faLink, faPlus, faShirt, faUser } from "@fortawesome/free-solid-svg-icons";import { useParams, usePathname } from "next/navigation";
 import { toast } from "react-toastify";
 import { mutate } from "swr";
 import { useModal } from "../modals/modalProvider";
@@ -183,6 +182,13 @@ export const SidebarLinks = () => {
                             level={2}
                             requiredRole={AuthRole.admin}
                             testId="lnk_users" />
+                        <NavLink
+                            text={t('sidebar.links.administration.settings')}
+                            href={"/app/admin/settings"}
+                            isRoute={pathname.startsWith(`/${locale}/app/admin/settings`)}
+                            level={2}
+                            requiredRole={AuthRole.admin}
+                            testId="lnk_adminSettings" />
                     </ul>
                 </NavGroup>
                 <NavLink

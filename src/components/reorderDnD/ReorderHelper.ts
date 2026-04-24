@@ -3,6 +3,7 @@
 export const DragableTypes = {
     UNIFORM_TYPE: "uniformType",
     UNIFORM_GENERATION: "uniformGeneration",
+    RETURN_CHECKLIST_TEMPLATE: "returnChecklistTemplate",
 }
 
 export const move = <T>(array: T[], item: T, replaceAtIndex: number): T[] => {

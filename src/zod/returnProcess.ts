@@ -71,3 +71,6 @@ export const changeReturnChecklistTemplateSortOrderSchema = z.object({
     newPosition: z.number().int().min(0),
 });
 export type ChangeReturnChecklistTemplateSortOrderInput = z.infer<typeof changeReturnChecklistTemplateSortOrderSchema>;
+
+export const returnProcessTemplateNameSchema = createReturnProcessTemplateSchema.pick({ name: true });
+export type ReturnProcessTemplateNameInput = z.infer<typeof returnProcessTemplateNameSchema>;
