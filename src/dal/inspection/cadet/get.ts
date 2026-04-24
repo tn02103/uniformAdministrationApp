@@ -13,7 +13,7 @@ import { z } from "zod";
  * @returns A promise that resolves to the inspection form data for the cadet.
  * @throws Will throw an error if no active inspection is found for today.
  */
-export const getCadetInspectionFormData = async (props: string) => genericSAValidator(
+export const getCadetInspectionFormData = async (props: string): Promise<CadetInspectionFormSchema> => genericSAValidator(
     AuthRole.inspector,
     props,
     z.string().uuid(),
@@ -31,17 +31,7 @@ export const getCadetInspectionFormData = async (props: string) => genericSAVali
         activeInspection.id
     )
 
-    const [issuedMaterials, issuedCounts, uniformTypes] = await prisma.$transaction([
-        prisma.material.findMany({
-            where: {
-                issuedEntries: {
-                    some: {
-                        fk_cadet: cadetId,
-                        dateReturned: null,
-                    },
-                },
-            },
-        }),
+    const [issuedCounts, uniformTypes] = await prisma.$transaction([
         prisma.uniform.groupBy({
             by: ['fk_uniformType'],
             where: {
@@ -84,22 +74,16 @@ export const getCadetInspectionFormData = async (props: string) => genericSAVali
             dateCreated: def.dateCreated,
             resolved: def.dateResolved !== null,
         })),
-        newDeficiencyList: activeInspection.deficiencyCreated.map(def => {
-            const isIssued = def.fk_material && issuedMaterials.some(mat => mat.id === def.fk_material);
-
-            return {
-                id: def.id,
-                typeId: def.type.id,
-                description: def.description,
-                comment: def.comment,
-                uniformId: def.fk_uniform ?? null,
-                materialId: (isIssued ? def.fk_material : "other") ?? null,
-                otherMaterialId: isIssued ? null : def.fk_material ?? null,
-                otherMaterialGroupId: isIssued ? null : def.material?.fk_materialGroup ?? null,
-                dateCreated: dayjs(def.dateCreated).format("YYYY-MM-DDTHH:mm:ss"),
-            }
-        }),
-    } satisfies CadetInspectionFormSchema;
+        newDeficiencyList: activeInspection.deficiencyCreated.map(def => ({
+            id: def.id,
+            typeId: def.type.id,
+            description: def.description,
+            comment: def.comment,
+            uniformId: def.fk_uniform ?? null,
+            materialId: def.fk_material ?? null,
+            dateCreated: dayjs(def.dateCreated).format("YYYY-MM-DDTHH:mm:ss"),
+        })),
+    };
 });
 
 export const getUnresolvedByCadet = async (props: string): Promise<Deficiency[]> => genericSAValidator(
@@ -196,7 +180,7 @@ export const unsecuredGetActiveInspection = async (cadetId: string, assosiation:
                     material: true,
                 },
                 orderBy: {
-                    type: {name: "asc"},
+                    type: { name: "asc" },
                 }
             },
         },

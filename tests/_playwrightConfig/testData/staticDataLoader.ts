@@ -187,6 +187,11 @@ class StaticDataCleanup {
         await this.loader.deficiencyTypes();
         await this.loader.deficiencies();
     }
+    /** Reset only deficiency records — does NOT touch inspection or cadetInspection rows. */
+    async deficiencies() {
+        await this.deleteDeficiency();
+        await this.loader.deficiencies();
+    }
     async user() {
         await this.deleteUsers();
         await this.loader.users();
@@ -196,6 +201,7 @@ class StaticDataCleanup {
             this.deleteUniformIssued(),
             this.deleteMaterialIssued(),
             this.deleteCadetInspection(),
+            this.deleteDeficiency(),
         ]);
         await this.deleteCadet();
 
@@ -203,6 +209,7 @@ class StaticDataCleanup {
         await this.loader.uniformIssued();
         await this.loader.materialIssued();
         await this.loader.cadetInspections();
+        await this.loader.deficiencies();
     }
     async uniformIssued() {
         await this.deleteUniformIssued();

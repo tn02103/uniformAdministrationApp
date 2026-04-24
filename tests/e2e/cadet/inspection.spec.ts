@@ -61,7 +61,11 @@ const test = adminTest.extend<Fixture>({
 });
 
 test.describe("<CadetInspectionCard />", () => {
-    test.afterEach(async ({ staticData }) => {
+    test.beforeEach(async ({ staticData }) => {
+        await staticData.cleanup.inspection();
+    });
+
+    test.afterAll(async ({ staticData }) => {
         await staticData.cleanup.inspection();
     });
 
@@ -76,9 +80,12 @@ test.describe("<CadetInspectionCard />", () => {
 
     test('inactive inspection state', async ({ page, staticData: { ids }, inspectionComponent, testData }) => {
         await page.goto(`/de/app/cadet/${ids.cadetIds[2]}`);
+        // Wait for SWR fetch to complete
+        await page.waitForLoadState('domcontentloaded');
 
         await expect(inspectionComponent.div_header).toContainText(german.cadetDetailPage.inspection["header.noInspection"]);
         await expect(inspectionComponent.btn_inspect).toBeHidden();
+        // Wait for SWR data to load before checking individual rows and count
         await expect(inspectionComponent.div_oldDeficiency(testData.unresolvedIds[0])).toBeVisible();
         await expect(inspectionComponent.div_oldDeficiency(testData.unresolvedIds[1])).toBeVisible();
         await expect(inspectionComponent.div_oldDeficiency(testData.unresolvedIds[2])).toBeVisible();
@@ -92,23 +99,28 @@ test.describe("<CadetInspectionCard />", () => {
     test('active inspection state, not inspected', async ({ page, staticData: { ids }, inspectionComponent, testData }) => {
         await startInspection(ids);
         await page.goto(`/de/app/cadet/${ids.cadetIds[2]}`);
-        
+
         await expect(async () => {
             await page.reload();
+            await page.waitForLoadState('domcontentloaded');
             await expect(inspectionComponent.div_header).toContainText(german.cadetDetailPage.inspection["header.inspection"]);
         }).toPass();
 
-        await test.step('inspection step 0', async () => Promise.all([
-            expect(inspectionComponent.div_oldDeficiency_list).toHaveCount(6),
-            expect(inspectionComponent.chk_olddef_resolved(testData.unresolvedIds[0])).toBeHidden(),
+        await test.step('inspection step 0', async () => {
+            // Wait for SWR data to load before checking all
+            await expect(inspectionComponent.div_oldDeficiency(testData.unresolvedIds[0])).toBeVisible();
+            await Promise.all([
+                expect(inspectionComponent.div_oldDeficiency_list).toHaveCount(6),
+                expect(inspectionComponent.chk_olddef_resolved(testData.unresolvedIds[0])).toBeHidden(),
 
-            expect(inspectionComponent.div_oldDeficiency(testData.unresolvedIds[0])).toBeVisible(),
-            expect(inspectionComponent.div_oldDeficiency(testData.unresolvedIds[1])).toBeVisible(),
-            expect(inspectionComponent.div_oldDeficiency(testData.unresolvedIds[2])).toBeVisible(),
-            expect(inspectionComponent.div_oldDeficiency(testData.unresolvedIds[3])).toBeVisible(),
-            expect(inspectionComponent.div_oldDeficiency(testData.unresolvedIds[4])).toBeVisible(),
-            expect(inspectionComponent.div_oldDeficiency(testData.unresolvedIds[5])).toBeVisible(),
-        ]));
+                expect(inspectionComponent.div_oldDeficiency(testData.unresolvedIds[0])).toBeVisible(),
+                expect(inspectionComponent.div_oldDeficiency(testData.unresolvedIds[1])).toBeVisible(),
+                expect(inspectionComponent.div_oldDeficiency(testData.unresolvedIds[2])).toBeVisible(),
+                expect(inspectionComponent.div_oldDeficiency(testData.unresolvedIds[3])).toBeVisible(),
+                expect(inspectionComponent.div_oldDeficiency(testData.unresolvedIds[4])).toBeVisible(),
+                expect(inspectionComponent.div_oldDeficiency(testData.unresolvedIds[5])).toBeVisible(),
+            ]);
+        });
 
         await expect(inspectionComponent.btn_inspect).toBeVisible();
         await inspectionComponent.btn_inspect.click();
@@ -166,10 +178,9 @@ test.describe("<CadetInspectionCard />", () => {
             await inspectionComponent.btn_step2_newDef.click();
             await expect(inspectionComponent.div_newDeficiency(1)).toBeVisible();
             await inspectionComponent.sel_newDef_type(1).selectOption(testData.newDefs.cadetMaterialOther.type);
-            await inspectionComponent.sel_newDef_material(1).selectOption("other");
-            await expect(inspectionComponent.sel_newDef_materialGroup(1)).toBeVisible();
-            await inspectionComponent.sel_newDef_materialGroup(1).selectOption(testData.newDefs.cadetMaterialOther.materialGroup!);
-            await inspectionComponent.sel_newDef_materialType(1).selectOption(testData.newDefs.cadetMaterialOther.materialType!);
+            await inspectionComponent.sel_newDef_material(1).click();
+            await inspectionComponent.sel_newDef_material(1).fill(testData.newDefs.cadetMaterialOther.description);
+            await inspectionComponent.div_newDeficiency(1).getByRole('option', { name: testData.newDefs.cadetMaterialOther.description }).click();
             await inspectionComponent.txt_newDef_comment(1).fill(testData.newDefs.cadetMaterialOther.comment!);
 
             await inspectionComponent.btn_step2_newDef.click();
@@ -269,13 +280,20 @@ test.describe("<CadetInspectionCard />", () => {
                     }
                 ]
             });
-
         });
 
         await page.goto(`/de/app/cadet/${ids.cadetIds[2]}`);
 
         await test.step('inspection step 0: verify unresolved deficiencies and new deficiencies are shown', async () => {
-            await expect(inspectionComponent.div_header).toContainText(german.cadetDetailPage.inspection["header.inspection"]);
+            await expect(async () => {
+                await startInspection(ids);
+                await page.reload();
+                await page.waitForLoadState('domcontentloaded');
+                await expect(inspectionComponent.div_header).toContainText(german.cadetDetailPage.inspection["header.inspection"]);
+            }).toPass({ timeout: 60_000 });
+
+            // Wait for SWR data to load: first deficiency visible before checking all
+            await expect(inspectionComponent.div_oldDeficiency(testData.unresolvedIds[0])).toBeVisible();
 
             // Should show 6 deficiencies: 3 unresolved old + 3 new from previous inspection
             await expect(inspectionComponent.div_oldDeficiency_list).toHaveCount(6);

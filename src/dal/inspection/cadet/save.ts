@@ -1,16 +1,23 @@
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { CadetInspectionFormSchema, cadetInspectionFormSchema } from "@/zod/deficiency";
-import { unsecuredGetActiveInspection } from "./get";
+import { IronSessionUser } from "@/lib/ironSession";
+import { CadetInspectionFormSchema, getCadetInspectionFormSchema } from "@/zod/deficiency";
 import { v4 as uuid } from "uuid";
+import { __usecuredGetDeficiencyTypeList } from "../deficiency/type/get";
+import { unsecuredGetActiveInspection } from "./get";
+
+const getSchema = async ({ assosiation }: IronSessionUser) => {
+    const deficiencyTypeList = await __usecuredGetDeficiencyTypeList(assosiation);
+    return getCadetInspectionFormSchema(deficiencyTypeList);
+}
 
 export const saveCadetInspection = async (props: CadetInspectionFormSchema) => genericSAValidator(
     AuthRole.inspector,
     props,
-    cadetInspectionFormSchema,
+    getSchema,
     { cadetId: props.cadetId }
-).then(async ([{ assosiation, username }, { cadetId, newDeficiencyList, oldDeficiencyList, uniformComplete }]) => {
+).then(async ([{ assosiation, username }, { oldDeficiencyList, newDeficiencyList, uniformComplete, cadetId }]) => {
     // Check if Inspection is active
     const inspection = await unsecuredGetActiveInspection(cadetId, assosiation);
     if (!inspection) {
@@ -118,7 +125,7 @@ export const saveCadetInspection = async (props: CadetInspectionFormSchema) => g
                 def.description = `${uniform.type.name}-${uniform.number}`;
             }
 
-            const materialId = (def.materialId === "other") ? def.otherMaterialId : def.materialId;
+            const materialId = def.materialId;
             if (type.relation === "material") {
                 if (!materialId) throw Error("Could not save new Deficiency fk_material is missing");
 

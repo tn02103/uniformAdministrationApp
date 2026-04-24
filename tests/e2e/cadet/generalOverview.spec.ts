@@ -9,7 +9,10 @@ const test = adminTest.extend<Fixture>({
     cadetListPage: async ({ page }, use) => use(new CadetListPage(page)),
 });
 
-test.beforeEach(async ({ page }) => { await page.goto('/de/app/cadet'); })
+test.beforeEach(async ({ page, staticData }) => { 
+    await staticData.cleanup.cadet();
+    await page.goto('/de/app/cadet'); 
+})
 
 test('E2E0101: validate Data', async ({ cadetListPage, staticData: { ids } }) => {
     await expect(cadetListPage.div_cadet_list).toHaveCount(9);

@@ -24,6 +24,7 @@ describe('resolveDeficiency', () => {
         expect(prismaMock.deficiency.update).toHaveBeenCalledWith({
             where: {
                 id: '5f09250d-23cb-45f8-a7d0-d0f6d3896f34',
+                dateResolved: null,
             },
             data: {
                 dateResolved: date,
@@ -69,6 +70,7 @@ describe('resolveDeficiency', () => {
         expect(prismaMock.deficiency.update).toHaveBeenCalledWith({
             where: {
                 id: '5f09250d-23cb-45f8-a7d0-d0f6d3896f34',
+                dateResolved: null,
             },
             data: {
                 dateResolved: date,

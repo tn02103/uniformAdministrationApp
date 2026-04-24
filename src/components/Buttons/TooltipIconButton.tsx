@@ -1,6 +1,6 @@
 import { useScopedI18n } from "@/lib/locales/client";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faArrowUpRightFromSquare, faCheck, faCircleDown, faCirclePlay, faCircleUp, faEdit, faEye, faEyeSlash, faPlus, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
+import { faArrowUpRightFromSquare, faCheck, faCircleDown, faCirclePlay, faCircleUp, faEdit, faEye, faEyeSlash, faPlus, faSquareCheck, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode } from "react";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
@@ -55,12 +55,13 @@ type SimplePropType = {
     iconClass?: string,
     buttonClass?: string,
     buttonSize?: "md" | "lg",
+    buttonType?: "button" | "submit";
 }
 const Variants: {
     [key in string]: {
         icon: IconProp,
         variant: string,
-        tooltipKey: "edit" | "create" | "moveUp" | "moveDown" | "open" | "delete" | "reactivate" | "deactivate" | "startInspection" | "save" | "cancel",
+        tooltipKey: "edit" | "create" | "moveUp" | "moveDown" | "open" | "delete" | "reactivate" | "deactivate" | "startInspection" | "save" | "cancel" | "resolve",
         testId: string,
         ariaLabel: string,
     }
@@ -142,8 +143,15 @@ const Variants: {
         testId: "btn_start",
         ariaLabel: "start inspection",
     },
+    resolve: {
+        icon: faSquareCheck,
+        variant: "outline-success",
+        tooltipKey: "resolve",
+        testId: "btn_resolve",
+        ariaLabel: "resolve",
+    },
 }
-export const TooltipActionButton = ({ onClick, disabled, variantKey, testId, buttonClass, iconClass, buttonSize }: SimplePropType) => {
+export const TooltipActionButton = ({ onClick, disabled, variantKey, testId, buttonClass, iconClass, buttonSize, buttonType }: SimplePropType) => {
     const t = useScopedI18n("common.actions");
     const variant = Variants[variantKey];
     if (!variant) {
@@ -163,7 +171,7 @@ export const TooltipActionButton = ({ onClick, disabled, variantKey, testId, but
         >
             <Button
                 data-testid={testId ?? variant.testId}
-                type={"button"}
+                type={buttonType ?? "button"}
                 variant={variant.variant}
                 className={`border-0 align-self-center ${buttonClass}`}
                 onClick={onClick}
