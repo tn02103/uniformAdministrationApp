@@ -35,6 +35,7 @@ export const InlineEditInputFormField = (props: InlineEditInputFormFieldProps) =
                 </p>
                 <TooltipActionButton
                     variantKey="edit"
+                    disabled={props.disabled}
                     onClick={() => setIsEditable(true)} />
             </div>
         )

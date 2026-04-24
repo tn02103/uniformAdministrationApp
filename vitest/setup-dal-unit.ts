@@ -157,6 +157,10 @@ const prismaMock = {
         create: vi.fn(),
         delete: vi.fn(),
     },
+    assosiationConfiguration: {
+        findUniqueOrThrow: vi.fn(),
+        update: vi.fn(),
+    },
     $executeRaw: vi.fn(),
 };
 
