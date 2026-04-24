@@ -131,8 +131,6 @@ const BASE_NEW_DEFICIENCY = {
     comment: "Test comment",
     uniformId: null,
     materialId: null,
-    otherMaterialId: null,
-    otherMaterialGroupId: null,
 };
 
 // Common mock database return values
@@ -505,32 +503,20 @@ describe("saveCadetInspection", () => {
                         fk_deficiencyType: TEST_IDS.typeId1,
                         description: "Manual description",
                         comment: "Test comment",
+                        fk_cadet: TEST_IDS.cadetId,
+                        fk_uniform: undefined,
+                        fk_material: undefined,
                     }),
                 })
             );
 
-            // Should create cadetDeficiency (not uniformDeficiency)
-            expect(prisma.cadetDeficiency.upsert).toHaveBeenCalledWith({
-                where: { deficiencyId: "created-def-id" },
-                create: {
-                    deficiencyId: "created-def-id",
-                    fk_cadet: TEST_IDS.cadetId,
-                    fk_material: undefined,
-                    fk_uniform: undefined
-                },
-                update: {
-                    fk_material: undefined,
-                    fk_uniform: undefined,
-                }
-            });
         });
 
-        it("should handle 'other' materialId correctly", async () => {
+        it("should use materialId for material lookup", async () => {
             // Arrange
             const newDeficiency = {
                 ...BASE_NEW_DEFICIENCY,
-                materialId: "other",
-                otherMaterialId: "other-material-id",
+                materialId: "other-material-id",
             };
 
             const propsWithNewDeficiency = {
@@ -546,7 +532,6 @@ describe("saveCadetInspection", () => {
             await saveCadetInspection(propsWithNewDeficiency);
 
             // Assert
-            // Should use otherMaterialId for material lookup
             expect(prisma.material.findUniqueOrThrow).toHaveBeenCalledWith({
                 where: {
                     id: "other-material-id",
@@ -635,19 +620,15 @@ describe("saveCadetInspection", () => {
             );
 
             // Should create cadetDeficiency with uniform relation
-            expect(prisma.cadetDeficiency.upsert).toHaveBeenCalledWith({
-                where: { deficiencyId: "created-def-id" },
-                create: {
-                    deficiencyId: "created-def-id",
-                    fk_cadet: TEST_IDS.cadetId,
-                    fk_material: undefined,
-                    fk_uniform: TEST_IDS.uniformId
-                },
-                update: {
-                    fk_material: undefined,
-                    fk_uniform: TEST_IDS.uniformId,
-                }
-            });
+            expect(prisma.deficiency.upsert).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    create: expect.objectContaining({
+                        fk_cadet: TEST_IDS.cadetId,
+                        fk_uniform: TEST_IDS.uniformId,
+                        fk_material: undefined,
+                    }),
+                })
+            );
         });
 
         it("should generate material description when relation='material'", async () => {
@@ -820,12 +801,18 @@ describe("saveCadetInspection", () => {
                     userCreated: TEST_USER.username,
                     userUpdated: TEST_USER.username,
                     fk_inspection_created: TEST_IDS.inspectionId,
+                    fk_cadet: TEST_IDS.cadetId,
+                    fk_uniform: undefined,
+                    fk_material: undefined,
                 },
                 update: {
                     description: "New deficiency",
                     comment: "Test comment",
                     userUpdated: TEST_USER.username,
                     dateUpdated: expect.any(Date),
+                    fk_cadet: TEST_IDS.cadetId,
+                    fk_uniform: undefined,
+                    fk_material: undefined,
                 }
             });
         });
@@ -863,17 +850,23 @@ describe("saveCadetInspection", () => {
                     userCreated: TEST_USER.username,
                     userUpdated: TEST_USER.username,
                     fk_inspection_created: TEST_IDS.inspectionId,
+                    fk_cadet: TEST_IDS.cadetId,
+                    fk_uniform: undefined,
+                    fk_material: undefined,
                 },
                 update: {
                     description: "Updated deficiency",
                     comment: "Updated comment",
                     userUpdated: TEST_USER.username,
                     dateUpdated: expect.any(Date),
+                    fk_cadet: TEST_IDS.cadetId,
+                    fk_uniform: undefined,
+                    fk_material: undefined,
                 }
             });
         });
 
-        it("should call uniformDeficiency.upsert when dependent='uniform'", async () => {
+        it("should set fk_uniform in deficiency when dependent='uniform'", async () => {
             // Arrange
             const newDeficiency = {
                 ...BASE_NEW_DEFICIENCY,
@@ -893,22 +886,23 @@ describe("saveCadetInspection", () => {
             await saveCadetInspection(propsWithNewDeficiency);
 
             // Assert
-            expect(prisma.uniformDeficiency.upsert).toHaveBeenCalledWith({
-                where: { deficiencyId: "created-def-id" },
-                create: {
-                    deficiencyId: "created-def-id",
-                    fk_uniform: TEST_IDS.uniformId,
-                },
-                update: {
-                    fk_uniform: TEST_IDS.uniformId,
-                },
-            });
-
-            // Should NOT create cadetDeficiency
-            expect(prisma.cadetDeficiency.upsert).not.toHaveBeenCalled();
+            expect(prisma.deficiency.upsert).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    create: expect.objectContaining({
+                        fk_uniform: TEST_IDS.uniformId,
+                        fk_cadet: undefined,
+                        fk_material: undefined,
+                    }),
+                    update: expect.objectContaining({
+                        fk_uniform: TEST_IDS.uniformId,
+                        fk_cadet: undefined,
+                        fk_material: undefined,
+                    }),
+                })
+            );
         });
 
-        it("should call cadetDeficiency.upsert when dependent='cadet'", async () => {
+        it("should set fk_cadet in deficiency when dependent='cadet'", async () => {
             // Arrange
             const newDeficiency = {
                 ...BASE_NEW_DEFICIENCY,
@@ -927,25 +921,23 @@ describe("saveCadetInspection", () => {
             await saveCadetInspection(propsWithNewDeficiency);
 
             // Assert
-            expect(prisma.cadetDeficiency.upsert).toHaveBeenCalledWith({
-                where: { deficiencyId: "created-def-id" },
-                create: {
-                    deficiencyId: "created-def-id",
-                    fk_cadet: TEST_IDS.cadetId,
-                    fk_material: undefined,
-                    fk_uniform: undefined
-                },
-                update: {
-                    fk_material: undefined,
-                    fk_uniform: undefined,
-                }
-            });
-
-            // Should NOT create uniformDeficiency
-            expect(prisma.uniformDeficiency.upsert).not.toHaveBeenCalled();
+            expect(prisma.deficiency.upsert).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    create: expect.objectContaining({
+                        fk_cadet: TEST_IDS.cadetId,
+                        fk_uniform: undefined,
+                        fk_material: undefined,
+                    }),
+                    update: expect.objectContaining({
+                        fk_cadet: TEST_IDS.cadetId,
+                        fk_uniform: undefined,
+                        fk_material: undefined,
+                    }),
+                })
+            );
         });
 
-        it("should set correct foreign keys in cadetDeficiency based on relation", async () => {
+        it("should set correct foreign keys in deficiency based on relation", async () => {
             // Arrange - Test material relation
             const newDeficiency = {
                 ...BASE_NEW_DEFICIENCY,
@@ -965,19 +957,20 @@ describe("saveCadetInspection", () => {
             await saveCadetInspection(propsWithNewDeficiency);
 
             // Assert
-            expect(prisma.cadetDeficiency.upsert).toHaveBeenCalledWith({
-                where: { deficiencyId: "created-def-id" },
-                create: {
-                    deficiencyId: "created-def-id",
-                    fk_cadet: TEST_IDS.cadetId,
-                    fk_material: TEST_IDS.materialId, // Should have material FK
-                    fk_uniform: undefined
-                },
-                update: {
-                    fk_material: TEST_IDS.materialId,
-                    fk_uniform: undefined,
-                }
-            });
+            expect(prisma.deficiency.upsert).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    create: expect.objectContaining({
+                        fk_cadet: TEST_IDS.cadetId,
+                        fk_material: TEST_IDS.materialId,
+                        fk_uniform: undefined,
+                    }),
+                    update: expect.objectContaining({
+                        fk_cadet: TEST_IDS.cadetId,
+                        fk_material: TEST_IDS.materialId,
+                        fk_uniform: undefined,
+                    }),
+                })
+            );
         });
 
         it("should call deficiency.deleteMany for orphaned deficiencies", async () => {
@@ -1016,8 +1009,6 @@ describe("saveCadetInspection", () => {
             // Should not call any new deficiency operations
             expect(prisma.deficiencyType.findUniqueOrThrow).not.toHaveBeenCalled();
             expect(prisma.deficiency.upsert).not.toHaveBeenCalled();
-            expect(prisma.uniformDeficiency.upsert).not.toHaveBeenCalled();
-            expect(prisma.cadetDeficiency.upsert).not.toHaveBeenCalled();
             expect(prisma.uniform.findUniqueOrThrow).not.toHaveBeenCalled();
             expect(prisma.material.findUniqueOrThrow).not.toHaveBeenCalled();
 
@@ -1034,8 +1025,6 @@ describe("saveCadetInspection", () => {
                 comment: "", // Empty comment
                 uniformId: null,
                 materialId: null,
-                otherMaterialId: null,
-                otherMaterialGroupId: null,
             };
 
             const propsWithMinimalDeficiency = {
@@ -1062,12 +1051,18 @@ describe("saveCadetInspection", () => {
                     userCreated: TEST_USER.username,
                     userUpdated: TEST_USER.username,
                     fk_inspection_created: TEST_IDS.inspectionId,
+                    fk_cadet: TEST_IDS.cadetId,
+                    fk_uniform: undefined,
+                    fk_material: undefined,
                 },
                 update: {
                     description: "Minimal deficiency",
                     comment: "",
                     userUpdated: TEST_USER.username,
                     dateUpdated: expect.any(Date),
+                    fk_cadet: TEST_IDS.cadetId,
+                    fk_uniform: undefined,
+                    fk_material: undefined,
                 }
             });
         });
@@ -1192,12 +1187,18 @@ describe("saveCadetInspection", () => {
                     userCreated: TEST_USER.username, // Should set userCreated
                     userUpdated: TEST_USER.username, // Should set userUpdated
                     fk_inspection_created: TEST_IDS.inspectionId, // Should set inspection created
+                    fk_cadet: TEST_IDS.cadetId,
+                    fk_uniform: undefined,
+                    fk_material: undefined,
                 },
                 update: {
                     description: "New deficiency for audit test",
                     comment: "Test comment",
                     userUpdated: TEST_USER.username,
                     dateUpdated: expect.any(Date),
+                    fk_cadet: TEST_IDS.cadetId,
+                    fk_uniform: undefined,
+                    fk_material: undefined,
                 }
             });
         });
@@ -1235,12 +1236,18 @@ describe("saveCadetInspection", () => {
                     userCreated: TEST_USER.username, // Still set for create fallback
                     userUpdated: TEST_USER.username,
                     fk_inspection_created: TEST_IDS.inspectionId,
+                    fk_cadet: TEST_IDS.cadetId,
+                    fk_uniform: undefined,
+                    fk_material: undefined,
                 },
                 update: {
                     description: "Updated deficiency for audit test",
                     comment: "Updated comment",
                     userUpdated: TEST_USER.username, // Should update userUpdated
                     dateUpdated: expect.any(Date), // Should update dateUpdated
+                    fk_cadet: TEST_IDS.cadetId,
+                    fk_uniform: undefined,
+                    fk_material: undefined,
                     // Note: userCreated and fk_inspection_created should NOT be in update
                 }
             });

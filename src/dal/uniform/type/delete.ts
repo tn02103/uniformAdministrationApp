@@ -84,10 +84,8 @@ const resolvesAllUniformDeficiencies = (fk_uniformType: string, username: string
     client.deficiency.updateMany({
         where: {
             dateResolved: null,
-            uniformDeficiency: {
-                uniform: {
-                    fk_uniformType
-                },
+            uniform: {
+                fk_uniformType,
             },
         },
         data: {

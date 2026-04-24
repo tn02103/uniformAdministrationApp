@@ -39,7 +39,7 @@ async function main() {
         });
 
         await prisma.cadet.createMany({
-            data: generator.cadet()
+            data: generator.cadet(),
         });
 
 
@@ -97,12 +97,6 @@ async function main() {
         });
         await prisma.deficiency.createMany({
             data: generator.deficiency(),
-        });
-        await prisma.cadetDeficiency.createMany({
-            data: generator.cadetDeficiency(),
-        });
-        await prisma.uniformDeficiency.createMany({
-            data: generator.uniformDeficiency(),
         });
         await prisma.deregistration.createMany({
             data: generator.deregistrations(),

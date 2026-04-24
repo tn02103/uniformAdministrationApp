@@ -28,3 +28,13 @@ export const plannedInspectionTypeArgs = {
     }
 } satisfies Prisma.InspectionFindManyArgs;
 export type PlannedInspectionType = Prisma.InspectionGetPayload<typeof plannedInspectionTypeArgs>;
+
+export interface CadetInspectionHistoryRow {
+    id: string;
+    date: string;               // YYYY-MM-DD
+    attendanceState: 'inspected' | 'excused' | 'missing';
+    uniformComplete: boolean | null;  // null when not inspected
+    unresolvedCount: number;
+    resolvedCount: number;
+    newlyCreatedCount: number;
+}

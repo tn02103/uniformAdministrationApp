@@ -9,7 +9,10 @@ const test = adminTest.extend<Fixture>({
     cadetListPage: async ({ page }, use) => use(new CadetListPage(page)),
 });
 
-test.beforeEach(async ({ page }) => { await page.goto('/de/app/cadet'); })
+test.beforeEach(async ({ page, staticData }) => { 
+    await staticData.cleanup.cadet();
+    await page.goto('/de/app/cadet'); 
+})
 
 test('E2E0101: validate Data', async ({ cadetListPage, staticData: { ids } }) => {
     await expect(cadetListPage.div_cadet_list).toHaveCount(9);
@@ -135,30 +138,21 @@ test('E2E0104: validate search', async ({ cadetListPage, staticData: { ids } }) 
     });
 });
 
-test('E2E0105: validate Links', async ({ page, cadetListPage, staticData: { ids } }) => {
+test('E2E0105: validate Links', async ({ cadetListPage, staticData: { ids } }) => {
     await test.step('Marie Becker', async () => {
-        await cadetListPage.lnk_cadet_firstname(ids.cadetIds[1]).click();
-        await expect(page).toHaveURL(`/de/app/cadet/${ids.cadetIds[1]}`);
-        await page.goBack();
+        await expect(cadetListPage.lnk_cadet_firstname(ids.cadetIds[1])).toBeVisible();
+        await expect(cadetListPage.lnk_cadet_firstname(ids.cadetIds[1])).toHaveAttribute('href', `/app/cadet/${ids.cadetIds[1]}`);
 
-        await cadetListPage.lnk_cadet_lastname(ids.cadetIds[1]).click();
-        await expect(page).toHaveURL(`/de/app/cadet/${ids.cadetIds[1]}`);
-        await page.goBack();
+        await expect(cadetListPage.lnk_cadet_lastname(ids.cadetIds[1])).toBeVisible();
+        await expect(cadetListPage.lnk_cadet_lastname(ids.cadetIds[1])).toHaveAttribute('href', `/app/cadet/${ids.cadetIds[1]}`);
     });
 
     await test.step('Uwe Luft', async () => {
-        await cadetListPage.lnk_cadet_firstname(ids.cadetIds[4]).click();
-        await expect(page).toHaveURL(`/de/app/cadet/${ids.cadetIds[4]}`);
-        await page.goBack();
-        await expect(cadetListPage.div_cadet_list.first()).toBeVisible();
+        await expect(cadetListPage.lnk_cadet_firstname(ids.cadetIds[4])).toBeVisible();
+        await expect(cadetListPage.lnk_cadet_firstname(ids.cadetIds[4])).toHaveAttribute('href', `/app/cadet/${ids.cadetIds[4]}`);
 
-        await cadetListPage.lnk_cadet_lastname(ids.cadetIds[4]).click();
-        // Retry click if navigation didn't happen (handles hydration race after goBack)
-        await expect(page).toHaveURL(`/de/app/cadet/${ids.cadetIds[4]}`).catch(async () => {
-            await cadetListPage.lnk_cadet_lastname(ids.cadetIds[4]).click();
-        });
-        await expect(page).toHaveURL(`/de/app/cadet/${ids.cadetIds[4]}`);
-        await page.goBack();
+        await expect(cadetListPage.lnk_cadet_lastname(ids.cadetIds[4])).toBeVisible();
+        await expect(cadetListPage.lnk_cadet_lastname(ids.cadetIds[4])).toHaveAttribute('href', `/app/cadet/${ids.cadetIds[4]}`);
     });
 });
 

@@ -98,6 +98,20 @@ export type InspectionReviewCadet = {
     activeDeficiencyCount: number;
     newlyClosedDeficiencyCount: number;
     overalClosedDeficiencyCount: number;
+    attendanceStatus: 'inspected' | 'excused' | 'missing';
+}
+
+export type ClosedInspectionSummary = {
+    id: string;
+    name: string;
+    date: string;
+    timeStart: string;
+    timeEnd: string;
+    activeCadets: number;
+    cadetsInspected: number;
+    deregisteredCadets: number;
+    missingCadets: number;
+    uniformCompletePercent: number;
 }
 
 export type InspectionReviewDeficiency = {
