@@ -41,7 +41,7 @@ export const ToggleFormField = <FormType extends FieldValues>(props: ToggleFormF
                             id={`${formName}_toggle-${name}`}
                             type="checkbox"
                             role="switch"
-                            className="form-check-input ms-0 my-2"
+                            className="form-check-input ms-0"
                             checked={field.value}
                             tabIndex={disabled ? -1 : 0}
                             style={disabled ? { pointerEvents: "none", opacity: 0.5 } : { cursor: "pointer" }}
@@ -51,7 +51,7 @@ export const ToggleFormField = <FormType extends FieldValues>(props: ToggleFormF
                             onChange={() => disabled ? undefined : field.onChange(!field.value)}
                         />
                         {toggleText && (
-                            <label id={`${formName}_${name}_toggleText`} className="form-check-label ms-2">{toggleText}</label>
+                            <label id={`${formName}_${name}_toggleText`} className="form-check-label ms-2 my-auto">{toggleText}</label>
                         )}
                     </div>
                 )

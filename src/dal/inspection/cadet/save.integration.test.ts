@@ -195,24 +195,11 @@ describe('saveCadetInspection Integration Tests', () => {
             expect(createdDeficiency?.description).toContain(data.uniformTypes[0].name);
             expect(createdDeficiency?.userCreated).toBe('aabb');
 
-            // Assert - Verify uniformDeficiency relationship was created
-            const uniformDeficiency = await prisma.uniformDeficiency.findFirst({
-                where: {
-                    deficiencyId: createdDeficiency!.id
-                }
-            });
+            // Assert - Verify uniform FK is set directly on deficiency
+            expect(createdDeficiency?.fk_uniform).toBe(uniformId);
 
-            expect(uniformDeficiency).toBeTruthy();
-            expect(uniformDeficiency?.fk_uniform).toBe(uniformId);
-
-            // Assert - Verify NO cadetDeficiency was created (should only be uniformDeficiency)
-            const cadetDeficiency = await prisma.cadetDeficiency.findFirst({
-                where: {
-                    deficiencyId: createdDeficiency!.id
-                }
-            });
-
-            expect(cadetDeficiency).toBeNull();
+            // Assert - Verify NO cadet FK was set (should only be uniform deficiency)
+            expect(createdDeficiency?.fk_cadet).toBeNull();
         });
 
         it('should create cadet deficiency with material relation and correct database relationships', async () => {
@@ -252,26 +239,10 @@ describe('saveCadetInspection Integration Tests', () => {
             expect(createdDeficiency?.description).toContain(data.materialGroups[0].description);
             expect(createdDeficiency?.userCreated).toBe('aabb');
 
-            // Assert - Verify cadetDeficiency relationship was created with material FK
-            const cadetDeficiency = await prisma.cadetDeficiency.findFirst({
-                where: {
-                    deficiencyId: createdDeficiency!.id
-                }
-            });
-
-            expect(cadetDeficiency).toBeTruthy();
-            expect(cadetDeficiency?.fk_cadet).toBe(cadetId);
-            expect(cadetDeficiency?.fk_material).toBe(materialId);
-            expect(cadetDeficiency?.fk_uniform).toBeNull();
-
-            // Assert - Verify NO uniformDeficiency was created (should only be cadetDeficiency)
-            const uniformDeficiency = await prisma.uniformDeficiency.findFirst({
-                where: {
-                    deficiencyId: createdDeficiency!.id
-                }
-            });
-
-            expect(uniformDeficiency).toBeNull();
+            // Assert - Verify cadet and material FKs are set directly on deficiency
+            expect(createdDeficiency?.fk_cadet).toBe(cadetId);
+            expect(createdDeficiency?.fk_material).toBe(materialId);
+            expect(createdDeficiency?.fk_uniform).toBeNull();
         });
 
         it('should create cadet deficiency with uniform relation and correct database relationships', async () => {
@@ -311,26 +282,10 @@ describe('saveCadetInspection Integration Tests', () => {
             expect(createdDeficiency?.description).toContain(data.uniformTypes[0].name);
             expect(createdDeficiency?.userCreated).toBe('aabb');
 
-            // Assert - Verify cadetDeficiency relationship was created with uniform FK
-            const cadetDeficiency = await prisma.cadetDeficiency.findFirst({
-                where: {
-                    deficiencyId: createdDeficiency!.id
-                }
-            });
-
-            expect(cadetDeficiency).toBeTruthy();
-            expect(cadetDeficiency?.fk_cadet).toBe(cadetId);
-            expect(cadetDeficiency?.fk_uniform).toBe(uniformId);
-            expect(cadetDeficiency?.fk_material).toBeNull();
-
-            // Assert - Verify NO uniformDeficiency was created (cadet dependent, not uniform dependent)
-            const uniformDeficiency = await prisma.uniformDeficiency.findFirst({
-                where: {
-                    deficiencyId: createdDeficiency!.id
-                }
-            });
-
-            expect(uniformDeficiency).toBeNull();
+            // Assert - Verify cadet and uniform FKs are set directly on deficiency
+            expect(createdDeficiency?.fk_cadet).toBe(cadetId);
+            expect(createdDeficiency?.fk_uniform).toBe(uniformId);
+            expect(createdDeficiency?.fk_material).toBeNull();
         });
     });
 
@@ -342,7 +297,7 @@ describe('saveCadetInspection Integration Tests', () => {
             // Create an existing deficiency that needs to be resolved
             const existingDeficiency = await prisma.deficiency.create({
                 data: {
-                    fk_deficiencyType: type === "cadet"?ids.deficiencyTypeIds[1]: ids.deficiencyTypeIds[2], // cadet dependent type
+                    fk_deficiencyType: type === "cadet" ? ids.deficiencyTypeIds[1] : ids.deficiencyTypeIds[2],
                     description: "Existing deficiency",
                     comment: "Initial comment",
                     dateCreated: new Date('2023-01-01T10:00:00Z'),
@@ -352,24 +307,11 @@ describe('saveCadetInspection Integration Tests', () => {
                     userUpdated: 'testuser',
                     userResolved: null,
                     fk_inspection_created: ids.inspectionIds[0],
-                    fk_inspection_resolved: null
+                    fk_inspection_resolved: null,
+                    fk_cadet: type === "cadet" ? cadetId : null,
                 }
             });
             existingDeficiencyId = existingDeficiency.id;
-
-            if (type === "cadet") {
-                // Link deficiency to cadet
-                await prisma.cadetDeficiency.create({
-                    data: {
-                        deficiencyId: existingDeficiencyId,
-                        fk_cadet: cadetId,
-                        fk_uniform: null,
-                        fk_material: null
-                    }
-                });
-            } else {
-
-            }
 
             return existingDeficiency;
         };
@@ -500,17 +442,8 @@ describe('saveCadetInspection Integration Tests', () => {
                     userUpdated: 'testuser',
                     userResolved: null,
                     fk_inspection_created: ids.inspectionIds[0],
-                    fk_inspection_resolved: null
-                }
-            });
-
-            // Link to our cadet
-            await prisma.cadetDeficiency.create({
-                data: {
-                    deficiencyId: ourDeficiency.id,
+                    fk_inspection_resolved: null,
                     fk_cadet: cadetId,
-                    fk_uniform: null,
-                    fk_material: null
                 }
             });
 

@@ -4,12 +4,6 @@ import {
     deleteReturnProcessTemplate,
     updateReturnProcessTemplate,
 } from "@/dal/cadet/returnProcessTemplate";
-import {
-    changeReturnChecklistTemplateSortOrder,
-    createReturnChecklistTemplate,
-    deleteReturnChecklistTemplate,
-    updateReturnChecklistTemplate,
-} from "@/dal/cadet/returnChecklistTemplate";
 import { ReturnChecklistTemplate, ReturnProcessTemplate } from "@/prisma/client";
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -91,14 +85,14 @@ describe("<ReturnProcessTemplateSection />", () => {
             anonymizationMode: "MANUAL",
             anonymizationDelayDays: 0,
         });
-        vi.mocked(createReturnProcessTemplate).mockResolvedValue({
+        vi.mocked(createReturnProcessTemplate).mockResolvedValue([tpl1, tpl2, {
             ...tpl1,
             id: "tpl-new",
             name: "New Template",
             checklistItems: [],
-        } as any);
-        vi.mocked(deleteReturnProcessTemplate).mockResolvedValue(undefined as any);
-        vi.mocked(updateReturnProcessTemplate).mockResolvedValue({ ...tpl1, name: "Renamed" } as any);
+        } as any]);
+        vi.mocked(deleteReturnProcessTemplate).mockResolvedValue([tpl1]);
+        vi.mocked(updateReturnProcessTemplate).mockResolvedValue([{ ...tpl1, name: "Renamed" }, tpl2] as any);
     });
 
     afterEach(() => vi.clearAllMocks());

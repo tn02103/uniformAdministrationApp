@@ -17,47 +17,57 @@ test.describe(() => {
         await expect(uniformListPage.div_nodata).toBeHidden();
     });
 
-    test('integration: sessionStorage filter config per uniformType', async ({ uniformListPage, staticData: { ids } }) => {
-        // Change some filters and submit
-        await uniformListPage.btn_genAccordion_header.click();
-        await expect(uniformListPage.chk_genFilter(ids.uniformGenerationIds[0])).toBeVisible();
-        // Retry first checkbox interaction after accordion animation
-        await expect(async () => {
+    test('integration: sessionStorage filter config per uniformType', async ({ uniformListPage, staticData: { ids, data } }) => {
+        await test.step('change filters and submit', async () => {
+            // Change some filters and submit
+            await uniformListPage.btn_genAccordion_header.click();
+            await expect(uniformListPage.chk_genFilter(ids.uniformGenerationIds[0])).toBeVisible();
+            // Retry first checkbox interaction after accordion animation
             await uniformListPage.chk_genFilter(ids.uniformGenerationIds[0]).setChecked(false);
-            await expect(uniformListPage.chk_genFilter(ids.uniformGenerationIds[0])).not.toBeChecked();
-        }).toPass({ timeout: 10_000 });
-        await uniformListPage.chk_genFilter(ids.uniformGenerationIds[1]).setChecked(false);
-        await uniformListPage.chk_genFilter_nullValue.setChecked(false);
-        await uniformListPage.btn_othersAccordion_header.click();
-        await expect(uniformListPage.chk_issuedFilter).toBeVisible();
-        // Retry first checkbox interaction after accordion animation
-        await expect(async () => {
+            await uniformListPage.chk_genFilter(ids.uniformGenerationIds[1]).setChecked(false);
+            await uniformListPage.chk_genFilter_nullValue.setChecked(false);
+            await uniformListPage.btn_othersAccordion_header.click();
+            await expect(uniformListPage.chk_issuedFilter).toBeVisible();
             await uniformListPage.chk_issuedFilter.setChecked(false);
-            await expect(uniformListPage.chk_issuedFilter).not.toBeChecked();
-        }).toPass({ timeout: 10_000 });
-        await uniformListPage.chk_isReserveFilter.setChecked(true);
-        await uniformListPage.btn_load.click();
+            await uniformListPage.chk_isReserveFilter.setChecked(true);
+            await uniformListPage.btn_load.click();
+            // Wait for the page to settle so sessionStorage is updated
+            await uniformListPage.page.waitForLoadState('domcontentloaded');
+        });
 
-        // Change type and back, expect filter config to persist
-        await uniformListPage.sel_type.selectOption(ids.uniformTypeIds[1]);
-        await uniformListPage.sel_type.selectOption(ids.uniformTypeIds[0]);
-        await expect.soft(uniformListPage.chk_genFilter(ids.uniformGenerationIds[0])).not.toBeChecked();
-        await expect.soft(uniformListPage.chk_genFilter(ids.uniformGenerationIds[1])).not.toBeChecked();
-        await expect.soft(uniformListPage.chk_genFilter_nullValue).not.toBeChecked();
-        await expect.soft(uniformListPage.chk_issuedFilter).not.toBeChecked();
-        await expect.soft(uniformListPage.chk_isReserveFilter).toBeChecked();
+        await test.step('navigate away and back', async () => {
+            // Change type and back, expect filter config to persist
+            await uniformListPage.sel_type.selectOption(ids.uniformTypeIds[1]);
+            await uniformListPage.page.waitForURL(`**/uniform/list/${ids.uniformTypeIds[1]}`, { timeout: 30_000 });
+            await expect(uniformListPage.div_pageHeader).toContainText(data.uniformTypes[1].name);
+            await uniformListPage.sel_type.selectOption(ids.uniformTypeIds[0]);
+            await expect(uniformListPage.div_nodata).toBeHidden();
+
+            await uniformListPage.page.waitForURL(`**/uniform/list/${ids.uniformTypeIds[0]}`, { timeout: 30_000 });
+            await expect(uniformListPage.div_pageHeader).toContainText(data.uniformTypes[0].name);
+            await expect(uniformListPage.div_nodata).toBeHidden();
+        });
+
+        await test.step('expect previous filters to be applied', async () => {
+            await expect.soft(uniformListPage.chk_genFilter(ids.uniformGenerationIds[0])).not.toBeChecked();
+            await expect.soft(uniformListPage.chk_genFilter(ids.uniformGenerationIds[1])).not.toBeChecked();
+            await expect.soft(uniformListPage.chk_genFilter_nullValue).not.toBeChecked();
+            await expect.soft(uniformListPage.chk_issuedFilter).not.toBeChecked();
+            await expect.soft(uniformListPage.chk_isReserveFilter).toBeChecked();
+        });
     });
 
-    // eslint-disable-next-line playwright/no-skipped-test
-    test.skip('integration: changing UniformType updates filter and data', async ({page, uniformListPage, staticData: { ids } }) => {
+    test('integration: changing UniformType updates filter and data', async ({ page, uniformListPage, staticData: { ids, data} }) => {
         await uniformListPage.sel_type.selectOption(ids.uniformTypeIds[1]);
         await page.waitForURL(`/de/app/uniform/list/${ids.uniformTypeIds[1]}`);
-        
-        await expect(uniformListPage.div_pageHeader).toContainText('Typ2');
+
+        await expect(uniformListPage.div_pageHeader).toContainText(data.uniformTypes[1].name);
         await expect(uniformListPage.div_othersAccordion).toBeVisible();
         // Check that only generations filter is visible for Typ2
         await expect(uniformListPage.div_genAccordion).toBeVisible();
         await expect(uniformListPage.div_sizeAccordion).toBeHidden();
+        await expect(uniformListPage.div_nodata).toBeHidden();
+        await expect(uniformListPage.div_uitem_number(ids.uniformIds[1][0])).toBeVisible();
     });
 
     test('integration: changing search input updates helptext and data', async ({ uniformListPage }) => {
@@ -93,14 +103,14 @@ test.describe(() => {
         // Filter by size
         await uniformListPage.openSizeAccordion();
         await expect(uniformListPage.chk_sizeFilter_selAll).toBeChecked();
-        
+
         await uniformListPage.chk_sizeFilter_selAll.click();
         await uniformListPage.chk_sizeFilter(ids.sizeIds[0]).click();
 
         await expect(uniformListPage.chk_sizeFilter_selAll).not.toBeChecked();
         await expect(uniformListPage.chk_sizeFilter(ids.sizeIds[0])).toBeChecked();
         await uniformListPage.btn_load.click();
-        
+
         // Expect only uniforms with this size to be shown
         const count = data.uniformList.filter(u => (
             (u.fk_uniformType === ids.uniformTypeIds[0])

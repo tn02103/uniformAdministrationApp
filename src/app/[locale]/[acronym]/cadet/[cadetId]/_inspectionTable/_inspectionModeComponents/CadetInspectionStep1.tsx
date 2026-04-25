@@ -2,7 +2,7 @@ import { useI18n } from "@/lib/locales/client";
 import { CadetInspectionFormSchema, OldDeficiencyFormSchema } from "@/zod/deficiency";
 import { Button, Col, Row } from "react-bootstrap";
 import { useWatch } from "react-hook-form";
-import { OldDeficiencyRow } from "./OldDeficiencyRow";
+import { DeficiencyInspectionStep1Row } from "./DeficiencyInspectionStep1Row";
 
 export type CadetInspectionStep1Props = {
     cancel: () => void;
@@ -28,7 +28,7 @@ export function CadetInspectionStep1({
                     </Col>
                 </Row>
                 {oldDeficiencyList?.map((def, index) =>
-                    <OldDeficiencyRow deficiency={def} step={1} key={def.id} index={index} />
+                    <DeficiencyInspectionStep1Row deficiency={def} key={def.id} index={index} />
                 )}
             </div>
             <Row className="p-0">

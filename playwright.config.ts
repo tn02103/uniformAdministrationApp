@@ -23,7 +23,7 @@ export default defineConfig({
     reporter: [
         ['dot'],
         ['html'],
-        ['json', { outputFile: 'test-results.json' }],
+        ['json', { outputFile: 'playwright-report/json/report.json' }],
     ],
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
     use: {
@@ -34,9 +34,6 @@ export default defineConfig({
         trace: 'on',
         screenshot: 'on',
         video: "on",
-    },
-    expect: {
-        timeout: 10_000,
     },
     // globalTeardown: require.resolve('./tests/global-teardown'),
 

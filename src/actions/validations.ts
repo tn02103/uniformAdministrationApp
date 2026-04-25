@@ -95,7 +95,7 @@ function assosiationValidator(assosiationValidations: AssosiationValidationDataT
 export const genericSAValidator = async <T>(
     requiredRole: AuthRole,
     data: T,
-    shema: z.ZodType<T>,
+    shema: z.ZodType<T> | ((user: IronSessionUser) => Promise<z.ZodType<T>>),
     assosiationValidations?: AssosiationValidationDataType
 ): Promise<[IronSessionUser, T]> => {
 
@@ -106,6 +106,9 @@ export const genericSAValidator = async <T>(
         throw new UnauthorizedException(`user does not have required role ${requiredRole}`);
     }
 
+    if (typeof shema === "function") {
+        shema = await shema(user);
+    }
     const zodResult = shema.safeParse(data);
     if (!zodResult.success) {
         throw zodResult.error;

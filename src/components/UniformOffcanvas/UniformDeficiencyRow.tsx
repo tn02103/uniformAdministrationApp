@@ -1,20 +1,22 @@
-import { createUniformDeficiency, resolveDeficiency, updateUniformDeficiency } from "@/dal/inspection/deficiency";
+import { createDeficiency, resolveDeficiency, updateDeficiency } from "@/dal/inspection/deficiency";
 import { useDeficienciesByUniformId, useDeficiencyTypes } from "@/dataFetcher/deficiency";
 import { swrKeys } from "@/dataFetcher/swrKeys";
 import { useI18n } from "@/lib/locales/client";
 import { Deficiency } from "@/types/deficiencyTypes";
-import { UpdateUniformDeficiencySchema, updateUniformDeficiencySchema } from "@/zod/deficiency";
+import { CreateDeficiencyInput, createDeficiencySchema } from "@/zod/deficiency";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatDate } from "date-fns";
 import { useState } from "react";
-import { Badge, Button, Card, Col, Dropdown, Form, FormControl, FormSelect, Row } from "react-bootstrap";
-import { useForm } from "react-hook-form";
+import { Badge, Button, Card, Col, Dropdown, Form, Row } from "react-bootstrap";
+import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { mutate } from "swr";
 import { LabelIconButton } from "../Buttons/LabelIconButton";
 import { ExpandableDividerArea } from "../ExpandableArea/ExpandableArea";
+import { SelectFormField } from "../fields/SelectFormField";
+import { TextareaFormField } from "../fields/TextareaFormField";
 
 export const UniformDeficiencyRow = ({ uniformId }: { uniformId: string }) => {
     const t = useI18n();
@@ -76,28 +78,29 @@ type DeficiencyCardProps = {
 }
 const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: DeficiencyCardProps) => {
     const t = useI18n();
-    const form = useForm<UpdateUniformDeficiencySchema>({
+    const { deficiencyTypeList } = useDeficiencyTypes();
+
+    const form = useForm<CreateDeficiencyInput>({
         mode: "onTouched",
         defaultValues: {
             comment: deficiency?.comment,
             typeId: deficiency?.typeId,
+            uniformId,
         },
-        resolver: zodResolver(updateUniformDeficiencySchema),
+        resolver: zodResolver(createDeficiencySchema(deficiencyTypeList ?? [])),
     });
 
     const [editable, setEditable] = useState(!deficiency);
-    const { deficiencyTypeList } = useDeficiencyTypes();
     const filteredTypes = deficiencyTypeList?.filter((type) => type.dependent === "uniform");
     const cardLabel = deficiency ? t('uniformOffcanvas.deficiency.cardLabel', { index }) : t('uniformOffcanvas.deficiency.createCardLabel');
 
-    const handleSave = async (data: UpdateUniformDeficiencySchema) => {
+    const handleSave = async (data: CreateDeficiencyInput) => {
         if (!deficiency) return handleCreate(data);
 
-        await updateUniformDeficiency({
+        await updateDeficiency({
             id: deficiency.id!,
             data: {
                 comment: data.comment,
-                typeId: data.typeId,
             },
         }).then(async () => {
             setEditable(false);
@@ -106,11 +109,8 @@ const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: Defici
             toast.error(t('common.error.actions.save'));
         });
     }
-    const handleCreate = async (data: UpdateUniformDeficiencySchema) => {
-        await createUniformDeficiency({
-            uniformId,
-            data
-        }).then(async () => {
+    const handleCreate = async (data: CreateDeficiencyInput) => {
+        await createDeficiency(data).then(async () => {
             hideCreateCard?.();
             await mutate(swrKeys.uniformDefieicncyMutateMatcher(uniformId));
         }).catch(() => {
@@ -134,158 +134,150 @@ const DeficiencyCard = ({ index, deficiency, uniformId, hideCreateCard }: Defici
             className={`m-1 p-0 ${deficiency?.dateResolved ? "text-secondary" : ""}`}
         >
             <Card.Body className="position-relative">
-                <form onSubmit={form.handleSubmit(handleSave)} noValidate autoComplete="off" className="mb-4">
-                    {editable ?
-                        <>
-                            <Card.Title className="fs-6 fw-bold">
-                                <FormSelect
-                                    className="mb-2"
-                                    {...form.register('typeId')}
-                                    aria-label={t('uniformOffcanvas.deficiency.label.deficiencyType')}
-                                >
-                                    {filteredTypes?.map((type) => (
-                                        <option
-                                            key={type.id}
-                                            value={type.id}
-                                        >
-                                            {type.name}
-                                        </option>
-                                    ))}
-                                </FormSelect>
+                <FormProvider {...form}>
+                    <form onSubmit={form.handleSubmit(handleSave)} noValidate autoComplete="off" className="mb-4">
+                        {editable && !deficiency ?
+                            <>
+                                <Card.Title className="fs-6 fw-bold">
+                                    <SelectFormField
+                                        name="typeId"
+                                        label={t('uniformOffcanvas.deficiency.label.deficiencyType')}
+                                        options={filteredTypes?.map((type) => ({ value: type.id, label: type.name })) ?? []}
+                                    />
+                                </Card.Title>
+                            </>
+                            : <Card.Title className="fs-6 fw-bold" aria-label={t('uniformOffcanvas.deficiency.label.deficiencyType')}>
+                                {deficiency?.typeName} {deficiency?.dateResolved && <Badge bg="success" className="ms-2">Gelöst</Badge>}
                             </Card.Title>
-                        </>
-                        : <Card.Title className="fs-6 fw-bold"  aria-label={t('uniformOffcanvas.deficiency.label.deficiencyType')}>
-                            {deficiency?.typeName} {deficiency?.dateResolved && <Badge bg="success" className="ms-2">Gelöst</Badge>}
-                        </Card.Title>
-                    }
-                    {(!editable && deficiency && !deficiency.dateResolved) && (
-                        <div className="position-absolute top-0 end-0">
-                            <Dropdown drop="start">
-                                <Dropdown.Toggle
-                                    variant="outline-secondary"
-                                    className="border-0"
-                                    id={"Cadetdropdown"}
-                                    aria-label={t('uniformOffcanvas.deficiency.label.actions', { index })}
-                                >
-                                    <FontAwesomeIcon icon={faEllipsisV} />
-                                </Dropdown.Toggle>
-                                <Dropdown.Menu>
-                                    {!deficiency.dateResolved &&
-                                        <Dropdown.Item
-                                            onClick={() => {
-                                                form.reset({
-                                                    typeId: deficiency.typeId,
-                                                    comment: deficiency.comment,
-                                                });
-                                                setEditable(true);
-                                            }}
-                                        >
-                                            {t('common.actions.edit')}
-                                        </Dropdown.Item>
-                                    }
-                                    {!deficiency.dateResolved &&
-                                        <Dropdown.Item
-                                            onClick={handleResolve}
-                                        >
-                                            {t('common.actions.resolve')}
-                                        </Dropdown.Item>
-                                    }
-                                </Dropdown.Menu>
-                            </Dropdown>
-                        </div>
-                    )}
-                    {editable ? (
-                        <>
-                            <FormControl
-                                as="textarea"
-                                rows={2}
-                                placeholder="Kommentar"
-                                className="mb-2"
-                                aria-label={t('uniformOffcanvas.deficiency.label.comment')}
-                                {...form.register('comment')}
-                            />
-                            <Row>
-                                <Col xs="auto" className="text-end">
-                                    <Button
+                        }
+                        {(!editable && deficiency && !deficiency.dateResolved) && (
+                            <div className="position-absolute top-0 end-0">
+                                <Dropdown drop="start">
+                                    <Dropdown.Toggle
                                         variant="outline-secondary"
-                                        type="button"
-                                        onClick={() => deficiency ? setEditable(false) : hideCreateCard?.()}
+                                        className="border-0"
+                                        id={"Cadetdropdown"}
+                                        aria-label={t('uniformOffcanvas.deficiency.label.actions', { index })}
                                     >
-                                        {t('common.actions.cancel')}
-                                    </Button>
-                                </Col>
-                                <Col xs="auto" className="text-end">
-                                    <Button
-                                        variant="outline-primary"
-                                        type="submit"
-                                        onClick={() => { }}
-                                    >
-                                        {deficiency ? t('common.actions.save') : t('common.actions.create')}
-                                    </Button>
-                                </Col>
-                            </Row>
-                        </>
-                    ) : (
-                        <Card.Text aria-label={t('uniformOffcanvas.deficiency.label.comment')}>
-                            {deficiency?.comment}
-                        </Card.Text>
-                    )}
-                    {deficiency &&
-                        <ExpandableDividerArea>
-                            <Col xs={6} className="mt-2">
-                                <div className="fw-bold" id={`def-${deficiency.id}-dateCreated`}>
-                                    {t('uniformOffcanvas.deficiency.label.date.created')}
-                                </div>
-                                <div aria-labelledby={`def-${deficiency.id}-dateCreated`}>
-                                    {formatDate(deficiency.dateCreated!, "dd.MM.yyyy")}
-                                </div>
-                            </Col>
-                            <Col xs={6} className="mt-2">
-                                <div className="fw-bold" id={`def-${deficiency.id}-userCreated`}>
-                                    {t('uniformOffcanvas.deficiency.label.user.created')}
-                                </div>
-                                <div aria-labelledby={`def-${deficiency.id}-userCreated`}>
-                                    {deficiency.userCreated}</div>
-                            </Col>
-                            <Col xs={6} className="mt-2">
-                                <div className="fw-bold" id={`def-${deficiency.id}-dateUpdated`}>
-                                    {t('uniformOffcanvas.deficiency.label.date.updated')}
-                                </div>
-                                <div aria-labelledby={`def-${deficiency.id}-dateUpdated`}>
-                                    {deficiency.dateUpdated && formatDate(deficiency.dateUpdated, "dd.MM.yyyy")}
-                                </div>
-                            </Col>
-                            <Col xs={6} className="mt-2">
-                                <div className="fw-bold" id={`def-${deficiency.id}-userUpdated`}>
-                                    {t('uniformOffcanvas.deficiency.label.user.updated')}
-                                </div>
-                                <div aria-labelledby={`def-${deficiency.id}-userUpdated`}>
-                                    {deficiency.userUpdated}
-                                </div>
-                            </Col>
-                            {deficiency.dateResolved && (
-                                <>
-                                    <Col xs={6} className="mt-2">
-                                        <div className="fw-bold" id={`def-${deficiency.id}-dateResolved`}>
-                                            {t('uniformOffcanvas.deficiency.label.date.resolved')}
-                                        </div>
-                                        <div aria-labelledby={`def-${deficiency.id}-dateResolved`}>
-                                            {formatDate(deficiency.dateResolved, "dd.MM.yyyy")}
-                                        </div>
+                                        <FontAwesomeIcon icon={faEllipsisV} />
+                                    </Dropdown.Toggle>
+                                    <Dropdown.Menu>
+                                        {!deficiency.dateResolved &&
+                                            <Dropdown.Item
+                                                onClick={() => {
+                                                    form.reset({
+                                                        typeId: deficiency.typeId,
+                                                        comment: deficiency.comment,
+                                                        uniformId,
+                                                    });
+                                                    setEditable(true);
+                                                }}
+                                            >
+                                                {t('common.actions.edit')}
+                                            </Dropdown.Item>
+                                        }
+                                        {!deficiency.dateResolved &&
+                                            <Dropdown.Item
+                                                onClick={handleResolve}
+                                            >
+                                                {t('common.actions.resolve')}
+                                            </Dropdown.Item>
+                                        }
+                                    </Dropdown.Menu>
+                                </Dropdown>
+                            </div>
+                        )}
+                        {editable ? (
+                            <>
+                                <TextareaFormField
+                                    name="comment"
+                                    label={t('uniformOffcanvas.deficiency.label.comment')}
+                                    rows={2}
+                                    maxLength={1000}
+                                />
+                                <Row className="mt-3">
+                                    <Col xs="auto" className="text-end">
+                                        <Button
+                                            variant="outline-secondary"
+                                            type="button"
+                                            onClick={() => deficiency ? setEditable(false) : hideCreateCard?.()}
+                                        >
+                                            {t('common.actions.cancel')}
+                                        </Button>
                                     </Col>
-                                    <Col xs={6} className="mt-2">
-                                        <div className="fw-bold" id={`def-${deficiency.id}-userResolved`}>
-                                            {t('uniformOffcanvas.deficiency.label.user.resolved')}
-                                        </div>
-                                        <div aria-labelledby={`def-${deficiency.id}-userResolved`}>
-                                            {deficiency.userResolved}
-                                        </div>
+                                    <Col xs="auto" className="text-end">
+                                        <Button
+                                            variant="outline-primary"
+                                            type="submit"
+                                            onClick={() => { }}
+                                        >
+                                            {deficiency ? t('common.actions.save') : t('common.actions.create')}
+                                        </Button>
                                     </Col>
-                                </>
-                            )}
-                        </ExpandableDividerArea>
-                    }
-                </form>
+                                </Row>
+                            </>
+                        ) : (
+                            <Card.Text aria-label={t('uniformOffcanvas.deficiency.label.comment')}>
+                                {deficiency?.comment}
+                            </Card.Text>
+                        )}
+                        {deficiency &&
+                            <ExpandableDividerArea>
+                                <Col xs={6} className="mt-2">
+                                    <div className="fw-bold" id={`def-${deficiency.id}-dateCreated`}>
+                                        {t('uniformOffcanvas.deficiency.label.date.created')}
+                                    </div>
+                                    <div aria-labelledby={`def-${deficiency.id}-dateCreated`}>
+                                        {formatDate(deficiency.dateCreated!, "dd.MM.yyyy")}
+                                    </div>
+                                </Col>
+                                <Col xs={6} className="mt-2">
+                                    <div className="fw-bold" id={`def-${deficiency.id}-userCreated`}>
+                                        {t('uniformOffcanvas.deficiency.label.user.created')}
+                                    </div>
+                                    <div aria-labelledby={`def-${deficiency.id}-userCreated`}>
+                                        {deficiency.userCreated}</div>
+                                </Col>
+                                <Col xs={6} className="mt-2">
+                                    <div className="fw-bold" id={`def-${deficiency.id}-dateUpdated`}>
+                                        {t('uniformOffcanvas.deficiency.label.date.updated')}
+                                    </div>
+                                    <div aria-labelledby={`def-${deficiency.id}-dateUpdated`}>
+                                        {deficiency.dateUpdated && formatDate(deficiency.dateUpdated, "dd.MM.yyyy")}
+                                    </div>
+                                </Col>
+                                <Col xs={6} className="mt-2">
+                                    <div className="fw-bold" id={`def-${deficiency.id}-userUpdated`}>
+                                        {t('uniformOffcanvas.deficiency.label.user.updated')}
+                                    </div>
+                                    <div aria-labelledby={`def-${deficiency.id}-userUpdated`}>
+                                        {deficiency.userUpdated}
+                                    </div>
+                                </Col>
+                                {deficiency.dateResolved && (
+                                    <>
+                                        <Col xs={6} className="mt-2">
+                                            <div className="fw-bold" id={`def-${deficiency.id}-dateResolved`}>
+                                                {t('uniformOffcanvas.deficiency.label.date.resolved')}
+                                            </div>
+                                            <div aria-labelledby={`def-${deficiency.id}-dateResolved`}>
+                                                {formatDate(deficiency.dateResolved, "dd.MM.yyyy")}
+                                            </div>
+                                        </Col>
+                                        <Col xs={6} className="mt-2">
+                                            <div className="fw-bold" id={`def-${deficiency.id}-userResolved`}>
+                                                {t('uniformOffcanvas.deficiency.label.user.resolved')}
+                                            </div>
+                                            <div aria-labelledby={`def-${deficiency.id}-userResolved`}>
+                                                {deficiency.userResolved}
+                                            </div>
+                                        </Col>
+                                    </>
+                                )}
+                            </ExpandableDividerArea>
+                        }
+                    </form>
+                </FormProvider>
             </Card.Body>
         </Card >
     );

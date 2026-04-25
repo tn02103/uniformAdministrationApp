@@ -2,12 +2,13 @@ import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { createReturnChecklistTemplateSchema, CreateReturnChecklistTemplateInput } from "@/zod/returnProcess";
+import { __unsecuredGetReturnProcessTemplateList } from "../returnProcessTemplate/get";
 
 /**
  * Creates a new checklist item for a return process template.
  * sortOrder is auto-calculated as MAX(existing) + 1 (or 0 if no items exist).
  * @param data returnProcessTemplateId, label
- * @returns the created ReturnChecklistTemplate
+ * @returns the updated list of ReturnProcessTemplates with checklist items
  */
 export const create = (data: CreateReturnChecklistTemplateInput) =>
     genericSAValidator(
@@ -23,7 +24,7 @@ export const create = (data: CreateReturnChecklistTemplateInput) =>
             });
             const sortOrder = aggregate._max.sortOrder !== null ? aggregate._max.sortOrder + 1 : 0;
 
-            return client.returnChecklistTemplate.create({
+            await client.returnChecklistTemplate.create({
                 data: {
                     fk_returnProcessTemplate: returnProcessTemplateId,
                     fk_assosiation: assosiation,
@@ -31,5 +32,6 @@ export const create = (data: CreateReturnChecklistTemplateInput) =>
                     sortOrder,
                 },
             });
+            return __unsecuredGetReturnProcessTemplateList(assosiation, client);
         })
     );

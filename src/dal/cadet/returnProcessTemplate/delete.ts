@@ -2,11 +2,13 @@ import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { deleteReturnProcessTemplateSchema, DeleteReturnProcessTemplateInput } from "@/zod/returnProcess";
+import { __unsecuredGetReturnProcessTemplateList } from "./get";
 
 /**
  * Deletes a return process template and all associated processes and checklist items.
  * Throws if the template has any active (unfinished) return processes.
  * @param data id of the template to delete
+ * @return the remaining ReturnProcessTemplates with checklist items
  */
 export const deleteTemplate = (data: DeleteReturnProcessTemplateInput) =>
     genericSAValidator(
@@ -14,7 +16,7 @@ export const deleteTemplate = (data: DeleteReturnProcessTemplateInput) =>
         data,
         deleteReturnProcessTemplateSchema,
         { returnProcessTemplateId: data.id }
-    ).then(([, { id }]) =>
+    ).then(([{assosiation}, { id }]) =>
         prisma.$transaction(async (client) => {
             const activeProcessCount = await client.returnProcess.count({
                 where: { fk_returnProcessTemplate: id, finished: false },
@@ -39,8 +41,9 @@ export const deleteTemplate = (data: DeleteReturnProcessTemplateInput) =>
                 where: { fk_returnProcessTemplate: id },
             });
 
-            return client.returnProcessTemplate.delete({
+            await client.returnProcessTemplate.delete({
                 where: { id },
             });
+            return __unsecuredGetReturnProcessTemplateList(assosiation, client);
         })
     );

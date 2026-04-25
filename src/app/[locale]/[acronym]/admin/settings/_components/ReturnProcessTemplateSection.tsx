@@ -68,8 +68,8 @@ export const ReturnProcessTemplateSection = ({ initialTemplates, returnProcessEn
             primaryOption: t("common.actions.delete"),
             primaryFunction: () => {
                 deleteReturnProcessTemplate({ id: template.id })
-                    .then(() => {
-                        setTemplates((prev) => prev.filter((tpl) => tpl.id !== template.id));
+                    .then((newData) => {
+                        setTemplates(newData);
                     })
                     .catch((err: Error) => {
                         if (err.message?.includes("active return processes")) {
@@ -84,12 +84,8 @@ export const ReturnProcessTemplateSection = ({ initialTemplates, returnProcessEn
 
     const handleRenameTemplate = async (templateId: string, name: string) => {
         await updateReturnProcessTemplate({ id: templateId, name })
-            .then((updated) => {
-                setTemplates((prev) =>
-                    prev.map((tpl) =>
-                        tpl.id === templateId ? { ...tpl, name: updated.name } : tpl
-                    )
-                );
+            .then((newData) => {
+                setTemplates(newData);
             })
             .catch(() => {
                 toast.error(t("admin.settings.returnProcess.update.error"));
@@ -98,17 +94,8 @@ export const ReturnProcessTemplateSection = ({ initialTemplates, returnProcessEn
 
     const handleToggleDefault = async (template: ReturnProcessTemplateWithItems) => {
         await updateReturnProcessTemplate({ id: template.id, defaultProcess: !template.defaultProcess })
-            .then((updated) => {
-                setTemplates((prev) =>
-                    prev.map((tpl) => {
-                        if (updated.defaultProcess) {
-                            return tpl.id === updated.id
-                                ? { ...tpl, ...updated }
-                                : { ...tpl, defaultProcess: false };
-                        }
-                        return tpl.id === updated.id ? { ...tpl, ...updated } : tpl;
-                    })
-                );
+            .then((newData) => {
+                setTemplates(newData);
             })
             .catch(() => {
                 toast.error(t("admin.settings.returnProcess.update.error"));
@@ -117,8 +104,8 @@ export const ReturnProcessTemplateSection = ({ initialTemplates, returnProcessEn
 
     const handleCreateTemplate = async (data: CreateReturnProcessTemplateInput) => {
         await createReturnProcessTemplate(data)
-            .then((created) => {
-                setTemplates((prev) => [...prev, created]);
+            .then((newTemplates) => {
+                setTemplates(newTemplates);
                 setIsCreating(false);
                 toast.success(t("admin.settings.returnProcess.create.success"));
             })
@@ -129,14 +116,8 @@ export const ReturnProcessTemplateSection = ({ initialTemplates, returnProcessEn
 
     const handleAddChecklistItem = async (templateId: string, label: string) => {
         await createReturnChecklistTemplate({ returnProcessTemplateId: templateId, label })
-            .then((created) => {
-                setTemplates((prev) =>
-                    prev.map((tpl) =>
-                        tpl.id === templateId
-                            ? { ...tpl, checklistItems: [...tpl.checklistItems, created] }
-                            : tpl
-                    )
-                );
+            .then((newData) => {
+                setTemplates(newData);
             })
             .catch(() => {
                 toast.error(t("admin.settings.returnProcess.checklist.create.error"));
@@ -145,19 +126,8 @@ export const ReturnProcessTemplateSection = ({ initialTemplates, returnProcessEn
 
     const handleRenameChecklistItem = async (templateId: string, itemId: string, label: string) => {
         await updateReturnChecklistTemplate({ id: itemId, label })
-            .then((updated) => {
-                setTemplates((prev) =>
-                    prev.map((tpl) =>
-                        tpl.id === templateId
-                            ? {
-                                ...tpl,
-                                checklistItems: tpl.checklistItems.map((ci) =>
-                                    ci.id === itemId ? updated : ci
-                                ),
-                            }
-                            : tpl
-                    )
-                );
+            .then((newData) => {
+                setTemplates(newData);
             })
             .catch(() => {
                 toast.error(t("admin.settings.returnProcess.checklist.update.error"));
@@ -166,17 +136,8 @@ export const ReturnProcessTemplateSection = ({ initialTemplates, returnProcessEn
 
     const handleDeleteChecklistItem = (templateId: string, itemId: string) => {
         deleteReturnChecklistTemplate({ id: itemId })
-            .then(() => {
-                setTemplates((prev) =>
-                    prev.map((tpl) =>
-                        tpl.id === templateId
-                            ? {
-                                ...tpl,
-                                checklistItems: tpl.checklistItems.filter((ci) => ci.id !== itemId),
-                            }
-                            : tpl
-                    )
-                );
+            .then((newData) => {
+                setTemplates(newData);
             })
             .catch(() => {
                 toast.error(t("admin.settings.returnProcess.checklist.delete.error"));
@@ -184,7 +145,6 @@ export const ReturnProcessTemplateSection = ({ initialTemplates, returnProcessEn
     };
 
     const handleChecklistSortOrder = async (
-        templateId: string,
         newArray: ReturnChecklistTemplate[],
         itemId: string
     ) => {
@@ -192,12 +152,8 @@ export const ReturnProcessTemplateSection = ({ initialTemplates, returnProcessEn
         if (newPosition === -1) return;
 
         await changeReturnChecklistTemplateSortOrder({ checklistItemId: itemId, newPosition })
-            .then((updated) => {
-                setTemplates((prev) =>
-                    prev.map((tpl) =>
-                        tpl.id === templateId ? { ...tpl, checklistItems: updated } : tpl
-                    )
-                );
+            .then((newData) => {
+                setTemplates(newData);
             })
             .catch(() => {
                 toast.error(t("admin.settings.returnProcess.checklist.sortOrder.error"));

@@ -4,9 +4,7 @@ describe("updateAnonymizationConfigSchema cross-field validation", () => {
     it("should reject AFTER_DAYS mode without anonymizationDelayDays", () => {
         const result = updateAnonymizationConfigSchema.safeParse({ anonymizationMode: "AFTER_DAYS" });
         expect(result.success).toBe(false);
-        if (!result.success) {
-            expect(result.error.issues[0].path).toContain("anonymizationDelayDays");
-        }
+        expect(result.error!.issues[0].path).toContain("anonymizationDelayDays");
     });
 
     it("should accept AFTER_DAYS mode with valid anonymizationDelayDays", () => {

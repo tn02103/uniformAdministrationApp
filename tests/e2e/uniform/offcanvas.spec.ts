@@ -285,7 +285,6 @@ test.describe('Offcanvas - CadetOverview', () => {
             const actionMenu = firstItem.getByRole('button', { name: /Aktionen/i });
             const editButton = firstItem.getByRole('button', { name: /Bearbeiten/i });
             const commentField = firstItem.getByLabel(/Kommentar/i);
-            const typeField = firstItem.getByLabel(/Art/i);
 
             await test.step('Edit and save deficiency', async () => {
                 await expect(deficiencyList).toBeVisible();
@@ -295,14 +294,10 @@ test.describe('Offcanvas - CadetOverview', () => {
                 await editButton.click();
 
                 await expect(commentField).toBeEditable();
-                await expect(typeField).toBeEditable();
-                await expect(typeField.getByRole('option')).toHaveCount(2);
-                expect(typeField.getByRole('option', { name: "Uniform" })).toBeDefined();
-                expect(typeField.getByRole('option', { name: "Uniform Broken" })).toBeDefined();
                 await expect(commentField).toHaveValue(deficiency.comment);
-                await expect(typeField).toHaveValue(data.deficiencyTypes[0].id);
+                // type field is not editable when editing existing deficiency
+                await expect(firstItem.getByRole('combobox', { name: /Art/i })).not.toBeAttached();
                 await commentField.fill('Test comment');
-                await typeField.selectOption({ label: 'Uniform Broken' });
 
                 const saveButton = firstItem.getByRole('button', { name: /Speichern/i });
                 await saveButton.click();
@@ -327,7 +322,7 @@ test.describe('Offcanvas - CadetOverview', () => {
                 expect(dbDeficiency).toMatchObject({
                     id: deficiency.id,
                     comment: 'Test comment',
-                    fk_deficiencyType: ids.deficiencyTypeIds[7],
+                    fk_deficiencyType: ids.deficiencyTypeIds[0],
                     dateResolved: null,
                     dateUpdated: expect.any(Date),
                     dateCreated: expect.any(Date),
@@ -407,7 +402,7 @@ test.describe('Offcanvas - CadetOverview', () => {
                 await expect(newDeficiencyRow).toBeVisible();
                 await expect(commentField).toBeEditable();
                 await expect(typeField).toBeEditable();
-                await expect(typeField.getByRole('option')).toHaveCount(2);
+                await expect(typeField.getByRole('option')).toHaveCount(3);
                 expect(typeField.getByRole('option', { name: "Uniform" })).toBeDefined();
                 expect(typeField.getByRole('option', { name: "Uniform Broken" })).toBeDefined();
 

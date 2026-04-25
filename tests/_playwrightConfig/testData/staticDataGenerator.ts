@@ -1,4 +1,4 @@
-import { AnonymizationMode, AssosiationConfiguration, CadetStatus, Deregistration, Inspection, Prisma, Redirect, StorageUnit, Uniform } from "@/prisma/client";
+import { AnonymizationMode, AssosiationConfiguration, CadetStatus, Deregistration, Prisma, Redirect, StorageUnit, Uniform } from "@/prisma/client";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat.js";
 import utc from "dayjs/plugin/utc.js";
@@ -38,9 +38,9 @@ export type StaticDataIdType = {
     }
 };
 export function getStaticDataIds(): StaticDataIdType {
-        return {
+    return {
         fk_assosiation: uuid(),
-            userIds: uuidArray(5), // Changed to use uuidArray
+        userIds: uuidArray(5), // Changed to use uuidArray
         cadetIds: uuidArray(12),
         sizeIds: uuidArray(21),
         sizelistIds: uuidArray(4),
@@ -54,7 +54,7 @@ export function getStaticDataIds(): StaticDataIdType {
         deficiencyIds: uuidArray(16),
         inspectionIds: uuidArray(6),
         redirectIds: uuidArray(4),
-        returnChecklistTemplateIds: uuidArray(3),
+        returnChecklistTemplateIds: uuidArray(5),
         returnProcessTemplateIds: uuidArray(2),
         returnProcessIds: uuidArray(3),
         dynamic: {
@@ -78,9 +78,9 @@ export default class StaticDataGenerator {
     assosiationConfiguration() {
         return {
             assosiationId: this.ids.fk_assosiation,
-                sendEmailAfterInspection: true, // Updated to reflect new logic
+            sendEmailAfterInspection: true, // Updated to reflect new logic
             inspectionReportEmails: [process.env.EMAIL_ADRESS_TESTS ?? 'admin@example.com'],
-            returnProcessEnabled: false,
+            returnProcessEnabled: true,
             anonymizationMode: AnonymizationMode.MANUAL,
             anonymizationDelayDays: 30,
         } satisfies AssosiationConfiguration
@@ -88,19 +88,20 @@ export default class StaticDataGenerator {
 
     cadet() {
         const { cadetIds, fk_assosiation } = this.ids
+        const defaultDate = new Date('2020-01-01');
         return [
-            { id: cadetIds[0], fk_assosiation, firstname: 'Antje', lastname: 'Fried', status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
-                { id: cadetIds[1], fk_assosiation, firstname: 'Marie', lastname: 'Becker', status: CadetStatus.ACTIVE, comment: 'Bemerkung Test', deletedAt: null }, // Updated comment
-            { id: cadetIds[2], fk_assosiation, firstname: 'Sven', lastname: 'Keller', status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
-            { id: cadetIds[3], fk_assosiation, firstname: 'Lucas', lastname: 'Schwartz', status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
-            { id: cadetIds[4], fk_assosiation, firstname: 'Uwe', lastname: 'Luft', status: CadetStatus.ACTIVE, comment: 'initial-comment', deletedAt: null },
-            { id: cadetIds[5], fk_assosiation, firstname: 'Maik', lastname: 'Finkel', status: CadetStatus.ACTIVE, comment: 'initial-comment', deletedAt: null },
-            { id: cadetIds[6], fk_assosiation, firstname: 'Tim', lastname: 'Weissmuller', status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
-            { id: cadetIds[7], fk_assosiation, firstname: 'Juliane', lastname: 'Unger', status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
-            { id: cadetIds[8], fk_assosiation, firstname: 'xxx', lastname: 'xxx', status: CadetStatus.DELETED, comment: '', deletedAt: new Date('2023-08-16T09:45:25.000Z') },
-            { id: cadetIds[9], fk_assosiation, firstname: 'Christina', lastname: 'Faber', status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
-            { id: cadetIds[10], fk_assosiation, firstname: 'NewReturning', lastname: 'Cadet', status: CadetStatus.RETURNING, comment: '', deletedAt: null },
-            { id: cadetIds[11], fk_assosiation, firstname: 'NewReturned', lastname: 'Cadet', status: CadetStatus.RETURNED, comment: '', deletedAt: null},
+            { id: cadetIds[0], fk_assosiation, firstname: 'Antje', lastname: 'Fried', dateCreated: defaultDate, status: CadetStatus.ACTIVE, comment: '', deletedAt: null},
+            { id: cadetIds[1], fk_assosiation, firstname: 'Marie', lastname: 'Becker', dateCreated: defaultDate, status: CadetStatus.ACTIVE, comment: 'Bemerkung Test', deletedAt: null }, // Updated comment
+            { id: cadetIds[2], fk_assosiation, firstname: 'Sven', lastname: 'Keller', dateCreated: defaultDate, status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
+            { id: cadetIds[3], fk_assosiation, firstname: 'Lucas', lastname: 'Schwartz', dateCreated: defaultDate, status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
+            { id: cadetIds[4], fk_assosiation, firstname: 'Uwe', lastname: 'Luft', dateCreated: defaultDate, status: CadetStatus.ACTIVE, comment: 'initial-comment', deletedAt: null },
+            { id: cadetIds[5], fk_assosiation, firstname: 'Maik', lastname: 'Finkel', dateCreated: defaultDate, status: CadetStatus.ACTIVE, comment: 'initial-comment', deletedAt: null },
+            { id: cadetIds[6], fk_assosiation, firstname: 'Tim', lastname: 'Weissmuller', dateCreated: defaultDate, status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
+            { id: cadetIds[7], fk_assosiation, firstname: 'Juliane', lastname: 'Unger', dateCreated: defaultDate, status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
+            { id: cadetIds[8], fk_assosiation, firstname: 'xxx', lastname: 'xxx', dateCreated: defaultDate, status: CadetStatus.DELETED, comment: '', deletedAt: new Date('2023-08-16T09:45:25.000Z') },
+            { id: cadetIds[9], fk_assosiation, firstname: 'Christina', lastname: 'Faber', dateCreated: defaultDate, status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
+            { id: cadetIds[10], fk_assosiation, firstname: 'NewReturning', lastname: 'Cadet', dateCreated: defaultDate, status: CadetStatus.RETURNING, comment: '', deletedAt: null },
+            { id: cadetIds[11], fk_assosiation, firstname: 'NewReturned', lastname: 'Cadet', dateCreated: defaultDate, status: CadetStatus.RETURNED, comment: '', deletedAt: null },
         ]
     }
 
@@ -553,125 +554,117 @@ export default class StaticDataGenerator {
                 id: this.ids.deficiencyIds[0], fk_deficiencyType: this.ids.deficiencyTypeIds[0], description: 'Typ1-1184', comment: 'Uniform Deficiency Sven Keller Resolved',
                 fk_inspection_created: this.ids.inspectionIds[0], fk_inspection_resolved: this.ids.inspectionIds[1],
                 dateCreated: new Date('2023-06-18T00:00:00.000Z'), dateUpdated: new Date('2023-06-18T00:00:00.000Z'), dateResolved: new Date('2023-08-13T00:00:00.000Z'),
-                userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4'
+                userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4',
+                fk_cadet: null, fk_uniform: this.ids.uniformIds[0][84], fk_material: null,
             },
             {
                 id: this.ids.deficiencyIds[1], fk_deficiencyType: this.ids.deficiencyTypeIds[0], description: 'Typ1-1146', comment: 'Uniform Deficiency Sven Keller Unresolved',
                 fk_inspection_created: this.ids.inspectionIds[0], fk_inspection_resolved: null,
                 dateCreated: new Date('2023-06-17T00:00:00.000Z'), dateUpdated: new Date('2023-06-17T00:00:00.000Z'), dateResolved: null,
-                userCreated: 'test2', userUpdated: 'test3', userResolved: null
+                userCreated: 'test2', userUpdated: 'test3', userResolved: null,
+                fk_cadet: null, fk_uniform: this.ids.uniformIds[0][46], fk_material: null,
             },
             {
                 id: this.ids.deficiencyIds[2], fk_deficiencyType: this.ids.deficiencyTypeIds[0], description: 'Typ1-1146', comment: 'Uniform Deficiency Sven Keller Resolved',
                 fk_inspection_created: this.ids.inspectionIds[0], fk_inspection_resolved: this.ids.inspectionIds[1],
                 dateCreated: new Date('2023-06-18T00:00:00.000Z'), dateUpdated: new Date('2023-06-18T00:00:00.000Z'), dateResolved: new Date('2023-08-13T00:00:00.000Z'),
-                userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4'
+                userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4',
+                fk_cadet: null, fk_uniform: this.ids.uniformIds[0][46], fk_material: null,
             },
             {
                 id: this.ids.deficiencyIds[3], fk_deficiencyType: this.ids.deficiencyTypeIds[0], description: 'Typ1-1168', comment: 'Uniform Deficiency Faber Christina Unresolved',
                 fk_inspection_created: this.ids.inspectionIds[1], fk_inspection_resolved: null,
                 dateCreated: new Date('2023-08-13T00:00:00.000Z'), dateUpdated: new Date('2023-08-13T00:00:00.000Z'), dateResolved: null,
-                userCreated: 'test4', userUpdated: 'test4', userResolved: null
+                userCreated: 'test4', userUpdated: 'test4', userResolved: null,
+                fk_cadet: null, fk_uniform: this.ids.uniformIds[0][68], fk_material: null,
             },
             {
                 id: this.ids.deficiencyIds[4], fk_deficiencyType: this.ids.deficiencyTypeIds[1], description: 'Ungewaschen', comment: 'Cadet Deficiency Marie Becker Resolved',
                 fk_inspection_created: this.ids.inspectionIds[0], fk_inspection_resolved: this.ids.inspectionIds[1],
                 dateCreated: new Date('2023-06-18T00:00:00.000Z'), dateUpdated: new Date('2023-06-18T00:00:00.000Z'), dateResolved: new Date('2023-08-13T00:00:00.000Z'),
-                userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4'
+                userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4',
+                fk_cadet: this.ids.cadetIds[1], fk_uniform: null, fk_material: null,
             },
             {
                 id: this.ids.deficiencyIds[5], fk_deficiencyType: this.ids.deficiencyTypeIds[1], description: 'Description1', comment: 'Cadet Deficiency Sven Keller Unresolved',
                 fk_inspection_created: this.ids.inspectionIds[0], fk_inspection_resolved: null,
                 dateCreated: new Date('2023-06-08T00:00:00.000Z'), dateUpdated: new Date('2023-06-08T00:00:00.000Z'), dateResolved: null,
-                userCreated: 'test4', userUpdated: 'test4', userResolved: null
+                userCreated: 'test4', userUpdated: 'test4', userResolved: null,
+                fk_cadet: this.ids.cadetIds[2], fk_uniform: null, fk_material: null,
             },
             {
                 id: this.ids.deficiencyIds[6], fk_deficiencyType: this.ids.deficiencyTypeIds[1], description: 'Resoved Test', comment: 'Cadet Deficiency Sven Keller Resolved',
                 fk_inspection_created: this.ids.inspectionIds[0], fk_inspection_resolved: this.ids.inspectionIds[1],
                 dateCreated: new Date('2023-06-18T00:00:00.000Z'), dateUpdated: new Date('2023-06-18T00:00:00.000Z'), dateResolved: new Date('2023-08-13T00:00:00.000Z'),
-                userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4'
+                userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4',
+                fk_cadet: this.ids.cadetIds[2], fk_uniform: null, fk_material: null,
             },
             {
                 id: this.ids.deficiencyIds[7], fk_deficiencyType: this.ids.deficiencyTypeIds[2], description: 'Typ4-1405', comment: 'CadetUniform Deficiency Lucas Schwartz Unresolved',
                 fk_inspection_created: this.ids.inspectionIds[1], fk_inspection_resolved: null,
                 dateCreated: new Date('2023-08-13T00:00:00.000Z'), dateUpdated: new Date('2023-08-13T00:00:00.000Z'), dateResolved: null,
-                userCreated: 'test4', userUpdated: 'test4', userResolved: null
+                userCreated: 'test4', userUpdated: 'test4', userResolved: null,
+                fk_cadet: this.ids.cadetIds[3], fk_uniform: this.ids.uniformIds[3][5], fk_material: null,
             },
             {
                 id: this.ids.deficiencyIds[8], fk_deficiencyType: this.ids.deficiencyTypeIds[2], description: 'Typ1-1101', comment: 'CadetUniform Deficiency Maik Finkel Unresolved',
                 fk_inspection_created: this.ids.inspectionIds[1], fk_inspection_resolved: null,
                 dateCreated: new Date('2023-08-13T00:00:00.000Z'), dateUpdated: new Date('2023-08-13T00:00:00.000Z'), dateResolved: null,
-                userCreated: 'test4', userUpdated: 'test4', userResolved: null
+                userCreated: 'test4', userUpdated: 'test4', userResolved: null,
+                fk_cadet: this.ids.cadetIds[5], fk_uniform: this.ids.uniformIds[0][1], fk_material: null,
             },
             {
                 id: this.ids.deficiencyIds[9], fk_deficiencyType: this.ids.deficiencyTypeIds[3], description: 'Gruppe1-Typ1-1', comment: 'CadetMaterial Deficiency Sven Keller Unresolved',
                 fk_inspection_created: this.ids.inspectionIds[0], fk_inspection_resolved: null,
                 dateCreated: new Date('2023-06-18T00:00:00.000Z'), dateUpdated: new Date('2023-06-18T00:00:00.000Z'), dateResolved: null,
-                userCreated: 'test4', userUpdated: 'test4', userResolved: null
+                userCreated: 'test4', userUpdated: 'test4', userResolved: null,
+                fk_cadet: this.ids.cadetIds[2], fk_uniform: null, fk_material: this.ids.materialIds[0],
             },
             {
                 id: this.ids.deficiencyIds[10], fk_deficiencyType: this.ids.deficiencyTypeIds[3], description: 'Gruppe2-Typ2-3', comment: 'CadetMaterial Deficiency Sven Keller Unresolved',
                 fk_inspection_created: this.ids.inspectionIds[0], fk_inspection_resolved: null,
                 dateCreated: new Date('2023-06-10T00:00:00.000Z'), dateUpdated: new Date('2023-06-10T00:00:00.000Z'), dateResolved: null,
-                userCreated: 'test4', userUpdated: 'test4', userResolved: null
+                userCreated: 'test4', userUpdated: 'test4', userResolved: null,
+                fk_cadet: this.ids.cadetIds[2], fk_uniform: null, fk_material: this.ids.materialIds[6],
             },
             {
                 id: this.ids.deficiencyIds[11], fk_deficiencyType: this.ids.deficiencyTypeIds[3], description: 'Gruppe1-Typ1-1', comment: 'CadetMaterial Deeficiency Lucas Schwartz Unresolved',
                 fk_inspection_created: this.ids.inspectionIds[1], fk_inspection_resolved: null,
                 dateCreated: new Date('2023-08-13T00:00:00.000Z'), dateUpdated: new Date('2023-08-13T00:00:00.000Z'), dateResolved: null,
-                userCreated: 'test4', userUpdated: 'test4', userResolved: null
+                userCreated: 'test4', userUpdated: 'test4', userResolved: null,
+                fk_cadet: this.ids.cadetIds[3], fk_uniform: null, fk_material: this.ids.materialIds[0],
             },
             {
                 id: this.ids.deficiencyIds[12], fk_deficiencyType: this.ids.deficiencyTypeIds[3], description: 'Gruppe1-Typ1-1', comment: 'CadetMaterial Deeficiency Maik Finkel Unresolved',
                 fk_inspection_created: this.ids.inspectionIds[1], fk_inspection_resolved: null,
                 dateCreated: new Date('2023-08-13T00:00:00.000Z'), dateUpdated: new Date('2023-08-13T00:00:00.000Z'), dateResolved: null,
-                userCreated: 'test4', userUpdated: 'test4', userResolved: null
+                userCreated: 'test4', userUpdated: 'test4', userResolved: null,
+                fk_cadet: this.ids.cadetIds[5], fk_uniform: null, fk_material: this.ids.materialIds[0],
             },
             {
                 id: this.ids.deficiencyIds[13], fk_deficiencyType: this.ids.deficiencyTypeIds[4], description: 'Bemerkung', comment: 'DeletedType Deficiency Sven Keller Unresolved',
                 fk_inspection_created: this.ids.inspectionIds[1], fk_inspection_resolved: null,
                 dateCreated: new Date('2023-08-13T00:00:00.000Z'), dateUpdated: new Date('2023-08-13T00:00:00.000Z'), dateResolved: null,
-                userCreated: 'test4', userUpdated: 'test4', userResolved: null
+                userCreated: 'test4', userUpdated: 'test4', userResolved: null,
+                fk_cadet: this.ids.cadetIds[2], fk_uniform: null, fk_material: null,
             },
             {
                 id: this.ids.deficiencyIds[14], fk_deficiencyType: this.ids.deficiencyTypeIds[7], description: 'Typ1-1146', comment: 'Broken Uniform Deficiency Resolved',
                 fk_inspection_created: null, fk_inspection_resolved: this.ids.inspectionIds[1],
                 dateCreated: new Date('2023-07-01T00:00:00.000Z'), dateUpdated: new Date('2023-07-01T00:00:00.000Z'), dateResolved: new Date('2023-08-13T00:00:00.000Z'),
-                userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4'
+                userCreated: 'test4', userUpdated: 'test4', userResolved: 'test4',
+                fk_cadet: null, fk_uniform: this.ids.uniformIds[0][46], fk_material: null,
             },
             {
                 id: this.ids.deficiencyIds[15], fk_deficiencyType: this.ids.deficiencyTypeIds[7], description: 'Typ1-1146', comment: 'Broken Uniform Deficiency Unresolved',
                 fk_inspection_created: null, fk_inspection_resolved: null,
                 dateCreated: new Date('2023-07-15T00:00:00.000Z'), dateUpdated: new Date('2023-07-15T00:00:00.000Z'), dateResolved: null,
-                userCreated: 'test4', userUpdated: 'test4', userResolved: null
+                userCreated: 'test4', userUpdated: 'test4', userResolved: null,
+                fk_cadet: null, fk_uniform: this.ids.uniformIds[0][46], fk_material: null,
             },
         ]
     }
 
-    cadetDeficiency() {
-        return [
-            { deficiencyId: this.ids.deficiencyIds[4], fk_cadet: this.ids.cadetIds[1], fk_uniform: null, fk_material: null },
-            { deficiencyId: this.ids.deficiencyIds[5], fk_cadet: this.ids.cadetIds[2], fk_uniform: null, fk_material: null },
-            { deficiencyId: this.ids.deficiencyIds[6], fk_cadet: this.ids.cadetIds[2], fk_uniform: null, fk_material: null },
-            { deficiencyId: this.ids.deficiencyIds[7], fk_cadet: this.ids.cadetIds[3], fk_uniform: this.ids.uniformIds[3][5], fk_material: null },
-            { deficiencyId: this.ids.deficiencyIds[8], fk_cadet: this.ids.cadetIds[5], fk_uniform: this.ids.uniformIds[0][1], fk_material: null },
-            { deficiencyId: this.ids.deficiencyIds[9], fk_cadet: this.ids.cadetIds[2], fk_uniform: null, fk_material: this.ids.materialIds[0] },
-            { deficiencyId: this.ids.deficiencyIds[10], fk_cadet: this.ids.cadetIds[2], fk_uniform: null, fk_material: this.ids.materialIds[6] },
-            { deficiencyId: this.ids.deficiencyIds[11], fk_cadet: this.ids.cadetIds[3], fk_uniform: null, fk_material: this.ids.materialIds[0] },
-            { deficiencyId: this.ids.deficiencyIds[12], fk_cadet: this.ids.cadetIds[5], fk_uniform: null, fk_material: this.ids.materialIds[0] },
-            { deficiencyId: this.ids.deficiencyIds[13], fk_cadet: this.ids.cadetIds[2], fk_uniform: null, fk_material: null },
-        ];
-    }
-    uniformDeficiency() {
-        return [
-            { deficiencyId: this.ids.deficiencyIds[0], fk_uniform: this.ids.uniformIds[0][84] },
-            { deficiencyId: this.ids.deficiencyIds[1], fk_uniform: this.ids.uniformIds[0][46] },
-            { deficiencyId: this.ids.deficiencyIds[2], fk_uniform: this.ids.uniformIds[0][46] },
-            { deficiencyId: this.ids.deficiencyIds[3], fk_uniform: this.ids.uniformIds[0][68] },
-            { deficiencyId: this.ids.deficiencyIds[14], fk_uniform: this.ids.uniformIds[0][46] },
-            { deficiencyId: this.ids.deficiencyIds[15], fk_uniform: this.ids.uniformIds[0][46] },
-        ];
-    }
     inspection() {
         return [
             { id: this.ids.inspectionIds[0], fk_assosiation: this.ids.fk_assosiation, name: "Quartal 1", date: '2023-06-18', timeStart: "07:58", timeEnd: "13:06" },
@@ -679,7 +672,7 @@ export default class StaticDataGenerator {
             { id: this.ids.inspectionIds[2], fk_assosiation: this.ids.fk_assosiation, name: "expired", date: '2023-08-17', timeStart: null, timeEnd: null },
             { id: this.ids.inspectionIds[3], fk_assosiation: this.ids.fk_assosiation, name: "planned", date: dayjs().add(10, "day").format("YYYY-MM-DD"), timeStart: null, timeEnd: null },
             { id: this.ids.inspectionIds[4], fk_assosiation: this.ids.fk_assosiation, name: "today", date: dayjs().format("YYYY-MM-DD"), timeStart: null, timeEnd: null },
-        ] satisfies Inspection[];
+        ];
     }
     cadetInspection() {
         return [

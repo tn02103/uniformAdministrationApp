@@ -1,10 +1,10 @@
-import TooltipIconButton from "@/components/Buttons/TooltipIconButton";
+import { ActionButton } from "@/components/Buttons/ActionButton";
 import { InlineEditInputFormField } from "@/components/fields/InlineEditInputFormField";
 import { ReorderableTableBody } from "@/components/reorderDnD/ReorderableTableBody";
 import { useI18n } from "@/lib/locales/client";
 import { ReturnChecklistTemplate, ReturnProcessTemplate } from "@/prisma/client";
 import { returnProcessTemplateNameSchema } from "@/zod/returnProcess";
-import { faBars, faCheck, faChevronDown, faChevronRight, faPen, faStar, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faChevronDown, faChevronRight, faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { Button, Table } from "react-bootstrap";
@@ -28,7 +28,6 @@ type TemplateCardProps = {
     onRenameChecklistItem: (templateId: string, itemId: string, label: string) => Promise<void>;
     onDeleteChecklistItem: (templateId: string, itemId: string) => void;
     onChecklistSortOrder: (
-        templateId: string,
         newArray: ReturnChecklistTemplate[],
         itemId: string
     ) => Promise<void>;
@@ -84,7 +83,7 @@ export const TemplateCard = ({
                     </span>
                 )}
                 {!disabled && (
-                    <>
+                    <> 
                         <Button
                             type="button"
                             variant={template.defaultProcess ? "warning" : "outline-warning"}
@@ -96,16 +95,10 @@ export const TemplateCard = ({
                         >
                             <FontAwesomeIcon icon={faStar} size="sm" />
                         </Button>
-                        <Button
-                            type="button"
-                            variant="outline-danger"
-                            size="sm"
+                        <ActionButton
+                            variantKey="delete"
                             onClick={() => onDelete(template)}
-                            aria-label={t("common.actions.delete")}
-                            className="border-0"
-                        >
-                            <FontAwesomeIcon icon={faTrash} size="sm" />
-                        </Button>
+                        />
                     </>
                 )}
             </div>
@@ -113,25 +106,25 @@ export const TemplateCard = ({
             {isExpanded && !disabled && (
                 <div className="card-body p-2">
                     <Table size="sm" className="mb-0" aria-label={template.name}>
-                        <tbody>
-                            {template.checklistItems.length === 0 && (
+                        {template.checklistItems.length === 0 && (
+                            <tbody>
                                 <tr>
                                     <td colSpan={3} className="text-muted fst-italic">
                                         {t("admin.settings.returnProcess.noChecklistItems")}
                                     </td>
                                 </tr>
-                            )}
-                        </tbody>
+                            </tbody>
+                        )}
                         <ReorderableTableBody<ReturnChecklistTemplate>
                             items={template.checklistItems}
                             itemType="RETURN_CHECKLIST_TEMPLATE"
                             onDragEnd={(newArray, itemId) =>
-                                onChecklistSortOrder(template.id, newArray, itemId)
+                                onChecklistSortOrder(newArray, itemId)
                             }
                         >
                             {({ item, draggableRef, previewRef, isDragging }) => (
                                 editingItemId === item.id ? (
-                                    <tr key={item.id} ref={previewRef}>
+                                    <tr key={item.id} ref={previewRef} data-testid={`tr_checklistItem_${item.id}`}>
                                         <td style={{ width: "2rem" }} />
                                         <td>
                                             <input
@@ -139,6 +132,7 @@ export const TemplateCard = ({
                                                 className="form-control form-control-sm"
                                                 value={editingLabel}
                                                 autoFocus
+                                                aria-label={t("admin.settings.returnProcess.checklistItemLabel")}
                                                 onChange={(e) => setEditingLabel(e.target.value)}
                                                 onKeyDown={(e) => {
                                                     if (e.key === "Enter") {
@@ -151,24 +145,16 @@ export const TemplateCard = ({
                                             />
                                         </td>
                                         <td className="text-end" style={{ width: "5rem" }}>
-                                            <TooltipIconButton
-                                                icon={faCheck}
-                                                variant="outline-success"
+                                            <ActionButton
+                                                variantKey="save"
                                                 onClick={() =>
                                                     onRenameChecklistItem(template.id, item.id, editingLabel)
                                                         .then(() => setEditingItemId(null))
                                                 }
-                                                tooltipText={t("common.actions.save")}
-                                                testId={`btn_saveEdit_checklistItem_${item.id}`}
-                                                buttonSize="sm"
                                             />
-                                            <TooltipIconButton
-                                                icon={faX}
-                                                variant="outline-secondary"
+                                            <ActionButton
+                                                variantKey="cancel"
                                                 onClick={() => setEditingItemId(null)}
-                                                tooltipText={t("common.actions.cancel")}
-                                                testId={`btn_cancelEdit_checklistItem_${item.id}`}
-                                                buttonSize="sm"
                                             />
                                         </td>
                                     </tr>
@@ -177,31 +163,25 @@ export const TemplateCard = ({
                                         key={item.id}
                                         ref={previewRef}
                                         style={{ opacity: isDragging ? 0.4 : 1 }}
-                                        className="hoverCol "
+                                        className="hoverCol"
+                                        data-testid={`tr_checklistItem_${item.id}`}
                                     >
                                         <td style={{ width: "2rem" }}>
-                                            <span ref={draggableRef} style={{ cursor: "grab" }} aria-label={t("common.actions.changePosition")}>
+                                            <span ref={draggableRef} role="button" style={{ cursor: "grab" }} aria-label={t("common.actions.changePosition")}>
                                                 <FontAwesomeIcon icon={faBars} className="text-secondary" />
                                             </span>
                                         </td>
                                         <td>{item.label}</td>
                                         <td className="text-end">
                                             <div className="hoverColHidden">
-                                                <TooltipIconButton
-                                                    icon={faPen}
-                                                    variant="outline-secondary"
+                                                <ActionButton
+                                                    variantKey="edit"
+                                                    disabled={editingItemId !== null}
                                                     onClick={() => { setEditingItemId(item.id); setEditingLabel(item.label); }}
-                                                    tooltipText={t("common.actions.edit")}
-                                                    testId={`btn_edit_checklistItem_${item.id}`}
-                                                    buttonSize="sm"
                                                 />
-                                                <TooltipIconButton
-                                                    icon={faTrash}
-                                                    variant="outline-danger"
+                                                <ActionButton
+                                                    variantKey="delete"
                                                     onClick={() => onDeleteChecklistItem(template.id, item.id)}
-                                                    tooltipText={t("common.actions.delete")}
-                                                    testId={`btn_delete_checklistItem_${item.id}`}
-                                                    buttonSize="sm"
                                                 />
                                             </div>
                                         </td>
@@ -209,13 +189,13 @@ export const TemplateCard = ({
                                 )
                             )}
                         </ReorderableTableBody>
-                        <tbody>
-                            <AddChecklistItemForm
-                                templateId={template.id}
-                                onSave={onAddChecklistItem}
-                            />
-                        </tbody>
                     </Table>
+                    <div>
+                        <AddChecklistItemForm
+                            templateId={template.id}
+                            onSave={onAddChecklistItem}
+                        />
+                    </div>
                 </div>
             )}
         </div>
