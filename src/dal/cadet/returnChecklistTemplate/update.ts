@@ -2,13 +2,14 @@ import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { updateReturnChecklistTemplateSchema, UpdateReturnChecklistTemplateInput } from "@/zod/returnProcess";
+import { __unsecuredGetReturnProcessTemplateList } from "../returnProcessTemplate/get";
 
 /**
  * Updates a checklist template item's label.
  * Use changeReturnChecklistTemplateSortOrder to change sort order.
  * Verifies the item belongs to the caller's organisation before updating.
  * @param data id, label
- * @returns the updated ReturnChecklistTemplate
+ * @returns the updated list of ReturnProcessTemplates with checklist items
  */
 export const update = (data: UpdateReturnChecklistTemplateInput) =>
     genericSAValidator(
@@ -21,11 +22,13 @@ export const update = (data: UpdateReturnChecklistTemplateInput) =>
                 where: { id, fk_assosiation: assosiation },
             });
 
-            return client.returnChecklistTemplate.update({
+            await client.returnChecklistTemplate.update({
                 where: { id },
                 data: {
                     label,
                 },
             });
+
+            return __unsecuredGetReturnProcessTemplateList(assosiation, client);
         })
     );

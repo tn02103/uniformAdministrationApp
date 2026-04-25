@@ -1,14 +1,20 @@
-import { prisma } from "@/lib/db";
 import { AuthRole } from "@/lib/AuthRoles";
+import { prisma } from "@/lib/db";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
-import { createReturnChecklistTemplate, updateReturnChecklistTemplate, deleteReturnChecklistTemplate, changeReturnChecklistTemplateSortOrder } from "./index";
+import { changeReturnChecklistTemplateSortOrder, createReturnChecklistTemplate, deleteReturnChecklistTemplate, updateReturnChecklistTemplate } from "./index";
 
 const staticData = new StaticData(0);
 const { ids } = staticData;
 const wrongOrg = new StaticData(1);
 
 describe('<ReturnChecklistTemplate> Integration Tests', () => {
-    beforeAll(async () => {
+    afterAll(async () => {
+        global.__ROLE__ = undefined;
+        await staticData.cleanup.returnProcessTemplate();
+    });
+
+    beforeEach(async () => {
+        global.__ROLE__ = AuthRole.admin;
         await staticData.cleanup.returnProcessTemplate();
     });
 
@@ -20,52 +26,41 @@ describe('<ReturnChecklistTemplate> Integration Tests', () => {
                 where: { fk_returnProcessTemplate: ids.returnProcessTemplateIds[1] }
             });
 
-            global.__ROLE__ = AuthRole.admin;
             const result = await createReturnChecklistTemplate({
                 returnProcessTemplateId: ids.returnProcessTemplateIds[1],
                 label: 'Helm abgeben',
             });
-            global.__ROLE__ = undefined;
 
             expect(result).toBeDefined();
-            expect(result.label).toBe('Helm abgeben');
-            expect(result.sortOrder).toBe(0);
-            expect(result.fk_returnProcessTemplate).toBe(ids.returnProcessTemplateIds[1]);
+            expect(result).toHaveLength(2);
+            expect(result[0].checklistItems).toHaveLength(1);
+            expect(result[0].checklistItems[0].label).toBe('Helm abgeben');
+            expect(result[0].checklistItems[0].sortOrder).toBe(0);
+            expect(result[0].checklistItems[0].fk_returnProcessTemplate).toBe(ids.returnProcessTemplateIds[1]);
         });
 
         it('should append at the end with sortOrder = MAX + 1 when items already exist', async () => {
             // returnProcessTemplateIds[0] has items at sortOrder 0 and 1
-            global.__ROLE__ = AuthRole.admin;
             const result = await createReturnChecklistTemplate({
                 returnProcessTemplateId: ids.returnProcessTemplateIds[0],
                 label: 'Neues Item',
             });
-            global.__ROLE__ = undefined;
 
-            expect(result.sortOrder).toBe(2); // existing: 0 and 1, new = 2
-        });
-
-        it('should append independently per template', async () => {
-            // Adding to templateIds[1] which now has 1 item (sortOrder=0 from first test)
-            global.__ROLE__ = AuthRole.admin;
-            const result = await createReturnChecklistTemplate({
-                returnProcessTemplateId: ids.returnProcessTemplateIds[1],
-                label: 'Second item in alt template',
-            });
-            global.__ROLE__ = undefined;
-
-            expect(result.sortOrder).toBe(1); // only 1 existing item at 0, new = 1
+            expect(result).toHaveLength(2);
+            expect(result[1].checklistItems).toHaveLength(3);
+            expect(result[1].checklistItems[2].label).toBe('Neues Item');
+            expect(result[1].checklistItems[0].sortOrder).toBe(0);
+            expect(result[1].checklistItems[1].sortOrder).toBe(1);
+            expect(result[1].checklistItems[2].sortOrder).toBe(2); // existing: 0 and 1, new = 2
         });
 
         it('should reject returnProcessTemplateId from another org', async () => {
-            global.__ROLE__ = AuthRole.admin;
             await expect(
                 createReturnChecklistTemplate({
                     returnProcessTemplateId: wrongOrg.ids.returnProcessTemplateIds[0],
                     label: 'Hijacked Item',
                 })
             ).rejects.toThrow();
-            global.__ROLE__ = undefined;
         });
 
         it('should reject insufficient role', async () => {
@@ -76,31 +71,30 @@ describe('<ReturnChecklistTemplate> Integration Tests', () => {
                     label: 'Fail Item',
                 })
             ).rejects.toThrow();
-            global.__ROLE__ = undefined;
         });
     });
 
     describe('updateReturnChecklistTemplate', () => {
         it('should update label', async () => {
-            global.__ROLE__ = AuthRole.admin;
             const result = await updateReturnChecklistTemplate({
                 id: ids.returnChecklistTemplateIds[0],
                 label: 'Updated Label',
             });
-            global.__ROLE__ = undefined;
 
-            expect(result.label).toBe('Updated Label');
+            expect(result).toHaveLength(2);
+            expect(result[1].checklistItems).toHaveLength(2);
+            const updatedItem = result[1].checklistItems.find(i => i.id === ids.returnChecklistTemplateIds[0]);
+            expect(updatedItem).toBeDefined();
+            expect(updatedItem!.label).toBe('Updated Label');
         });
 
         it('should reject checklist item from another org', async () => {
-            global.__ROLE__ = AuthRole.admin;
             await expect(
                 updateReturnChecklistTemplate({
                     id: wrongOrg.ids.returnChecklistTemplateIds[0],
                     label: 'Hijacked',
                 })
             ).rejects.toThrow();
-            global.__ROLE__ = undefined;
         });
 
         it('should reject insufficient role', async () => {
@@ -111,7 +105,6 @@ describe('<ReturnChecklistTemplate> Integration Tests', () => {
                     label: 'Fail',
                 })
             ).rejects.toThrow();
-            global.__ROLE__ = undefined;
         });
     });
 
@@ -121,10 +114,14 @@ describe('<ReturnChecklistTemplate> Integration Tests', () => {
         });
 
         it('should delete a checklist item', async () => {
-            global.__ROLE__ = AuthRole.admin;
-            await deleteReturnChecklistTemplate({ id: ids.returnChecklistTemplateIds[2] });
-            global.__ROLE__ = undefined;
+            const result = await deleteReturnChecklistTemplate({ id: ids.returnChecklistTemplateIds[2] });
 
+            // verify return
+            expect(result).toHaveLength(2);
+            const alltemplateItemIds = result.flatMap(t => t.checklistItems.map(i => i.id));
+            expect(alltemplateItemIds).not.toContain(ids.returnChecklistTemplateIds[2]);
+
+            // verify deletion in DB
             const db = await prisma.returnChecklistTemplate.findUnique({
                 where: { id: ids.returnChecklistTemplateIds[2] },
             });
@@ -134,9 +131,7 @@ describe('<ReturnChecklistTemplate> Integration Tests', () => {
         it('should shift sortOrders of following items after deletion', async () => {
             // returnProcessTemplateIds[0] has items: [0]=sortOrder:0, [1]=sortOrder:1
             // Delete item at sortOrder=0 → item at sortOrder=1 should become sortOrder=0
-            global.__ROLE__ = AuthRole.admin;
             await deleteReturnChecklistTemplate({ id: ids.returnChecklistTemplateIds[0] });
-            global.__ROLE__ = undefined;
 
             const remaining = await prisma.returnChecklistTemplate.findUnique({
                 where: { id: ids.returnChecklistTemplateIds[1] },
@@ -145,24 +140,20 @@ describe('<ReturnChecklistTemplate> Integration Tests', () => {
             expect(remaining!.sortOrder).toBe(0); // was 1, now shifted down to 0
         });
 
-        it('should not change sortOrders when deleting the last item', async () => {
+        it('should be able to delete the last item', async () => {
             // Only returnChecklistTemplateIds[1] remains in template[0] at sortOrder=0
-            global.__ROLE__ = AuthRole.admin;
-            await deleteReturnChecklistTemplate({ id: ids.returnChecklistTemplateIds[1] });
-            global.__ROLE__ = undefined;
+            await deleteReturnChecklistTemplate({ id: ids.returnChecklistTemplateIds[2] });
 
             const remaining = await prisma.returnChecklistTemplate.findMany({
-                where: { fk_returnProcessTemplate: ids.returnProcessTemplateIds[0] },
+                where: { fk_returnProcessTemplate: ids.returnProcessTemplateIds[1] },
             });
             expect(remaining).toHaveLength(0);
         });
 
         it('should reject checklist item from another org', async () => {
-            global.__ROLE__ = AuthRole.admin;
             await expect(
                 deleteReturnChecklistTemplate({ id: wrongOrg.ids.returnChecklistTemplateIds[0] })
             ).rejects.toThrow();
-            global.__ROLE__ = undefined;
         });
 
         it('should reject insufficient role', async () => {
@@ -170,7 +161,6 @@ describe('<ReturnChecklistTemplate> Integration Tests', () => {
             await expect(
                 deleteReturnChecklistTemplate({ id: ids.returnChecklistTemplateIds[2] })
             ).rejects.toThrow();
-            global.__ROLE__ = undefined;
         });
     });
 
@@ -182,35 +172,114 @@ describe('<ReturnChecklistTemplate> Integration Tests', () => {
         it('should move an item to a lower position (move up)', async () => {
             // items in template[0]: [0]=sortOrder:0, [1]=sortOrder:1
             // Move item[1] to position 0
-            global.__ROLE__ = AuthRole.admin;
             const result = await changeReturnChecklistTemplateSortOrder({
                 checklistItemId: ids.returnChecklistTemplateIds[1],
                 newPosition: 0,
             });
-            global.__ROLE__ = undefined;
 
-            const moved = result.find(i => i.id === ids.returnChecklistTemplateIds[1]);
-            const shifted = result.find(i => i.id === ids.returnChecklistTemplateIds[0]);
-            expect(moved!.sortOrder).toBe(0);
-            expect(shifted!.sortOrder).toBe(1);
+            expect(result).toHaveLength(2);
+            expect(result[1].checklistItems).toHaveLength(2);
+            expect(result[1].checklistItems[0].id).toBe(ids.returnChecklistTemplateIds[1]);
+            expect(result[1].checklistItems[0].sortOrder).toBe(0);
+            expect(result[1].checklistItems[1].id).toBe(ids.returnChecklistTemplateIds[0]);
+            expect(result[1].checklistItems[1].sortOrder).toBe(1);
         });
 
         it('should move an item to a higher position (move down)', async () => {
             // [0]=sortOrder:0, [1]=sortOrder:1 
             // Move item[0] back to position 0
-            global.__ROLE__ = AuthRole.admin;
             const result = await changeReturnChecklistTemplateSortOrder({
                 checklistItemId: ids.returnChecklistTemplateIds[1],
                 newPosition: 0,
             });
-            global.__ROLE__ = undefined;
 
-            const moved = result.find(i => i.id === ids.returnChecklistTemplateIds[0]);
-            const shifted = result.find(i => i.id === ids.returnChecklistTemplateIds[1]);
-            expect(moved!.sortOrder).toBe(1);
-            expect(shifted!.sortOrder).toBe(0);
-
+            expect(result).toHaveLength(2);
+            expect(result[1].checklistItems).toHaveLength(2);
+            expect(result[1].checklistItems[0].id).toBe(ids.returnChecklistTemplateIds[1]);
+            expect(result[1].checklistItems[0].sortOrder).toBe(0);
+            expect(result[1].checklistItems[1].id).toBe(ids.returnChecklistTemplateIds[0]);
+            expect(result[1].checklistItems[1].sortOrder).toBe(1);
         });
+
+        it('shoud move an item multiple positions top bound', async () => {
+            // Add a third and fourth item so we have more positions to move
+            await prisma.returnChecklistTemplate.createMany({
+                data: [
+                    {
+                        id: ids.returnChecklistTemplateIds[3],
+                        fk_returnProcessTemplate: ids.returnProcessTemplateIds[0],
+                        fk_assosiation: staticData.fk_assosiation,
+                        label: 'Item 3',
+                        sortOrder: 2,
+                    },
+                    {
+                        id: ids.returnChecklistTemplateIds[4],
+                        fk_returnProcessTemplate: ids.returnProcessTemplateIds[0],
+                        fk_assosiation: staticData.fk_assosiation,
+                        label: 'Item 4',
+                        sortOrder: 3,
+                    },
+                ]
+            });
+
+            // Current order: [0,1,3,4] at sortOrder [0,1,2,3]
+            // Move item[1] (sortOrder=1) to position 3 → new order should be [0,3,4,1] with sortOrders [0,1,2,3]
+            const result = await changeReturnChecklistTemplateSortOrder({
+                checklistItemId: ids.returnChecklistTemplateIds[1],
+                newPosition: 3,
+            });
+
+            expect(result).toHaveLength(2);
+            expect(result[1].checklistItems).toHaveLength(4);
+            expect(result[1].checklistItems[0].id).toBe(ids.returnChecklistTemplateIds[0]);
+            expect(result[1].checklistItems[0].sortOrder).toBe(0);
+            expect(result[1].checklistItems[1].id).toBe(ids.returnChecklistTemplateIds[3]);
+            expect(result[1].checklistItems[1].sortOrder).toBe(1);
+            expect(result[1].checklistItems[2].id).toBe(ids.returnChecklistTemplateIds[4]);
+            expect(result[1].checklistItems[2].sortOrder).toBe(2);
+            expect(result[1].checklistItems[3].id).toBe(ids.returnChecklistTemplateIds[1]);
+            expect(result[1].checklistItems[3].sortOrder).toBe(3);
+        });
+
+        it('shoud move an item multiple positions bottom bound', async () => {
+            // Add a third and fourth item so we have more positions to move
+            await prisma.returnChecklistTemplate.createMany({
+                data: [
+                    {
+                        id: ids.returnChecklistTemplateIds[3],
+                        fk_returnProcessTemplate: ids.returnProcessTemplateIds[0],
+                        fk_assosiation: staticData.fk_assosiation,
+                        label: 'Item 3',
+                        sortOrder: 2,
+                    },
+                    {
+                        id: ids.returnChecklistTemplateIds[4],
+                        fk_returnProcessTemplate: ids.returnProcessTemplateIds[0],
+                        fk_assosiation: staticData.fk_assosiation,
+                        label: 'Item 4',
+                        sortOrder: 3,
+                    },
+                ]
+            });
+            // Current order: [0,1,3,4] at sortOrder [0,1,2,3]
+            // Move item[3] (sortOrder=3) to position 0 → new order should be [3,0,1,4] with sortOrders [0,1,2,3]
+            const result = await changeReturnChecklistTemplateSortOrder({
+                checklistItemId: ids.returnChecklistTemplateIds[3],
+                newPosition: 0,
+            });
+
+            expect(result).toHaveLength(2);
+            expect(result[1].checklistItems).toHaveLength(4);
+            expect(result[1].checklistItems[0].id).toBe(ids.returnChecklistTemplateIds[3]);
+            expect(result[1].checklistItems[0].sortOrder).toBe(0);
+            expect(result[1].checklistItems[1].id).toBe(ids.returnChecklistTemplateIds[0]);
+            expect(result[1].checklistItems[1].sortOrder).toBe(1);
+            expect(result[1].checklistItems[2].id).toBe(ids.returnChecklistTemplateIds[1]);
+            expect(result[1].checklistItems[2].sortOrder).toBe(2);
+            expect(result[1].checklistItems[3].id).toBe(ids.returnChecklistTemplateIds[4]);
+            expect(result[1].checklistItems[3].sortOrder).toBe(3);
+        });
+
 
         it('should be a no-op when position does not change', async () => {
             const before = await prisma.returnChecklistTemplate.findMany({
@@ -218,12 +287,10 @@ describe('<ReturnChecklistTemplate> Integration Tests', () => {
                 orderBy: { sortOrder: 'asc' },
             });
 
-            global.__ROLE__ = AuthRole.admin;
             await changeReturnChecklistTemplateSortOrder({
                 checklistItemId: ids.returnChecklistTemplateIds[0],
                 newPosition: before.find(i => i.id === ids.returnChecklistTemplateIds[0])!.sortOrder,
             });
-            global.__ROLE__ = undefined;
 
             const after = await prisma.returnChecklistTemplate.findMany({
                 where: { fk_returnProcessTemplate: ids.returnProcessTemplateIds[0] },
@@ -233,25 +300,21 @@ describe('<ReturnChecklistTemplate> Integration Tests', () => {
         });
 
         it('should reject invalid newPosition (out of bounds)', async () => {
-            global.__ROLE__ = AuthRole.admin;
             await expect(
                 changeReturnChecklistTemplateSortOrder({
                     checklistItemId: ids.returnChecklistTemplateIds[0],
                     newPosition: 999,
                 })
             ).rejects.toThrow();
-            global.__ROLE__ = undefined;
         });
 
         it('should reject item from another org', async () => {
-            global.__ROLE__ = AuthRole.admin;
             await expect(
                 changeReturnChecklistTemplateSortOrder({
                     checklistItemId: wrongOrg.ids.returnChecklistTemplateIds[0],
                     newPosition: 0,
                 })
             ).rejects.toThrow();
-            global.__ROLE__ = undefined;
         });
 
         it('should reject insufficient role', async () => {
@@ -262,7 +325,6 @@ describe('<ReturnChecklistTemplate> Integration Tests', () => {
                     newPosition: 0,
                 })
             ).rejects.toThrow();
-            global.__ROLE__ = undefined;
         });
     });
 });

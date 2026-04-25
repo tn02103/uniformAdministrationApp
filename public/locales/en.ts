@@ -490,6 +490,7 @@ export default {
                 size: "Sizes",
                 material: "Materials",
                 dashboard: "Dashboard",
+                settings: "Settings",
             },
             userOverview: "Accesses",
             redirects: "Redirects",
@@ -654,6 +655,62 @@ export default {
                 'message#other': "Should the type really be deleted? All {count} existing deficiencies will also be deleted. This action cannot be undone.",
             },
         },
+        settings: {
+            header: "Settings",
+            anonymization: {
+                header: "Anonymisation Policy",
+                returnProcessEnabled: "Return process enabled",
+                anonymizationMode: "Anonymisation mode",
+                anonymizationDelayDays: "Delay in days",
+                modes: {
+                    MANUAL: "Manual",
+                    AFTER_DAYS: "After days",
+                    IMMEDIATELY: "Immediately",
+                },
+                success: "Settings saved successfully",
+                error: "An error occurred while saving",
+            },
+            returnProcess: {
+                header: "Return Process",
+                addTemplate: "Add template",
+                templateName: "Template name",
+                defaultProcess: "Default process",
+                noTemplates: "No templates available",
+                addChecklistItem: "Add checklist item",
+                addItemLabel: "Add Item",
+                checklistItemLabel: "Label",
+                noChecklistItems: "No checklist items available",
+                create: {
+                    success: "Template created successfully",
+                    error: "An error occurred while creating the template",
+                },
+                update: {
+                    success: "Template updated successfully",
+                    error: "An error occurred while updating the template",
+                },
+                delete: {
+                    header: 'Delete template "{name}"',
+                    message: "Should the template really be deleted? This action cannot be undone.",
+                    activeProcessError: "The template cannot be deleted because there are active return processes.",
+                    error: "An error occurred while deleting",
+                },
+                checklist: {
+                    create: {
+                        success: "Checklist item created successfully",
+                        error: "An error occurred while creating the checklist item",
+                    },
+                    update: {
+                        error: "An error occurred while updating the checklist item",
+                    },
+                    delete: {
+                        error: "An error occurred while deleting the checklist item",
+                    },
+                    sortOrder: {
+                        error: "An error occurred while changing the order",
+                    },
+                },
+            },
+        },
         dashboard: {
             "header.page": "Dashboard",
             "header.uniformCounts": "Uniform Item Counts",
@@ -752,7 +809,8 @@ export default {
         "admin.uniform": "Uniform configuration - Uniformadmin",
         "admin.uniform.size": "Uniform size configuration - Uniformadmin",
         "admin.material": "material configuration - Uniformadmin",
-        "admin.deficiency": "deficiency configuration - Uniformadmin"
+        "admin.deficiency": "deficiency configuration - Uniformadmin",
+        "admin.settings": "Settings - Uniformadmin"
     },
     modals: {
         ariaLabel: {

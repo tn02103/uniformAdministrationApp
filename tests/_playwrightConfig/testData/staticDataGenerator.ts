@@ -38,9 +38,9 @@ export type StaticDataIdType = {
     }
 };
 export function getStaticDataIds(): StaticDataIdType {
-        return {
+    return {
         fk_assosiation: uuid(),
-            userIds: uuidArray(5), // Changed to use uuidArray
+        userIds: uuidArray(5), // Changed to use uuidArray
         cadetIds: uuidArray(12),
         sizeIds: uuidArray(21),
         sizelistIds: uuidArray(4),
@@ -54,7 +54,7 @@ export function getStaticDataIds(): StaticDataIdType {
         deficiencyIds: uuidArray(16),
         inspectionIds: uuidArray(6),
         redirectIds: uuidArray(4),
-        returnChecklistTemplateIds: uuidArray(3),
+        returnChecklistTemplateIds: uuidArray(5),
         returnProcessTemplateIds: uuidArray(2),
         returnProcessIds: uuidArray(3),
         dynamic: {
@@ -78,9 +78,9 @@ export default class StaticDataGenerator {
     assosiationConfiguration() {
         return {
             assosiationId: this.ids.fk_assosiation,
-                sendEmailAfterInspection: true, // Updated to reflect new logic
+            sendEmailAfterInspection: true, // Updated to reflect new logic
             inspectionReportEmails: [process.env.EMAIL_ADRESS_TESTS ?? 'admin@example.com'],
-            returnProcessEnabled: false,
+            returnProcessEnabled: true,
             anonymizationMode: AnonymizationMode.MANUAL,
             anonymizationDelayDays: 30,
         } satisfies AssosiationConfiguration
@@ -90,7 +90,7 @@ export default class StaticDataGenerator {
         const { cadetIds, fk_assosiation } = this.ids
         return [
             { id: cadetIds[0], fk_assosiation, firstname: 'Antje', lastname: 'Fried', status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
-                { id: cadetIds[1], fk_assosiation, firstname: 'Marie', lastname: 'Becker', status: CadetStatus.ACTIVE, comment: 'Bemerkung Test', deletedAt: null }, // Updated comment
+            { id: cadetIds[1], fk_assosiation, firstname: 'Marie', lastname: 'Becker', status: CadetStatus.ACTIVE, comment: 'Bemerkung Test', deletedAt: null }, // Updated comment
             { id: cadetIds[2], fk_assosiation, firstname: 'Sven', lastname: 'Keller', status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
             { id: cadetIds[3], fk_assosiation, firstname: 'Lucas', lastname: 'Schwartz', status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
             { id: cadetIds[4], fk_assosiation, firstname: 'Uwe', lastname: 'Luft', status: CadetStatus.ACTIVE, comment: 'initial-comment', deletedAt: null },
@@ -100,7 +100,7 @@ export default class StaticDataGenerator {
             { id: cadetIds[8], fk_assosiation, firstname: 'xxx', lastname: 'xxx', status: CadetStatus.DELETED, comment: '', deletedAt: new Date('2023-08-16T09:45:25.000Z') },
             { id: cadetIds[9], fk_assosiation, firstname: 'Christina', lastname: 'Faber', status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
             { id: cadetIds[10], fk_assosiation, firstname: 'NewReturning', lastname: 'Cadet', status: CadetStatus.RETURNING, comment: '', deletedAt: null },
-            { id: cadetIds[11], fk_assosiation, firstname: 'NewReturned', lastname: 'Cadet', status: CadetStatus.RETURNED, comment: '', deletedAt: null},
+            { id: cadetIds[11], fk_assosiation, firstname: 'NewReturned', lastname: 'Cadet', status: CadetStatus.RETURNED, comment: '', deletedAt: null },
         ]
     }
 

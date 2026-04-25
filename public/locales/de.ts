@@ -489,7 +489,8 @@ export default {
                 uniform: "Uniform",
                 size: "Größen",
                 material: "Materialien",
-                dashboard: "Dashboard"
+                dashboard: "Dashboard",
+                settings: "Einstellungen"
             },
             userOverview: "Zugänge",
             redirects: "Weiterleitungen",
@@ -654,6 +655,62 @@ export default {
                 'message#other': "Do you really want to delete the type? This will also delete all {count} existing defects. This action cannot be undone.",
             },
         },
+        settings: {
+            header: "Einstellungen",
+            anonymization: {
+                header: "Anonymisierungsrichtlinie",
+                returnProcessEnabled: "Rückgabeprozess aktiviert",
+                anonymizationMode: "Anonymisierungsmodus",
+                anonymizationDelayDays: "Verzögerung in Tagen",
+                modes: {
+                    MANUAL: "Manuell",
+                    AFTER_DAYS: "Nach Tagen",
+                    IMMEDIATELY: "Sofort",
+                },
+                success: "Einstellungen erfolgreich gespeichert",
+                error: "Beim Speichern ist ein Fehler aufgetreten",
+            },
+            returnProcess: {
+                header: "Rückgabeprozess",
+                addTemplate: "Vorlage hinzufügen",
+                templateName: "Vorlagenname",
+                defaultProcess: "Standardprozess",
+                noTemplates: "Keine Vorlagen vorhanden",
+                addChecklistItem: "Prüfpunkt hinzufügen",
+                addItemLabel: "Prüfpunkt",
+                checklistItemLabel: "Bezeichnung",
+                noChecklistItems: "Keine Prüfpunkte vorhanden",
+                create: {
+                    success: "Vorlage erfolgreich erstellt",
+                    error: "Beim Erstellen der Vorlage ist ein Fehler aufgetreten",
+                },
+                update: {
+                    success: "Vorlage erfolgreich aktualisiert",
+                    error: "Beim Aktualisieren der Vorlage ist ein Fehler aufgetreten",
+                },
+                delete: {
+                    header: 'Vorlage "{name}" löschen',
+                    message: "Soll die Vorlage wirklich gelöscht werden? Diese Aktion ist nicht wieder umkehrbar.",
+                    activeProcessError: "Die Vorlage kann nicht gelöscht werden, da noch aktive Rückgabeprozesse vorhanden sind.",
+                    error: "Beim Löschen ist ein Fehler aufgetreten",
+                },
+                checklist: {
+                    create: {
+                        success: "Prüfpunkt erfolgreich erstellt",
+                        error: "Beim Erstellen des Prüfpunkts ist ein Fehler aufgetreten",
+                    },
+                    update: {
+                        error: "Beim Aktualisieren des Prüfpunkts ist ein Fehler aufgetreten",
+                    },
+                    delete: {
+                        error: "Beim Löschen des Prüfpunkts ist ein Fehler aufgetreten",
+                    },
+                    sortOrder: {
+                        error: "Beim Ändern der Reihenfolge ist ein Fehler aufgetreten",
+                    },
+                },
+            },
+        },
         dashboard: {
             "header.page": "Dashboard",
             "header.uniformCounts": "Anzahlen der Uniformteile",
@@ -752,7 +809,8 @@ export default {
         "admin.uniform": "Uniform Konfiguration - Uniformadmin",
         "admin.uniform.size": "Unifromgrößen Konfiguration - Uniformadmin",
         "admin.material": "Material Konfiguration - Uniformadmin",
-        "admin.deficiency": "Mängel Konfiguration - Uniformadmin"
+        "admin.deficiency": "Mängel Konfiguration - Uniformadmin",
+        "admin.settings": "Einstellungen - Uniformadmin"
     },
     modals: {
         ariaLabel: {

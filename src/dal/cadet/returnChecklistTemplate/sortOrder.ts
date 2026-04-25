@@ -2,14 +2,14 @@ import { genericSAValidator } from "@/actions/validations";
 import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { Prisma } from "@/prisma/client";
-import { changeReturnChecklistTemplateSortOrderSchema, ChangeReturnChecklistTemplateSortOrderInput } from "@/zod/returnProcess";
+import { ChangeReturnChecklistTemplateSortOrderInput, changeReturnChecklistTemplateSortOrderSchema } from "@/zod/returnProcess";
+import { __unsecuredGetReturnProcessTemplateList } from "../returnProcessTemplate/get";
 
 /**
  * Changes the sort order of a checklist item within its process template,
  * shifting other items as needed to keep sort orders sequential.
  * @param data checklistItemId and newPosition (0-based index within the template)
- * @returns the full updated list of ReturnChecklistTemplate for the same template
+ * @returns the updated list of ReturnProcessTemplates with checklist items
  */
 export const changeSortOrder = (data: ChangeReturnChecklistTemplateSortOrderInput) =>
     genericSAValidator(
@@ -23,7 +23,7 @@ export const changeSortOrder = (data: ChangeReturnChecklistTemplateSortOrderInpu
             });
 
             if (item.sortOrder === newPosition) {
-                return getTemplateItems(item.fk_returnProcessTemplate, client);
+                return __unsecuredGetReturnProcessTemplateList(item.fk_returnProcessTemplate, client);
             }
 
             const listSize = await client.returnChecklistTemplate.count({
@@ -53,12 +53,6 @@ export const changeSortOrder = (data: ChangeReturnChecklistTemplateSortOrderInpu
                 data: { sortOrder: newPosition },
             });
 
-            return getTemplateItems(item.fk_returnProcessTemplate, client);
+            return __unsecuredGetReturnProcessTemplateList(assosiation, client);
         })
     );
-
-const getTemplateItems = (fk_returnProcessTemplate: string, client: Prisma.TransactionClient) =>
-    client.returnChecklistTemplate.findMany({
-        where: { fk_returnProcessTemplate },
-        orderBy: { sortOrder: "asc" },
-    });

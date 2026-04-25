@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { customErrorMap } from "./customZod/customErrorMap";
+z.setErrorMap(customErrorMap);
 
 export const createReturnProcessSchema = z.object({
     cadetId: z.string().uuid(),
@@ -59,3 +61,6 @@ export const changeReturnChecklistTemplateSortOrderSchema = z.object({
     newPosition: z.number().int().min(0),
 });
 export type ChangeReturnChecklistTemplateSortOrderInput = z.infer<typeof changeReturnChecklistTemplateSortOrderSchema>;
+
+export const returnProcessTemplateNameSchema = createReturnProcessTemplateSchema.pick({ name: true });
+export type ReturnProcessTemplateNameInput = z.infer<typeof returnProcessTemplateNameSchema>;

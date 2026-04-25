@@ -66,19 +66,21 @@ test('validate moveUp', async ({ page, materialListComponent, staticData: { ids 
     });
 
     await test.step('validate db', async () => {
-        const [initial, seccond] = await prisma.$transaction([
-            prisma.material.findUnique({
-                where: { id: ids.materialIds[1] }
-            }),
-            prisma.material.findUnique({
-                where: { id: ids.materialIds[0] }
-            }),
-        ]);
-        expect(initial).toBeDefined();
-        expect(seccond).toBeDefined();
+        await expect(async () => {
+            const [initial, seccond] = await prisma.$transaction([
+                prisma.material.findUnique({
+                    where: { id: ids.materialIds[1] }
+                }),
+                prisma.material.findUnique({
+                    where: { id: ids.materialIds[0] }
+                }),
+            ]);
+            expect(initial).toBeDefined();
+            expect(seccond).toBeDefined();
 
-        expect.soft(initial?.sortOrder).toBe(0);
-        expect.soft(seccond?.sortOrder).toBe(1);
+            expect.soft(initial?.sortOrder).toBe(0);
+            expect.soft(seccond?.sortOrder).toBe(1);
+        }).toPass();
     });
 
 });
@@ -92,19 +94,21 @@ test('validate moveDown', async ({ page, materialListComponent, staticData: { id
     });
 
     await test.step('validate db', async () => {
-        const [initial, seccond] = await prisma.$transaction([
-            prisma.material.findUnique({
-                where: { id: ids.materialIds[1] }
-            }),
-            prisma.material.findUnique({
-                where: { id: ids.materialIds[2] }
-            }),
-        ]);
-        expect(initial).toBeDefined();
-        expect(seccond).toBeDefined();
+        await expect(async () => {
+            const [initial, seccond] = await prisma.$transaction([
+                prisma.material.findUnique({
+                    where: { id: ids.materialIds[1] }
+                }),
+                prisma.material.findUnique({
+                    where: { id: ids.materialIds[2] }
+                }),
+            ]);
+            expect(initial).toBeDefined();
+            expect(seccond).toBeDefined();
 
-        expect.soft(initial?.sortOrder).toBe(2);
-        expect.soft(seccond?.sortOrder).toBe(1);
+            expect.soft(initial?.sortOrder).toBe(2);
+            expect.soft(seccond?.sortOrder).toBe(1);
+        }).toPass();
     });
 });
 
@@ -123,27 +127,31 @@ test('validate create', async ({ materialListComponent, editMaterialPopup, stati
         await expect(editMaterialPopup.div_popup).toBeHidden();
     });
 
-    const dbMaterial = await prisma.material.findFirst({
-        where: {
-            fk_materialGroup: ids.materialGroupIds[0],
-            typename: "newType",
-        },
-    });
-
+    let dbMaterialId: string | null = null;
     await test.step('validate db', async () => {
-        expect(dbMaterial).not.toBeNull();
-        expect(dbMaterial).toStrictEqual(expect.objectContaining({
-            typename: "newType",
-            sortOrder: 4,
-            actualQuantity: 99,
-            targetQuantity: 98,
-            recdelete: null,
-            recdeleteUser: null,
-        }));
+        await expect(async () => {
+            const dbMaterial = await prisma.material.findFirst({
+                where: {
+                    fk_materialGroup: ids.materialGroupIds[0],
+                    typename: "newType",
+                },
+            });
+
+            expect(dbMaterial).not.toBeNull();
+            expect(dbMaterial).toStrictEqual(expect.objectContaining({
+                typename: "newType",
+                sortOrder: 4,
+                actualQuantity: 99,
+                targetQuantity: 98,
+                recdelete: null,
+                recdeleteUser: null,
+            }));
+            dbMaterialId = dbMaterial!.id;
+        }).toPass();
     });
 
     await test.step('validate ui', async () => {
-        const id = dbMaterial!.id
+        const id = dbMaterialId!;
         await expect(materialListComponent.div_material(id)).toBeVisible();
         await expect(materialListComponent.div_material_actualQuantity(id)).toHaveText('99');
         await expect(materialListComponent.div_material_targetQuantity(id)).toHaveText('98');
@@ -224,27 +232,28 @@ test('validate delete', async ({ page, materialListComponent, staticData: { data
         await expect(materialListComponent.div_material(material.id)).toBeHidden();
     });
 
-    const [dbIssued, dbMaterial] = await prisma.$transaction([
-        prisma.materialIssued.findFirst({
-            where: {
-                fk_cadet: ids.cadetIds[0],
-                fk_material: material.id,
-            }
-        }),
-        prisma.material.findUnique({
-            where: { id: material.id }
-        }),
-    ]);
-
     await test.step('validate DB: material returned', async () => {
-        expect(dbIssued).not.toBeNull();
-        expect(dbIssued?.dateReturned).not.toBeNull();
+        await expect(async () => {
+            const dbIssued = await prisma.materialIssued.findFirst({
+                where: {
+                    fk_cadet: ids.cadetIds[0],
+                    fk_material: material.id,
+                }
+            });
+            expect(dbIssued).not.toBeNull();
+            expect(dbIssued?.dateReturned).not.toBeNull();
+        }).toPass();
     });
 
     await test.step('validate DB: material deleted', async () => {
-        expect(dbMaterial).not.toBeNull();
-        expect(dbMaterial!.recdelete).not.toBeNull();
-        expect(dbMaterial!.recdeleteUser).toEqual('test4');
+        await expect(async () => {
+            const dbMaterial = await prisma.material.findUnique({
+                where: { id: material.id }
+            });
+            expect(dbMaterial).not.toBeNull();
+            expect(dbMaterial!.recdelete).not.toBeNull();
+            expect(dbMaterial!.recdeleteUser).toEqual('test4');
+        }).toPass();
     });
 
 });

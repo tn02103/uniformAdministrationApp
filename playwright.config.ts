@@ -35,9 +35,6 @@ export default defineConfig({
         screenshot: 'on',
         video: "on",
     },
-    expect: {
-        timeout: 10_000,
-    },
     // globalTeardown: require.resolve('./tests/global-teardown'),
 
     /* Configure projects for major browsers */
