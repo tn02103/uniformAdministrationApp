@@ -5,9 +5,9 @@ import { CadetInspectionFormSchema, NewCadetDeficiencyFormSchema, OldDeficiencyF
 import { useParams } from "next/navigation";
 import { Button, Col, Row } from "react-bootstrap";
 import { useFieldArray, useWatch } from "react-hook-form";
-import { ParamType } from "../page";
+import { ParamType } from "../../page";
+import { DeficiencyReadDisplay } from "../_sharedComponents/DeficiencyReadDisplay";
 import { NewDeficiencyRow } from "./NewDeficiencyRow";
-import { OldDeficiencyRow } from "./OldDeficiencyRow";
 
 
 const initDeficiency: NewCadetDeficiencyFormSchema = {
@@ -16,8 +16,6 @@ const initDeficiency: NewCadetDeficiencyFormSchema = {
     comment: "",
     uniformId: null,
     materialId: null,
-    otherMaterialGroupId: null,
-    otherMaterialId: null,
 }
 
 export function CadetInspectionStep2({
@@ -47,9 +45,11 @@ export function CadetInspectionStep2({
                         {tCard('label.amountUnresolved', { count: unresolvedOldDeficiencyList.length })}
                     </Col>
                 </Row>
-                {(unresolvedOldDeficiencyList)?.map((def, index) =>
-                    <OldDeficiencyRow deficiency={def} step={2} key={def.id} index={index} />
-                )}
+                {(unresolvedOldDeficiencyList)?.map((def) => (
+                    <Row key={def.id} className="p-1 m-0 border-bottom border-1 py-1" data-testid={`div_olddef_${def.id}`}>
+                        <DeficiencyReadDisplay deficiency={def} compact />
+                    </Row>
+                ))}
                 <Row className="border-bottom p-1 bg-body-secondary m-0">
                     <Col xs="auto">
                         {tCard('label.newDeficiencies')}

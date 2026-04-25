@@ -127,7 +127,8 @@ test('validate create', async ({ materialListComponent, editMaterialPopup, stati
         await expect(editMaterialPopup.div_popup).toBeHidden();
     });
 
-    let dbMaterialId: string | null = null;
+
+    let materialId: string | null = null;
     await test.step('validate db', async () => {
         await expect(async () => {
             const dbMaterial = await prisma.material.findFirst({
@@ -136,7 +137,6 @@ test('validate create', async ({ materialListComponent, editMaterialPopup, stati
                     typename: "newType",
                 },
             });
-
             expect(dbMaterial).not.toBeNull();
             expect(dbMaterial).toStrictEqual(expect.objectContaining({
                 typename: "newType",
@@ -146,12 +146,12 @@ test('validate create', async ({ materialListComponent, editMaterialPopup, stati
                 recdelete: null,
                 recdeleteUser: null,
             }));
-            dbMaterialId = dbMaterial!.id;
+            materialId = dbMaterial!.id;
         }).toPass();
     });
 
     await test.step('validate ui', async () => {
-        const id = dbMaterialId!;
+        const id = materialId!;
         await expect(materialListComponent.div_material(id)).toBeVisible();
         await expect(materialListComponent.div_material_actualQuantity(id)).toHaveText('99');
         await expect(materialListComponent.div_material_targetQuantity(id)).toHaveText('98');

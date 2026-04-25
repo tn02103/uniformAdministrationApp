@@ -53,18 +53,15 @@ export const getItemLabels = async (): Promise<ItemLabel[]> => genericSANoDataVa
                 cadet: true,
             },
         },
-        uniformDeficiencies: {
+        deficiencies: {
             where: {
-                deficiency: {
-                    dateResolved: null,
+                dateResolved: null,
+                type: {
+                    dependent: "uniform",
                 },
             },
             include: {
-                deficiency: {
-                    include: {
-                        type: true,
-                    },
-                },
+                type: true,
             },
         },
     },
@@ -91,9 +88,9 @@ export const getItemLabels = async (): Promise<ItemLabel[]> => genericSANoDataVa
         id: item.storageUnit.id,
         name: item.storageUnit.name,
     } : null,
-    activeDeficiencies: item.uniformDeficiencies.map(ud => ({
-        typeName: ud.deficiency.type.name,
-        comment: ud.deficiency.comment,
+    activeDeficiencies: item.deficiencies.map(ud => ({
+        typeName: ud.type.name,
+        comment: ud.comment,
     })),
 })));
 
@@ -123,14 +120,11 @@ export const getDeficiencies = async (props: GetDeficienciesProps): Promise<Defi
     { uniformId: props.uniformId }
 ).then(([, { uniformId, includeResolved }]) => prisma.deficiency.findMany({
     where: {
-        uniformDeficiency: {
-            fk_uniform: uniformId,
-        },
+        fk_uniform: uniformId,
         dateResolved: includeResolved ? undefined : null,
     },
     include: {
         type: true,
-        uniformDeficiency: true,
     },
     orderBy: [
         { dateCreated: 'asc' },  // Oldest to newest

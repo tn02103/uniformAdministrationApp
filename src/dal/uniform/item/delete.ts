@@ -34,7 +34,7 @@ export const markDeleted = (props: string): Promise<void> => genericSAValidator(
         }),
         prisma.deficiency.updateMany({
             where: {
-                uniformDeficiency: { fk_uniform: id },
+                fk_uniform: id,
                 dateResolved: null,
             },
             data: {

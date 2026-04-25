@@ -30,7 +30,7 @@ export const resolve = async (props: string) => genericSAValidator(
     }
 
     await prisma.deficiency.update({
-        where: { id },
+        where: { id, dateResolved: null},
         data: {
             dateResolved: new Date(),
             userResolved: username,

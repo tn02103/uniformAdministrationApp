@@ -51,11 +51,7 @@ Delegate to `planner` agent with: ticket/PR number and workflow type.
 
 Planner returns a `PLAN` object (already written to the session file by the planner).
 
-Use the `ask` tool to present the following questions to the user (add more if `plan.has_critical_questions: yes`):
-1. "Are there any requirements missing from the plan?"
-2. "Are there any requirements that are not described correctly?"
-
-If `plan.has_critical_questions: yes`: also include each unanswered question from `questions_and_answers`.
+If `plan.has_critical_questions: yes`: Use the `ask` tool to present each unanswered question from `questions_and_answers`.
 
 Record any answers in the session file before proceeding. Do not continue until the user has responded.
 

@@ -23,7 +23,7 @@ export default defineConfig({
     reporter: [
         ['dot'],
         ['html'],
-        ['json', { outputFile: 'test-results.json' }],
+        ['json', { outputFile: 'playwright-report/json/report.json' }],
     ],
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
     use: {
