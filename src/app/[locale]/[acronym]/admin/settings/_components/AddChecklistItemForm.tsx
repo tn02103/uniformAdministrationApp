@@ -25,29 +25,27 @@ export const AddChecklistItemForm = ({ templateId, onSave }: AddChecklistItemFor
     };
 
     return (
-        <tr>
-            <td colSpan={3}>
-                <Form<AddChecklistItemFormValues>
-                    onSubmit={handleSubmit}
-                    aria-label={t("admin.settings.returnProcess.addChecklistItem")}
+        <div >
+            <Form<AddChecklistItemFormValues>
+                onSubmit={handleSubmit}
+                aria-label={t("admin.settings.returnProcess.addChecklistItem")}
+            >
+                <div
+                    className="d-flex gap-2 align-items-start flex-wrap"
                 >
-                    <div
-                        className="d-flex gap-2 align-items-start flex-wrap"
-                    >
-                        <div style={{ flexGrow: 1, minWidth: "160px" }}>
-                            <InputFormField
-                                name="label"
-                                label={t("admin.settings.returnProcess.addItemLabel")}
-                                formName={`addChecklist_${templateId}`}
-                                maxLength={100}
-                            />
-                        </div>
-                        <Button type="submit" variant="outline-primary" size="sm" className="mt-4 pt-1">
-                            <FontAwesomeIcon icon={faPlus} />
-                        </Button>
+                    <div style={{ flexGrow: 1, minWidth: "160px" }}>
+                        <InputFormField
+                            name="label"
+                            label={t("admin.settings.returnProcess.addItemLabel")}
+                            formName={`addChecklist_${templateId}`}
+                            maxLength={100}
+                        />
                     </div>
-                </Form>
-            </td>
-        </tr >
+                    <Button type="submit" variant="outline-primary" size="sm" className="mt-4 pt-1">
+                        <FontAwesomeIcon icon={faPlus} />
+                    </Button>
+                </div>
+            </Form>
+        </div>
     );
 };

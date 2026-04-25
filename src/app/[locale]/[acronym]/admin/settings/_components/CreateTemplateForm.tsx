@@ -19,6 +19,9 @@ export const CreateTemplateForm = ({ onSave, onCancel }: CreateTemplateFormProps
             aria-label={t("admin.settings.returnProcess.addTemplate")}
         >
             <Form
+                formName="create-process-template"
+                aria-label={t("admin.settings.returnProcess.addTemplate")}
+                mode="onSubmit"
                 onSubmit={onSave}
                 zodSchema={createReturnProcessTemplateSchema}
                 defaultValues={{ name: "", defaultProcess: false }}
@@ -27,7 +30,6 @@ export const CreateTemplateForm = ({ onSave, onCancel }: CreateTemplateFormProps
                     <InputFormField
                         name="name"
                         label={t("admin.settings.returnProcess.templateName")}
-                        formName="createTemplate"
                         required
                         hookFormValidation
                         maxLength={100}

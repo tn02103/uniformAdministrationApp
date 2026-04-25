@@ -16,16 +16,14 @@ vi.mock("@/components/reorderDnD/ReorderableTableBody", () => ({
 
 vi.mock("./AddChecklistItemForm", () => ({
     AddChecklistItemForm: vi.fn(({ onSave, templateId }) => (
-        <tr>
-            <td>
-                <button
-                    data-testid={`add-checklist-item-form-${templateId}`}
-                    onClick={() => onSave(templateId, "New Item")}
-                >
-                    add-form
-                </button>
-            </td>
-        </tr>
+        <div>
+            <button
+                data-testid={`add-checklist-item-form-${templateId}`}
+                onClick={() => onSave(templateId, "New Item")}
+            >
+                add-form
+            </button>
+        </div>
     )),
 }));
 
@@ -64,13 +62,13 @@ const defaultProps = {
     template,
     isExpanded: false,
     onToggleExpand: vi.fn(),
-    onRename: vi.fn(async () => {}),
+    onRename: vi.fn(async () => { }),
     onDelete: vi.fn(),
-    onToggleDefault: vi.fn(async () => {}),
-    onAddChecklistItem: vi.fn(async () => {}),
-    onRenameChecklistItem: vi.fn(async () => {}),
+    onToggleDefault: vi.fn(async () => { }),
+    onAddChecklistItem: vi.fn(async () => { }),
+    onRenameChecklistItem: vi.fn(async () => { }),
     onDeleteChecklistItem: vi.fn(),
-    onChecklistSortOrder: vi.fn(async () => {}),
+    onChecklistSortOrder: vi.fn(async () => { }),
 };
 
 describe("<TemplateCard />", () => {
@@ -119,26 +117,34 @@ describe("<TemplateCard />", () => {
 
     it("enters edit mode for checklist item and calls onRenameChecklistItem on confirm", async () => {
         render(<TemplateCard {...defaultProps} isExpanded={true} />);
-        const editBtn = screen.getByTestId(`btn_edit_checklistItem_${checklistItem.id}`);
+        const row = screen.getByTestId(`tr_checklistItem_${checklistItem.id}`);
+        const editBtn = within(row).getByTestId(`btn_edit`);
         await user.click(editBtn);
         const input = screen.getByRole("textbox");
         await user.clear(input);
         await user.type(input, "Updated label");
-        await user.click(screen.getByTestId(`btn_saveEdit_checklistItem_${checklistItem.id}`));
+        const saveBtn = within(row).getByTestId(`btn_save`);
+        await user.click(saveBtn);
         expect(defaultProps.onRenameChecklistItem).toHaveBeenCalledWith(template.id, checklistItem.id, "Updated label");
     });
 
     it("cancels edit mode without calling onRenameChecklistItem", async () => {
         render(<TemplateCard {...defaultProps} isExpanded={true} />);
-        await user.click(screen.getByTestId(`btn_edit_checklistItem_${checklistItem.id}`));
-        await user.click(screen.getByTestId(`btn_cancelEdit_checklistItem_${checklistItem.id}`));
+        const row = screen.getByTestId(`tr_checklistItem_${checklistItem.id}`);
+        const editBtn = within(row).getByTestId(`btn_edit`);
+        await user.click(editBtn);
+
+        const cancelBtn = within(row).getByTestId(`btn_cancel`);
+        await user.click(cancelBtn);
         expect(defaultProps.onRenameChecklistItem).not.toHaveBeenCalled();
         expect(screen.getByText("Check tyres")).toBeInTheDocument();
     });
 
     it("calls onDeleteChecklistItem when delete button is clicked on checklist item", async () => {
         render(<TemplateCard {...defaultProps} isExpanded={true} />);
-        await user.click(screen.getByTestId(`btn_delete_checklistItem_${checklistItem.id}`));
+        const row = screen.getByTestId(`tr_checklistItem_${checklistItem.id}`);
+        const deleteBtn = within(row).getByTestId(`btn_delete`);
+        await user.click(deleteBtn);
         expect(defaultProps.onDeleteChecklistItem).toHaveBeenCalledWith(template.id, checklistItem.id);
     });
 

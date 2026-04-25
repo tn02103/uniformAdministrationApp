@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { customErrorMap } from "./customZod/customErrorMap";
+z.setErrorMap(customErrorMap);
 
 export const createReturnProcessSchema = z.object({
     cadetId: z.string().uuid(),

@@ -1,13 +1,14 @@
 import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { deleteReturnChecklistTemplateSchema, DeleteReturnChecklistTemplateInput } from "@/zod/returnProcess";
+import { DeleteReturnChecklistTemplateInput, deleteReturnChecklistTemplateSchema } from "@/zod/returnProcess";
+import { __unsecuredGetReturnProcessTemplateList } from "../returnProcessTemplate/get";
 
 /**
  * Deletes a checklist template item and shifts the sortOrder of all following items down by 1.
  * Verifies the item belongs to the caller's organisation before deleting.
  * @param data id of the checklist template item to delete
- * @returns the deleted ReturnChecklistTemplate
+ * @returns the updated list of ReturnProcessTemplates with checklist items
  */
 export const deleteChecklistTemplate = (data: DeleteReturnChecklistTemplateInput) =>
     genericSAValidator(
@@ -24,7 +25,7 @@ export const deleteChecklistTemplate = (data: DeleteReturnChecklistTemplateInput
                 where: { fk_checklistItem: id },
             });
 
-            const deleted = await client.returnChecklistTemplate.delete({
+            await client.returnChecklistTemplate.delete({
                 where: { id },
             });
 
@@ -36,6 +37,6 @@ export const deleteChecklistTemplate = (data: DeleteReturnChecklistTemplateInput
                 data: { sortOrder: { decrement: 1 } },
             });
 
-            return deleted;
+            return __unsecuredGetReturnProcessTemplateList(assosiation, client);
         })
     );

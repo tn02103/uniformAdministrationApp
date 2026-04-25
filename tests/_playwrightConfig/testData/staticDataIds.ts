@@ -32,7 +32,9 @@ export function getStaticDataIds(index: number) {
         returnChecklistTemplateIds: [
             `${prefix}cc0000-0000-4000-8000-000000000001`,
             `${prefix}cc0000-0000-4000-8000-000000000002`,
-            `${prefix}cc0000-0000-4000-8000-000000000003`
+            `${prefix}cc0000-0000-4000-8000-000000000003`,
+            `${prefix}cc0000-0000-4000-8000-000000000004`,
+            `${prefix}cc0000-0000-4000-8000-000000000005`
         ],
         returnProcessTemplateIds: [
             `${prefix}ee0000-0000-4000-8000-000000000001`,

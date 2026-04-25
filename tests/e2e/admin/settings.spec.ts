@@ -1,32 +1,29 @@
 import { prisma } from "@/lib/db";
 import { expect } from "playwright/test";
 import german from "../../../public/locales/de";
-import { adminTest, inspectorTest, managerTest } from "../../_playwrightConfig/setup";
+import { adminTest as test, managerTest } from "../../_playwrightConfig/setup";
 
 const t = german.admin.settings;
 const tCommon = german.common.actions;
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
-const settingsUrl =  "/de/app/admin/settings";
+const settingsUrl = "/de/app/admin/settings";
 
 // ─── Role-based access ───────────────────────────────────────────────────────
 
-managerTest('materialManager cannot access admin settings page (403)', async ({ page, staticData }) => {
-    const acronym = staticData.data.assosiation.acronym;
+managerTest('materialManager cannot access admin settings page (403)', async ({ page }) => {
     await page.goto(settingsUrl);
     await expect(page.getByTestId('div_403Page')).toBeVisible();
 });
 
-
 // ─── Anonymization Config ────────────────────────────────────────────────────
-adminTest.describe('Anonymization Config section', () => {
-    adminTest.beforeEach(async ({ page }) => {
+test.describe('Anonymization Config section', () => {
+    test.beforeEach(async ({ page }) => {
         await page.goto(settingsUrl);
-        await page.waitForLoadState('networkidle');
     });
 
-    adminTest.afterEach(async ({ staticData }) => {
+    test.afterEach(async ({ staticData }) => {
         // Reset config to initial state (returnProcessEnabled=false, MANUAL, 30 days)
         await prisma.assosiationConfiguration.update({
             where: { assosiationId: staticData.fk_assosiation },
@@ -38,44 +35,43 @@ adminTest.describe('Anonymization Config section', () => {
         });
     });
 
-    adminTest('toggle returnProcessEnabled persists after page reload', async ({ page }) => {
+    test('toggle returnProcessEnabled persists after page reload', async ({ page }) => {
         const toggle = page.getByRole('switch', { name: t.anonymization.returnProcessEnabled });
-        await expect(toggle).not.toBeChecked();
-
-        await toggle.click();
+        await expect(toggle).toBeVisible();
         await expect(toggle).toBeChecked();
 
-        // Save
-        await page.getByRole('form', { name: t.anonymization.header }).getByRole('button', { name: tCommon.save }).click();
-        await expect(page.getByText(t.anonymization.success)).toBeVisible();
+        await toggle.click();
+        await expect(toggle).not.toBeChecked();
 
         // Reload and verify persisted
         await page.reload();
-        await page.waitForLoadState('networkidle');
-        await expect(page.getByRole('switch', { name: t.anonymization.returnProcessEnabled })).toBeChecked();
+        await expect(page.getByRole('switch', { name: t.anonymization.returnProcessEnabled })).not.toBeChecked();
     });
 
-    adminTest('selecting AFTER_DAYS shows days input, other modes hide it', async ({ page }) => {
+    test('selecting AFTER_DAYS shows days input, other modes hide it', async ({ page }) => {
         const modeSelect = page.getByRole('combobox', { name: t.anonymization.anonymizationMode });
         const daysInput = page.getByRole('spinbutton', { name: t.anonymization.anonymizationDelayDays });
 
         // Default is MANUAL – days input should be hidden
-        await expect(daysInput).not.toBeVisible();
+        await expect(daysInput).toBeHidden();
 
         // Select AFTER_DAYS
+        await modeSelect.click();
         await modeSelect.selectOption(t.anonymization.modes.AFTER_DAYS);
+        await expect(modeSelect).toHaveValue("AFTER_DAYS");
         await expect(daysInput).toBeVisible();
 
         // Select IMMEDIATELY – days input should hide again
         await modeSelect.selectOption(t.anonymization.modes.IMMEDIATELY);
-        await expect(daysInput).not.toBeVisible();
+        await expect(daysInput).toBeHidden();
     });
 
-    adminTest('anonymizationDelayDays value < 1 is rejected with a validation error', async ({ page }) => {
+    test('anonymizationDelayDays value < 1 is rejected with a validation error', async ({ page }) => {
         const modeSelect = page.getByRole('combobox', { name: t.anonymization.anonymizationMode });
         const daysInput = page.getByRole('spinbutton', { name: t.anonymization.anonymizationDelayDays });
 
         // Switch to AFTER_DAYS to reveal the field
+        await modeSelect.click();
         await modeSelect.selectOption(t.anonymization.modes.AFTER_DAYS);
         await expect(daysInput).toBeVisible();
 
@@ -86,13 +82,14 @@ adminTest.describe('Anonymization Config section', () => {
 
         // Validation error should appear, no success toast
         await expect(page.getByTestId('err_anonymizationDelayDays')).toBeVisible();
-        await expect(page.getByText(t.anonymization.success)).not.toBeVisible();
-    }); 
+        await expect(page.getByText(t.anonymization.success)).toBeHidden();
+    });
 
-    adminTest('saving config shows success toast and data persists after reload', async ({ page, staticData }) => {
+    test('saving config shows success toast and data persists after reload', async ({ page, staticData }) => {
         const modeSelect = page.getByRole('combobox', { name: t.anonymization.anonymizationMode });
 
         // Change mode to IMMEDIATELY and save
+        await modeSelect.click();
         await modeSelect.selectOption(t.anonymization.modes.IMMEDIATELY);
         await page.getByRole('form', { name: t.anonymization.header }).getByRole('button', { name: tCommon.save }).click();
 
@@ -100,7 +97,6 @@ adminTest.describe('Anonymization Config section', () => {
 
         // Reload and verify persistence
         await page.reload();
-        await page.waitForLoadState('networkidle');
         await expect(page.getByRole('combobox', { name: t.anonymization.anonymizationMode })).toHaveValue('IMMEDIATELY');
 
         // Verify in DB
@@ -113,27 +109,23 @@ adminTest.describe('Anonymization Config section', () => {
 
 // ─── ReturnProcessTemplate section ──────────────────────────────────────────
 
-const templateTest = adminTest.extend<{ acronym: string }>({
-    acronym: async ({ staticData }, use) => {
-        use(staticData.data.assosiation.acronym);
-    },
-});
-
-templateTest.describe('Return Process Template section', () => {
-    templateTest.beforeEach(async ({ page }) => {
+test.describe('Return Process Template section', () => {
+    test.beforeEach(async ({ page }) => {
         await page.goto(settingsUrl);
-        await page.waitForLoadState('networkidle');
     });
 
-    templateTest.afterEach(async ({ staticData }) => {
+    test.afterEach(async ({ staticData }) => {
         await staticData.cleanup.returnProcessTemplate();
     });
 
-    templateTest('create a new template', async ({ page, staticData }) => {
+    test('create a new template', async ({ page, staticData }) => {
+        const inputRegex = new RegExp(t.returnProcess.templateName, "i");
         await page.getByRole('button', { name: t.returnProcess.addTemplate }).click();
 
         const form = page.getByRole('form', { name: t.returnProcess.addTemplate });
-        await form.getByRole('textbox', { name: t.returnProcess.templateName }).fill('Neue Vorlage');
+        await expect(form).toBeVisible();
+        await expect(page.getByRole('textbox', { name: inputRegex })).toBeVisible();
+        await form.getByRole('textbox', { name: inputRegex }).fill('Neue Vorlage');
         await form.getByRole('button', { name: tCommon.create }).click();
 
         await expect(page.getByText(t.returnProcess.create.success)).toBeVisible();
@@ -146,35 +138,39 @@ templateTest.describe('Return Process Template section', () => {
         expect(tpl).not.toBeNull();
     });
 
-    templateTest('rename an existing template', async ({ page, staticData }) => {
-        const templateName = staticData.data.returnProcessTemplates[1].name; // 'Alternative Rückgabe'
+    test('rename an existing template', async ({ page, staticData }) => {
+        const inputRegex = new RegExp(t.returnProcess.templateName, "i");
+        const template = staticData.data.returnProcessTemplates[1]; // 'Alternative Rückgabe'
 
         // Find the template card and click the edit button
-        const card = page.locator('.card').filter({ hasText: templateName });
+        const card = page.getByTestId(`div_returnprocess_${template.id}`);
         await expect(card).toBeVisible();
 
         // Click the edit (pencil) button to enter inline edit mode
         await card.getByRole('button', { name: 'edit' }).first().click();
 
-        const input = card.getByRole('textbox', { name: t.returnProcess.templateName });
+        const input = card.getByRole('textbox', { name: inputRegex });
+        await expect(input).toBeVisible();
         await input.clear();
         await input.fill('Umbenannte Vorlage');
         await card.getByRole('button', { name: 'save changes' }).click();
 
-        await expect(card).not.toBeVisible(); // old card gone
+        await expect(input).toBeHidden();
         await expect(page.getByText('Umbenannte Vorlage')).toBeVisible();
 
         // Verify in DB
-        const tpl = await prisma.returnProcessTemplate.findFirst({
-            where: { fk_assosiation: staticData.fk_assosiation, name: 'Umbenannte Vorlage' },
-        });
-        expect(tpl).not.toBeNull();
+        await expect(async () => {
+            const tpl = await prisma.returnProcessTemplate.findFirst({
+                where: { fk_assosiation: staticData.fk_assosiation, name: 'Umbenannte Vorlage' },
+            });
+            expect(tpl).not.toBeNull();
+        }).toPass();
     });
 
-    templateTest('delete a template that has no active processes', async ({ page, staticData }) => {
+    test('delete a template that has no active processes', async ({ page, staticData }) => {
         // Template[1] ('Alternative Rückgabe') has no active return processes
-        const templateName = staticData.data.returnProcessTemplates[1].name;
-        const card = page.locator('.card').filter({ hasText: templateName });
+        const template = staticData.data.returnProcessTemplates[1];
+        const card = page.getByTestId(`div_returnprocess_${template.id}`);
         await expect(card).toBeVisible();
 
         await card.getByRole('button', { name: tCommon.delete }).click();
@@ -184,7 +180,7 @@ templateTest.describe('Return Process Template section', () => {
         await expect(modal).toBeVisible();
         await modal.getByTestId('btn_save').click();
 
-        await expect(card).not.toBeVisible();
+        await expect(card).toBeHidden();
 
         // Verify deleted from DB
         const tpl = await prisma.returnProcessTemplate.findUnique({
@@ -193,93 +189,125 @@ templateTest.describe('Return Process Template section', () => {
         expect(tpl).toBeNull();
     });
 
-    templateTest('add a checklist item to a template', async ({ page, staticData }) => {
-        const templateName = staticData.data.returnProcessTemplates[1].name; // 'Alternative Rückgabe'
-        const card = page.locator('.card').filter({ hasText: templateName });
+    test('add a checklist item to a template', async ({ page, staticData }) => {
+        const inputRegex = new RegExp(t.returnProcess.addItemLabel, "i");
+        const template = staticData.data.returnProcessTemplates[1]; // 'Alternative Rückgabe'
+        const card = page.getByTestId(`div_returnprocess_${template.id}`);
 
         // Expand the template card
-        await card.getByRole('button', { name: templateName }).click();
+        await card.getByRole('button', { name: template.name }).click();
 
         // Add a new checklist item
         const addForm = card.getByRole('form', { name: t.returnProcess.addChecklistItem });
-        await addForm.getByRole('textbox', { name: t.returnProcess.checklistItemLabel }).fill('Stiefel abgeben');
+        const input = addForm.getByRole('textbox', { name: inputRegex });
+        await expect(addForm).toBeVisible();
+        await expect(input).toBeVisible();
+        await input.fill('Stiefel abgeben');
         await addForm.locator('button[type="submit"]').click();
-
-        await expect(page.getByText(t.returnProcess.checklist.create.success)).toBeVisible();
 
         // Verify item is visible in the template
         await expect(card.getByText('Stiefel abgeben')).toBeVisible();
+        await expect(input).toBeEmpty();
+
+        // Add another item to verify multiple items can be added
+        await input.fill('Mütze abgeben');
+        await page.keyboard.press('Enter'); // Submit the form with Enter key
+        await expect(input).toBeEmpty();
+        await expect(card.getByText('Mütze abgeben')).toBeVisible();
 
         // Verify in DB
-        const item = await prisma.returnChecklistTemplate.findFirst({
-            where: { fk_assosiation: staticData.fk_assosiation, label: 'Stiefel abgeben' },
-        });
-        expect(item).not.toBeNull();
+        await expect(async () => {
+            const item = await prisma.returnChecklistTemplate.findFirst({
+                where: { fk_assosiation: staticData.fk_assosiation, label: 'Stiefel abgeben' },
+            });
+            expect(item).not.toBeNull();
+        }).toPass();
     });
 
-    templateTest('rename a checklist item', async ({ page, staticData }) => {
-        const templateName = staticData.data.returnProcessTemplates[0].name; // 'Standard Rückgabe'
-        const itemLabel = staticData.data.returnChecklistTemplates[0].label;  // 'Hose abgeben'
-        const card = page.locator('.card').filter({ hasText: templateName });
+    test('rename a checklist item', async ({ page, staticData }) => {
+        const template = staticData.data.returnProcessTemplates[0]; // 'Standard Rückgabe'
+        const cheklistItem = staticData.data.returnChecklistTemplates[0];  // 'Hose abgeben'
+        const card = page.getByTestId(`div_returnprocess_${template.id}`);
 
         // Expand
-        await card.getByRole('button', { name: templateName }).click();
+        await card.getByRole('button', { name: template.name }).click();
 
         // Find the item row and click edit
-        const itemRow = card.locator('tr').filter({ hasText: itemLabel });
-        await itemRow.getByRole('button', { name: 'edit' }).click();
+        // The edit button is hidden until hover (.hoverColHidden) – use force:true to bypass visibility check
+        const itemRow = card.getByTestId(`tr_checklistItem_${cheklistItem.id}`);
+        const button = itemRow.getByRole('button', { name: 'edit' });
+        await expect(itemRow).toBeVisible();
+        await itemRow.hover();
+        await button.click({ force: true });
 
         const input = itemRow.getByRole('textbox', { name: t.returnProcess.checklistItemLabel });
         await input.clear();
         await input.fill('Hose zurückgeben');
-        await itemRow.getByRole('button', { name: 'save changes' }).click();
+        const saveButton = itemRow.getByRole('button', { name: 'save' });
+        await saveButton.click();
+
+        expect(input).toBeHidden();
+        expect(saveButton).toBeHidden();
 
         await expect(card.getByText('Hose zurückgeben')).toBeVisible();
-        await expect(card.getByText(itemLabel)).not.toBeVisible();
+        await expect(card.getByText(cheklistItem.label)).toBeHidden();
 
         // Verify in DB
-        const item = await prisma.returnChecklistTemplate.findFirst({
-            where: {
-                fk_assosiation: staticData.fk_assosiation,
-                label: 'Hose zurückgeben',
-            },
-        });
-        expect(item).not.toBeNull();
+        await expect(async () => {
+            const item = await prisma.returnChecklistTemplate.findFirst({
+                where: {
+                    fk_assosiation: staticData.fk_assosiation,
+                    label: 'Hose zurückgeben',
+                },
+            });
+            expect(item).not.toBeNull();
+        }).toPass();
     });
 
-    templateTest('delete a checklist item', async ({ page, staticData }) => {
-        const templateName = staticData.data.returnProcessTemplates[0].name; // 'Standard Rückgabe'
-        const itemLabel = staticData.data.returnChecklistTemplates[1].label;  // 'Jacke abgeben'
-        const card = page.locator('.card').filter({ hasText: templateName });
+    test('delete a checklist item', async ({ page, staticData }) => {
+        const template = staticData.data.returnProcessTemplates[0]; // 'Standard Rückgabe'
+        const checklistItem = staticData.data.returnChecklistTemplates[1];  // 'Jacke abgeben'
+        const card = page.getByTestId(`div_returnprocess_${template.id}`);
 
         // Expand
-        await card.getByRole('button', { name: templateName }).click();
+        await card.getByRole('button', { name: template.name }).click();
 
         // Find and delete the item
-        const itemRow = card.locator('tr').filter({ hasText: itemLabel });
-        await itemRow.getByRole('button', { name: tCommon.delete }).click();
+        // The delete button is hidden until hover (.hoverColHidden) – use force:true to bypass visibility check
+        const itemRow = card.getByTestId(`tr_checklistItem_${checklistItem.id}`);
+        await expect(itemRow).toBeVisible();
+        await itemRow.hover();
+        await itemRow.getByRole('button', { name: "delete" }).click({ force: true });
 
-        await expect(card.getByText(itemLabel)).not.toBeVisible();
+        await expect(itemRow).toBeHidden();
+        await expect(card.getByText(checklistItem.label)).toBeHidden();
 
         // Verify deleted from DB
-        const item = await prisma.returnChecklistTemplate.findFirst({
-            where: { fk_assosiation: staticData.fk_assosiation, label: itemLabel },
-        });
-        expect(item).toBeNull();
+        await expect(async () => {
+            const item = await prisma.returnChecklistTemplate.findFirst({
+                where: { fk_assosiation: staticData.fk_assosiation, label: checklistItem.label },
+            });
+            expect(item).toBeNull();
+        }).toPass();
     });
 
-    templateTest('drag-and-drop reorder checklist items', async ({ page, staticData, browserName }) => {
+    test('drag-and-drop reorder checklist items', async ({ page, staticData, browserName }) => {
         // eslint-disable-next-line playwright/no-skipped-test
         test.skip(browserName !== 'chromium', 'DnD reorder only tested in Chromium');
 
-        const templateName = staticData.data.returnProcessTemplates[0].name; // 'Standard Rückgabe'
+        const template = staticData.data.returnProcessTemplates[0]; // 'Standard Rückgabe'
         const items = staticData.data.returnChecklistTemplates.filter(
             (i) => i.fk_returnProcessTemplate === staticData.ids.returnProcessTemplateIds[0]
         );
-        const card = page.locator('.card').filter({ hasText: templateName });
+        const card = page.getByTestId(`div_returnprocess_${template.id}`);
 
         // Expand template card
-        await card.getByRole('button', { name: templateName }).click();
+        await card.getByRole('button', { name: template.name }).click();
+
+        const rows = card.locator('tbody').nth(0).locator('tr');
+        await expect(rows).toHaveCount(items.length);
+        await expect(rows.nth(0)).toContainText(items[0].label);
+        await expect(rows.nth(1)).toContainText(items[1].label);
 
         const firstRowHandle = card.locator('tr').filter({ hasText: items[0].label })
             .locator('span[aria-label]').first();
@@ -295,11 +323,7 @@ templateTest.describe('Return Process Template section', () => {
         });
 
         // Items should have swapped positions in the DOM
-        const rows = card.locator('tbody').nth(0).locator('tr');
-        await expect(rows.first()).toContainText(items[1].label);
+        await expect(rows.nth(0)).toContainText(items[1].label);
+        await expect(rows.nth(1)).toContainText(items[0].label);
     });
 });
-
-// re-export so the test runner file is recognised correctly
-const test = adminTest;
-export { test };

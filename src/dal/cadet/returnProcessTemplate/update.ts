@@ -2,12 +2,13 @@ import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { updateReturnProcessTemplateSchema, UpdateReturnProcessTemplateInput } from "@/zod/returnProcess";
+import { __unsecuredGetReturnProcessTemplateList } from "./get";
 
 /**
  * Updates a return process template's name and/or defaultProcess flag.
  * If defaultProcess is set to true, clears the flag on all other templates.
  * @param data id, optional name and defaultProcess
- * @returns the updated ReturnProcessTemplate with checklist items
+ * @returns the updated list of ReturnProcessTemplates with checklist items
  */
 export const update = (data: UpdateReturnProcessTemplateInput) =>
     genericSAValidator(
@@ -24,17 +25,13 @@ export const update = (data: UpdateReturnProcessTemplateInput) =>
                 });
             }
 
-            return client.returnProcessTemplate.update({
+            await client.returnProcessTemplate.update({
                 where: { id },
                 data: {
                     ...(name !== undefined && { name }),
                     ...(defaultProcess !== undefined && { defaultProcess }),
                 },
-                include: {
-                    checklistItems: {
-                        orderBy: { sortOrder: 'asc' },
-                    },
-                },
             });
+            return __unsecuredGetReturnProcessTemplateList(assosiation, client);
         })
     );

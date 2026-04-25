@@ -8,7 +8,12 @@ const { ids } = staticData;
 const wrongOrg = new StaticData(1);
 
 describe('<ReturnProcessTemplate> Integration Tests', () => {
-    beforeAll(async () => {
+    afterAll(async () => {
+        global.__ROLE__ = undefined;
+        await staticData.cleanup.returnProcessTemplate();
+    });
+
+    beforeEach(async () => {
         await staticData.cleanup.returnProcessTemplate();
     });
 
@@ -53,10 +58,13 @@ describe('<ReturnProcessTemplate> Integration Tests', () => {
             global.__ROLE__ = undefined;
 
             expect(result).toBeDefined();
-            expect(result.name).toBe('Test Template');
-            expect(result.defaultProcess).toBe(false);
+            expect(result).toHaveLength(3); 
+            const created = result.find((t) => t.name === 'Test Template');
+            expect(created).toBeDefined();
+            expect(created!.name).toBe('Test Template');
+            expect(created!.defaultProcess).toBe(false);
 
-            const db = await prisma.returnProcessTemplate.findUnique({ where: { id: result.id } });
+            const db = await prisma.returnProcessTemplate.findUnique({ where: { id: created!.id } });
             expect(db).not.toBeNull();
         });
 
@@ -69,7 +77,10 @@ describe('<ReturnProcessTemplate> Integration Tests', () => {
             });
             global.__ROLE__ = undefined;
 
-            expect(result.defaultProcess).toBe(true);
+            expect(result).toHaveLength(3);
+            const newDefault = result.find((t) => t.name === 'New Default Template');
+            expect(newDefault).toBeDefined();
+            expect(newDefault!.defaultProcess).toBe(true);
 
             const oldDefault = await prisma.returnProcessTemplate.findUnique({
                 where: { id: ids.returnProcessTemplateIds[0] },
@@ -95,7 +106,10 @@ describe('<ReturnProcessTemplate> Integration Tests', () => {
             });
             global.__ROLE__ = undefined;
 
-            expect(result.name).toBe('Updated Name');
+            expect(result).length(2);
+            const updated = result.find((t) => t.id === ids.returnProcessTemplateIds[1]);
+            expect(updated).toBeDefined();
+            expect(updated!.name).toBe('Updated Name');
         });
 
         it('should unset defaultProcess on others when setting defaultProcess=true', async () => {
@@ -143,8 +157,10 @@ describe('<ReturnProcessTemplate> Integration Tests', () => {
     describe('deleteReturnProcessTemplate', () => {
         it('should delete a template with no active processes', async () => {
             global.__ROLE__ = AuthRole.admin;
-            await deleteReturnProcessTemplate({ id: ids.returnProcessTemplateIds[1] });
+            const result = await deleteReturnProcessTemplate({ id: ids.returnProcessTemplateIds[1] });
             global.__ROLE__ = undefined;
+            expect(result).toHaveLength(1);
+            expect(result.map((i) => i.id)).not.toContain(ids.returnProcessTemplateIds[1]);
 
             const db = await prisma.returnProcessTemplate.findUnique({
                 where: { id: ids.returnProcessTemplateIds[1] },
