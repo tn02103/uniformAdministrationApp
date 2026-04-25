@@ -31,7 +31,7 @@ test.describe('Anonymization Config section', () => {
         await prisma.assosiationConfiguration.update({
             where: { assosiationId: staticData.fk_assosiation },
             data: {
-                returnProcessEnabled: false,
+                returnProcessEnabled: true,
                 anonymizationMode: 'MANUAL',
                 anonymizationDelayDays: 30,
             },
@@ -238,6 +238,7 @@ test.describe('Return Process Template section', () => {
         const itemRow = rp.tr_checklistItem(checklistItemId);
         await expect(itemRow).toBeVisible();
         await itemRow.hover();
+        // eslint-disable-next-line playwright/no-force-option
         await rp.btn_editChecklistItem(checklistItemId).click({ force: true });
 
         const input = rp.txt_checklistItemLabel(checklistItemId);
@@ -276,6 +277,7 @@ test.describe('Return Process Template section', () => {
         const itemRow = rp.tr_checklistItem(checklistItemId);
         await expect(itemRow).toBeVisible();
         await itemRow.hover();
+        // eslint-disable-next-line playwright/no-force-option
         await rp.btn_deleteChecklistItem(checklistItemId).click({ force: true });
 
         await expect(itemRow).toBeHidden();

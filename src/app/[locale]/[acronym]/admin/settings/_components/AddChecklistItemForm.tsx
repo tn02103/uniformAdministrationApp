@@ -1,9 +1,7 @@
+import { ActionButton } from "@/components/Buttons/ActionButton";
 import { Form } from "@/components/fields/Form";
 import { InputFormField } from "@/components/fields/InputFormField";
 import { useI18n } from "@/lib/locales/client";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button } from "react-bootstrap";
 import { UseFormReturn } from "react-hook-form";
 
 type AddChecklistItemFormProps = {
@@ -38,12 +36,14 @@ export const AddChecklistItemForm = ({ templateId, onSave }: AddChecklistItemFor
                             name="label"
                             label={t("admin.settings.returnProcess.addItemLabel")}
                             formName={`addChecklist_${templateId}`}
-                            maxLength={100}
                         />
                     </div>
-                    <Button type="submit" variant="outline-primary" size="sm" className="mt-4 pt-1">
-                        <FontAwesomeIcon icon={faPlus} />
-                    </Button>
+                    <ActionButton
+                        variantKey="add"
+                        type="submit"
+                        size="md"
+                        buttonClass="mt-4 pt-1"
+                    />
                 </div>
             </Form>
         </div>

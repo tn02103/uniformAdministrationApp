@@ -145,7 +145,6 @@ export const ReturnProcessTemplateSection = ({ initialTemplates, returnProcessEn
     };
 
     const handleChecklistSortOrder = async (
-        templateId: string,
         newArray: ReturnChecklistTemplate[],
         itemId: string
     ) => {

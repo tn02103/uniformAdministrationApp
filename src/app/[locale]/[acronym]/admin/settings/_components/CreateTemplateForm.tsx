@@ -31,8 +31,6 @@ export const CreateTemplateForm = ({ onSave, onCancel }: CreateTemplateFormProps
                         name="name"
                         label={t("admin.settings.returnProcess.templateName")}
                         required
-                        hookFormValidation
-                        maxLength={100}
                     />
                 </div>
                 <div className="d-flex gap-2 mt-4 pt-1">

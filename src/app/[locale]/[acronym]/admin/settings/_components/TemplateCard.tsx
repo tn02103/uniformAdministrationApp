@@ -1,10 +1,10 @@
-import TooltipIconButton, { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
+import { ActionButton } from "@/components/Buttons/ActionButton";
 import { InlineEditInputFormField } from "@/components/fields/InlineEditInputFormField";
 import { ReorderableTableBody } from "@/components/reorderDnD/ReorderableTableBody";
 import { useI18n } from "@/lib/locales/client";
 import { ReturnChecklistTemplate, ReturnProcessTemplate } from "@/prisma/client";
 import { returnProcessTemplateNameSchema } from "@/zod/returnProcess";
-import { faBars, faCheck, faChevronDown, faChevronRight, faPen, faStar, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faChevronDown, faChevronRight, faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { Button, Table } from "react-bootstrap";
@@ -28,7 +28,6 @@ type TemplateCardProps = {
     onRenameChecklistItem: (templateId: string, itemId: string, label: string) => Promise<void>;
     onDeleteChecklistItem: (templateId: string, itemId: string) => void;
     onChecklistSortOrder: (
-        templateId: string,
         newArray: ReturnChecklistTemplate[],
         itemId: string
     ) => Promise<void>;
@@ -84,7 +83,7 @@ export const TemplateCard = ({
                     </span>
                 )}
                 {!disabled && (
-                    <>
+                    <> 
                         <Button
                             type="button"
                             variant={template.defaultProcess ? "warning" : "outline-warning"}
@@ -96,16 +95,10 @@ export const TemplateCard = ({
                         >
                             <FontAwesomeIcon icon={faStar} size="sm" />
                         </Button>
-                        <Button
-                            type="button"
-                            variant="outline-danger"
-                            size="sm"
+                        <ActionButton
+                            variantKey="delete"
                             onClick={() => onDelete(template)}
-                            aria-label={t("common.actions.delete")}
-                            className="border-0"
-                        >
-                            <FontAwesomeIcon icon={faTrash} size="sm" />
-                        </Button>
+                        />
                     </>
                 )}
             </div>
@@ -126,7 +119,7 @@ export const TemplateCard = ({
                             items={template.checklistItems}
                             itemType="RETURN_CHECKLIST_TEMPLATE"
                             onDragEnd={(newArray, itemId) =>
-                                onChecklistSortOrder(template.id, newArray, itemId)
+                                onChecklistSortOrder(newArray, itemId)
                             }
                         >
                             {({ item, draggableRef, previewRef, isDragging }) => (
@@ -152,14 +145,14 @@ export const TemplateCard = ({
                                             />
                                         </td>
                                         <td className="text-end" style={{ width: "5rem" }}>
-                                            <TooltipActionButton
+                                            <ActionButton
                                                 variantKey="save"
                                                 onClick={() =>
                                                     onRenameChecklistItem(template.id, item.id, editingLabel)
                                                         .then(() => setEditingItemId(null))
                                                 }
                                             />
-                                            <TooltipActionButton
+                                            <ActionButton
                                                 variantKey="cancel"
                                                 onClick={() => setEditingItemId(null)}
                                             />
@@ -181,12 +174,12 @@ export const TemplateCard = ({
                                         <td>{item.label}</td>
                                         <td className="text-end">
                                             <div className="hoverColHidden">
-                                                <TooltipActionButton
+                                                <ActionButton
                                                     variantKey="edit"
                                                     disabled={editingItemId !== null}
                                                     onClick={() => { setEditingItemId(item.id); setEditingLabel(item.label); }}
                                                 />
-                                                <TooltipActionButton
+                                                <ActionButton
                                                     variantKey="delete"
                                                     onClick={() => onDeleteChecklistItem(template.id, item.id)}
                                                 />

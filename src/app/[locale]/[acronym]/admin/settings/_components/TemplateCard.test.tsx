@@ -105,7 +105,7 @@ describe("<TemplateCard />", () => {
 
     it("calls onDelete when delete button is clicked", async () => {
         render(<TemplateCard {...defaultProps} />);
-        await user.click(screen.getByRole("button", { name: /common.actions.delete/i }));
+        await user.click(screen.getByRole("button", { name: /delete/i }));
         expect(defaultProps.onDelete).toHaveBeenCalledWith(template);
     });
 

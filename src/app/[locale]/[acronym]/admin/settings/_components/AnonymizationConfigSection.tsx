@@ -1,14 +1,15 @@
 "use client";
 
-import { updateAssosiationAnonymizationConfig } from "@/dal/assosiation";
+import { Form } from "@/components/fields/Form";
+import { FormConditional } from "@/components/fields/form/FormConditional";
 import { NumberInputFormField } from "@/components/fields/NumberInputFormField";
 import { SelectFormField } from "@/components/fields/SelectFormField";
+import { updateAssosiationAnonymizationConfig } from "@/dal/assosiation";
 import { useI18n } from "@/lib/locales/client";
-import { updateAnonymizationConfigSchema, UpdateAnonymizationConfigInput } from "@/zod/assosiation";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { UpdateAnonymizationConfigInput, updateAnonymizationConfigSchema } from "@/zod/assosiation";
 import { useRouter } from "next/navigation";
 import { Button } from "react-bootstrap";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormStateSubscribe, UseFormReturn } from "react-hook-form";
 import { toast } from "react-toastify";
 
 type AnonymizationConfig = {
@@ -29,24 +30,13 @@ export const AnonymizationConfigSection = ({ initialConfig }: Props) => {
     const t = useI18n();
     const router = useRouter();
 
-    const form = useForm<UpdateAnonymizationConfigInput>({
-        resolver: zodResolver(updateAnonymizationConfigSchema),
-        defaultValues: {
-            anonymizationMode: initialConfig.anonymizationMode,
-            anonymizationDelayDays: initialConfig.anonymizationDelayDays ?? 1,
-        },
-    });
-
-    const mode = form.watch("anonymizationMode");
-    const { isDirty, isSubmitting } = form.formState;
-
     const modeOptions = [
         { value: "MANUAL", label: t("admin.settings.anonymization.modes.MANUAL") },
         { value: "AFTER_DAYS", label: t("admin.settings.anonymization.modes.AFTER_DAYS") },
         { value: "IMMEDIATELY", label: t("admin.settings.anonymization.modes.IMMEDIATELY") },
     ];
 
-    const onSubmit = async (data: UpdateAnonymizationConfigInput) => {
+    const handleSubmit = async (data: UpdateAnonymizationConfigInput, form: UseFormReturn<UpdateAnonymizationConfigInput>) => {
         const delayDays = data.anonymizationMode === "AFTER_DAYS" ? (data.anonymizationDelayDays ?? undefined) : undefined;
         await updateAssosiationAnonymizationConfig({
             anonymizationMode: data.anonymizationMode,
@@ -61,39 +51,49 @@ export const AnonymizationConfigSection = ({ initialConfig }: Props) => {
     };
 
     return (
-        <div style={{minWidth: "400px"}}>
+        <div style={{ minWidth: "400px" }}>
             <h2>{t("admin.settings.anonymization.header")}</h2>
             <hr />
-            <FormProvider {...form}>
-                <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    noValidate
-                    aria-label={t("admin.settings.anonymization.header")}
+            <Form<UpdateAnonymizationConfigInput>
+                formName="anonymizationConfig"
+                aria-label={t("admin.settings.anonymization.header")}
+                onSubmit={handleSubmit}
+                defaultValues={{
+                    anonymizationMode: initialConfig.anonymizationMode,
+                    anonymizationDelayDays: initialConfig.anonymizationDelayDays ?? 1,
+                }}
+                zodSchema={updateAnonymizationConfigSchema}
+            >
+                <div className="mt-3">
+                    <SelectFormField
+                        name="anonymizationMode"
+                        label={t("admin.settings.anonymization.anonymizationMode")}
+                        options={modeOptions}
+                        formName="anonymizationConfig"
+                        selectClassName="w-auto"
+                    />
+                </div>
+                <FormConditional
+                    name="anonymizationMode"
+                    condition={(value) => value === "AFTER_DAYS"}
                 >
                     <div className="mt-3">
-                        <SelectFormField
-                            name="anonymizationMode"
-                            label={t("admin.settings.anonymization.anonymizationMode")}
-                            options={modeOptions}
+                        <NumberInputFormField
+                            name="anonymizationDelayDays"
+                            label={t("admin.settings.anonymization.anonymizationDelayDays")}
                             formName="anonymizationConfig"
-                            selectClassName="w-auto"
+                            className="w-auto"
                         />
                     </div>
-                    {mode === "AFTER_DAYS" && (
-                        <div className="mt-3">
-                            <NumberInputFormField
-                                name="anonymizationDelayDays"
-                                label={t("admin.settings.anonymization.anonymizationDelayDays")}
-                                formName="anonymizationConfig"
-                                className="w-auto"
-                            />
-                        </div>
+                </FormConditional>
+                <FormStateSubscribe
+                    render={({ isDirty, isSubmitting }) => (
+                        <Button type="submit" variant="primary" className="mt-3" disabled={!isDirty || isSubmitting}>
+                            {t("common.actions.save")}
+                        </Button>
                     )}
-                    <Button type="submit" variant="primary" className="mt-3" disabled={!isDirty || isSubmitting}>
-                        {t("common.actions.save")}
-                    </Button>
-                </form>
-            </FormProvider>
-        </div>
+                />
+            </Form>
+        </div >
     );
 };

@@ -31,7 +31,7 @@ export class ReturnProcessComponent {
     }
 
     btn_deleteTemplate(templateId: string) {
-        return this.div_templateCard(templateId).getByRole('button', { name: tCommon.delete });
+        return this.div_templateCard(templateId).getByRole('button', { name: 'delete' });
     }
 
     btn_expandTemplate(templateId: string, name: string) {
