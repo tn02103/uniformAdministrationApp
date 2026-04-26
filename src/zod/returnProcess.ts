@@ -7,6 +7,7 @@ export const createReturnProcessSchema = z.object({
     returnProcessTemplateId: z.string().uuid(),
     inspectorComment: z.string().optional(),
     preCheckedItemIds: z.array(z.string().uuid()).optional(),
+    finished: z.boolean().optional(),
 });
 export type CreateReturnProcessInput = z.infer<typeof createReturnProcessSchema>;
 
@@ -30,6 +31,9 @@ export type CompleteChecklistInput = z.infer<typeof completeChecklistSchema>;
 export const returnProcessModalFormSchema = z.object({
     templateId: z.string(),
     items: z.record(z.string(), z.boolean()),
+    uniformItems: z.record(z.string(), z.boolean()),
+    materialItems: z.record(z.string(), z.boolean()),
+    notes: z.string().optional(),
 });
 export type ReturnProcessModalFormType = z.infer<typeof returnProcessModalFormSchema>;
 

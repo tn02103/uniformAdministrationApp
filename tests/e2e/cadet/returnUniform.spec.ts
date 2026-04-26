@@ -6,7 +6,7 @@ import { CadetDataComponent } from "../../_playwrightConfig/pages/cadet/cadetDat
 import { CadetDetailPage } from "../../_playwrightConfig/pages/cadet/cadetDetail.page";
 import { MessagePopupComponent } from "../../_playwrightConfig/pages/popups/MessagePopup.component";
 import { ToastTestComponent } from "../../_playwrightConfig/pages/global/Toast.component";
-import { adminTest, inspectorTest, userTest } from "../../_playwrightConfig/setup";
+import { inspectorTest, userTest } from "../../_playwrightConfig/setup";
 
 type Fixture = {
     cadetDetailPage: CadetDetailPage;
@@ -33,7 +33,7 @@ test.describe("Cadet Return Uniform", () => {
         });
     });
 
-    // AC1: "Return Uniform" only visible when cadet status is ACTIVE and user is inspector
+    // AC1: "Vereinsaustritt" only visible when cadet status is ACTIVE and user is inspector
     test.describe("AC1: visibility based on cadet status and user role", () => {
 
         test("inspector sees return menu item for ACTIVE cadet", async ({ page, staticData, cadetDetailPage }) => {
@@ -42,7 +42,7 @@ test.describe("Cadet Return Uniform", () => {
 
             await cadetDetailPage.btn_menu.click();
             await expect(page.getByTestId("btn_cadet_menu_return")).toBeVisible();
-            await expect(page.getByTestId("btn_cadet_menu_return")).toHaveText(german.cadetDetailPage.returnProcess.dropdownLabel);
+            await expect(page.getByTestId("btn_cadet_menu_return")).toHaveText(german.cadetDetailPage.vereinsaustritt.dropdownLabel);
         });
 
         test("inspector does NOT see return menu item for RETURNING cadet", async ({ page, staticData, cadetDetailPage }) => {
@@ -68,11 +68,11 @@ test.describe("Cadet Return Uniform", () => {
         });
     });
 
-    // AC4: Without returnProcessEnabled/templates: confirmation dialog → cadet RETURNED
+    // AC4: Without returnProcessEnabled/templates: modal opens with step 1 → direct save → cadet RETURNED
     test.describe("AC4: direct return path (returnProcessEnabled=false)", () => {
 
-        test("shows confirmation modal and returns cadet directly", async ({
-            page, staticData, cadetDetailPage, messagePopup, toast,
+        test("shows Vereinsaustritt modal with uniform items step and saves directly", async ({
+            page, staticData, cadetDetailPage, toast,
         }) => {
             // returnProcessEnabled is false by default
             const activeCadetId = staticData.ids.cadetIds[0];
@@ -81,25 +81,30 @@ test.describe("Cadet Return Uniform", () => {
             await cadetDetailPage.btn_menu.click();
             await page.getByTestId("btn_cadet_menu_return").click();
 
-            // Confirm the warning modal is shown
-            await expect(messagePopup.div_popup).toBeVisible();
-            await expect(messagePopup.div_header).toContainText(german.cadetDetailPage.returnProcess.directReturn.header);
-            await expect(messagePopup.div_message).toContainText(staticData.data.cadets[0].firstname);
-            await expect(messagePopup.div_message).toContainText(staticData.data.cadets[0].lastname);
+            // Modal opens with step 1
+            const modalLocator = page.locator(".modal");
+            await expect(modalLocator).toBeVisible();
+            await expect(modalLocator.locator(".modal-title")).toContainText(german.cadetDetailPage.vereinsaustritt.modal.header);
+            await expect(modalLocator).toContainText(german.cadetDetailPage.vereinsaustritt.modal.step1.header);
 
-            // Confirm the action
-            await messagePopup.btn_save.click();
+            // Save button (no process step)
+            const saveBtn = modalLocator.getByRole("button", { name: german.cadetDetailPage.vereinsaustritt.modal.actions.save });
+            await expect(saveBtn).toBeVisible();
+            await saveBtn.click();
 
-            // Page should refresh, cadet status updates
-            await page.waitForLoadState("networkidle");
+            // Modal should close
+            await expect(modalLocator).toBeHidden();
+
+            // Success toast
+            await expect(toast.toast_success).toBeVisible();
 
             // Verify cadet status in DB
             const cadet = await prisma.cadet.findUnique({ where: { id: activeCadetId } });
             expect(cadet?.status === CadetStatus.RETURNED || cadet?.status === CadetStatus.DELETED).toBeTruthy();
         });
 
-        test("cancelling the confirmation modal does not change cadet status", async ({
-            page, staticData, cadetDetailPage, messagePopup,
+        test("cancelling the modal does not change cadet status", async ({
+            page, staticData, cadetDetailPage,
         }) => {
             const activeCadetId = staticData.ids.cadetIds[0];
             await page.goto(`/de/app/cadet/${activeCadetId}`);
@@ -107,9 +112,10 @@ test.describe("Cadet Return Uniform", () => {
             await cadetDetailPage.btn_menu.click();
             await page.getByTestId("btn_cadet_menu_return").click();
 
-            await expect(messagePopup.div_popup).toBeVisible();
-            await messagePopup.btn_cancel.click();
-            await expect(messagePopup.div_popup).toBeHidden();
+            const modalLocator = page.locator(".modal");
+            await expect(modalLocator).toBeVisible();
+            await modalLocator.getByRole("button", { name: german.common.actions.cancel }).click();
+            await expect(modalLocator).toBeHidden();
 
             // Cadet should still be ACTIVE
             const cadet = await prisma.cadet.findUnique({ where: { id: activeCadetId } });
@@ -117,8 +123,8 @@ test.describe("Cadet Return Uniform", () => {
         });
     });
 
-    // AC2: With returnProcessEnabled + templates: modal opens with checklist; template select only if >1
-    // AC3: After "Start ReturnProcess": cadet status becomes RETURNING
+    // AC2: With returnProcessEnabled + templates: two-step modal; template select only if >1
+    // AC3: After "Start Process": cadet status becomes RETURNING
     test.describe("AC2/AC3: return process path (returnProcessEnabled=true)", () => {
 
         test.beforeEach(async ({ staticData }) => {
@@ -128,7 +134,7 @@ test.describe("Cadet Return Uniform", () => {
             });
         });
 
-        test("AC2: opens return process modal with checklist items and template selector (>1 templates)", async ({
+        test("AC2: opens two-step modal - step 1 shows uniform items", async ({
             page, staticData, cadetDetailPage,
         }) => {
             const activeCadetId = staticData.ids.cadetIds[0];
@@ -137,21 +143,43 @@ test.describe("Cadet Return Uniform", () => {
             await cadetDetailPage.btn_menu.click();
             await page.getByTestId("btn_cadet_menu_return").click();
 
-            // Modal header
             const modalLocator = page.locator(".modal");
             await expect(modalLocator).toBeVisible();
-            await expect(modalLocator.locator(".modal-title")).toContainText(german.cadetDetailPage.returnProcess.modal.header);
+            await expect(modalLocator.locator(".modal-title")).toContainText(german.cadetDetailPage.vereinsaustritt.modal.header);
+            await expect(modalLocator).toContainText(german.cadetDetailPage.vereinsaustritt.modal.step1.header);
+
+            // "Weiter" button is visible
+            await expect(
+                modalLocator.getByRole("button", { name: german.cadetDetailPage.vereinsaustritt.modal.actions.next })
+            ).toBeVisible();
+        });
+
+        test("AC2: step 2 shows checklist items, template selector (>1 templates) and notes", async ({
+            page, staticData, cadetDetailPage,
+        }) => {
+            const activeCadetId = staticData.ids.cadetIds[0];
+            await page.goto(`/de/app/cadet/${activeCadetId}`);
+
+            await cadetDetailPage.btn_menu.click();
+            await page.getByTestId("btn_cadet_menu_return").click();
+
+            const modalLocator = page.locator(".modal");
+            await expect(modalLocator).toBeVisible();
+
+            // Navigate to step 2
+            await modalLocator.getByRole("button", { name: german.cadetDetailPage.vereinsaustritt.modal.actions.next }).click();
+            await expect(modalLocator).toContainText(german.cadetDetailPage.vereinsaustritt.modal.step2.header);
 
             // Template select field is visible (>1 templates)
             await expect(modalLocator.locator("select")).toBeVisible();
 
-            // Default template has 2 checklist items
+            // Default template has checklist items
             await expect(modalLocator.getByText(staticData.data.returnChecklistTemplates[0].label)).toBeVisible();
             await expect(modalLocator.getByText(staticData.data.returnChecklistTemplates[1].label)).toBeVisible();
 
-            // Start button visible
+            // Start process button visible
             await expect(
-                modalLocator.getByRole("button", { name: german.cadetDetailPage.returnProcess.modal.startButton })
+                modalLocator.getByRole("button", { name: german.cadetDetailPage.vereinsaustritt.modal.actions.startProcess })
             ).toBeVisible();
         });
 
@@ -166,6 +194,7 @@ test.describe("Cadet Return Uniform", () => {
 
             const modalLocator = page.locator(".modal");
             await expect(modalLocator).toBeVisible();
+            await modalLocator.getByRole("button", { name: german.cadetDetailPage.vereinsaustritt.modal.actions.next }).click();
 
             // Default template "Standard Rückgabe" should be selected
             const selectField = modalLocator.locator("select");
@@ -183,6 +212,7 @@ test.describe("Cadet Return Uniform", () => {
 
             const modalLocator = page.locator(".modal");
             await expect(modalLocator).toBeVisible();
+            await modalLocator.getByRole("button", { name: german.cadetDetailPage.vereinsaustritt.modal.actions.next }).click();
 
             // Switch to alternative template
             await modalLocator.locator("select").selectOption(staticData.ids.returnProcessTemplateIds[1]);
@@ -193,7 +223,7 @@ test.describe("Cadet Return Uniform", () => {
             await expect(modalLocator.getByText(staticData.data.returnChecklistTemplates[1].label)).toBeHidden();
         });
 
-        test("AC3: clicking start return process sets cadet status to RETURNING", async ({
+        test("AC3: clicking start process sets cadet status to RETURNING", async ({
             page, staticData, cadetDetailPage, toast,
         }) => {
             const activeCadetId = staticData.ids.cadetIds[0];
@@ -204,10 +234,11 @@ test.describe("Cadet Return Uniform", () => {
 
             const modalLocator = page.locator(".modal");
             await expect(modalLocator).toBeVisible();
+            await modalLocator.getByRole("button", { name: german.cadetDetailPage.vereinsaustritt.modal.actions.next }).click();
 
             // Submit the form
             await modalLocator.getByRole("button", {
-                name: german.cadetDetailPage.returnProcess.modal.startButton
+                name: german.cadetDetailPage.vereinsaustritt.modal.actions.startProcess
             }).click();
 
             // Modal should close
@@ -232,9 +263,10 @@ test.describe("Cadet Return Uniform", () => {
 
             const modalLocator = page.locator(".modal");
             await expect(modalLocator).toBeVisible();
+            await modalLocator.getByRole("button", { name: german.cadetDetailPage.vereinsaustritt.modal.actions.next }).click();
 
             await modalLocator.getByRole("button", {
-                name: german.cadetDetailPage.returnProcess.modal.startButton
+                name: german.cadetDetailPage.vereinsaustritt.modal.actions.startProcess
             }).click();
             await expect(modalLocator).toBeHidden();
 
@@ -300,3 +332,4 @@ test.describe("Cadet Return Uniform", () => {
         });
     });
 });
+

@@ -1,5 +1,4 @@
 "use client";
-import { deleteCadet } from "@/actions/cadet/delete";
 import { useModal } from "@/components/modals/modalProvider";
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n } from "@/lib/locales/client";
@@ -49,19 +48,19 @@ export default function CadetDropDown({
     } */
 
     function handleReturnUniform() {
-        if (returnConfig?.returnProcessEnabled && returnConfig.templates.length > 0) {
+        if (returnConfig) {
             setIsReturnModalOpen(true);
         } else {
             modal?.simpleWarningModal({
-                header: t('cadetDetailPage.returnProcess.directReturn.header'),
-                message: t('cadetDetailPage.returnProcess.directReturn.message', { firstname, lastname }),
-                primaryOption: t('cadetDetailPage.returnProcess.directReturn.confirm'),
+                header: t('cadetDetailPage.vereinsaustritt.directReturn.header'),
+                message: t('cadetDetailPage.vereinsaustritt.directReturn.message', { firstname, lastname }),
+                primaryOption: t('cadetDetailPage.vereinsaustritt.directReturn.confirm'),
                 primaryFunction: () => returnCadetDirectly({ cadetId })
                     .then(() => {
                         router.refresh();
                     })
                     .catch(() => {
-                        toast.error(t('cadetDetailPage.returnProcess.directReturn.error'));
+                        toast.error(t('cadetDetailPage.vereinsaustritt.directReturn.error'));
                     }),
             });
         }
@@ -79,7 +78,7 @@ export default function CadetDropDown({
                 <Dropdown.Menu>
                     {cadetStatus === CadetStatus.ACTIVE && userRole >= AuthRole.inspector && (
                         <Dropdown.Item onClick={handleReturnUniform} data-testid={"btn_cadet_menu_return"}>
-                            {t('cadetDetailPage.returnProcess.dropdownLabel')}
+                            {t('cadetDetailPage.vereinsaustritt.dropdownLabel')}
                         </Dropdown.Item>
                     )}
                     {/* <Dropdown.Item onClick={handleDeleteCadet} data-testid={"btn_cadet_menu_delete"}>
@@ -90,6 +89,7 @@ export default function CadetDropDown({
             {isReturnModalOpen && returnConfig && (
                 <CadetReturnUniformModal
                     cadetId={cadetId}
+                    returnProcessEnabled={returnConfig.returnProcessEnabled}
                     templates={returnConfig.templates}
                     onClose={() => setIsReturnModalOpen(false)}
                 />

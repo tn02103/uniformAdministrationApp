@@ -1,57 +1,132 @@
 "use client";
-import { createReturnProcess } from "@/dal/cadet/returnProcess";
+
+import { CheckboxFormField } from "@/components/fields/CheckboxFormField";
 import { FormContext } from "@/components/fields/Form";
 import { SelectFormField } from "@/components/fields/SelectFormField";
-import { CheckboxFormField } from "@/components/fields/CheckboxFormField";
+import { TextareaFormField } from "@/components/fields/TextareaFormField";
+import { createReturnProcess } from "@/dal/cadet/returnProcess";
+import { returnCadetDirectly } from "@/dal/cadet";
+import { useCadetMaterialMap, useCadetUniformDescriptList } from "@/dataFetcher/cadet";
 import { useI18n } from "@/lib/locales/client";
+import { CadetMaterial } from "@/types/globalMaterialTypes";
+import { UniformLabel } from "@/types/globalUniformTypes";
 import { ReturnChecklistTemplate, ReturnProcessTemplate } from "@/prisma/browser";
-import { ReturnProcessModalFormType } from "@/zod/returnProcess";
+import { ReturnProcessModalFormType, returnProcessModalFormSchema } from "@/zod/returnProcess";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { FormProvider, Path, useForm } from "react-hook-form";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Dropdown, Modal, Spinner, SplitButton } from "react-bootstrap";
+import { FormProvider, Path, useForm, useWatch } from "react-hook-form";
 import { toast } from "react-toastify";
 
 type TemplateWithItems = ReturnProcessTemplate & { checklistItems: ReturnChecklistTemplate[] };
 
 type Props = {
     cadetId: string;
+    returnProcessEnabled: boolean;
     templates: TemplateWithItems[];
     onClose: () => void;
 };
 
-export default function CadetReturnUniformModal({ cadetId, templates, onClose }: Props) {
+/**
+ * Outer wrapper that waits for async uniform/material data to load before rendering the form.
+ */
+export default function CadetReturnUniformModal(props: Props) {
+    const { uniformLabels } = useCadetUniformDescriptList(props.cadetId);
+    const { materialMap } = useCadetMaterialMap(props.cadetId);
+    const t = useI18n();
+
+    if (uniformLabels === undefined || materialMap === undefined) {
+        return (
+            <Modal show onHide={props.onClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>{t("cadetDetailPage.vereinsaustritt.modal.header")}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className="d-flex justify-content-center p-4">
+                        <Spinner animation="border" />
+                    </div>
+                </Modal.Body>
+            </Modal>
+        );
+    }
+
+    const allMaterials = Object.values(materialMap).flat();
+    return (
+        <CadetReturnUniformModalForm
+            {...props}
+            uniformLabels={uniformLabels}
+            allMaterials={allMaterials}
+        />
+    );
+}
+
+type InnerProps = Props & {
+    uniformLabels: UniformLabel[];
+    allMaterials: CadetMaterial[];
+};
+
+/**
+ * Inner form component for the Vereinsaustritt (club exit) modal.
+ * Step 1: Confirm which uniform items and materials were returned.
+ * Step 2 (if returnProcessEnabled and templates available): Configure the exit process.
+ */
+function CadetReturnUniformModalForm({
+    cadetId,
+    returnProcessEnabled,
+    templates,
+    onClose,
+    uniformLabels,
+    allMaterials,
+}: InnerProps) {
     const t = useI18n();
     const router = useRouter();
+    const [step, setStep] = useState<1 | 2>(1);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const showProcessStep = returnProcessEnabled && templates.length > 0;
 
     const defaultTemplate = useMemo(
         () => templates.find((tmpl) => tmpl.defaultProcess) ?? templates[0],
         [templates]
     );
-
     const [selectedTemplateId, setSelectedTemplateId] = useState<string>(defaultTemplate?.id ?? "");
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const form = useForm<ReturnProcessModalFormType>({
-        defaultValues: { templateId: defaultTemplate?.id ?? "", items: {} },
-    });
-
-    const formContextValue = useMemo(
-        () => ({ disabled: isSubmitting, plaintext: false, formName: "returnProcessModal" }),
-        [isSubmitting]
-    );
-
     const selectedTemplate = useMemo(
         () => templates.find((tmpl) => tmpl.id === selectedTemplateId) ?? defaultTemplate,
         [templates, selectedTemplateId, defaultTemplate]
     );
-
     const sortedItems = useMemo(
         () => [...(selectedTemplate?.checklistItems ?? [])].sort((a, b) => a.sortOrder - b.sortOrder),
         [selectedTemplate]
     );
 
-    async function handleSubmit(data: ReturnProcessModalFormType) {
+    const initialUniformItems = useMemo(
+        () => Object.fromEntries(uniformLabels.map((l) => [l.id, true])),
+        [uniformLabels]
+    );
+    const initialMaterialItems = useMemo(
+        () => Object.fromEntries(allMaterials.map((m) => [m.id, true])),
+        [allMaterials]
+    );
+
+    const form = useForm<ReturnProcessModalFormType>({
+        resolver: zodResolver(returnProcessModalFormSchema),
+        defaultValues: {
+            templateId: defaultTemplate?.id ?? "",
+            items: {},
+            uniformItems: initialUniformItems,
+            materialItems: initialMaterialItems,
+            notes: "",
+        },
+    });
+
+    const watchedItems = useWatch({ control: form.control, name: "items" });
+    const allChecklistItemsChecked = useMemo(
+        () => sortedItems.length > 0 && sortedItems.every((item) => watchedItems?.[item.id] === true),
+        [sortedItems, watchedItems]
+    );
+
+    async function submitProcess(data: ReturnProcessModalFormType, finished: boolean) {
         if (!selectedTemplate) return;
         setIsSubmitting(true);
         try {
@@ -62,60 +137,196 @@ export default function CadetReturnUniformModal({ cadetId, templates, onClose }:
                 cadetId,
                 returnProcessTemplateId: selectedTemplate.id,
                 preCheckedItemIds,
+                inspectorComment: data.notes || undefined,
+                finished,
             });
-            toast.success(t("cadetDetailPage.returnProcess.modal.success"));
+            toast.success(
+                finished
+                    ? t("cadetDetailPage.vereinsaustritt.modal.successFinished")
+                    : t("cadetDetailPage.vereinsaustritt.modal.success")
+            );
             onClose();
             router.refresh();
         } catch {
-            toast.error(t("cadetDetailPage.returnProcess.modal.error"));
+            toast.error(t("cadetDetailPage.vereinsaustritt.modal.error"));
         } finally {
             setIsSubmitting(false);
         }
     }
 
+    async function submitDirect() {
+        setIsSubmitting(true);
+        try {
+            await returnCadetDirectly({ cadetId });
+            toast.success(t("cadetDetailPage.vereinsaustritt.modal.successDirect"));
+            onClose();
+            router.refresh();
+        } catch {
+            toast.error(t("cadetDetailPage.vereinsaustritt.modal.error"));
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    function handleStartProcess() {
+        form.handleSubmit((data) => submitProcess(data, false))();
+    }
+
+    function handleSaveFinished() {
+        form.handleSubmit((data) => submitProcess(data, true))();
+    }
+
+    function handleDirectSave() {
+        form.handleSubmit(() => submitDirect())();
+    }
+
     return (
-        <FormContext.Provider value={formContextValue}>
-            <FormProvider {...form}>
+        <FormProvider {...form}>
+            <FormContext.Provider value={{ disabled: isSubmitting, plaintext: false, formName: "vereinsaustritt-form" }}>
                 <Modal show onHide={onClose}>
                     <Modal.Header closeButton>
-                        <Modal.Title>
-                            {t("cadetDetailPage.returnProcess.modal.header")}
-                        </Modal.Title>
+                        <Modal.Title>{t("cadetDetailPage.vereinsaustritt.modal.header")}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        {templates.length > 1 && (
-                            <div className="d-flex justify-content-center mb-3">
-                                <SelectFormField<ReturnProcessModalFormType>
-                                    name="templateId"
-                                    label={t("cadetDetailPage.returnProcess.modal.templateLabel")}
-                                    labelClassName="visually-hidden"
-                                    options={templates.map((tmpl) => ({ value: tmpl.id, label: tmpl.name }))}
-                                    onValueChange={(value) => setSelectedTemplateId(value as string)}
-                                />
+                        {step === 1 && (
+                            <div>
+                                <h2 className="fs-5 fw-bold text-center mb-3">
+                                    {t("cadetDetailPage.vereinsaustritt.modal.step1.header")}
+                                </h2>
+                                {uniformLabels.length > 0 && (
+                                    <>
+                                        <h3 className="fs-6 fw-bold text-start">
+                                            {t("cadetDetailPage.vereinsaustritt.modal.step1.uniformItems")}
+                                        </h3>
+                                        <div className="d-flex flex-row flex-wrap mt-2">
+                                            {uniformLabels.map((label) => (
+                                                <CheckboxFormField<ReturnProcessModalFormType>
+                                                    key={label.id}
+                                                    name={`uniformItems.${label.id}` as Path<ReturnProcessModalFormType>}
+                                                    label={label.description}
+                                                    className="me-3"
+                                                />
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+                                {allMaterials.length > 0 && (
+                                    <>
+                                        <h3 className="fs-6 fw-bold text-start mt-3">
+                                            {t("cadetDetailPage.vereinsaustritt.modal.step1.materialItems")}
+                                        </h3>
+                                        <div className="d-flex flex-row flex-wrap mt-2">
+                                            {allMaterials.map((material) => (
+                                                <CheckboxFormField<ReturnProcessModalFormType>
+                                                    key={material.id}
+                                                    name={`materialItems.${material.id}` as Path<ReturnProcessModalFormType>}
+                                                    label={`${material.issued}x ${material.groupName} (${material.typename})`}
+                                                    className="me-3"
+                                                />
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         )}
-                        {sortedItems.map((item) => (
-                            <CheckboxFormField<ReturnProcessModalFormType>
-                                key={item.id}
-                                name={`items.${item.id}` as Path<ReturnProcessModalFormType>}
-                                label={item.label}
-                            />
-                        ))}
+                        {step === 2 && showProcessStep && (
+                            <div>
+                                <h2 className="fs-5 fw-bold text-center mb-3">
+                                    {t("cadetDetailPage.vereinsaustritt.modal.step2.header")}
+                                </h2>
+                                {templates.length > 1 && (
+                                    <div className="d-flex justify-content-center mb-3">
+                                        <SelectFormField<ReturnProcessModalFormType>
+                                            name="templateId"
+                                            label={t("cadetDetailPage.vereinsaustritt.modal.step2.templateLabel")}
+                                            labelClassName="visually-hidden"
+                                            options={templates.map((tmpl) => ({ value: tmpl.id, label: tmpl.name }))}
+                                            onValueChange={(value) => setSelectedTemplateId(value as string)}
+                                            selectClassName="fw-bold"
+                                        />
+                                    </div>
+                                )}
+                                {sortedItems.map((item) => (
+                                    <CheckboxFormField<ReturnProcessModalFormType>
+                                        key={item.id}
+                                        name={`items.${item.id}` as Path<ReturnProcessModalFormType>}
+                                        label={item.label}
+                                    />
+                                ))}
+                                <div className="mt-3">
+                                    <TextareaFormField<ReturnProcessModalFormType>
+                                        name="notes"
+                                        label={t("cadetDetailPage.vereinsaustritt.modal.step2.notesLabel")}
+                                        rows={3}
+                                    />
+                                </div>
+                            </div>
+                        )}
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
-                            {t("common.actions.cancel")}
-                        </Button>
-                        <Button
-                            variant="primary"
-                            onClick={form.handleSubmit(handleSubmit)}
-                            disabled={isSubmitting}
-                        >
-                            {t("cadetDetailPage.returnProcess.modal.startButton")}
-                        </Button>
+                        {step === 1 && (
+                            <>
+                                <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
+                                    {t("common.actions.cancel")}
+                                </Button>
+                                {showProcessStep ? (
+                                    <Button
+                                        variant="primary"
+                                        onClick={() => setStep(2)}
+                                        disabled={isSubmitting}
+                                    >
+                                        {t("cadetDetailPage.vereinsaustritt.modal.actions.next")}
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        variant="primary"
+                                        onClick={handleDirectSave}
+                                        disabled={isSubmitting}
+                                    >
+                                        {t("cadetDetailPage.vereinsaustritt.modal.actions.save")}
+                                    </Button>
+                                )}
+                            </>
+                        )}
+                        {step === 2 && showProcessStep && (
+                            <>
+                                <Button
+                                    variant="secondary"
+                                    onClick={() => setStep(1)}
+                                    disabled={isSubmitting}
+                                >
+                                    {t("cadetDetailPage.vereinsaustritt.modal.actions.back")}
+                                </Button>
+                                {allChecklistItemsChecked ? (
+                                    <SplitButton
+                                        variant="primary"
+                                        title={t("cadetDetailPage.vereinsaustritt.modal.actions.saveFinished")}
+                                        onClick={handleSaveFinished}
+                                        disabled={isSubmitting}
+                                        id="vereinsaustritt-split-btn"
+                                    >
+                                        <Dropdown.Item onClick={handleStartProcess} disabled={isSubmitting}>
+                                            {t("cadetDetailPage.vereinsaustritt.modal.actions.startProcess")}
+                                        </Dropdown.Item>
+                                    </SplitButton>
+                                ) : (
+                                    <SplitButton
+                                        variant="primary"
+                                        title={t("cadetDetailPage.vereinsaustritt.modal.actions.startProcess")}
+                                        onClick={handleStartProcess}
+                                        disabled={isSubmitting}
+                                        id="vereinsaustritt-split-btn"
+                                    >
+                                        <Dropdown.Item onClick={handleSaveFinished} disabled={isSubmitting}>
+                                            {t("cadetDetailPage.vereinsaustritt.modal.actions.saveFinished")}
+                                        </Dropdown.Item>
+                                    </SplitButton>
+                                )}
+                            </>
+                        )}
                     </Modal.Footer>
                 </Modal>
-            </FormProvider>
-        </FormContext.Provider>
+            </FormContext.Provider>
+        </FormProvider>
     );
 }

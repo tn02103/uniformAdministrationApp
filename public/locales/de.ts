@@ -289,20 +289,37 @@ export default {
         returnUniform: {
             error: "Beim Zurückziehen des Uniformteils ist ein Fehler aufgetreten. Bitte versuchen sie es noch einmal",
         },
-        returnProcess: {
-            dropdownLabel: "Uniform zurückgeben",
+        vereinsaustritt: {
+            dropdownLabel: "Vereinsaustritt",
             modal: {
-                header: "Uniformrückgabe starten",
-                templateLabel: "Vorlage",
-                startButton: "Uniformrückgabe starten",
-                success: "Uniformrückgabe erfolgreich gestartet",
-                error: "Beim Starten der Uniformrückgabe ist ein Fehler aufgetreten",
+                header: "Vereinsaustritt",
+                step1: {
+                    header: "Zurückgegebene Ausrüstung bestätigen",
+                    uniformItems: "Uniformteile",
+                    materialItems: "Materialien",
+                },
+                step2: {
+                    header: "Austrittsprozess",
+                    templateLabel: "Vorlage",
+                    notesLabel: "Bemerkungen",
+                },
+                actions: {
+                    next: "Weiter",
+                    back: "Zurück",
+                    save: "Speichern",
+                    startProcess: "Prozess starten",
+                    saveFinished: "Abgeschlossen speichern",
+                },
+                success: "Vereinsaustritt erfolgreich gestartet",
+                successFinished: "Vereinsaustritt erfolgreich abgeschlossen",
+                successDirect: "Vereinsaustritt erfolgreich gespeichert",
+                error: "Beim Speichern des Vereinsaustritts ist ein Fehler aufgetreten",
             },
             directReturn: {
-                header: "Uniform direkt zurückgeben",
-                message: "Möchten Sie die Uniform von {firstname} {lastname} direkt zurückgeben?",
-                confirm: "Zurückgeben",
-                error: "Beim Zurückgeben der Uniform ist ein Fehler aufgetreten",
+                header: "Vereinsaustritt",
+                message: "Möchten Sie den Vereinsaustritt von {firstname} {lastname} direkt bestätigen?",
+                confirm: "Bestätigen",
+                error: "Beim Speichern des Vereinsaustritts ist ein Fehler aufgetreten",
             },
         },
         issueMaterial: {

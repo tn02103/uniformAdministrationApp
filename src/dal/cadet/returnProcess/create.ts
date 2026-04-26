@@ -19,7 +19,7 @@ export const create = (data: CreateReturnProcessInput) =>
             cadetId: data.cadetId,
             returnProcessTemplateId: data.returnProcessTemplateId,
         }
-    ).then(([{ assosiation, username }, { cadetId, returnProcessTemplateId, inspectorComment, preCheckedItemIds }]) =>
+    ).then(([{ assosiation, username }, { cadetId, returnProcessTemplateId, inspectorComment, preCheckedItemIds, finished }]) =>
         prisma.$transaction(async (client) => {
             const cadet = await client.cadet.findUniqueOrThrow({
                 where: { id: cadetId, fk_assosiation: assosiation, deletedAt: null },
@@ -47,13 +47,15 @@ export const create = (data: CreateReturnProcessInput) =>
                 checklistItems.some((item) => item.id === id)
             );
 
+            const isFinished = finished ?? false;
+
             const returnProcess = await client.returnProcess.create({
                 data: {
                     fk_cadet: cadetId,
                     fk_returnProcessTemplate: returnProcessTemplateId,
                     fk_assosiation: assosiation,
                     inspectorComment: inspectorComment ?? null,
-                    finished: false,
+                    finished: isFinished,
                     itemStatuses: {
                         createMany: {
                             data: checklistItems.map((item) => {
@@ -71,7 +73,7 @@ export const create = (data: CreateReturnProcessInput) =>
 
             await client.cadet.update({
                 where: { id: cadetId, fk_assosiation: assosiation, deletedAt: null },
-                data: { status: CadetStatus.RETURNING },
+                data: { status: isFinished ? CadetStatus.RETURNED : CadetStatus.RETURNING },
             });
 
             return returnProcess;

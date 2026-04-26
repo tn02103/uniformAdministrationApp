@@ -41,9 +41,9 @@ export const getInspectionsByCadet = async (data: { cadetId: string }): Promise<
                                 AND v."dateCreated" <= i.date::date
                                 AND (v."dateResolved" IS NULL OR v."dateResolved" > i.date::date)), 0) AS "unresolvedCount"
               FROM inspection.inspection i
-              JOIN base.cadet c ON c.id = ${cadetId} AND c.fk_assosiation = i.fk_assosiation AND c.recdelete IS NULL
-             LEFT JOIN inspection.cadet_inspection ci ON ci.fk_inspection = i.id AND ci.fk_cadet = ${cadetId}
-             LEFT JOIN inspection.deregistration dr ON dr.fk_inspection = i.id AND dr.fk_cadet = ${cadetId}
+              JOIN base.cadet c ON c.id = ${cadetId} AND c.fk_assosiation = i.fk_assosiation
+             LEFT JOIN inspection.cadet_inspection ci ON ci.fk_inspection = i.id AND ci.fk_cadet = c.id
+             LEFT JOIN inspection.deregistration dr ON dr.fk_inspection = i.id AND dr.fk_cadet = c.id
              WHERE i.fk_assosiation = ${assosiation}
                AND i.time_end IS NOT NULL
                AND i.date::date >= c.date_created
