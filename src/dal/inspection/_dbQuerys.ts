@@ -6,7 +6,7 @@ export class DBQuery {
   getInspectionReviewData = async (fk_assosiation: string, id: string, client: Prisma.TransactionClient) => {
     const insp = await this.getInspectionInformation(id, client).then(d => d[0]);
     const activeDeficiencieList = await this.getActiveDeficiencyList(id, client);
-    const cadetList = await this.getInspectionReviewCadetList(fk_assosiation, id, insp.date, client);
+    const cadetList = await this.getInspectionReviewCadetList(fk_assosiation, id, insp.date, insp.time_start ?? '00:00', client);
     return {
       id: id,
       date: insp.date,
@@ -53,8 +53,8 @@ export class DBQuery {
                        FROM base.cadet c
                       WHERE c.fk_assosiation = i.fk_assosiation
                         AND c.date_created <= i.date::date
-                        AND (c.status = 'ACTIVE'
-                            OR c.deleted_at > i.date::date ) as "activeCadets",
+                        AND (c.deleted_at IS NULL
+                            OR c.deleted_at > (i.date || ' ' || COALESCE(i.time_end, '23:59'))::timestamp)) as "activeCadets",
          	        (SELECT COUNT(cd.id)
                        FROM inspection.deficiency cd
                       WHERE cd.fk_inspection_resolved = i.id) as "newlyResolvedDeficiencies",
@@ -109,7 +109,7 @@ export class DBQuery {
       } : undefined
     })));
 
-  getInspectionReviewCadetList = (fk_assosiation: string, inspectionId: string, date: string, client: Prisma.TransactionClient): Promise<InspectionReviewCadet[]> =>
+  getInspectionReviewCadetList = (fk_assosiation: string, inspectionId: string, date: string, timeStart: string, client: Prisma.TransactionClient): Promise<InspectionReviewCadet[]> =>
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     client.$queryRaw<any[]>`
          SELECT c."id" as "cadetId",
@@ -163,7 +163,8 @@ export class DBQuery {
       LEFT JOIN inspection.deregistration dr
              ON dr.fk_cadet = c.id AND dr.fk_inspection = ${inspectionId}
           WHERE c.fk_assosiation= ${fk_assosiation}
-            AND c.status = 'ACTIVE'
+            AND c.date_created <= ${date}::date
+            AND (c.deleted_at IS NULL OR c.deleted_at > (${date} || ' ' || ${timeStart})::timestamp)
     `.then(list => list.map(d => ({
       cadet: {
         id: d.cadetId,

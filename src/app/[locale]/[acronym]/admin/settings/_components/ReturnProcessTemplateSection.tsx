@@ -14,7 +14,7 @@ import {
     updateReturnProcessTemplate,
 } from "@/dal/cadet/returnProcessTemplate";
 import { useI18n } from "@/lib/locales/client";
-import { ReturnChecklistTemplate, ReturnProcessTemplate } from "@/prisma/client";
+import { ReturnChecklistItemTemplate, ReturnProcessTemplateWithItems } from "@/types/returnProcessTypes";
 import {
     CreateReturnProcessTemplateInput
 } from "@/zod/returnProcess";
@@ -25,10 +25,6 @@ import { Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { CreateTemplateForm } from "./CreateTemplateForm";
 import { TemplateCard } from "./TemplateCard";
-
-type ReturnProcessTemplateWithItems = ReturnProcessTemplate & {
-    checklistItems: ReturnChecklistTemplate[];
-};
 
 type Props = {
     /** Initial template list fetched server-side. */
@@ -145,7 +141,7 @@ export const ReturnProcessTemplateSection = ({ initialTemplates, returnProcessEn
     };
 
     const handleChecklistSortOrder = async (
-        newArray: ReturnChecklistTemplate[],
+        newArray: ReturnChecklistItemTemplate[],
         itemId: string
     ) => {
         const newPosition = newArray.findIndex((i) => i.id === itemId);

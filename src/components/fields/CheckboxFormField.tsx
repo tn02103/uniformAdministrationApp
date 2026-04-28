@@ -8,6 +8,7 @@ export type CheckboxFormFieldProps<FormType extends FieldValues> = {
     name: Path<FormType>;
     formName?: string;
     disabled?: boolean;
+    className?: string;
 }
 
 /**
@@ -19,6 +20,7 @@ export const CheckboxFormField = <FormType extends FieldValues>({
     name,
     disabled: disabledProp,
     formName: formNameProp,
+    className
 }: CheckboxFormFieldProps<FormType>) => {
     const { field, fieldState } = useController({
         name,
@@ -31,13 +33,13 @@ export const CheckboxFormField = <FormType extends FieldValues>({
     const inputId = `${formName}_checkbox-${name}`;
 
     return (
-        <div className="mb-2">
+        <div className={`mb-2 ${className}`}>
             <div className="form-check">
                 <input
                     {...field}
                     id={inputId}
                     type="checkbox"
-                    className="form-check-input"
+                    className={"form-check-input"}
                     checked={field.value}
                     tabIndex={disabled ? -1 : 0}
                     style={disabled ? { pointerEvents: "none", opacity: 0.5 } : { cursor: "pointer" }}

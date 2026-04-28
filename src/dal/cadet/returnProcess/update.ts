@@ -59,7 +59,7 @@ export const completeChecklist = (data: CompleteChecklistInput) =>
     ).then(([{ username, assosiation }, { returnProcessId }]) =>
         prisma.$transaction(async (client) => {
             const returnProcess = await client.returnProcess.findFirstOrThrow({
-                where: { id: returnProcessId, fk_assosiation: assosiation },
+                where: { id: returnProcessId, fk_assosiation: assosiation, finished: false },
                 include: { itemStatuses: true },
             });
 
@@ -74,7 +74,7 @@ export const completeChecklist = (data: CompleteChecklistInput) =>
             });
 
             await client.returnProcess.update({
-                where: { id: returnProcessId, fk_assosiation: assosiation },
+                where: { id: returnProcessId, fk_assosiation: assosiation, finished: false },
                 data: { finished: true, updatedAt: now },
             });
 

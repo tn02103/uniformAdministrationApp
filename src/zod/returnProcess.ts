@@ -8,11 +8,15 @@ export const createReturnProcessSchema = z.object({
     inspectorComment: z.string().optional(),
     preCheckedItemIds: z.array(z.string().uuid()).optional(),
     finished: z.boolean().optional(),
+    selectedUniformIds: z.array(z.string().uuid()).optional(),
+    selectedMaterialIds: z.array(z.string().uuid()).optional(),
 });
 export type CreateReturnProcessInput = z.infer<typeof createReturnProcessSchema>;
 
 export const returnCadetDirectlySchema = z.object({
     cadetId: z.string().uuid(),
+    selectedUniformIds: z.array(z.string().uuid()).optional(),
+    selectedMaterialIds: z.array(z.string().uuid()).optional(),
 });
 export type ReturnCadetDirectlyInput = z.infer<typeof returnCadetDirectlySchema>;
 

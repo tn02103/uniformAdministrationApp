@@ -147,7 +147,7 @@ describe('getInspectionsByCadet', () => {
             // inspection[1] date='2023-08-13' >= 2023-07-01 → included
             await prisma.cadet.update({
                 where: { id: ids.cadetIds[0] },
-                data: { dateCreated: new Date('2023-07-01') },
+                data: { createdAt: new Date('2023-07-01') },
             });
 
             const { success, result } = await runServerActionTest(
@@ -165,7 +165,7 @@ describe('getInspectionsByCadet', () => {
             // Set dateCreated to a very early date → all inspections included
             await prisma.cadet.update({
                 where: { id: ids.cadetIds[0] },
-                data: { dateCreated: new Date('2000-01-01') },
+                data: { createdAt: new Date('2000-01-01') },
             });
 
             const { success, result } = await runServerActionTest(
@@ -182,12 +182,12 @@ describe('getInspectionsByCadet', () => {
 
     describe('soft-delete filter', () => {
         it('rejects the request when the cadet is soft-deleted', async () => {
-            // Soft-delete cadet[0]; genericSAValidator checks recdelete IS NULL,
+            // Soft-delete cadet[0]; genericSAValidator checks deletedAt IS NULL,
             // so the request should be rejected before the SQL runs.
-            // The JOIN clause also includes AND c.recdelete IS NULL as defence-in-depth.
+            // The JOIN clause also includes AND c.deletedAt IS NULL as defence-in-depth.
             await prisma.cadet.update({
                 where: { id: ids.cadetIds[0] },
-                data: { recdelete: new Date(), recdeleteUser: 'test' },
+                data: { deletedAt: new Date() },
             });
 
             const { success } = await runServerActionTest(

@@ -84,4 +84,45 @@ describe('<returnCadetDirectly> Integration Tests', () => {
         ).rejects.toThrow();
         global.__ROLE__ = undefined;
     });
+
+    it('should set dateReturned on selected uniform items', async () => {
+        const cadetId = ids.cadetIds[4]; // ACTIVE, has uniforms
+        const selectedUniformIds = [ids.uniformIds[0][21], ids.uniformIds[0][22]];
+
+        await returnCadetDirectly({ cadetId, selectedUniformIds });
+
+        const returnedEntries = await prisma.uniformIssued.findMany({
+            where: { fk_cadet: cadetId, fk_uniform: { in: selectedUniformIds }, dateReturned: { not: null } },
+        });
+        expect(returnedEntries).toHaveLength(2);
+
+        // Non-selected items remain un-returned
+        const unselectedEntry = await prisma.uniformIssued.findFirst({
+            where: { fk_cadet: cadetId, fk_uniform: ids.uniformIds[0][23], dateReturned: null },
+        });
+        expect(unselectedEntry).not.toBeNull();
+    });
+
+    it('should set dateReturned on selected material items', async () => {
+        const cadetId = ids.cadetIds[5]; // ACTIVE, has materials
+        const selectedMaterialIds = [ids.materialIds[0], ids.materialIds[4]];
+
+        await returnCadetDirectly({ cadetId, selectedMaterialIds });
+
+        const returnedMaterials = await prisma.materialIssued.findMany({
+            where: { fk_cadet: cadetId, fk_material: { in: selectedMaterialIds }, dateReturned: { not: null } },
+        });
+        expect(returnedMaterials).toHaveLength(2);
+    });
+
+    it('should resolve all open cadet deficiencies', async () => {
+        const cadetId = ids.cadetIds[3]; // ACTIVE, has open deficiencies
+
+        await returnCadetDirectly({ cadetId });
+
+        const openDeficiencies = await prisma.deficiency.findMany({
+            where: { fk_cadet: cadetId, dateResolved: null },
+        });
+        expect(openDeficiencies).toHaveLength(0);
+    });
 });

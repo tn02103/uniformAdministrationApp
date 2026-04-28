@@ -2,6 +2,7 @@ import { genericSANoDataValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { Prisma } from "@/prisma/client";
+import { ReturnProcessTemplateWithItems, returnProcessTemplateWithItemsArgs } from "@/types/returnProcessTypes";
 
 /**
  * Returns all return process templates for the caller's organisation,
@@ -17,12 +18,7 @@ export const getReturnProcessTemplateList = () =>
 export const __unsecuredGetReturnProcessTemplateList = (
     fk_assosiation: string,
     client?: Prisma.TransactionClient
-) => (client ?? prisma).returnProcessTemplate.findMany({
+): Promise<ReturnProcessTemplateWithItems[]> => (client ?? prisma).returnProcessTemplate.findMany({
+    ...returnProcessTemplateWithItemsArgs,
     where: { fk_assosiation },
-    include: {
-        checklistItems: {
-            orderBy: { sortOrder: 'asc' },
-        },
-    },
-    orderBy: { name: 'asc' },
 });

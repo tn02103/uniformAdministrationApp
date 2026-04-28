@@ -2,18 +2,14 @@ import { ActionButton } from "@/components/Buttons/ActionButton";
 import { InlineEditInputFormField } from "@/components/fields/InlineEditInputFormField";
 import { ReorderableTableBody } from "@/components/reorderDnD/ReorderableTableBody";
 import { useI18n } from "@/lib/locales/client";
-import { ReturnChecklistTemplate, ReturnProcessTemplate } from "@/prisma/client";
 import { returnProcessTemplateNameSchema } from "@/zod/returnProcess";
 import { faBars, faChevronDown, faChevronRight, faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { Button, Table } from "react-bootstrap";
 import { AddChecklistItemForm } from "./AddChecklistItemForm";
+import { ReturnChecklistItemTemplate, ReturnProcessTemplateWithItems } from "@/types/returnProcessTypes";
 
-
-type ReturnProcessTemplateWithItems = ReturnProcessTemplate & {
-    checklistItems: ReturnChecklistTemplate[];
-};
 
 type TemplateCardProps = {
     template: ReturnProcessTemplateWithItems;
@@ -28,7 +24,7 @@ type TemplateCardProps = {
     onRenameChecklistItem: (templateId: string, itemId: string, label: string) => Promise<void>;
     onDeleteChecklistItem: (templateId: string, itemId: string) => void;
     onChecklistSortOrder: (
-        newArray: ReturnChecklistTemplate[],
+        newArray: ReturnChecklistItemTemplate[],
         itemId: string
     ) => Promise<void>;
 };
@@ -115,7 +111,7 @@ export const TemplateCard = ({
                                 </tr>
                             </tbody>
                         )}
-                        <ReorderableTableBody<ReturnChecklistTemplate>
+                        <ReorderableTableBody<ReturnChecklistItemTemplate>
                             items={template.checklistItems}
                             itemType="RETURN_CHECKLIST_TEMPLATE"
                             onDragEnd={(newArray, itemId) =>

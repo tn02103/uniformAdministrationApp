@@ -10,7 +10,6 @@ import { useCadetMaterialMap, useCadetUniformDescriptList } from "@/dataFetcher/
 import { useI18n } from "@/lib/locales/client";
 import { CadetMaterial } from "@/types/globalMaterialTypes";
 import { UniformLabel } from "@/types/globalUniformTypes";
-import { ReturnChecklistTemplate, ReturnProcessTemplate } from "@/prisma/browser";
 import { ReturnProcessModalFormType, returnProcessModalFormSchema } from "@/zod/returnProcess";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -18,13 +17,12 @@ import { useMemo, useState } from "react";
 import { Button, Dropdown, Modal, Spinner, SplitButton } from "react-bootstrap";
 import { FormProvider, Path, useForm, useWatch } from "react-hook-form";
 import { toast } from "react-toastify";
-
-type TemplateWithItems = ReturnProcessTemplate & { checklistItems: ReturnChecklistTemplate[] };
+import { ReturnProcessTemplateWithItems } from "@/types/returnProcessTypes";
 
 type Props = {
     cadetId: string;
     returnProcessEnabled: boolean;
-    templates: TemplateWithItems[];
+    templates: ReturnProcessTemplateWithItems[];
     onClose: () => void;
 };
 
@@ -133,12 +131,20 @@ function CadetReturnUniformModalForm({
             const preCheckedItemIds = sortedItems
                 .filter((item) => data.items[item.id])
                 .map((item) => item.id);
+            const selectedUniformIds = Object.entries(data.uniformItems)
+                .filter(([, checked]) => checked)
+                .map(([id]) => id);
+            const selectedMaterialIds = Object.entries(data.materialItems)
+                .filter(([, checked]) => checked)
+                .map(([id]) => id);
             await createReturnProcess({
                 cadetId,
                 returnProcessTemplateId: selectedTemplate.id,
                 preCheckedItemIds,
                 inspectorComment: data.notes || undefined,
                 finished,
+                selectedUniformIds,
+                selectedMaterialIds,
             });
             toast.success(
                 finished
@@ -157,7 +163,15 @@ function CadetReturnUniformModalForm({
     async function submitDirect() {
         setIsSubmitting(true);
         try {
-            await returnCadetDirectly({ cadetId });
+            const uniformItemsValues = form.getValues('uniformItems');
+            const materialItemsValues = form.getValues('materialItems');
+            const selectedUniformIds = Object.entries(uniformItemsValues)
+                .filter(([, checked]) => checked)
+                .map(([id]) => id);
+            const selectedMaterialIds = Object.entries(materialItemsValues)
+                .filter(([, checked]) => checked)
+                .map(([id]) => id);
+            await returnCadetDirectly({ cadetId, selectedUniformIds, selectedMaterialIds });
             toast.success(t("cadetDetailPage.vereinsaustritt.modal.successDirect"));
             onClose();
             router.refresh();

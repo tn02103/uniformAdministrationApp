@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import { AuthRole } from "@/lib/AuthRoles";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { createReturnProcess, getReturnProcessList, completeReturnChecklistItem, completeReturnChecklist, getReturnProcessConfig } from "./index";
+import { __unsecuredProcessCadetEquipmentReturn } from "./create";
 
 const staticData = new StaticData(0);
 const { ids } = staticData;
@@ -120,14 +121,14 @@ describe('<ReturnProcess> Integration Tests', () => {
             const wrongCadetId = wrongOrg.ids.cadetIds[0];
 
             await expect(
-                createReturnProcess({ cadetId: wrongCadetId })
+                createReturnProcess({ cadetId: wrongCadetId } as never)
             ).rejects.toThrow();
         });
 
         it('should reject insufficient role', async () => {
             global.__ROLE__ = AuthRole.user;
             await expect(
-                createReturnProcess({ cadetId: ids.cadetIds[3] })
+                createReturnProcess({ cadetId: ids.cadetIds[3] } as never)
             ).rejects.toThrow();
             global.__ROLE__ = undefined;
         });
@@ -290,5 +291,226 @@ describe('<ReturnProcess> Integration Tests', () => {
             await expect(getReturnProcessConfig()).rejects.toThrow();
             global.__ROLE__ = undefined;
         });
+    });
+});
+
+describe('<__unsecuredProcessCadetEquipmentReturn> Integration Tests', () => {
+    beforeEach(async () => {
+        await staticData.cleanup.uniformIssued();
+        await staticData.cleanup.materialIssued();
+        await staticData.cleanup.deficiencies();
+    });
+
+    // cadet[3] has:
+    //   uniforms: uniformIds[0][80,81,82], uniformIds[3][5], uniformIds[1][12], uniformIds[2][57]
+    //   materials: materialIds[0], materialIds[5], materialIds[7], materialIds[9]
+    //   open deficiencies: deficiencyIds[7] (CadetUniform), deficiencyIds[11] (CadetMaterial)
+
+    it('should set dateReturned on selected uniform items', async () => {
+        const cadetId = ids.cadetIds[3];
+        const selectedUniformIds = [ids.uniformIds[0][80], ids.uniformIds[0][81]];
+
+        await prisma.$transaction(async (client) => {
+            await __unsecuredProcessCadetEquipmentReturn(
+                client, cadetId, staticData.fk_assosiation, 'mana', selectedUniformIds, []
+            );
+        });
+
+        const returnedEntries = await prisma.uniformIssued.findMany({
+            where: { fk_cadet: cadetId, fk_uniform: { in: selectedUniformIds }, dateReturned: { not: null } },
+        });
+        expect(returnedEntries).toHaveLength(2);
+    });
+
+    it('should NOT delete uniform issued records even when issued today', async () => {
+        const cadetId = ids.cadetIds[3];
+        const uniformId = ids.uniformIds[0][80];
+
+        // Update an existing entry to have today as the issue date
+        await prisma.uniformIssued.updateMany({
+            where: { fk_cadet: cadetId, fk_uniform: uniformId },
+            data: { dateIssued: new Date() },
+        });
+
+        await prisma.$transaction(async (client) => {
+            await __unsecuredProcessCadetEquipmentReturn(
+                client, cadetId, staticData.fk_assosiation, 'mana', [uniformId], []
+            );
+        });
+
+        // Entry must still exist (not deleted)
+        const entry = await prisma.uniformIssued.findFirst({
+            where: { fk_cadet: cadetId, fk_uniform: uniformId },
+        });
+        expect(entry).not.toBeNull();
+        expect(entry!.dateReturned).not.toBeNull();
+    });
+
+    it('should set dateReturned on selected material items', async () => {
+        const cadetId = ids.cadetIds[3];
+        const selectedMaterialIds = [ids.materialIds[0], ids.materialIds[5]];
+
+        await prisma.$transaction(async (client) => {
+            await __unsecuredProcessCadetEquipmentReturn(
+                client, cadetId, staticData.fk_assosiation, 'mana', [], selectedMaterialIds
+            );
+        });
+
+        const returnedMaterials = await prisma.materialIssued.findMany({
+            where: { fk_cadet: cadetId, fk_material: { in: selectedMaterialIds }, dateReturned: { not: null } },
+        });
+        expect(returnedMaterials).toHaveLength(2);
+    });
+
+    it('should NOT delete material issued records even when issued today', async () => {
+        const cadetId = ids.cadetIds[3];
+        const materialId = ids.materialIds[0];
+
+        // Update the material issued entry to today
+        await prisma.materialIssued.updateMany({
+            where: { fk_cadet: cadetId, fk_material: materialId, dateReturned: null },
+            data: { dateIssued: new Date() },
+        });
+
+        await prisma.$transaction(async (client) => {
+            await __unsecuredProcessCadetEquipmentReturn(
+                client, cadetId, staticData.fk_assosiation, 'mana', [], [materialId]
+            );
+        });
+
+        // Entry must still exist (not deleted)
+        const entry = await prisma.materialIssued.findFirst({
+            where: { fk_cadet: cadetId, fk_material: materialId },
+        });
+        expect(entry).not.toBeNull();
+        expect(entry!.dateReturned).not.toBeNull();
+    });
+
+    it('should resolve all open deficiencies for the cadet', async () => {
+        const cadetId = ids.cadetIds[3];
+
+        await prisma.$transaction(async (client) => {
+            await __unsecuredProcessCadetEquipmentReturn(
+                client, cadetId, staticData.fk_assosiation, 'mana', [], []
+            );
+        });
+
+        const openDeficiencies = await prisma.deficiency.findMany({
+            where: { fk_cadet: cadetId, dateResolved: null },
+        });
+        expect(openDeficiencies).toHaveLength(0);
+
+        const resolvedDeficiencies = await prisma.deficiency.findMany({
+            where: { fk_cadet: cadetId, dateResolved: { not: null }, userResolved: 'mana' },
+        });
+        expect(resolvedDeficiencies.length).toBeGreaterThan(0);
+    });
+
+    it('should not affect uniform items not in the selection', async () => {
+        const cadetId = ids.cadetIds[3];
+        const selectedUniformIds = [ids.uniformIds[0][80]]; // only one selected
+        const unselectedUniformId = ids.uniformIds[0][81];
+
+        await prisma.$transaction(async (client) => {
+            await __unsecuredProcessCadetEquipmentReturn(
+                client, cadetId, staticData.fk_assosiation, 'mana', selectedUniformIds, []
+            );
+        });
+
+        const unselectedEntry = await prisma.uniformIssued.findFirst({
+            where: { fk_cadet: cadetId, fk_uniform: unselectedUniformId, dateReturned: null },
+        });
+        expect(unselectedEntry).not.toBeNull(); // should still be un-returned
+    });
+
+    it('should not affect material items not in the selection', async () => {
+        const cadetId = ids.cadetIds[3];
+        const selectedMaterialIds = [ids.materialIds[0]]; // only one selected
+        const unselectedMaterialId = ids.materialIds[5];
+
+        await prisma.$transaction(async (client) => {
+            await __unsecuredProcessCadetEquipmentReturn(
+                client, cadetId, staticData.fk_assosiation, 'mana', [], selectedMaterialIds
+            );
+        });
+
+        const unselectedEntry = await prisma.materialIssued.findFirst({
+            where: { fk_cadet: cadetId, fk_material: unselectedMaterialId, dateReturned: null },
+        });
+        expect(unselectedEntry).not.toBeNull(); // should still be un-returned
+    });
+
+    it('should not resolve deficiencies of other cadets', async () => {
+        const cadetId = ids.cadetIds[3];
+        const otherCadetId = ids.cadetIds[5]; // also has open deficiencies
+
+        await prisma.$transaction(async (client) => {
+            await __unsecuredProcessCadetEquipmentReturn(
+                client, cadetId, staticData.fk_assosiation, 'mana', [], []
+            );
+        });
+
+        const otherCadetOpenDeficiencies = await prisma.deficiency.findMany({
+            where: { fk_cadet: otherCadetId, dateResolved: null },
+        });
+        expect(otherCadetOpenDeficiencies.length).toBeGreaterThan(0);
+    });
+});
+
+describe('<createReturnProcess> equipment return integration tests', () => {
+    beforeEach(async () => {
+        await staticData.cleanup.cadet();
+    });
+
+    it('should set dateReturned on selected uniform items when creating a process', async () => {
+        const cadetId = ids.cadetIds[4]; // ACTIVE, has uniforms
+        const selectedUniformIds = [ids.uniformIds[0][21], ids.uniformIds[0][22]];
+
+        await createReturnProcess({
+            cadetId,
+            returnProcessTemplateId: ids.returnProcessTemplateIds[0],
+            selectedUniformIds,
+        });
+
+        const returnedEntries = await prisma.uniformIssued.findMany({
+            where: { fk_cadet: cadetId, fk_uniform: { in: selectedUniformIds }, dateReturned: { not: null } },
+        });
+        expect(returnedEntries).toHaveLength(2);
+
+        // Non-selected items still un-returned
+        const unselectedEntry = await prisma.uniformIssued.findFirst({
+            where: { fk_cadet: cadetId, fk_uniform: ids.uniformIds[0][23], dateReturned: null },
+        });
+        expect(unselectedEntry).not.toBeNull();
+    });
+
+    it('should set dateReturned on selected material items when creating a process', async () => {
+        const cadetId = ids.cadetIds[5]; // ACTIVE, has materials
+        const selectedMaterialIds = [ids.materialIds[0], ids.materialIds[4]];
+
+        await createReturnProcess({
+            cadetId,
+            returnProcessTemplateId: ids.returnProcessTemplateIds[0],
+            selectedMaterialIds,
+        });
+
+        const returnedMaterials = await prisma.materialIssued.findMany({
+            where: { fk_cadet: cadetId, fk_material: { in: selectedMaterialIds }, dateReturned: { not: null } },
+        });
+        expect(returnedMaterials).toHaveLength(2);
+    });
+
+    it('should resolve all open cadet deficiencies when creating a process', async () => {
+        const cadetId = ids.cadetIds[3]; // ACTIVE, has open deficiencies
+
+        await createReturnProcess({
+            cadetId,
+            returnProcessTemplateId: ids.returnProcessTemplateIds[0],
+        });
+
+        const openDeficiencies = await prisma.deficiency.findMany({
+            where: { fk_cadet: cadetId, dateResolved: null },
+        });
+        expect(openDeficiencies).toHaveLength(0);
     });
 });

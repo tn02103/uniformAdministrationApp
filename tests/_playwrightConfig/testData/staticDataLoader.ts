@@ -495,7 +495,7 @@ class StaticDataLoader {
     }
     async cadets() {
         await prisma.cadet.createMany({
-            data: this.data.cadets.map(c => ({ ...c, dateCreated: c.dateCreated ?? new Date('2020-01-01') })),
+            data: this.data.cadets.map(c => ({ ...c, createdAt: c.createdAt ?? new Date('2020-01-01') })),
         });
     }
     async uniformSize() {

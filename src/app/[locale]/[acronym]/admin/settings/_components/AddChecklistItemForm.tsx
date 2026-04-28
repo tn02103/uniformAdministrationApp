@@ -23,7 +23,7 @@ export const AddChecklistItemForm = ({ templateId, onSave }: AddChecklistItemFor
     };
 
     return (
-        <div >
+        <div>
             <Form<AddChecklistItemFormValues>
                 onSubmit={handleSubmit}
                 aria-label={t("admin.settings.returnProcess.addChecklistItem")}
