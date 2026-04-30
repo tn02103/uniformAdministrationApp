@@ -139,14 +139,20 @@ describe('<ReturnProcess> Integration Tests', () => {
             const wrongCadetId = wrongOrg.ids.cadetIds[0];
 
             await expect(
-                createReturnProcess({ cadetId: wrongCadetId } as never)
+                createReturnProcess({
+                    cadetId: wrongCadetId,
+                    returnProcessTemplateId: ids.returnProcessTemplateIds[0],
+                })
             ).rejects.toThrow();
         });
 
         it('should reject insufficient role', async () => {
             global.__ROLE__ = AuthRole.user;
             await expect(
-                createReturnProcess({ cadetId: ids.cadetIds[3] } as never)
+                createReturnProcess({
+                    cadetId: ids.cadetIds[3],
+                    returnProcessTemplateId: ids.returnProcessTemplateIds[0],
+                })
             ).rejects.toThrow();
             global.__ROLE__ = undefined;
         });

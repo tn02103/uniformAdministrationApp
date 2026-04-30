@@ -11,11 +11,22 @@ const wrongOrg = new StaticData(1);
 describe('<returnCadetDirectly> Integration Tests', () => {
     beforeEach(async () => {
         await staticData.cleanup.cadet();
-        // Reset anonymizationMode to MANUAL (default) before each test
+        // Reset return configuration before each test
         await prisma.assosiationConfiguration.update({
             where: { assosiationId: staticData.fk_assosiation },
-            data: { anonymizationMode: AnonymizationMode.MANUAL },
+            data: { anonymizationMode: AnonymizationMode.MANUAL, returnProcessEnabled: false },
         });
+    });
+
+    it('should throw when return process is enabled', async () => {
+        await prisma.assosiationConfiguration.update({
+            where: { assosiationId: staticData.fk_assosiation },
+            data: { returnProcessEnabled: true },
+        });
+
+        await expect(
+            returnCadetDirectly({ cadetId: ids.cadetIds[0] })
+        ).rejects.toThrow("Direct cadet return is disabled when return process is enabled");
     });
 
     it('should throw if cadet is not ACTIVE', async () => {
