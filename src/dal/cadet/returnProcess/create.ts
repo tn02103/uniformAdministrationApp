@@ -98,16 +98,6 @@ export const create = (data: CreateReturnProcessInput) =>
                 where: { fk_returnProcessTemplate: returnProcessTemplateId, fk_assosiation: assosiation },
             });
 
-            if (returnProcessTemplateId !== undefined && returnProcessTemplateId !== null) {
-                const templateExists = await client.returnProcessTemplate.findFirst({
-                    where: { id: returnProcessTemplateId, fk_assosiation: assosiation },
-                    select: { id: true },
-                });
-                if (!templateExists) {
-                    throw new Error("ReturnProcessTemplate not found or does not belong to organisation");
-                }
-            }
-
             const validPreCheckedItemIds = (preCheckedItemIds ?? []).filter((id) =>
                 checklistItems.some((item) => item.id === id)
             );

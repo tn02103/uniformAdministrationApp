@@ -2,6 +2,10 @@ import { genericSANoDataValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 
+/**
+ * Returns return-process configuration and all checklist templates for the caller organisation.
+ * @returns The return process enabled flag, anonymization mode, and organisation-scoped templates with ordered checklist items.
+ */
 export const getReturnProcessConfig = () =>
     genericSANoDataValidator(AuthRole.inspector)
         .then(async ([{ assosiation }]) => {

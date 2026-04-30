@@ -5,6 +5,13 @@ import { AnonymizationMode, CadetStatus } from "@/prisma/enums";
 import { ReturnCadetDirectlyInput, returnCadetDirectlySchema } from "@/zod/returnProcess";
 import { __unsecuredProcessCadetEquipmentReturn } from "./returnProcess/create";
 
+/**
+ * Returns a cadet directly without creating a return process.
+ * Rejects when the organisation has the return process flow enabled.
+ * @param data - cadetId and optional selectedUniformIds/selectedMaterialIds to mark as returned.
+ * @throws {Error} When return process is enabled for the organisation.
+ * @throws {Error} When the cadet is not ACTIVE.
+ */
 export const returnCadetDirectly = async (data: ReturnCadetDirectlyInput) =>
     genericSAValidator(
         AuthRole.inspector,
@@ -14,8 +21,12 @@ export const returnCadetDirectly = async (data: ReturnCadetDirectlyInput) =>
     ).then(async ([{ assosiation, username }, { cadetId, selectedUniformIds, selectedMaterialIds }]) => {
         const config = await prisma.assosiationConfiguration.findUniqueOrThrow({
             where: { assosiationId: assosiation },
-            select: { anonymizationMode: true },
+            select: { anonymizationMode: true, returnProcessEnabled: true },
         });
+
+        if (config.returnProcessEnabled) {
+            throw new Error("Direct cadet return is disabled when return process is enabled");
+        }
 
         await prisma.$transaction(async (client) => {
             const now = new Date();
