@@ -61,12 +61,16 @@ const CadetDetailPage = async (props: PropType) => {
         );
     }
 
-    const [cadet, uniformMap, materialMap, materialConfig, returnConfig] = await Promise.all([
+    const [cadet, uniformMap, materialMap, materialConfig, returnConfigResult] = await Promise.all([
         getCadetData(cadetId),
         getCadetUniformMap(cadetId),
         getCadetMaterialMap(cadetId),
         getMaterialConfiguration(),
-        user!.role >= AuthRole.inspector ? getReturnProcessConfig().catch(() => null) : Promise.resolve(null),
+        user!.role >= AuthRole.inspector
+            ? getReturnProcessConfig()
+                .then((config) => ({ config, loadFailed: false }))
+                .catch(() => ({ config: null, loadFailed: true }))
+            : Promise.resolve({ config: null, loadFailed: false }),
     ]);
     if (!cadet) {
         return notFound();
@@ -80,7 +84,8 @@ const CadetDetailPage = async (props: PropType) => {
                         <CadetDropDown
                             firstname={cadet.firstname}
                             lastname={cadet.lastname}
-                            returnConfig={returnConfig}
+                            returnConfig={returnConfigResult.config}
+                            returnConfigLoadFailed={returnConfigResult.loadFailed}
                             cadetStatus={cadet.status}
                             userRole={user!.role}
                         />

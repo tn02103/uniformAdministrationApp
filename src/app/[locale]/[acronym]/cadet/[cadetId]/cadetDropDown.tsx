@@ -18,12 +18,18 @@ type ReturnConfig = {
     templates: (ReturnProcessTemplate & { checklistItems: ReturnChecklistTemplate[] })[];
 } | null;
 
+/**
+ * Action dropdown for cadet detail page operations.
+ *
+ * @param returnConfigLoadFailed - Indicates that return-process configuration could not be loaded, so return actions are fail-closed.
+ */
 export default function CadetDropDown({
-    firstname, lastname, returnConfig, cadetStatus, userRole,
+    firstname, lastname, returnConfig, returnConfigLoadFailed, cadetStatus, userRole,
 }: {
     firstname: string;
     lastname: string;
     returnConfig: ReturnConfig;
+    returnConfigLoadFailed: boolean;
     cadetStatus: CadetStatus;
     userRole: AuthRole;
 }) {
@@ -34,20 +40,12 @@ export default function CadetDropDown({
 
     const { cadetId }: { cadetId: string } = useParams();
 
-  /*  function handleDeleteCadet() {
-        modal?.simpleWarningModal({
-            header: t('cadetDetailPage.delete.header'),
-            message: t('cadetDetailPage.delete.message', { firstname, lastname }),
-            primaryOption: t('common.actions.delete'),
-            primaryFunction: () => deleteCadet(cadetId).then(() => {
-                router.push('/app/cadet');
-            }).catch(() => {
-                toast.error(t('cadetDetailPage.delete.error'));
-            })
-        });
-    } */
-
     function handleReturnUniform() {
+        if (returnConfigLoadFailed) {
+            toast.error(t('cadetDetailPage.vereinsaustritt.directReturn.error'));
+            return;
+        }
+
         if (returnConfig) {
             setIsReturnModalOpen(true);
         } else {
@@ -81,9 +79,6 @@ export default function CadetDropDown({
                             {t('cadetDetailPage.vereinsaustritt.dropdownLabel')}
                         </Dropdown.Item>
                     )}
-                    {/* <Dropdown.Item onClick={handleDeleteCadet} data-testid={"btn_cadet_menu_delete"}>
-                        {t('common.actions.delete')}
-                    </Dropdown.Item> */}
                 </Dropdown.Menu>
             </Dropdown>
             {isReturnModalOpen && returnConfig && (

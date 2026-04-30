@@ -28,6 +28,9 @@ type Props = {
 
 /**
  * Outer wrapper that waits for async uniform/material data to load before rendering the form.
+ *
+ * @param props - Cadet id, return-process configuration and modal close callback.
+ * @returns The return-uniform modal or a loading modal while dependent data is fetched.
  */
 export default function CadetReturnUniformModal(props: Props) {
     const { uniformLabels } = useCadetUniformDescriptList(props.cadetId);
@@ -191,7 +194,7 @@ function CadetReturnUniformModalForm({
     }
 
     function handleDirectSave() {
-        form.handleSubmit(() => submitDirect())();
+        void submitDirect();
     }
 
     return (
