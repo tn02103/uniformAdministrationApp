@@ -34,6 +34,8 @@ describe('<returnCadetDirectly> Integration Tests', () => {
         const cadet = await prisma.cadet.findUnique({ where: { id: cadetId } });
         expect(cadet!.status).toBe(CadetStatus.RETURNED);
         expect(cadet!.deletedAt).toBeNull();
+        expect(cadet!.returnStartedAt).not.toBeNull();
+        expect(cadet!.returnEndedAt).not.toBeNull();
         expect(cadet!.firstname).not.toBe('XXXX');
     });
 
@@ -50,6 +52,8 @@ describe('<returnCadetDirectly> Integration Tests', () => {
         const cadet = await prisma.cadet.findUnique({ where: { id: cadetId } });
         expect(cadet!.status).toBe(CadetStatus.RETURNED);
         expect(cadet!.deletedAt).toBeNull();
+        expect(cadet!.returnStartedAt).not.toBeNull();
+        expect(cadet!.returnEndedAt).not.toBeNull();
     });
 
     it('should anonymize cadet immediately when anonymizationMode is IMMEDIATELY', async () => {
@@ -67,6 +71,8 @@ describe('<returnCadetDirectly> Integration Tests', () => {
         expect(cadet!.firstname).toBe('XXXX');
         expect(cadet!.lastname).toBe('XXXX');
         expect(cadet!.deletedAt).not.toBeNull();
+        expect(cadet!.returnStartedAt).not.toBeNull();
+        expect(cadet!.returnEndedAt).not.toBeNull();
     });
 
     it('should reject cadet from wrong org', async () => {

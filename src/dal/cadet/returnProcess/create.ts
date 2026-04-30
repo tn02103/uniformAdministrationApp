@@ -20,35 +20,37 @@ export const __unsecuredProcessCadetEquipmentReturn = async (
 
     // Return selected uniform items
     if (selectedUniformIds.length > 0) {
-        const issuedEntries = await client.uniformIssued.findMany({
+        await client.uniformIssued.updateMany({
             where: {
-                uniform: { id: { in: selectedUniformIds }, fk_assosiation: assosiation, recdelete: null },
+                uniform: {
+                    is: {
+                        id: { in: selectedUniformIds },
+                        type: { fk_assosiation: assosiation },
+                        recdelete: null,
+                    },
+                },
                 fk_cadet: cadetId,
                 dateReturned: null,
             },
-            select: { id: true },
+            data: { dateReturned: now },
         });
-
-        for (const entry of issuedEntries) {
-            await client.uniformIssued.update({ where: { id: entry.id }, data: { dateReturned: now } });
-        }
     }
 
     // Return selected materials (by material type ID)
     if (selectedMaterialIds.length > 0) {
-        const issuedMaterials = await client.materialIssued.findMany({
+        await client.materialIssued.updateMany({
             where: {
+                material: {
+                    is: {
+                        id: { in: selectedMaterialIds },
+                        materialGroup: { fk_assosiation: assosiation },
+                    },
+                },
                 fk_cadet: cadetId,
-                fk_material: { in: selectedMaterialIds },
                 dateReturned: null,
-                material: { materialGroup: { fk_assosiation: assosiation } },
             },
-            select: { id: true },
+            data: { dateReturned: now },
         });
-
-        for (const entry of issuedMaterials) {
-            await client.materialIssued.update({ where: { id: entry.id }, data: { dateReturned: now } });
-        }
     }
 
     // Resolve all open deficiencies for the cadet
@@ -83,6 +85,7 @@ export const create = (data: CreateReturnProcessInput) =>
         }
     ).then(([{ assosiation, username }, { cadetId, returnProcessTemplateId, inspectorComment, preCheckedItemIds, finished, selectedUniformIds, selectedMaterialIds }]) =>
         prisma.$transaction(async (client) => {
+            const now = new Date();
             const cadet = await client.cadet.findUniqueOrThrow({
                 where: { id: cadetId, fk_assosiation: assosiation, deletedAt: null },
             });
@@ -145,7 +148,11 @@ export const create = (data: CreateReturnProcessInput) =>
 
             await client.cadet.update({
                 where: { id: cadetId, fk_assosiation: assosiation, deletedAt: null },
-                data: { status: isFinished ? CadetStatus.RETURNED : CadetStatus.RETURNING },
+                data: {
+                    status: isFinished ? CadetStatus.RETURNED : CadetStatus.RETURNING,
+                    returnStartedAt: cadet.returnStartedAt ?? now,
+                    returnEndedAt: isFinished ? now : null,
+                },
             });
 
             return returnProcess;

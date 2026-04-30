@@ -46,7 +46,7 @@ describe('saveCadetInspection Integration Tests', () => {
             // Create some existing deregistrations to test cleanup
             await prisma.deregistration.createMany({
                 data: [
-                    { fk_cadet: cadetId, fk_inspection: inspection.id },
+                    { fk_cadet: cadetId, fk_inspection: inspection.id! },
                 ]
             });
 
@@ -398,8 +398,6 @@ describe('saveCadetInspection Integration Tests', () => {
                     comment: "Should be scoped to our association",
                     uniformId: null,
                     materialId: null,
-                    otherMaterialId: null,
-                    otherMaterialGroupId: null
                 }]
             };
 

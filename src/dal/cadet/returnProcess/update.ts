@@ -59,7 +59,7 @@ export const completeChecklist = (data: CompleteChecklistInput) =>
     ).then(([{ username, assosiation }, { returnProcessId }]) =>
         prisma.$transaction(async (client) => {
             const returnProcess = await client.returnProcess.findFirstOrThrow({
-                where: { id: returnProcessId, fk_assosiation: assosiation, finished: false },
+                where: { id: returnProcessId, fk_assosiation: assosiation },
                 include: { itemStatuses: true },
             });
 
@@ -74,13 +74,22 @@ export const completeChecklist = (data: CompleteChecklistInput) =>
             });
 
             await client.returnProcess.update({
-                where: { id: returnProcessId, fk_assosiation: assosiation, finished: false },
+                where: { id: returnProcessId, fk_assosiation: assosiation },
                 data: { finished: true, updatedAt: now },
+            });
+
+            const cadet = await client.cadet.findUniqueOrThrow({
+                where: { id: returnProcess.fk_cadet, fk_assosiation: assosiation, deletedAt: null },
+                select: { returnStartedAt: true },
             });
 
             await client.cadet.update({
                 where: { id: returnProcess.fk_cadet, fk_assosiation: assosiation, deletedAt: null },
-                data: { status: CadetStatus.RETURNED },
+                data: {
+                    status: CadetStatus.RETURNED,
+                    returnStartedAt: cadet.returnStartedAt ?? now,
+                    returnEndedAt: now,
+                },
             });
         })
     );

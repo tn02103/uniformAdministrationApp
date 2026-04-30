@@ -75,6 +75,24 @@ describe('<ReturnProcess> Integration Tests', () => {
             // Verify cadet status updated to RETURNING
             const cadet = await prisma.cadet.findUnique({ where: { id: cadetId } });
             expect(cadet!.status).toBe('RETURNING');
+            expect(cadet!.returnStartedAt).not.toBeNull();
+            expect(cadet!.returnEndedAt).toBeNull();
+        });
+
+        it('should set status RETURNED with both return timestamps when created as finished', async () => {
+            const cadetId = ids.cadetIds[4]; // ACTIVE cadet
+
+            const result = await createReturnProcess({
+                cadetId,
+                returnProcessTemplateId: ids.returnProcessTemplateIds[0],
+                finished: true,
+            });
+
+            expect(result.finished).toBe(true);
+            const cadet = await prisma.cadet.findUnique({ where: { id: cadetId } });
+            expect(cadet!.status).toBe('RETURNED');
+            expect(cadet!.returnStartedAt).not.toBeNull();
+            expect(cadet!.returnEndedAt).not.toBeNull();
         });
 
         it('should fail validation when returnProcessTemplateId is missing', async () => {
@@ -245,6 +263,8 @@ describe('<ReturnProcess> Integration Tests', () => {
             // Check cadet status
             const cadet = await prisma.cadet.findUnique({ where: { id: ids.cadetIds[10] } });
             expect(cadet!.status).toBe('RETURNED');
+            expect(cadet!.returnStartedAt).not.toBeNull();
+            expect(cadet!.returnEndedAt).not.toBeNull();
         });
 
         it('should reject returnProcessId from wrong org', async () => {

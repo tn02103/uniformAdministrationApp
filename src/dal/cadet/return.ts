@@ -18,6 +18,7 @@ export const returnCadetDirectly = async (data: ReturnCadetDirectlyInput) =>
         });
 
         await prisma.$transaction(async (client) => {
+            const now = new Date();
             const cadet = await client.cadet.findUniqueOrThrow({
                 where: { id: cadetId, fk_assosiation: assosiation, deletedAt: null },
             });
@@ -41,14 +42,20 @@ export const returnCadetDirectly = async (data: ReturnCadetDirectlyInput) =>
                     data: {
                         firstname: "XXXX",
                         lastname: "XXXX",
-                        deletedAt: new Date(),
+                        deletedAt: now,
+                        returnStartedAt: cadet.returnStartedAt ?? now,
+                        returnEndedAt: now,
                         status: CadetStatus.DELETED,
                     },
                 });
             } else {
                 await client.cadet.update({
                     where: { id: cadetId, fk_assosiation: assosiation, deletedAt: null },
-                    data: { status: CadetStatus.RETURNED },
+                    data: {
+                        status: CadetStatus.RETURNED,
+                        returnStartedAt: cadet.returnStartedAt ?? now,
+                        returnEndedAt: now,
+                    },
                 });
             }
         });
