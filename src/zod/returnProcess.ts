@@ -33,10 +33,10 @@ export const completeChecklistSchema = z.object({
 export type CompleteChecklistInput = z.infer<typeof completeChecklistSchema>;
 
 export const returnProcessModalFormSchema = z.object({
-    templateId: z.string(),
-    items: z.record(z.string(), z.boolean()),
-    uniformItems: z.record(z.string(), z.boolean()),
-    materialItems: z.record(z.string(), z.boolean()),
+    templateId: z.string().uuid(),
+    items: z.record(z.string().uuid(), z.boolean()),
+    uniformItems: z.record(z.string().uuid(), z.boolean()),
+    materialItems: z.record(z.string().uuid(), z.boolean()),
     notes: z.string().optional(),
 });
 export type ReturnProcessModalFormType = z.infer<typeof returnProcessModalFormSchema>;
