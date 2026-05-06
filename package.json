@@ -94,7 +94,7 @@
         "@vitest/coverage-v8": "4.1.4",
         "@vitest/eslint-plugin": "1.6.16",
         "cross-env": "10.1.0",
-        "eslint": "9.39.4",
+        "eslint": "10.2.1",
         "eslint-config-next": "16.2.4",
         "eslint-plugin-playwright": "2.10.1",
         "eslint-plugin-testing-library": "7.16.2",
