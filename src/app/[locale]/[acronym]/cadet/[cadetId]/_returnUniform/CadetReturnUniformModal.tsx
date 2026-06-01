@@ -7,7 +7,7 @@ import { TextareaFormField } from "@/components/fields/TextareaFormField";
 import { createReturnProcess } from "@/dal/cadet/returnProcess";
 import { returnCadetDirectly } from "@/dal/cadet";
 import { useCadetMaterialMap, useCadetUniformDescriptList } from "@/dataFetcher/cadet";
-import { useI18n } from "@/lib/locales/client";
+import { useI18n, useScopedI18n } from "@/lib/locales/client";
 import { CadetMaterial } from "@/types/globalMaterialTypes";
 import { UniformLabel } from "@/types/globalUniformTypes";
 import { ReturnProcessModalFormType, returnProcessModalFormSchema } from "@/zod/returnProcess";
@@ -35,17 +35,17 @@ type Props = {
 export default function CadetReturnUniformModal(props: Props) {
     const { uniformLabels } = useCadetUniformDescriptList(props.cadetId);
     const { materialMap } = useCadetMaterialMap(props.cadetId);
-    const t = useI18n();
+    const t = useScopedI18n('cadetDetailPage.memberExit.modal');
 
     if (uniformLabels === undefined || materialMap === undefined) {
         return (
             <Modal show onHide={props.onClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>{t("cadetDetailPage.vereinsaustritt.modal.header")}</Modal.Title>
+                    <Modal.Title>{t("header")}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div className="d-flex justify-content-center p-4">
-                        <Spinner animation="border" />
+                        <Spinner animation="border" role="status" />
                     </div>
                 </Modal.Body>
             </Modal>
@@ -68,7 +68,7 @@ type InnerProps = Props & {
 };
 
 /**
- * Inner form component for the Vereinsaustritt (club exit) modal.
+ * Inner form component for the member exit modal.
  * Step 1: Confirm which uniform items and materials were returned.
  * Step 2 (if returnProcessEnabled and templates available): Configure the exit process.
  */
@@ -80,7 +80,8 @@ function CadetReturnUniformModalForm({
     uniformLabels,
     allMaterials,
 }: InnerProps) {
-    const t = useI18n();
+    const t = useScopedI18n('cadetDetailPage.memberExit.modal');
+    const tGlobal = useI18n();
     const router = useRouter();
     const [step, setStep] = useState<1 | 2>(1);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -151,13 +152,13 @@ function CadetReturnUniformModalForm({
             });
             toast.success(
                 finished
-                    ? t("cadetDetailPage.vereinsaustritt.modal.successFinished")
-                    : t("cadetDetailPage.vereinsaustritt.modal.success")
+                    ? t("successFinished")
+                    : t("success")
             );
             onClose();
             router.refresh();
         } catch {
-            toast.error(t("cadetDetailPage.vereinsaustritt.modal.error"));
+            toast.error(t("error"));
         } finally {
             setIsSubmitting(false);
         }
@@ -175,11 +176,11 @@ function CadetReturnUniformModalForm({
                 .filter(([, checked]) => checked)
                 .map(([id]) => id);
             await returnCadetDirectly({ cadetId, selectedUniformIds, selectedMaterialIds });
-            toast.success(t("cadetDetailPage.vereinsaustritt.modal.successDirect"));
+            toast.success(t("successDirect"));
             onClose();
             router.refresh();
         } catch {
-            toast.error(t("cadetDetailPage.vereinsaustritt.modal.error"));
+            toast.error(t("error"));
         } finally {
             setIsSubmitting(false);
         }
@@ -199,21 +200,21 @@ function CadetReturnUniformModalForm({
 
     return (
         <FormProvider {...form}>
-            <FormContext.Provider value={{ disabled: isSubmitting, plaintext: false, formName: "vereinsaustritt-form" }}>
+            <FormContext.Provider value={{ disabled: isSubmitting, plaintext: false, formName: "member-exit-form" }}>
                 <Modal show onHide={onClose}>
                     <Modal.Header closeButton>
-                        <Modal.Title>{t("cadetDetailPage.vereinsaustritt.modal.header")}</Modal.Title>
+                        <Modal.Title>{t("header")}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         {step === 1 && (
                             <div>
                                 <h2 className="fs-5 fw-bold text-center mb-3">
-                                    {t("cadetDetailPage.vereinsaustritt.modal.step1.header")}
+                                    {t("step1.header")}
                                 </h2>
                                 {uniformLabels.length > 0 && (
                                     <>
                                         <h3 className="fs-6 fw-bold text-start">
-                                            {t("cadetDetailPage.vereinsaustritt.modal.step1.uniformItems")}
+                                            {t("step1.uniformItems")}
                                         </h3>
                                         <div className="d-flex flex-row flex-wrap mt-2">
                                             {uniformLabels.map((label) => (
@@ -230,7 +231,7 @@ function CadetReturnUniformModalForm({
                                 {allMaterials.length > 0 && (
                                     <>
                                         <h3 className="fs-6 fw-bold text-start mt-3">
-                                            {t("cadetDetailPage.vereinsaustritt.modal.step1.materialItems")}
+                                            {t("step1.materialItems")}
                                         </h3>
                                         <div className="d-flex flex-row flex-wrap mt-2">
                                             {allMaterials.map((material) => (
@@ -249,13 +250,13 @@ function CadetReturnUniformModalForm({
                         {step === 2 && showProcessStep && (
                             <div>
                                 <h2 className="fs-5 fw-bold text-center mb-3">
-                                    {t("cadetDetailPage.vereinsaustritt.modal.step2.header")}
+                                    {t("step2.header")}
                                 </h2>
                                 {templates.length > 1 && (
                                     <div className="d-flex justify-content-center mb-3">
                                         <SelectFormField<ReturnProcessModalFormType>
                                             name="templateId"
-                                            label={t("cadetDetailPage.vereinsaustritt.modal.step2.templateLabel")}
+                                            label={t("step2.templateLabel")}
                                             labelClassName="visually-hidden"
                                             options={templates.map((tmpl) => ({ value: tmpl.id, label: tmpl.name }))}
                                             onValueChange={(value) => setSelectedTemplateId(value as string)}
@@ -273,7 +274,7 @@ function CadetReturnUniformModalForm({
                                 <div className="mt-3">
                                     <TextareaFormField<ReturnProcessModalFormType>
                                         name="notes"
-                                        label={t("cadetDetailPage.vereinsaustritt.modal.step2.notesLabel")}
+                                        label={t("step2.notesLabel")}
                                         rows={3}
                                     />
                                 </div>
@@ -284,7 +285,7 @@ function CadetReturnUniformModalForm({
                         {step === 1 && (
                             <>
                                 <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
-                                    {t("common.actions.cancel")}
+                                    {tGlobal("common.actions.cancel")}
                                 </Button>
                                 {showProcessStep ? (
                                     <Button
@@ -292,7 +293,7 @@ function CadetReturnUniformModalForm({
                                         onClick={() => setStep(2)}
                                         disabled={isSubmitting}
                                     >
-                                        {t("cadetDetailPage.vereinsaustritt.modal.actions.next")}
+                                        {t("actions.next")}
                                     </Button>
                                 ) : (
                                     <Button
@@ -300,7 +301,7 @@ function CadetReturnUniformModalForm({
                                         onClick={handleDirectSave}
                                         disabled={isSubmitting}
                                     >
-                                        {t("cadetDetailPage.vereinsaustritt.modal.actions.save")}
+                                        {t("actions.save")}
                                     </Button>
                                 )}
                             </>
@@ -312,30 +313,30 @@ function CadetReturnUniformModalForm({
                                     onClick={() => setStep(1)}
                                     disabled={isSubmitting}
                                 >
-                                    {t("cadetDetailPage.vereinsaustritt.modal.actions.back")}
+                                    {t("actions.back")}
                                 </Button>
                                 {allChecklistItemsChecked ? (
                                     <SplitButton
                                         variant="primary"
-                                        title={t("cadetDetailPage.vereinsaustritt.modal.actions.saveFinished")}
+                                        title={t("actions.saveFinished")}
                                         onClick={handleSaveFinished}
                                         disabled={isSubmitting}
-                                        id="vereinsaustritt-split-btn"
+                                        id="member-exit-split-btn"
                                     >
                                         <Dropdown.Item onClick={handleStartProcess} disabled={isSubmitting}>
-                                            {t("cadetDetailPage.vereinsaustritt.modal.actions.startProcess")}
+                                            {t("actions.startProcess")}
                                         </Dropdown.Item>
                                     </SplitButton>
                                 ) : (
                                     <SplitButton
                                         variant="primary"
-                                        title={t("cadetDetailPage.vereinsaustritt.modal.actions.startProcess")}
+                                        title={t("actions.startProcess")}
                                         onClick={handleStartProcess}
                                         disabled={isSubmitting}
-                                        id="vereinsaustritt-split-btn"
+                                        id="member-exit-split-btn"
                                     >
                                         <Dropdown.Item onClick={handleSaveFinished} disabled={isSubmitting}>
-                                            {t("cadetDetailPage.vereinsaustritt.modal.actions.saveFinished")}
+                                            {t("actions.saveFinished")}
                                         </Dropdown.Item>
                                     </SplitButton>
                                 )}

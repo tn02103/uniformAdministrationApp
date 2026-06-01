@@ -41,15 +41,39 @@ describe("CadetDropDown fail-closed return config behavior", () => {
         await user.click(screen.getByTestId("btn_cadet_menu"));
         await user.click(screen.getByTestId("btn_cadet_menu_return"));
 
-        expect(toast.error).toHaveBeenCalledWith("cadetDetailPage.vereinsaustritt.directReturn.error");
+        expect(toast.error).toHaveBeenCalledWith("cadetDetailPage.memberExit.directReturn.error");
         expect(modalApi.simpleWarningModal).not.toHaveBeenCalled();
         expect(returnCadetDirectly).not.toHaveBeenCalled();
         expect(screen.queryByTestId("return-uniform-modal")).not.toBeInTheDocument();
     });
 
-    it("keeps return action fail-closed even when stale return config exists", async () => {
+    it("opens the return modal when returnConfig has returnProcessEnabled=false", async () => {
         const user = userEvent.setup();
-        const modalApi = vi.mocked(useModal)();
+
+        render(
+            <CadetDropDown
+                firstname="Max"
+                lastname="Mustermann"
+                returnConfig={{
+                    returnProcessEnabled: false,
+                    anonymizationMode: "ON_COMPLETE",
+                    templates: [],
+                }}
+                returnConfigLoadFailed={false}
+                cadetStatus={CadetStatus.ACTIVE}
+                userRole={AuthRole.inspector}
+            />
+        );
+
+        await user.click(screen.getByTestId("btn_cadet_menu"));
+        await user.click(screen.getByTestId("btn_cadet_menu_return"));
+
+        expect(screen.getByTestId("return-uniform-modal")).toBeInTheDocument();
+        expect(toast.error).not.toHaveBeenCalled();
+    });
+
+    it("opens the return modal when returnConfig has returnProcessEnabled=true", async () => {
+        const user = userEvent.setup();
 
         render(
             <CadetDropDown
@@ -60,7 +84,7 @@ describe("CadetDropDown fail-closed return config behavior", () => {
                     anonymizationMode: "ON_COMPLETE",
                     templates: [],
                 }}
-                returnConfigLoadFailed
+                returnConfigLoadFailed={false}
                 cadetStatus={CadetStatus.ACTIVE}
                 userRole={AuthRole.inspector}
             />
@@ -69,9 +93,7 @@ describe("CadetDropDown fail-closed return config behavior", () => {
         await user.click(screen.getByTestId("btn_cadet_menu"));
         await user.click(screen.getByTestId("btn_cadet_menu_return"));
 
-        expect(toast.error).toHaveBeenCalledWith("cadetDetailPage.vereinsaustritt.directReturn.error");
-        expect(modalApi.simpleWarningModal).not.toHaveBeenCalled();
-        expect(returnCadetDirectly).not.toHaveBeenCalled();
-        expect(screen.queryByTestId("return-uniform-modal")).not.toBeInTheDocument();
+        expect(screen.getByTestId("return-uniform-modal")).toBeInTheDocument();
+        expect(toast.error).not.toHaveBeenCalled();
     });
 });

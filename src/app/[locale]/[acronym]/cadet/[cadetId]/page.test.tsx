@@ -99,4 +99,20 @@ describe("CadetDetailPage return config fail-closed wiring", () => {
             undefined
         );
     });
+
+    it("passes loaded config and no-failure flag to dropdown when return config resolves", async () => {
+        render(await CadetDetailPage({ params: Promise.resolve({ cadetId, locale: "de" }) }));
+
+        expect(vi.mocked(CadetDropDown)).toHaveBeenCalledWith(
+            expect.objectContaining({
+                returnConfig: {
+                    returnProcessEnabled: true,
+                    anonymizationMode: "ON_COMPLETE",
+                    templates: [],
+                },
+                returnConfigLoadFailed: false,
+            }),
+            undefined
+        );
+    });
 });

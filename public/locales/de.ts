@@ -289,7 +289,7 @@ export default {
         returnUniform: {
             error: "Beim Zurückziehen des Uniformteils ist ein Fehler aufgetreten. Bitte versuchen sie es noch einmal",
         },
-        vereinsaustritt: {
+        memberExit: {
             dropdownLabel: "Vereinsaustritt",
             modal: {
                 header: "Vereinsaustritt",

@@ -76,14 +76,14 @@ describe("<CadetReturnUniformModal />", () => {
             vi.mocked(useCadetUniformDescriptList).mockReturnValue({ uniformLabels: undefined });
             setup();
             // Modal body should show spinner, no form content
-            expect(document.querySelector(".spinner-border")).toBeInTheDocument();
+            expect(screen.getByRole("status")).toBeInTheDocument();
             expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
         });
 
         it("shows a spinner when material map is not yet loaded", () => {
             vi.mocked(useCadetMaterialMap).mockReturnValue({ materialMap: undefined, mutate: vi.fn() });
             setup();
-            expect(document.querySelector(".spinner-border")).toBeInTheDocument();
+            expect(screen.getByRole("status")).toBeInTheDocument();
             expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
         });
     });
@@ -103,20 +103,20 @@ describe("<CadetReturnUniformModal />", () => {
             expect(screen.getByRole("checkbox", { name: /Typ2/i })).toBeChecked();
         });
 
-        it("shows 'Weiter' button when returnProcessEnabled with templates", () => {
+        it("shows the 'Next' button when returnProcessEnabled with templates", () => {
             setup();
-            expect(screen.getByRole("button", { name: /cadetDetailPage.vereinsaustritt.modal.actions.next/i })).toBeInTheDocument();
+            expect(screen.getByRole("button", { name: /actions\.next/i })).toBeInTheDocument();
         });
 
-        it("shows 'Speichern' button when no process step", () => {
+        it("shows the 'Save' button when there is no process step", () => {
             setup({ returnProcessEnabled: false });
-            expect(screen.getByRole("button", { name: /cadetDetailPage.vereinsaustritt.modal.actions.save/i })).toBeInTheDocument();
-            expect(screen.queryByRole("button", { name: /cadetDetailPage.vereinsaustritt.modal.actions.next/i })).not.toBeInTheDocument();
+            expect(screen.getByRole("button", { name: /actions\.save/i })).toBeInTheDocument();
+            expect(screen.queryByRole("button", { name: /actions\.next/i })).not.toBeInTheDocument();
         });
 
-        it("shows 'Speichern' button when returnProcessEnabled but no templates", () => {
+        it("shows the 'Save' button when returnProcessEnabled but no templates exist", () => {
             setup({ templates: [] });
-            expect(screen.getByRole("button", { name: /cadetDetailPage.vereinsaustritt.modal.actions.save/i })).toBeInTheDocument();
+            expect(screen.getByRole("button", { name: /actions\.save/i })).toBeInTheDocument();
         });
     });
 
@@ -124,7 +124,7 @@ describe("<CadetReturnUniformModal />", () => {
         it("still submits direct return when process is enabled but no templates exist", async () => {
             setup({ returnProcessEnabled: true, templates: [] });
 
-            await userEvent.click(screen.getByRole("button", { name: /cadetDetailPage.vereinsaustritt.modal.actions.save/i }));
+            await userEvent.click(screen.getByRole("button", { name: /actions\.save/i }));
 
             expect(vi.mocked(returnCadetDirectly)).toHaveBeenCalledWith(
                 expect.objectContaining({
@@ -137,7 +137,7 @@ describe("<CadetReturnUniformModal />", () => {
         it("calls returnCadetDirectly with all checked uniform and material IDs", async () => {
             setup({ returnProcessEnabled: false });
 
-            await userEvent.click(screen.getByRole("button", { name: /cadetDetailPage.vereinsaustritt.modal.actions.save/i }));
+            await userEvent.click(screen.getByRole("button", { name: /actions\.save/i }));
 
             expect(vi.mocked(returnCadetDirectly)).toHaveBeenCalledWith(
                 expect.objectContaining({
@@ -152,17 +152,29 @@ describe("<CadetReturnUniformModal />", () => {
             setup({ returnProcessEnabled: false });
 
             await userEvent.click(screen.getByRole("checkbox", { name: /Jacke-1/i }));
-            await userEvent.click(screen.getByRole("button", { name: /cadetDetailPage.vereinsaustritt.modal.actions.save/i }));
+            await userEvent.click(screen.getByRole("button", { name: /actions\.save/i }));
 
             const call = vi.mocked(returnCadetDirectly).mock.calls[0][0];
             expect(call.selectedUniformIds).not.toContain("11111111-1111-4111-8111-111111111111");
             expect(call.selectedUniformIds).toContain("22222222-2222-4222-8222-222222222222");
         });
 
+        it("calls returnCadetDirectly with only checked items when one material is unchecked", async () => {
+            setup({ returnProcessEnabled: false });
+
+            // Uncheck the first material (Typ1)
+            await userEvent.click(screen.getByRole("checkbox", { name: /Typ1/i }));
+            await userEvent.click(screen.getByRole("button", { name: /actions\.save/i }));
+
+            const call = vi.mocked(returnCadetDirectly).mock.calls[0][0];
+            expect(call.selectedMaterialIds).not.toContain("44444444-4444-4444-8444-444444444444");
+            expect(call.selectedMaterialIds).toContain("66666666-6666-4666-8666-666666666666");
+        });
+
         it("shows success toast and calls onClose after successful direct save", async () => {
             setup({ returnProcessEnabled: false });
 
-            await userEvent.click(screen.getByRole("button", { name: /cadetDetailPage.vereinsaustritt.modal.actions.save/i }));
+            await userEvent.click(screen.getByRole("button", { name: /actions\.save/i }));
 
             expect(vi.mocked(toast).success).toHaveBeenCalled();
             expect(defaultProps.onClose).toHaveBeenCalled();
@@ -172,60 +184,60 @@ describe("<CadetReturnUniformModal />", () => {
             vi.mocked(returnCadetDirectly).mockRejectedValue(new Error("Network error"));
             setup({ returnProcessEnabled: false });
 
-            await userEvent.click(screen.getByRole("button", { name: /cadetDetailPage.vereinsaustritt.modal.actions.save/i }));
+            await userEvent.click(screen.getByRole("button", { name: /actions\.save/i }));
 
             expect(vi.mocked(toast).error).toHaveBeenCalled();
         });
     });
 
     describe("two-step flow (with process)", () => {
-        it("navigates to step 2 when clicking 'Weiter'", async () => {
+        it("navigates to step 2 when clicking the 'Next' button", async () => {
             setup();
 
-            await userEvent.click(screen.getByRole("button", { name: /cadetDetailPage.vereinsaustritt.modal.actions.next/i }));
+            await userEvent.click(screen.getByRole("button", { name: /actions\.next/i }));
 
-            expect(screen.getByText(/cadetDetailPage.vereinsaustritt.modal.step2.header/i)).toBeInTheDocument();
+            expect(screen.getByText(/step2\.header/i)).toBeInTheDocument();
             expect(screen.getByRole("checkbox", { name: /Ausweis abgeben/i })).toBeInTheDocument();
         });
 
-        it("navigates back to step 1 when clicking 'Zurück'", async () => {
+        it("navigates back to step 1 when clicking the 'Back' button", async () => {
             setup();
-            await userEvent.click(screen.getByRole("button", { name: /cadetDetailPage.vereinsaustritt.modal.actions.next/i }));
+            await userEvent.click(screen.getByRole("button", { name: /actions\.next/i }));
 
-            await userEvent.click(screen.getByRole("button", { name: /cadetDetailPage.vereinsaustritt.modal.actions.back/i }));
+            await userEvent.click(screen.getByRole("button", { name: /actions\.back/i }));
 
             expect(screen.getByRole("checkbox", { name: /Jacke-1/i })).toBeInTheDocument();
         });
 
         it("shows 'Start process' as default button when checklist items are not all checked", async () => {
             setup();
-            await userEvent.click(screen.getByRole("button", { name: /cadetDetailPage.vereinsaustritt.modal.actions.next/i }));
+            await userEvent.click(screen.getByRole("button", { name: /actions\.next/i }));
 
             // Find the split button primary action — it should be 'startProcess'
-            const startProcessBtn = screen.getAllByText(/cadetDetailPage.vereinsaustritt.modal.actions.startProcess/i)[0];
+            const startProcessBtn = screen.getAllByText(/actions\.startProcess/i)[0];
             expect(startProcessBtn).toBeInTheDocument();
         });
 
         it("shows 'Save as completed' as default button when all checklist items are checked", async () => {
             setup();
-            await userEvent.click(screen.getByRole("button", { name: /cadetDetailPage.vereinsaustritt.modal.actions.next/i }));
+            await userEvent.click(screen.getByRole("button", { name: /actions\.next/i }));
 
             // Check all items
             await userEvent.click(screen.getByRole("checkbox", { name: /Ausweis abgeben/i }));
             await userEvent.click(screen.getByRole("checkbox", { name: /Schlüssel abgeben/i }));
 
             // Primary split button should now be 'saveFinished'
-            const saveFinishedBtns = screen.getAllByText(/cadetDetailPage.vereinsaustritt.modal.actions.saveFinished/i);
+            const saveFinishedBtns = screen.getAllByText(/actions\.saveFinished/i);
             expect(saveFinishedBtns.length).toBeGreaterThan(0);
         });
 
         it("calls createReturnProcess with selected uniform and material IDs when starting process", async () => {
             setup();
-            await userEvent.click(screen.getByRole("button", { name: /cadetDetailPage.vereinsaustritt.modal.actions.next/i }));
+            await userEvent.click(screen.getByRole("button", { name: /actions\.next/i }));
 
             // Uncheck one uniform before submitting
             // (step 1 data should already be captured)
-            await userEvent.click(screen.getAllByText(/cadetDetailPage.vereinsaustritt.modal.actions.startProcess/i)[0]);
+            await userEvent.click(screen.getAllByText(/actions\.startProcess/i)[0]);
 
             expect(vi.mocked(createReturnProcess)).toHaveBeenCalledWith(
                 expect.objectContaining({
@@ -240,14 +252,14 @@ describe("<CadetReturnUniformModal />", () => {
 
         it("calls createReturnProcess with finished=true when saving as completed", async () => {
             setup();
-            await userEvent.click(screen.getByRole("button", { name: /cadetDetailPage.vereinsaustritt.modal.actions.next/i }));
+            await userEvent.click(screen.getByRole("button", { name: /actions\.next/i }));
 
             // Check all items so the 'saveFinished' button becomes primary
             await userEvent.click(screen.getByRole("checkbox", { name: /Ausweis abgeben/i }));
             await userEvent.click(screen.getByRole("checkbox", { name: /Schlüssel abgeben/i }));
 
             // Click the primary split button (saveFinished)
-            await userEvent.click(screen.getAllByText(/cadetDetailPage.vereinsaustritt.modal.actions.saveFinished/i)[0]);
+            await userEvent.click(screen.getAllByText(/actions\.saveFinished/i)[0]);
 
             expect(vi.mocked(createReturnProcess)).toHaveBeenCalledWith(
                 expect.objectContaining({
@@ -256,24 +268,27 @@ describe("<CadetReturnUniformModal />", () => {
             );
         });
 
-        it("does not pass unchecked uniform IDs to createReturnProcess", async () => {
+        it("does not pass unchecked uniform and material IDs to createReturnProcess", async () => {
             setup();
 
-            // Uncheck uniform-1 in step 1 before going to step 2
+            // Uncheck uniform-1 and material Typ1 in step 1 before going to step 2
             await userEvent.click(screen.getByRole("checkbox", { name: /Jacke-1/i }));
-            await userEvent.click(screen.getByRole("button", { name: /cadetDetailPage.vereinsaustritt.modal.actions.next/i }));
-            await userEvent.click(screen.getAllByText(/cadetDetailPage.vereinsaustritt.modal.actions.startProcess/i)[0]);
+            await userEvent.click(screen.getByRole("checkbox", { name: /Typ1/i }));
+            await userEvent.click(screen.getByRole("button", { name: /actions\.next/i }));
+            await userEvent.click(screen.getAllByText(/actions\.startProcess/i)[0]);
 
             const call = vi.mocked(createReturnProcess).mock.calls[0][0];
             expect(call.selectedUniformIds).not.toContain("11111111-1111-4111-8111-111111111111");
             expect(call.selectedUniformIds).toContain("22222222-2222-4222-8222-222222222222");
+            expect(call.selectedMaterialIds).not.toContain("44444444-4444-4444-8444-444444444444");
+            expect(call.selectedMaterialIds).toContain("66666666-6666-4666-8666-666666666666");
         });
 
         it("shows error toast when createReturnProcess throws", async () => {
             vi.mocked(createReturnProcess).mockRejectedValue(new Error("server error"));
             setup();
-            await userEvent.click(screen.getByRole("button", { name: /cadetDetailPage.vereinsaustritt.modal.actions.next/i }));
-            await userEvent.click(screen.getAllByText(/cadetDetailPage.vereinsaustritt.modal.actions.startProcess/i)[0]);
+            await userEvent.click(screen.getByRole("button", { name: /actions\.next/i }));
+            await userEvent.click(screen.getAllByText(/actions\.startProcess/i)[0]);
 
             expect(vi.mocked(toast).error).toHaveBeenCalled();
         });

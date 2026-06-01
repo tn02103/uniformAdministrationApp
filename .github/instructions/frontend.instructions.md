@@ -83,9 +83,10 @@ const MyForm = () => {
 
 ## Internationalisation (i18n)
 - **No hardcoded UI strings** in components — all visible text must use translation keys
-- Use `next-intl`'s `useTranslations` hook in client components
+- Use `next-intl`'s `useTranslations` hook in client components; use `useScopedI18n` from `@/lib/locales/client` when a component only references keys under one scope
 - Translation files live in `public/locales/`
 - Never write string literals like `"Speichern"` or `"Save"` directly in JSX — always `t('save')` or equivalent
+- **i18n keys must be English** — never use German or other non-English words as translation keys (the translated values may be in any language, but the key identifiers must be English)
 - Error messages from DAL/Zod are handled by the field components automatically
 
 ## Data Loading

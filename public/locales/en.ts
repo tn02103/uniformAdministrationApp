@@ -289,7 +289,7 @@ export default {
         returnUniform: {
             error: "An error occurred while withdrawing the uniform part. Please try again",
         },
-        vereinsaustritt: {
+        memberExit: {
             dropdownLabel: "Club exit",
             modal: {
                 header: "Club exit",
