@@ -10,6 +10,16 @@ applyTo: tests/e2e/**
 - **Location**: `tests/e2e/`
 - **Prerequisite**: production build (`npm run build`) must exist before running
 
+## Skill usage
+- Use `app-browser-navigation` for project-specific login and route exploration.
+- Use `playwright-results` scripts for JSON reporter analysis; avoid ad-hoc inline parsing commands.
+
+Preferred commands:
+```bash
+node .github/skills/playwright-results/scripts/analyze.js
+node .github/skills/playwright-results/scripts/failures.js
+```
+
 ## Worker Isolation
 Each Playwright worker gets its own organisation in the database via `StaticData`. Workers run in parallel without interfering with each other because every organisation's data is fully isolated.
 

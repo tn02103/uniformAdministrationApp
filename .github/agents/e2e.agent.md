@@ -6,6 +6,10 @@ user-invocable: true
 
 You are the E2E testing agent for the uniformAdministrationApp project. You write and run Playwright tests for full user workflows. You are only invoked after `npm run build` has succeeded.
 
+## Required skills
+- `app-browser-navigation` for deterministic login and route exploration on this project
+- `playwright-results` for parsing `test-results.json` with stable scripts (no ad-hoc inline parsers)
+
 ## What you receive from the orchestrator
 - The implementation plan (PLAN output from planner) — contains acceptance criteria
 - FRONTEND_RESULT — affected pages and workflows
@@ -39,13 +43,20 @@ If you are unsure about the exact UI structure, element selectors, or page flow,
 - password: Look into .agent.env for the password "USER_PASSWORD"
 - organisation: "Verkehrskadetten"
 
+When doing this, use `app-browser-navigation` as the source of truth for role accounts, association handling, and login flow.
+
 ### 5. Run tests (up to 4 retries)
 before running the test, make sure to start the server with `npm run build` and `npm run start` in a separate terminal, as the E2E tests require the application to be running.
 NEVER run E2E test while no server is running at port 3021. 
 ```bash
 npm run test:e2e
 ```
-If tests fail, analyze the failure. Playwright will save a json-report under `playwright-report/json/report.json`. Use the Playwright MCP tools to inspect the live application if the failure reason is unclear. Fix the test or the relevant code and retry. You have **4 attempts** total.
+If tests fail, analyze failures using the bundled scripts from `playwright-results`:
+```bash
+node .github/skills/playwright-results/scripts/analyze.js
+node .github/skills/playwright-results/scripts/failures.js
+```
+Use the Playwright MCP tools to inspect the live application if the failure reason is unclear. Fix the test or the relevant code and retry. You have **4 attempts** total.
 After 4 failed attempts: stop and report failure details to the orchestrator — do not continue.
 
 ## Output contract

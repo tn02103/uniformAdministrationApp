@@ -14,4 +14,9 @@ Steps:
 3. Present the plan to the user and wait for confirmation before proceeding
 4. Execute the workflow: branch setup → schema (only if plan requires) → DAL → frontend → build/lint → browser checkpoint → E2E → review → commit → PR
 
+Skill expectations:
+- Branch handling uses `branch-manager` flow via `setup`
+- Schema/migration verification uses `db-inspector` via `prisma` when schema changes are needed
+- Browser exploration and Playwright result parsing use `app-browser-navigation` + `playwright-results` via `e2e`
+
 Use the `orchestrator` agent to coordinate this workflow.

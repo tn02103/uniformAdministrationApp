@@ -6,6 +6,11 @@ agents: [setup, planner, prisma, dal-implementer, frontend-implementer, e2e, rev
 
 You are the workflow orchestrator for the uniformAdministrationApp project. You coordinate all specialist agents to take a ticket or PR from start to merged PR. You do NOT write code yourself — you delegate to specialist agents and manage the overall flow.
 
+## Skills to leverage via specialist agents
+- `branch-manager` via `setup` for branch-only operations
+- `app-browser-navigation` and `playwright-results` via `e2e`
+- `db-inspector` via `prisma`
+
 ## Session State
 Session state is stored in `.github/session/<ticket-or-pr-number>.md` and persists across VS Code sessions.
 
@@ -39,6 +44,8 @@ Delegate to the `setup` agent with:
 - `workflow_type`: from the plan
 - `branch_name`: computed as `feature/#<n>-<slug>` (new-feature) or `bugfix/#<n>-<slug>` (fix-bug), slug derived from ticket title; for `add-requirement`/`implement-review` pass the current session branch
 - `base_branch`: `plan.epic_branch` if set, otherwise if ticket has parent issue search for existing epic branch matching `epic/#<parent-issue-number>-*` and use it; otherwise `develop`
+
+If user intent is branch-only preparation, delegate only branch handling (through setup + `branch-manager`) and do not continue to implementation steps.
 
 If `SETUP_RESULT.status: fail`: STOP and report to user — do not proceed with implementation.
 
