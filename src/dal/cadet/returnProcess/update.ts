@@ -27,6 +27,7 @@ export const completeChecklistItem = (data: CompleteChecklistItemInput) =>
                 where: {
                     fk_returnProcess: returnProcessId,
                     fk_checklistItem: checklistItemId,
+                    returnProcess: { fk_assosiation: assosiation },
                 },
                 data: {
                     completedAt: completed ? new Date() : null,
@@ -46,8 +47,8 @@ export const completeChecklistItem = (data: CompleteChecklistItemInput) =>
     );
 
 /**
- * Marks all checklist items as completed and finishes the return process.
- * Sets the cadet status to RETURNED.
+ * Finishes the return process without changing checklist item completion state.
+ * Sets the cadet status to RETURNED and ensures return timestamps are set.
  * @param data returnProcessId
  */
 export const completeChecklist = (data: CompleteChecklistInput) =>
@@ -56,21 +57,13 @@ export const completeChecklist = (data: CompleteChecklistInput) =>
         data,
         completeChecklistSchema,
         { returnProcessId: data.returnProcessId }
-    ).then(([{ username, assosiation }, { returnProcessId }]) =>
+    ).then(([{ assosiation }, { returnProcessId }]) =>
         prisma.$transaction(async (client) => {
-            const returnProcess = await client.returnProcess.findFirstOrThrow({
-                where: { id: returnProcessId, fk_assosiation: assosiation },
-                include: { itemStatuses: true },
-            });
-
             const now = new Date();
 
-            await client.returnChecklistItemStatus.updateMany({
-                where: { fk_returnProcess: returnProcessId },
-                data: {
-                    completedAt: now,
-                    completedByUser: username,
-                },
+            const returnProcess = await client.returnProcess.findFirstOrThrow({
+                where: { id: returnProcessId, fk_assosiation: assosiation },
+                select: { fk_cadet: true },
             });
 
             await client.returnProcess.update({

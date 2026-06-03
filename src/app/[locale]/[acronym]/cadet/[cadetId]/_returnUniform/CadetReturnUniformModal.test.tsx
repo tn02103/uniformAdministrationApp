@@ -47,6 +47,16 @@ const mockTemplate: ReturnProcessTemplateWithItems = {
         { id: "99999999-9999-4999-8999-999999999999", label: "Schlüssel abgeben", sortOrder: 1 },
     ],
 };
+const mockTemplateAlt: ReturnProcessTemplateWithItems = {
+    id: "aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+    name: "Alternativprozess",
+    defaultProcess: false,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    checklistItems: [
+        { id: "bbbbbbb1-bbbb-4bbb-8bbb-bbbbbbbbbbb1", label: "Meldung abgeben", sortOrder: 0 },
+    ],
+};
 
 const defaultProps = {
     cadetId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
@@ -191,6 +201,19 @@ describe("<CadetReturnUniformModal />", () => {
     });
 
     describe("two-step flow (with process)", () => {
+        it("shows template selector, checklist items, and notes field on step 2", async () => {
+            setup({ templates: [mockTemplate, mockTemplateAlt] });
+
+            await userEvent.click(screen.getByRole("button", { name: /actions\.next/i }));
+
+            expect(screen.getByRole("combobox")).toBeInTheDocument();
+            expect(screen.getByRole("option", { name: /Standardprozess/i })).toBeInTheDocument();
+            expect(screen.getByRole("option", { name: /Alternativprozess/i })).toBeInTheDocument();
+            expect(screen.getByRole("checkbox", { name: /Ausweis abgeben/i })).toBeInTheDocument();
+            expect(screen.getByRole("checkbox", { name: /Schlüssel abgeben/i })).toBeInTheDocument();
+            expect(screen.getByRole("textbox", { name: /step2\.notesLabel/i })).toBeInTheDocument();
+        });
+
         it("navigates to step 2 when clicking the 'Next' button", async () => {
             setup();
 

@@ -39,6 +39,25 @@ export class StaticData {
         }
         await this.fill.all();
     }
+
+    async setReturnProcessEnabled(enabled: boolean) {
+        await prisma.assosiationConfiguration.update({
+            where: { assosiationId: this.fk_assosiation },
+            data: { returnProcessEnabled: enabled },
+        });
+    }
+
+    async getCadet(cadetId: string) {
+        return prisma.cadet.findFirst({
+            where: { id: cadetId, fk_assosiation: this.fk_assosiation },
+        });
+    }
+
+    async getReturnProcessByCadetId(cadetId: string) {
+        return prisma.returnProcess.findFirst({
+            where: { fk_cadet: cadetId, fk_assosiation: this.fk_assosiation },
+        });
+    }
 }
 
 class StaticDataGetter {

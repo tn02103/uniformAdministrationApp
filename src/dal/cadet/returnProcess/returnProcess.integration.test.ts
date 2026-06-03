@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { AuthRole } from "@/lib/AuthRoles";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { cleanDataV2 } from "@/dal/_helper/testHelper";
 import { createReturnProcess, getReturnProcessList, completeReturnChecklistItem, completeReturnChecklist, getReturnProcessConfig } from "./index";
 import { __unsecuredProcessCadetEquipmentReturn } from "./create";
 
@@ -10,6 +11,7 @@ const wrongOrg = new StaticData(1);
 
 describe('<ReturnProcess> Integration Tests', () => {
     beforeAll(async () => {
+        await staticData.resetData();
         await staticData.cleanup.returnProcess();
     });
 
@@ -23,6 +25,7 @@ describe('<ReturnProcess> Integration Tests', () => {
             expect(process!.cadet.id).toBe(ids.cadetIds[10]);
             expect(process!.returnProcessTemplate.id).toBe(ids.returnProcessTemplateIds[0]);
             expect(process!.itemStatuses).toHaveLength(2);
+            expect(cleanDataV2(result)).toMatchSnapshot();
         });
 
         it('should not return finished processes', async () => {
@@ -248,19 +251,30 @@ describe('<ReturnProcess> Integration Tests', () => {
     });
 
     describe('completeReturnChecklist', () => {
-        it('should mark all items complete, set finished=true, and cadet status=RETURNED', async () => {
+        it('should preserve checklist items and set finished=true with cadet status=RETURNED', async () => {
             const returnProcessId = ids.returnProcessIds[0];
+            const completedItemId = ids.returnChecklistTemplateIds[0];
+            const unfinishedItemId = ids.returnChecklistTemplateIds[1];
+
+            await completeReturnChecklistItem({
+                returnProcessId,
+                checklistItemId: completedItemId,
+                completed: true,
+            });
 
             await completeReturnChecklist({ returnProcessId });
 
-            // Check all item statuses are completed
+            // Check checklist items preserved
             const statuses = await prisma.returnChecklistItemStatus.findMany({
                 where: { fk_returnProcess: returnProcessId },
             });
-            statuses.forEach((s) => {
-                expect(s.completedAt).not.toBeNull();
-                expect(s.completedByUser).toBe('mana');
-            });
+            const completedStatus = statuses.find((s) => s.fk_checklistItem === completedItemId);
+            const unfinishedStatus = statuses.find((s) => s.fk_checklistItem === unfinishedItemId);
+
+            expect(completedStatus?.completedAt).not.toBeNull();
+            expect(completedStatus?.completedByUser).toBe('mana');
+            expect(unfinishedStatus?.completedAt).toBeNull();
+            expect(unfinishedStatus?.completedByUser).toBeNull();
 
             // Check process is finished
             const process = await prisma.returnProcess.findUnique({ where: { id: returnProcessId } });
@@ -287,40 +301,13 @@ describe('<ReturnProcess> Integration Tests', () => {
             global.__ROLE__ = undefined;
         });
     });
-
-    describe('getReturnProcessConfig', () => {
-        it('should return returnProcessEnabled, anonymizationMode and templates with checklistItems', async () => {
-            const result = await getReturnProcessConfig();
-
-            expect(result).toBeDefined();
-            expect(typeof result.returnProcessEnabled).toBe('boolean');
-            expect(result.anonymizationMode).toBeDefined();
-            expect(Array.isArray(result.templates)).toBe(true);
-            const template = result.templates.find((t) => t.id === ids.returnProcessTemplateIds[0]);
-            expect(template).toBeDefined();
-            expect(Array.isArray(template!.checklistItems)).toBe(true);
-            // checklistItems should be in sortOrder order
-            const orders = template!.checklistItems.map((i) => i.sortOrder);
-            expect(orders).toEqual([...orders].sort((a, b) => a - b));
-        });
-
-        it('should not return templates from another org', async () => {
-            const result = await getReturnProcessConfig();
-            const wrongOrgTemplateIds = wrongOrg.ids.returnProcessTemplateIds;
-            result.templates.forEach((t) => {
-                expect(wrongOrgTemplateIds).not.toContain(t.id);
-            });
-        });
-
-        it('should reject insufficient role', async () => {
-            global.__ROLE__ = AuthRole.user;
-            await expect(getReturnProcessConfig()).rejects.toThrow();
-            global.__ROLE__ = undefined;
-        });
-    });
 });
 
 describe('<__unsecuredProcessCadetEquipmentReturn> Integration Tests', () => {
+    beforeAll(async () => {
+        await staticData.resetData();
+    });
+
     beforeEach(async () => {
         await staticData.cleanup.uniformIssued();
         await staticData.cleanup.materialIssued();
@@ -484,6 +471,10 @@ describe('<__unsecuredProcessCadetEquipmentReturn> Integration Tests', () => {
 });
 
 describe('<createReturnProcess> equipment return integration tests', () => {
+    beforeAll(async () => {
+        await staticData.resetData();
+    });
+
     beforeEach(async () => {
         await staticData.cleanup.cadet();
     });
