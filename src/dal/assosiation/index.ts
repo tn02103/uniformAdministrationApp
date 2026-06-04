@@ -1,7 +1,9 @@
 "use server";
 
-import { getAnonymizationConfig as _getAnonymizationConfig } from "./getAnonymizationConfig";
-import { updateAnonymizationConfig as _updateAnonymizationConfig } from "./updateAnonymizationConfig";
+import { getAnonymizationConfig } from "./getAnonymizationConfig";
+import { updateAnonymizationConfig } from "./updateAnonymizationConfig";
+import { getReturnProcessConfig } from "./config/returnProcess";
 
-export const getAssosiationAnonymizationConfig = _getAnonymizationConfig;
-export const updateAssosiationAnonymizationConfig = _updateAnonymizationConfig;
+export const getAssosiationAnonymizationConfig = getAnonymizationConfig;
+export const updateAssosiationAnonymizationConfig = updateAnonymizationConfig;
+export { getReturnProcessConfig };

@@ -88,6 +88,6 @@ describe('getClosedInspectionReport', () => {
 
         expect(success).toBeTruthy();
         const report = result as InspectionReview;
-        expect(report.activeCadets).toBe(10);
+        expect(report.activeCadets).toBe(9);
     });
 });

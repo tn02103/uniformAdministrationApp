@@ -1,7 +1,7 @@
 import { getCadetData } from "@/actions/cadet/data";
 import { getCadetMaterialMap } from "@/actions/controllers/CadetMaterialController";
 import { getCadetUniformMap } from "@/dal/cadet/uniformMap";
-import { getReturnProcessConfig } from "@/dal/cadet/returnProcess";
+import { getReturnProcessConfig } from "@/dal/assosiation";
 import { getMaterialConfiguration } from "@/dal/material/type/_index";
 import { AuthRole } from "@/lib/AuthRoles";
 import { getIronSession } from "@/lib/ironSession";

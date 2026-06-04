@@ -56,6 +56,7 @@ export default defineConfig({
     },
     resolve: {
         alias: [
+            { find: 'server-only', replacement: path.resolve(__dirname, 'vitest/mocks/server-only.ts') },
             { find: /^@\/prisma\/(.*)/, replacement: path.resolve(__dirname, 'prisma/generated/$1') },
             { find: /^@\/(.*)/, replacement: path.resolve(__dirname, 'src/$1') },
         ],

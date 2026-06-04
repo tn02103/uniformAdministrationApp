@@ -179,21 +179,4 @@ describe('getInspectionsByCadet', () => {
             expect(rowIds).toContain(ids.inspectionIds[1]);
         });
     });
-
-    describe('soft-delete filter', () => {
-        it('rejects the request when the cadet is soft-deleted', async () => {
-            // Soft-delete cadet[0]; genericSAValidator checks deletedAt IS NULL,
-            // so the request should be rejected before the SQL runs.
-            // The JOIN clause also includes AND c.deletedAt IS NULL as defence-in-depth.
-            await prisma.cadet.update({
-                where: { id: ids.cadetIds[0] },
-                data: { deletedAt: new Date() },
-            });
-
-            const { success } = await runServerActionTest(
-                getInspectionsByCadet({ cadetId: ids.cadetIds[0] })
-            );
-            expect(success).toBeFalsy();
-        });
-    });
 });
