@@ -30,23 +30,21 @@ test.describe("Cadet Return Uniform", () => {
             await page.goto(`/de/app/cadet/${activeCadetId}`);
 
             await cadetDetailPage.btn_menu.click();
-            await expect(page.getByTestId("btn_cadet_menu_return")).toBeVisible();
+            await expect(cadetDetailPage.btn_menu_memberExit).toBeVisible();
         });
 
         test("inspector does NOT see return menu item for RETURNING cadet", async ({ page, staticData, cadetDetailPage }) => {
             const returningCadetId = staticData.ids.cadetIds[10];
             await page.goto(`/de/app/cadet/${returningCadetId}`);
 
-            await cadetDetailPage.btn_menu.click();
-            await expect(page.getByTestId("btn_cadet_menu_return")).toBeHidden();
+            await expect(cadetDetailPage.btn_menu).toBeHidden();
         });
 
         test("inspector does NOT see return menu item for RETURNED cadet", async ({ page, staticData, cadetDetailPage }) => {
             const returnedCadetId = staticData.ids.cadetIds[11];
             await page.goto(`/de/app/cadet/${returnedCadetId}`);
 
-            await cadetDetailPage.btn_menu.click();
-            await expect(page.getByTestId("btn_cadet_menu_return")).toBeHidden();
+            await expect(cadetDetailPage.btn_menu).toBeHidden();
         });
 
         userTest("user role cannot see cadet menu at all", async ({ page, staticData }) => {
@@ -58,8 +56,10 @@ test.describe("Cadet Return Uniform", () => {
 
     // AC4: Without returnProcessEnabled/templates: modal opens with step 1 → direct save → cadet RETURNED
     test.describe("AC4: direct return path (returnProcessEnabled=false)", () => {
-
-        test("shows Vereinsaustritt modal with uniform items step and saves directly", async ({
+        test.beforeEach(async ({ staticData }) => {
+            await staticData.setReturnProcessEnabled(false);
+        });
+        test("shows member exit modal with uniform items step and saves directly", async ({
             page, staticData, cadetDetailPage, toast,
         }) => {
             // returnProcessEnabled is false by default
@@ -67,14 +67,14 @@ test.describe("Cadet Return Uniform", () => {
             await page.goto(`/de/app/cadet/${activeCadetId}`);
 
             await cadetDetailPage.btn_menu.click();
-            await page.getByTestId("btn_cadet_menu_return").click();
+            await cadetDetailPage.btn_menu_memberExit.click();
 
             // Modal opens with step 1
             const modalLocator = page.locator(".modal");
             await expect(modalLocator).toBeVisible();
 
             // Save button (no process step)
-            const saveBtn = modalLocator.getByRole("button", { name: german.cadetDetailPage.vereinsaustritt.modal.actions.save });
+            const saveBtn = modalLocator.getByRole("button", { name: german.cadetDetailPage.memberExit.modal.actions.save });
             await expect(saveBtn).toBeVisible();
             await saveBtn.click();
 
@@ -96,7 +96,7 @@ test.describe("Cadet Return Uniform", () => {
             await page.goto(`/de/app/cadet/${activeCadetId}`);
 
             await cadetDetailPage.btn_menu.click();
-            await page.getByTestId("btn_cadet_menu_return").click();
+            await cadetDetailPage.btn_menu_memberExit.click();
 
             const modalLocator = page.locator(".modal");
             await expect(modalLocator).toBeVisible();
@@ -124,15 +124,15 @@ test.describe("Cadet Return Uniform", () => {
             await page.goto(`/de/app/cadet/${activeCadetId}`);
 
             await cadetDetailPage.btn_menu.click();
-            await page.getByTestId("btn_cadet_menu_return").click();
+            await cadetDetailPage.btn_menu_memberExit.click();
 
             const modalLocator = page.locator(".modal");
             await expect(modalLocator).toBeVisible();
-            await modalLocator.getByRole("button", { name: german.cadetDetailPage.vereinsaustritt.modal.actions.next }).click();
+            await modalLocator.getByRole("button", { name: german.cadetDetailPage.memberExit.modal.actions.next }).click();
 
             // Submit the form
             await modalLocator.getByRole("button", {
-                name: german.cadetDetailPage.vereinsaustritt.modal.actions.startProcess
+                name: german.cadetDetailPage.memberExit.modal.actions.startProcess
             }).click();
 
             // Modal should close
@@ -153,14 +153,14 @@ test.describe("Cadet Return Uniform", () => {
             await page.goto(`/de/app/cadet/${activeCadetId}`);
 
             await cadetDetailPage.btn_menu.click();
-            await page.getByTestId("btn_cadet_menu_return").click();
+            await cadetDetailPage.btn_menu_memberExit.click();
 
             const modalLocator = page.locator(".modal");
             await expect(modalLocator).toBeVisible();
-            await modalLocator.getByRole("button", { name: german.cadetDetailPage.vereinsaustritt.modal.actions.next }).click();
+            await modalLocator.getByRole("button", { name: german.cadetDetailPage.memberExit.modal.actions.next }).click();
 
             await modalLocator.getByRole("button", {
-                name: german.cadetDetailPage.vereinsaustritt.modal.actions.startProcess
+                name: german.cadetDetailPage.memberExit.modal.actions.startProcess
             }).click();
             await expect(modalLocator).toBeHidden();
 
@@ -178,7 +178,7 @@ test.describe("Cadet Return Uniform", () => {
             await page.goto(`/de/app/cadet/${activeCadetId}`);
 
             await cadetDetailPage.btn_menu.click();
-            await page.getByTestId("btn_cadet_menu_return").click();
+            await cadetDetailPage.btn_menu_memberExit.click();
 
             const modalLocator = page.locator(".modal");
             await expect(modalLocator).toBeVisible();
@@ -190,33 +190,6 @@ test.describe("Cadet Return Uniform", () => {
             // Cadet should still be ACTIVE
             const cadet = await staticData.getCadet(activeCadetId);
             expect(cadet?.status).toBe(CadetStatus.ACTIVE);
-        });
-    });
-
-    // AC5: Error handling: if cadet not active, action fails with error (the return button is hidden, enforced at DAL level too)
-    test.describe("AC5: non-ACTIVE cadet cannot trigger return", () => {
-
-        test("RETURNING cadet has no return menu option", async ({
-            page, staticData, cadetDetailPage,
-        }) => {
-            // cadetIds[10] is RETURNING
-            const returningCadetId = staticData.ids.cadetIds[10];
-            await page.goto(`/de/app/cadet/${returningCadetId}`);
-
-            await cadetDetailPage.btn_menu.click();
-            // The return item should not be rendered for non-ACTIVE status
-            await expect(page.getByTestId("btn_cadet_menu_return")).toBeHidden();
-        });
-
-        test("RETURNED cadet has no return menu option", async ({
-            page, staticData, cadetDetailPage,
-        }) => {
-            // cadetIds[11] is RETURNED
-            const returnedCadetId = staticData.ids.cadetIds[11];
-            await page.goto(`/de/app/cadet/${returnedCadetId}`);
-
-            await cadetDetailPage.btn_menu.click();
-            await expect(page.getByTestId("btn_cadet_menu_return")).toBeHidden();
         });
     });
 });

@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
-import CadetReturnUniformModal from "./CadetReturnUniformModal";
+import CadetReturnUniformModal from "./MemberExitModal";
 import { createReturnProcess } from "@/dal/cadet/returnProcess";
 import { returnCadetDirectly } from "@/dal/cadet";
 import { useCadetUniformDescriptList, useCadetMaterialMap } from "@/dataFetcher/cadet";

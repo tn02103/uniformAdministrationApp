@@ -8,7 +8,7 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { Dropdown } from "react-bootstrap";
 import { toast } from "react-toastify";
-import CadetReturnUniformModal from "./_returnUniform/CadetReturnUniformModal";
+import CadetReturnUniformModal from "./_returnUniform/MemberExitModal";
 import { ReturnConfig } from "@/types/returnProcessTypes";
 
 /**
@@ -56,7 +56,7 @@ export default function CadetDropDown({
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                     {cadetStatus === CadetStatus.ACTIVE && userRole >= AuthRole.inspector && (
-                        <Dropdown.Item onClick={handleReturnUniform} data-testid={"btn_cadet_menu_return"}>
+                        <Dropdown.Item onClick={handleReturnUniform} data-testid={"btn_cadet_menu_memberExit"}>
                             {t('cadetDetailPage.memberExit.dropdownLabel')}
                         </Dropdown.Item>
                     )}
