@@ -24,9 +24,9 @@ export default defineProject({
     },
     resolve: {
         alias: [
-            { find: /^@\/prisma\/(.*)/, replacement: path.resolve(__dirname, 'prisma/generated/$1') },
-            { find: /^@\/(.*)/, replacement: path.resolve(__dirname, 'src/$1') },
-            { find: '@test-utils/prisma-mock', replacement: path.resolve(__dirname, 'vitest/setup-dal-unit') },
+            { find: /^@\/prisma\/(.*)/, replacement: path.resolve(import.meta.dirname, 'prisma/generated/$1') },
+            { find: /^@\/(.*)/, replacement: path.resolve(import.meta.dirname, 'src/$1') },
+            { find: '@test-utils/prisma-mock', replacement: path.resolve(import.meta.dirname, 'vitest/setup-dal-unit') },
         ],
     },
 });
