@@ -6,6 +6,7 @@ permissions:
   contents: read
 on:
   pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
   # Stage 1: Testing and Linting
@@ -49,7 +50,7 @@ jobs:
     name: DAL-Integration Tests
     runs-on: ubuntu-latest
     env:
-      DATABASE_URL: "postgres://user:password@localhost:5432/vk_uniform"
+      DATABASE_URL: "******localhost:5432/vk_uniform"
       IRON_SESSION_KEY: "46[Hmau0uH&B]0;kjm$'r1Lk;kX@I|cm@"
       IRON_SESSION_COOKIE_NAME: "iron-session-cookie"
       REFRESH_TOKEN_KEY: "refresh-token"
@@ -108,7 +109,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test-dal-unit, test-dal-integration, test-components, lint]
     env:
-      DATABASE_URL: "postgres://user:password@localhost:5432/vk_uniform"
+      DATABASE_URL: "******localhost:5432/vk_uniform"
       IRON_SESSION_KEY: "46[Hmau0uH&B]0;jjm$'r1Lk;kX@I|cm@"
       IRON_SESSION_COOKIE_NAME: "iron-session-cookie"
       REFRESH_TOKEN_KEY: "refresh-token"
@@ -160,7 +161,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     env:
-      DATABASE_URL: "postgres://user:password@localhost:5432/vk_uniform"
+      DATABASE_URL: "******localhost:5432/vk_uniform"
       IRON_SESSION_KEY: "46[Hmau0uH&B]0;kjm$'r1Lk;kX@I|cm@"
       IRON_SESSION_COOKIE_NAME: "iron-session-cookie"
       REFRESH_TOKEN_KEY: "refresh-token"
