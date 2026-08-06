@@ -56,8 +56,8 @@ export default defineConfig({
     },
     resolve: {
         alias: [
-            { find: /^@\/prisma\/(.*)/, replacement: path.resolve(__dirname, 'prisma/generated/$1') },
-            { find: /^@\/(.*)/, replacement: path.resolve(__dirname, 'src/$1') },
+            { find: /^@\/prisma\/(.*)/, replacement: path.resolve(import.meta.dirname, 'prisma/generated/$1') },
+            { find: /^@\/(.*)/, replacement: path.resolve(import.meta.dirname, 'src/$1') },
         ],
     },
 });

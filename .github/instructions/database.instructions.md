@@ -40,6 +40,7 @@ Import the args constant into Prisma queries to ensure type consistency.
 3. Adapt `StaticData` if new/changed models affect test data (see below)
 4. Run `npx prisma migrate dev --name <name>` to create the migration
 5. Verify with `npx prisma studio`
+6. Run schema/migration verification with `db-inspector` skill scripts
 
 ### Naming convention
 - Work-in-progress: prefix with `snapshot_`, e.g. `snapshot_add_storage_unit`
@@ -55,6 +56,22 @@ npx prisma db seed                     # Run seed.ts
 npx prisma generate                    # Regenerate Prisma Client
 npx prisma studio                      # Visual DB browser
 ```
+
+## DB inspector skill scripts
+Use these helpers for repeatable migration verification:
+
+```bash
+bash .github/skills/db-inspector/scripts/schema.sh
+bash .github/skills/db-inspector/scripts/migration-verify.sh
+bash .github/skills/db-inspector/scripts/query.sh "SELECT table_schema, table_name FROM information_schema.tables LIMIT 20"
+```
+
+`query.sh` blocks mutating SQL by design and is intended for read-only diagnostics.
+
+## Hybrid verification guidance
+Prisma checks are required but not always sufficient. For migrations involving views, indexes, functions, or cross-schema effects, combine:
+1. Prisma/DAL checks for app-level correctness
+2. SQL/catalog checks via `db-inspector` scripts for structural correctness
 
 **Warning**: Never run `prisma migrate reset` without confirming the `DATABASE_URL` shows `localhost`. This command is destructive.
 

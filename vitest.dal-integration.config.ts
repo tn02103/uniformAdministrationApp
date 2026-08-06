@@ -22,10 +22,10 @@ export default defineProject({
     resolve: {
         alias: [
             // More specific alias must come first
-            { find: /^@\/prisma\/(.*)/, replacement: path.resolve(__dirname, 'prisma/generated/$1') },
-            { find: /^@\/(.*)/, replacement: path.resolve(__dirname, 'src/$1') },
+            { find: /^@\/prisma\/(.*)/, replacement: path.resolve(import.meta.dirname, 'prisma/generated/$1') },
+            { find: /^@\/(.*)/, replacement: path.resolve(import.meta.dirname, 'src/$1') },
             // Replace ioredis with in-memory mock in tests
-            { find: 'ioredis', replacement: path.resolve(__dirname, 'node_modules/ioredis-mock') },
+            { find: 'ioredis', replacement: path.resolve(import.meta.dirname, 'node_modules/ioredis-mock') },
         ],
     },
 });

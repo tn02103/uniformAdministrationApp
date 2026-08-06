@@ -18,4 +18,9 @@ Steps:
 
 **Branch stays the same** — do NOT create a new branch. The existing PR is updated, not replaced.
 
+Skill expectations:
+- Branch validation uses `branch-manager` flow via `setup`
+- Schema/migration verification uses `db-inspector` via `prisma`
+- Browser exploration and Playwright result parsing use `app-browser-navigation` + `playwright-results` via `e2e`
+
 Use the `orchestrator` agent to coordinate this workflow.
