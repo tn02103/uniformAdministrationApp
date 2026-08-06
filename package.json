@@ -111,8 +111,7 @@
         "bcrypt@*": true,
         "prisma@*": true,
         "@swc/core@*": true,
-        "esbuild@*": true,
-        "unrs-resolver@*": true
+        "esbuild@*": true
     },
     "overrides": {
         "exceljs": {
