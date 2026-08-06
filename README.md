@@ -8,7 +8,6 @@
 - `npm run dev` to start in development mode
 - `npm run build` & `npm run start` to start project as Production build
 
-
 ## .env
 ```
 DATABASE_URL="postgres://{{username}}:{{password}}@{{url}}/{{database}}"
