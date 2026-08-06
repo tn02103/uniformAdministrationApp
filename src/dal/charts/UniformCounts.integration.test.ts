@@ -2,7 +2,7 @@
 import { getUniformCountBySizeForType, getUniformCountByType } from './UniformCounts';
 import { AuthRole } from '@/lib/AuthRoles';
 import { staticData } from '../../../vitest/setup-dal-integration';
-import type { UniformType } from '@prisma/client';
+import type { UniformType } from '@/prisma/client';
 
 // Integration tests use real database and static test data
 // staticData provides comprehensive test dataset with known relationships
