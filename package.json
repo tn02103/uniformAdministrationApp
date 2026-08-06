@@ -106,10 +106,13 @@
         "vitest": "4.1.10"
     },
     "allowScripts": {
-        "@prisma/engines@7.9.1": true,
-        "@parcel/watcher@2.5.1": true,
-        "bcrypt@6.0.0": true,
-        "prisma@7.9.1": true
+        "@prisma/engines@*": true,
+        "@parcel/watcher@*": true,
+        "bcrypt@*": true,
+        "prisma@*": true,
+        "@swc/core@*": true,
+        "esbuild@*": true,
+        "unrs-resolver@*": true
     },
     "overrides": {
         "exceljs": {
