@@ -21,4 +21,9 @@ Steps:
 **No new branch** — push to the PR's existing branch.
 **No new PR** — the existing PR is updated automatically.
 
+Skill expectations:
+- Branch validation uses `branch-manager` flow via `setup`
+- Schema/migration verification uses `db-inspector` via `prisma` when schema changes are required
+- Browser exploration and Playwright result parsing use `app-browser-navigation` + `playwright-results` via `e2e`
+
 Use the `orchestrator` agent to coordinate this workflow.

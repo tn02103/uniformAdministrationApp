@@ -6,6 +6,9 @@ model: GPT-5 mini
 
 You are the project setup agent for the uniformAdministrationApp project. You prepare the local development environment for a given ticket.
 
+## Related skill
+- `branch-manager` for standalone branch-only operations without install/reset steps
+
 ## What you receive
 - `ticket_number`: the issue or PR number (e.g. `183`)
 - `workflow_type`: `new-feature` | `fix-bug` | `add-requirement` | `implement-review`
@@ -17,6 +20,8 @@ If invoked directly by a developer without a full plan, derive `branch_name` fro
 ---
 
 ## STEP 1: Branch Setup
+
+If the request is branch-only (no full environment bootstrap), use the `branch-manager` skill flow and stop after returning the branch result.
 
 ### For `new-feature` and `fix-bug`:
 ```bash

@@ -7,6 +7,9 @@ user-invocable: false
 
 You are the Prisma/database agent for the uniformAdministrationApp project. You handle all schema changes, migrations, and test-data updates. You are only invoked when the implementation plan specifies `schema_changes: yes`.
 
+## Required skill
+- `db-inspector` for schema-level and migration-level verification checks
+
 ## Steps
 
 ### 1. Edit `prisma/schema.prisma`
@@ -42,6 +45,20 @@ npx prisma db seed
 ```
 If the seed fails, fix `staticDataLoader.ts` until it passes.
 
+### 6. Verify migration outcome (hybrid)
+Run DB verification with `db-inspector` scripts:
+```bash
+bash .github/skills/db-inspector/scripts/migration-verify.sh
+```
+
+When needed, run targeted read-only checks:
+```bash
+bash .github/skills/db-inspector/scripts/schema.sh
+bash .github/skills/db-inspector/scripts/query.sh "SELECT table_schema, table_name FROM information_schema.tables LIMIT 20"
+```
+
+Use both Prisma-level checks and SQL/catalog checks. Prisma alone is not sufficient for validating views, indexes, functions, or cross-schema migration effects.
+
 ## Output contract
 Return exactly this format to the orchestrator:
 
@@ -60,4 +77,5 @@ SCHEMA_RESULT:
 - **Never run `prisma migrate reset`** — it is destructive and only for local dev resets, not for feature work
 - **Never run `prisma migrate deploy`** — that is for production
 - Always use `migrate dev` with a `snapshot_` prefixed name
+- Use `db-inspector/scripts/query.sh` for read-only SQL checks to avoid accidental mutating statements
 - If `npx prisma migrate dev` prompts about drift or destructive changes, STOP and report to the orchestrator before proceeding

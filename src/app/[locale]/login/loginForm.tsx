@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { mutate } from "swr";
 import { useLocalStorage } from "usehooks-ts";
-import { uuid } from "uuidv4";
+import { v4 as uuid } from "uuid";
 
 type PropType = {
     assosiations: Assosiation[];
