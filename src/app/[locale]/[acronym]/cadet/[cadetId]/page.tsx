@@ -82,8 +82,6 @@ const CadetDetailPage = async (props: PropType) => {
                 {(user!.role >= AuthRole.inspector) &&
                     <div className="position-absolute w-auto top-0 end-0">
                         <CadetDropDown
-                            firstname={cadet.firstname}
-                            lastname={cadet.lastname}
                             returnConfig={returnConfigResult.config}
                             returnConfigLoadFailed={returnConfigResult.loadFailed}
                             cadetStatus={cadet.status}

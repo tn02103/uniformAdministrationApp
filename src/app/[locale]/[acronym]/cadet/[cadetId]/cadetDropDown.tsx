@@ -19,8 +19,6 @@ import { ReturnConfig } from "@/types/returnProcessTypes";
 export default function CadetDropDown({
     returnConfig, returnConfigLoadFailed, cadetStatus, userRole,
 }: {
-    firstname: string;
-    lastname: string;
     returnConfig: ReturnConfig;
     returnConfigLoadFailed: boolean;
     cadetStatus: CadetStatus;
