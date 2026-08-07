@@ -1,47 +1,5 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`<ReturnProcess> Integration Tests > getReturnProcessConfig > should return returnProcessEnabled, anonymizationMode and templates with checklistItems 1`] = `
-{
-  "anonymizationMode": "MANUAL",
-  "returnProcessEnabled": true,
-  "templates": [
-    {
-      "checklistItems": [
-        {
-          "id": "cc0000-0000-4000-8000-000000000003",
-          "label": "Schuhe abgeben",
-          "sortOrder": 0,
-        },
-      ],
-      "createdAt": {},
-      "defaultProcess": false,
-      "id": "ee0000-0000-4000-8000-000000000002",
-      "name": "Alternative Rückgabe",
-      "updatedAt": {},
-    },
-    {
-      "checklistItems": [
-        {
-          "id": "cc0000-0000-4000-8000-000000000001",
-          "label": "Hose abgeben",
-          "sortOrder": 0,
-        },
-        {
-          "id": "cc0000-0000-4000-8000-000000000002",
-          "label": "Jacke abgeben",
-          "sortOrder": 1,
-        },
-      ],
-      "createdAt": {},
-      "defaultProcess": true,
-      "id": "ee0000-0000-4000-8000-000000000001",
-      "name": "Standard Rückgabe",
-      "updatedAt": {},
-    },
-  ],
-}
-`;
-
 exports[`<ReturnProcess> Integration Tests > getReturnProcessList > should return unfinished return processes with cadet and template info 1`] = `
 [
   {

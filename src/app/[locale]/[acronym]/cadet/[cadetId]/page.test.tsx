@@ -93,8 +93,8 @@ describe("CadetDetailPage return config fail-closed wiring", () => {
             expect.objectContaining({
                 returnConfig: null,
                 returnConfigLoadFailed: true,
-                firstname: "Max",
-                lastname: "Mustermann",
+                cadetStatus: "ACTIVE",
+                userRole: AuthRole.inspector,
             }),
             undefined
         );

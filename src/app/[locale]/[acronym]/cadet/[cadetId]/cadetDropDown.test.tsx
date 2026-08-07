@@ -29,8 +29,6 @@ describe("CadetDropDown fail-closed return config behavior", () => {
 
         render(
             <CadetDropDown
-                firstname="Max"
-                lastname="Mustermann"
                 returnConfig={null}
                 returnConfigLoadFailed
                 cadetStatus={CadetStatus.ACTIVE}
@@ -39,12 +37,12 @@ describe("CadetDropDown fail-closed return config behavior", () => {
         );
 
         await user.click(screen.getByTestId("btn_cadet_menu"));
-        await user.click(screen.getByTestId("btn_cadet_menu_return"));
+        await user.click(screen.getByTestId("btn_cadet_menu_memberExit"));
 
         expect(toast.error).toHaveBeenCalledWith("cadetDetailPage.memberExit.directReturn.error");
         expect(modalApi.simpleWarningModal).not.toHaveBeenCalled();
         expect(returnCadetDirectly).not.toHaveBeenCalled();
-        expect(screen.queryByTestId("return-uniform-modal")).not.toBeInTheDocument();
+        expect(screen.queryByTestId("member_exit_modal")).not.toBeInTheDocument();
     });
 
     it("opens the return modal when returnConfig has returnProcessEnabled=false", async () => {
@@ -52,11 +50,9 @@ describe("CadetDropDown fail-closed return config behavior", () => {
 
         render(
             <CadetDropDown
-                firstname="Max"
-                lastname="Mustermann"
                 returnConfig={{
                     returnProcessEnabled: false,
-                    anonymizationMode: "ON_COMPLETE",
+                    anonymizationMode: "MANUAL",
                     templates: [],
                 }}
                 returnConfigLoadFailed={false}
@@ -66,22 +62,20 @@ describe("CadetDropDown fail-closed return config behavior", () => {
         );
 
         await user.click(screen.getByTestId("btn_cadet_menu"));
-        await user.click(screen.getByTestId("btn_cadet_menu_return"));
+        await user.click(screen.getByTestId("btn_cadet_menu_memberExit"));
 
-        expect(screen.getByTestId("return-uniform-modal")).toBeInTheDocument();
+        expect(screen.getByTestId("member_exit_modal")).toBeInTheDocument();
         expect(toast.error).not.toHaveBeenCalled();
     });
 
-    it("opens the return modal when returnConfig has returnProcessEnabled=true", async () => {
+    it("opens the member-exit-modal when returnConfig has returnProcessEnabled=true", async () => {
         const user = userEvent.setup();
 
         render(
             <CadetDropDown
-                firstname="Max"
-                lastname="Mustermann"
                 returnConfig={{
                     returnProcessEnabled: true,
-                    anonymizationMode: "ON_COMPLETE",
+                    anonymizationMode: "MANUAL",
                     templates: [],
                 }}
                 returnConfigLoadFailed={false}
@@ -91,9 +85,9 @@ describe("CadetDropDown fail-closed return config behavior", () => {
         );
 
         await user.click(screen.getByTestId("btn_cadet_menu"));
-        await user.click(screen.getByTestId("btn_cadet_menu_return"));
+        await user.click(screen.getByTestId("btn_cadet_menu_memberExit"));
 
-        expect(screen.getByTestId("return-uniform-modal")).toBeInTheDocument();
+        expect(screen.getByTestId("member_exit_modal")).toBeInTheDocument();
         expect(toast.error).not.toHaveBeenCalled();
     });
 });

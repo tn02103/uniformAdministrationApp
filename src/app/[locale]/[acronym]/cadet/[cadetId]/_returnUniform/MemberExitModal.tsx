@@ -39,7 +39,7 @@ export default function CadetReturnUniformModal(props: Props) {
 
     if (uniformLabels === undefined || materialMap === undefined) {
         return (
-            <Modal show onHide={props.onClose}>
+            <Modal show onHide={props.onClose} data-testid="member_exit_modal">
                 <Modal.Header closeButton>
                     <Modal.Title>{t("header")}</Modal.Title>
                 </Modal.Header>
@@ -201,7 +201,7 @@ function CadetReturnUniformModalForm({
     return (
         <FormProvider {...form}>
             <FormContext.Provider value={{ disabled: isSubmitting, plaintext: false, formName: "member-exit-form" }}>
-                <Modal show onHide={onClose}>
+                <Modal show onHide={onClose} data-testid="member_exit_modal">
                     <Modal.Header closeButton>
                         <Modal.Title>{t("header")}</Modal.Title>
                     </Modal.Header>
