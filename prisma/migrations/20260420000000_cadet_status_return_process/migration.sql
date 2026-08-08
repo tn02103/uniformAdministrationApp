@@ -51,7 +51,7 @@ ADD COLUMN "returnProcessEnabled" BOOLEAN NOT NULL DEFAULT false;
 
 -- CreateTable: return process templates
 CREATE TABLE "base"."return_process_template" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL DEFAULT gen_random_uuid(),
     "fk_assosiation" CHAR(36) NOT NULL,
     "name" TEXT NOT NULL,
     "defaultProcess" BOOLEAN NOT NULL DEFAULT false,
@@ -63,7 +63,7 @@ CREATE TABLE "base"."return_process_template" (
 
 -- CreateTable: return processes (final shape)
 CREATE TABLE "base"."return_process" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL DEFAULT gen_random_uuid(),
     "fk_cadet" CHAR(36) NOT NULL,
     "fk_returnProcessTemplate" CHAR(36) NOT NULL,
     "fk_assosiation" CHAR(36) NOT NULL,
@@ -77,7 +77,7 @@ CREATE TABLE "base"."return_process" (
 
 -- CreateTable: checklist templates
 CREATE TABLE "base"."return_checklist_template" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL DEFAULT gen_random_uuid(),
     "fk_assosiation" CHAR(36) NOT NULL,
     "fk_returnProcessTemplate" CHAR(36) NOT NULL,
     "label" TEXT NOT NULL,
@@ -113,6 +113,9 @@ CREATE INDEX "return_process_fk_cadet_idx" ON "base"."return_process"("fk_cadet"
 
 -- CreateIndex
 CREATE INDEX "return_checklist_item_status_fk_checklistItem_idx" ON "base"."return_checklist_item_status"("fk_checklistItem");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "return_process_fk_cadet_key" ON "base"."return_process"("fk_cadet");
 
 -- AddForeignKey
 ALTER TABLE "base"."return_process_template" ADD CONSTRAINT "return_process_template_fk_assosiation_fkey" FOREIGN KEY ("fk_assosiation") REFERENCES "authentication"."assosiation"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

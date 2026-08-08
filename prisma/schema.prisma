@@ -91,7 +91,7 @@ model Cadet {
     deficiencies    Deficiency[]
     cadetInspection CadetInspection[]
     deregistrations Deregistration[]
-    returnProcesses ReturnProcess[]
+    returnProcess   ReturnProcess?
 
     @@index([fk_assosiation])
     @@map("cadet")
@@ -115,11 +115,11 @@ model ReturnProcessTemplate {
 }
 
 model ReturnProcess {
-    id                       String                      @id @default(cuid())
-    fk_cadet                 String                      @db.Char(36)
+    id                       String                      @id @default(uuid())
+    fk_cadet                 String                      @db.Char(36) @unique
     cadet                    Cadet                       @relation(fields: [fk_cadet], references: [id])
     fk_returnProcessTemplate String                      @db.Char(36)
-    returnProcessTemplate    ReturnProcessTemplate       @relation(fields: [fk_returnProcessTemplate], references: [id])
+    template                 ReturnProcessTemplate       @relation(fields: [fk_returnProcessTemplate], references: [id])
     fk_assosiation           String                      @db.Char(36)
     assosiation              Assosiation                 @relation(fields: [fk_assosiation], references: [id])
     inspectorComment         String?
