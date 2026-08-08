@@ -1,16 +1,12 @@
-import { TooltipActionButton } from "@/components/Buttons/TooltipIconButton";
-import dayjs from "@/lib/dayjs";
-import { prisma } from "@/lib/db";
-import { Table as BootstrapTable } from "react-bootstrap";
-import type { Get, Paths } from "type-fest";
-import { Table} from "@/components/Tables/Table";
-import { memberExitProcessArgs } from "@/types/returnProcessTypes";
 import { getActiveReturnProcessList } from "@/dal/cadet/memberExits/process/get";
+import { prisma } from "@/lib/db";
+import { getScopedI18n } from "@/lib/locales/config";
+import { Table as BootstrapTable } from "react-bootstrap";
 import ActiveExitProcesses from "./ActiveExitProcesses";
 
 
 export default async function MemberExitsPage() {
-
+    const t = await getScopedI18n("memberExit.managementOverview");
     const memberInExitProcess = await getActiveReturnProcessList();
 
 
@@ -44,7 +40,7 @@ export default async function MemberExitsPage() {
     return (
         <div className="container-lg content-center bg-light rounded px-md-3 px-xl-5 p-0">
             <div className="row pt-2 pb-2 m-0">
-                <h1 data-testid="div_cadetListHeader" className="text-center">Austritte</h1>
+                <h1 data-testid="div_cadetListHeader" className="text-center">{t('header')}</h1>
 
             </div>
             <ActiveExitProcesses memberInExitProcess={memberInExitProcess} />

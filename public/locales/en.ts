@@ -967,4 +967,55 @@ export default {
             change: "change",
         },
     },
+        memberExit: {
+        managementOverview: {
+            header: "Club exits",
+            active: {
+                header: "Active exit processes",
+                tableheaders:{
+                    startDate: "Start date",
+                    cadet: "Member",
+                    template: "Template",
+                    todos: "Checklist items",
+                    uniformAndMaterialReturned: "Uniform/ Material returned",
+                }
+            },
+            finished: {
+                header: "Completed exit processes",
+            },
+            offcanvas: {
+                header: "Club exit of {cadet}",
+                processDetails: {
+                    header: "Process details",
+                    status: "Status",
+                    completed: "Completed",
+                    inProgress: "In progress",
+                    todos: "Checklist items",
+                    uniformReturned: "Uniform returned",
+                    materialReturned: "Material returned",
+                    template: "Template",
+                    startedAt: "Started at",
+                    lastUpdatedAt: "Last updated at",
+                    comment: "Comments",
+                },
+                todos: {
+                    header: "Checklist items",
+                },
+                missingReturns: {
+                    header: "Not returned",
+                    uniform: "Uniform parts",
+                    uniformComplete: "Uniform parts fully returned",
+                    material: "Materials",
+                    materialComplete: "Materials fully returned",
+                },
+                completeProcess: "Complete club exit",
+                errors: {
+                    toggleTask: "An error occurred while changing the checklist item",
+                    completeProcess: "An error occurred while completing the exit process",
+                    withdrawMaterial: "An error occurred while withdrawing the material",
+                    withdrawUniform: "An error occurred while withdrawing the uniform",
+                }
+            },
+        },
+    },
 } as const;

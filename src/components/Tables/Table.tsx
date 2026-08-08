@@ -13,7 +13,7 @@ type TableColumn<T extends object, K extends TableDataKeys<T>> = {
     render?: (value: TableDataValue<T, K>, row: T) => React.ReactNode;
 };
 
-type TableColumns<T extends object> = {
+export type TableColumns<T extends object> = {
     [K in TableDataKeys<T>]: TableColumn<T, K>
 }[TableDataKeys<T>];
 

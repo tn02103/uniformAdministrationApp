@@ -10,6 +10,7 @@ import { Button, Offcanvas } from "react-bootstrap";
 import { returnMaterial } from "@/actions/controllers/CadetMaterialController";
 import { completeReturnChecklistItem, completeReturnProcess } from "@/dal/cadet/memberExits/process";
 import { useCallback } from "react";
+import { useScopedI18n } from "@/lib/locales/client";
 
 
 export default function ExitProcessOffcanvas({
@@ -19,6 +20,9 @@ export default function ExitProcessOffcanvas({
     process: memberExitProcess;
     onClose?: () => void;
 }) {
+    const t = useScopedI18n("memberExit.managementOverview.offcanvas");
+    const tCommon = useScopedI18n("common");
+
     const router = useRouter();
 
     const todoCount = process.itemStatuses.length;
@@ -37,7 +41,7 @@ export default function ExitProcessOffcanvas({
         }).then(() => {
             router.refresh();
         }).catch(() => {
-            toast.error("Fehler beim Aktualisieren des ToDos. Bitte versuchen Sie es erneut.");
+            toast.error(t('errors.toggleTask'));
         });
     }, [process.id, router]);
 
@@ -45,7 +49,7 @@ export default function ExitProcessOffcanvas({
         returnUniformItem({ uniformId, cadetId: process.cadet.id }).then(() => {
             router.refresh();
         }).catch(() => {
-            toast.error("Fehler beim Zurückgeben des Uniformteils. Bitte versuchen Sie es erneut.");
+            toast.error(t('errors.withdrawUniform'));
         })
     }, [process.cadet.id, router]);
 
@@ -53,7 +57,7 @@ export default function ExitProcessOffcanvas({
         returnMaterial(process.cadet.id, materialId).then(() => {
             router.refresh();
         }).catch(() => {
-            toast.error("Fehler beim Zurückgeben des Materials. Bitte versuchen Sie es erneut.");
+            toast.error(t('errors.withdrawMaterial'));
         })
     }, [process.cadet.id, router]);
 
@@ -61,58 +65,58 @@ export default function ExitProcessOffcanvas({
         completeReturnProcess({ returnProcessId: process.id }).then(() => {
             router.refresh();
         }).catch(() => {
-            toast.error("Fehler beim Abschließen des Austrittsprozesses. Bitte versuchen Sie es erneut.");
+            toast.error(t('errors.completeProcess'));
         });
     }, [process.id, router]);
 
     return (
         <Offcanvas show onHide={onClose} placement="end" style={{ width: "500px" }} backdrop={true}>
             <Offcanvas.Header closeButton>
-                <Offcanvas.Title>Austritt: {process.cadet.lastname} {process.cadet.firstname}</Offcanvas.Title>
+                <Offcanvas.Title>{t('header', { cadet: `${process.cadet.lastname} ${process.cadet.firstname}` })}</Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
-                <h2 className="fs-4 text-center">Processdetails</h2>
+                <h2 className="fs-4 text-center">{t('processDetails.header')}</h2>
                 <table>
                     <tbody>
                         <tr>
-                            <th className="text-end pe-2">Status:</th>
-                            <td>{process.finished ? "Abgeschlossen" : "Aktiv"}</td>
+                            <th className="text-end pe-2">{t('processDetails.status')}</th>
+                            <td>{process.finished ? t('processDetails.completed') : t('processDetails.inProgress')}</td>
                         </tr>
                         <tr>
-                            <th className="text-end pe-2">ToDos:</th>
+                            <th className="text-end pe-2">{t('processDetails.todos')}</th>
                             <td>
                                 <FontAwesomeIcon icon={todoStatus ? faCircleCheck : faCircleXmark} className={todoStatus ? "text-success" : "text-danger"} />
                                 {completedCount} / {todoCount}
                             </td>
                         </tr>
                         <tr>
-                            <th className="text-end pe-2">Uniform abgegeben:</th>
+                            <th className="text-end pe-2">{t('processDetails.uniformReturned')}</th>
                             <td>
                                 <FontAwesomeIcon icon={uniformStatus ? faCircleCheck : faCircleXmark} className={uniformStatus ? "text-success" : "text-danger"} />
-                                {uniformStatus ? "Ja" : "Nein"}
+                                {uniformStatus ? tCommon('yes') : tCommon('no')}
                             </td>
                         </tr>
                         <tr>
-                            <th className="text-end pe-2">Material abgegeben:</th>
+                            <th className="text-end pe-2">{t('processDetails.materialReturned')}</th>
                             <td>
                                 <FontAwesomeIcon icon={materialStatus ? faCircleCheck : faCircleXmark} className={materialStatus ? "text-success" : "text-danger"} />
-                                {materialStatus ? "Ja" : "Nein"}
+                                {materialStatus ? tCommon('yes') : tCommon('no')}
                             </td>
                         </tr>
                         <tr>
-                            <th className="text-end pe-2">Template:</th>
+                            <th className="text-end pe-2">{t('processDetails.template')}</th>
                             <td>{process.template.name}</td>
                         </tr>
                         <tr>
-                            <th className="text-end pe-2" >Gestartet am:</th>
+                            <th className="text-end pe-2" >{t('processDetails.startedAt')}</th>
                             <td>{dayjs(process.createdAt).format("DD.MM.YYYY HH:mm")}</td>
                         </tr>
                         <tr>
-                            <th className="text-end pe-2">Zuletzt verändert am:</th>
+                            <th className="text-end pe-2">{t('processDetails.lastUpdatedAt')}</th>
                             <td>{dayjs(process.updatedAt).format("DD.MM.YYYY HH:mm")}</td>
                         </tr>
                         <tr>
-                            <th className="text-end pe-2">Kommentar:</th>
+                            <th className="text-end pe-2">{t('processDetails.comment')}</th>
                             <td>{process.inspectorComment || "--"}</td>
                         </tr>
                     </tbody>
@@ -124,10 +128,10 @@ export default function ExitProcessOffcanvas({
                         onClick={handleCompleteProcess}
                         variant={allCompleted ? "success" : (!uniformStatus || !materialStatus ? "warning" : "primary")}
                     >
-                        Prozess abschließen
+                        {t('completeProcess')}
                     </Button>
                 </div>
-                <h2 className="fs-4 mt-5 text-center">Todos</h2>
+                <h2 className="fs-4 mt-5 text-center">{t('todos.header')}</h2>
                 <div>
                     {process.itemStatuses.map(item => (
                         <div className="d-flex align-items-center my-1" key={item.checklistItem.id}>
@@ -146,29 +150,29 @@ export default function ExitProcessOffcanvas({
                     ))}
                 </div>
 
-                <h2 className="fs-4 mt-5 text-center">Nicht zurückgegeben</h2>
-                <h3 className="fs-6 fw-bold mt-2">Uniformteile</h3>
+                <h2 className="fs-4 mt-5 text-center">{t('missingReturns.header')}</h2>
+                <h3 className="fs-6 fw-bold mt-2">{t('missingReturns.uniform')}</h3>
                 <div>
                     {process.cadet.uniformIssued.length > 0 ? (
                         <ul className="p-0">
                             {process.cadet.uniformIssued.map(({ uniform }) => (
                                 <li key={uniform.id} className="d-flex align-items-start m-1 fs-6">
-                                    <ActionButton variantKey="withdraw" buttonClass="bg-transparent text-danger" onClick={() => handleWithdrawUniform(uniform.id)} title="Uniformteil zurückgeben" />
+                                    <ActionButton variantKey="withdraw" buttonClass="bg-transparent text-danger" onClick={() => handleWithdrawUniform(uniform.id)} />
                                     {uniform.type.name}-{uniform.number}
                                 </li>
                             ))}
                         </ul>
                     ) : (
-                        <p>Alle Uniformteile zurückgegeben.</p>
+                        <p>{t('missingReturns.uniformComplete')}</p>
                     )}
                 </div>
-                <h3 className="fs-6 fw-bold mt-2">Material</h3>
+                <h3 className="fs-6 fw-bold mt-2">{t('missingReturns.material')}</h3>
                 <div>
                     {process.cadet.materialIssued.length > 0 ? (
                         <ul className="p-0">
                             {process.cadet.materialIssued.map(({ material }) => (
                                 <li key={material.id} className="d-flex align-items-start m-1 fs-6">
-                                    <button className="border-0 bg-transparent" onClick={() => handleWithdrawMaterial(material.id)} title="Material zurückgeben">
+                                    <button className="border-0 bg-transparent" onClick={() => handleWithdrawMaterial(material.id)}>
                                         <ActionButton variantKey="withdraw" buttonClass="bg-transparent text-danger" />
                                     </button>
                                     {material.materialGroup.description} - {material.typename}
@@ -176,7 +180,7 @@ export default function ExitProcessOffcanvas({
                             ))}
                         </ul>
                     ) : (
-                        <p>Alles Material zurückgegeben.</p>
+                        <p>{t('missingReturns.materialComplete')}</p>
                     )}
                 </div>
             </Offcanvas.Body>
