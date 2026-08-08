@@ -3,7 +3,7 @@ import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { AnonymizationMode, CadetStatus } from "@/prisma/enums";
 import { ReturnCadetDirectlyInput, returnCadetDirectlySchema } from "@/zod/returnProcess";
-import { __unsecuredProcessCadetEquipmentReturn } from "./returnProcess/create";
+import { __unsecuredProcessCadetEquipmentReturn } from "./memberExits/process/create";
 
 /**
  * Returns a cadet directly without creating a return process.

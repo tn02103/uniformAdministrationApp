@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
 import CadetReturnUniformModal from "./MemberExitModal";
-import { createReturnProcess } from "@/dal/cadet/returnProcess";
+import { createReturnProcess } from "@/dal/cadet/memberExits/process";
 import { returnCadetDirectly } from "@/dal/cadet";
 import { useCadetUniformDescriptList, useCadetMaterialMap } from "@/dataFetcher/cadet";
 import { toast } from "react-toastify";

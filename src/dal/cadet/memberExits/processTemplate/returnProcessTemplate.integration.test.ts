@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { AuthRole } from "@/lib/AuthRoles";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { StaticData } from "../../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { createReturnProcessTemplate, getReturnProcessTemplateList, updateReturnProcessTemplate, deleteReturnProcessTemplate } from "./index";
 
 const staticData = new StaticData(0);

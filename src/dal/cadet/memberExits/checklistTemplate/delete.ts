@@ -2,7 +2,7 @@ import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { DeleteReturnChecklistTemplateInput, deleteReturnChecklistTemplateSchema } from "@/zod/returnProcess";
-import { __unsecuredGetReturnProcessTemplateList } from "../returnProcessTemplate/get";
+import { __unsecuredGetReturnProcessTemplateList } from "../processTemplate/get";
 
 /**
  * Deletes a checklist template item and shifts the sortOrder of all following items down by 1.

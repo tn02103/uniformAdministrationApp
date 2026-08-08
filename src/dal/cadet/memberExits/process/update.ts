@@ -51,7 +51,7 @@ export const completeChecklistItem = (data: CompleteChecklistItemInput) =>
  * Sets the cadet status to RETURNED and ensures return timestamps are set.
  * @param data returnProcessId
  */
-export const completeChecklist = (data: CompleteChecklistInput) =>
+export const completeProcess = (data: CompleteChecklistInput) =>
     genericSAValidator(
         AuthRole.inspector,
         data,

@@ -4,7 +4,7 @@ import { CheckboxFormField } from "@/components/fields/CheckboxFormField";
 import { FormContext } from "@/components/fields/Form";
 import { SelectFormField } from "@/components/fields/SelectFormField";
 import { TextareaFormField } from "@/components/fields/TextareaFormField";
-import { createReturnProcess } from "@/dal/cadet/returnProcess";
+import { createReturnProcess } from "@/dal/cadet/memberExits/process";
 import { returnCadetDirectly } from "@/dal/cadet";
 import { useCadetMaterialMap, useCadetUniformDescriptList } from "@/dataFetcher/cadet";
 import { useI18n, useScopedI18n } from "@/lib/locales/client";

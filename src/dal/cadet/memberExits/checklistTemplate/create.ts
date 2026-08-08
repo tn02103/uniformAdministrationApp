@@ -2,7 +2,7 @@ import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { createReturnChecklistTemplateSchema, CreateReturnChecklistTemplateInput } from "@/zod/returnProcess";
-import { __unsecuredGetReturnProcessTemplateList } from "../returnProcessTemplate/get";
+import { __unsecuredGetReturnProcessTemplateList } from "../processTemplate/get";
 
 /**
  * Creates a new checklist item for a return process template.

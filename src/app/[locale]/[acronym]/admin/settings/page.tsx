@@ -1,5 +1,5 @@
 import { getAssosiationAnonymizationConfig } from "@/dal/assosiation";
-import { getReturnProcessTemplateList } from "@/dal/cadet/returnProcessTemplate";
+import { getReturnProcessTemplateList } from "@/dal/cadet/memberExits/processTemplate";
 import { getI18n } from "@/lib/locales/config";
 import { AnonymizationConfigSection } from "./_components/AnonymizationConfigSection";
 import { ReturnProcessTemplateSection } from "./_components/ReturnProcessTemplateSection";

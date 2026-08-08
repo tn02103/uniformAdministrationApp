@@ -7,12 +7,12 @@ import {
     createReturnChecklistTemplate,
     deleteReturnChecklistTemplate,
     updateReturnChecklistTemplate,
-} from "@/dal/cadet/returnChecklistTemplate";
+} from "@/dal/cadet/memberExits/checklistTemplate";
 import {
     createReturnProcessTemplate,
     deleteReturnProcessTemplate,
     updateReturnProcessTemplate,
-} from "@/dal/cadet/returnProcessTemplate";
+} from "@/dal/cadet/memberExits/processTemplate";
 import { useI18n } from "@/lib/locales/client";
 import { ReturnChecklistItemTemplate, ReturnProcessTemplateWithItems } from "@/types/returnProcessTypes";
 import {

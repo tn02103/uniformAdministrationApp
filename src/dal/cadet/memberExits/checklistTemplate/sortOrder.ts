@@ -3,7 +3,7 @@ import SaveDataException from "@/errors/SaveDataException";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { ChangeReturnChecklistTemplateSortOrderInput, changeReturnChecklistTemplateSortOrderSchema } from "@/zod/returnProcess";
-import { __unsecuredGetReturnProcessTemplateList } from "../returnProcessTemplate/get";
+import { __unsecuredGetReturnProcessTemplateList } from "../processTemplate/get";
 
 /**
  * Changes the sort order of a checklist item within its process template,

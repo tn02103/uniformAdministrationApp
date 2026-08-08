@@ -1,7 +1,7 @@
 import { cleanDataV2 } from "@/dal/_helper/testHelper";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { StaticData } from "../../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { __unsecuredProcessCadetEquipmentReturn } from "./create";
 import { completeReturnChecklist, completeReturnChecklistItem, createReturnProcess, getReturnProcessList } from "./index";
 

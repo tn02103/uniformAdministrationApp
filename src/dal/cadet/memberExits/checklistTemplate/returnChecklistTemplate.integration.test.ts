@@ -1,6 +1,6 @@
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
-import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
+import { StaticData } from "../../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { changeReturnChecklistTemplateSortOrder, createReturnChecklistTemplate, deleteReturnChecklistTemplate, updateReturnChecklistTemplate } from "./index";
 
 const staticData = new StaticData(0);

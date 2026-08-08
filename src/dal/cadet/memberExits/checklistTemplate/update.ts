@@ -2,7 +2,7 @@ import { genericSAValidator } from "@/actions/validations";
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { updateReturnChecklistTemplateSchema, UpdateReturnChecklistTemplateInput } from "@/zod/returnProcess";
-import { __unsecuredGetReturnProcessTemplateList } from "../returnProcessTemplate/get";
+import { __unsecuredGetReturnProcessTemplateList } from "../processTemplate/get";
 
 /**
  * Updates a checklist template item's label.
