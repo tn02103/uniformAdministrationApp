@@ -50,7 +50,17 @@ export const Form = <TFieldValue extends FieldValues>({
     }), [disabled, plaintext, formName]);
 
     return (
-        <form noValidate name={formName} aria-label={ariaLabel} autoComplete="off" onSubmit={form.handleSubmit((d) => onSubmit(d, form), (e) => onSubmitError?.(e, form))} className="form">
+        <form
+            noValidate
+            name={formName}
+            aria-label={ariaLabel}
+            autoComplete="off"
+            onSubmit={form.handleSubmit(
+                (d) => onSubmit(d, form),
+                onSubmitError ? (e) => onSubmitError?.(e, form) : undefined
+            )}
+            className="form"
+        >
             <FormContext.Provider value={formContextValue}>
                 <FormProvider {...form}>
                     {children}

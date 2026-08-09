@@ -6,6 +6,11 @@ import { uuidValidationPattern } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
 import { genericSAValidatorV2 } from "../validations";
 
+/**
+ * @deprecated
+ * @param cadetId 
+ * @returns 
+ */
 export const deleteCadet = async (cadetId: string) => genericSAValidatorV2(
     AuthRole.inspector,
     uuidValidationPattern.test(cadetId),

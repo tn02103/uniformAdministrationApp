@@ -70,7 +70,7 @@ describe('getClosedInspectionList', () => {
         const list = result as { id: string; activeCadets: number }[];
         const insp = list.find(r => r.id === staticData.ids.inspectionIds[0]);
         expect(insp).toBeDefined();
-        // All 10 cadets are active on 2023-06-18, including cadet[8] deleted on 2023-08-16.
-        expect(insp!.activeCadets).toBe(10);
+        // All 12 cadets are active on 2023-06-18, including cadet[8] deleted on 2023-08-16.
+        expect(insp!.activeCadets).toBe(12);
     });
 });

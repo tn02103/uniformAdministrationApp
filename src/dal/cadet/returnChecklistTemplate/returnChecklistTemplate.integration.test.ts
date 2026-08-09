@@ -36,7 +36,7 @@ describe('<ReturnChecklistTemplate> Integration Tests', () => {
             expect(result[0].checklistItems).toHaveLength(1);
             expect(result[0].checklistItems[0].label).toBe('Helm abgeben');
             expect(result[0].checklistItems[0].sortOrder).toBe(0);
-            expect(result[0].checklistItems[0].fk_returnProcessTemplate).toBe(ids.returnProcessTemplateIds[1]);
+            expect(result[0].id).toBe(ids.returnProcessTemplateIds[1]);
         });
 
         it('should append at the end with sortOrder = MAX + 1 when items already exist', async () => {

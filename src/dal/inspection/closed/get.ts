@@ -33,7 +33,7 @@ export const getClosedInspectionList = async (): Promise<ClosedInspectionSummary
                        (SELECT COUNT(c.id)
                           FROM base.cadet c
                          WHERE c.fk_assosiation = i.fk_assosiation
-                           AND (c.recdelete IS NULL OR to_char(c.recdelete, 'YYYY-MM-DD') > i.date)) AS "activeCadets",
+                           AND (c.deleted_at IS NULL OR to_char(c.deleted_at, 'YYYY-MM-DD') > i.date)) AS "activeCadets",
                        (SELECT COUNT(ic2.id)
                           FROM inspection.cadet_inspection ic2
                          WHERE ic2.fk_inspection = i.id

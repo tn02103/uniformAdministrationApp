@@ -25,10 +25,21 @@ const _locales_mock = {
 vi.mock("@/lib/locales/client", () => _locales_mock);
 _mockStore.set("@/lib/locales/client", _locales_mock);
 
+const _locales_server_mock = {
+    getScopedI18n: vi.fn(async () => (key: string) => key),
+};
+vi.mock("@/lib/locales/config", () => _locales_server_mock);
+_mockStore.set("@/lib/locales/config", _locales_server_mock);
+
 // --- Next.js navigation ---
 const _navigation_mock = { useParams: vi.fn(), useRouter: vi.fn() };
 vi.mock("next/navigation", () => _navigation_mock);
 _mockStore.set("next/navigation", _navigation_mock);
+
+// --- Next.js server-only module ---
+const _server_only_mock = {};
+vi.mock("server-only", () => _server_only_mock);
+_mockStore.set("server-only", _server_only_mock);
 
 // --- modalProvider ---
 const _modals_inner = {

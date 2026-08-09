@@ -1,6 +1,7 @@
 import { getCadetData } from "@/actions/cadet/data";
 import { getCadetMaterialMap } from "@/actions/controllers/CadetMaterialController";
 import { getCadetUniformMap } from "@/dal/cadet/uniformMap";
+import { getReturnProcessConfig } from "@/dal/assosiation";
 import { getMaterialConfiguration } from "@/dal/material/type/_index";
 import { AuthRole } from "@/lib/AuthRoles";
 import { getIronSession } from "@/lib/ironSession";
@@ -60,11 +61,16 @@ const CadetDetailPage = async (props: PropType) => {
         );
     }
 
-    const [cadet, uniformMap, materialMap, materialConfig] = await Promise.all([
+    const [cadet, uniformMap, materialMap, materialConfig, returnConfigResult] = await Promise.all([
         getCadetData(cadetId),
         getCadetUniformMap(cadetId),
         getCadetMaterialMap(cadetId),
         getMaterialConfiguration(),
+        user!.role >= AuthRole.inspector
+            ? getReturnProcessConfig()
+                .then((config) => ({ config, loadFailed: false }))
+                .catch(() => ({ config: null, loadFailed: true }))
+            : Promise.resolve({ config: null, loadFailed: false }),
     ]);
     if (!cadet) {
         return notFound();
@@ -75,7 +81,12 @@ const CadetDetailPage = async (props: PropType) => {
             <Row className="position-relative">
                 {(user!.role >= AuthRole.inspector) &&
                     <div className="position-absolute w-auto top-0 end-0">
-                        <CadetDropDown firstname={cadet.firstname} lastname={cadet.lastname} />
+                        <CadetDropDown
+                            returnConfig={returnConfigResult.config}
+                            returnConfigLoadFailed={returnConfigResult.loadFailed}
+                            cadetStatus={cadet.status}
+                            userRole={user!.role}
+                        />
                     </div>
                 }
                 <h1 data-testid="div_pageHeader" className="text-center mb-3">

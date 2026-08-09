@@ -39,6 +39,25 @@ export class StaticData {
         }
         await this.fill.all();
     }
+
+    async setReturnProcessEnabled(enabled: boolean) {
+        await prisma.assosiationConfiguration.update({
+            where: { assosiationId: this.fk_assosiation },
+            data: { returnProcessEnabled: enabled },
+        });
+    }
+
+    async getCadet(cadetId: string) {
+        return prisma.cadet.findFirst({
+            where: { id: cadetId, fk_assosiation: this.fk_assosiation },
+        });
+    }
+
+    async getReturnProcessByCadetId(cadetId: string) {
+        return prisma.returnProcess.findFirst({
+            where: { fk_cadet: cadetId, fk_assosiation: this.fk_assosiation },
+        });
+    }
 }
 
 class StaticDataGetter {
@@ -495,7 +514,7 @@ class StaticDataLoader {
     }
     async cadets() {
         await prisma.cadet.createMany({
-            data: this.data.cadets.map(c => ({ ...c, dateCreated: c.dateCreated ?? new Date('2020-01-01') })),
+            data: this.data.cadets.map(c => ({ ...c, createdAt: c.createdAt ?? new Date('2020-01-01') })),
         });
     }
     async uniformSize() {

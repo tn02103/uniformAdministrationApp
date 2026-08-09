@@ -1,0 +1,49 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<ReturnProcess> Integration Tests > getReturnProcessList > should return unfinished return processes with cadet and template info 1`] = `
+[
+  {
+    "cadet": {
+      "firstname": "NewReturning",
+      "id": "aa1111-1111-1111-1111-111111111111",
+      "lastname": "Cadet",
+    },
+    "createdAt": {},
+    "finished": false,
+    "fk_assosiation": "bf2ef8-3894-47d4-ada4-e8b5cda5095c",
+    "fk_cadet": "aa1111-1111-1111-1111-111111111111",
+    "fk_returnProcessTemplate": "ee0000-0000-4000-8000-000000000001",
+    "id": "aa0000-0000-4000-8000-000000000001",
+    "inspectorComment": null,
+    "itemStatuses": [
+      {
+        "checklistItem": {
+          "id": "cc0000-0000-4000-8000-000000000001",
+          "label": "Hose abgeben",
+          "sortOrder": 0,
+        },
+        "completedAt": null,
+        "completedByUser": null,
+        "fk_checklistItem": "cc0000-0000-4000-8000-000000000001",
+        "fk_returnProcess": "aa0000-0000-4000-8000-000000000001",
+      },
+      {
+        "checklistItem": {
+          "id": "cc0000-0000-4000-8000-000000000002",
+          "label": "Jacke abgeben",
+          "sortOrder": 1,
+        },
+        "completedAt": null,
+        "completedByUser": null,
+        "fk_checklistItem": "cc0000-0000-4000-8000-000000000002",
+        "fk_returnProcess": "aa0000-0000-4000-8000-000000000001",
+      },
+    ],
+    "returnProcessTemplate": {
+      "id": "ee0000-0000-4000-8000-000000000001",
+      "name": "Standard Rückgabe",
+    },
+    "updatedAt": {},
+  },
+]
+`;

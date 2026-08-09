@@ -6,10 +6,10 @@ import StaticDataGenerator, { getStaticDataIds } from '../tests/_playwrightConfi
 
 
 const adapter = new PrismaPg({ connectionString: `${process.env.DATABASE_URL}` });
-const prismaClient = new PrismaClient({adapter});
+const prismaClient = new PrismaClient({ adapter });
 
 async function main() {
-    
+
     const ids = getStaticDataIds()
     ids.fk_assosiation = process.env.ASSOSIATION_ID ?? ids.fk_assosiation;
     const generator = new StaticDataGenerator(ids);
@@ -42,6 +42,21 @@ async function main() {
             data: generator.cadet(),
         });
 
+        await prisma.returnProcessTemplate.createMany({
+            data: generator.returnProcessTemplates(),
+        });
+
+        await prisma.returnProcess.createMany({
+            data: generator.returnProcesses(),
+        });
+
+        await prisma.returnChecklistTemplate.createMany({
+            data: generator.returnChecklistTemplates(),
+        });
+
+        await prisma.returnChecklistItemStatus.createMany({
+            data: generator.returnChecklistItemStatuses(),
+        });
 
         await prisma.uniformSize.createMany({
             data: generator.uniformSize()

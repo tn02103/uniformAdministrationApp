@@ -90,18 +90,18 @@ export default class StaticDataGenerator {
         const { cadetIds, fk_assosiation } = this.ids
         const defaultDate = new Date('2020-01-01');
         return [
-            { id: cadetIds[0], fk_assosiation, firstname: 'Antje', lastname: 'Fried', dateCreated: defaultDate, status: CadetStatus.ACTIVE, comment: '', deletedAt: null},
-            { id: cadetIds[1], fk_assosiation, firstname: 'Marie', lastname: 'Becker', dateCreated: defaultDate, status: CadetStatus.ACTIVE, comment: 'Bemerkung Test', deletedAt: null }, // Updated comment
-            { id: cadetIds[2], fk_assosiation, firstname: 'Sven', lastname: 'Keller', dateCreated: defaultDate, status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
-            { id: cadetIds[3], fk_assosiation, firstname: 'Lucas', lastname: 'Schwartz', dateCreated: defaultDate, status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
-            { id: cadetIds[4], fk_assosiation, firstname: 'Uwe', lastname: 'Luft', dateCreated: defaultDate, status: CadetStatus.ACTIVE, comment: 'initial-comment', deletedAt: null },
-            { id: cadetIds[5], fk_assosiation, firstname: 'Maik', lastname: 'Finkel', dateCreated: defaultDate, status: CadetStatus.ACTIVE, comment: 'initial-comment', deletedAt: null },
-            { id: cadetIds[6], fk_assosiation, firstname: 'Tim', lastname: 'Weissmuller', dateCreated: defaultDate, status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
-            { id: cadetIds[7], fk_assosiation, firstname: 'Juliane', lastname: 'Unger', dateCreated: defaultDate, status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
-            { id: cadetIds[8], fk_assosiation, firstname: 'xxx', lastname: 'xxx', dateCreated: defaultDate, status: CadetStatus.DELETED, comment: '', deletedAt: new Date('2023-08-16T09:45:25.000Z') },
-            { id: cadetIds[9], fk_assosiation, firstname: 'Christina', lastname: 'Faber', dateCreated: defaultDate, status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
-            { id: cadetIds[10], fk_assosiation, firstname: 'NewReturning', lastname: 'Cadet', dateCreated: defaultDate, status: CadetStatus.RETURNING, comment: '', deletedAt: null },
-            { id: cadetIds[11], fk_assosiation, firstname: 'NewReturned', lastname: 'Cadet', dateCreated: defaultDate, status: CadetStatus.RETURNED, comment: '', deletedAt: null },
+            { id: cadetIds[0], fk_assosiation, firstname: 'Antje', lastname: 'Fried', createdAt: defaultDate, returnStartedAt: null, returnEndedAt: null, status: CadetStatus.ACTIVE, comment: '', deletedAt: null},
+            { id: cadetIds[1], fk_assosiation, firstname: 'Marie', lastname: 'Becker', createdAt: defaultDate, returnStartedAt: null, returnEndedAt: null, status: CadetStatus.ACTIVE, comment: 'Bemerkung Test', deletedAt: null }, // Updated comment
+            { id: cadetIds[2], fk_assosiation, firstname: 'Sven', lastname: 'Keller', createdAt: defaultDate, returnStartedAt: null, returnEndedAt: null, status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
+            { id: cadetIds[3], fk_assosiation, firstname: 'Lucas', lastname: 'Schwartz', createdAt: defaultDate, returnStartedAt: null, returnEndedAt: null, status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
+            { id: cadetIds[4], fk_assosiation, firstname: 'Uwe', lastname: 'Luft', createdAt: defaultDate, returnStartedAt: null, returnEndedAt: null, status: CadetStatus.ACTIVE, comment: 'initial-comment', deletedAt: null },
+            { id: cadetIds[5], fk_assosiation, firstname: 'Maik', lastname: 'Finkel', createdAt: defaultDate, returnStartedAt: null, returnEndedAt: null, status: CadetStatus.ACTIVE, comment: 'initial-comment', deletedAt: null },
+            { id: cadetIds[6], fk_assosiation, firstname: 'Tim', lastname: 'Weissmuller', createdAt: defaultDate, returnStartedAt: null, returnEndedAt: null, status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
+            { id: cadetIds[7], fk_assosiation, firstname: 'Juliane', lastname: 'Unger', createdAt: defaultDate, returnStartedAt: null, returnEndedAt: null, status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
+            { id: cadetIds[8], fk_assosiation, firstname: 'xxx', lastname: 'xxx', createdAt: defaultDate, returnStartedAt: new Date('2023-08-13T09:05:49.000Z'), returnEndedAt: new Date('2023-08-16T09:45:25.000Z'), status: CadetStatus.DELETED, comment: '', deletedAt: new Date('2023-08-16T09:45:25.000Z') },
+            { id: cadetIds[9], fk_assosiation, firstname: 'Christina', lastname: 'Faber', createdAt: defaultDate, returnStartedAt: null, returnEndedAt: null, status: CadetStatus.ACTIVE, comment: '', deletedAt: null },
+            { id: cadetIds[10], fk_assosiation, firstname: 'NewReturning', lastname: 'Cadet', createdAt: defaultDate, returnStartedAt: new Date('2023-08-16T11:11:05.000Z'), returnEndedAt: null, status: CadetStatus.RETURNING, comment: '', deletedAt: null },
+            { id: cadetIds[11], fk_assosiation, firstname: 'NewReturned', lastname: 'Cadet', createdAt: defaultDate, returnStartedAt: new Date('2023-10-13T09:11:05.000Z'), returnEndedAt: new Date('2023-11-16T09:45:25.000Z'), status: CadetStatus.RETURNED, comment: '', deletedAt: null },
         ]
     }
 

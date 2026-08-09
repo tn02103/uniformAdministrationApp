@@ -11,7 +11,7 @@ export class CadetDetailPage {
     // Page
     readonly divPageHeader: Locator;
     readonly btn_menu: Locator;
-    readonly btn_menu_delete: Locator;
+    readonly btn_menu_memberExit: Locator;
 
     readonly cadetDataComponent: CadetDataComponent;
     readonly cadetUniformComponent: CadetUniformComponent;
@@ -27,6 +27,6 @@ export class CadetDetailPage {
 
         this.divPageHeader = page.getByTestId("div_pageHeader");
         this.btn_menu = page.getByTestId('btn_cadet_menu');
-        this.btn_menu_delete = page.getByTestId('btn_cadet_menu_delete');
+        this.btn_menu_memberExit = page.getByTestId('btn_cadet_menu_memberExit');
     }
 }

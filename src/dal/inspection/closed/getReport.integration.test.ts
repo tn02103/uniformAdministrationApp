@@ -1,4 +1,5 @@
 import { getClosedInspectionReport } from "@/dal/inspection/closed/getReport";
+import { prisma } from "@/lib/db";
 import { StaticData } from "../../../../tests/_playwrightConfig/testData/staticDataLoader";
 import { runServerActionTest } from "../../_helper/testHelper";
 import { InspectionReview } from "@/types/deficiencyTypes";
@@ -44,5 +45,49 @@ describe('getClosedInspectionReport', () => {
         const cadet2Entry = report.cadetList.find(e => e.cadet.id === staticData.ids.cadetIds[2]);
         expect(cadet2Entry).toBeDefined();
         expect(cadet2Entry!.attendanceStatus).toBe('missing');
+    });
+
+    it('excludes cadets that were already RETURNING before inspection start from cadetList', async () => {
+        const returnStartedBeforeInspection = new Date('2023-08-13T07:00:00.000Z');
+        await prisma.cadet.update({
+            where: { id: staticData.ids.cadetIds[10] },
+            data: {
+                status: 'RETURNING',
+                returnStartedAt: returnStartedBeforeInspection,
+                returnEndedAt: null,
+                deletedAt: null,
+            },
+        });
+
+        const { success, result } = await runServerActionTest(
+            getClosedInspectionReport({ inspectionId: staticData.ids.inspectionIds[1] })
+        );
+
+        expect(success).toBeTruthy();
+        const report = result as InspectionReview;
+        const entry = report.cadetList.find((e) => e.cadet.id === staticData.ids.cadetIds[10]);
+        expect(entry).toBeUndefined();
+    });
+
+    it('activeCadets counts only cadets active at inspection end', async () => {
+        const beforeEnd = new Date('2023-08-13T12:00:00.000Z');
+
+        await prisma.cadet.update({
+            where: { id: staticData.ids.cadetIds[11] },
+            data: {
+                status: 'RETURNED',
+                returnStartedAt: new Date('2023-08-13T10:00:00.000Z'),
+                returnEndedAt: beforeEnd,
+                deletedAt: null,
+            },
+        });
+
+        const { success, result } = await runServerActionTest(
+            getClosedInspectionReport({ inspectionId: staticData.ids.inspectionIds[1] })
+        );
+
+        expect(success).toBeTruthy();
+        const report = result as InspectionReview;
+        expect(report.activeCadets).toBe(9);
     });
 });

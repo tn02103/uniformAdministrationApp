@@ -91,15 +91,20 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
         }
     }
 
+    function isLeavingRef(e: React.MouseEvent, refObject: Node | null) {
+        const relatedTarget = e.relatedTarget;
+        if ((relatedTarget instanceof Node) && refObject && refObject.contains(relatedTarget)) {
+            return false;
+        }
+        
+        return true;
+    }
+
     function handleCollapseButtonMouseLeave(e: React.MouseEvent) {
         if (isMobile) return;
 
-        const relatedTarget = e.relatedTarget as Node;
-        const isLeavingToSidebar = sidebarRef.current && sidebarRef.current.contains(relatedTarget);
-
         setIsOverCollapseButton(false);
-
-        if (isLeavingToSidebar && !isSidebarFixed) {
+        if (!isSidebarFixed && !isLeavingRef(e, sidebarRef.current)) {
             setCollapsed(false);
         }
     }
@@ -108,10 +113,8 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
         // Only for large screens
         if (isMobile) return;
 
-        const relatedTarget = e.relatedTarget as Node;
-        const isLeavingToCollapseButton = collapseButtonRef.current && collapseButtonRef.current.contains(relatedTarget);
 
-        if (isLeavingToCollapseButton) {
+        if (!isLeavingRef(e, collapseButtonRef.current)) {
             setIsOverCollapseButton(true);
             return;
         }

@@ -129,6 +129,7 @@ test('validate create', async ({ materialListComponent, editMaterialPopup, stati
 
 
     let materialId: string | null = null;
+
     await test.step('validate db', async () => {
         await expect(async () => {
             const dbMaterial = await prisma.material.findFirst({

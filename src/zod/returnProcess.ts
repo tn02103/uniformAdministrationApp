@@ -4,10 +4,21 @@ z.setErrorMap(customErrorMap);
 
 export const createReturnProcessSchema = z.object({
     cadetId: z.string().uuid(),
-    returnProcessTemplateId: z.string().uuid().optional(),
+    returnProcessTemplateId: z.string().uuid(),
     inspectorComment: z.string().optional(),
+    preCheckedItemIds: z.array(z.string().uuid()).optional(),
+    finished: z.boolean().optional(),
+    selectedUniformIds: z.array(z.string().uuid()).optional(),
+    selectedMaterialIds: z.array(z.string().uuid()).optional(),
 });
 export type CreateReturnProcessInput = z.infer<typeof createReturnProcessSchema>;
+
+export const returnCadetDirectlySchema = z.object({
+    cadetId: z.string().uuid(),
+    selectedUniformIds: z.array(z.string().uuid()).optional(),
+    selectedMaterialIds: z.array(z.string().uuid()).optional(),
+});
+export type ReturnCadetDirectlyInput = z.infer<typeof returnCadetDirectlySchema>;
 
 export const completeChecklistItemSchema = z.object({
     returnProcessId: z.string().uuid(),
@@ -20,6 +31,15 @@ export const completeChecklistSchema = z.object({
     returnProcessId: z.string().uuid(),
 });
 export type CompleteChecklistInput = z.infer<typeof completeChecklistSchema>;
+
+export const returnProcessModalFormSchema = z.object({
+    templateId: z.string().uuid(),
+    items: z.record(z.string().uuid(), z.boolean()),
+    uniformItems: z.record(z.string().uuid(), z.boolean()),
+    materialItems: z.record(z.string().uuid(), z.boolean()),
+    notes: z.string().optional(),
+});
+export type ReturnProcessModalFormType = z.infer<typeof returnProcessModalFormSchema>;
 
 export const createReturnProcessTemplateSchema = z.object({
     name: z.string().min(1).max(100),

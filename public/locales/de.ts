@@ -289,6 +289,39 @@ export default {
         returnUniform: {
             error: "Beim Zurückziehen des Uniformteils ist ein Fehler aufgetreten. Bitte versuchen sie es noch einmal",
         },
+        memberExit: {
+            dropdownLabel: "Vereinsaustritt",
+            modal: {
+                header: "Vereinsaustritt",
+                step1: {
+                    header: "Zurückgegebene Ausrüstung bestätigen",
+                    uniformItems: "Uniformteile",
+                    materialItems: "Materialien",
+                },
+                step2: {
+                    header: "Austrittsprozess",
+                    templateLabel: "Vorlage",
+                    notesLabel: "Bemerkungen",
+                },
+                actions: {
+                    next: "Weiter",
+                    back: "Zurück",
+                    save: "Speichern",
+                    startProcess: "Prozess starten",
+                    saveFinished: "Abgeschlossen speichern",
+                },
+                success: "Vereinsaustritt erfolgreich gestartet",
+                successFinished: "Vereinsaustritt erfolgreich abgeschlossen",
+                successDirect: "Vereinsaustritt erfolgreich gespeichert",
+                error: "Beim Speichern des Vereinsaustritts ist ein Fehler aufgetreten",
+            },
+            directReturn: {
+                header: "Vereinsaustritt",
+                message: "Möchten Sie den Vereinsaustritt von {firstname} {lastname} direkt bestätigen?",
+                confirm: "Bestätigen",
+                error: "Beim Speichern des Vereinsaustritts ist ein Fehler aufgetreten",
+            },
+        },
         issueMaterial: {
             header: "{group} ausgeben",
             error: ""

@@ -289,6 +289,39 @@ export default {
         returnUniform: {
             error: "An error occurred while withdrawing the uniform part. Please try again",
         },
+        memberExit: {
+            dropdownLabel: "Club exit",
+            modal: {
+                header: "Club exit",
+                step1: {
+                    header: "Confirm returned equipment",
+                    uniformItems: "Uniform items",
+                    materialItems: "Materials",
+                },
+                step2: {
+                    header: "Exit process",
+                    templateLabel: "Template",
+                    notesLabel: "Notes",
+                },
+                actions: {
+                    next: "Next",
+                    back: "Back",
+                    save: "Save",
+                    startProcess: "Start process",
+                    saveFinished: "Save as completed",
+                },
+                success: "Club exit process successfully started",
+                successFinished: "Club exit process successfully completed",
+                successDirect: "Club exit successfully saved",
+                error: "An error occurred while saving the club exit",
+            },
+            directReturn: {
+                header: "Club exit",
+                message: "Do you want to confirm the club exit of {firstname} {lastname}?",
+                confirm: "Confirm",
+                error: "An error occurred while saving the club exit",
+            },
+        },
         issueMaterial: {
             header: "Issue {group}",
             error: ""

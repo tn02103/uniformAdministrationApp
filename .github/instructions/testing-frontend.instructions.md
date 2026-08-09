@@ -85,3 +85,5 @@ describe('MyForm', () => {
 - Do not test implementation details; test observable behaviour
 - Use `vi.fn()` / `vi.mock()` — **never** `jest.*` equivalents
 - No `console.log` in test files
+- **Test descriptions must be in English** — never use German or other non-English text in `describe()`, `it()`, or `test()` labels
+- **Never use direct DOM access** (`document.querySelector`, `document.getElementById`, etc.) — always use Testing Library `screen` queries (`screen.getByRole`, `screen.getByLabelText`, etc.)

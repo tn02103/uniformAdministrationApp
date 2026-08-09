@@ -79,9 +79,11 @@ model Cadet {
     fk_assosiation  String            @db.Char(36)
     firstname       String            @db.VarChar(30)
     lastname        String            @db.VarChar(30)
-    dateCreated     DateTime          @map("date_created") @db.Date @default(now())
     comment         String            @default("")
     status          CadetStatus       @default(ACTIVE)
+    createdAt       DateTime          @map("date_created") @db.Date @default(now())
+    returnStartedAt DateTime?         @map("return_started_at") @db.Timestamp(6)
+    returnEndedAt   DateTime?         @map("return_ended_at") @db.Timestamp(6)
     deletedAt       DateTime?         @map("deleted_at") @db.Timestamp(6)
     assosiation     Assosiation       @relation(fields: [fk_assosiation], references: [id])
     materialIssued  MaterialIssued[]

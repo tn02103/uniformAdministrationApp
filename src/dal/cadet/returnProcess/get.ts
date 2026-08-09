@@ -14,7 +14,7 @@ export const getReturnProcessList = () =>
             __unsecuredGetReturnProcessList(assosiation)
         );
 
-export const __unsecuredGetReturnProcessList = (
+const __unsecuredGetReturnProcessList = (
     fk_assosiation: string,
     client?: Prisma.TransactionClient
 ) => (client ?? prisma).returnProcess.findMany({
