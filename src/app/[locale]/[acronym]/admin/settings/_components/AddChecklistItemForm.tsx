@@ -26,7 +26,7 @@ export const AddChecklistItemForm = ({ templateId, onSave }: AddChecklistItemFor
         <div>
             <Form<AddChecklistItemFormValues>
                 onSubmit={handleSubmit}
-                aria-label={t("admin.settings.returnProcess.addChecklistItem")}
+                aria-label={t("admin.settings.resignationProcess.addChecklistItem")}
             >
                 <div
                     className="d-flex gap-2 align-items-start flex-wrap"
@@ -34,7 +34,7 @@ export const AddChecklistItemForm = ({ templateId, onSave }: AddChecklistItemFor
                     <div style={{ flexGrow: 1, minWidth: "160px" }}>
                         <InputFormField
                             name="label"
-                            label={t("admin.settings.returnProcess.addItemLabel")}
+                            label={t("admin.settings.resignationProcess.addItemLabel")}
                             formName={`addChecklist_${templateId}`}
                         />
                     </div>

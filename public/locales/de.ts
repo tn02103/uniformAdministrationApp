@@ -723,7 +723,7 @@ export default {
             header: "Einstellungen",
             anonymization: {
                 header: "Anonymisierungsrichtlinie",
-                returnProcessEnabled: "Rückgabeprozess aktiviert",
+                resignationProcessEnabled: "Rückgabeprozess aktiviert",
                 anonymizationMode: "Anonymisierungsmodus",
                 anonymizationDelayDays: "Verzögerung in Tagen",
                 modes: {
@@ -734,7 +734,7 @@ export default {
                 success: "Einstellungen erfolgreich gespeichert",
                 error: "Beim Speichern ist ein Fehler aufgetreten",
             },
-            returnProcess: {
+            resignationProcess: {
                 header: "Rückgabeprozess",
                 addTemplate: "Vorlage hinzufügen",
                 templateName: "Vorlagenname",
@@ -965,6 +965,58 @@ export default {
             },
             cancel: "Abbrechen",
             change: "Ändern",
+        },
+    },
+    memberExit: {
+        managementOverview: {
+            header: "Vereinsaustritte",
+            headerActive: "Aktive Austrittsprozesse",
+            headerFinished: "Abgeschlossene Austrittsprozesse",
+            tableheaders:{
+                startDate: "Startdatum",
+                cadet: "Person",
+                template: "Vorlage",
+                todos: "Prüfpunkte",
+                uniformAndMaterialReturned: "Unif./ Mat. zurückgegeben",
+                exitDate: "Austrittsdatum",
+                exitStartDate: "Austrittsprozess gestartet",
+            },
+            finished: {
+                header: "Abgeschlossene Austrittsprozesse",
+            },
+            offcanvas: {
+                header: "Vereinsaustritt von {cadet}",
+                processDetails: {
+                    header: "Prozessdetails",
+                    status: "Status",
+                    completed: "Abgeschlossen",
+                    inProgress: "In Bearbeitung",
+                    todos: "Prüfpunkte",
+                    uniformReturned: "Uniform zurückgegeben",
+                    materialReturned: "Material zurückgegeben",
+                    template: "Vorlage",
+                    startedAt: "Gestartet am",
+                    lastUpdatedAt: "Zuletzt aktualisiert am",
+                    comment: "Bemerkungen",
+                },
+                todos: {
+                    header: "Prüfpunkte",
+                },
+                missingReturns: {
+                    header: "Nicht zurückgegeben",
+                    uniform: "Uniformteile",
+                    uniformComplete: "Uniformteile vollständig zurückgegeben",
+                    material: "Materialien",
+                    materialComplete: "Materialien vollständig zurückgegeben",
+                },
+                completeProcess: "Vereinsaustritt abschließen",
+                errors: {
+                    toggleTask: "Beim Ändern des Prüfpunkts ist ein Fehler aufgetreten",
+                    completeProcess: "Beim Abschließen des Austrittsprozesses ist ein Fehler aufgetreten",
+                    withdrawMaterial: "Beim Zurückziehen des Materials ist ein Fehler aufgetreten",
+                    withdrawUniform: "Beim Zurückziehen der Uniform ist ein Fehler aufgetreten",
+                }
+            },
         },
     },
 } as const;

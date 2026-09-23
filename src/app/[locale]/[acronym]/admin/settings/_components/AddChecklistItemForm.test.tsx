@@ -20,7 +20,7 @@ describe("<AddChecklistItemForm />", () => {
 
     it("renders the label input", () => {
         render(<AddChecklistItemForm templateId={templateId} onSave={onSave} />, { wrapper: Wrapper });
-        expect(screen.getByLabelText(/admin.settings.returnProcess.addItemLabel/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/admin.settings.resignationProcess.addItemLabel/i)).toBeInTheDocument();
     });
 
     it("renders the submit button", () => {
@@ -30,21 +30,21 @@ describe("<AddChecklistItemForm />", () => {
 
     it("calls onSave with templateId and trimmed label on submit", async () => {
         render(<AddChecklistItemForm templateId={templateId} onSave={onSave} />, { wrapper: Wrapper });
-        await user.type(screen.getByLabelText(/admin.settings.returnProcess.addItemLabel/i), "  New Item  ");
+        await user.type(screen.getByLabelText(/admin.settings.resignationProcess.addItemLabel/i), "  New Item  ");
         await user.click(screen.getByRole("button"));
         expect(onSave).toHaveBeenCalledWith(templateId, "New Item");
     });
 
     it("does not call onSave when label is empty/whitespace only", async () => {
         render(<AddChecklistItemForm templateId={templateId} onSave={onSave} />, { wrapper: Wrapper });
-        await user.type(screen.getByLabelText(/admin.settings.returnProcess.addItemLabel/i), "   ");
+        await user.type(screen.getByLabelText(/admin.settings.resignationProcess.addItemLabel/i), "   ");
         await user.click(screen.getByRole("button"));
         expect(onSave).not.toHaveBeenCalled();
     });
 
     it("resets the input after successful submit", async () => {
         render(<AddChecklistItemForm templateId={templateId} onSave={onSave} />, { wrapper: Wrapper });
-        const input = screen.getByLabelText(/admin.settings.returnProcess.addItemLabel/i);
+        const input = screen.getByLabelText(/admin.settings.resignationProcess.addItemLabel/i);
         await user.type(input, "Some item");
         await user.click(screen.getByRole("button"));
         expect(input).toHaveValue("");

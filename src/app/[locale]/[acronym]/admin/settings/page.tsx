@@ -1,8 +1,8 @@
 import { getAssosiationAnonymizationConfig } from "@/dal/assosiation";
-import { getReturnProcessTemplateList } from "@/dal/cadet/returnProcessTemplate";
+import { getResignationProcessTemplateList } from "@/dal";
 import { getI18n } from "@/lib/locales/config";
 import { AnonymizationConfigSection } from "./_components/AnonymizationConfigSection";
-import { ReturnProcessTemplateSection } from "./_components/ReturnProcessTemplateSection";
+import { ResignationProcessTemplateSection } from "./_components/ResignationProcessTemplateSection";
 
 /**
  * Admin settings page — server component.
@@ -12,7 +12,7 @@ export default async function AdminSettingsPage() {
     const t = await getI18n();
     const [config, templates] = await Promise.all([
         getAssosiationAnonymizationConfig(),
-        getReturnProcessTemplateList(),
+        getResignationProcessTemplateList(),
     ]);
 
     return (
@@ -20,9 +20,9 @@ export default async function AdminSettingsPage() {
             <h1 className="text-center pt-3">{t('admin.settings.header')}</h1>
             <div className="d-flex flex-column align-items-center gap-4 p-3 p-md-4">
                 <AnonymizationConfigSection initialConfig={config} />
-                <ReturnProcessTemplateSection
+                <ResignationProcessTemplateSection
                     initialTemplates={templates}
-                    returnProcessEnabled={config.returnProcessEnabled}
+                    resignationProcessEnabled={config.resignationProcessEnabled}
                 />
             </div>
         </div>

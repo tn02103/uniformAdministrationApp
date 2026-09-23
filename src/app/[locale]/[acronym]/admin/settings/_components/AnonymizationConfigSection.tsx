@@ -4,7 +4,7 @@ import { Form } from "@/components/fields/Form";
 import { FormConditional } from "@/components/fields/form/FormConditional";
 import { NumberInputFormField } from "@/components/fields/NumberInputFormField";
 import { SelectFormField } from "@/components/fields/SelectFormField";
-import { updateAssosiationAnonymizationConfig } from "@/dal/assosiation";
+import { updateAssosiationAnonymizationConfig } from "@/dal";
 import { useI18n } from "@/lib/locales/client";
 import { UpdateAnonymizationConfigInput, updateAnonymizationConfigSchema } from "@/zod/assosiation";
 import { useRouter } from "next/navigation";

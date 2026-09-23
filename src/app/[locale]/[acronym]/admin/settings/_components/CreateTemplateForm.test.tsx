@@ -12,7 +12,7 @@ describe("<CreateTemplateForm />", () => {
 
     it("renders the template name input", () => {
         render(<CreateTemplateForm onSave={onSave} onCancel={onCancel} />);
-        expect(screen.getByLabelText(/admin.settings.returnProcess.templateName/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/admin.settings.resignationProcess.templateName/i)).toBeInTheDocument();
     });
 
     it("renders Create and Cancel buttons", () => {
@@ -23,7 +23,7 @@ describe("<CreateTemplateForm />", () => {
 
     it("calls onSave with name and defaultProcess=false on submit", async () => {
         render(<CreateTemplateForm onSave={onSave} onCancel={onCancel} />);
-        await user.type(screen.getByLabelText(/admin.settings.returnProcess.templateName/i), "My Template");
+        await user.type(screen.getByLabelText(/admin.settings.resignationProcess.templateName/i), "My Template");
         await user.click(screen.getByRole("button", { name: /common.actions.create/i }));
         expect(onSave).toHaveBeenCalledWith(
             expect.objectContaining({ name: "My Template", defaultProcess: false }),

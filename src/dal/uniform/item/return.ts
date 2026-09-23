@@ -26,9 +26,8 @@ export const returnItem = async (props: PropType): Promise<CadetUniformMap> => g
                 id: uniformId,
                 recdelete: null,
             },
-            cadet:  {
+            cadet: {
                 id: cadetId,
-                status: "ACTIVE",
             },
             dateReturned: null,
         }

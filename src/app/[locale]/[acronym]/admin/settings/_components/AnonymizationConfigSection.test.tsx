@@ -1,4 +1,4 @@
-import { updateAssosiationAnonymizationConfig } from "@/dal/assosiation";
+import { updateAssosiationAnonymizationConfig } from "@/dal";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
@@ -22,7 +22,7 @@ describe("<AnonymizationConfigSection />", () => {
 
     beforeEach(() => {
         vi.mocked(updateAssosiationAnonymizationConfig).mockResolvedValue({
-            returnProcessEnabled: true,
+            resignationProcessEnabled: true,
             anonymizationMode: "MANUAL",
             anonymizationDelayDays: 0,
         });

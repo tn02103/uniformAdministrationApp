@@ -14,7 +14,7 @@ export const updateAnonymizationConfig = async (data: UpdateAnonymizationConfigI
             where: { assosiationId: assosiation },
             data: cleanedData,
             select: {
-                returnProcessEnabled: true,
+                resignationProcessEnabled: true,
                 anonymizationMode: true,
                 anonymizationDelayDays: true,
             },
