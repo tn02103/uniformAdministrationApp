@@ -8,7 +8,18 @@ const globalForPrisma = global as unknown as {
 
 const connectionString = `${process.env.DATABASE_URL}`;
 const adapter = new PrismaPg({ connectionString })
-export const prisma = globalForPrisma.prisma || new PrismaClient({ adapter });
+export const prisma = globalForPrisma.prisma || new PrismaClient({ adapter }).$extends({
+    result: {
+        cadet: {
+            fullName: {
+                needs: { firstname: true, lastname: true },
+                compute(cadet) {
+                    return `${cadet.firstname} ${cadet.lastname}`;
+                }
+            }
+        },
+    }   
+});
 
 if (process.env.NODE_ENV !== 'production') {
     globalForPrisma.prisma = prisma;

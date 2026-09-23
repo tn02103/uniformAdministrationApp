@@ -723,7 +723,7 @@ export default {
             header: "Settings",
             anonymization: {
                 header: "Anonymisation Policy",
-                returnProcessEnabled: "Return process enabled",
+                resignationProcessEnabled: "Return process enabled",
                 anonymizationMode: "Anonymisation mode",
                 anonymizationDelayDays: "Delay in days",
                 modes: {
@@ -734,7 +734,7 @@ export default {
                 success: "Settings saved successfully",
                 error: "An error occurred while saving",
             },
-            returnProcess: {
+            resignationProcess: {
                 header: "Return Process",
                 addTemplate: "Add template",
                 templateName: "Template name",
@@ -967,18 +967,19 @@ export default {
             change: "change",
         },
     },
-        memberExit: {
+    memberExit: {
         managementOverview: {
             header: "Club exits",
-            active: {
-                header: "Active exit processes",
-                tableheaders:{
-                    startDate: "Start date",
-                    cadet: "Member",
-                    template: "Template",
-                    todos: "Checklist items",
-                    uniformAndMaterialReturned: "Uniform/ Material returned",
-                }
+            headerActive: "Active exit processes",
+            headerFinished: "Completed exit processes",
+            tableheaders: {
+                startDate: "Start date",
+                cadet: "Member",
+                template: "Template",
+                todos: "Checklist items",
+                uniformAndMaterialReturned: "Uniform/ Material returned",
+                exitDate: "Exit date",
+                exitStartDate: "Exit start date"
             },
             finished: {
                 header: "Completed exit processes",

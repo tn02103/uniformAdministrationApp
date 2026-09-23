@@ -1,4 +1,4 @@
-import { ReturnChecklistTemplate, ReturnProcessTemplate } from "@/prisma/client";
+import type { ResignationProcessTemplate, ResignationChecklistItemTemplate } from "@/prisma/client";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
@@ -7,7 +7,7 @@ import { TemplateCard } from "./TemplateCard";
 vi.mock("@/components/reorderDnD/ReorderableTableBody", () => ({
     ReorderableTableBody: vi.fn(({ items, children }) => (
         <tbody data-testid="reorderable-table-body">
-            {items.map((item: ReturnChecklistTemplate) =>
+            {items.map((item: ResignationChecklistItemTemplate) =>
                 children({ item, draggableRef: undefined, previewRef: undefined, isDragging: false })
             )}
         </tbody>
@@ -40,20 +40,20 @@ vi.mock("@/components/fields/InlineEditInputFormField", () => ({
     )),
 }));
 
-const checklistItem: ReturnChecklistTemplate = {
+const checklistItem: ResignationChecklistItemTemplate = {
     id: "ci-1",
     label: "Check tyres",
     sortOrder: 0,
     fk_assosiation: "assoc-1",
-    fk_returnProcessTemplate: "tpl-1",
+    processTemplateId: "tpl-1",
 };
 
-const template: ReturnProcessTemplate & { checklistItems: ReturnChecklistTemplate[] } = {
+const template: ResignationProcessTemplate & { checklistItemTemplates: ResignationChecklistItemTemplate[] } = {
     id: "tpl-1",
     name: "Standard Process",
     defaultProcess: false,
     fk_assosiation: "assoc-1",
-    checklistItems: [checklistItem],
+    checklistItemTemplates: [checklistItem],
     createdAt: new Date(),
     updatedAt: new Date(),
 };
@@ -99,7 +99,7 @@ describe("<TemplateCard />", () => {
 
     it("shows default badge when defaultProcess is true", () => {
         render(<TemplateCard {...defaultProps} template={{ ...template, defaultProcess: true }} />);
-        const badges = screen.getAllByLabelText(/admin.settings.returnProcess.defaultProcess/i);
+        const badges = screen.getAllByLabelText(/admin.settings.resignationProcess.defaultProcess/i);
         expect(badges.length).toBeGreaterThanOrEqual(1);
     });
 
@@ -111,7 +111,7 @@ describe("<TemplateCard />", () => {
 
     it("calls onToggleDefault when star button is clicked", async () => {
         render(<TemplateCard {...defaultProps} />);
-        await user.click(screen.getByRole("button", { name: /admin.settings.returnProcess.defaultProcess/i }));
+        await user.click(screen.getByRole("button", { name: /admin.settings.resignationProcess.defaultProcess/i }));
         expect(defaultProps.onToggleDefault).toHaveBeenCalledWith(template);
     });
 
@@ -152,13 +152,13 @@ describe("<TemplateCard />", () => {
 
     it("renders with opacity-50 class when disabled", () => {
         render(<TemplateCard {...defaultProps} disabled />);
-        expect(screen.getByTestId(`div_returnprocess_${template.id}`)).toHaveClass("opacity-50");
+        expect(screen.getByTestId(`div_resignationProcess_${template.id}`)).toHaveClass("opacity-50");
     });
 
     it("does not render action buttons when disabled", () => {
         render(<TemplateCard {...defaultProps} disabled />);
         expect(screen.queryByRole("button", { name: /common.actions.delete/i })).not.toBeInTheDocument();
-        expect(screen.queryByRole("button", { name: /admin.settings.returnProcess.defaultProcess/i })).not.toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: /admin.settings.resignationProcess.defaultProcess/i })).not.toBeInTheDocument();
     });
 
     it("expand button is disabled when card is disabled", () => {

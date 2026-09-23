@@ -9,36 +9,36 @@ datasource db {
 }
 
 model Assosiation {
-    id                       String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    name                     String                     @unique @db.VarChar(100)
-    acronym                  String                     @db.VarChar(5)
-    useBeta                  Boolean                    @default(false) @map("use_beta")
-    user                     User[]
-    cadet                    Cadet[]
-    materialGroup            MaterialGroup[]
-    uniformSize              UniformSize[]
-    uniformSizelist          UniformSizelist[]
-    uniformType              UniformType[]
-    deficiencyType           DeficiencyType[]
-    inspection               Inspection[]
-    AssosiationConfiguration AssosiationConfiguration[]
-    StorageUnit              StorageUnit[]
-    Redirect                 Redirect[]
-    returnProcessTemplates   ReturnProcessTemplate[]
-    returnProcesses          ReturnProcess[]
+    id                          String                       @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    name                        String                       @unique @db.VarChar(100)
+    acronym                     String                       @db.VarChar(5)
+    useBeta                     Boolean                      @default(false) @map("use_beta")
+    user                        User[]
+    cadet                       Cadet[]
+    materialGroup               MaterialGroup[]
+    uniformSize                 UniformSize[]
+    uniformSizelist             UniformSizelist[]
+    uniformType                 UniformType[]
+    deficiencyType              DeficiencyType[]
+    inspection                  Inspection[]
+    AssosiationConfiguration    AssosiationConfiguration[]
+    StorageUnit                 StorageUnit[]
+    Redirect                    Redirect[]
+    resignationProcessTemplates ResignationProcessTemplate[]
+    resignationProcesses        ResignationProcess[]
 
     @@map("assosiation")
     @@schema("authentication")
 }
 
 model AssosiationConfiguration {
-    assosiationId            String            @id @db.Char(36)
-    sendEmailAfterInspection Boolean
-    inspectionReportEmails   String[]
-    returnProcessEnabled     Boolean           @default(false)
-    anonymizationMode        AnonymizationMode @default(MANUAL)
-    anonymizationDelayDays   Int               @default(30)
-    assosiation              Assosiation       @relation(fields: [assosiationId], references: [id], onDelete: Cascade)
+    assosiationId             String            @id @db.Char(36)
+    sendEmailAfterInspection  Boolean
+    inspectionReportEmails    String[]
+    resignationProcessEnabled Boolean           @default(false)
+    anonymizationMode         AnonymizationMode @default(MANUAL)
+    anonymizationDelayDays    Int               @default(30)
+    assosiation               Assosiation       @relation(fields: [assosiationId], references: [id], onDelete: Cascade)
 
     @@map("assosiation_configuration")
     @@schema("base")
@@ -75,91 +75,90 @@ model User {
 }
 
 model Cadet {
-    id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    fk_assosiation  String            @db.Char(36)
-    firstname       String            @db.VarChar(30)
-    lastname        String            @db.VarChar(30)
-    comment         String            @default("")
-    status          CadetStatus       @default(ACTIVE)
-    createdAt       DateTime          @map("date_created") @db.Date @default(now())
-    returnStartedAt DateTime?         @map("return_started_at") @db.Timestamp(6)
-    returnEndedAt   DateTime?         @map("return_ended_at") @db.Timestamp(6)
-    deletedAt       DateTime?         @map("deleted_at") @db.Timestamp(6)
-    assosiation     Assosiation       @relation(fields: [fk_assosiation], references: [id])
-    materialIssued  MaterialIssued[]
-    uniformIssued   UniformIssued[]
-    deficiencies    Deficiency[]
-    cadetInspection CadetInspection[]
-    deregistrations Deregistration[]
-    returnProcess   ReturnProcess?
+    id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    fk_assosiation     String              @db.Char(36)
+    firstname          String              @db.VarChar(30)
+    lastname           String              @db.VarChar(30)
+    comment            String              @default("")
+    status             CadetStatus         @default(ACTIVE)
+    createdAt          DateTime            @default(now()) @map("date_created") @db.Date
+    resignedAt         DateTime?           @db.Timestamp(6) @map("resigned_at")
+    deletedAt          DateTime?           @db.Timestamp(6) @map("deleted_at")
+    assosiation        Assosiation         @relation(fields: [fk_assosiation], references: [id])
+    materialIssued     MaterialIssued[]
+    uniformIssued      UniformIssued[]
+    deficiencies       Deficiency[]
+    cadetInspection    CadetInspection[]
+    deregistrations    Deregistration[]
+    resignationProcess ResignationProcess?
 
     @@index([fk_assosiation])
     @@map("cadet")
     @@schema("base")
 }
 
-model ReturnProcessTemplate {
-    id              String                    @id @default(uuid())
-    fk_assosiation  String                    @db.Char(36)
-    name            String
-    defaultProcess  Boolean                   @default(false)
-    createdAt       DateTime                  @default(now())
-    updatedAt       DateTime                  @updatedAt
-    assosiation     Assosiation               @relation(fields: [fk_assosiation], references: [id])
-    checklistItems  ReturnChecklistTemplate[]
-    returnProcesses ReturnProcess[]
+model ResignationProcessTemplate {
+    id                     String                             @id @default(dbgenerated("gen_random_uuid()"))
+    fk_assosiation         String                             @db.Char(36)
+    name                   String
+    defaultProcess         Boolean                            @default(false)
+    createdAt              DateTime                           @default(now())
+    updatedAt              DateTime                           @updatedAt
+    assosiation            Assosiation                        @relation(fields: [fk_assosiation], references: [id])
+    checklistItemTemplates ResignationChecklistItemTemplate[]
+    resignationProcesses    ResignationProcess[]
 
     @@index([fk_assosiation])
-    @@map("return_process_template")
+    @@map("resignation_process_template")
     @@schema("base")
 }
 
-model ReturnProcess {
-    id                       String                      @id @default(uuid())
-    fk_cadet                 String                      @db.Char(36) @unique
-    cadet                    Cadet                       @relation(fields: [fk_cadet], references: [id])
-    fk_returnProcessTemplate String                      @db.Char(36)
-    template                 ReturnProcessTemplate       @relation(fields: [fk_returnProcessTemplate], references: [id])
-    fk_assosiation           String                      @db.Char(36)
-    assosiation              Assosiation                 @relation(fields: [fk_assosiation], references: [id])
-    inspectorComment         String?
-    finished                 Boolean                     @default(false)
-    createdAt                DateTime                    @default(now())
-    updatedAt                DateTime                    @updatedAt
-    itemStatuses             ReturnChecklistItemStatus[]
+model ResignationProcess {
+    id               String                     @id @default(dbgenerated("gen_random_uuid()"))
+    cadetId          String                     @unique @db.Char(36)
+    cadet            Cadet                      @relation(fields: [cadetId], references: [id])
+    templateId       String                     @db.Char(36)
+    template         ResignationProcessTemplate @relation(fields: [templateId], references: [id])
+    fk_assosiation   String                     @db.Char(36)
+    assosiation      Assosiation                @relation(fields: [fk_assosiation], references: [id])
+    inspectorComment String?
+    finished         Boolean                    @default(false)
+    createdAt        DateTime                   @default(now())
+    updatedAt        DateTime                   @updatedAt
+    checklistItems   ResignationChecklistItem[]
 
     @@index([fk_assosiation])
-    @@index([fk_cadet])
-    @@map("return_process")
+    @@index([cadetId])
+    @@map("resignation_process")
     @@schema("base")
 }
 
-model ReturnChecklistTemplate {
-    id                       String                      @id @default(uuid())
-    fk_assosiation           String                      @db.Char(36)
-    fk_returnProcessTemplate String                      @db.Char(36)
-    label                    String
-    sortOrder                Int                         @default(0)
-    returnProcessTemplate    ReturnProcessTemplate       @relation(fields: [fk_returnProcessTemplate], references: [id])
-    itemStatuses             ReturnChecklistItemStatus[]
+model ResignationChecklistItemTemplate {
+    id                String                     @id @default(dbgenerated("gen_random_uuid()"))
+    fk_assosiation    String                     @db.Char(36)
+    processTemplateId String                     @db.Char(36)
+    label             String
+    sortOrder         Int                        @default(0)
+    processTemplate   ResignationProcessTemplate @relation(fields: [processTemplateId], references: [id])
+    checklistItems    ResignationChecklistItem[]
 
-    @@index([fk_returnProcessTemplate])
+    @@index([processTemplateId])
     @@index([fk_assosiation])
-    @@map("return_checklist_template")
+    @@map("resignation_checklist_template")
     @@schema("base")
 }
 
-model ReturnChecklistItemStatus {
-    fk_returnProcess String                  @db.Char(36)
-    fk_checklistItem String                  @db.Char(36)
-    completedAt      DateTime?
-    completedByUser  String?                 @db.VarChar(10)
-    returnProcess    ReturnProcess           @relation(fields: [fk_returnProcess], references: [id])
-    checklistItem    ReturnChecklistTemplate @relation(fields: [fk_checklistItem], references: [id])
+model ResignationChecklistItem {
+    processId           String                           @db.Char(36)
+    checklistTemplateId String                           @db.Char(36)
+    completedAt         DateTime?
+    completedByUser     String?                          @db.VarChar(10)
+    process             ResignationProcess               @relation(fields: [processId], references: [id])
+    checklistItem       ResignationChecklistItemTemplate @relation(fields: [checklistTemplateId], references: [id])
 
-    @@id([fk_returnProcess, fk_checklistItem])
-    @@index([fk_checklistItem])
-    @@map("return_checklist_item_status")
+    @@id([processId, checklistTemplateId])
+    @@index([checklistTemplateId])
+    @@map("resignation_checklist_item")
     @@schema("base")
 }
 
@@ -236,22 +235,22 @@ model UniformSizelist {
 }
 
 model Uniform {
-    id                  String              @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    number              Int
-    fk_uniformType      String              @map("fk_uniform_type") @db.Char(36)
-    fk_generation       String?             @db.Char(36)
-    fk_size             String?             @db.Char(36)
-    isReserve           Boolean             @default(false)
-    comment             String?
-    recdelete           DateTime?           @db.Timestamp(6)
-    recdeleteUser       String?             @map("recdelete_user") @db.VarChar(10)
-    generation          UniformGeneration?  @relation(fields: [fk_generation], references: [id], onDelete: Restrict, onUpdate: Restrict)
-    size                UniformSize?        @relation(fields: [fk_size], references: [id], onUpdate: Restrict)
-    type                UniformType         @relation(fields: [fk_uniformType], references: [id], onUpdate: Restrict)
-    issuedEntries       UniformIssued[]
-    deficiencies        Deficiency[]
-    storageUnit         StorageUnit?        @relation(fields: [storageUnitId], references: [id])
-    storageUnitId       String?             @db.Char(36)
+    id             String             @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    number         Int
+    fk_uniformType String             @map("fk_uniform_type") @db.Char(36)
+    fk_generation  String?            @db.Char(36)
+    fk_size        String?            @db.Char(36)
+    isReserve      Boolean            @default(false)
+    comment        String?
+    recdelete      DateTime?          @db.Timestamp(6)
+    recdeleteUser  String?            @map("recdelete_user") @db.VarChar(10)
+    generation     UniformGeneration? @relation(fields: [fk_generation], references: [id], onDelete: Restrict, onUpdate: Restrict)
+    size           UniformSize?       @relation(fields: [fk_size], references: [id], onUpdate: Restrict)
+    type           UniformType        @relation(fields: [fk_uniformType], references: [id], onUpdate: Restrict)
+    issuedEntries  UniformIssued[]
+    deficiencies   Deficiency[]
+    storageUnit    StorageUnit?       @relation(fields: [storageUnitId], references: [id])
+    storageUnitId  String?            @db.Char(36)
 
     @@index([fk_generation])
     @@index([fk_size])
@@ -309,15 +308,15 @@ model MaterialGroup {
 }
 
 model Material {
-    id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
-    typename         String            @db.VarChar(20)
-    fk_materialGroup String            @map("fk_material_group") @db.Char(36)
-    actualQuantity   Int               @map("quantity_actual") @db.SmallInt
-    targetQuantity   Int               @map("quantity_target") @db.SmallInt
-    sortOrder        Int               @map("sort_order") @db.SmallInt
-    recdelete        DateTime?         @db.Timestamp(6)
-    recdeleteUser    String?           @map("recdelete_user") @db.VarChar(10)
-    materialGroup    MaterialGroup     @relation(fields: [fk_materialGroup], references: [id], onUpdate: Restrict)
+    id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Char(36)
+    typename         String           @db.VarChar(20)
+    fk_materialGroup String           @map("fk_material_group") @db.Char(36)
+    actualQuantity   Int              @map("quantity_actual") @db.SmallInt
+    targetQuantity   Int              @map("quantity_target") @db.SmallInt
+    sortOrder        Int              @map("sort_order") @db.SmallInt
+    recdelete        DateTime?        @db.Timestamp(6)
+    recdeleteUser    String?          @map("recdelete_user") @db.VarChar(10)
+    materialGroup    MaterialGroup    @relation(fields: [fk_materialGroup], references: [id], onUpdate: Restrict)
     issuedEntries    MaterialIssued[]
     deficiencies     Deficiency[]
 
@@ -447,8 +446,8 @@ enum deficiencytype_relation {
 
 enum CadetStatus {
     ACTIVE
-    RETURNING
-    RETURNED
+    RESIGNING
+    RESIGNED
     DELETED
 
     @@schema("base")

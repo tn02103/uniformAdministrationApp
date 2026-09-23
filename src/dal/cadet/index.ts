@@ -1,5 +1,4 @@
-"use server";
-
-import { returnCadetDirectly as _returnCadetDirectly } from "./return";
-
-export const returnCadetDirectly = _returnCadetDirectly;
+export * from "./resignation";
+export * from "./resignation/process";
+export * from "./resignation/processTemplate"
+export * from "./resignation/checklistTemplate";

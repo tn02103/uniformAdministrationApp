@@ -47,21 +47,20 @@ describe('getClosedInspectionReport', () => {
         expect(cadet2Entry!.attendanceStatus).toBe('missing');
     });
 
-    it('excludes cadets that were already RETURNING before inspection start from cadetList', async () => {
+    it('excludes cadets that were already RESIGNING before inspection start from cadetList', async () => {
         const returnStartedBeforeInspection = new Date('2023-08-13T07:00:00.000Z');
         await prisma.cadet.update({
             where: { id: staticData.ids.cadetIds[10] },
             data: {
-                status: 'RETURNING',
-                returnStartedAt: returnStartedBeforeInspection,
-                returnEndedAt: null,
+                status: 'RESIGNING',
+                resignedAt: returnStartedBeforeInspection,
                 deletedAt: null,
             },
         });
 
         const { success, result } = await runServerActionTest(
             getClosedInspectionReport({ inspectionId: staticData.ids.inspectionIds[1] })
-        );
+        ); 
 
         expect(success).toBeTruthy();
         const report = result as InspectionReview;
@@ -70,14 +69,11 @@ describe('getClosedInspectionReport', () => {
     });
 
     it('activeCadets counts only cadets active at inspection end', async () => {
-        const beforeEnd = new Date('2023-08-13T12:00:00.000Z');
-
         await prisma.cadet.update({
             where: { id: staticData.ids.cadetIds[11] },
             data: {
-                status: 'RETURNED',
-                returnStartedAt: new Date('2023-08-13T10:00:00.000Z'),
-                returnEndedAt: beforeEnd,
+                status: 'RESIGNED',
+                resignedAt: new Date('2023-08-13T13:00:00.000Z'),
                 deletedAt: null,
             },
         });
@@ -88,6 +84,6 @@ describe('getClosedInspectionReport', () => {
 
         expect(success).toBeTruthy();
         const report = result as InspectionReview;
-        expect(report.activeCadets).toBe(9);
+        expect(report.activeCadets).toBe(10);
     });
 });

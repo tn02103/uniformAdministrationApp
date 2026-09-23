@@ -723,7 +723,7 @@ export default {
             header: "Einstellungen",
             anonymization: {
                 header: "Anonymisierungsrichtlinie",
-                returnProcessEnabled: "Rückgabeprozess aktiviert",
+                resignationProcessEnabled: "Rückgabeprozess aktiviert",
                 anonymizationMode: "Anonymisierungsmodus",
                 anonymizationDelayDays: "Verzögerung in Tagen",
                 modes: {
@@ -734,7 +734,7 @@ export default {
                 success: "Einstellungen erfolgreich gespeichert",
                 error: "Beim Speichern ist ein Fehler aufgetreten",
             },
-            returnProcess: {
+            resignationProcess: {
                 header: "Rückgabeprozess",
                 addTemplate: "Vorlage hinzufügen",
                 templateName: "Vorlagenname",
@@ -970,15 +970,16 @@ export default {
     memberExit: {
         managementOverview: {
             header: "Vereinsaustritte",
-            active: {
-                header: "Aktive Austrittsprozesse",
-                tableheaders:{
-                    startDate: "Startdatum",
-                    cadet: "Person",
-                    template: "Vorlage",
-                    todos: "Prüfpunkte",
-                    uniformAndMaterialReturned: "Unif./ Mat. zurückgegeben",
-                }
+            headerActive: "Aktive Austrittsprozesse",
+            headerFinished: "Abgeschlossene Austrittsprozesse",
+            tableheaders:{
+                startDate: "Startdatum",
+                cadet: "Person",
+                template: "Vorlage",
+                todos: "Prüfpunkte",
+                uniformAndMaterialReturned: "Unif./ Mat. zurückgegeben",
+                exitDate: "Austrittsdatum",
+                exitStartDate: "Austrittsprozess gestartet",
             },
             finished: {
                 header: "Abgeschlossene Austrittsprozesse",

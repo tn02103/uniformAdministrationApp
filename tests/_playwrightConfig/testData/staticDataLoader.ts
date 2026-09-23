@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { Assosiation, AssosiationConfiguration, Cadet, CadetStatus, DeficiencyType, Material, MaterialGroup, Prisma, ReturnChecklistTemplate, StorageUnit, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@/prisma/client";
+import { Assosiation, AssosiationConfiguration, Cadet, CadetStatus, DeficiencyType, Material, MaterialGroup, Prisma, ResignationChecklistItemTemplate, StorageUnit, Uniform, UniformGeneration, UniformSize, UniformSizelist, UniformType } from "@/prisma/client";
 import bcrypt from 'bcrypt';
 import StaticDataGenerator, { StaticDataIdType } from "./staticDataGenerator";
 import { getStaticDataIds } from "./staticDataIds";
@@ -40,21 +40,21 @@ export class StaticData {
         await this.fill.all();
     }
 
-    async setReturnProcessEnabled(enabled: boolean) {
+    async setResignationProcessEnabled(enabled: boolean) {
         await prisma.assosiationConfiguration.update({
             where: { assosiationId: this.fk_assosiation },
-            data: { returnProcessEnabled: enabled },
+            data: { resignationProcessEnabled: enabled },
         });
     }
 
-    async getCadet(cadetId: string) {
+    getCadet(cadetId: string) {
         return prisma.cadet.findFirst({
             where: { id: cadetId, fk_assosiation: this.fk_assosiation },
         });
     }
 
-    async getReturnProcessByCadetId(cadetId: string) {
-        return prisma.returnProcess.findFirst({
+    async getResignationProcessByCadetId(cadetId: string) {
+        return prisma.resignationProcess.findFirst({
             where: { fk_cadet: cadetId, fk_assosiation: this.fk_assosiation },
         });
     }
@@ -66,10 +66,10 @@ class StaticDataGetter {
     readonly assosiation: Assosiation;
     readonly assosiationConfiguration: AssosiationConfiguration;
     readonly cadets: Cadet[];
-    readonly returnChecklistTemplates: ReturnChecklistTemplate[];
-    readonly returnProcessTemplates: Prisma.ReturnProcessTemplateCreateManyInput[];
-    readonly returnProcesses: Prisma.ReturnProcessCreateManyInput[];
-    readonly returnChecklistItemStatuses: Prisma.ReturnChecklistItemStatusCreateManyInput[];
+    readonly resignationChecklistItemTemplates: ResignationChecklistItemTemplate[];
+    readonly resignationProcessTemplates: Prisma.ResignationProcessTemplateCreateManyInput[];
+    readonly resignationProcesses: Prisma.ResignationProcessCreateManyInput[];
+    readonly resignationChecklistItems: Prisma.ResignationChecklistItemCreateManyInput[];
     readonly userIds: string[];
 
     readonly uniformSizes: UniformSize[];
@@ -110,10 +110,10 @@ class StaticDataGetter {
 
         this.assosiationConfiguration = generator.assosiationConfiguration();
         this.cadets = generator.cadet();
-        this.returnChecklistTemplates = generator.returnChecklistTemplates();
-        this.returnProcessTemplates = generator.returnProcessTemplates();
-        this.returnProcesses = generator.returnProcesses();
-        this.returnChecklistItemStatuses = generator.returnChecklistItemStatuses();
+        this.resignationChecklistItemTemplates = generator.resignationChecklistItemTemplates();
+        this.resignationProcessTemplates = generator.resignationProcessTemplates();
+        this.resignationProcesses = generator.resignationProcesses();
+        this.resignationChecklistItems = generator.resignationChecklistItems();
         this.uniformSizes = generator.uniformSize();
 
         this.uniformSizelists = [
@@ -227,16 +227,16 @@ class StaticDataCleanup {
         await prisma.$transaction([
             this.deleteUniformIssued(),
             this.deleteMaterialIssued(),
-            this.deleteReturnChecklistItemStatuses(),
-            this.deleteReturnProcesses(),
+            this.deleteResignationChecklistItems(),
+            this.deleteResignationProcesses(),
             this.deleteCadetInspection(),
             this.deleteDeficiency(),
         ]);
         await this.deleteCadet();
 
         await this.loader.cadets();
-        await this.loader.returnProcesses();
-        await this.loader.returnChecklistItemStatuses();
+        await this.loader.resignationProcesses();
+        await this.loader.resignationChecklistItems();
         await this.loader.uniformIssued();
         await this.loader.materialIssued();
         await this.loader.cadetInspections();
@@ -320,30 +320,30 @@ class StaticDataCleanup {
         await this.loader.redirects();
     }
 
-    async returnProcess() {
-        await this.deleteReturnChecklistItemStatuses();
-        await this.deleteReturnProcesses();
+    async resignationProcess() {
+        await this.deleteResignationChecklistItems();
+        await this.deleteResignationProcesses();
 
         // Reset cadet statuses to match static data (tests may have changed them)
         await prisma.cadet.updateMany({
             where: { id: { in: [this.data.cadets[10].id] } },
-            data: { status: CadetStatus.RETURNING },
+            data: { status: CadetStatus.RESIGNING },
         });
 
-        await this.loader.returnProcesses();
-        await this.loader.returnChecklistItemStatuses();
+        await this.loader.resignationProcesses();
+        await this.loader.resignationChecklistItems();
     }
 
-    async returnProcessTemplate() {
-        await this.deleteReturnChecklistItemStatuses();
-        await this.deleteReturnProcesses();
-        await this.deleteReturnChecklistTemplates();
-        await this.deleteReturnProcessTemplates();
+    async resignationProcessTemplate() {
+        await this.deleteResignationChecklistItems();
+        await this.deleteResignationProcesses();
+        await this.deleteResignationChecklistItemTemplates();
+        await this.deleteResignationProcessTemplates();
 
-        await this.loader.returnProcessTemplates();
-        await this.loader.returnChecklistTemplates();
-        await this.loader.returnProcesses();
-        await this.loader.returnChecklistItemStatuses();
+        await this.loader.resignationProcessTemplates();
+        await this.loader.resignationChecklistItemTemplates();
+        await this.loader.resignationProcesses();
+        await this.loader.resignationChecklistItems();
     }
 
     async removeAssosiation() {
@@ -364,10 +364,10 @@ class StaticDataCleanup {
         await this.deleteUniformSizelist();
         await this.deleteStorage();
 
-        await this.deleteReturnChecklistItemStatuses();
-        await this.deleteReturnProcesses();
-        await this.deleteReturnChecklistTemplates();
-        await this.deleteReturnProcessTemplates();
+        await this.deleteResignationChecklistItems();
+        await this.deleteResignationProcesses();
+        await this.deleteResignationChecklistItemTemplates();
+        await this.deleteResignationProcessTemplates();
 
         await this.deleteCadet();
         await this.deleteUsers();
@@ -431,16 +431,16 @@ class StaticDataCleanup {
     private deleteRedirects = () => prisma.redirect.deleteMany({
         where: { assosiationId: this.fk_assosiation }
     });
-    private deleteReturnChecklistTemplates = () => prisma.returnChecklistTemplate.deleteMany({
+    private deleteResignationChecklistItemTemplates = () => prisma.resignationChecklistItemTemplate.deleteMany({
         where: { fk_assosiation: this.fk_assosiation }
     });
-    private deleteReturnChecklistItemStatuses = () => prisma.returnChecklistItemStatus.deleteMany({
+    private deleteResignationChecklistItems = () => prisma.resignationChecklistItem.deleteMany({
         where: { checklistItem: { fk_assosiation: this.fk_assosiation } }
     });
-    private deleteReturnProcesses = () => prisma.returnProcess.deleteMany({
+    private deleteResignationProcesses = () => prisma.resignationProcess.deleteMany({
         where: { fk_assosiation: this.fk_assosiation }
     });
-    private deleteReturnProcessTemplates = () => prisma.returnProcessTemplate.deleteMany({
+    private deleteResignationProcessTemplates = () => prisma.resignationProcessTemplate.deleteMany({
         where: { fk_assosiation: this.fk_assosiation }
     });
 }
@@ -454,14 +454,14 @@ class StaticDataLoader {
     async all() {
         await this.assosiation();
         await this.assosiationConfiguration();
-        await this.returnProcessTemplates();
-        await this.returnChecklistTemplates();
+        await this.resignationProcessTemplates();
+        await this.resignationChecklistItemTemplates();
         await this.users();
 
         await this.storageUnits();
         await this.cadets();
-        await this.returnProcesses();
-        await this.returnChecklistItemStatuses();
+        await this.resignationProcesses();
+        await this.resignationChecklistItems();
         await this.uniformSize();
         await this.uniformSizelists();
         await this.connectSizes();
@@ -490,22 +490,22 @@ class StaticDataLoader {
             data: this.data.assosiationConfiguration,
         });
     }
-    async returnChecklistTemplates() {
-        await prisma.returnChecklistTemplate.createMany({
-            data: this.data.returnChecklistTemplates
+    async resignationChecklistItemTemplates() {
+        await prisma.resignationChecklistItemTemplate.createMany({
+            data: this.data.resignationChecklistItemTemplates
         });
     }
 
-    async returnProcessTemplates() {
-        await prisma.returnProcessTemplate.createMany({ data: this.data.returnProcessTemplates });
+    async resignationProcessTemplates() {
+        await prisma.resignationProcessTemplate.createMany({ data: this.data.resignationProcessTemplates });
     }
 
-    async returnProcesses() {
-        await prisma.returnProcess.createMany({ data: this.data.returnProcesses });
+    async resignationProcesses() {
+        await prisma.resignationProcess.createMany({ data: this.data.resignationProcesses });
     }
 
-    async returnChecklistItemStatuses() {
-        await prisma.returnChecklistItemStatus.createMany({ data: this.data.returnChecklistItemStatuses });
+    async resignationChecklistItems() {
+        await prisma.resignationChecklistItem.createMany({ data: this.data.resignationChecklistItems });
     }
     async users() {
         await prisma.user.createMany({

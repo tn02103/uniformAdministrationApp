@@ -4,12 +4,12 @@ import { toast } from "react-toastify";
 import { useModal } from "@/components/modals/modalProvider";
 import { AuthRole } from "@/lib/AuthRoles";
 import { CadetStatus } from "@/prisma/browser";
-import { returnCadetDirectly } from "@/dal/cadet";
+import { resignMemberDirectly } from "@/dal";
 import { useParams } from "next/navigation";
 import CadetDropDown from "./cadetDropDown";
 
-vi.mock("@/dal/cadet", () => ({
-    returnCadetDirectly: vi.fn(),
+vi.mock("@/dal", () => ({
+    resignMemberDirectly: vi.fn(),
 }));
 
 vi.mock("./_returnUniform/CadetReturnUniformModal", () => ({
@@ -20,7 +20,7 @@ describe("CadetDropDown fail-closed return config behavior", () => {
     beforeEach(() => {
         vi.clearAllMocks();
         vi.mocked(useParams).mockReturnValue({ cadetId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa" });
-        vi.mocked(returnCadetDirectly).mockResolvedValue(undefined);
+        vi.mocked(resignMemberDirectly).mockResolvedValue(undefined);
     });
 
     it("shows an error and blocks return action when return config failed to load", async () => {
@@ -29,8 +29,8 @@ describe("CadetDropDown fail-closed return config behavior", () => {
 
         render(
             <CadetDropDown
-                returnConfig={null}
-                returnConfigLoadFailed
+                resignationConfig={null}
+                resignationConfigLoadFailed
                 cadetStatus={CadetStatus.ACTIVE}
                 userRole={AuthRole.inspector}
             />
@@ -41,21 +41,21 @@ describe("CadetDropDown fail-closed return config behavior", () => {
 
         expect(toast.error).toHaveBeenCalledWith("cadetDetailPage.memberExit.directReturn.error");
         expect(modalApi.simpleWarningModal).not.toHaveBeenCalled();
-        expect(returnCadetDirectly).not.toHaveBeenCalled();
+        expect(resignMemberDirectly).not.toHaveBeenCalled();
         expect(screen.queryByTestId("member_exit_modal")).not.toBeInTheDocument();
     });
 
-    it("opens the return modal when returnConfig has returnProcessEnabled=false", async () => {
+    it("opens the return modal when resignationConfig has resignationProcessEnabled=false", async () => {
         const user = userEvent.setup();
 
         render(
             <CadetDropDown
-                returnConfig={{
-                    returnProcessEnabled: false,
+                resignationConfig={{
+                    resignationProcessEnabled: false,
                     anonymizationMode: "MANUAL",
                     templates: [],
                 }}
-                returnConfigLoadFailed={false}
+                resignationConfigLoadFailed={false}
                 cadetStatus={CadetStatus.ACTIVE}
                 userRole={AuthRole.inspector}
             />
@@ -68,17 +68,17 @@ describe("CadetDropDown fail-closed return config behavior", () => {
         expect(toast.error).not.toHaveBeenCalled();
     });
 
-    it("opens the member-exit-modal when returnConfig has returnProcessEnabled=true", async () => {
+    it("opens the member-exit-modal when resignationConfig has resignationProcessEnabled=true", async () => {
         const user = userEvent.setup();
 
         render(
             <CadetDropDown
-                returnConfig={{
-                    returnProcessEnabled: true,
+                resignationConfig={{
+                    resignationProcessEnabled: true,
                     anonymizationMode: "MANUAL",
                     templates: [],
                 }}
-                returnConfigLoadFailed={false}
+                resignationConfigLoadFailed={false}
                 cadetStatus={CadetStatus.ACTIVE}
                 userRole={AuthRole.inspector}
             />
