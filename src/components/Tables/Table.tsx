@@ -27,7 +27,7 @@ export const Table = <T extends object>({
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map((row, rowIndex) => (
+                    {data.map((row) => (
                         <TableRow
                             key={getRowId(row)}
                             row={row}

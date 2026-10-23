@@ -1,4 +1,5 @@
-import { Prisma, AnonymizationMode } from "@/prisma/client";
+import { InternalExtensionArgs } from "@/lib/db";
+import { AnonymizationMode, Prisma } from "@/prisma/client";
 
 export const returnChecklistItemTemplateArgs = {
     select: {
@@ -21,11 +22,10 @@ export const resignationProcessTemplateWithItemsArgs = {
     orderBy: { name: 'asc' },
 } satisfies Prisma.ResignationProcessTemplateFindManyArgs;
 
-export const resignationProcessArgs = {
+export const cadetWithResignationProcessArgs = {
     select: {
         id: true,
-        firstname: true,
-        lastname: true,
+        fullname: true,
         status: true,
         resignedAt: true,
         deletedAt: true,
@@ -80,12 +80,16 @@ export const resignationProcessArgs = {
         },
     },
     orderBy: { resignationProcess: { updatedAt: 'desc' } }
-} satisfies Prisma.CadetFindManyArgs;
+} satisfies Prisma.CadetFindManyArgs<InternalExtensionArgs>;
+
+
 
 export type ResignationProcessTemplateWithItems = Prisma.ResignationProcessTemplateGetPayload<typeof resignationProcessTemplateWithItemsArgs>;
 export type ResignationChecklistItemTemplate = Prisma.ResignationChecklistItemTemplateGetPayload<typeof returnChecklistItemTemplateArgs>;
-export type ResignationProcess = Prisma.CadetGetPayload<typeof resignationProcessArgs>;
-
+export type CadetWithResignationProcess = Prisma.CadetGetPayload<typeof cadetWithResignationProcessArgs>;
+export type CadetWithNonNullResignationProcess = Omit<CadetWithResignationProcess, 'resignationProcess'> & {
+  resignationProcess: NonNullable<CadetWithResignationProcess['resignationProcess']>;
+};
 /** Shape returned by getResignationProcessConfig and passed to the CadetDropDown component. */
 export type ResignationProcessConfig = {
     resignationProcessEnabled: boolean;

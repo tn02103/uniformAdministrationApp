@@ -36,6 +36,9 @@ export const TableCol = <T extends object>({
         if (column.dataType === "datetime" && (value instanceof Date || value instanceof dayjs)) {
             return dayjs(value as Date).format("DD.MM.YYYY HH:mm");
         }
+        if (value === undefined || value === null) {
+            return "";
+        }
         return String(value);
     }, [value, row, column.render, column.dataType]);
 

@@ -532,13 +532,17 @@ export default {
             "activeInspection.collapsed": "{controlled} / {total}"
         },
         links: {
-            cadetOverview: "Personal",
-            uniformOverview: "Uniform",
-            storageUnit: "Lagereinheiten",
-            create: {
-                group: "Anlegen",
-                cadet: "Person",
-                uniform: "Uniform",
+            members: {
+                group: "Mitglieder",
+                overview: "Übersicht",
+                create: "Neu",
+                resignation: "Austritte",
+            },
+            uniform: {
+                group: "Uniform",
+                overview: "Übersicht",
+                create: "Neu",
+                storage: "Lager"
             },
             inspection: {
                 group: "Inspektion",
@@ -548,15 +552,15 @@ export default {
                 inspection: "Verwaltung",
                 deficiencyType: "Mangeltypen",
             },
-            administration: {
+            admin: {
                 group: "Administration",
                 uniform: "Uniform",
-                size: "Größen",
+                uniformSizes: "Größen",
                 material: "Materialien",
-                dashboard: "Dashboard",
-                settings: "Einstellungen"
+                user: "Nutzer",
+                orgSettings: "Org-Einstellungen"
             },
-            userOverview: "Zugänge",
+            dashboard: "Dashboard",
             redirects: "Weiterleitungen",
         },
     },
@@ -967,7 +971,7 @@ export default {
             change: "Ändern",
         },
     },
-    memberExit: {
+    resignation: {
         managementOverview: {
             header: "Vereinsaustritte",
             headerActive: "Aktive Austrittsprozesse",
@@ -976,6 +980,7 @@ export default {
                 startDate: "Startdatum",
                 cadet: "Person",
                 template: "Vorlage",
+                hasProcess: "Mit Prozess",
                 todos: "Prüfpunkte",
                 uniformAndMaterialReturned: "Unif./ Mat. zurückgegeben",
                 exitDate: "Austrittsdatum",

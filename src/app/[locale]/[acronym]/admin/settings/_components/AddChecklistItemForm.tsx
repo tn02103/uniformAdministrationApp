@@ -25,6 +25,7 @@ export const AddChecklistItemForm = ({ templateId, onSave }: AddChecklistItemFor
     return (
         <div>
             <Form<AddChecklistItemFormValues>
+                formName={`addChecklist_${templateId}`}
                 onSubmit={handleSubmit}
                 aria-label={t("admin.settings.resignationProcess.addChecklistItem")}
             >
@@ -35,7 +36,6 @@ export const AddChecklistItemForm = ({ templateId, onSave }: AddChecklistItemFor
                         <InputFormField
                             name="label"
                             label={t("admin.settings.resignationProcess.addItemLabel")}
-                            formName={`addChecklist_${templateId}`}
                         />
                     </div>
                     <ActionButton

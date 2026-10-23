@@ -532,13 +532,17 @@ export default {
             "activeInspection.collapsed": "{controlled} / {total}"
         },
         links: {
-            cadetOverview: "Staff",
-            uniformOverview: "Uniform",
-            storageUnit: "Storage units",
-            create: {
-                group: "Create",
-                cadet: "Person",
-                uniform: "Uniform",
+            members: {
+                group: "Members",
+                overview: "Overview",
+                create: "Create",
+                resignation: "Resignations"
+            },
+            uniform: {
+                group: "Uniform",
+                overview: "Overview",
+                create: "Create",
+                storage: "Storage"
             },
             inspection: {
                 group: "Inspection",
@@ -548,15 +552,15 @@ export default {
                 inspection: "Administration",
                 deficiencyType: "Deficiency types",
             },
-            administration: {
+            admin: {
                 group: "Administration",
                 uniform: "Uniform",
-                size: "Sizes",
+                uniformSizes: "Sizes",
                 material: "Materials",
-                dashboard: "Dashboard",
-                settings: "Settings",
+                user: "Users",
+                orgSettings: "Settings",
             },
-            userOverview: "Accesses",
+            dashboard: "Dashboard",
             redirects: "Redirects",
         },
     },
@@ -967,7 +971,7 @@ export default {
             change: "change",
         },
     },
-    memberExit: {
+    resignation: {
         managementOverview: {
             header: "Club exits",
             headerActive: "Active exit processes",
@@ -976,6 +980,7 @@ export default {
                 startDate: "Start date",
                 cadet: "Member",
                 template: "Template",
+                hasProcess: "Has process",
                 todos: "Checklist items",
                 uniformAndMaterialReturned: "Uniform/ Material returned",
                 exitDate: "Exit date",

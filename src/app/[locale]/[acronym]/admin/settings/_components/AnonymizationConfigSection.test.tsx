@@ -34,62 +34,94 @@ describe("<AnonymizationConfigSection />", () => {
 
     it("renders the mode select and save button", () => {
         render(<AnonymizationConfigSection initialConfig={defaultConfig} />);
-        expect(screen.getByRole("combobox", { name: /admin.settings.anonymization.anonymizationMode/i })).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: /common.actions.save/i })).toBeInTheDocument();
+        expect(screen.getByRole("combobox", { name: /anonymizationMode/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /actions.save/i })).toBeInTheDocument();
     });
 
     it("save button is disabled when form is not dirty", () => {
         render(<AnonymizationConfigSection initialConfig={defaultConfig} />);
-        expect(screen.getByRole("button", { name: /common.actions.save/i })).toBeDisabled();
+        expect(screen.getByRole("button", { name: /actions.save/i })).toBeDisabled();
     });
 
     it("save button is enabled after changing anonymizationMode", async () => {
         render(<AnonymizationConfigSection initialConfig={defaultConfig} />);
         await user.selectOptions(
-            screen.getByRole("combobox", { name: /admin.settings.anonymization.anonymizationMode/i }),
+            screen.getByRole("combobox", { name: /anonymizationMode/i }),
             "IMMEDIATELY"
         );
-        expect(screen.getByRole("button", { name: /common.actions.save/i })).toBeEnabled();
+        expect(screen.getByRole("button", { name: /actions.save/i })).toBeEnabled();
     });
 
     it("does not show delay-days input when mode is MANUAL", () => {
         render(<AnonymizationConfigSection initialConfig={defaultConfig} />);
-        expect(screen.queryByLabelText(/admin.settings.anonymization.anonymizationDelayDays/i)).not.toBeInTheDocument();
+        expect(screen.queryByLabelText(/anonymizationDelayDays/i)).not.toBeInTheDocument();
     });
 
     it("shows delay-days input when mode is AFTER_DAYS", async () => {
         render(<AnonymizationConfigSection initialConfig={{ anonymizationMode: "AFTER_DAYS", anonymizationDelayDays: 3 }} />);
-        expect(screen.getByLabelText(/admin.settings.anonymization.anonymizationDelayDays/i)).toBeInTheDocument();
+        expect(screen.getByRole("spinbutton", { name: /anonymizationDelayDays/i })).toBeInTheDocument();
     });
 
     it("shows delay-days input after switching to AFTER_DAYS", async () => {
         render(<AnonymizationConfigSection initialConfig={defaultConfig} />);
         await user.selectOptions(
-            screen.getByRole("combobox", { name: /admin.settings.anonymization.anonymizationMode/i }),
+            screen.getByRole("combobox", { name: /anonymizationMode/i }),
             "AFTER_DAYS"
         );
-        expect(screen.getByLabelText(/admin.settings.anonymization.anonymizationDelayDays/i)).toBeInTheDocument();
+        expect(screen.getByRole("spinbutton", { name: /anonymizationDelayDays/i })).toBeInTheDocument();
     });
 
     it("hides delay-days input after switching away from AFTER_DAYS", async () => {
         render(<AnonymizationConfigSection initialConfig={{ anonymizationMode: "AFTER_DAYS", anonymizationDelayDays: 3 }} />);
         await user.selectOptions(
-            screen.getByRole("combobox", { name: /admin.settings.anonymization.anonymizationMode/i }),
+            screen.getByRole("combobox", { name: /anonymizationMode/i }),
             "MANUAL"
         );
-        expect(screen.queryByLabelText(/admin.settings.anonymization.anonymizationDelayDays/i)).not.toBeInTheDocument();
+        expect(screen.queryByRole("spinbutton", { name: /anonymizationDelayDays/i })).not.toBeInTheDocument();
     });
 
-    it("calls updateAssosiationAnonymizationConfig with correct args on submit", async () => {
-        render(<AnonymizationConfigSection initialConfig={defaultConfig} />);
-        await user.selectOptions(
-            screen.getByRole("combobox", { name: /admin.settings.anonymization.anonymizationMode/i }),
-            "IMMEDIATELY"
-        );
-        await user.click(screen.getByRole("button", { name: /common.actions.save/i }));
-        expect(updateAssosiationAnonymizationConfig).toHaveBeenCalledWith({
-            anonymizationMode: "IMMEDIATELY",
-            anonymizationDelayDays: undefined,
+    describe("onSubmit", () => {
+        it("calls updateAssosiationAnonymizationConfig with correct args on submit", async () => {
+            render(<AnonymizationConfigSection initialConfig={defaultConfig} />);
+            await user.selectOptions(
+                screen.getByRole("combobox", { name: /anonymizationMode/i }),
+                "IMMEDIATELY"
+            );
+            await user.click(screen.getByRole("button", { name: /actions.save/i }));
+            expect(updateAssosiationAnonymizationConfig).toHaveBeenCalledWith({
+                anonymizationMode: "IMMEDIATELY",
+                anonymizationDelayDays: undefined,
+            });
+        });
+        it("provides anonymizationDelayDays when switching to AFTER_DAYS", async () => {
+            render(<AnonymizationConfigSection initialConfig={defaultConfig} />);
+            const modeSelect = screen.getByRole("combobox", { name: /anonymizationMode/i });
+            const saveButton = screen.getByRole("button", { name: /actions.save/i });
+            
+            await user.selectOptions(
+                modeSelect,
+                "AFTER_DAYS"
+            );
+            const delayInput = screen.getByRole("spinbutton", { name: /anonymizationDelayDays/i });
+            await user.clear(delayInput);
+            await user.type(delayInput, "5");
+            await user.click(saveButton);
+            expect(updateAssosiationAnonymizationConfig).toHaveBeenCalledWith({
+                anonymizationMode: "AFTER_DAYS",
+                anonymizationDelayDays: 5,
+            });
+        });
+        it("sets anonymizationDelayDays to undefined when switching from AFTER_DAYS to IMMEDIATELY", async () => {
+            render(<AnonymizationConfigSection initialConfig={{ anonymizationMode: "AFTER_DAYS", anonymizationDelayDays: 5 }} />);
+            await user.selectOptions(
+                screen.getByRole("combobox", { name: /anonymizationMode/i }),
+                "IMMEDIATELY"
+            );
+            await user.click(screen.getByRole("button", { name: /actions.save/i }));
+            expect(updateAssosiationAnonymizationConfig).toHaveBeenCalledWith({
+                anonymizationMode: "IMMEDIATELY",
+                anonymizationDelayDays: undefined,
+            });
         });
     });
 
@@ -97,12 +129,12 @@ describe("<AnonymizationConfigSection />", () => {
         const { toast } = await import("react-toastify");
         render(<AnonymizationConfigSection initialConfig={defaultConfig} />);
         await user.selectOptions(
-            screen.getByRole("combobox", { name: /admin.settings.anonymization.anonymizationMode/i }),
+            screen.getByRole("combobox", { name: /anonymizationMode/i }),
             "IMMEDIATELY"
         );
-        await user.click(screen.getByRole("button", { name: /common.actions.save/i }));
+        await user.click(screen.getByRole("button", { name: /actions.save/i }));
         expect(toast.success).toHaveBeenCalledTimes(1);
-        expect(screen.getByRole("button", { name: /common.actions.save/i })).toBeDisabled();
+        expect(screen.getByRole("button", { name: /actions.save/i })).toBeDisabled();
     });
 
     it("shows error toast when submit fails", async () => {
@@ -110,10 +142,10 @@ describe("<AnonymizationConfigSection />", () => {
         const { toast } = await import("react-toastify");
         render(<AnonymizationConfigSection initialConfig={defaultConfig} />);
         await user.selectOptions(
-            screen.getByRole("combobox", { name: /admin.settings.anonymization.anonymizationMode/i }),
+            screen.getByRole("combobox", { name: /anonymizationMode/i }),
             "IMMEDIATELY"
         );
-        await user.click(screen.getByRole("button", { name: /common.actions.save/i }));
+        await user.click(screen.getByRole("button", { name: /actions.save/i }));
         expect(toast.error).toHaveBeenCalledTimes(1);
     });
 });

@@ -46,7 +46,7 @@ export const ResignationProcessTemplateSection = ({ initialTemplates, resignatio
     const [isCreating, setIsCreating] = useState(false);
     const [resignationProcessEnabled, setResignationProcessEnabled] = useState(initialResignationProcessEnabled);
 
-    const handleToggleResignationProcess = async (value: boolean) => {
+    const handleToggleResignationProcessActive = async (value: boolean) => {
         await updateAssosiationAnonymizationConfig({ resignationProcessEnabled: value })
             .then(() => {
                 setResignationProcessEnabled(value);
@@ -54,6 +54,39 @@ export const ResignationProcessTemplateSection = ({ initialTemplates, resignatio
             })
             .catch(() => {
                 toast.error(t("admin.settings.anonymization.error"));
+            });
+    };
+
+    // ##### PROCESS TEMPLATE MANAGEMENT
+    const handleCreateTemplate = async (data: CreateResignationProcessTemplateInput) => {
+        await createResignationProcessTemplate(data)
+            .then((newTemplates) => {
+                setTemplates(newTemplates);
+                setIsCreating(false);
+                toast.success(t("admin.settings.resignationProcess.create.success"));
+            })
+            .catch(() => {
+                toast.error(t("admin.settings.resignationProcess.create.error"));
+            });
+    };
+
+    const handleToggleDefaultTemplate = async (template: ResignationProcessTemplateWithItems) => {
+        await updateResignationProcessTemplate({ id: template.id, defaultProcess: !template.defaultProcess })
+            .then((newData) => {
+                setTemplates(newData);
+            })
+            .catch(() => {
+                toast.error(t("admin.settings.resignationProcess.update.error"));
+            });
+    };
+
+    const handleRenameTemplate = async (templateId: string, name: string) => {
+        await updateResignationProcessTemplate({ id: templateId, name })
+            .then((newData) => {
+                setTemplates(newData);
+            })
+            .catch(() => {
+                toast.error(t("admin.settings.resignationProcess.update.error"));
             });
     };
 
@@ -78,38 +111,7 @@ export const ResignationProcessTemplateSection = ({ initialTemplates, resignatio
         });
     };
 
-    const handleRenameTemplate = async (templateId: string, name: string) => {
-        await updateResignationProcessTemplate({ id: templateId, name })
-            .then((newData) => {
-                setTemplates(newData);
-            })
-            .catch(() => {
-                toast.error(t("admin.settings.resignationProcess.update.error"));
-            });
-    };
-
-    const handleToggleDefault = async (template: ResignationProcessTemplateWithItems) => {
-        await updateResignationProcessTemplate({ id: template.id, defaultProcess: !template.defaultProcess })
-            .then((newData) => {
-                setTemplates(newData);
-            })
-            .catch(() => {
-                toast.error(t("admin.settings.resignationProcess.update.error"));
-            });
-    };
-
-    const handleCreateTemplate = async (data: CreateResignationProcessTemplateInput) => {
-        await createResignationProcessTemplate(data)
-            .then((newTemplates) => {
-                setTemplates(newTemplates);
-                setIsCreating(false);
-                toast.success(t("admin.settings.resignationProcess.create.success"));
-            })
-            .catch(() => {
-                toast.error(t("admin.settings.resignationProcess.create.error"));
-            });
-    };
-
+    // ##### CHECKLIST ITEM MANAGEMENT
     const handleAddChecklistItem = async (templateId: string, label: string) => {
         await createResignationChecklistItemTemplate({ resignationProcessTemplateId: templateId, label })
             .then((newData) => {
@@ -167,7 +169,7 @@ export const ResignationProcessTemplateSection = ({ initialTemplates, resignatio
                     role="switch"
                     id="resignationProcessEnabledToggle"
                     checked={resignationProcessEnabled}
-                    onChange={(e) => handleToggleResignationProcess(e.target.checked)}
+                    onChange={(e) => handleToggleResignationProcessActive(e.target.checked)}
                 />
                 <label className="form-check-label" htmlFor="resignationProcessEnabledToggle">
                     {t("admin.settings.anonymization.resignationProcessEnabled")}
@@ -190,7 +192,7 @@ export const ResignationProcessTemplateSection = ({ initialTemplates, resignatio
                         }
                         onRename={handleRenameTemplate}
                         onDelete={handleDeleteTemplate}
-                        onToggleDefault={handleToggleDefault}
+                        onToggleDefault={handleToggleDefaultTemplate}
                         onAddChecklistItem={handleAddChecklistItem}
                         onRenameChecklistItem={handleRenameChecklistItem}
                         onDeleteChecklistItem={handleDeleteChecklistItem}

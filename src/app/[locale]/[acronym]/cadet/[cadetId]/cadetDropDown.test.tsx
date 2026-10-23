@@ -45,7 +45,7 @@ describe("CadetDropDown fail-closed return config behavior", () => {
         expect(screen.queryByTestId("member_exit_modal")).not.toBeInTheDocument();
     });
 
-    it("opens the return modal when resignationConfig has resignationProcessEnabled=false", async () => {
+    it("opens the member-exit-modal when resignationConfig has resignationProcessEnabled=false", async () => {
         const user = userEvent.setup();
 
         render(

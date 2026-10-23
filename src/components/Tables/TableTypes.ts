@@ -21,19 +21,20 @@ export type RowAction<T extends object> = {
     onClick: (row: T) => void;
     label: string;
 };
+export type TableRowActions<T extends object> = RowAction<T>[];
 
 export type TableProps<T extends object> = {
     children?: React.ReactNode;
     data: T[];
     columns?: TableColumns<T>[];
-    rowActions?: RowAction<T>[];
+    rowActions?: TableRowActions<T>;
     mobileActionBreakpoint?: "xs" | "sm" | "md" | "lg" | "xl" | "xxl";
     getRowId: (row: T) => string;
 }
 export type TableRowProps<T extends object> = {
     row: T;
     columns: TableColumns<T>[];
-    rowActions: RowAction<T>[];
+    rowActions: TableRowActions<T>;
     getRowId: (row: T) => string;
     mobileActionBreakpoint?: "xs" | "sm" | "md" | "lg" | "xl" | "xxl";
 };

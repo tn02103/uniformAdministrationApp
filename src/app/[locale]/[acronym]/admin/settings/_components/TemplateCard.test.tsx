@@ -42,7 +42,7 @@ vi.mock("@/components/fields/InlineEditInputFormField", () => ({
 
 const checklistItem: ResignationChecklistItemTemplate = {
     id: "ci-1",
-    label: "Check tyres",
+    label: "Check item 1",
     sortOrder: 0,
     fk_assosiation: "assoc-1",
     processTemplateId: "tpl-1",
@@ -87,20 +87,20 @@ describe("<TemplateCard />", () => {
         expect(defaultProps.onToggleExpand).toHaveBeenCalledTimes(1);
     });
 
-    it("does not render checklist body when collapsed", () => {
-        render(<TemplateCard {...defaultProps} isExpanded={false} />);
+    it("only renders contents when expanded", () => {
+        const {rerender} = render(<TemplateCard {...defaultProps} isExpanded={false} />);
         expect(screen.queryByTestId("reorderable-table-body")).not.toBeInTheDocument();
-    });
-
-    it("renders checklist items when expanded", () => {
-        render(<TemplateCard {...defaultProps} isExpanded={true} />);
-        expect(screen.getByText("Check tyres")).toBeInTheDocument();
+        expect(screen.queryByText("Check item 1")).not.toBeInTheDocument();
+        rerender(<TemplateCard {...defaultProps} isExpanded={true} />);
+        expect(screen.getByText("Check item 1")).toBeInTheDocument();
+        expect(screen.getByTestId("reorderable-table-body")).toBeInTheDocument();
     });
 
     it("shows default badge when defaultProcess is true", () => {
-        render(<TemplateCard {...defaultProps} template={{ ...template, defaultProcess: true }} />);
-        const badges = screen.getAllByLabelText(/admin.settings.resignationProcess.defaultProcess/i);
-        expect(badges.length).toBeGreaterThanOrEqual(1);
+        const {rerender} = render(<TemplateCard {...defaultProps} template={{ ...template, defaultProcess: true }} />);
+        expect(screen.getByTestId("default-process-badge")).toBeInTheDocument();
+        rerender(<TemplateCard {...defaultProps} template={{ ...template, defaultProcess: false }} />);
+        expect(screen.queryByTestId("default-process-badge")).not.toBeInTheDocument();
     });
 
     it("calls onDelete when delete button is clicked", async () => {
@@ -111,7 +111,7 @@ describe("<TemplateCard />", () => {
 
     it("calls onToggleDefault when star button is clicked", async () => {
         render(<TemplateCard {...defaultProps} />);
-        await user.click(screen.getByRole("button", { name: /admin.settings.resignationProcess.defaultProcess/i }));
+        await user.click(screen.getByRole("button", { name: /resignationProcess.defaultProcess/i }));
         expect(defaultProps.onToggleDefault).toHaveBeenCalledWith(template);
     });
 
@@ -137,7 +137,7 @@ describe("<TemplateCard />", () => {
         const cancelBtn = within(row).getByTestId(`btn_cancel`);
         await user.click(cancelBtn);
         expect(defaultProps.onRenameChecklistItem).not.toHaveBeenCalled();
-        expect(screen.getByText("Check tyres")).toBeInTheDocument();
+        expect(screen.getByText("Check item 1")).toBeInTheDocument();
     });
 
     it("calls onDeleteChecklistItem when delete button is clicked on checklist item", async () => {
@@ -158,7 +158,7 @@ describe("<TemplateCard />", () => {
     it("does not render action buttons when disabled", () => {
         render(<TemplateCard {...defaultProps} disabled />);
         expect(screen.queryByRole("button", { name: /common.actions.delete/i })).not.toBeInTheDocument();
-        expect(screen.queryByRole("button", { name: /admin.settings.resignationProcess.defaultProcess/i })).not.toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: /resignationProcess.defaultProcess/i })).not.toBeInTheDocument();
     });
 
     it("expand button is disabled when card is disabled", () => {

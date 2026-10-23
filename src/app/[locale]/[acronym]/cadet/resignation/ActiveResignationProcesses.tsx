@@ -1,31 +1,30 @@
 "use client";
 
 import { Table } from "@/components/Tables/Table";
-import { TableColumns } from "@/components/Tables/TableTypes";
+import { TableColumns, TableRowActions } from "@/components/Tables/TableTypes";
 import { useScopedI18n } from "@/lib/locales/client";
-import { ResignationProcess } from "@/types/resignationProcessTypes";
+import { CadetWithNonNullResignationProcess } from "@/types/resignationProcessTypes";
 import { useMemo, useState } from "react";
-import ExitProcessOffcanvas from "./ExitProcessOffcanvas";
+import ResignationProcessOffcanvas from "./ResignationProcessOffcanvas";
 
-export default function ActiveExitProcesses({ activeExitProcesses }: { activeExitProcesses: ResignationProcess[] }) {
-    const t = useScopedI18n("memberExit.managementOverview");
+export default function ActiveResignationProcesses({ membersWithActiveProcess }: { membersWithActiveProcess: CadetWithNonNullResignationProcess[] }) {
+    const t = useScopedI18n("resignation.managementOverview");
     const tCommon = useScopedI18n("common");
     const [openProcessId, setOpenProcessId] = useState<string | null>(null);
     const openProcess = useMemo(() =>
-        activeExitProcesses.find(process => process.id === openProcessId),
-        [openProcessId, activeExitProcesses]
+        membersWithActiveProcess.find(process => process.id === openProcessId),
+        [openProcessId, membersWithActiveProcess]
     );
 
-    const tableColumns: TableColumns<typeof activeExitProcesses[0]>[] = useMemo(() => [
+    const tableColumns: TableColumns<typeof membersWithActiveProcess[0]>[] = useMemo(() => [
         {
             key: "resignationProcess.createdAt",
             label: t('tableheaders.startDate'),
             dataType: "datetime"
         },
         {
-            key: "firstname",
+            key: "fullname",
             label: t('tableheaders.cadet'),
-            render: (_, { firstname, lastname }) => `${firstname} ${lastname}`
         },
         {
             key: "resignationProcess.checklistItems",
@@ -46,21 +45,23 @@ export default function ActiveExitProcesses({ activeExitProcesses }: { activeExi
             label: t('tableheaders.template'),
             visibleBreakpoint: "md"
         },
-    ], []);
+    ], [t, tCommon]);
+
+    const rowActions: TableRowActions<CadetWithNonNullResignationProcess> = useMemo(() => [
+        { actionKey: "open", onClick: (row) => setOpenProcessId(row.id), label: tCommon('actions.open') },
+    ], [setOpenProcessId, tCommon]);
 
     return (
         <>
             <h2>{t('headerActive')}</h2>
-            <Table<typeof activeExitProcesses[0]>
-                data={activeExitProcesses}
+            <Table<typeof membersWithActiveProcess[0]>
+                data={membersWithActiveProcess}
                 columns={tableColumns}
-                rowActions={[
-                    { actionKey: "open", onClick: (row) => setOpenProcessId(row.id), label: tCommon('actions.open') },
-                ]}
+                rowActions={rowActions}
                 getRowId={(row) => row.id}
             />
             {openProcess && (
-                <ExitProcessOffcanvas member={openProcess} onClose={() => setOpenProcessId(null)} />
+                <ResignationProcessOffcanvas member={openProcess} onClose={() => setOpenProcessId(null)} />
             )}
         </>
     );

@@ -99,7 +99,7 @@ describe("<ResignationProcessTemplateSection />", () => {
 
     it("renders the section heading", () => {
         render(<ResignationProcessTemplateSection {...defaultProps} />);
-        expect(screen.getByRole("heading", { name: /admin.settings.resignationProcess.header/i })).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: /resignationProcess.header/i })).toBeInTheDocument();
     });
 
     it("renders the resignationProcessEnabled toggle", () => {
@@ -156,23 +156,23 @@ describe("<ResignationProcessTemplateSection />", () => {
 
     it("shows 'no templates' message when list is empty", () => {
         render(<ResignationProcessTemplateSection {...defaultProps} initialTemplates={[]} />);
-        expect(screen.getByText(/admin.settings.resignationProcess.noTemplates/i)).toBeInTheDocument();
+        expect(screen.getByText(/resignationProcess.noTemplates/i)).toBeInTheDocument();
     });
 
     it("shows add-template button", () => {
         render(<ResignationProcessTemplateSection {...defaultProps} />);
-        expect(screen.getByRole("button", { name: /admin.settings.resignationProcess.addTemplate/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /resignationProcess.addTemplate/i })).toBeInTheDocument();
     });
 
     it("shows CreateTemplateForm when add-template button is clicked", async () => {
         render(<ResignationProcessTemplateSection {...defaultProps} />);
-        await user.click(screen.getByRole("button", { name: /admin.settings.resignationProcess.addTemplate/i }));
+        await user.click(screen.getByRole("button", { name: /resignationProcess.addTemplate/i }));
         expect(screen.getByTestId("create-template-form")).toBeInTheDocument();
     });
 
     it("hides CreateTemplateForm and adds card on successful create", async () => {
         render(<ResignationProcessTemplateSection {...defaultProps} />);
-        await user.click(screen.getByRole("button", { name: /admin.settings.resignationProcess.addTemplate/i }));
+        await user.click(screen.getByRole("button", { name: /resignationProcess.addTemplate/i }));
         await user.click(screen.getByRole("button", { name: /submit-create/i }));
         expect(screen.queryByTestId("create-template-form")).not.toBeInTheDocument();
         expect(screen.getByTestId("template-card-tpl-new")).toBeInTheDocument();
@@ -180,7 +180,7 @@ describe("<ResignationProcessTemplateSection />", () => {
 
     it("hides CreateTemplateForm on cancel", async () => {
         render(<ResignationProcessTemplateSection {...defaultProps} />);
-        await user.click(screen.getByRole("button", { name: /admin.settings.resignationProcess.addTemplate/i }));
+        await user.click(screen.getByRole("button", { name: /resignationProcess.addTemplate/i }));
         await user.click(screen.getByRole("button", { name: /cancel-create/i }));
         expect(screen.queryByTestId("create-template-form")).not.toBeInTheDocument();
     });

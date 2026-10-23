@@ -69,7 +69,6 @@ export const AnonymizationConfigSection = ({ initialConfig }: Props) => {
                         name="anonymizationMode"
                         label={t("admin.settings.anonymization.anonymizationMode")}
                         options={modeOptions}
-                        formName="anonymizationConfig"
                         selectClassName="w-auto"
                     />
                 </div>
@@ -81,7 +80,6 @@ export const AnonymizationConfigSection = ({ initialConfig }: Props) => {
                         <NumberInputFormField
                             name="anonymizationDelayDays"
                             label={t("admin.settings.anonymization.anonymizationDelayDays")}
-                            formName="anonymizationConfig"
                             className="w-auto"
                         />
                     </div>

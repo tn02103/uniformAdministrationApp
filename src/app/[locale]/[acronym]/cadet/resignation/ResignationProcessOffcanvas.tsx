@@ -1,31 +1,28 @@
+import { returnMaterial } from "@/actions/controllers/CadetMaterialController";
 import { ActionButton } from "@/components/Buttons/ActionButton";
-import { toast } from "react-toastify";
+import { completeResignationChecklistItem, completeResignationProcess } from "@/dal/cadet/resignation/process";
 import { returnUniformItem } from "@/dal/uniform/item";
 import dayjs from "@/lib/dayjs";
-import { ResignationProcess as memberWithExitProcess } from "@/types/resignationProcessTypes";
+import { useScopedI18n } from "@/lib/locales/client";
+import { CadetWithNonNullResignationProcess } from "@/types/resignationProcessTypes";
 import { faCircleCheck, faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
-import { Button, Offcanvas } from "react-bootstrap";
-import { returnMaterial } from "@/actions/controllers/CadetMaterialController";
-import { completeResignationChecklistItem, completeResignationProcess } from "@/dal/cadet/resignation/process";
 import { useCallback } from "react";
-import { useScopedI18n } from "@/lib/locales/client";
+import { Button, Offcanvas } from "react-bootstrap";
+import { toast } from "react-toastify";
 
 
-export default function ExitProcessOffcanvas({
+export default function ResignationProcessOffcanvas({
     member,
     onClose,
     editable = true,
 }: {
-    member: memberWithExitProcess;
+    member: CadetWithNonNullResignationProcess;
     onClose: () => void;
     editable?: boolean;
 }) {
-    if (!member.resignationProcess || member.resignationProcess === null) {
-        return null;
-    }
-    const t = useScopedI18n("memberExit.managementOverview.offcanvas");
+    const t = useScopedI18n("resignation.managementOverview.offcanvas");
     const tCommon = useScopedI18n("common");
 
     const router = useRouter();
@@ -48,7 +45,7 @@ export default function ExitProcessOffcanvas({
         }).catch(() => {
             toast.error(t('errors.toggleTask'));
         });
-    }, [member.resignationProcess!.id, router]);
+    }, [member.resignationProcess, router, t]);
 
     const handleWithdrawUniform = useCallback((uniformId: string) => {
         returnUniformItem({ uniformId, cadetId: member.id }).then(() => {
@@ -56,7 +53,7 @@ export default function ExitProcessOffcanvas({
         }).catch(() => {
             toast.error(t('errors.withdrawUniform'));
         })
-    }, [member.id, router]);
+    }, [member.id, router, t]);
 
     const handleWithdrawMaterial = useCallback((materialId: string) => {
         returnMaterial(member.id, materialId).then(() => {
@@ -64,7 +61,7 @@ export default function ExitProcessOffcanvas({
         }).catch(() => {
             toast.error(t('errors.withdrawMaterial'));
         })
-    }, [member.id, router]);
+    }, [member.id, router, t]);
 
     const handleCompleteProcess = useCallback(() => {
         completeResignationProcess({ resignationProcessId: member.resignationProcess!.id }).then(() => {
@@ -73,12 +70,12 @@ export default function ExitProcessOffcanvas({
         }).catch(() => {
             toast.error(t('errors.completeProcess'));
         });
-    }, [member.resignationProcess!.id, router]);
+    }, [member.resignationProcess, router, onClose, t]);
 
     return (
         <Offcanvas show onHide={onClose} placement="end" style={{ width: "500px" }} backdrop={true}>
             <Offcanvas.Header closeButton>
-                <Offcanvas.Title>{t('header', { cadet: `${member.lastname} ${member.firstname}` })}</Offcanvas.Title>
+                <Offcanvas.Title>{t('header', { cadet: member.fullname })}</Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
                 <h2 className="fs-4 text-center">{t('processDetails.header')}</h2>
@@ -157,7 +154,6 @@ export default function ExitProcessOffcanvas({
                         </div>
                     ))}
                 </div>
-
                 <h2 className="fs-4 mt-5 text-center">{t('missingReturns.header')}</h2>
                 <h3 className="fs-6 fw-bold mt-2">{t('missingReturns.uniform')}</h3>
                 <div>

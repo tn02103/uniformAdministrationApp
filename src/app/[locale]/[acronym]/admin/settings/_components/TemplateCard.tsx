@@ -61,7 +61,7 @@ export const TemplateCard = ({
                     aria-expanded={!disabled && isExpanded}
                     aria-label={template.name}
                 >
-                    <FontAwesomeIcon icon={isExpanded && !disabled ? faChevronDown : faChevronRight} fixedWidth />
+                    <FontAwesomeIcon icon={isExpanded && !disabled ? faChevronDown : faChevronRight} />
                 </button>
                 <div className="flex-grow-1">
                     <InlineEditInputFormField
@@ -74,7 +74,7 @@ export const TemplateCard = ({
                     />
                 </div>
                 {template.defaultProcess && (
-                    <span className="badge bg-warning rounded-pill text-dark" aria-label={t("admin.settings.resignationProcess.defaultProcess")}>
+                    <span className="badge bg-warning rounded-pill text-dark" aria-label={t("admin.settings.resignationProcess.defaultProcess")} data-testid="default-process-badge">
                         {t("admin.settings.resignationProcess.defaultProcess")}
                     </span>
                 )}
