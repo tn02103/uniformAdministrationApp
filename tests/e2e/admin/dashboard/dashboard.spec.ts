@@ -99,8 +99,8 @@ test.describe('Admin Dashboard - Charts', () => {
             // Check for hover state - adapt to actual CSS module classes
             const firstItemClasses = await legendItems.first().getAttribute('class');
             // Look for hovered state or visible state (since hover might not change classes immediately)
-            expect(firstItemClasses).toMatch(/CustomLegend-module__[\w\d]*__hovered/);
-            expect(firstItemClasses).not.toMatch(/CustomLegend-module__[\w\d]*__dimmed/);
+            expect(firstItemClasses).toMatch(/[\w\d]*_hovered/);
+            expect(firstItemClasses).not.toMatch(/[\w\d]*_dimmed/);
 
             // Check other items for dimming (if implemented)
             for (let i = 1; i < Math.min(itemCount, 3); i++) {
@@ -108,8 +108,8 @@ test.describe('Admin Dashboard - Charts', () => {
                 const classes = await item.getAttribute('class');
                 // Items should at least have the base legend item class
                 if (classes) {
-                    expect(classes).not.toMatch(/CustomLegend-module__[\w\d]*__hovered/);
-                    expect(classes).toMatch(/CustomLegend-module__[\w\d]*__dimmed/);
+                    expect(classes).not.toMatch(/[\w\d]*_hovered/);
+                    expect(classes).toMatch(/[\w\d]*_dimmed/);
                 }
             }
         });
@@ -131,7 +131,7 @@ test.describe('Admin Dashboard - Charts', () => {
             const afterClickClasses = await legendItems.first().getAttribute('class');
 
             // The classes should either contain hidden state or have changed
-            const hasHiddenClass = afterClickClasses?.includes('hidden') || afterClickClasses?.includes('CustomLegend_hidden__');
+            const hasHiddenClass = afterClickClasses?.includes('hidden') || afterClickClasses?.includes('_hidden');
             const classesChanged = initialClasses !== afterClickClasses;
 
             expect(hasHiddenClass || classesChanged).toBe(true);
@@ -159,7 +159,7 @@ test.describe('Admin Dashboard - Charts', () => {
                     const item = legendItems.nth(i);
                     await expect(item).toBeVisible();
                     const classes = await item.getAttribute('class');
-                    expect(classes).toMatch(/CustomLegend-module__[\w\d]*__legendItem/);
+                    expect(classes).toMatch(/[\w\d]*_legendItem/);
                 }
 
                 // Verify chart container remains visible
@@ -256,16 +256,16 @@ test.describe('Admin Dashboard - Charts', () => {
 
                 // Check for hover state - adapt to actual CSS module classes
                 const hoveredClasses = await legendItems.first().getAttribute('class');
-                expect(hoveredClasses).toMatch(/CustomLegend-module__[\w\d]*__hovered/);
-                expect(hoveredClasses).not.toMatch(/CustomLegend-module__[\w\d]*__dimmed/);
+                expect(hoveredClasses).toMatch(/[\w\d]*_hovered/);
+                expect(hoveredClasses).not.toMatch(/[\w\d]*_dimmed/);
 
                 // Check other items for dimming (if implemented)
                 for (let i = 1; i < Math.min(itemCount, 3); i++) {
                     const item = legendItems.nth(i);
                     const classes = await item.getAttribute('class');
                     if (classes) {
-                        expect(classes).not.toMatch(/CustomLegend-module__[\w\d]*__hovered/);
-                        expect(classes).toMatch(/CustomLegend-module__[\w\d]*__dimmed/);
+                        expect(classes).not.toMatch(/[\w\d]*_hovered/);
+                        expect(classes).toMatch(/[\w\d]*_dimmed/);
                     }
                 }
             }
