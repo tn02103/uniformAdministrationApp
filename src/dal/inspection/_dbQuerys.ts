@@ -53,8 +53,8 @@ export class DBQuery {
                        FROM base.cadet c
                       WHERE c.fk_assosiation = i.fk_assosiation
                         AND c.date_created <= i.date::date
-                      AND (c.return_started_at IS NULL
-                        OR c.return_started_at > (i.date || ' ' || COALESCE(i.time_end, '23:59'))::timestamp)
+                      AND (c.resigned_at IS NULL
+                        OR c.resigned_at > (i.date || ' ' || COALESCE(i.time_end, '23:59'))::timestamp)
                       AND (c.deleted_at IS NULL
                         OR c.deleted_at > (i.date || ' ' || COALESCE(i.time_end, '23:59'))::timestamp)) as "activeCadets",
          	        (SELECT COUNT(cd.id)
@@ -166,7 +166,7 @@ export class DBQuery {
              ON dr.fk_cadet = c.id AND dr.fk_inspection = ${inspectionId}
           WHERE c.fk_assosiation= ${fk_assosiation}
             AND c.date_created <= ${date}::date
-            AND (c.return_started_at IS NULL OR c.return_started_at > (${date} || ' ' || ${timeStart})::timestamp)
+            AND (c.resigned_at IS NULL OR c.resigned_at > (${date} || ' ' || ${timeStart})::timestamp)
             AND (c.deleted_at IS NULL OR c.deleted_at > (${date} || ' ' || ${timeStart})::timestamp)
     `.then(list => list.map(d => ({
       cadet: {

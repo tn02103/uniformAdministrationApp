@@ -181,7 +181,7 @@ const Sidebar = ({ assosiation, username, children }: SidebarPropType) => {
                         }
                     }}
                 >
-                    <div className={`container-lg px-3 px-lg-4 py-3 m-auto`}>
+                    <div className={`container-lg px-0 px-sm-3 px-lg-4 py-3 m-auto`}>
                         {children}
                     </div>
                 </div>

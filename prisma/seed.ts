@@ -42,20 +42,20 @@ async function main() {
             data: generator.cadet(),
         });
 
-        await prisma.returnProcessTemplate.createMany({
-            data: generator.returnProcessTemplates(),
+        await prisma.resignationProcessTemplate.createMany({
+            data: generator.resignationProcessTemplates(),
         });
 
-        await prisma.returnProcess.createMany({
-            data: generator.returnProcesses(),
+        await prisma.resignationProcess.createMany({
+            data: generator.resignationProcesses(),
         });
 
-        await prisma.returnChecklistTemplate.createMany({
-            data: generator.returnChecklistTemplates(),
+        await prisma.resignationChecklistItemTemplate.createMany({
+            data: generator.resignationChecklistItemTemplates(),
         });
 
-        await prisma.returnChecklistItemStatus.createMany({
-            data: generator.returnChecklistItemStatuses(),
+        await prisma.resignationChecklistItem.createMany({
+            data: generator.resignationChecklistItems(),
         });
 
         await prisma.uniformSize.createMany({

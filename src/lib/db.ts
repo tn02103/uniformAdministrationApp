@@ -1,14 +1,29 @@
 
 import { PrismaClient } from "@/prisma/client";
 import { PrismaPg } from '@prisma/adapter-pg';
+import { InternalArgs } from "@prisma/client/runtime/client";
 
 const globalForPrisma = global as unknown as {
     prisma: PrismaClient
 }
 
 const connectionString = `${process.env.DATABASE_URL}`;
-const adapter = new PrismaPg({ connectionString })
-export const prisma = globalForPrisma.prisma || new PrismaClient({ adapter });
+const adapter = new PrismaPg({ connectionString });
+
+export const prisma = globalForPrisma.prisma || new PrismaClient({ adapter }).$extends({
+    result: {
+        cadet: {
+            fullname: {
+                needs: { firstname: true, lastname: true },
+                compute(cadet) {
+                    return `${cadet.firstname} ${cadet.lastname}`;
+                }
+            }
+        },
+    }
+});
+
+export type InternalExtensionArgs = InternalArgs<{ cadet: { fullname: true } }>
 
 if (process.env.NODE_ENV !== 'production') {
     globalForPrisma.prisma = prisma;

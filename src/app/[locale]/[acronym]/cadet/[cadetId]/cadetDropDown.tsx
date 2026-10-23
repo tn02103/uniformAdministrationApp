@@ -1,15 +1,16 @@
 "use client";
+
 import { AuthRole } from "@/lib/AuthRoles";
 import { useI18n } from "@/lib/locales/client";
 import { CadetStatus } from "@/prisma/browser";
+import { ResignationConfig } from "@/types/resignationProcessTypes";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { Dropdown } from "react-bootstrap";
 import { toast } from "react-toastify";
-import CadetReturnUniformModal from "./_returnUniform/MemberExitModal";
-import { ReturnConfig } from "@/types/returnProcessTypes";
+import MemberResignationModal from "./_memberResignation/MemberResignationModal";
 
 /**
  * Action dropdown for cadet detail page operations.
@@ -17,10 +18,10 @@ import { ReturnConfig } from "@/types/returnProcessTypes";
  * @param returnConfigLoadFailed - Indicates that return-process configuration could not be loaded, so return actions are fail-closed.
  */
 export default function CadetDropDown({
-    returnConfig, returnConfigLoadFailed, cadetStatus, userRole,
+    resignationConfig, resignationConfigLoadFailed, cadetStatus, userRole,
 }: {
-    returnConfig: ReturnConfig;
-    returnConfigLoadFailed: boolean;
+    resignationConfig: ResignationConfig;
+    resignationConfigLoadFailed: boolean;
     cadetStatus: CadetStatus;
     userRole: AuthRole;
 }) {
@@ -30,12 +31,12 @@ export default function CadetDropDown({
     const { cadetId }: { cadetId: string } = useParams();
 
     function handleReturnUniform() {
-        if (returnConfigLoadFailed) {
+        if (resignationConfigLoadFailed) {
             toast.error(t('cadetDetailPage.memberExit.directReturn.error'));
             return;
         }
 
-        if (returnConfig) {
+        if (resignationConfig) {
             setIsReturnModalOpen(true);
         } else {
             // Should not be reachable: config loaded successfully but was null
@@ -60,11 +61,11 @@ export default function CadetDropDown({
                     )}
                 </Dropdown.Menu>
             </Dropdown>
-            {isReturnModalOpen && returnConfig && (
-                <CadetReturnUniformModal
+            {isReturnModalOpen && resignationConfig && (
+                <MemberResignationModal
                     cadetId={cadetId}
-                    returnProcessEnabled={returnConfig.returnProcessEnabled}
-                    templates={returnConfig.templates}
+                    resignationProcessEnabled={resignationConfig.resignationProcessEnabled}
+                    templates={resignationConfig.templates}
                     onClose={() => setIsReturnModalOpen(false)}
                 />
             )}

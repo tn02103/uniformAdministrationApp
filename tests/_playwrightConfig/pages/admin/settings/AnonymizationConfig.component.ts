@@ -8,7 +8,7 @@ export class AnonymizationConfigComponent {
 
     readonly page: Page;
 
-    readonly chk_returnProcessEnabled: Locator;
+    readonly chk_resignationProcessEnabled: Locator;
     readonly sel_anonymizationMode: Locator;
     readonly txt_anonymizationDelayDays: Locator;
     readonly btn_save: Locator;
@@ -18,7 +18,7 @@ export class AnonymizationConfigComponent {
     constructor(page: Page) {
         this.page = page;
 
-        this.chk_returnProcessEnabled = page.getByRole('switch', { name: t.returnProcessEnabled });
+        this.chk_resignationProcessEnabled = page.getByRole('switch', { name: t.resignationProcessEnabled });
         this.sel_anonymizationMode = page.getByRole('combobox', { name: t.anonymizationMode });
         this.txt_anonymizationDelayDays = page.getByRole('spinbutton', { name: t.anonymizationDelayDays });
         this.btn_save = page.getByRole('form', { name: t.header }).getByRole('button', { name: tCommon.save });

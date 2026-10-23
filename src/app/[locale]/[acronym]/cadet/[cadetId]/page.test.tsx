@@ -5,7 +5,7 @@ import CadetDropDown from "./cadetDropDown";
 import { getCadetData } from "@/actions/cadet/data";
 import { getCadetMaterialMap } from "@/actions/controllers/CadetMaterialController";
 import { getCadetUniformMap } from "@/dal/cadet/uniformMap";
-import { getReturnProcessConfig } from "@/dal/assosiation";
+import { getResignationProcessConfig } from "@/dal/assosiation";
 import { getMaterialConfiguration } from "@/dal/material/type/_index";
 import { getIronSession } from "@/lib/ironSession";
 
@@ -22,7 +22,7 @@ vi.mock("@/dal/cadet/uniformMap", () => ({
 }));
 
 vi.mock("@/dal/assosiation", () => ({
-    getReturnProcessConfig: vi.fn(),
+    getResignationProcessConfig: vi.fn(),
 }));
 
 vi.mock("@/dal/material/type/_index", () => ({
@@ -76,23 +76,23 @@ describe("CadetDetailPage return config fail-closed wiring", () => {
         vi.mocked(getCadetUniformMap).mockResolvedValue({} as never);
         vi.mocked(getCadetMaterialMap).mockResolvedValue({} as never);
         vi.mocked(getMaterialConfiguration).mockResolvedValue({} as never);
-        vi.mocked(getReturnProcessConfig).mockResolvedValue({
-            returnProcessEnabled: true,
+        vi.mocked(getResignationProcessConfig).mockResolvedValue({
+            resignationProcessEnabled: true,
             anonymizationMode: "ON_COMPLETE",
             templates: [],
         } as never);
     });
 
     it("passes load-failed flag and null config to dropdown when return config request fails", async () => {
-        vi.mocked(getReturnProcessConfig).mockRejectedValueOnce(new Error("config unavailable"));
+        vi.mocked(getResignationProcessConfig).mockRejectedValueOnce(new Error("config unavailable"));
 
         render(await CadetDetailPage({ params: Promise.resolve({ cadetId, locale: "de" }) }));
 
         expect(screen.getByTestId("cadet-dropdown")).toBeInTheDocument();
         expect(vi.mocked(CadetDropDown)).toHaveBeenCalledWith(
             expect.objectContaining({
-                returnConfig: null,
-                returnConfigLoadFailed: true,
+                resignationConfig: null,
+                resignationConfigLoadFailed: true,
                 cadetStatus: "ACTIVE",
                 userRole: AuthRole.inspector,
             }),
@@ -105,12 +105,12 @@ describe("CadetDetailPage return config fail-closed wiring", () => {
 
         expect(vi.mocked(CadetDropDown)).toHaveBeenCalledWith(
             expect.objectContaining({
-                returnConfig: {
-                    returnProcessEnabled: true,
+                resignationConfig: {
+                    resignationProcessEnabled: true,
                     anonymizationMode: "ON_COMPLETE",
                     templates: [],
                 },
-                returnConfigLoadFailed: false,
+                resignationConfigLoadFailed: false,
             }),
             undefined
         );

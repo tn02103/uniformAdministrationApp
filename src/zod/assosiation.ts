@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const updateAnonymizationConfigSchema = z.object({
-    returnProcessEnabled: z.boolean().optional(),
+    resignationProcessEnabled: z.boolean().optional(),
     anonymizationMode: z.enum(["MANUAL", "AFTER_DAYS", "IMMEDIATELY"]).optional(),
     anonymizationDelayDays: z.number().int().min(1).optional(),
 }).superRefine((data, ctx) => {

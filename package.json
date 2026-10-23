@@ -103,7 +103,16 @@
         "prisma": "7.7.0",
         "ts-node": "10.9.2",
         "tsx": "4.21.0",
+        "type-fest": "^5.8.0",
         "typescript": "6.0.3",
         "vitest": "4.1.4"
+    },
+    "allowScripts": {
+        "@prisma/engines@*": true,
+        "@parcel/watcher@*": true,
+        "bcrypt@*": true,
+        "prisma@*": true,
+        "@swc/core@*": true,
+        "esbuild@*": true
     }
 }

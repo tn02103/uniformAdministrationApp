@@ -1,7 +1,7 @@
 import { getCadetData } from "@/actions/cadet/data";
 import { getCadetMaterialMap } from "@/actions/controllers/CadetMaterialController";
 import { getCadetUniformMap } from "@/dal/cadet/uniformMap";
-import { getReturnProcessConfig } from "@/dal/assosiation";
+import { getResignationProcessConfig } from "@/dal";
 import { getMaterialConfiguration } from "@/dal/material/type/_index";
 import { AuthRole } from "@/lib/AuthRoles";
 import { getIronSession } from "@/lib/ironSession";
@@ -61,13 +61,13 @@ const CadetDetailPage = async (props: PropType) => {
         );
     }
 
-    const [cadet, uniformMap, materialMap, materialConfig, returnConfigResult] = await Promise.all([
+    const [cadet, uniformMap, materialMap, materialConfig, resignationConfigResult] = await Promise.all([
         getCadetData(cadetId),
         getCadetUniformMap(cadetId),
         getCadetMaterialMap(cadetId),
         getMaterialConfiguration(),
         user!.role >= AuthRole.inspector
-            ? getReturnProcessConfig()
+            ? getResignationProcessConfig()
                 .then((config) => ({ config, loadFailed: false }))
                 .catch(() => ({ config: null, loadFailed: true }))
             : Promise.resolve({ config: null, loadFailed: false }),
@@ -82,8 +82,8 @@ const CadetDetailPage = async (props: PropType) => {
                 {(user!.role >= AuthRole.inspector) &&
                     <div className="position-absolute w-auto top-0 end-0">
                         <CadetDropDown
-                            returnConfig={returnConfigResult.config}
-                            returnConfigLoadFailed={returnConfigResult.loadFailed}
+                            resignationConfig={resignationConfigResult.config}
+                            resignationConfigLoadFailed={resignationConfigResult.loadFailed}
                             cadetStatus={cadet.status}
                             userRole={user!.role}
                         />

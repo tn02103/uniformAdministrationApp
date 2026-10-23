@@ -177,3 +177,14 @@
         display: none;
     }
 }
+
+.navGroupArrow:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.navGroupArrow {
+    border-width: 2px;
+    border-style: solid;
+    border-color: transparent;
+    border-radius: 8px;
+}
