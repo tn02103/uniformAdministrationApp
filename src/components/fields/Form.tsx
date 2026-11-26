@@ -37,6 +37,7 @@ export const Form = <TFieldValue extends FieldValues>({
     const form = useForm<TFieldValue>({
         mode,
         reValidateMode,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         resolver: props.zodSchema ? zodResolver(props.zodSchema as any) : undefined,
         ...props,
     });

@@ -76,6 +76,7 @@ const FormComponent = (props: FormComponentProps) => {
         defaultValues: {
             [name]: propValue || ''
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         resolver: zodSchema ? zodResolver(zodSchema as any) : undefined,
     });
 
