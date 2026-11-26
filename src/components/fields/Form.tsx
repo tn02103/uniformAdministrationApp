@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createContext, useContext, useMemo } from "react";
 import { FieldErrors, FieldValues, FormProvider, useForm, UseFormProps } from "react-hook-form";
-import { ZodTypeAny } from "zod";
+import type { ZodType } from "zod";
 
 
 type FormContextType = {
@@ -20,7 +20,7 @@ type FormProps<TFieldValue extends FieldValues> = {
     disabled?: boolean;
     plaintext?: boolean;
     formName?: string;
-    zodSchema?: ZodTypeAny;
+    zodSchema?: ZodType;
 } & UseFormProps<TFieldValue>;
 
 export const Form = <TFieldValue extends FieldValues>({
@@ -37,7 +37,7 @@ export const Form = <TFieldValue extends FieldValues>({
     const form = useForm<TFieldValue>({
         mode,
         reValidateMode,
-        resolver: props.zodSchema ? zodResolver(props.zodSchema) : undefined,
+        resolver: props.zodSchema ? zodResolver(props.zodSchema as any) : undefined,
         ...props,
     });
 
