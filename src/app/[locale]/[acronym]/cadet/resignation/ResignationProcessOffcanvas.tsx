@@ -1,7 +1,7 @@
 import { returnMaterial } from "@/actions/controllers/CadetMaterialController";
 import { ActionButton } from "@/components/Buttons/ActionButton";
 import { completeResignationChecklistItem, completeResignationProcess } from "@/dal/cadet/resignation/process";
-import { returnUniformItem } from "@/dal/uniform/item";
+import { returnUniformItem } from "@/dal/uniform/item/_index";
 import dayjs from "@/lib/dayjs";
 import { useScopedI18n } from "@/lib/locales/client";
 import { CadetWithNonNullResignationProcess } from "@/types/resignationProcessTypes";

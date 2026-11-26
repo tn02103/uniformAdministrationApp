@@ -1,0 +1,76 @@
+.groupHeader {
+    color: white;
+    font-weight: bold;
+    display: flex;
+    flex-direction: row;
+    align-items: space-between;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+
+
+    .headerBtn {
+        color: white;
+        margin: 0;
+        padding: 0.5rem;
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: start;
+        vertical-align: middle;
+        border: none;
+
+        .childSelected & {
+            font-weight: bold;
+        }
+
+        &:hover {
+            opacity: 0.75;
+        }
+    }
+
+    .navGroupArrow {
+        border: none;
+        color: white;
+        margin: 0;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+
+        svg {
+            border-width: 2px;
+            border-style: solid;
+            border-color: transparent;
+            border-radius: 8px;
+        }
+
+        &:hover {
+            opacity: 0.75;
+        }
+    }
+}
+
+.groupItem {
+    &.childSelected.hideChildren {
+        background-color: #0d6efd;
+    }
+
+    &.childSelected.showChildren {
+        background-color: #0347CE;
+    }
+
+    &.showChildren {
+        background-color: #022874;
+    }
+}
+
+.navLink {
+    display: flex;
+    flex-direction: row;
+}
+.navLink:hover .navLinkText {
+    opacity: 0.75;
+}
+.navLinkText {
+    padding: 0;
+    margin: 0;
+}
