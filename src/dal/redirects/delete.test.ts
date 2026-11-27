@@ -1,7 +1,7 @@
 ﻿
 import { AuthRole } from "@/lib/AuthRoles";
 import { revalidatePath } from "next/cache";
-import z from "zod";
+import { z } from "zod";
 import { deleteRedirect } from "./index";
 import { prismaMock } from '@test-utils/prisma-mock';
 import { genericSAValidator } from "@/actions/validations";

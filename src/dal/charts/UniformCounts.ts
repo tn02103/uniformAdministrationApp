@@ -3,7 +3,7 @@ import { genericSANoDataValidator, genericSAValidator } from "@/actions/validati
 import { AuthRole } from "@/lib/AuthRoles";
 import { prisma } from "@/lib/db";
 import { CadetLabel, cadetLableArgs } from "@/types/globalCadetTypes";
-import z from "zod";
+import { z } from "zod";
 
 
 export type UniformCountBySizeForTypeData = {

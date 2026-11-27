@@ -403,8 +403,9 @@ test.describe('Offcanvas - CadetOverview', () => {
                 await expect(commentField).toBeEditable();
                 await expect(typeField).toBeEditable();
                 await expect(typeField.getByRole('option')).toHaveCount(3);
-                expect(typeField.getByRole('option', { name: "Uniform" })).toBeDefined();
-                expect(typeField.getByRole('option', { name: "Uniform Broken" })).toBeDefined();
+                await expect(typeField.getByRole('option').nth(0)).toBeDisabled();
+                await expect(typeField.getByRole('option', { name: /Uniform$/i })).toBeEnabled();
+                await expect(typeField.getByRole('option', { name: /Uniform Broken$/i })).toBeEnabled();
 
                 await commentField.fill('Test new comment');
                 await typeField.selectOption({ label: 'Uniform' });

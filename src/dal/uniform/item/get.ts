@@ -32,80 +32,87 @@ export type ItemLabel = {
  * @requires AuthRole.user
  * @returns List of labels for uniform items
  */
-export const getItemLabels = async (): Promise<ItemLabel[]> => genericSANoDataValidator(
-    AuthRole.user,
-).then(([{ assosiation }]) => prisma.uniform.findMany({
-    where: {
-        type: {
-            fk_assosiation: assosiation
-        },
-        recdelete: null,
-    },
-    include: {
-        type: true,
-        generation: true,
-        storageUnit: true,
-        issuedEntries: {
-            where: {
-                dateReturned: null,
+export const getItemLabels = async (): Promise<ItemLabel[]> => {
+    const [{ assosiation }] = await genericSANoDataValidator(
+        AuthRole.user,
+    );
+    const data = await prisma.uniform.findMany({
+        where: {
+            type: {
+                fk_assosiation: assosiation
             },
-            include: {
-                cadet: true,
-            },
+            recdelete: null,
         },
-        deficiencies: {
-            where: {
-                dateResolved: null,
-                type: {
-                    dependent: "uniform",
+        include: {
+            type: true,
+            generation: true,
+            storageUnit: true,
+            issuedEntries: {
+                where: {
+                    dateReturned: null,
+                },
+                include: {
+                    cadet: true,
                 },
             },
-            include: {
-                type: true,
+            deficiencies: {
+                where: {
+                    dateResolved: null,
+                    type: {
+                        dependent: "uniform",
+                    },
+                },
+                include: {
+                    type: true,
+                },
             },
         },
-    },
-    orderBy: [
-        { type: { name: 'asc' } },
-        { number: 'asc' },
-    ]
-})).then(data => data.map((item): ItemLabel => ({
-    id: item.id,
-    number: item.number,
-    label: `${item.type.name}-${item.number}`,
-    isReserve: item.isReserve || (item.type.usingGenerations && item.generation?.isReserve) || false,
-    type: {
-        id: item.type.id,
-        name: item.type.name,
-        acronym: item.type.acronym,
-    },
-    owner: item.issuedEntries.length > 0 ? {
-        id: item.issuedEntries[0].cadet.id,
-        firstname: item.issuedEntries[0].cadet.firstname,
-        lastname: item.issuedEntries[0].cadet.lastname,
-    } : null,
-    storageUnit: item.storageUnit ? {
-        id: item.storageUnit.id,
-        name: item.storageUnit.name,
-    } : null,
-    activeDeficiencies: item.deficiencies.map(ud => ({
-        typeName: ud.type.name,
-        comment: ud.comment,
-    })),
-})));
+        orderBy: [
+            { type: { name: 'asc' } },
+            { number: 'asc' },
+        ]
+    });
+    return data.map((item): ItemLabel => ({
+        id: item.id,
+        number: item.number,
+        label: `${item.type.name}-${item.number}`,
+        isReserve: item.isReserve || (item.type.usingGenerations && item.generation?.isReserve) || false,
+        type: {
+            id: item.type.id,
+            name: item.type.name,
+            acronym: item.type.acronym,
+        },
+        owner: item.issuedEntries.length > 0 ? {
+            id: item.issuedEntries[0].cadet.id,
+            firstname: item.issuedEntries[0].cadet.firstname,
+            lastname: item.issuedEntries[0].cadet.lastname,
+        } : null,
+        storageUnit: item.storageUnit ? {
+            id: item.storageUnit.id,
+            name: item.storageUnit.name,
+        } : null,
+        activeDeficiencies: item.deficiencies.map(ud => ({
+            typeName: ud.type.name,
+            comment: ud.comment,
+        })),
+    }));
+};
 
 
-export const getHistory = async (props: string): Promise<UniformHistroyEntry[]> => genericSAValidator(
-    AuthRole.inspector,
-    props,
-    z.string().uuid(),
-    { uniformId: props }
-).then(([, uniformId]) => prisma.uniformIssued.findMany({
-    where: {
-        fk_uniform: uniformId,
-    },
-    ...uniformHistoryArgs,
-}));
+export const getHistory = async (props: string): Promise<UniformHistroyEntry[]> => {
+    const [, uniformId] = await genericSAValidator(
+        AuthRole.inspector,
+        props,
+        z.string().uuid(),
+        { uniformId: props }
+    );
+    return prisma.uniformIssued.findMany({
+        where: {
+            fk_uniform: uniformId,
+        },
+        ...uniformHistoryArgs,
+    });
+};
 
 const getDeficienciesPropSchema = z.object({
     uniformId: z.string().uuid(),
@@ -113,24 +120,26 @@ const getDeficienciesPropSchema = z.object({
 });
 type GetDeficienciesProps = z.infer<typeof getDeficienciesPropSchema>;
 
-export const getDeficiencies = async (props: GetDeficienciesProps): Promise<Deficiency[]> => genericSAValidator(
-    AuthRole.inspector,
-    props,
-    getDeficienciesPropSchema,
-    { uniformId: props.uniformId }
-).then(([, { uniformId, includeResolved }]) => prisma.deficiency.findMany({
-    where: {
-        fk_uniform: uniformId,
-        dateResolved: includeResolved ? undefined : null,
-    },
-    include: {
-        type: true,
-    },
-    orderBy: [
-        { dateCreated: 'asc' },  // Oldest to newest
-    ],
-})).then((deficiencies) =>
-    deficiencies.map((deficiency): Deficiency => ({
+export const getDeficiencies = async (props: GetDeficienciesProps): Promise<Deficiency[]> => {
+    const [, { uniformId, includeResolved }] = await genericSAValidator(
+        AuthRole.inspector,
+        props,
+        getDeficienciesPropSchema,
+        { uniformId: props.uniformId }
+    );
+    const deficiencies = await prisma.deficiency.findMany({
+        where: {
+            fk_uniform: uniformId,
+            dateResolved: includeResolved ? undefined : null,
+        },
+        include: {
+            type: true,
+        },
+        orderBy: [
+            { dateCreated: 'asc' },
+        ],
+    });
+    return deficiencies.map((deficiency): Deficiency => ({
         id: deficiency.id,
         typeId: deficiency.type.id,
         typeName: deficiency.type.name,
@@ -142,8 +151,8 @@ export const getDeficiencies = async (props: GetDeficienciesProps): Promise<Defi
         userCreated: deficiency.userCreated,
         userUpdated: deficiency.userUpdated,
         userResolved: deficiency.userResolved,
-    }))
-);
+    }));
+};
 
 const getListWithOwnerPropSchema = z.object({
     uniformTypeId: z.string().uuid(),
@@ -155,8 +164,8 @@ const getListWithOwnerPropSchema = z.object({
         issued: z.boolean().optional(),
         notIssued: z.boolean().optional(),
         inStorageUnit: z.boolean().optional(),
-        generations: z.record(z.boolean()).optional(),
-        sizes: z.record(z.boolean()).optional(),
+        generations: z.record(z.string(), z.boolean()).optional(),
+        sizes: z.record(z.string(), z.boolean()).optional(),
     }).optional().nullable(),
 });
 type getListWithOwnerProps = z.infer<typeof getListWithOwnerPropSchema>;
@@ -171,12 +180,13 @@ type getListWithOwnerProps = z.infer<typeof getListWithOwnerPropSchema>;
  * @param filter filterObject of uniformFilter Pannel
  * @returns UniformWithOwner[]
  */
-export const getListWithOwner = async (props: getListWithOwnerProps): Promise<UniformWithOwner[]> => genericSAValidator(
-    AuthRole.user,
-    props,
-    getListWithOwnerPropSchema,
-    { uniformTypeId: props.uniformTypeId }
-).then(async ([{ }, { uniformTypeId, orderBy, asc, filter }]) => {
+export const getListWithOwner = async (props: getListWithOwnerProps): Promise<UniformWithOwner[]> => {
+    const [{ }, { uniformTypeId, orderBy, asc, filter }] = await genericSAValidator(
+        AuthRole.user,
+        props,
+        getListWithOwnerPropSchema,
+        { uniformTypeId: props.uniformTypeId }
+    );
 
     const sqlFilter: Prisma.UniformFindManyArgs["where"] = {};
     const generationFilter = filter?.generations ? Object.entries(filter.generations).filter(([, value]) => value).map(([key,]) => key) : [];
@@ -355,4 +365,4 @@ export const getListWithOwner = async (props: getListWithOwnerProps): Promise<Un
         // If no owner and no storage unit, sort by number
         return returnValue(a.number - b.number);
     });
-});
+};
