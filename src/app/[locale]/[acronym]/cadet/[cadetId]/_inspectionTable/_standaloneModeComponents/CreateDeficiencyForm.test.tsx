@@ -5,11 +5,14 @@ import { mutate } from "swr";
 import { toast } from "react-toastify";
 import { CreateDeficiencyForm } from "./CreateDeficiencyForm";
 
+const cadetId = '2dcbe30e-0737-4b92-b748-96bf35c374d5';
+const deficiencyTypeId = 'd3e8e4c7-5e41-48ef-829c-64531aab8c9a';
+
 vi.mock('next/navigation', async () => {
     const actual = await vi.importActual('next/navigation');
     return {
         ...actual,
-        useParams: vi.fn().mockReturnValue({ cadetId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' }),
+        useParams: vi.fn().mockReturnValue({ cadetId: '2dcbe30e-0737-4b92-b748-96bf35c374d5' }),
     };
 });
 
@@ -25,7 +28,7 @@ vi.mock('swr', async (importOriginal) => {
 vi.mock('@/dataFetcher/deficiency', () => ({
     useDeficiencyTypes: vi.fn().mockReturnValue({
         deficiencyTypeList: [
-            { id: '97d25d1c-15cc-43fb-a2f3-5b21d0ffd8cd', name: 'Cadet Issue', dependent: 'cadet', relation: null },
+            { id: 'd3e8e4c7-5e41-48ef-829c-64531aab8c9a', name: 'Cadet Issue', dependent: 'cadet', relation: null },
         ],
     }),
 }));
@@ -55,7 +58,7 @@ describe('CreateDeficiencyForm', () => {
         const user = userEvent.setup();
         renderForm();
 
-        await user.selectOptions(screen.getByLabelText(/common.type/i), '97d25d1c-15cc-43fb-a2f3-5b21d0ffd8cd');
+        await user.selectOptions(screen.getByLabelText(/common.type/i), deficiencyTypeId);
         await user.type(screen.getByLabelText(/common.description/i), 'E2E New Deficiency');
         await user.type(screen.getByLabelText(/common.comment/i), 'E2E New Comment');
         await user.click(screen.getByTestId('btn_save_new_deficiency'));
@@ -63,9 +66,9 @@ describe('CreateDeficiencyForm', () => {
         await waitFor(() => {
             expect(createDeficiency).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    typeId: '97d25d1c-15cc-43fb-a2f3-5b21d0ffd8cd',
+                    typeId: deficiencyTypeId,
                     comment: 'E2E New Comment',
-                    cadetId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+                    cadetId,
                 })
             );
         });
@@ -75,7 +78,7 @@ describe('CreateDeficiencyForm', () => {
         const user = userEvent.setup();
         renderForm();
 
-        await user.selectOptions(screen.getByLabelText(/common.type/i), '97d25d1c-15cc-43fb-a2f3-5b21d0ffd8cd');
+        await user.selectOptions(screen.getByLabelText(/common.type/i), deficiencyTypeId);
         await user.type(screen.getByLabelText(/common.description/i), 'Some Description');
         await user.type(screen.getByLabelText(/common.comment/i), 'Some Comment');
         await user.click(screen.getByTestId('btn_save_new_deficiency'));
@@ -90,7 +93,7 @@ describe('CreateDeficiencyForm', () => {
         const user = userEvent.setup();
         renderForm();
 
-        await user.selectOptions(screen.getByLabelText(/common.type/i), '97d25d1c-15cc-43fb-a2f3-5b21d0ffd8cd');
+        await user.selectOptions(screen.getByLabelText(/common.type/i), deficiencyTypeId);
         await user.type(screen.getByLabelText(/common.description/i), 'Some Description');
         await user.type(screen.getByLabelText(/common.comment/i), 'Some Comment');
         await user.click(screen.getByTestId('btn_save_new_deficiency'));
@@ -105,7 +108,7 @@ describe('CreateDeficiencyForm', () => {
         const user = userEvent.setup();
         renderForm();
 
-        await user.selectOptions(screen.getByLabelText(/common.type/i), '97d25d1c-15cc-43fb-a2f3-5b21d0ffd8cd');
+        await user.selectOptions(screen.getByLabelText(/common.type/i), deficiencyTypeId);
         await user.type(screen.getByLabelText(/common.description/i), 'Some Description');
         await user.type(screen.getByLabelText(/common.comment/i), 'Some Comment');
         await user.click(screen.getByTestId('btn_save_new_deficiency'));

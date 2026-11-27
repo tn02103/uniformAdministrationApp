@@ -36,7 +36,7 @@ export function CreateDeficiencyForm({
             await mutate(swrKeys.unresolvedDeficienciesByCadet(cadetId));
             onSaved();
             toast.success(t('cadetDetailPage.inspection.message.deficiencyCreated'));
-        } catch {
+        } catch {;
             toast.error(t('common.error.actions.save'));
         }
     };

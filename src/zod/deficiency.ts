@@ -14,6 +14,8 @@ export const AdminDeficiencytypeFormSchema = z.object({
 export type AdminDeficiencytypeFormSchema = z.infer<typeof AdminDeficiencytypeFormSchema>;
 
 // ##### GLOBAL COMPONENTS #######
+
+const nullableUUID = z.union([z.uuidv4("pleaseSelect"), z.string().max(0).transform(() => null)]).nullable().optional();
 export const deficiencyDescriptionSchema = z.string("string.required").max(30, "string.maxLength;value:30").regex(/^[\w\s.,;:\-/\xC0-\xFF]*$/, "string.noSpecialChars");
 export const deficiencyCommentSchema = z.string("string.required").max(1000, "string.maxLength;value:1000").regex(/^[\w\s.,;:!?'"()\-/\xC0-\xFF]*$/, "string.noSpecialChars");
 
@@ -21,9 +23,9 @@ export const baseDeficiencySchema = z.object({
     typeId: z.uuidv4("pleaseSelect"),
     description: deficiencyDescriptionSchema.nullable().optional(),
     comment: deficiencyCommentSchema,
-    cadetId: z.uuidv4("pleaseSelect").nullable().optional(),
-    uniformId:  z.uuidv4("pleaseSelect").nullable().optional(),
-    materialId:  z.uuidv4("pleaseSelect").nullable().optional(),
+    cadetId: nullableUUID,
+    uniformId:  nullableUUID,
+    materialId:  nullableUUID,
 });
 type BaseDeficiencySchema = z.infer<typeof baseDeficiencySchema>;
 
