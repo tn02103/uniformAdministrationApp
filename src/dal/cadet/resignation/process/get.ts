@@ -17,6 +17,13 @@ export const getMembersWithActiveResignationProcessList = (): Promise<CadetWithN
             ...data.filter((cadet: CadetWithResignationProcess) => cadet.resignationProcess !== null)
         ] as CadetWithNonNullResignationProcess[]));
 
+/**
+ * DAL-Function. 
+ * Returns all resigned members for the caller's organisation,
+ * including cadet info and resignation process details.
+ * Excludes cadets who are still in the process of resigning.
+ * @returns list of resigned Cadet records with resignation process details
+ */
 export const getResignedMemberlist = (): Promise<CadetWithResignationProcess[]> => genericSANoDataValidator(AuthRole.inspector)
     .then(([{ assosiation }]) =>
         prisma.cadet.findMany({
