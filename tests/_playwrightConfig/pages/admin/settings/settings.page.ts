@@ -1,20 +1,20 @@
 import { Page } from "playwright/test";
 import { AnonymizationConfigComponent } from "./AnonymizationConfig.component";
-import { ReturnProcessComponent } from "./ReturnProcess.component";
+import { ResignationProcessComponent } from "./ResignationProcess.component";
 
 export class SettingsPage {
 
     readonly page: Page;
 
     readonly anonymizationConfig: AnonymizationConfigComponent;
-    readonly returnProcess: ReturnProcessComponent;
+    readonly resignationProcess: ResignationProcessComponent;
 
     static readonly url = '/de/app/admin/settings';
 
     constructor(page: Page) {
         this.page = page;
         this.anonymizationConfig = new AnonymizationConfigComponent(page);
-        this.returnProcess = new ReturnProcessComponent(page);
+        this.resignationProcess = new ResignationProcessComponent(page);
     }
 
     async goto() {

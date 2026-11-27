@@ -7,7 +7,7 @@ export const getAnonymizationConfig = async () =>
         prisma.assosiationConfiguration.findUniqueOrThrow({
             where: { assosiationId: assosiation },
             select: {
-                returnProcessEnabled: true,
+                resignationProcessEnabled: true,
                 anonymizationMode: true,
                 anonymizationDelayDays: true,
             },

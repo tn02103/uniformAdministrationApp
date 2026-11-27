@@ -1,11 +1,11 @@
 import { Form } from "@/components/fields/Form";
 import { InputFormField } from "@/components/fields/InputFormField";
 import { useI18n } from "@/lib/locales/client";
-import { CreateReturnProcessTemplateInput, createReturnProcessTemplateSchema } from "@/zod/returnProcess";
+import { CreateResignationProcessTemplateInput, createResignationProcessTemplateSchema } from "@/zod/resignationProcess";
 import { Button } from "react-bootstrap";
 
 type CreateTemplateFormProps = {
-    onSave: (data: CreateReturnProcessTemplateInput) => Promise<void>;
+    onSave: (data: CreateResignationProcessTemplateInput) => Promise<void>;
     onCancel: () => void;
 };
 
@@ -16,20 +16,20 @@ export const CreateTemplateForm = ({ onSave, onCancel }: CreateTemplateFormProps
     return (
         <div
             className="d-flex align-items-start gap-2 mt-3 flex-wrap"
-            aria-label={t("admin.settings.returnProcess.addTemplate")}
+            aria-label={t("admin.settings.resignationProcess.addTemplate")}
         >
             <Form
                 formName="create-process-template"
-                aria-label={t("admin.settings.returnProcess.addTemplate")}
+                aria-label={t("admin.settings.resignationProcess.addTemplate")}
                 mode="onSubmit"
                 onSubmit={onSave}
-                zodSchema={createReturnProcessTemplateSchema}
+                zodSchema={createResignationProcessTemplateSchema}
                 defaultValues={{ name: "", defaultProcess: false }}
             >
                 <div style={{ minWidth: "220px", flexGrow: 1 }}>
                     <InputFormField
                         name="name"
-                        label={t("admin.settings.returnProcess.templateName")}
+                        label={t("admin.settings.resignationProcess.templateName")}
                         required
                     />
                 </div>

@@ -9,7 +9,7 @@ afterEach(async () => {
     await prisma.assosiationConfiguration.update({
         where: { assosiationId: staticData.fk_assosiation },
         data: {
-            returnProcessEnabled: staticData.data.assosiationConfiguration.returnProcessEnabled,
+            resignationProcessEnabled: staticData.data.assosiationConfiguration.resignationProcessEnabled,
             anonymizationMode: staticData.data.assosiationConfiguration.anonymizationMode,
             anonymizationDelayDays: staticData.data.assosiationConfiguration.anonymizationDelayDays,
         },
@@ -31,7 +31,7 @@ describe("getAnonymizationConfig", () => {
         const result = await getAnonymizationConfig();
 
         expect(result).toEqual({
-            returnProcessEnabled: staticData.data.assosiationConfiguration.returnProcessEnabled,
+            resignationProcessEnabled: staticData.data.assosiationConfiguration.resignationProcessEnabled,
             anonymizationMode: staticData.data.assosiationConfiguration.anonymizationMode,
             anonymizationDelayDays: staticData.data.assosiationConfiguration.anonymizationDelayDays,
         });
@@ -43,7 +43,7 @@ describe("getAnonymizationConfig", () => {
         const result = await getAnonymizationConfig();
 
         expect(result).toEqual({
-            returnProcessEnabled: wrongAssosiation.data.assosiationConfiguration.returnProcessEnabled,
+            resignationProcessEnabled: wrongAssosiation.data.assosiationConfiguration.resignationProcessEnabled,
             anonymizationMode: wrongAssosiation.data.assosiationConfiguration.anonymizationMode,
             anonymizationDelayDays: wrongAssosiation.data.assosiationConfiguration.anonymizationDelayDays,
         });
@@ -71,16 +71,16 @@ describe("updateAnonymizationConfig", () => {
         delete global.__ASSOSIATION__;
     });
 
-    it("should update returnProcessEnabled", async () => {
-        const result = await updateAnonymizationConfig({ returnProcessEnabled: true });
+    it("should update resignationProcessEnabled", async () => {
+        const result = await updateAnonymizationConfig({ resignationProcessEnabled: true });
 
-        expect(result.returnProcessEnabled).toBe(true);
+        expect(result.resignationProcessEnabled).toBe(true);
 
         const dbRecord = await prisma.assosiationConfiguration.findUniqueOrThrow({
             where: { assosiationId: staticData.fk_assosiation },
-            select: { returnProcessEnabled: true },
+            select: { resignationProcessEnabled: true },
         });
-        expect(dbRecord.returnProcessEnabled).toBe(true);
+        expect(dbRecord.resignationProcessEnabled).toBe(true);
     });
 
     it("should update anonymizationMode to AFTER_DAYS with valid delay", async () => {
@@ -106,14 +106,14 @@ describe("updateAnonymizationConfig", () => {
     });
 
     it("should only update the session org's config and not affect another org", async () => {
-        await updateAnonymizationConfig({ returnProcessEnabled: true });
+        await updateAnonymizationConfig({ resignationProcessEnabled: true });
 
         const otherOrgRecord = await prisma.assosiationConfiguration.findUniqueOrThrow({
             where: { assosiationId: wrongAssosiation.fk_assosiation },
-            select: { returnProcessEnabled: true },
+            select: { resignationProcessEnabled: true },
         });
-        expect(otherOrgRecord.returnProcessEnabled).toBe(
-            wrongAssosiation.data.assosiationConfiguration.returnProcessEnabled
+        expect(otherOrgRecord.resignationProcessEnabled).toBe(
+            wrongAssosiation.data.assosiationConfiguration.resignationProcessEnabled
         );
     });
 

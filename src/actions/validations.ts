@@ -20,8 +20,8 @@ type AssosiationValidationDataType = {
     deficiencyId?: string | string[],
     inspectionId?: string | string[],
     storageUnitId?: string | string[],
-    returnProcessId?: string | string[],
-    returnProcessTemplateId?: string | string[],
+    resignationProcessId?: string | string[],
+    resignationProcessTemplateId?: string | string[],
 }
 
 function assosiationValidator(assosiationValidations: AssosiationValidationDataType, fk_assosiation: string) {
@@ -82,11 +82,11 @@ function assosiationValidator(assosiationValidations: AssosiationValidationDataT
     if (assosiationValidations.storageUnitId) {
         validate(assosiationValidations.storageUnitId, validateStorageUnitAssosiation);
     }
-    if (assosiationValidations.returnProcessId) {
-        validate(assosiationValidations.returnProcessId, validateReturnProcessAssosiation);
+    if (assosiationValidations.resignationProcessId) {
+        validate(assosiationValidations.resignationProcessId, validateResignationProcessAssosiation);
     }
-    if (assosiationValidations.returnProcessTemplateId) {
-        validate(assosiationValidations.returnProcessTemplateId, validateReturnProcessTemplateAssosiation);
+    if (assosiationValidations.resignationProcessTemplateId) {
+        validate(assosiationValidations.resignationProcessTemplateId, validateResignationProcessTemplateAssosiation);
     }
     return Promise.all(validationPromises);
 }
@@ -244,12 +244,12 @@ const validateStorageUnitAssosiation = async (id: string, assosiationId: string)
         where: { id, assosiationId }
     });
 
-export const validateReturnProcessAssosiation = async (id: string, assosiationId: string) =>
-    prisma.returnProcess.findUniqueOrThrow({
+export const validateResignationProcessAssosiation = async (id: string, assosiationId: string) =>
+    prisma.resignationProcess.findUniqueOrThrow({
         where: { id, fk_assosiation: assosiationId }
     });
 
-export const validateReturnProcessTemplateAssosiation = async (id: string, assosiationId: string) =>
-    prisma.returnProcessTemplate.findUniqueOrThrow({
+export const validateResignationProcessTemplateAssosiation = async (id: string, assosiationId: string) =>
+    prisma.resignationProcessTemplate.findUniqueOrThrow({
         where: { id, fk_assosiation: assosiationId }
     });

@@ -29,18 +29,18 @@ export function getStaticDataIds(index: number) {
             `${prefix}aa1111-1111-1111-1111-111111111111`,
             `${prefix}bb2222-2222-2222-2222-222222222222`
         ],
-        returnChecklistTemplateIds: [
+        resignationChecklistItemTemplateIds: [
             `${prefix}cc0000-0000-4000-8000-000000000001`,
             `${prefix}cc0000-0000-4000-8000-000000000002`,
             `${prefix}cc0000-0000-4000-8000-000000000003`,
             `${prefix}cc0000-0000-4000-8000-000000000004`,
             `${prefix}cc0000-0000-4000-8000-000000000005`
         ],
-        returnProcessTemplateIds: [
+        resignationProcessTemplateIds: [
             `${prefix}ee0000-0000-4000-8000-000000000001`,
             `${prefix}ee0000-0000-4000-8000-000000000002`
         ],
-        returnProcessIds: [
+        resignationProcessIds: [
             `${prefix}aa0000-0000-4000-8000-000000000001`,
             `${prefix}aa0000-0000-4000-8000-000000000002`,
             `${prefix}aa0000-0000-4000-8000-000000000003`

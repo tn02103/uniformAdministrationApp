@@ -1,18 +1,20 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faArrowUpRightFromSquare, faCheck, faCircleDown, faCirclePlay, faCircleUp, faEdit, faEye, faEyeSlash, faPlus, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
+import { faArrowUpRightFromSquare, faCheck, faCircleDown, faCirclePlay, faCircleUp, faEdit, faEye, faEyeSlash, faPlus, faRightToBracket, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "react-bootstrap";
 
+export type ActionButtonVariants = keyof typeof Variants;
 type SimplePropType = {
     onClick?: () => void,
     type?: "button" | "submit" | "reset",
     size?: "sm" | "md" | "lg",
-    variantKey: keyof typeof Variants;
+    variantKey: ActionButtonVariants;
     variantOverride?: string;
     disabled?: boolean,
     testId?: string;
     iconClass?: string,
     buttonClass?: string,
+    title?: string;
 }
 const Variants: {
     [key in string]: {
@@ -94,6 +96,12 @@ const Variants: {
         testId: "btn_start",
         ariaLabel: "start inspection",
     },
+    withdraw: {
+        icon: faRightToBracket,
+        variant: "outline-danger",
+        testId: "btn_withdraw",
+        ariaLabel: "withdraw item",
+    }
 }
 export const ActionButton = ({
     onClick,
@@ -104,6 +112,7 @@ export const ActionButton = ({
     iconClass,
     size = "sm",
     type = "button",
+    title,
 }: SimplePropType) => {
     const variant = Variants[variantKey];
     if (!variant) {
@@ -115,6 +124,7 @@ export const ActionButton = ({
         <Button
             data-testid={testId ?? variant.testId}
             type={type}
+            title={title}
             variant={variant.variant}
             className={`border-0 align-self-center ${buttonClass}`}
             onClick={onClick}

@@ -1,25 +1,30 @@
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
+import { useParams, usePathname } from "next/navigation";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { AuthRole } from "../../lib/AuthRoles";
 import { useGlobalData } from "../globalDataProvider";
+import styles from "./NavItems.module.css";
 import { useSidebarContext } from "./Sidebar";
+import { NavbarLink } from "./SidebarTypes";
 
-type NavLinkProps = {
-    requiredRole: AuthRole;
+export type NavLinkProps = {
     text: string;
-    icon?: IconProp;
-    href: string;
-    isRoute: boolean;
-    level?: 1 | 2;
-    testId: string;
-}
-const NavLink = ({ text, icon, isRoute, href, level, requiredRole, testId }: NavLinkProps) => {
+    onNavigation?: (key: string) => void;
+} & ({
+    item: Omit<NavbarLink, "icon">;
+    level: 2;
+} | {
+    item: NavbarLink;
+    level?: 1;
+})
+
+const NavLink = ({ item, text, level, onNavigation }: NavLinkProps) => {
     const { userRole } = useGlobalData();
     const { collapsed, isSidebarFixed, isMobile, setCollapsed } = useSidebarContext();
+    const pathname = usePathname();
+    const { locale } = useParams<{ locale: string }>();
 
-    if (userRole < requiredRole) {
+    if (userRole < item.requiredRole) {
         return <></>;
     }
 
@@ -28,6 +33,8 @@ const NavLink = ({ text, icon, isRoute, href, level, requiredRole, testId }: Nav
             e.preventDefault();
             e.stopPropagation();
             setCollapsed(false);
+        } else {
+            onNavigation?.(item.key);
         }
     };
 
@@ -40,17 +47,24 @@ const NavLink = ({ text, icon, isRoute, href, level, requiredRole, testId }: Nav
             }
         >
             <li className={`list-group-item rounded px-2 py-1 w-100 fs-5 
-                    ${isRoute ? "fw-bold bg-primary" : ""} 
+                    ${item.isRoute(pathname) ? "fw-bold bg-primary" : ""} 
                     ${collapsed ? "d-flex justify-content-between" : ""}
                     ${(level === 2) ? "fs-6 fw-light" : "fs-6 my-1 "}`}
-                style={{ transition: "1s ease-in-out" }}
+                aria-label={collapsed ? "openNavbar" : text}
+                aria-hidden={collapsed && level === 2}
             >
-                <Link data-testid={testId} href={href} className="stretched-link d-flex flex-row" style={{ overflow: "hidden" }} onClick={handleClick}>
-                    {icon &&
-                        <FontAwesomeIcon size="xl" icon={icon} width={20} className={collapsed ? "" : "pe-2"} />
+                <Link
+                    data-testid={`lnk_nav_${item.key}`}
+                    href={`/${locale}/app/${item.href}`}
+                    className={"stretched-link " + styles.navLink}
+                    style={{ overflow: "hidden" }}
+                    onClick={handleClick}
+                >
+                    {level !== 2 && item.icon &&
+                        <FontAwesomeIcon size="xl" icon={item.icon} width={20} className={collapsed ? "" : "pe-2"} />
                     }
-                    <p style={{ visibility: collapsed ? "hidden" : "visible", transitionDelay: "0.3s" }} className="p-0 m-0">
-                        {!collapsed && text}
+                    <p style={{ visibility: collapsed ? "hidden" : "visible", transitionDelay: "0.0s" }} className={styles.navLinkText}>
+                        {text}
                     </p>
                 </Link>
             </li>

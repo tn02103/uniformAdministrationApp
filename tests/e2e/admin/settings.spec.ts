@@ -41,15 +41,15 @@ test.describe('Anonymization Config section', () => {
     test('toggle returnProcessEnabled persists after page reload', async ({ page, settingsPage }) => {
         const { anonymizationConfig: ac } = settingsPage;
 
-        await expect(ac.chk_returnProcessEnabled).toBeVisible();
-        await expect(ac.chk_returnProcessEnabled).toBeChecked();
+        await expect(ac.chk_resignationProcessEnabled).toBeVisible();
+        await expect(ac.chk_resignationProcessEnabled).toBeChecked();
 
-        await ac.chk_returnProcessEnabled.click();
-        await expect(ac.chk_returnProcessEnabled).not.toBeChecked();
+        await ac.chk_resignationProcessEnabled.click();
+        await expect(ac.chk_resignationProcessEnabled).not.toBeChecked();
 
         // Reload and verify persisted
         await page.reload();
-        await expect(ac.chk_returnProcessEnabled).not.toBeChecked();
+        await expect(ac.chk_resignationProcessEnabled).not.toBeChecked();
     });
 
     test('selecting AFTER_DAYS shows days input, other modes hide it', async ({ settingsPage }) => {
@@ -108,7 +108,7 @@ test.describe('Anonymization Config section', () => {
     });
 });
 
-// ─── ReturnProcessTemplate section ──────────────────────────────────────────
+// ─── resignationProcessTemplate section ──────────────────────────────────────────
 
 test.describe('Return Process Template section', () => {
     test.beforeEach(async ({ settingsPage }) => {
@@ -116,11 +116,11 @@ test.describe('Return Process Template section', () => {
     });
 
     test.afterEach(async ({ staticData }) => {
-        await staticData.cleanup.returnProcessTemplate();
+        await staticData.cleanup.resignationProcessTemplate();
     });
 
     test('create a new template', async ({ settingsPage, staticData }) => {
-        const { returnProcess: rp } = settingsPage;
+        const { resignationProcess: rp } = settingsPage;
 
         await rp.btn_addTemplate.click();
 
@@ -133,15 +133,15 @@ test.describe('Return Process Template section', () => {
         await expect(settingsPage.page.getByText('Neue Vorlage')).toBeVisible();
 
         // Verify in DB
-        const tpl = await prisma.returnProcessTemplate.findFirst({
+        const tpl = await prisma.resignationProcessTemplate.findFirst({
             where: { fk_assosiation: staticData.fk_assosiation, name: 'Neue Vorlage' },
         });
         expect(tpl).not.toBeNull();
     });
 
     test('rename an existing template', async ({ settingsPage, staticData }) => {
-        const { returnProcess: rp } = settingsPage;
-        const template = staticData.data.returnProcessTemplates[1]; // 'Alternative Rückgabe'
+        const { resignationProcess: rp } = settingsPage;
+        const template = staticData.data.resignationProcessTemplates[1]; // 'Alternative Rückgabe'
         const templateId = template.id!;
 
         const card = rp.div_templateCard(templateId);
@@ -160,7 +160,7 @@ test.describe('Return Process Template section', () => {
 
         // Verify in DB
         await expect(async () => {
-            const tpl = await prisma.returnProcessTemplate.findFirst({
+            const tpl = await prisma.resignationProcessTemplate.findFirst({
                 where: { fk_assosiation: staticData.fk_assosiation, name: 'Umbenannte Vorlage' },
             });
             expect(tpl).not.toBeNull();
@@ -168,9 +168,9 @@ test.describe('Return Process Template section', () => {
     });
 
     test('delete a template that has no active processes', async ({ settingsPage, staticData }) => {
-        const { returnProcess: rp } = settingsPage;
+        const { resignationProcess: rp } = settingsPage;
         // Template[1] ('Alternative Rückgabe') has no active return processes
-        const template = staticData.data.returnProcessTemplates[1];
+        const template = staticData.data.resignationProcessTemplates[1];
         const templateId = template.id!;
         const card = rp.div_templateCard(templateId);
         await expect(card).toBeVisible();
@@ -185,15 +185,15 @@ test.describe('Return Process Template section', () => {
         await expect(card).toBeHidden();
 
         // Verify deleted from DB
-        const tpl = await prisma.returnProcessTemplate.findUnique({
-            where: { id: staticData.ids.returnProcessTemplateIds[1] },
+        const tpl = await prisma.resignationProcessTemplate.findUnique({
+            where: { id: staticData.ids.resignationProcessTemplateIds[1] },
         });
         expect(tpl).toBeNull();
     });
 
     test('add a checklist item to a template', async ({ settingsPage, staticData }) => {
-        const { returnProcess: rp } = settingsPage;
-        const template = staticData.data.returnProcessTemplates[1]; // 'Alternative Rückgabe'
+        const { resignationProcess: rp } = settingsPage;
+        const template = staticData.data.resignationProcessTemplates[1]; // 'Alternative Rückgabe'
         const templateId = template.id!;
 
         // Expand the template card
@@ -217,7 +217,7 @@ test.describe('Return Process Template section', () => {
 
         // Verify in DB
         await expect(async () => {
-            const item = await prisma.returnChecklistTemplate.findFirst({
+            const item = await prisma.resignationChecklistItemTemplate.findFirst({
                 where: { fk_assosiation: staticData.fk_assosiation, label: 'Stiefel abgeben' },
             });
             expect(item).not.toBeNull();
@@ -225,10 +225,10 @@ test.describe('Return Process Template section', () => {
     });
 
     test('rename a checklist item', async ({ settingsPage, staticData }) => {
-        const { returnProcess: rp } = settingsPage;
-        const template = staticData.data.returnProcessTemplates[0]; // 'Standard Rückgabe'
+        const { resignationProcess: rp } = settingsPage;
+        const template = staticData.data.resignationProcessTemplates[0]; // 'Standard Rückgabe'
         const templateId = template.id!;
-        const checklistItem = staticData.data.returnChecklistTemplates[0]; // 'Hose abgeben'
+        const checklistItem = staticData.data.resignationChecklistItemTemplates[0]; // 'Hose abgeben'
         const checklistItemId = checklistItem.id!;
 
         // Expand
@@ -253,7 +253,7 @@ test.describe('Return Process Template section', () => {
 
         // Verify in DB
         await expect(async () => {
-            const item = await prisma.returnChecklistTemplate.findFirst({
+            const item = await prisma.resignationChecklistItemTemplate.findFirst({
                 where: {
                     fk_assosiation: staticData.fk_assosiation,
                     label: 'Hose zurückgeben',
@@ -264,10 +264,10 @@ test.describe('Return Process Template section', () => {
     });
 
     test('delete a checklist item', async ({ settingsPage, staticData }) => {
-        const { returnProcess: rp } = settingsPage;
-        const template = staticData.data.returnProcessTemplates[0]; // 'Standard Rückgabe'
+        const { resignationProcess: rp } = settingsPage;
+        const template = staticData.data.resignationProcessTemplates[0]; // 'Standard Rückgabe'
         const templateId = template.id!;
-        const checklistItem = staticData.data.returnChecklistTemplates[1]; // 'Jacke abgeben'
+        const checklistItem = staticData.data.resignationChecklistItemTemplates[1]; // 'Jacke abgeben'
         const checklistItemId = checklistItem.id!;
 
         // Expand
@@ -285,7 +285,7 @@ test.describe('Return Process Template section', () => {
 
         // Verify deleted from DB
         await expect(async () => {
-            const item = await prisma.returnChecklistTemplate.findFirst({
+            const item = await prisma.resignationChecklistItemTemplate.findFirst({
                 where: { fk_assosiation: staticData.fk_assosiation, label: checklistItem.label },
             });
             expect(item).toBeNull();
@@ -296,11 +296,11 @@ test.describe('Return Process Template section', () => {
         // eslint-disable-next-line playwright/no-skipped-test
         test.skip(browserName !== 'chromium', 'DnD reorder only tested in Chromium');
 
-        const { returnProcess: rp } = settingsPage;
-        const template = staticData.data.returnProcessTemplates[0]; // 'Standard Rückgabe'
+        const { resignationProcess: rp } = settingsPage;
+        const template = staticData.data.resignationProcessTemplates[0]; // 'Standard Rückgabe'
         const templateId = template.id!;
-        const items = staticData.data.returnChecklistTemplates.filter(
-            (i) => i.fk_returnProcessTemplate === staticData.ids.returnProcessTemplateIds[0]
+        const items = staticData.data.resignationChecklistItemTemplates.filter(
+            (i) => i.processTemplateId === staticData.ids.resignationProcessTemplateIds[0]
         );
         const card = rp.div_templateCard(templateId);
 

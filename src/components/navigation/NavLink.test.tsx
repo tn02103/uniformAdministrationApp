@@ -1,11 +1,11 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { faGear } from '@fortawesome/free-solid-svg-icons';
-import NavLink from './NavLink';
-import { AuthRole } from '../../lib/AuthRoles';
-import { useSidebarContext } from './Sidebar';
-import { useGlobalData } from '../globalDataProvider';
+import { fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MockedFunction } from 'vitest';
+import { AuthRole } from '../../lib/AuthRoles';
+import { useGlobalData } from '../globalDataProvider';
+import NavLink, { NavLinkProps } from './NavLink';
+import { useSidebarContext } from './Sidebar';
 
 // Mock the context hooks
 vi.mock('./Sidebar', () => ({
@@ -21,6 +21,13 @@ vi.mock('next/link', () => ({
             </a>
         );
     },
+}));
+vi.mock('next/navigation', () => ({
+    useRouter: vi.fn(() => ({
+        push: vi.fn(),
+    })),
+    usePathname: vi.fn(() => '/test'),
+    useParams: vi.fn(() => ({ locale: "de" })),
 }));
 
 // Mock Bootstrap components
@@ -38,13 +45,28 @@ const mockUseSidebarContext = useSidebarContext as MockedFunction<typeof useSide
 const mockUseGlobalData = useGlobalData as MockedFunction<typeof useGlobalData>;
 
 describe('NavLink', () => {
+    const isRouteMock = vi.fn(() => false);
     const defaultProps = {
         text: 'Test Link',
-        href: '/test',
-        isRoute: false,
-        requiredRole: AuthRole.user,
-        testId: 'test-nav-link',
+        level: 1,
+        item: {
+            key: 'test-nav-link',
+            isRoute: isRouteMock,
+            href: 'test',
+            icon: faGear,
+            requiredRole: AuthRole.user,
+        }
+    } satisfies NavLinkProps;
+    const getNavLinkProps = (itemOverrides?: Partial<NavLinkProps['item']>): NavLinkProps => {
+        return {
+            ...defaultProps,
+            item: {
+                ...defaultProps.item,
+                ...itemOverrides,
+            },
+        };
     };
+
 
     const defaultSidebarContext = {
         collapsed: false,
@@ -73,7 +95,8 @@ describe('NavLink', () => {
     describe('Basic Rendering', () => {
         test('renders with required props', () => {
             render(<NavLink {...defaultProps} />);
-            expect(screen.getByTestId('test-nav-link')).toBeInTheDocument();
+            expect(screen.getByRole('listitem', { name: 'Test Link' })).toBeInTheDocument();
+            expect(screen.getByRole('link', { name: 'Test Link' })).toBeInTheDocument();
             expect(screen.getByText('Test Link')).toBeInTheDocument();
         });
 
@@ -83,7 +106,7 @@ describe('NavLink', () => {
         });
 
         test('renders icon when provided', () => {
-            render(<NavLink {...defaultProps} icon={faGear} />);
+            render(<NavLink {...getNavLinkProps({ icon: faGear })} />);
             const icon = screen.getByRole('img', { hidden: true });
             expect(icon).toBeInTheDocument();
             expect(icon).toHaveAttribute('data-icon', 'gear');
@@ -93,11 +116,6 @@ describe('NavLink', () => {
             render(<NavLink {...defaultProps} />);
             expect(screen.queryByRole('img', { hidden: true })).not.toBeInTheDocument();
         });
-
-        test('applies correct testId', () => {
-            render(<NavLink {...defaultProps} testId="custom-test-id" />);
-            expect(screen.getByTestId('custom-test-id')).toBeInTheDocument();
-        });
     });
 
     describe('Role-Based Access Control', () => {
@@ -106,8 +124,8 @@ describe('NavLink', () => {
                 ...defaultGlobalData,
                 userRole: AuthRole.user,
             });
-            render(<NavLink {...defaultProps} requiredRole={AuthRole.admin} />);
-            expect(screen.queryByTestId('test-nav-link')).not.toBeInTheDocument();
+            render(<NavLink {...getNavLinkProps({ requiredRole: AuthRole.admin })} />);
+            expect(screen.queryByRole('listitem', { name: 'Test Link' })).not.toBeInTheDocument();
         });
 
         test('shows component for sufficient user role', () => {
@@ -115,62 +133,35 @@ describe('NavLink', () => {
                 ...defaultGlobalData,
                 userRole: AuthRole.admin,
             });
-            render(<NavLink {...defaultProps} requiredRole={AuthRole.user} />);
-            expect(screen.getByTestId('test-nav-link')).toBeInTheDocument();
-        });
-
-        test('tests different AuthRole scenarios', () => {
-            // Test user role can access user-level component
-            mockUseGlobalData.mockReturnValue({
-                ...defaultGlobalData,
-                userRole: AuthRole.user,
-            });
-            const { rerender } = render(<NavLink {...defaultProps} requiredRole={AuthRole.user} />);
-            expect(screen.getByTestId('test-nav-link')).toBeInTheDocument();
-
-            // Test user role cannot access admin-level component
-            rerender(<NavLink {...defaultProps} requiredRole={AuthRole.admin} />);
-            expect(screen.queryByTestId('test-nav-link')).not.toBeInTheDocument();
-
-            // Test admin role can access all levels
-            mockUseGlobalData.mockReturnValue({
-                ...defaultGlobalData,
-                userRole: AuthRole.admin,
-            });
-            rerender(<NavLink {...defaultProps} requiredRole={AuthRole.admin} />);
-            expect(screen.getByTestId('test-nav-link')).toBeInTheDocument();
+            render(<NavLink {...getNavLinkProps({ requiredRole: AuthRole.user })} />);
+            expect(screen.getByRole('listitem', { name: 'Test Link' })).toBeInTheDocument();
         });
     });
 
     describe('Navigation Link', () => {
         test('renders Next.js Link with correct href', () => {
-            render(<NavLink {...defaultProps} href="/custom-path" />);
-            const link = screen.getByTestId('test-nav-link');
-            expect(link).toHaveAttribute('href', '/custom-path');
-        });
-
-        test('link has correct className', () => {
-            render(<NavLink {...defaultProps} />);
-            const link = screen.getByTestId('test-nav-link');
-            expect(link).toHaveClass('stretched-link', 'd-flex', 'flex-row');
-        });
-
-        test('link has correct data-testid', () => {
-            render(<NavLink {...defaultProps} testId="custom-link-id" />);
-            expect(screen.getByTestId('custom-link-id')).toBeInTheDocument();
+            render(<NavLink {...getNavLinkProps({ href: "custom-path" })} />);
+            const link = screen.getByRole('link', { name: 'Test Link' });
+            expect(link).toHaveAttribute('href', '/de/app/custom-path');
         });
     });
 
     describe('Styling and CSS Classes', () => {
         test('applies route styling when isRoute=true', () => {
-            render(<NavLink {...defaultProps} isRoute={true} />);
-            // Check for route-specific styling by looking for the list item element
-            const listItem = screen.getByRole('listitem');
-            expect(listItem).toHaveClass('fw-bold', 'bg-primary');
+            try {
+                isRouteMock.mockReturnValue(true);
+                render(<NavLink {...defaultProps} />);
+                // Check for route-specific styling by looking for the list item element
+                const listItem = screen.getByRole('listitem');
+                expect(listItem).toHaveClass('fw-bold', 'bg-primary');
+            } finally {
+                isRouteMock.mockReturnValue(false);
+            }
         });
 
         test('applies normal styling when isRoute=false', () => {
-            render(<NavLink {...defaultProps} isRoute={false} />);
+            isRouteMock.mockReturnValue(false);
+            render(<NavLink {...defaultProps} />);
             // Check that route-specific styling is not applied
             const listItem = screen.getByRole('listitem');
             expect(listItem).not.toHaveClass('fw-bold', 'bg-primary');
@@ -246,10 +237,28 @@ describe('NavLink', () => {
             });
 
             render(<NavLink {...defaultProps} />);
-            const link = screen.getByTestId('test-nav-link');
+            const link = screen.getByRole('link');
 
             await user.click(link);
             expect(mockSetCollapsed).toHaveBeenCalledWith(false);
+        });
+        test('hides aria item when collapsed and level is 2', () => {
+            mockUseSidebarContext.mockReturnValue({
+                ...defaultSidebarContext,
+                collapsed: true,
+            });
+            render(<NavLink {...defaultProps} level={2} />);
+            const listItem = screen.getByRole('listitem', { hidden: true });
+            expect(listItem).toHaveAttribute('aria-hidden', 'true');
+        });
+        test('does not hide aria item when collapsed and level is 1', () => {
+            mockUseSidebarContext.mockReturnValue({
+                ...defaultSidebarContext,
+                collapsed: true,
+            });
+            render(<NavLink {...defaultProps} level={1} />);
+            const listItem = screen.getByRole('listitem', { hidden: true });
+            expect(listItem).toHaveAttribute('aria-hidden', "false");
         });
     });
 
@@ -265,7 +274,7 @@ describe('NavLink', () => {
             });
 
             render(<NavLink {...defaultProps} />);
-            const link = screen.getByTestId('test-nav-link');
+            const link = screen.getByRole('link');
 
             const clickEvent = new MouseEvent('click', { bubbles: true });
             const preventDefaultSpy = vi.spyOn(clickEvent, 'preventDefault');
@@ -287,7 +296,7 @@ describe('NavLink', () => {
             });
 
             render(<NavLink {...defaultProps} />);
-            const link = screen.getByTestId('test-nav-link');
+            const link = screen.getByRole('link');
 
             const clickEvent = new MouseEvent('click', { bubbles: true });
             const preventDefaultSpy = vi.spyOn(clickEvent, 'preventDefault');
@@ -310,7 +319,7 @@ describe('NavLink', () => {
             });
 
             render(<NavLink {...defaultProps} />);
-            const link = screen.getByTestId('test-nav-link');
+            const link = screen.getByRole('link');
 
             const clickEvent = new MouseEvent('click', { bubbles: true });
             const preventDefaultSpy = vi.spyOn(clickEvent, 'preventDefault');
@@ -333,7 +342,7 @@ describe('NavLink', () => {
             });
 
             render(<NavLink {...defaultProps} />);
-            const link = screen.getByTestId('test-nav-link');
+            const link = screen.getByRole('link');
 
             const clickEvent = new MouseEvent('click', { bubbles: true });
             const preventDefaultSpy = vi.spyOn(clickEvent, 'preventDefault');
@@ -345,7 +354,7 @@ describe('NavLink', () => {
             expect(stopPropagationSpy).not.toHaveBeenCalled();
             expect(mockSetCollapsed).not.toHaveBeenCalled();
         });
-        
+
         test('calls preventDefault and stopPropagation correctly', () => {
             const mockSetCollapsed = vi.fn();
             mockUseSidebarContext.mockReturnValue({
@@ -357,7 +366,7 @@ describe('NavLink', () => {
             });
 
             render(<NavLink {...defaultProps} />);
-            const link = screen.getByTestId('test-nav-link');
+            const link = screen.getByRole('link');
 
             const mockEvent = new MouseEvent('click', { bubbles: true });
             const preventDefaultSpy = vi.spyOn(mockEvent, 'preventDefault');
@@ -368,6 +377,22 @@ describe('NavLink', () => {
             expect(preventDefaultSpy).toHaveBeenCalled();
             expect(stopPropagationSpy).toHaveBeenCalled();
             expect(mockSetCollapsed).toHaveBeenCalledWith(false);
+        });
+        test('calls onNavigation correctly', async () => {
+            const mockSetCollapsed = vi.fn();
+            mockUseSidebarContext.mockReturnValue({
+                ...defaultSidebarContext,
+                collapsed: true,
+                isSidebarFixed: true,
+                setCollapsed: mockSetCollapsed,
+            });
+
+            const onNavigation = vi.fn();
+            render(<NavLink {...defaultProps} onNavigation={onNavigation} />);
+
+            const link = screen.getByRole('link');
+            await userEvent.click(link);
+            expect(onNavigation).toHaveBeenCalled();
         });
     });
 
@@ -413,7 +438,7 @@ describe('NavLink', () => {
 
     describe('Icon Rendering', () => {
         test('FontAwesome icon props', () => {
-            render(<NavLink {...defaultProps} icon={faGear} />);
+            render(<NavLink {...getNavLinkProps({ icon: faGear })} />);
 
             const icon = screen.getByRole('img', { hidden: true });
             expect(icon).toHaveAttribute('data-icon', 'gear');
@@ -425,7 +450,7 @@ describe('NavLink', () => {
                 ...defaultSidebarContext,
                 collapsed: true,
             });
-            render(<NavLink {...defaultProps} icon={faGear} />);
+            render(<NavLink {...getNavLinkProps({ icon: faGear })} />);
 
             const icon = screen.getByRole('img', { hidden: true });
             expect(icon).not.toHaveClass('pe-2');
@@ -436,73 +461,10 @@ describe('NavLink', () => {
                 ...defaultSidebarContext,
                 collapsed: false,
             });
-            render(<NavLink {...defaultProps} icon={faGear} />);
+            render(<NavLink {...getNavLinkProps({ icon: faGear })} />);
 
             const icon = screen.getByRole('img', { hidden: true });
             expect(icon).toHaveClass('pe-2');
-        });
-    });
-
-    describe('Text Visibility', () => {
-        test('text hidden when collapsed', () => {
-            mockUseSidebarContext.mockReturnValue({
-                ...defaultSidebarContext,
-                collapsed: true,
-            });
-            render(<NavLink {...defaultProps} />);
-
-            const link = screen.getByRole('link')
-            expect(link).not.toHaveTextContent('Test Link');
-        });
-
-        test('text visible when expanded', () => {
-            mockUseSidebarContext.mockReturnValue({
-                ...defaultSidebarContext,
-                collapsed: false,
-            });
-            render(<NavLink {...defaultProps} />);
-
-            const textElement = screen.getByText('Test Link');
-            expect(textElement).toHaveStyle({ visibility: 'visible' });
-        });
-
-        test('text transition delay', () => {
-            render(<NavLink {...defaultProps} />);
-
-            const textElement = screen.getByText('Test Link');
-            expect(textElement).toHaveStyle({ transitionDelay: '0.3s' });
-        });
-    });
-
-    describe('Accessibility', () => {
-        test('link is keyboard accessible', async () => {
-            render(<NavLink {...defaultProps} />);
-            const link = screen.getByTestId('test-nav-link');
-
-            // Focus the link and test keyboard interaction
-            link.focus();
-            expect(link).toHaveFocus();
-
-            // Test Enter key
-            await user.keyboard('{Enter}');
-            expect(link).toBeInTheDocument();
-        });
-
-        test('has proper ARIA attributes', () => {
-            render(<NavLink {...defaultProps} />);
-            const link = screen.getByTestId('test-nav-link');
-
-            // Check that the link has proper href attribute
-            expect(link).toHaveAttribute('href', '/test');
-            expect(link).toHaveAttribute('data-testid', 'test-nav-link');
-        });
-
-        test('screen reader compatibility', () => {
-            render(<NavLink {...defaultProps} />);
-
-            // Test that important text is accessible
-            expect(screen.getByText('Test Link')).toBeInTheDocument();
-            expect(screen.getByRole('link')).toBeInTheDocument();
         });
     });
 });

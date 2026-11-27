@@ -532,13 +532,17 @@ export default {
             "activeInspection.collapsed": "{controlled} / {total}"
         },
         links: {
-            cadetOverview: "Staff",
-            uniformOverview: "Uniform",
-            storageUnit: "Storage units",
-            create: {
-                group: "Create",
-                cadet: "Person",
-                uniform: "Uniform",
+            members: {
+                group: "Members",
+                overview: "Overview",
+                create: "Create",
+                resignation: "Resignations"
+            },
+            uniform: {
+                group: "Uniform",
+                overview: "Overview",
+                create: "Create",
+                storage: "Storage"
             },
             inspection: {
                 group: "Inspection",
@@ -548,15 +552,15 @@ export default {
                 inspection: "Administration",
                 deficiencyType: "Deficiency types",
             },
-            administration: {
+            admin: {
                 group: "Administration",
                 uniform: "Uniform",
-                size: "Sizes",
+                uniformSizes: "Sizes",
                 material: "Materials",
-                dashboard: "Dashboard",
-                settings: "Settings",
+                user: "Users",
+                orgSettings: "Settings",
             },
-            userOverview: "Accesses",
+            dashboard: "Dashboard",
             redirects: "Redirects",
         },
     },
@@ -723,7 +727,7 @@ export default {
             header: "Settings",
             anonymization: {
                 header: "Anonymisation Policy",
-                returnProcessEnabled: "Return process enabled",
+                resignationProcessEnabled: "Return process enabled",
                 anonymizationMode: "Anonymisation mode",
                 anonymizationDelayDays: "Delay in days",
                 modes: {
@@ -734,7 +738,7 @@ export default {
                 success: "Settings saved successfully",
                 error: "An error occurred while saving",
             },
-            returnProcess: {
+            resignationProcess: {
                 header: "Return Process",
                 addTemplate: "Add template",
                 templateName: "Template name",
@@ -965,6 +969,59 @@ export default {
             },
             cancel: "cancel",
             change: "change",
+        },
+    },
+    resignation: {
+        managementOverview: {
+            header: "Club exits",
+            headerActive: "Active exit processes",
+            headerFinished: "Completed exit processes",
+            tableheaders: {
+                startDate: "Start date",
+                cadet: "Member",
+                template: "Template",
+                hasProcess: "Has process",
+                todos: "Checklist items",
+                uniformAndMaterialReturned: "Uniform/ Material returned",
+                exitDate: "Exit date",
+                exitStartDate: "Exit start date"
+            },
+            finished: {
+                header: "Completed exit processes",
+            },
+            offcanvas: {
+                header: "Club exit of {cadet}",
+                processDetails: {
+                    header: "Process details",
+                    status: "Status",
+                    completed: "Completed",
+                    inProgress: "In progress",
+                    todos: "Checklist items",
+                    uniformReturned: "Uniform returned",
+                    materialReturned: "Material returned",
+                    template: "Template",
+                    startedAt: "Started at",
+                    lastUpdatedAt: "Last updated at",
+                    comment: "Comments",
+                },
+                todos: {
+                    header: "Checklist items",
+                },
+                missingReturns: {
+                    header: "Not returned",
+                    uniform: "Uniform parts",
+                    uniformComplete: "Uniform parts fully returned",
+                    material: "Materials",
+                    materialComplete: "Materials fully returned",
+                },
+                completeProcess: "Complete club exit",
+                errors: {
+                    toggleTask: "An error occurred while changing the checklist item",
+                    completeProcess: "An error occurred while completing the exit process",
+                    withdrawMaterial: "An error occurred while withdrawing the material",
+                    withdrawUniform: "An error occurred while withdrawing the uniform",
+                }
+            },
         },
     },
 } as const;

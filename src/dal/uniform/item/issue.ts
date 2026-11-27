@@ -1,5 +1,5 @@
 import { genericSAValidator } from "@/actions/validations"
-import { SAErrorResponseType } from "@/dal/_index"
+import { SAErrorResponseType } from "@/dal/index"
 import { __unsecuredGetCadetUniformMap } from "@/dal/cadet/uniformMap"
 import CustomException from "@/errors/CustomException"
 import { NullValueException } from "@/errors/LoadDataException"
