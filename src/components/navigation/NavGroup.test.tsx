@@ -119,15 +119,6 @@ describe('NavGroup', () => {
     const mockUseSidebarContext = useSidebarContext as MockedFunction<typeof useSidebarContext>;
     const mockUseGlobalData = useGlobalData as MockedFunction<typeof useGlobalData>;
 
-
-    /*
-    Rendering:
-    - Hides children when collapsed
-    - Hides Title if collapsed
-    - Hides group-expand arrow if 
-    */
-
-
     beforeEach(() => {
         vi.clearAllMocks();
         user = userEvent.setup();
@@ -140,7 +131,6 @@ describe('NavGroup', () => {
     });
 
     // Basic Rendering Tests
-
     test('renders correctly', () => {
         render(<NavGroup {...defaultProps} />);
 

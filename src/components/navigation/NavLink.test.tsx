@@ -1,11 +1,11 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { faGear } from '@fortawesome/free-solid-svg-icons';
-import NavLink, { NavLinkProps } from './NavLink';
-import { AuthRole } from '../../lib/AuthRoles';
-import { useSidebarContext } from './Sidebar';
-import { useGlobalData } from '../globalDataProvider';
+import { fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MockedFunction } from 'vitest';
+import { AuthRole } from '../../lib/AuthRoles';
+import { useGlobalData } from '../globalDataProvider';
+import NavLink, { NavLinkProps } from './NavLink';
+import { useSidebarContext } from './Sidebar';
 
 // Mock the context hooks
 vi.mock('./Sidebar', () => ({
@@ -53,6 +53,7 @@ describe('NavLink', () => {
             key: 'test-nav-link',
             isRoute: isRouteMock,
             href: 'test',
+            icon: faGear,
             requiredRole: AuthRole.user,
         }
     } satisfies NavLinkProps;
@@ -466,28 +467,4 @@ describe('NavLink', () => {
             expect(icon).toHaveClass('pe-2');
         });
     });
-
-    /* describe('Text Visibility', () => {
-         test('text hidden when collapsed', () => {
-             mockUseSidebarContext.mockReturnValue({
-                 ...defaultSidebarContext,
-                 collapsed: true,
-             });
-             render(<NavLink {...defaultProps} />);
- 
-             const link = screen.getByRole('link')
-             expect(link).not.toHaveTextContent('Test Link');
-         });
- 
-         test('text visible when expanded', () => {
-             mockUseSidebarContext.mockReturnValue({
-                 ...defaultSidebarContext,
-                 collapsed: false,
-             });
-             render(<NavLink {...defaultProps} />);
- 
-             const textElement = screen.getByText('Test Link');
-             expect(textElement).toHaveStyle({ visibility: 'visible' });
-         });
-     }); */
 });
