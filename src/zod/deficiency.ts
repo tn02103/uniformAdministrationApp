@@ -15,17 +15,17 @@ export type AdminDeficiencytypeFormSchema = z.infer<typeof AdminDeficiencytypeFo
 
 // ##### GLOBAL COMPONENTS #######
 
-const nullableUUID = z.union([z.string().uuid(), z.string().max(0).transform(() => null)]).nullable().optional();
-export const deficiencyDescriptionSchema = z.string().max(30, "string.maxLength;value:30").regex(/^[\w\s.,;:\-/\xC0-\xFF]*$/, "string.noSpecialChars");
-export const deficiencyCommentSchema = z.string().max(1000, "string.maxLength;value:1000").regex(/^[\w\s.,;:!?'"()\-/\xC0-\xFF]*$/, "string.noSpecialChars");
+const nullableUUID = z.union([z.uuidv4("pleaseSelect"), z.string().max(0).transform(() => null)]).nullable().optional();
+export const deficiencyDescriptionSchema = z.string("string.required").max(30, "string.maxLength;value:30").regex(/^[\w\s.,;:\-/\xC0-\xFF]*$/, "string.noSpecialChars");
+export const deficiencyCommentSchema = z.string("string.required").max(1000, "string.maxLength;value:1000").regex(/^[\w\s.,;:!?'"()\-/\xC0-\xFF]*$/, "string.noSpecialChars");
 
 export const baseDeficiencySchema = z.object({
-    typeId: z.string().uuid(),
+    typeId: z.uuidv4("pleaseSelect"),
     description: deficiencyDescriptionSchema.nullable().optional(),
     comment: deficiencyCommentSchema,
     cadetId: nullableUUID,
-    uniformId: nullableUUID,
-    materialId: nullableUUID,
+    uniformId:  nullableUUID,
+    materialId:  nullableUUID,
 });
 type BaseDeficiencySchema = z.infer<typeof baseDeficiencySchema>;
 
@@ -86,13 +86,13 @@ const getSuperRefinement = (deficiencyTypeList: TypelistItem[], pathPrefix: stri
 
 // ##### CADET INSPECTION SCHEMAS #####
 export const getNewCadetDeficiencyFormSchema = (typeList: TypelistItem[], pathPrefix: string[]) => baseDeficiencySchema.extend({
-    id: z.string().uuid().optional(),
+    id: z.uuidv4().optional(),
     dateCreated: z.string().regex(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})?$/, "string.invalidDate").nullable().optional(),
 }).superRefine(getSuperRefinement(typeList, pathPrefix));
 
 export const oldDeficiencyFormSchema = z.object({
-    id: z.string().uuid(),
-    typeId: z.string().uuid(),
+    id: z.uuidv4(),
+    typeId: z.uuidv4(),
     typeName: z.string(),
     description: deficiencyDescriptionSchema,
     comment: deficiencyCommentSchema,
@@ -101,7 +101,7 @@ export const oldDeficiencyFormSchema = z.object({
 });
 
 export const getCadetInspectionFormSchema = (typeList: TypelistItem[], pathPrefix: string[] = []) => z.object({
-    cadetId: z.string().uuid(),
+    cadetId: z.uuidv4(),
     uniformComplete: z.boolean(),
     oldDeficiencyList: z.array(oldDeficiencyFormSchema),
     newDeficiencyList: getNewCadetDeficiencyFormSchema(typeList, [...pathPrefix, "newDeficiencyList"]).array(),

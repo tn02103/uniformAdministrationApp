@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { getByRole, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FormProvider, useForm, UseFormReturn } from 'react-hook-form';
 import { CadetInspectionFormSchema } from '@/zod/deficiency';
@@ -127,9 +127,9 @@ describe('DeficiencyInspectionStep1Row', () => {
 
             const rowA = screen.getByTestId('div_olddef_def-a');
             const rowB = screen.getByTestId('div_olddef_def-b');
-            const switchA = rowA.querySelector('input[role="switch"]') as HTMLInputElement;
-            const switchB = rowB.querySelector('input[role="switch"]') as HTMLInputElement;
-
+            const switchA = getByRole(rowA, 'switch');
+            const switchB = getByRole(rowB, 'switch');
+            
             expect(switchA).toBeChecked();
             expect(switchB).not.toBeChecked();
 
