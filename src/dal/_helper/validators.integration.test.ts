@@ -55,6 +55,6 @@ describe('genericSAValidator', () => {
             .catch((error) => error);
 
         expect(error.issues[0].code).toBe('invalid_type');
-        expect(error.issues[0].message).toBe('Expected string, received number');
+        expect(error.issues[0].message).toBe('Invalid input: expected string, received number');
     });
 });

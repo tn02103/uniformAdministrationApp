@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { Button, FormControl } from "react-bootstrap";
 import { useController, useForm } from "react-hook-form";
-import { ZodTypeAny } from "zod";
+import type { ZodType } from "zod";
 import { TooltipActionButton } from "../Buttons/TooltipIconButton";
 import { Field, FieldProps } from "./Field";
 
@@ -21,7 +21,7 @@ export type InlineEditInputFormFieldProps = {
     inputClassName?: string;
     onSave?: (value: string) => void;
     onValueChange?: (value: string, event: React.ChangeEvent<HTMLInputElement>) => void;
-    zodSchema?: ZodTypeAny;
+    zodSchema?: ZodType;
 } & Omit<FieldProps, "label">
 
 export const InlineEditInputFormField = (props: InlineEditInputFormFieldProps) => {
@@ -76,7 +76,8 @@ const FormComponent = (props: FormComponentProps) => {
         defaultValues: {
             [name]: propValue || ''
         },
-        resolver: zodSchema ? zodResolver(zodSchema) : undefined,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        resolver: zodSchema ? zodResolver(zodSchema as any) : undefined,
     });
 
     const { field, fieldState } = useController({
