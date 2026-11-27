@@ -25,7 +25,7 @@ type UniformGenerationOffcanvasProps = {
 export const UniformgenerationOffcanvas = ({ generation, uniformTypeId, usingSizes, onHide }: UniformGenerationOffcanvasProps) => {
     const formSchema = uniformGenerationFormSchema.omit({ fk_sizelist: true }).extend({
         fk_sizelist: usingSizes
-            ? z.uuidv4("pleaseSelect")
+            ? z.uuid("pleaseSelect")
             : uniformGenerationFormSchema.shape.fk_sizelist,
     });
 
