@@ -12,7 +12,7 @@ import { SAFormHandler } from "@/lib/SAFormHandler";
 import { storageUnitFormSchema, StorageUnitFormType } from "@/zod/storage";
 import { Button, Col, Row } from "react-bootstrap";
 import { useFormContext } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 
 
 type Props = {

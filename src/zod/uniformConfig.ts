@@ -1,8 +1,6 @@
 import { z } from "zod";
-import { customErrorMap } from "./customZod/customErrorMap";
-import { descriptionSchema } from "./global";
 
-z.setErrorMap(customErrorMap);
+import { descriptionSchema } from "./global";
 
 export const uniformTypeFormSchema = z.object({
     name: z.string().min(1).max(10),
@@ -18,8 +16,8 @@ export const uniformTypeFormSchema = z.object({
 export type UniformTypeFormType = z.infer<typeof uniformTypeFormSchema>;
 
 export const uniformGenerationFormSchema = z.object({
-    name: descriptionSchema(z.string().min(1, 'string.required').max(20, "string.maxLength;value:20")),
+    name: descriptionSchema(z.string("string.required").min(1, 'string.required').max(20, "string.maxLength;value:20")),
     isReserve: z.boolean(),
-    fk_sizelist: z.string().uuid().nullable(),
+    fk_sizelist: z.uuid("pleaseSelect").nullable(),
 });
 export type UniformGenerationFormType = z.infer<typeof uniformGenerationFormSchema>;
